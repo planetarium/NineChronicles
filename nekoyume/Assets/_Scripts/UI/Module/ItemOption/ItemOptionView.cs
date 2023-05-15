@@ -64,13 +64,14 @@ namespace Nekoyume.UI.Module
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,
-            decimal totalPower,
+            string totalPowerString,
             int totalChance,
             decimal plusPower,
-            int plusChance) =>
+            int plusChance,
+            string plusRatioString) =>
             UpdateView(
-                $"{skillName} {totalPower} / {totalChance}%",
-                plusPower > 0 || plusChance > 0 ? $"+{plusPower} / +{plusChance}%" : string.Empty);
+                $"{skillName} {totalPowerString} / {totalChance}%",
+                plusPower > 0 || plusChance > 0 ? $"+{plusPower}(+{plusRatioString}) / +{plusChance}%" : string.Empty);
 
         public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
 

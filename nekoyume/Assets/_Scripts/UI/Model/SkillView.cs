@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Model
             chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
             if (skill is BuffSkill buffSkill)
             {
-                var powerValue = buffSkill.SkillRow.EffectToString(skill.Power);
+                var powerValue = buffSkill.EffectToString();
                 power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             }
             else
@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Model
 
         public SkillView(BuffSkill skill)
         {
-            var powerValue = skill.SkillRow.EffectToString(skill.Power);
+            var powerValue = skill.EffectToString();
             name.Value = skill.SkillRow.GetLocalizedName();
             power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";

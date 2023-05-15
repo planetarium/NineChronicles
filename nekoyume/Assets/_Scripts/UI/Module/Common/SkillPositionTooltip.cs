@@ -9,11 +9,24 @@ using UniRx;
 using UnityEngine.UI;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
+using Libplanet.Blocks;
 
 namespace Nekoyume.UI.Module.Common
 {
     public class SkillPositionTooltip : PositionTooltip
     {
+        private struct OptionDigest
+        {
+            public int SkillId;
+            public int ChanceMin;
+            public int ChanceMax;
+            public int PowerMin;
+            public int PowerMax;
+            public int StatPowerRatioMin;
+            public int StatPowerRatioMax;
+            public StatType ReferencedStatType;
+        }
+
         [SerializeField]
         protected TextMeshProUGUI cooldownText;
 
@@ -48,19 +61,31 @@ namespace Nekoyume.UI.Module.Common
             }
             else
             {
+                var digest = new OptionDigest()
+                {
+                    SkillId = optionRow.SkillId,
+                    ChanceMin = optionRow.SkillChanceMin,
+                    ChanceMax = optionRow.SkillChanceMax,
+                    PowerMin = optionRow.SkillDamageMin,
+                    PowerMax = optionRow.SkillDamageMax,
+                    StatPowerRatioMin = optionRow.StatDamageRatioMin,
+                    StatPowerRatioMax = optionRow.StatDamageRatioMax,
+                    ReferencedStatType = optionRow.ReferencedStatType
+                };
+
                 switch (skillRow.SkillType)
                 {
                     case SkillType.Attack:
-                        SetAttackSkillDescription(optionRow);
+                        SetAttackSkillDescription(digest);
                         break;
                     case SkillType.Heal:
-                        SetHealDescription(optionRow);
+                        SetHealDescription(digest);
                         break;
                     case SkillType.Buff:
-                        SetBuffDescription(optionRow, false);
+                        SetBuffDescription(digest, false);
                         break;
                     case SkillType.Debuff:
-                        SetBuffDescription(optionRow, true);
+                        SetBuffDescription(digest, true);
                         break;
                 }
             }
@@ -68,7 +93,15 @@ namespace Nekoyume.UI.Module.Common
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
         }
 
-        public void Set(SkillSheet.Row skillRow, int chanceMin, int chanceMax, int damageMin, int damageMax)
+        public void Set(
+            SkillSheet.Row skillRow,
+            int chanceMin,
+            int chanceMax,
+            int powerMin,
+            int powerMax,
+            int ratioMin,
+            int ratioMax,
+            StatType referencedStatType)
         {
             titleText.text = skillRow.GetLocalizedName();
 
@@ -78,20 +111,32 @@ namespace Nekoyume.UI.Module.Common
                 contentText.text = L10nManager.Localize(key);
             }
             else
+            {
+                var digest = new OptionDigest()
                 {
+                    SkillId = skillRow.Id,
+                    ChanceMin = chanceMin,
+                    ChanceMax = chanceMax,
+                    PowerMin = powerMin,
+                    PowerMax = powerMax,
+                    StatPowerRatioMin = ratioMin,
+                    StatPowerRatioMax = ratioMax,
+                    ReferencedStatType = referencedStatType,
+                };
+
                 switch (skillRow.SkillType)
                 {
                     case SkillType.Attack:
-                        SetAttackSkillDescription(skillRow, chanceMin, chanceMax, damageMin, damageMax);
+                        SetAttackSkillDescription(digest);
                         break;
                     case SkillType.Heal:
-                        SetHealDescription(skillRow, chanceMin, chanceMax, damageMin, damageMax);
+                        SetHealDescription(digest);
                         break;
                     case SkillType.Buff:
-                        SetBuffDescription(skillRow, chanceMin, chanceMax, damageMax, false);
+                        SetBuffDescription(digest, false);
                         break;
                     case SkillType.Debuff:
-                        SetBuffDescription(skillRow, chanceMin, chanceMax, damageMax, true);
+                        SetBuffDescription(digest, true);
                         break;
                 }
             }
@@ -99,78 +144,80 @@ namespace Nekoyume.UI.Module.Common
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
         }
 
-        private void SetAttackSkillDescription(EquipmentItemOptionSheet.Row optionRow)
+        private void SetAttackSkillDescription(OptionDigest digest)
         {
-            var row = TableSheets.Instance.SkillSheet[optionRow.SkillId];
-            SetAttackSkillDescription(
-                row,
-                optionRow.SkillChanceMin,
-                optionRow.SkillChanceMax,
-                optionRow.SkillDamageMin,
-                optionRow.SkillDamageMax);
+            var row = TableSheets.Instance.SkillSheet[digest.SkillId];
+            SetAttackSkillDescription(row, digest);
         }
 
-        private void SetAttackSkillDescription(SkillSheet.Row row,
-            int chanceMin, int chanceMax, int damageMin, int damageMax)
+        private void SetAttackSkillDescription(SkillSheet.Row row, OptionDigest digest)
         {
-            var chanceText = chanceMin == chanceMax ?
-                $"{VariableColorTag}{chanceMin}%</color>" :
-                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
-            var value = damageMin == damageMax ?
-                $"{VariableColorTag}{row.EffectToString(damageMin)}</color>" :
-                $"{VariableColorTag}{row.EffectToString(damageMin)}-{row.EffectToString(damageMax)}</color>";
-            contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_ATTACK", chanceText, value);
-
+            contentText.text = GetDescription("SKILL_DESCRIPTION_ATTACK", row, digest);
             buffObject.SetActive(false);
             debuffObject.SetActive(false);
         }
 
-        private void SetHealDescription(EquipmentItemOptionSheet.Row optionRow)
+        private void SetHealDescription(OptionDigest digest)
         {
-            var row = TableSheets.Instance.SkillSheet[optionRow.SkillId];
-            SetHealDescription(
-                row,
-                optionRow.SkillChanceMin,
-                optionRow.SkillChanceMax,
-                optionRow.SkillDamageMin,
-                optionRow.SkillDamageMax);
+            var row = TableSheets.Instance.SkillSheet[digest.SkillId];
+            SetHealSkillDescription(row, digest);
         }
 
-        private void SetHealDescription(SkillSheet.Row row,
-            int chanceMin, int chanceMax, int amountMin, int amountMax)
+        private void SetHealSkillDescription(SkillSheet.Row row, OptionDigest digest)
         {
-            var chanceText = chanceMin == chanceMax ?
-                $"{VariableColorTag}{chanceMin}%</color>" :
-                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
-            var value = amountMin == amountMax ?
-                $"{VariableColorTag}{row.EffectToString(amountMin)}</color>" :
-                $"{VariableColorTag}{row.EffectToString(amountMin)}-{row.EffectToString(amountMax)}</color>";
-            contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_HEAL", chanceText, value);
-
+            contentText.text = GetDescription("SKILL_DESCRIPTION_HEAL", row, digest);
             buffObject.SetActive(false);
             debuffObject.SetActive(false);
         }
 
-        private void SetBuffDescription(EquipmentItemOptionSheet.Row optionRow, bool isDebuff)
+        private void SetBuffDescription(OptionDigest digest, bool isDebuff)
         {
-            var skillRow = TableSheets.Instance.SkillSheet[optionRow.SkillId];
+            var skillRow = TableSheets.Instance.SkillSheet[digest.SkillId];
             SetBuffDescription(
                 skillRow,
-                optionRow.SkillChanceMin,
-                optionRow.SkillChanceMax,
-                optionRow.SkillDamageMax,
+                digest,
                 isDebuff);
         }
 
-        private void SetBuffDescription(SkillSheet.Row skillRow, int chanceMin, int chanceMax, int damageMax, bool isDebuff)
+        private void SetBuffDescription(SkillSheet.Row skillRow, OptionDigest digest, bool isDebuff)
         {
             var sheets = TableSheets.Instance;
             var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillRow.Id].BuffIds.First()];
-            var chanceText = chanceMin == chanceMax ?
-                $"{VariableColorTag}{chanceMin}%</color>" :
-                $"{VariableColorTag}{chanceMin}-{chanceMax}%</color>";
+            var chanceText = digest.ChanceMin == digest.ChanceMax ?
+                $"{VariableColorTag}{digest.ChanceMin}%</color>" :
+                $"{VariableColorTag}{digest.ChanceMin}-{digest.ChanceMax}%</color>";
             var statType = $"{VariableColorTag}{buffRow.StatType}</color>";
-            var value = $"{VariableColorTag}{skillRow.EffectToString(damageMax)}</color>";
+
+            string desc;
+            if (digest.PowerMin == digest.PowerMax &&
+                digest.StatPowerRatioMin == digest.StatPowerRatioMax)
+            {
+                var str = SkillExtensions.EffectToString(
+                    skillRow.Id,
+                    skillRow.SkillType,
+                    digest.PowerMin,
+                    digest.StatPowerRatioMin,
+                    digest.ReferencedStatType);
+                desc = $"{VariableColorTag}{str}</color>";
+            }
+            else
+            {
+                var strMin = SkillExtensions.EffectToString(
+                    skillRow.Id,
+                    skillRow.SkillType,
+                    digest.PowerMin,
+                    digest.StatPowerRatioMin,
+                    digest.ReferencedStatType);
+                var strMax = SkillExtensions.EffectToString(
+                    skillRow.Id,
+                    skillRow.SkillType,
+                    digest.PowerMax,
+                    digest.StatPowerRatioMax,
+                    digest.ReferencedStatType);
+                desc = $"{VariableColorTag}{strMin}-{strMax}</color>";
+            }
+
+            var value = $"{VariableColorTag}{desc}</color>";
 
             var icon = BuffHelper.GetStatBuffIcon(buffRow.StatType, isDebuff);
             if (isDebuff)
@@ -188,6 +235,43 @@ namespace Nekoyume.UI.Module.Common
 
             buffObject.SetActive(!isDebuff);
             debuffObject.SetActive(isDebuff);
+        }
+
+        private string GetDescription(string format, SkillSheet.Row row, OptionDigest digest)
+        {
+            var chanceText = digest.ChanceMin == digest.ChanceMax ?
+                $"{VariableColorTag}{digest.ChanceMin}%</color>" :
+                $"{VariableColorTag}{digest.ChanceMin}-{digest.ChanceMax}%</color>";
+            string desc;
+            if (digest.PowerMin == digest.PowerMax &&
+                digest.StatPowerRatioMin == digest.StatPowerRatioMax)
+            {
+                var str = SkillExtensions.EffectToString(
+                    row.Id,
+                    row.SkillType,
+                    digest.PowerMin,
+                    digest.StatPowerRatioMin,
+                    digest.ReferencedStatType);
+                desc = $"{VariableColorTag}{str}</color>";
+            }
+            else
+            {
+                var strMin = SkillExtensions.EffectToString(
+                    row.Id,
+                    row.SkillType,
+                    digest.PowerMin,
+                    digest.StatPowerRatioMin,
+                    digest.ReferencedStatType);
+                var strMax = SkillExtensions.EffectToString(
+                    row.Id,
+                    row.SkillType,
+                    digest.PowerMax,
+                    digest.StatPowerRatioMax,
+                    digest.ReferencedStatType);
+                desc = $"{VariableColorTag}{strMin}-{strMax}</color>";
+            }
+
+            return L10nManager.Localize(format, chanceText, desc);
         }
     }
 }

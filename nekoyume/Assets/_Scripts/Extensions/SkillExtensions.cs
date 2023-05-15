@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AsyncIO;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -32,7 +31,7 @@ namespace Nekoyume
             var sb = new StringBuilder();
             if (skill is BuffSkill buffSkill)
             {
-                sb.AppendLine($"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffSkill.SkillRow.EffectToString(buffSkill.Power)}");
+                sb.AppendLine($"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffSkill.EffectToString()}");
             }
             else
             {
@@ -43,11 +42,37 @@ namespace Nekoyume
             return sb.ToString();
         }
 
-        public static string EffectToString(this SkillSheet.Row row, int power)
+        public static string EffectToString(this Skill skill)
+        {
+            var row = skill.SkillRow;
+            return EffectToString(
+                row.Id,
+                row.SkillType,
+                skill.Power,
+                skill.StatPowerRatio,
+                skill.ReferencedStatType);
+        }
+
+        public static string EffectToString(SkillSheet.Row skillRow, EquipmentItemOptionSheet.Row optionRow, bool max)
+        {
+            return EffectToString(
+                skillRow.Id,
+                skillRow.SkillType,
+                max ? optionRow.SkillDamageMax : optionRow.SkillChanceMin,
+                max ? optionRow.StatDamageRatioMax : optionRow.StatDamageRatioMin,
+                optionRow.ReferencedStatType);
+        }
+
+        public static string EffectToString(
+            int skillId,
+            SkillType skillType,
+            int power,
+            int statPowerRatio,
+            StatType referencedStatType)
         {
             var sheets = TableSheets.Instance;
-            var isBuff = sheets.SkillBuffSheet.TryGetValue(row.Id, out var skillBuffRow) &&
-                row.SkillType == SkillType.Buff;
+            var isBuff = sheets.SkillBuffSheet.TryGetValue(skillId, out var skillBuffRow) &&
+                (skillType == SkillType.Buff || skillType == SkillType.Debuff);
             var showPercent = false;
             if (isBuff)
             {
@@ -59,13 +84,20 @@ namespace Nekoyume
 
             var valueText = power.ToString();
 
-            if (power > 0)
+            if (statPowerRatio > 0)
             {
-                var sign = power >= 0 ? "+" : "-";
-                if (row.ReferencedStatType != StatType.NONE)
+                var sign = statPowerRatio >= 0 ? "+" : "-";
+                if (referencedStatType != StatType.NONE)
                 {
-                    var multiplierText = (Math.Abs(row.StatPowerRatio) / 10000m).ToString("0.##");
-                    valueText = $"({valueText} {sign} {multiplierText} {row.ReferencedStatType})";
+                    var multiplierText = (Math.Abs(statPowerRatio) / 10000m).ToString("0.##");
+                    if (power != 0)
+                    {
+                        valueText = $"({valueText} {sign} {multiplierText} {referencedStatType})";
+                    }
+                    else
+                    {
+                        valueText = $"({sign}{multiplierText} {referencedStatType})";
+                    }
                 }
             }
 

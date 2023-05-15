@@ -408,20 +408,28 @@ namespace Nekoyume.UI
                     var skillName = skills[i].skillRow.GetLocalizedName();
                     var power = skills[i].power;
                     var chance = skills[i].chance;
+                    var ratio = skills[i].statPowerRatio;
+                    var refStatType = skills[i].refStatType;
+                    var effectString = SkillExtensions.EffectToString(
+                        skills[i].skillRow.Id,
+                        skills[i].skillRow.SkillType,
+                        power,
+                        ratio,
+                        refStatType);
 
                     if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
                         row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
                     {
                         var view = skillViews[i];
                         view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
+                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
                             string.Empty,
                             $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
                             string.Empty);
                         var skillRow = skills[i].skillRow;
                         view.SetDescriptionButton(() =>
                         {
-                            skillTooltip.Set(skillRow, chance, chance, power, power);
+                            skillTooltip.Set(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
                             skillTooltip.gameObject.SetActive(true);
                             skillTooltip.transform.position = view.DescriptionPosition;
                         });
@@ -434,19 +442,24 @@ namespace Nekoyume.UI
                         var chanceAdd = Math.Max(1,
                             (int)(chance *
                                   row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
+                        var ratioAdd = Math.Max(1,
+                            (int)(chance *
+                                  row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
                         var totalPower = power + powerAdd;
                         var totalChance = chance + chanceAdd;
+                        var totalRatio = ratio + ratioAdd;
 
                         var view = skillViews[i];
                         view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
+                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
                             $"(<size=80%>max</size> +{powerAdd})",
                             $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
                             $"(<size=80%>max</size> +{chanceAdd}%)");
                         var skillRow = skills[i].skillRow;
                         view.SetDescriptionButton(() =>
                         {
-                            skillTooltip.Set(skillRow, totalChance, totalChance, totalPower, totalPower);
+                            skillTooltip.Set(
+                                skillRow, totalChance, totalChance, totalPower, totalPower, totalRatio, totalRatio, refStatType);
                             skillTooltip.gameObject.SetActive(true);
                             skillTooltip.transform.position = view.DescriptionPosition;
                         });
