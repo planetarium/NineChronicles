@@ -1,4 +1,4 @@
-ㅂ,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count,cooldown,stat_power_ratio,referenced_stat_type
+id,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count,cooldown,stat_power_ratio,referenced_stat_type
 100000,기본 공격,Normal,Attack,NormalAttack,Enemy,1,0,,
 100001,일격,Normal,Attack,BlowAttack,Enemy,1,1,,
 _100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1 // 노멀 속성의 전체 일격은 추가하면 안 됩니다.,,
