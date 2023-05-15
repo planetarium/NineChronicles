@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderers;
+using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -57,12 +58,7 @@ namespace Nekoyume.BlockChain.Policy
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader = actionLoader ?? new StaticActionLoader(
-                Assembly.GetEntryAssembly() is Assembly entryAssembly
-                    ? new[] { typeof(ActionBase).Assembly, entryAssembly }
-                    : new[] { typeof(ActionBase).Assembly },
-                typeof(ActionBase)
-            );
+            _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
 
             LoggedActionRenderer =
                 new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
@@ -206,39 +202,30 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                var actionTypes = actionLoader.Load(index);
-                // Check ActivateAccount
-                if (((ITransaction)transaction).Actions is { } customActions &&
-                    customActions.Count == 1 &&
-                    customActions.First() is Dictionary dictionary &&
-                    dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                    typeIdValue is Text typeId &&
-                    (typeId == "activate_account2" || typeId == "activate_account"))
+                if (transaction.Actions is { } rawActions &&
+                    rawActions.Count == 1)
                 {
-                    if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
-                          valuesValue is Dictionary values))
+                    try
+                    {
+                        var action = actionLoader.LoadAction(index, rawActions.First());
+                        if (action is IActivateAccount { } activate)
+                        {
+                            return transaction.Nonce == 0 &&
+                                blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                                new PendingActivationState(rawPending).Verify(activate.Signature)
+                                    ? null
+                                    : new TxPolicyViolationException(
+                                        $"Transaction {transaction.Id} has an invalid activate action.",
+                                        transaction.Id);
+                        }
+                    }
+                    catch (InvalidActionException e)
                     {
                         return new TxPolicyViolationException(
                             $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id);
+                            transaction.Id,
+                            e);
                     }
-
-                    IAction action = (IAction)Activator.CreateInstance(actionTypes[typeId]);
-                    if (!(action is IActivateAccount activateAccount))
-                    {
-                        return new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id);
-                    }
-                    action.LoadPlainValue(values);
-
-                    return transaction.Nonce == 0 &&
-                           blockChain.GetState(activateAccount.PendingAddress) is Dictionary rawPending &&
-                           new PendingActivationState(rawPending).Verify(activateAccount.Signature)
-                        ? null
-                        : new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid activate action.",
-                            transaction.Id);
                 }
 
                 // Check admin

@@ -9,6 +9,7 @@
     using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -51,10 +52,7 @@
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
                     genesisHash: genesis.Hash,
-                    nativeTokenPredicate: policy.NativeTokens.Contains,
-                    actionTypeLoader: new StaticActionLoader(
-                        new[] { typeof(ActionBase).Assembly }
-                    ),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
                     feeCalculator: null
                 ),
                 renderers: blockRenderers);

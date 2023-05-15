@@ -56,7 +56,9 @@ namespace Nekoyume.Action
 
             public IActionContext GetUnconsumedContext() => null;
 
-            public bool IsNativeToken(Currency currency) => false;
+            public long GasUsed() => 0;
+
+            public long GasLimit() => 0;
 
             public void PutLog(string log)
             {
