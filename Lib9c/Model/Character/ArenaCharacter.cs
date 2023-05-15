@@ -307,7 +307,7 @@ namespace Nekoyume.Model
                         power = (int)Math.Round(power * optionInfo.SkillValue);
                     }
                 }
-                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
+                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance, default, StatType.NONE);
                 _runeSkills.Add(skill);
                 RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
             }
@@ -351,22 +351,10 @@ namespace Nekoyume.Model
                 }
                 else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
                 {
-                    switch (optionInfo.SkillStatType)
-                    {
-                        case StatType.HP:
-                            power = HP;
-                            break;
-                        case StatType.ATK:
-                            power = ATK;
-                            break;
-                        case StatType.DEF:
-                            power = DEF;
-                            break;
-                    }
-
-                    power = (int)Math.Round(power * optionInfo.SkillValue);
+                    var value = Stats.GetStatAsInt(optionInfo.SkillStatType);
+                    power = (int)Math.Round(value * optionInfo.SkillValue);
                 }
-                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance);
+                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance, default, StatType.NONE);
                 var customField = new SkillCustomField
                 {
                     BuffDuration = optionInfo.BuffDuration,
@@ -388,18 +376,28 @@ namespace Nekoyume.Model
                 throw new KeyNotFoundException(GameConfig.DefaultAttackId.ToString(CultureInfo.InvariantCulture));
             }
 
-            var attack = SkillFactory.GetForArena(skillRow, 0, 100);
+            var attack = SkillFactory.GetForArena(skillRow, 0, 100, default, StatType.NONE);
             skills.Add(attack);
 
             foreach (var skill in equipments.SelectMany(equipment => equipment.Skills))
             {
-                var arenaSkill = SkillFactory.GetForArena(skill.SkillRow, skill.Power, skill.Chance);
+                var arenaSkill = SkillFactory.GetForArena(
+                    skill.SkillRow,
+                    skill.Power,
+                    skill.Chance,
+                    skill.StatPowerRatio,
+                    skill.ReferencedStatType);
                 skills.Add(arenaSkill);
             }
 
             foreach (var buff in equipments.SelectMany(equipment => equipment.BuffSkills))
             {
-                var buffSkill = SkillFactory.GetForArena(buff.SkillRow, buff.Power, buff.Chance);
+                var buffSkill = SkillFactory.GetForArena(
+                    buff.SkillRow,
+                    buff.Power,
+                    buff.Chance,
+                    buff.StatPowerRatio,
+                    buff.ReferencedStatType);
                 skills.Add(buffSkill);
             }
 

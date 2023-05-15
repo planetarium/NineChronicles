@@ -719,7 +719,8 @@ namespace Nekoyume.Action
                     var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
                     var dmg = random.Next(optionRow.SkillDamageMin, optionRow.SkillDamageMax + 1);
                     var chance = random.Next(optionRow.SkillChanceMin, optionRow.SkillChanceMax + 1);
-                    skill = SkillFactory.Get(skillRow, dmg, chance);
+                    var statDamageRatio = random.Next(optionRow.StatDamageRatioMin, optionRow.StatDamageRatioMax + 1);
+                    skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, optionRow.ReferencedStatType);
                 }
                 catch (InvalidOperationException)
                 {
