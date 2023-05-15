@@ -50,8 +50,13 @@ namespace Nekoyume.Model.Buff
             ActionBuffSheet actionBuffSheet)
         {
             var buffs = new List<Buff>();
-            var extraValueBuff = skill is BuffSkill &&
-                (skill.Power > 0 || skill.ReferencedStatType != StatType.NONE);
+
+            // If ReferencedStatType exists,
+            // buff value = original value + (referenced stat * (SkillRow.StatPowerRatio / 10000))
+            var extraValueBuff =
+                skill is BuffSkill &&
+                skill.StatPowerRatio > 0 &&
+                skill.ReferencedStatType != StatType.NONE;
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -64,21 +69,17 @@ namespace Nekoyume.Model.Buff
                     if (!customField.HasValue &&
                         extraValueBuff)
                     {
-                        var additionalPower = skill.Power;
-                        // If ReferencedStatType exists,
-                        // buff value = original value + (referenced stat * (SkillRow.StatPowerRatio / 10000))
-                        if (skill.ReferencedStatType != StatType.NONE)
-                        {
-                            var statMap = stats.StatWithItems;
-                            var multiplier = skill.StatPowerRatio / 10000m;
-                            additionalPower = (int)Math.Round(
-                                statMap.GetStat(skill.ReferencedStatType) * multiplier);
-                        }
+                        var statMap = stats.StatWithItems;
+                        var multiplier = skill.StatPowerRatio / 10000m;
+                        var additionalValue = skill.Power +
+                            (int)Math.Round(statMap.GetStat(skill.ReferencedStatType) * multiplier);
                         
                         customField = new SkillCustomField()
                         {
                             BuffDuration = buffRow.Duration,
-                            BuffValue = buffRow.Value + additionalPower,
+                            BuffValue = skill.SkillRow.SkillType == SkillType.Buff ?
+                                buffRow.Value + additionalValue :
+                                buffRow.Value - additionalValue,
                         };
                     }
 

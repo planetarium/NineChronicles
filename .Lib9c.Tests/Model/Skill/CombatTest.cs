@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Model.Skill
             _enemy.Stats.SetStatForTest(StatType.CRI, 0);
 
             Assert.True(_tableSheets.SkillSheet.TryGetValue(100000, out var skillRow));
-            var normalAttack = new NormalAttack(skillRow, 0, 100);
+            var normalAttack = new NormalAttack(skillRow, 0, 100, default, StatType.NONE);
 
             var prevHP = _player.CurrentHP;
             normalAttack.Use(_enemy, 1, new List<StatBuff>());
@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Model.Skill
             _enemy.Stats.SetStatForTest(StatType.CRI, 100);
 
             Assert.True(_tableSheets.SkillSheet.TryGetValue(100000, out var skillRow));
-            var normalAttack = new NormalAttack(skillRow, 0, 100);
+            var normalAttack = new NormalAttack(skillRow, 0, 100, default, StatType.NONE);
 
             var prevHP = _player.CurrentHP;
             normalAttack.Use(_enemy, 1, new List<StatBuff>());

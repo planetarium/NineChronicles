@@ -9,7 +9,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Skill.Arena
 {
     [Serializable]
-    public abstract class ArenaSkill : IState, ISkill
+    public abstract class ArenaSkill : ISkill
     {
         public SkillSheet.Row SkillRow { get; }
         public int Power { get; private set; }
@@ -158,24 +158,6 @@ namespace Nekoyume.Model.Skill.Arena
             Chance = chance;
             Power = power;
             StatPowerRatio = statPowerRatio;
-        }
-
-        public IValue Serialize()
-        {
-            var dict = new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"skillRow"] = SkillRow.Serialize(),
-                [(Text)"power"] = Power.Serialize(),
-                [(Text)"chance"] = Chance.Serialize()
-            });
-
-            if (StatPowerRatio != default && ReferencedStatType != StatType.NONE)
-            {
-                dict = dict.Add("stat_power_ratio", StatPowerRatio.Serialize())
-                    .Add("referenced_stat_type", ReferencedStatType.Serialize());
-            }
-
-            return dict;
         }
     }
 }
