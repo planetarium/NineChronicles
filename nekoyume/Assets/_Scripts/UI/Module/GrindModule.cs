@@ -448,7 +448,7 @@ namespace Nekoyume.UI.Module
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
             ActionManager.Instance
-                .Grinding(equipments, chargeAp, (int) _cachedGrindingRewardCrystal.MajorUnit)
+                .Grinding(equipments, chargeAp, (long)_cachedGrindingRewardCrystal.MajorUnit)
                 .Subscribe(eval =>
                 {
                     Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
