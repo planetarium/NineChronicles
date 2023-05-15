@@ -32,6 +32,7 @@ namespace Nekoyume.TableData
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
             public bool? IsMimisbrunnrSubRecipe { get; private set; }
+            public int? RewardHammerPoint { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -75,6 +76,7 @@ namespace Nekoyume.TableData
                 if (fields.Count > 22)
                 {
                     IsMimisbrunnrSubRecipe = bool.Parse(fields[22]);
+                    RewardHammerPoint = ParseInt(fields[23]);
                 }
             }
         }
