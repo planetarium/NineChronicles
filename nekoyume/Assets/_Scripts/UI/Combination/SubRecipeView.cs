@@ -472,7 +472,7 @@ namespace Nekoyume.UI
                         SetOptions(options);
 
                         var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
-                                            subRecipe.IsMimisbrunnrSubRecipe.Value;
+                                                     (subRecipe.IsMimisbrunnrSubRecipe ?? true);
                         var hammerPointStates = States.Instance.HammerPointStates;
                         var showHammerPoint = hammerPointStates is not null &&
                                               hammerPointStates.TryGetValue(recipeId, out _hammerPointState) &&
@@ -482,9 +482,7 @@ namespace Nekoyume.UI
                         if (showHammerPoint)
                         {
                             var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
-                            var increasePoint = index == 0
-                                ? CombinationEquipment.BasicSubRecipeHammerPoint
-                                : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                            var increasePoint = subRecipe.RewardHammerPoint ?? 1;
                             var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
                             var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                             _canSuperCraft = _hammerPointState.HammerPoint == max;
