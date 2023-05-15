@@ -17,13 +17,11 @@ namespace Lib9c.Tests.Action
             var address = new PrivateKey().ToAddress();
             var valkyrie = new PrivateKey().ToAddress();
             var contractAddress = address.Derive(nameof(BringEinheri));
-            var mead = Currencies.Mead;
             IAccountStateDelta states = new State()
                 .SetState(
                     contractAddress,
                     List.Empty.Add(valkyrie.Serialize()).Add(false.Serialize())
-                )
-                .MintAsset(valkyrie, 1 * mead);
+                );
 
             var action = new TakeSides
             {
@@ -35,8 +33,6 @@ namespace Lib9c.Tests.Action
                 PreviousStates = states,
             });
 
-            Assert.Equal(0 * mead, nextState.GetBalance(valkyrie, mead));
-            Assert.Equal(1 * mead, nextState.GetBalance(address, mead));
             var contract = Assert.IsType<List>(nextState.GetState(contractAddress));
             Assert.Equal(contract[0].ToAddress(), valkyrie);
             Assert.True(contract[1].ToBoolean());

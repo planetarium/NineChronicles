@@ -24,8 +24,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            var signer = context.Signer;
-            var states = context.PreviousStates.Mead(signer, 1);
+            var states = context.PreviousStates;
             var contractAddress = EinheriAddress.Derive(nameof(BringEinheri));
             if (states.TryGetState(contractAddress, out List _))
             {
