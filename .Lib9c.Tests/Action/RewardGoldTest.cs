@@ -553,17 +553,17 @@ namespace Lib9c.Tests.Action
             var valkyrieAddress = new PrivateKey().ToAddress();
             var contractAddress = agentAddress.GetPledgeAddress();
             IAccountStateDelta states = new State()
-                .MintAsset(valkyrieAddress, 2 * Currencies.Mead)
+                .MintAsset(valkyrieAddress, 5 * Currencies.Mead)
                 .TransferAsset(valkyrieAddress, agentAddress, 1 * Currencies.Mead)
                 .SetState(contractAddress, List.Empty.Add(valkyrieAddress.Serialize()).Add(true.Serialize()))
                 .BurnAsset(agentAddress, 1 * Currencies.Mead);
-            Assert.Equal(1 * Currencies.Mead, states.GetBalance(valkyrieAddress, Currencies.Mead));
+            Assert.Equal(4 * Currencies.Mead, states.GetBalance(valkyrieAddress, Currencies.Mead));
             Assert.Equal(0 * Currencies.Mead, states.GetBalance(agentAddress, Currencies.Mead));
 
             var nextState = RewardGold.TransferMead(states);
             // transfer mead from valkyrie to agent
             Assert.Equal(0 * Currencies.Mead, nextState.GetBalance(valkyrieAddress, Currencies.Mead));
-            Assert.Equal(1 * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));
+            Assert.Equal(4 * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));
         }
     }
 }

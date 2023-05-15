@@ -13,6 +13,9 @@ namespace Nekoyume.Action
         {
         }
 
+        // Value from tx per block policy.
+        // https://github.com/planetarium/lib9c/blob/b6c1e85abc0b93347dae8e1a12aaefd767b27632/Lib9c.Policy/Policy/MaxTransactionsPerSignerPerBlockPolicy.cs#L29
+        public const int RefillMead = 4;
         public Address EinheriAddress;
 
         public override IValue PlainValue => EinheriAddress.Serialize();

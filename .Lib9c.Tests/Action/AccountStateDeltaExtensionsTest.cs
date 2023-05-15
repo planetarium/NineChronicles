@@ -157,29 +157,30 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Mead(bool mintAgent)
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        public void Mead(int agentBalance)
         {
             var valkyrie = new PrivateKey().ToAddress();
-            var agentContractAddress = _agentAddress.Derive(nameof(BringEinheri));
+            var agentContractAddress = _agentAddress.GetPledgeAddress();
             var mead = Currencies.Mead;
-            var price = 1 * mead;
+            var price = BringEinheri.RefillMead * mead;
             IAccountStateDelta states = new State()
                 .SetState(
                     agentContractAddress,
                     List.Empty.Add(valkyrie.Serialize()).Add(true.Serialize()))
                 .MintAsset(valkyrie, price);
 
-            var expectedValkyrieBalance = mintAgent ? price : 0 * mead;
-
-            if (mintAgent)
+            if (agentBalance > 0)
             {
-                states = states.MintAsset(_agentAddress, price);
+                states = states.MintAsset(_agentAddress, agentBalance * mead);
             }
 
-            states = states.Mead(_agentAddress, 1);
-            Assert.Equal(expectedValkyrieBalance, states.GetBalance(valkyrie, mead));
+            states = states.Mead(_agentAddress, 4);
+            Assert.Equal(agentBalance * mead, states.GetBalance(valkyrie, mead));
             Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }
     }

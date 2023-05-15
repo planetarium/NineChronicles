@@ -31,8 +31,8 @@ namespace Lib9c.Tests.Action.Scenario
                 ValkyrieAddress = valkyrie,
             };
             var states3 = Execute(states2, takeSides, agentAddress);
-            Assert.Equal(7 * mead, states3.GetBalance(valkyrie, mead));
-            Assert.Equal(1 * mead, states3.GetBalance(agentAddress, mead));
+            Assert.Equal(4 * mead, states3.GetBalance(valkyrie, mead));
+            Assert.Equal(4 * mead, states3.GetBalance(agentAddress, mead));
 
             // release and return einheri mead
             var releaseEinheri = new ReleaseEinheri
@@ -49,19 +49,20 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(1 * mead, states5.GetBalance(agentAddress, mead));
 
             var states6 = Execute(states5, takeSides, agentAddress);
-            Assert.Equal(4 * mead, states6.GetBalance(valkyrie, mead));
-            Assert.Equal(1 * mead, states6.GetBalance(agentAddress, mead));
+            Assert.Equal(1 * mead, states6.GetBalance(valkyrie, mead));
+            Assert.Equal(4 * mead, states6.GetBalance(agentAddress, mead));
         }
 
         private IAccountStateDelta Execute(IAccountStateDelta state, IAction action, Address signer)
         {
             Assert.True(state.GetBalance(signer, Currencies.Mead) > 0 * Currencies.Mead);
             var nextState = state.BurnAsset(signer, 1 * Currencies.Mead);
-            return action.Execute(new ActionContext
+            var executedState = action.Execute(new ActionContext
             {
                 Signer = signer,
                 PreviousStates = nextState,
             });
+            return RewardGold.TransferMead(executedState);
         }
     }
 }
