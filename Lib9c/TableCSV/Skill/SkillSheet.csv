@@ -1,7 +1,7 @@
-id,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count,cooldown,stat_power_ratio,referenced_stat_type
+ㅂ,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count,cooldown,stat_power_ratio,referenced_stat_type
 100000,기본 공격,Normal,Attack,NormalAttack,Enemy,1,0,,
 100001,일격,Normal,Attack,BlowAttack,Enemy,1,1,,
-_100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1,, // 노멀 속성의 전체 일격은 추가하면 안 됩니다.
+_100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1 // 노멀 속성의 전체 일격은 추가하면 안 됩니다.,,
 100003,연사,Normal,Attack,DoubleAttack,Enemy,2,1,,
 100005,광역 난사,Normal,Attack,AreaAttack,Enemies,5,1,,
 110000,불 공격,Fire,Attack,NormalAttack,Enemy,1,1,,
@@ -10,6 +10,8 @@ _100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1,, // 노멀 속성�
 110003,불꽃 연사,Fire,Attack,DoubleAttack,Enemy,2,3,,
 110004,불꽃 연사(전체),Fire,Attack,DoubleAttack,Enemy,2,13,,
 110005,용암 해일,Fire,Attack,AreaAttack,Enemies,5,13,,
+110006,Flame Attack (ATK),Fire,Attack,AreaAttack,Enemies,5,13,0,ATK
+110007,Flame Attack (DEF),Fire,Attack,AreaAttack,Enemies,5,13,0,DEF
 120000,물 공격,Water,Attack,NormalAttack,Enemy,1,1,,
 120001,얼음 일격,Water,Attack,BlowAttack,Enemy,1,5,,
 120002,얼음 일격(전체),Water,Attack,BlowAttack,Enemies,1,13,,
@@ -22,6 +24,8 @@ _100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1,, // 노멀 속성�
 130003,모래 연사,Land,Attack,DoubleAttack,Enemy,2,3,,
 130004,모래 연사(전체),Land,Attack,DoubleAttack,Enemy,2,13,,
 130005,모래 폭풍,Land,Attack,AreaAttack,Enemies,5,13,,
+130006,Sand Attack (ATK),Land,Attack,AreaAttack,Enemies,5,13,0,ATK
+130007,Sand Attack (DEF),Land,Attack,AreaAttack,Enemies,5,13,0,DEF
 140000,바람 공격,Wind,Attack,NormalAttack,Enemy,1,1,,
 140001,바람 일격,Wind,Attack,BlowAttack,Enemy,1,5,,
 140002,바람 일격(전체),Wind,Attack,BlowAttack,Enemies,1,13,,
@@ -29,34 +33,57 @@ _100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1,, // 노멀 속성�
 140004,바람 연사(전체),Wind,Attack,DoubleAttack,Enemy,2,13,,
 140005,거대 태풍,Wind,Attack,AreaAttack,Enemies,5,13,,
 200000,체력 증가,Normal,Buff,HPBuff,Self,1,10,,
-_200001,체력 증가(전체),Normal,Buff,HPBuff,Ally,1,1,, // 미구현
+_200001,체력 증가(전체),Normal,Buff,HPBuff,Ally,1,1 // 미구현,,
 210000,공격 강화,Normal,Buff,AttackBuff,Self,1,25,,
-_210001,공격 강화(전체),Normal,Buff,AttackBuff,Ally,1,1,, // 미구현
+_210001,공격 강화(전체),Normal,Buff,AttackBuff,Ally,1,1 // 미구현,,
 210002,공격 약화,Normal,Debuff,AttackBuff,Enemy,1,10,,
 210003,공격 약화(전체),Normal,Debuff,AttackBuff,Enemies,1,10,,
 210004,공격 강화,Normal,Buff,AttackBuff,Self,1,10,,
+210005,ATK Up (DEF),Normal,Buff,AttackBuff,Self,1,10,0,DEF
+210006,ATK Down (HIT),Normal,Debuff,AttackBuff,Enemy,1,10,0,HIT
+210007,ATK Down (SPD),Normal,Debuff,AttackBuff,Enemy,1,10,0,SPD
+210008,ATK All Down (ATK),Normal,Debuff,AttackBuff,Enemies,1,10,0,ATK
+210009,ATK All Down (DEF),Normal,Debuff,AttackBuff,Enemies,1,10,0,DEF
+210010,ATK Down (HP),Normal,Debuff,AttackBuff,Enemy,1,10,0,HP
 220000,방어 강화,Normal,Buff,DefenseBuff,Self,1,25,,
-_220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1,, // 미구현
+_220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1 // 미구현,,
 220002,방어 약화,Normal,Debuff,DefenseBuff,Enemy,1,10,,
 220003,방어 약화(전체),Normal,Debuff,DefenseBuff,Enemies,1,10,,
 220004,방어 강화,Normal,Buff,DefenseBuff,Self,1,10,,
+220005,DEF Up (ATK),Normal,Buff,AttackBuff,Self,1,10,0,ATK
+220006,DEF Down (HP),Normal,Debuff,DefenseBuff,Enemy,1,10,0,HP
+220007,DEF Down (HIT),Normal,Debuff,DefenseBuff,Enemy,1,10,0,HIT
+220008,DEF Down (SPD),Normal,Debuff,DefenseBuff,Enemy,1,10,0,SPD
 230000,치명 증가,Normal,Buff,CriticalBuff,Self,1,25,,
-_230001,치명 증가(전체),Normal,Buff,CriticalBuff,Ally,1,1,, // 미구현
+_230001,치명 증가(전체),Normal,Buff,CriticalBuff,Ally,1,1 // 미구현,,
 230002,치명 감소,Normal,Debuff,CriticalBuff,Enemy,1,10,,
 230003,치명 감소(전체),Normal,Debuff,CriticalBuff,Enemies,1,10,,
 230004,치명 증가,Normal,Buff,CriticalBuff,Self,1,10,,
 240000,명중 증가,Normal,Buff,HitBuff,Self,1,25,,
-_240001,명중 증가(전체),Normal,Buff,HitBuff,Ally,1,1,, // 미구현
+_240001,명중 증가(전체),Normal,Buff,HitBuff,Ally,1,1 // 미구현,,
 240002,명중 감소,Normal,Debuff,HitBuff,Enemy,1,10,,
 240003,명중 감소(전체),Normal,Debuff,HitBuff,Enemies,1,10,,
 240004,명중 증가,Normal,Buff,HitBuff,Self,1,10,,
+240005,HIT Down (SPD),Normal,Debuff,HitBuff,Enemy,1,10,0,SPD
 250000,속도 증가,Normal,Buff,SpeedBuff,Self,1,25,,
-_250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1,, // 미구현
+_250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현,,
 250002,속도 감소,Normal,Debuff,SpeedBuff,Enemy,1,10,,
 250003,속도 감소(전체),Normal,Debuff,SpeedBuff,Enemies,1,10,,
 250004,속도 증가,Normal,Buff,SpeedBuff,Self,1,10,,
+250005,SPD Down (HP),Normal,Debuff,SpeedBuff,Enemy,1,10,0,HP
+250006,SPD Down (HIT),Normal,Debuff,SpeedBuff,Enemy,1,10,0,HIT
+260000,Armor Penetration (ATK),Normal,Buff,Buff,Self,1,10,0,ATK
+260001,Armor Penetration (DEF),Normal,Buff,Buff,Self,1,10,0,DEF
+270000,Thorn (HP),Normal,Buff,Buff,Self,1,10,0,HP
+270001,Thorn (HIT),Normal,Buff,Buff,Self,1,10,0,HIT
+270002,Thorn (SPD),Normal,Buff,Buff,Self,1,10,0,SPD
 300000,힐,Normal,Heal,Heal,Self,1,10,,
-_300001,힐(전체),Normal,Heal,Heal,Ally,1,1,, // 미구현
+300001,힐(전체),Normal,Heal,Heal,Ally,1,10,,
+300002,Heal (HP),Normal,Heal,Heal,Self,1,10,0,HP
+300003,Heal (ATK),Normal,Heal,Heal,Self,1,10,0,ATK
+300004,Heal (DEF),Normal,Heal,Heal,Self,1,10,0,DEF
+300005,Heal (HIT),Normal,Heal,Heal,Self,1,10,0,HIT
+300006,Heal (SPD),Normal,Heal,Heal,Self,1,10,0,SPD
 400000,SS 올스텟,Normal,Buff,Buff,Self,1,999,,
 400001,SS 공격 치명,Normal,Buff,AttackBuff,Self,1,999,,
 400002,SS 방어 치명,Normal,Buff,DefenseBuff,Self,1,999,,
