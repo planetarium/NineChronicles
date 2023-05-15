@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.TableData
@@ -30,6 +31,7 @@ namespace Nekoyume.TableData
             public long RequiredBlockIndex { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
+            public bool IsMimisbrunnrSubRecipe { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -68,6 +70,11 @@ namespace Nekoyume.TableData
                         ParseInt(fields[10 + offset]),
                         ParseInt(fields[11 + offset]),
                         ParseInt(fields[12 + offset])));
+                }
+
+                if (fields.Count > 22)
+                {
+                    IsMimisbrunnrSubRecipe = bool.Parse(fields[22]);
                 }
             }
         }
