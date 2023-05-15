@@ -31,7 +31,7 @@ namespace Nekoyume.TableData
             public long RequiredBlockIndex { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
-            public bool IsMimisbrunnrSubRecipe { get; private set; }
+            public bool? IsMimisbrunnrSubRecipe { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {

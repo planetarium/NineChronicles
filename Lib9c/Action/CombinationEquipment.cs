@@ -330,7 +330,10 @@ namespace Nekoyume.Action
                     throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
                 }
 
-                if (recipeRow.IsMimisBrunnrSubRecipe(subRecipeId))
+                var isMimisbrunnrSubRecipe = subRecipeRow?.IsMimisbrunnrSubRecipe ?? true;
+                if (subRecipeId.HasValue
+                    && recipeRow.SubRecipeIds[2] == subRecipeId.Value
+                    && isMimisbrunnrSubRecipe)
                 {
                     throw new ArgumentException(
                         $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
@@ -399,7 +402,10 @@ namespace Nekoyume.Action
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
                 endBlockIndex,
-                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                madeWithMimisbrunnrRecipe: subRecipeId.HasValue &&
+                                           recipeRow.SubRecipeIds[2] == subRecipeId.Value &&
+                                           (subRecipeRow?.IsMimisbrunnrSubRecipe ?? true)
+            );
 
             if (!(subRecipeRow is null))
             {
