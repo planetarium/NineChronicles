@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6769825520319249428}
   - component: {fileID: 8470686497327608282}
   - component: {fileID: 1972509559279336861}
-  - component: {fileID: 9168372316898752434}
   - component: {fileID: 7523983055923419712}
   m_Layer: 8
   m_Name: 208004
@@ -208,19 +207,6 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: 0d6d5762895982e458fae9c04777f9f3, type: 2}
   - stateName: TurnOver_02
     animation: {fileID: 11400000, guid: 0d6d5762895982e458fae9c04777f9f3, type: 2}
---- !u!114 &9168372316898752434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7040087345957413616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b5682f17f354987b0920e43d1c42732, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initializeSortingProbsOfChildren: 0
 --- !u!65 &7523983055923419712
 BoxCollider:
   m_ObjectHideFlags: 0
