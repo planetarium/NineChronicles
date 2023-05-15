@@ -68,11 +68,11 @@ namespace Nekoyume.Model.Buff
                     if (!customField.HasValue &&
                         extraValueBuff)
                     {
-                        var statMap = stats.StatWithItems;
-                        var multiplier = skill.StatPowerRatio / 10000m;
                         var additionalValue = skill.Power;
                         if (skill.ReferencedStatType != StatType.NONE)
                         {
+                            var statMap = stats.StatWithItems;
+                            var multiplier = skill.StatPowerRatio / 10000m;
                             additionalValue += (int)Math.Round(statMap.GetStat(skill.ReferencedStatType) * multiplier);
                         }
                         
