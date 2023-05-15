@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Nekoyume.Game;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -89,7 +89,8 @@ namespace Nekoyume
                 var sign = statPowerRatio >= 0 ? "+" : "-";
                 if (referencedStatType != StatType.NONE)
                 {
-                    var multiplierText = (Math.Abs(statPowerRatio) / 10000m).ToString("0.##");
+                    var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
+                    var multiplierText = (Math.Abs(statPowerRatio) / 10000m).ToString("P2", percentageFormat);
                     if (power != 0)
                     {
                         valueText = $"({valueText} {sign} {multiplierText} {referencedStatType})";

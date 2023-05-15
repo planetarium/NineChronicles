@@ -416,6 +416,9 @@ namespace Nekoyume.UI
                         power,
                         ratio,
                         refStatType);
+                    var isBuff =
+                        skills[i].skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Buff ||
+                        skills[i].skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Debuff;
 
                     if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
                         row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
@@ -436,7 +439,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        var powerAdd = Math.Max(1,
+                        var powerAdd = Math.Max(isBuff ? 0 : 1,
                             (int)(power *
                                   row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
                         var chanceAdd = Math.Max(1,

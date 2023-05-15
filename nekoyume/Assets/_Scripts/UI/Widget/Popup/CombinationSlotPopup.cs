@@ -376,7 +376,7 @@ namespace Nekoyume.UI
 
                 var (skillRow, power, chance, _, _) = itemOptionInfo.SkillOptions[i];
                 var (_, prePower, preChance, _, _) = itemOptionInfoPre.SkillOptions[i];
-                var powerRate = RateOfChange(prePower, power);
+                var powerRate = prePower == power ? 0 : RateOfChange(prePower, power);
                 var chancePlus = chance - preChance;
                 var powerRateString = powerRate > 0 ? $" (+{powerRate}%)" : string.Empty;
                 var chanceRateString = chancePlus > 0 ? $" (+{chancePlus}%p)" : string.Empty;
