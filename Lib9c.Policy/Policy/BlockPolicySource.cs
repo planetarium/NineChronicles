@@ -277,15 +277,13 @@ namespace Nekoyume.BlockChain.Policy
 
                     return null;
                 }
-                if (!transaction.Actions.Any())
+                if (transaction.MaxGasPrice is null || transaction.GasLimit is null)
                 {
-                    return new TxPolicyViolationException("Transaction has no actions",
+                    return new
+                        TxPolicyViolationException("Transaction has no gas price or limit.",
                         transaction.Id);
                 }
-                var feeCalculator = new FeeCalculator();
-                FungibleAssetValue totalFee = transaction.Actions.Select(feeCalculator.CalculateFee)
-                    .Aggregate((a, b) => a + b);
-                if (totalFee > blockChain.GetBalance(transaction.Signer, Currencies.Mead))
+                if (transaction.MaxGasPrice * transaction.GasLimit > blockChain.GetBalance(transaction.Signer, Currencies.Mead))
                 {
                     return new TxPolicyViolationException(
                         $"Transaction {transaction.Id} signer insufficient transaction fee",
