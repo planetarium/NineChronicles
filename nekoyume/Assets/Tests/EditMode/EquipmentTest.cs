@@ -85,7 +85,7 @@ namespace Tests.EditMode
             var row = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, default, default);
             var skillRow = _tableSheets.SkillSheet.Values.First(i => i.SkillType == skillType);
-            var skill = SkillFactory.Get(skillRow, 10, 10);
+            var skill = SkillFactory.GetV1(skillRow, 10, 10);
             if (skillType == SkillType.Debuff || skillType == SkillType.Buff)
             {
                 equipment.BuffSkills.Add((BuffSkill) skill);

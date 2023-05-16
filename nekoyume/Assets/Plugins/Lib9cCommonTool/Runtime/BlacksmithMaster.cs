@@ -58,7 +58,9 @@ namespace Lib9cCommonTool.Runtime
                     var skill = SkillFactory.Get(
                         skillRow,
                         option.SkillDamageMax,
-                        option.SkillChanceMax);
+                        option.SkillChanceMax,
+                        option.StatDamageRatioMax,
+                        option.ReferencedStatType);
                     equipment.Skills.Add(skill);
                     equipment.optionCountFromCombination++;
 

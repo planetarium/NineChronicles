@@ -162,7 +162,7 @@ namespace Nekoyume.UI
                 foreach (var skillOption in _editorSkillOptions)
                 {
                     var row = skillList[Random.Range(0, skillList.Count)];
-                    var skill = SkillFactory.Get(row, skillOption.power, skillOption.chance);
+                    var skill = SkillFactory.GetV1(row, skillOption.power, skillOption.chance);
                     equipment.Skills.Add(skill);
                     equipment.optionCountFromCombination++;
                 }
