@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
@@ -261,14 +261,17 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (_, prePower, preChance) = itemOptionInfoPre.SkillOptions[i];
-                var (skillRow, power, chance) = skillOptions[i];
+                var (_, prePower, preChance, preRatio, _) = itemOptionInfoPre.SkillOptions[i];
+                var (skillRow, power, chance, ratio, type) = skillOptions[i];
+                var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
+                var ratioStr = $"{ratio - preRatio} {type}";
                 optionView.UpdateAsTotalAndPlusSkill(
                     skillRow.GetLocalizedName(),
-                    power,
+                    powerText,
                     chance,
                     power - prePower,
-                    chance - preChance);
+                    chance - preChance,
+                    ratioStr);
             }
 
             // NOTE: Ignore Show Animation

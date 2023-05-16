@@ -77,7 +77,7 @@ namespace Lib9cCommonTool.Runtime
             {
                 for (var i = 0; i < level; i++)
                 {
-                    equipment.LevelUpV2(random, enhancementCostRow, true);
+                    equipment.LevelUp(random, enhancementCostRow, true);
                 }
             }
 

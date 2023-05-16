@@ -11,9 +11,9 @@ namespace Nekoyume.UI.Module
 
         public bool IsShow => gameObject.activeSelf;
 
-        public void Show(StatMapEx statMapEx, bool isMainStat)
+        public void Show(DecimalStat decimalStat, bool isMainStat)
         {
-            if (statMapEx is null)
+            if (decimalStat is null)
             {
                 Hide();
                 return;
@@ -23,9 +23,9 @@ namespace Nekoyume.UI.Module
             bulletSubImage.enabled = !isMainStat;
 
             if (isMainStat)
-                Show(statMapEx.StatType, statMapEx.ValueAsInt, statMapEx.AdditionalValueAsInt);
+                Show(decimalStat.StatType, decimalStat.BaseValueAsInt, decimalStat.AdditionalValueAsInt);
             else
-                Show(statMapEx.StatType, statMapEx.TotalValueAsInt, 0);
+                Show(decimalStat.StatType, decimalStat.TotalValueAsInt, 0);
         }
 
         public override void Show()

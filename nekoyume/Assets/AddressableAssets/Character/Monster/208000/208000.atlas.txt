@@ -1,0 +1,34 @@
+
+208000.png
+size: 128,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+acc
+  rotate: false
+  xy: 2, 2
+  size: 68, 58
+  orig: 68, 58
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 2, 62
+  size: 68, 60
+  orig: 68, 60
+  offset: 0, 0
+  index: -1
+eye
+  rotate: false
+  xy: 72, 5
+  size: 35, 30
+  orig: 35, 30
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: true
+  xy: 72, 37
+  size: 85, 46
+  orig: 85, 46
+  offset: 0, 0
+  index: -1

@@ -294,7 +294,7 @@ public class BattleSimulator : Widget
                 if (optionRow.StatType != StatType.NONE)
                 {
                     var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.TotalValue);
                 }
                 else
                 {

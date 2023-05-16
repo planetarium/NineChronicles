@@ -213,8 +213,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillRow, power, chance) = itemOptionInfo.SkillOptions[i];
-                optionView.UpdateView($"{skillRow.GetLocalizedName()} {power} / {chance}%",
+                var (skillRow, power, chance, ratio, type) = itemOptionInfo.SkillOptions[i];
+                var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
+                optionView.UpdateView($"{skillRow.GetLocalizedName()} {powerText} / {chance}%",
                     string.Empty);
                 optionView.Show();
             }
@@ -296,7 +297,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillRow, _, _) = itemOptionInfo.SkillOptions[i];
+                var (skillRow, _, _, _, _) = itemOptionInfo.SkillOptions[i];
                 var text = string.Format(
                     format,
                     skillRow.GetLocalizedName(),
@@ -373,9 +374,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillRow, power, chance) = itemOptionInfo.SkillOptions[i];
-                var (_, prePower, preChance) = itemOptionInfoPre.SkillOptions[i];
-                var powerRate = RateOfChange(prePower, power);
+                var (skillRow, power, chance, _, _) = itemOptionInfo.SkillOptions[i];
+                var (_, prePower, preChance, _, _) = itemOptionInfoPre.SkillOptions[i];
+                var powerRate = prePower == power ? 0 : RateOfChange(prePower, power);
                 var chancePlus = chance - preChance;
                 var powerRateString = powerRate > 0 ? $" (+{powerRate}%)" : string.Empty;
                 var chanceRateString = chancePlus > 0 ? $" (+{chancePlus}%p)" : string.Empty;
@@ -446,9 +447,9 @@ namespace Nekoyume.UI
             return _informations.FirstOrDefault(x => x.Type.Equals(type));
         }
 
-        private static int RateOfChange(float prevent, float current)
+        private static int RateOfChange(decimal previous, decimal current)
         {
-            return Mathf.RoundToInt((current - prevent) / prevent * 100);
+            return (int)Math.Round((current - previous) / previous * 100);
         }
     }
 }

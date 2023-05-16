@@ -143,7 +143,7 @@ namespace Nekoyume.UI
                 var equipmentList = !_editorStatOptions.Any() || _editorStatOptions[0].statType == StatType.NONE
                     ? tableSheets.EquipmentItemSheet.OrderedList
                     : tableSheets.EquipmentItemSheet.OrderedList.Where(e =>
-                        e.Stat.Type == _editorStatOptions[0].statType).ToList();
+                        e.Stat.StatType == _editorStatOptions[0].statType).ToList();
                 if (!equipmentList.Any())
                 {
                     Debug.LogError($"{_editorStatOptions[0].statType} cannot be main stat type");
@@ -263,8 +263,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillRow, power, chance) = skillOptions[i];
-                optionView.UpdateAsSkill(skillRow.GetLocalizedName(), power, chance);
+                var (skillRow, power, chance, ratio, type) = skillOptions[i];
+                var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
+                optionView.UpdateAsSkill(skillRow.GetLocalizedName(), powerText, chance);
             }
 
             if (itemUsable.ItemType == ItemType.Equipment)

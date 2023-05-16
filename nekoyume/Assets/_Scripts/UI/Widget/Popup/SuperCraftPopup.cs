@@ -16,11 +16,16 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Skill;
     using UniRx;
+    using UnityEngine.UI;
     public class SuperCraftPopup : PopupWidget
     {
         [SerializeField]
         private ConditionalCostButton superCraftButton;
+
+        [SerializeField] [Space]
+        private GameObject skillTextGroupParent;
 
         [SerializeField]
         private TMP_Text skillName;
@@ -31,11 +36,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text skillChanceText;
 
-        [SerializeField]
-        private Toggle basicRecipeToggle;
+        [SerializeField] [Space]
+        private GameObject noneRecipeTextParent;
+
+        [SerializeField] [Space]
+        private ToggleGroup normalRecipeTabGroup;
 
         [SerializeField]
-        private Toggle premiumRecipeToggle;
+        private Toggle basicRecipeTab;
+
+        [SerializeField]
+        private Toggle premiumRecipeTab;
+
+        [SerializeField] [Space]
+        private SubRecipeView.RecipeTabGroup legendaryRecipeTabGroup;
 
         private EquipmentItemRecipeSheet.Row _recipeRow;
         private int _subRecipeIndex;
@@ -46,22 +60,33 @@ namespace Nekoyume.UI
 
         public override void Initialize()
         {
-            basicRecipeToggle.onValueChanged.AddListener(b =>
+            basicRecipeTab.onValueChanged.AddListener(b =>
             {
                 _subRecipeIndex = b ? BasicRecipeIndex : PremiumRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
-            premiumRecipeToggle.onValueChanged.AddListener(b =>
+            premiumRecipeTab.onValueChanged.AddListener(b =>
             {
                 _subRecipeIndex = b ? PremiumRecipeIndex : BasicRecipeIndex;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
             });
+            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+            {
+                var index = i;
+                legendaryRecipeTabGroup.recipeTabs[index].toggle.onValueChanged.AddListener(b =>
+                {
+                    if (!b) return;
+                    _subRecipeIndex = index;
+                    SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+                });
+            }
+
             superCraftButton.OnSubmitSubject.Subscribe(_ =>
             {
                 var craftInfo = new Craft.CraftInfo()
                 {
                     RecipeID = _recipeRow.Id,
-                    SubrecipeId = premiumRecipeToggle.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
+                    SubrecipeId = premiumRecipeTab.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
                 };
 
                 Find<PetSelectionPopup>().Show(craftInfo, SendAction);
@@ -81,8 +106,40 @@ namespace Nekoyume.UI
                 CostType.Crystal,
                 sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
-            premiumRecipeToggle.isOn = true;
-            SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
+
+            if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)
+            {
+                normalRecipeTabGroup.gameObject.SetActive(true);
+                legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                normalRecipeTabGroup.SetAllTogglesOff();
+            }
+            else
+            {
+                normalRecipeTabGroup.gameObject.SetActive(false);
+                legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(true);
+                legendaryRecipeTabGroup.toggleGroup.SetAllTogglesOff();
+
+                var tabNames = SubRecipeView.DefaultTabNames;
+                var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
+                if (tab != null)
+                {
+                    tabNames = tab.TabNames;
+                }
+
+                for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+                {
+                    var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
+
+                    recipeTab.toggle.gameObject.SetActive(i < tabNames.Length);
+                    if (i < tabNames.Length)
+                    {
+                        recipeTab.disableText.text = tabNames[i];
+                        recipeTab.enableText.text = tabNames[i];
+                    }
+                }
+            }
+
+            SetSkillInfoText(null);
         }
 
         private void SendAction(int? petId)
@@ -121,23 +178,38 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetSkillInfoText(int subRecipeId)
+        private void SetSkillInfoText(int? subRecipeId)
         {
+            if(subRecipeId is null)
+            {
+                skillTextGroupParent.SetActive(false);
+                noneRecipeTextParent.SetActive(true);
+                return;
+            }
+
+            skillTextGroupParent.SetActive(true);
+            noneRecipeTextParent.SetActive(false);
+
             var sheets = TableSheets.Instance;
-            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
+            var subRecipeRow = sheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
             var optionSheet = sheets.EquipmentItemOptionSheet;
             var skillOptionRow = subRecipeRow.Options
                 .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
                 .FirstOrDefault(tuple => tuple.option.SkillId != 0)
                 .option;
-            var isBuffSkill = skillOptionRow.SkillDamageMax == 0;
-            var buffRow = isBuffSkill
-                ? sheets.StatBuffSheet[sheets.SkillBuffSheet[skillOptionRow.SkillId].BuffIds.First()]
-                : null;
+            var skillRow = sheets.SkillSheet[skillOptionRow.SkillId];
+            var isBuffSkill = skillRow.SkillType is SkillType.Buff or SkillType.Debuff;
             skillName.text = L10nManager.Localize($"SKILL_NAME_{skillOptionRow.SkillId}");
+
+            var effectString = SkillExtensions.EffectToString(
+                skillOptionRow.SkillId,
+                skillRow.SkillType,
+                skillOptionRow.SkillDamageMax,
+                skillOptionRow.StatDamageRatioMax,
+                skillOptionRow.ReferencedStatType);
             skillPowerText.text = isBuffSkill
-                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {buffRow.StatModifier}"
-                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {skillOptionRow.SkillDamageMax.ToString()}";
+                ? $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {effectString}"
+                : $"{L10nManager.Localize("UI_SKILL_POWER")}: {effectString}";
             skillChanceText.text =
                 $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skillOptionRow.SkillChanceMin.NormalizeFromTenThousandths() * 100:0%}";
         }
