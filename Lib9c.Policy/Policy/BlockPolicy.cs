@@ -13,9 +13,9 @@ namespace Nekoyume.BlockChain.Policy
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
-            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
+            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException>
                 validateNextBlockTx = null,
-            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
+            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException>
                 validateNextBlock = null,
             Func<long, long> getMaxTransactionsBytes = null,
             Func<long, int> getMinTransactionsPerBlock = null,

@@ -14,7 +14,7 @@ namespace Nekoyume.BlockChain
     public class StagePolicy : IStagePolicy<NCAction>
     {
         private readonly VolatileStagePolicy<NCAction> _impl;
-        private readonly ConcurrentDictionary<Address, SortedList<Transaction<NCAction>, TxId>> _txs;
+        private readonly ConcurrentDictionary<Address, SortedList<Transaction, TxId>> _txs;
         private readonly int _quotaPerSigner;
 
         private static readonly ImmutableHashSet<Address> _bannedAccounts = new[]
@@ -43,14 +43,14 @@ namespace Nekoyume.BlockChain
                     $"{nameof(quotaPerSigner)} must be positive: ${quotaPerSigner}");
             }
 
-            _txs = new ConcurrentDictionary<Address, SortedList<Transaction<NCAction>, TxId>>();
+            _txs = new ConcurrentDictionary<Address, SortedList<Transaction, TxId>>();
             _quotaPerSigner = quotaPerSigner;
             _impl = (txLifeTime == default)
                 ? new VolatileStagePolicy<NCAction>()
                 : new VolatileStagePolicy<NCAction>(txLifeTime);
         }
 
-        public Transaction<NCAction> Get(BlockChain<NCAction> blockChain, TxId id, bool filtered = true)
+        public Transaction Get(BlockChain<NCAction> blockChain, TxId id, bool filtered = true)
             => _impl.Get(blockChain, id, filtered);
 
         public long GetNextTxNonce(BlockChain<NCAction> blockChain, Address address)
@@ -62,16 +62,16 @@ namespace Nekoyume.BlockChain
         public bool Ignores(BlockChain<NCAction> blockChain, TxId id)
             => _impl.Ignores(blockChain, id);
 
-        public IEnumerable<Transaction<NCAction>> Iterate(BlockChain<NCAction> blockChain, bool filtered = true)
+        public IEnumerable<Transaction> Iterate(BlockChain<NCAction> blockChain, bool filtered = true)
         {
             if (filtered)
             {
-                var txsPerSigner = new Dictionary<Address, SortedSet<Transaction<NCAction>>>();
-                foreach (Transaction<NCAction> tx in _impl.Iterate(blockChain, filtered))
+                var txsPerSigner = new Dictionary<Address, SortedSet<Transaction>>();
+                foreach (Transaction tx in _impl.Iterate(blockChain, filtered))
                 {
                     if (!txsPerSigner.TryGetValue(tx.Signer, out var s))
                     {
-                        txsPerSigner[tx.Signer] = s = new SortedSet<Transaction<NCAction>>(new TxComparer());
+                        txsPerSigner[tx.Signer] = s = new SortedSet<Transaction>(new TxComparer());
                     }
 
                     s.Add(tx);
@@ -91,7 +91,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public bool Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+        public bool Stage(BlockChain<NCAction> blockChain, Transaction transaction)
         {
             if (_bannedAccounts.Contains(transaction.Signer))
             {
@@ -104,9 +104,9 @@ namespace Nekoyume.BlockChain
         public bool Unstage(BlockChain<NCAction> blockChain, TxId id)
             => _impl.Unstage(blockChain, id);
 
-        private class TxComparer : IComparer<Transaction<NCAction>>
+        private class TxComparer : IComparer<Transaction>
         {
-            public int Compare(Transaction<NCAction> x, Transaction<NCAction> y)
+            public int Compare(Transaction x, Transaction y)
             {
                 if (x.Nonce < y.Nonce)
                 {

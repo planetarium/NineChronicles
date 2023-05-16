@@ -413,10 +413,7 @@ namespace Nekoyume.Model.State
 
         public static FungibleAssetValue ToFungibleAssetValue(this IValue serialized) =>
             serialized is Bencodex.Types.List serializedList
-                ? FungibleAssetValue.FromRawValue(
-                    CurrencyExtensions.Deserialize(
-                        (Bencodex.Types.Dictionary) serializedList.ElementAt(0)),
-                    serializedList.ElementAt(1).ToBigInteger())
+                ? new FungibleAssetValue(serializedList)
                 : throw new InvalidCastException();
 
         public static FungibleAssetValue? ToNullableFungibleAssetValue(this IValue serialized) =>

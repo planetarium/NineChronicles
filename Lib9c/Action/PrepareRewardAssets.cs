@@ -50,8 +50,6 @@ namespace Nekoyume.Action
                 }
             }
 
-            CheckPermission(context);
-
             foreach (var asset in Assets)
             {
                 // Prevent mint NCG.

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Bencodex.Types;
 using Cocona;
 using Cocona.Help;
 using Libplanet.Action;
@@ -47,7 +48,7 @@ namespace Lib9c.Tools.SubCommand
                 .Select(type => ActionTypeAttribute.ValueOf(type))
                 .OrderBy(type => type);
 
-            foreach (string typeId in typeIds) {
+            foreach (IValue typeId in typeIds) {
                 Console.WriteLine(typeId);
             }
         }

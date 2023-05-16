@@ -8,20 +8,20 @@ namespace Nekoyume.BlockChain
 {
     public class CustomActionsDeserializableValidator
     {
-        private readonly IActionTypeLoader _actionTypeLoader;
+        private readonly IActionLoader _actionLoader;
         private readonly long _nextBlockIndex;
 
-        public CustomActionsDeserializableValidator(IActionTypeLoader actionTypeLoader, long nextBlockIndex)
+        public CustomActionsDeserializableValidator(IActionLoader actionLoader, long nextBlockIndex)
         {
-            _actionTypeLoader = actionTypeLoader;
+            _actionLoader = actionLoader;
             _nextBlockIndex = nextBlockIndex;
         }
 
         public bool Validate(ITransaction transaction)
         {
-            var types = _actionTypeLoader.Load(new ActionTypeLoaderContext(_nextBlockIndex));
+            var types = _actionLoader.Load(_nextBlockIndex);
 
-            return transaction.CustomActions?.All(ca =>
+            return transaction.Actions?.All(ca =>
                 ca is Dictionary dictionary &&
                 dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
                 typeIdValue is Text typeId &&
