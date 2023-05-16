@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action
         [InlineData(null, false, 0, 1)]
         [InlineData(typeof(NotEnoughFungibleAssetValueException), true, 1, 1)]
         [InlineData(null, true, 1, 1)]
-        [InlineData(typeof(ArgumentException), true, 0, 1)]
+        [InlineData(typeof(ArgumentException), true, 0, 2)]
         [InlineData(typeof(NotEnoughHammerPointException), true, 1, 1)]
         public void ExecuteWithCheckingHammerPointState(
             Type exc,
