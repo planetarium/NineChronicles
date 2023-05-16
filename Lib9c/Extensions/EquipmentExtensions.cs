@@ -45,6 +45,11 @@ namespace Nekoyume.Extensions
                 throw new SheetRowNotFoundException("EquipmentItemSubRecipeSheetV2", mimisSubRecipeId);
             }
 
+            if (subRecipeRow.IsMimisbrunnrSubRecipe.HasValue && !subRecipeRow.IsMimisbrunnrSubRecipe.Value)
+            {
+                return false;
+            }
+
             EquipmentItemOptionSheet.Row[] optionRows;
             try
             {
@@ -270,7 +275,7 @@ namespace Nekoyume.Extensions
                 subRecipeSheet,
                 itemOptionSheet
             );
-            
+
             return isMadeWithMimisbrunnrRecipe ? row.MimisLevel : row.Level;
         }
     }
