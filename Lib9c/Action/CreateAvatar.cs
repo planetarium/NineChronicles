@@ -225,7 +225,12 @@ namespace Nekoyume.Action
                     else
                     {
                         var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
-                        var skill = SkillFactory.Get(skillRow, optionRow.SkillDamageMax, optionRow.SkillChanceMax);
+                        var skill = SkillFactory.Get(
+                            skillRow,
+                            optionRow.SkillDamageMax,
+                            optionRow.SkillChanceMax,
+                            optionRow.StatDamageRatioMax,
+                            optionRow.ReferencedStatType);
                         if (skill != null)
                         {
                             equipment.Skills.Add(skill);

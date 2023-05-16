@@ -71,7 +71,7 @@ namespace Nekoyume.Model
                     skillRow.SkillType == SkillType.Buff ||
                     skillRow.SkillType == SkillType.Debuff;
 
-                var skill = SkillFactory.Get(skillRow, !isBuff ? dmg : 0, 100);
+                var skill = SkillFactory.GetV1(skillRow, !isBuff ? dmg : 0, 100);
                 _orderedSkills.Add(skill);
             }
 
@@ -86,7 +86,7 @@ namespace Nekoyume.Model
                 enrageSkillRow.SkillType == SkillType.Buff ||
                 enrageSkillRow.SkillType == SkillType.Debuff;
 
-            var enrageSkill = SkillFactory.Get(enrageSkillRow, !isBuff ? dmg : 0, 100);
+            var enrageSkill = SkillFactory.GetV1(enrageSkillRow, !isBuff ? dmg : 0, 100);
             _enrageSkill = enrageSkill;
         }
 

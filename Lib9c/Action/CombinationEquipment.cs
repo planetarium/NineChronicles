@@ -699,7 +699,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    var skill = CombinationEquipment5.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
                     if (!(skill is null))
                     {
                         equipment.Skills.Add(skill);
@@ -708,6 +708,26 @@ namespace Nekoyume.Action
                         agentState.unlockedOptions.Add(optionRow.Id);
                     }
                 }
+            }
+        }
+
+        public static Skill GetSkill(
+            EquipmentItemOptionSheet.Row row,
+            SkillSheet skillSheet,
+            IRandom random)
+        {
+            try
+            {
+                var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
+                var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
+                var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
+                var statDamageRatio = random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1);
+                var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, row.ReferencedStatType);
+                return skill;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
             }
         }
 

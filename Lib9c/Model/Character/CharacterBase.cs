@@ -479,7 +479,7 @@ namespace Nekoyume.Model
                 throw new KeyNotFoundException(GameConfig.DefaultAttackId.ToString(CultureInfo.InvariantCulture));
             }
 
-            var attack = SkillFactory.Get(skillRow, 0, 100);
+            var attack = SkillFactory.GetV1(skillRow, 0, 100);
             Skills.Add(attack);
         }
 
