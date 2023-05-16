@@ -31,17 +31,25 @@ namespace Lib9c.DevExtensions.Action.Craft
             var states = context.PreviousStates;
             int targetStage;
 
-            if (ActionType.TypeIdentifier.Contains("combination_equipment"))
+            if (ActionType.TypeIdentifier is Text text)
             {
-                targetStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-            }
-            else if (ActionType.TypeIdentifier.Contains("combination_consumable"))
-            {
-                targetStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            }
-            else if (ActionType.TypeIdentifier.Contains("item_enhancement"))
-            {
-                targetStage = GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
+                if (text.Value.Contains("combination_equipment"))
+                {
+                    targetStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+                }
+                else if (text.Value.Contains("combination_consumable"))
+                {
+                    targetStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+                }
+                else if (text.Value.Contains("item_enhancement"))
+                {
+                    targetStage = GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
+                }
+                else
+                {
+                    throw new InvalidActionFieldException(
+                        $"{ActionType.TypeIdentifier} is not valid action");
+                }
             }
             else
             {
@@ -64,7 +72,7 @@ namespace Lib9c.DevExtensions.Action.Craft
             new Dictionary<string, IValue>
             {
                 ["avatarAddress"] = AvatarAddress.Serialize(),
-                ["typeIdentifier"] = ActionType.TypeIdentifier.Serialize()
+                ["typeIdentifier"] = ActionType.TypeIdentifier
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(

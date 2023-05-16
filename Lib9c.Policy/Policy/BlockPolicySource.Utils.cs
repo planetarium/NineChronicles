@@ -29,7 +29,7 @@ namespace Nekoyume.BlockChain.Policy
         /// </para>
         /// </summary>
         /// <param name="transaction">The <see cref="Transaction{T}"/> to consider.</param>
-        /// <param name="actionTypeLoader">The loader to use <see cref="IAction"/>s included
+        /// <param name="actionLoader">The loader to use <see cref="IAction"/>s included
         /// in <paramref name="transaction"/>.</param>
         /// <param name="blockIndex">Either the index of a prospective block to include
         /// <paramref name="transaction"/> or the index of a <see cref="Block{T}"/> containing
@@ -39,16 +39,16 @@ namespace Nekoyume.BlockChain.Policy
         /// <seealso cref="ActionObsoleteAttribute"/>
         internal static bool IsObsolete(
             ITransaction transaction,
-            IActionTypeLoader actionTypeLoader,
+            IActionLoader actionLoader,
             long blockIndex
         )
         {
-            if (!(transaction.CustomActions is { } customActions))
+            if (!(transaction.Actions is { } customActions))
             {
                 return false;
             }
 
-            var types = actionTypeLoader.Load(new ActionTypeLoaderContext(blockIndex));
+            var types = actionLoader.Load(blockIndex);
 
             // Comparison with ObsoleteIndex + 2 is intended to have backward
             // compatibility with a bugged original implementation.
@@ -65,7 +65,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         internal static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+            BlockChain<NCAction> blockChain, Transaction transaction)
         {
             return GetAdminState(blockChain) is AdminState admin
                 && admin.AdminAddress.Equals(transaction.Signer);
@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy)
         {
             long maxTransactionsBytes = maxTransactionsBytesPolicy.Getter(block.Index);
@@ -106,7 +106,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy)
         {
@@ -136,7 +136,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerSignerPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
             int maxTransactionsPerSignerPerBlock =

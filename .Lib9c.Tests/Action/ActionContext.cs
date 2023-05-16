@@ -33,6 +33,10 @@ namespace Lib9c.Tests.Action
 
         public bool IsNativeToken(Currency currency) => false;
 
+        public void UseGas(long gas)
+        {
+        }
+
         public IActionContext GetUnconsumedContext()
         {
             // Unable to determine if Random has ever been consumed...
@@ -49,6 +53,10 @@ namespace Lib9c.Tests.Action
                 PreviousStateRootHash = PreviousStateRootHash,
             };
         }
+
+        public long GasUsed() => 0;
+
+        public long GasLimit() => 0;
 
         public void PutLog(string log)
         {

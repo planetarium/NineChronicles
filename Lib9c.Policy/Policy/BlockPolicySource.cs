@@ -38,7 +38,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
-        private readonly IActionTypeLoader _actionTypeLoader;
+        private readonly IActionLoader _actionLoader;
 
         // FIXME: Why does BlockPolicySource have renderers?
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -55,9 +55,9 @@ namespace Nekoyume.BlockChain.Policy
         public BlockPolicySource(
             ILogger logger,
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
-            IActionTypeLoader actionTypeLoader = null)
+            IActionLoader actionLoader = null)
         {
-            _actionTypeLoader = actionTypeLoader ?? new StaticActionTypeLoader(
+            _actionLoader = actionLoader ?? new StaticActionLoader(
                 Assembly.GetEntryAssembly() is Assembly entryAssembly
                     ? new[] { typeof(ActionBase).Assembly, entryAssembly }
                     : new[] { typeof(ActionBase).Assembly },
@@ -155,10 +155,10 @@ namespace Nekoyume.BlockChain.Policy
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
 
-            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
+            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
-                    blockChain, _actionTypeLoader, transaction);
-            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
+                    blockChain, _actionLoader, transaction);
+            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
                     maxTransactionsBytesPolicy,
@@ -184,20 +184,20 @@ namespace Nekoyume.BlockChain.Policy
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
-            IActionTypeLoader actionTypeLoader,
-            Transaction<NCAction> transaction)
+            IActionLoader actionLoader,
+            Transaction transaction)
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
 
-            if (((ITransaction)transaction).CustomActions?.Count > 1)
+            if (((ITransaction)transaction).Actions?.Count > 1)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has too many actions: " +
-                    $"{((ITransaction)transaction).CustomActions?.Count}",
+                    $"{((ITransaction)transaction).Actions?.Count}",
                     transaction.Id);
             }
-            else if (IsObsolete(transaction, actionTypeLoader, index))
+            else if (IsObsolete(transaction, actionLoader, index))
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} is obsolete.",
@@ -206,9 +206,9 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                var actionTypes = actionTypeLoader.Load(new ActionTypeLoaderContext(index));
+                var actionTypes = actionLoader.Load(index);
                 // Check ActivateAccount
-                if (((ITransaction)transaction).CustomActions is { } customActions &&
+                if (((ITransaction)transaction).Actions is { } customActions &&
                     customActions.Count == 1 &&
                     customActions.First() is Dictionary dictionary &&
                     dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
@@ -290,7 +290,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         internal static BlockPolicyViolationException ValidateNextBlockRaw(
-            Block<NCAction> nextBlock,
+            Block nextBlock,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
