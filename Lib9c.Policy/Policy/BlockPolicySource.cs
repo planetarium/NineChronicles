@@ -48,10 +48,10 @@ namespace Nekoyume.BlockChain.Policy
         public readonly BlockRenderer BlockRenderer = new BlockRenderer();
 
         // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedActionRenderer<NCAction> LoggedActionRenderer;
+        public readonly LoggedActionRenderer LoggedActionRenderer;
 
         // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedRenderer<NCAction> LoggedBlockRenderer;
+        public readonly LoggedRenderer LoggedBlockRenderer;
 
         public BlockPolicySource(
             ILogger logger,
@@ -61,10 +61,10 @@ namespace Nekoyume.BlockChain.Policy
             _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
 
             LoggedActionRenderer =
-                new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
+                new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
 
             LoggedBlockRenderer =
-                new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
+                new LoggedRenderer(BlockRenderer, logger, logEventLevel);
         }
 
         /// <summary>
@@ -175,8 +175,8 @@ namespace Nekoyume.BlockChain.Policy
 #endif
         }
 
-        public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
-            new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
+        public IEnumerable<IRenderer> GetRenderers() =>
+            new IRenderer[] { BlockRenderer, LoggedActionRenderer };
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,

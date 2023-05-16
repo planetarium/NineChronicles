@@ -3,14 +3,11 @@ namespace Lib9c.Tests.Action
     using System.Security.Cryptography;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
     using Libplanet.Blocks;
     using Libplanet.Tx;
 
     public class ActionContext : IActionContext
     {
-        public BlockHash? GenesisHash { get; set; }
-
         public Address Signer { get; set; }
 
         public TxId? TxId { get; set; }
