@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;
 
@@ -47,8 +48,10 @@ namespace Nekoyume.TableData
                 HitCount = ParseInt(fields[5]);
                 Cooldown = ParseInt(fields[6]);
             }
-            public IValue Serialize() =>
-                Bencodex.Types.Dictionary.Empty
+
+            public IValue Serialize()
+            {
+                var dict = Bencodex.Types.Dictionary.Empty
                     .Add("id", Id)
                     .Add("elemental_type", ElementalType.ToString())
                     .Add("skill_type", SkillType.ToString())
@@ -56,6 +59,8 @@ namespace Nekoyume.TableData
                     .Add("skill_target_type", SkillTargetType.ToString())
                     .Add("hit_count", HitCount)
                     .Add("cooldown", Cooldown);
+                return dict;
+            }
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {

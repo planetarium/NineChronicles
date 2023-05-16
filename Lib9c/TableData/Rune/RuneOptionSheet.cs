@@ -17,7 +17,7 @@ namespace Nekoyume.TableData
             public class RuneOptionInfo
             {
                 public int Cp { get; }
-                public List<(StatMap statMap, StatModifier.OperationType operationType)> Stats { get; set; }
+                public List<(DecimalStat stat, StatModifier.OperationType operationType)> Stats { get; set; }
                 public int SkillId { get; set; }
                 public int SkillCooldown { get; set; }
                 public int SkillChance { get; set; }
@@ -29,7 +29,7 @@ namespace Nekoyume.TableData
 
                 public RuneOptionInfo(
                     int cp,
-                    List<(StatMap, StatModifier.OperationType)> stats,
+                    List<(DecimalStat, StatModifier.OperationType)> stats,
                     int skillId,
                     int skillCooldown,
                     int skillChance,
@@ -53,7 +53,7 @@ namespace Nekoyume.TableData
 
                 public RuneOptionInfo(
                     int cp,
-                    List<(StatMap, StatModifier.OperationType)> stats)
+                    List<(DecimalStat, StatModifier.OperationType)> stats)
                 {
                     Cp = cp;
                     Stats = stats;
@@ -68,7 +68,7 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 LevelOptionMap = new Dictionary<int, RuneOptionInfo>();
-                var stats = new List<(StatMap, StatModifier.OperationType)>();
+                var stats = new List<(DecimalStat, StatModifier.OperationType)>();
 
                 RuneId = ParseInt(fields[0]);
                 var level = ParseInt(fields[1]);
@@ -80,7 +80,7 @@ namespace Nekoyume.TableData
                     Enum.Parse(typeof(StatModifier.OperationType), fields[5]);
                 if (statType1 != StatType.NONE)
                 {
-                    var statMap = new StatMap(statType1, value1);
+                    var statMap = new DecimalStat(statType1, value1);
                     stats.Add((statMap, valueType1));
                 }
 
@@ -90,7 +90,7 @@ namespace Nekoyume.TableData
                     Enum.Parse(typeof(StatModifier.OperationType), fields[8]);
                 if (statType2 != StatType.NONE)
                 {
-                    var statMap = new StatMap(statType2, value2);
+                    var statMap = new DecimalStat(statType2, value2);
                     stats.Add((statMap, valueType2));
                 }
 
@@ -100,7 +100,7 @@ namespace Nekoyume.TableData
                     Enum.Parse(typeof(StatModifier.OperationType), fields[11]);
                 if (statType3 != StatType.NONE)
                 {
-                    var statMap = new StatMap(statType3, value3);
+                    var statMap = new DecimalStat(statType3, value3);
                     stats.Add((statMap, valueType3));
                 }
 

@@ -507,8 +507,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 {
                     Assert.Contains(
                         equipment.StatsMap.GetAdditionalStats(),
-                        stat => stat.StatType == statOption.Key &&
-                                stat.AdditionalValue == statOption.Value);
+                        stat => stat.statType == statOption.Key &&
+                                stat.additionalValue == statOption.Value);
                 }
 
                 var skillOptions = options

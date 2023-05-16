@@ -114,7 +114,7 @@ namespace Nekoyume.Battle
                 foreach (var skill in _skillsOnWaveStart)
                 {
                     var buffs = BuffFactory.GetBuffs(
-                        Player.ATK,
+                        Player.Stats,
                         skill,
                         SkillBuffSheet,
                         StatBuffSheet,
