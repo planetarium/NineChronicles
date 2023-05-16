@@ -81,7 +81,7 @@ namespace Lib9c.DevExtensions
                     1
                 );
             }
-            Block<NCAction> genesis = store.GetBlock<NCAction>(
+            Block genesis = store.GetBlock(
                 genesisBlockHash
             );
             BlockChain<NCAction> chain;
@@ -137,7 +137,7 @@ namespace Lib9c.DevExtensions
             }
         }
 
-        public static Block<NCAction> ParseBlockOffset(
+        public static Block ParseBlockOffset(
             BlockChain<NCAction> chain,
             string blockHashOrIndex,
             long defaultIndex = -1)
@@ -261,7 +261,7 @@ namespace Lib9c.DevExtensions
                 .ToImmutableHashSet();
         }
 
-        public static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
+        public static void ExportBlock(Block block, string path)
         {
             Bencodex.Types.Dictionary dict = block.MarshalBlock();
             byte[] encoded = new Codec().Encode(dict);

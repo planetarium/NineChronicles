@@ -40,7 +40,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
-        private readonly IActionTypeLoader _actionTypeLoader;
+        private readonly IActionLoader _actionLoader;
 
         // FIXME: Why does BlockPolicySource have renderers?
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -57,9 +57,9 @@ namespace Nekoyume.BlockChain.Policy
         public BlockPolicySource(
             ILogger logger,
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
-            IActionTypeLoader actionTypeLoader = null)
+            IActionLoader actionLoader = null)
         {
-            _actionTypeLoader = actionTypeLoader ?? new StaticActionTypeLoader(
+            _actionLoader = actionLoader ?? new StaticActionLoader(
                 Assembly.GetEntryAssembly() is Assembly entryAssembly
                     ? new[] { typeof(ActionBase).Assembly, entryAssembly }
                     : new[] { typeof(ActionBase).Assembly },
@@ -157,10 +157,10 @@ namespace Nekoyume.BlockChain.Policy
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
 
-            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
+            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
-                    blockChain, _actionTypeLoader, transaction);
-            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
+                    blockChain, _actionLoader, transaction);
+            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
                     maxTransactionsBytesPolicy,
@@ -186,21 +186,21 @@ namespace Nekoyume.BlockChain.Policy
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
-            IActionTypeLoader actionTypeLoader,
-            Transaction<NCAction> transaction,
+            IActionLoader actionLoader,
+            Transaction transaction,
             long meadStartIndex = MeadConfig.MeadTransferStartIndex)
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
 
-            if (((ITransaction)transaction).CustomActions?.Count > 1)
+            if (((ITransaction)transaction).Actions?.Count > 1)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has too many actions: " +
-                    $"{((ITransaction)transaction).CustomActions?.Count}",
+                    $"{((ITransaction)transaction).Actions?.Count}",
                     transaction.Id);
             }
-            else if (IsObsolete(transaction, actionTypeLoader, index))
+            else if (IsObsolete(transaction, actionLoader, index))
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} is obsolete.",
@@ -211,9 +211,9 @@ namespace Nekoyume.BlockChain.Policy
             {
                 if (index < meadStartIndex)
                 {
-                    var actionTypes = actionTypeLoader.Load(new ActionTypeLoaderContext(index));
+                    var actionTypes = actionLoader.Load(index);
                     // Check ActivateAccount
-                    if (((ITransaction)transaction).CustomActions is { } customActions &&
+                    if (((ITransaction)transaction).Actions is { } customActions &&
                         customActions.Count == 1 &&
                         customActions.First() is Dictionary dictionary &&
                         dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
@@ -221,7 +221,7 @@ namespace Nekoyume.BlockChain.Policy
                         (typeId == "activate_account2" || typeId == "activate_account"))
                     {
                         if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
-                              valuesValue is Dictionary values))
+                                valuesValue is Dictionary values))
                         {
                             return new TxPolicyViolationException(
                                 $"Transaction {transaction.Id} has an invalid action.",
@@ -238,12 +238,13 @@ namespace Nekoyume.BlockChain.Policy
                         action.LoadPlainValue(values);
 
                         return transaction.Nonce == 0 &&
-                               blockChain.GetState(activateAccount.PendingAddress) is Dictionary rawPending &&
-                               new PendingActivationState(rawPending).Verify(activateAccount.Signature)
-                            ? null
-                            : new TxPolicyViolationException(
-                                $"Transaction {transaction.Id} has an invalid activate action.",
-                                transaction.Id);
+                            blockChain.GetState(activateAccount.PendingAddress) is Dictionary
+                                rawPending &&
+                            new PendingActivationState(rawPending).Verify(activateAccount.Signature)
+                                ? null
+                                : new TxPolicyViolationException(
+                                    $"Transaction {transaction.Id} has an invalid activate action.",
+                                    transaction.Id);
                     }
 
                     // Check admin
@@ -262,12 +263,12 @@ namespace Nekoyume.BlockChain.Policy
                                 IImmutableSet<Address> activatedAccounts =
                                     new ActivatedAccountsState(asDict).Accounts;
                                 return !activatedAccounts.Any() ||
-                                       activatedAccounts.Contains(transaction.Signer)
-                                    ? null
-                                    : new TxPolicyViolationException(
-                                        $"Transaction {transaction.Id} is by a signer " +
-                                        $"without account activation: {transaction.Signer}",
-                                        transaction.Id);
+                                    activatedAccounts.Contains(transaction.Signer)
+                                        ? null
+                                        : new TxPolicyViolationException(
+                                            $"Transaction {transaction.Id} is by a signer " +
+                                            $"without account activation: {transaction.Signer}",
+                                            transaction.Id);
                             }
                             return null;
                         case Bencodex.Types.Boolean _:
@@ -276,10 +277,10 @@ namespace Nekoyume.BlockChain.Policy
 
                     return null;
                 }
-
                 if (!transaction.Actions.Any())
                 {
-                    return new TxPolicyViolationException("Transaction has no actions", transaction.Id);
+                    return new TxPolicyViolationException("Transaction has no actions",
+                        transaction.Id);
                 }
                 var feeCalculator = new FeeCalculator();
                 FungibleAssetValue totalFee = transaction.Actions.Select(feeCalculator.CalculateFee)
@@ -310,7 +311,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         internal static BlockPolicyViolationException ValidateNextBlockRaw(
-            Block<NCAction> nextBlock,
+            Block nextBlock,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,

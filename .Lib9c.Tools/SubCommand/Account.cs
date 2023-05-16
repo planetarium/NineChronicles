@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bencodex.Types;
 using Cocona;
 using Lib9c.DevExtensions;
 using Libplanet;
@@ -43,7 +44,7 @@ namespace Lib9c.Tools.SubCommand
             (BlockChain<NCAction> chain, IStore store, _, _) =
                 Utils.GetBlockChain(logger, storePath, chainId);
 
-            Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);
+            Block offset = Utils.ParseBlockOffset(chain, block);
             stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
 
             Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
@@ -66,9 +67,9 @@ namespace Lib9c.Tools.SubCommand
                 stderr.WriteLine("Scanning block #{0} {1}...", digest.Index, digest.Hash);
                 stderr.Flush();
                 IEnumerable<Address> addrs = digest.TxIds
-                    .Select(txId => store.GetTransaction<NCAction>(new TxId(txId.ToArray())))
-                    .SelectMany(tx => tx.CustomActions is { } ca
-                        ? ca.Select(a => a.InnerAction)
+                    .Select(txId => store.GetTransaction(new TxId(txId.ToArray())))
+                    .SelectMany(tx => tx.Actions is { } ca
+                        ? ca.Select(a => ToAction(a).InnerAction)
                             .SelectMany(a => a is TransferAsset t
                                 ? new[] { t.Sender, t.Recipient }
                                 : a is InitializeStates i &&
@@ -99,6 +100,15 @@ namespace Lib9c.Tools.SubCommand
             }
 
             throw new InvalidOperationException($"Block #{blockHash} is not found in the store.");
+        }
+
+        private static NCAction ToAction(IValue plainValue)
+        {
+#pragma warning disable CS0612
+            var action = new NCAction();
+#pragma warning restore CS0612
+            action.LoadPlainValue(plainValue);
+            return action;
         }
     }
 }

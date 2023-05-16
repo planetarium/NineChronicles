@@ -39,11 +39,11 @@
             stagePolicy ??= new VolatileStagePolicy<NCAction>();
             store ??= new DefaultStore(null);
             stateStore ??= new TrieStateStore(new DefaultKeyValueStore(null));
-            Block<NCAction> genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
+            Block genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
             return BlockChain<NCAction>.Create(policy, stagePolicy, store, stateStore, genesis, renderers: blockRenderers);
         }
 
-        public static Block<NCAction> MakeGenesisBlock(
+        public static Block MakeGenesisBlock(
             Address adminAddress,
             IImmutableSet<Address> activatedAddresses,
             AuthorizedMinersState authorizedMinersState = null,

@@ -24,14 +24,14 @@ namespace Nekoyume.BlockChain.Policy
 
         public TxPolicyViolationException ValidateNextBlockTx(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Transaction<PolymorphicAction<ActionBase>> transaction)
+            Transaction transaction)
         {
             return null;
         }
 
         public BlockPolicyViolationException ValidateNextBlock(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Block<PolymorphicAction<ActionBase>> nextBlock)
+            Block nextBlock)
         {
             return null;
         }
