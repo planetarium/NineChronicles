@@ -89,7 +89,6 @@ namespace Lib9c.DevExtensions
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,
-                genesis.Hash,
                 new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
                 null);
             PolymorphicAction<ActionBase>.ReloadLoader(

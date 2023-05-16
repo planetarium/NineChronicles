@@ -19,7 +19,7 @@ namespace Lib9c.Renderers
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block;
 
-    public class ActionRenderer : IActionRenderer<NCAction>
+    public class ActionRenderer : IActionRenderer
     {
         public Subject<ActionEvaluation<ActionBase>> ActionRenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
@@ -96,18 +96,6 @@ namespace Lib9c.Renderers
         public void RenderBlockEnd(NCBlock oldTip, NCBlock newTip)
         {
             BlockEndSubject.OnNext((oldTip, newTip));
-        }
-
-        [Obsolete("Use BlockRenderer.RenderReorg(oldTip, newTip, branchpoint)")]
-        public void RenderReorg(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint)
-        {
-            // RenderReorg should be handled by BlockRenderer
-        }
-
-        [Obsolete("Use BlockRenderer.RenderReorgEnd(oldTip, newTip, branchpoint)")]
-        public void RenderReorgEnd(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint)
-        {
-            // RenderReorgEnd should be handled by BlockRenderer
         }
 
         public IObservable<ActionEvaluation<T>> EveryRender<T>() where T : ActionBase =>
