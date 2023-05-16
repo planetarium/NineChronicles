@@ -10,6 +10,7 @@ using Bencodex;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -89,16 +90,11 @@ namespace Lib9c.DevExtensions
                 _ => policy.BlockAction,
                 blockChainStates,
                 genesis.Hash,
-                policy.NativeTokens.Contains,
-                new StaticActionLoader(
-                    new[]
-                    {
-                        typeof(ActionBase).Assembly,  // Lib9c
-                        typeof(Utils).Assembly,  // Lib9c.DevExtensions
-                    }
-                ),
-                null
-            );
+                new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                null);
+            PolymorphicAction<ActionBase>.ReloadLoader(
+                new[] { typeof(ActionBase).Assembly, typeof(Utils).Assembly });
+
             BlockChain<NCAction> chain;
             if (store.GetCanonicalChainId() is null)
             {
