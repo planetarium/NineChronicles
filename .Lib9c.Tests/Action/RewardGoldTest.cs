@@ -545,7 +545,6 @@ namespace Lib9c.Tests.Action
                 actionEvaluator: new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    genesisHash: genesis.Hash,
                     actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
                     feeCalculator: null
                 ),
