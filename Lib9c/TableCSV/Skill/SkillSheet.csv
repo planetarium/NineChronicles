@@ -50,7 +50,7 @@ _220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1 // 미구현
 220002,방어 약화,Normal,Debuff,DefenseBuff,Enemy,1,10
 220003,방어 약화(전체),Normal,Debuff,DefenseBuff,Enemies,1,10
 220004,방어 강화,Normal,Buff,DefenseBuff,Self,1,10
-220005,DEF Up (ATK),Normal,Buff,AttackBuff,Self,1,10
+220005,DEF Up (ATK),Normal,Buff,DefenseBuff,Self,1,10
 220006,DEF Down (HP),Normal,Debuff,DefenseBuff,Enemy,1,10
 220007,DEF Down (HIT),Normal,Debuff,DefenseBuff,Enemy,1,10
 220008,DEF Down (SPD),Normal,Debuff,DefenseBuff,Enemy,1,10
