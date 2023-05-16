@@ -37,7 +37,7 @@ namespace Nekoyume.TableData
                 SkillChanceMin = ParseInt(fields[7], 0);
                 SkillChanceMax = ParseInt(fields[8], 0);
 
-                if (fields.Count >= 9)
+                if (fields.Count > 9)
                 {
                     StatDamageRatioMin = ParseInt(fields[9], 0);
                     StatDamageRatioMax = ParseInt(fields[10], 0);
