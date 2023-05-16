@@ -149,7 +149,7 @@ namespace Lib9c.Tests
                     1 * Currencies.Mead,
                 },
             };
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+            Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet<Address>.Empty,
                 initialValidators: new Dictionary<PublicKey, BigInteger>
@@ -173,8 +173,8 @@ namespace Lib9c.Tests
                 avatarAddress = adminAddress,
             };
 
-            Transaction<PolymorphicAction<ActionBase>> txEmpty =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txEmpty =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     adminPrivateKey,
                     genesis.Hash,
@@ -182,8 +182,8 @@ namespace Lib9c.Tests
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txEmpty, 0L));
 
-            Transaction<PolymorphicAction<ActionBase>> txByAdmin =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txByAdmin =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     adminPrivateKey,
                     genesis.Hash,
@@ -191,8 +191,8 @@ namespace Lib9c.Tests
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin, 0L));
 
-            Transaction<PolymorphicAction<ActionBase>> txByStranger =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txByStranger =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     0,
                     new PrivateKey(),
                     genesis.Hash,
@@ -200,14 +200,27 @@ namespace Lib9c.Tests
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByStranger, 0L));
 
-            Transaction<PolymorphicAction<ActionBase>> txByAdmin2 =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
+            Transaction txByAdmin2 =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
                     1,
                     adminPrivateKey,
                     genesis.Hash,
-                    new PolymorphicAction<ActionBase>[] { action }
+                    gasLimit: 1,
+                    maxGasPrice: new FungibleAssetValue(Currencies.Mead, 10, 10),
+                    actions: new PolymorphicAction<ActionBase>[] { action }
                 );
-            Assert.Null(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin2, 0L));
+            Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin2, 0L));
+
+            Transaction txByAdmin3 =
+                Transaction.Create<PolymorphicAction<ActionBase>>(
+                    2,
+                    adminPrivateKey,
+                    genesis.Hash,
+                    gasLimit: 1,
+                    maxGasPrice: new FungibleAssetValue(Currencies.Mead, 0, 0),
+                    actions: new PolymorphicAction<ActionBase>[] { action }
+                );
+            Assert.Null(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin3, 0L));
         }
 
         [Fact]
