@@ -202,30 +202,29 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                if (transaction.Actions is { } rawActions &&
-                    rawActions.Count == 1)
+                // Check Activation
+                try
                 {
-                    try
+                    if (transaction.Actions is { } rawActions &&
+                        rawActions.Count == 1 &&
+                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
+                        polyAction.InnerAction is IActivateAccount activate)
                     {
-                        var action = actionLoader.LoadAction(index, rawActions.First());
-                        if (action is IActivateAccount { } activate)
-                        {
-                            return transaction.Nonce == 0 &&
-                                blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
-                                new PendingActivationState(rawPending).Verify(activate.Signature)
-                                    ? null
-                                    : new TxPolicyViolationException(
-                                        $"Transaction {transaction.Id} has an invalid activate action.",
-                                        transaction.Id);
-                        }
+                        return transaction.Nonce == 0 &&
+                            blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                            new PendingActivationState(rawPending).Verify(activate.Signature)
+                                ? null
+                                : new TxPolicyViolationException(
+                                    $"Transaction {transaction.Id} has an invalid activate action.",
+                                    transaction.Id);
                     }
-                    catch (InvalidActionException e)
-                    {
-                        return new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id,
-                            e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    return new TxPolicyViolationException(
+                        $"Transaction {transaction.Id} has an invalid action.",
+                        transaction.Id,
+                        e);
                 }
 
                 // Check admin
