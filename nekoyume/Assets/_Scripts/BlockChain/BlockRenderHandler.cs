@@ -19,8 +19,6 @@ namespace Nekoyume.BlockChain
     using Nekoyume.Helper;
     using Nekoyume.UI.Scroller;
     using UniRx;
-    using NCAction = PolymorphicAction<ActionBase>;
-    using NCBlock = Block<PolymorphicAction<ActionBase>>;
 
     public class BlockRenderHandler
     {
