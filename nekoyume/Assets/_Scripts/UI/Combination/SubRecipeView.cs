@@ -471,18 +471,18 @@ namespace Nekoyume.UI
                     {
                         SetOptions(options);
 
+                        var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
+                                                     (subRecipe.IsMimisbrunnrSubRecipe ?? true);
                         var hammerPointStates = States.Instance.HammerPointStates;
                         var showHammerPoint = hammerPointStates is not null &&
                                               hammerPointStates.TryGetValue(recipeId, out _hammerPointState) &&
-                                              index != MimisbrunnrRecipeIndex;
-                        hammerPointView.parentObject.SetActive(showHammerPoint);
+                                              !isMimisbrunnrSubRecipe;
 
+                        hammerPointView.parentObject.SetActive(showHammerPoint);
                         if (showHammerPoint)
                         {
                             var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
-                            var increasePoint = index == 0
-                                ? CombinationEquipment.BasicSubRecipeHammerPoint
-                                : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                            var increasePoint = subRecipe.RewardHammerPoint ?? 1;
                             var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
                             var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                             _canSuperCraft = _hammerPointState.HammerPoint == max;
@@ -507,7 +507,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
+                            var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
                             levelText.text = $"Lv {level}";
                             levelText.enabled = true;
                         }
