@@ -322,6 +322,8 @@ namespace Nekoyume.Action
                 }
             }
 
+            var isMimisbrunnrSubRecipe = subRecipeRow?.IsMimisbrunnrSubRecipe ??
+                subRecipeId.HasValue && recipeRow.SubRecipeIds[2] == subRecipeId.Value;
             var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
@@ -330,10 +332,7 @@ namespace Nekoyume.Action
                     throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
                 }
 
-                var isMimisbrunnrSubRecipe = subRecipeRow?.IsMimisbrunnrSubRecipe ?? true;
-                if (subRecipeId.HasValue
-                    && recipeRow.SubRecipeIds[2] == subRecipeId.Value
-                    && isMimisbrunnrSubRecipe)
+                if (isMimisbrunnrSubRecipe)
                 {
                     throw new ArgumentException(
                         $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
@@ -403,9 +402,7 @@ namespace Nekoyume.Action
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
                 endBlockIndex,
-                madeWithMimisbrunnrRecipe: subRecipeId.HasValue &&
-                                           recipeRow.SubRecipeIds[2] == subRecipeId.Value &&
-                                           (subRecipeRow?.IsMimisbrunnrSubRecipe ?? true)
+                madeWithMimisbrunnrRecipe: isMimisbrunnrSubRecipe
             );
 
             if (!(subRecipeRow is null))
