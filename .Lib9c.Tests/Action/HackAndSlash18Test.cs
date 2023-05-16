@@ -1303,7 +1303,7 @@ namespace Lib9c.Tests.Action
                         .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
                 if (skill.Value != null)
                 {
-                    skillsOnWaveStart.Add(SkillFactory.Get(skill.Value, default, 100));
+                    skillsOnWaveStart.Add(SkillFactory.GetV1(skill.Value, default, 100));
                 }
             }
 
