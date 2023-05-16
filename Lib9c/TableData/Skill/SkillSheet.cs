@@ -23,8 +23,6 @@ namespace Nekoyume.TableData
             public SkillTargetType SkillTargetType { get; private set; }
             public int HitCount { get; private set; }
             public int Cooldown { get; private set; }
-            public int StatPowerRatio { get; private set; }
-            public StatType ReferencedStatType { get; private set; }
 
             public Row() {}
 
@@ -38,13 +36,6 @@ namespace Nekoyume.TableData
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), (Bencodex.Types.Text) serialized["skill_target_type"]);
                 HitCount = (Bencodex.Types.Integer) serialized["hit_count"];
                 Cooldown = (Bencodex.Types.Integer) serialized["cooldown"];
-
-                if (serialized.TryGetValue((Bencodex.Types.Text)"stat_power_ratio", out var powerRatio) &&
-                    serialized.TryGetValue((Bencodex.Types.Text)"referenced_stat_type", out var refStatType))
-                {
-                    StatPowerRatio = powerRatio.ToInteger();
-                    ReferencedStatType = StatTypeExtension.Deserialize((Binary)refStatType);
-                }
             }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -56,12 +47,6 @@ namespace Nekoyume.TableData
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 HitCount = ParseInt(fields[5]);
                 Cooldown = ParseInt(fields[6]);
-
-                if (fields.Count == 9)
-                {
-                    StatPowerRatio = TryParseInt(fields[7], out var powerRatio) ? powerRatio : default;
-                    ReferencedStatType = Enum.TryParse<StatType>(fields[8], out var statType) ? statType : StatType.NONE;
-                }
             }
 
             public IValue Serialize()
@@ -74,13 +59,6 @@ namespace Nekoyume.TableData
                     .Add("skill_target_type", SkillTargetType.ToString())
                     .Add("hit_count", HitCount)
                     .Add("cooldown", Cooldown);
-
-                if (StatPowerRatio != default && ReferencedStatType != StatType.NONE)
-                {
-                    dict = dict.Add("stat_power_ratio", StatPowerRatio.Serialize())
-                        .Add("referenced_stat_type", ReferencedStatType.Serialize());
-                }
-
                 return dict;
             }
 

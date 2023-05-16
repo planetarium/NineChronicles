@@ -16,8 +16,8 @@ namespace Nekoyume.Helper
         public readonly List<(StatType type, int value, int count)> StatOptions
             = new List<(StatType type, int value, int count)>();
 
-        public readonly List<(SkillSheet.Row skillRow, int power, int chance)> SkillOptions
-            = new List<(SkillSheet.Row skillRow, int power, int chance)>();
+        public readonly List<(SkillSheet.Row skillRow, int power, int chance, int statPowerRatio, StatType refStatType)> SkillOptions
+            = new List<(SkillSheet.Row skillRow, int power, int chance, int statPowerRatio, StatType refStatType)>();
 
         public readonly int CP;
 
@@ -52,7 +52,9 @@ namespace Nekoyume.Helper
                 SkillOptions.Add((
                     skill.SkillRow,
                     skill.Power,
-                    skill.Chance));
+                    skill.Chance,
+                    skill.StatPowerRatio,
+                    skill.ReferencedStatType));
             }
 
             CP = CPHelper.GetCP(equipment);

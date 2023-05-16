@@ -8,7 +8,12 @@ namespace Nekoyume.Model.Skill
     [Serializable]
     public class HealSkill : Skill
     {
-        public HealSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
+        public HealSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 
@@ -29,9 +34,9 @@ namespace Nekoyume.Model.Skill
             var infos = new List<BattleStatus.Skill.SkillInfo>();
 
             // Apply stat power ratio
-            var powerMultiplier = SkillRow.StatPowerRatio / 10000m;
-            var statAdditionalPower = SkillRow.ReferencedStatType != StatType.NONE ?
-                (int)(caster.Stats.GetStat(SkillRow.ReferencedStatType) * powerMultiplier) : default;
+            var powerMultiplier = StatPowerRatio / 10000m;
+            var statAdditionalPower = ReferencedStatType != StatType.NONE ?
+                (int)(caster.Stats.GetStat(ReferencedStatType) * powerMultiplier) : default;
 
             var healPoint = caster.ATK + Power + statAdditionalPower;
             foreach (var target in SkillRow.SkillTargetType.GetTarget(caster))

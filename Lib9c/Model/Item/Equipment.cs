@@ -192,7 +192,8 @@ namespace Nekoyume.Model.Item
             {
                 var chance = decimal.ToInt32(skill.Chance * 1.3m);
                 var power = decimal.ToInt32(skill.Power * 1.3m);
-                skill.Update(chance, power);
+                var statPowerRatio = decimal.ToInt32(skill.StatPowerRatio * 1.3m);
+                skill.Update(chance, power, statPowerRatio);
             }
         }
 
@@ -235,8 +236,17 @@ namespace Nekoyume.Model.Item
                 {
                     addPower = Math.Max(1.0m, addPower);
                 }
+                var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
+                if (addStatPowerRatio > 0)
+                {
+                    addStatPowerRatio = Math.Max(1.0m, addStatPowerRatio);
+                }
 
-                skill.Update(skill.Chance + (int)addChance, skill.Power + (int)addPower);
+                var chance = skill.Chance + (int)addChance;
+                var power = skill.Power + (int)addPower;
+                var statPowerRatio = skill.StatPowerRatio + (int)addStatPowerRatio;
+
+                skill.Update(chance, power, statPowerRatio);
             }
         }
 
