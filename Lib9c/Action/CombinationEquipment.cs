@@ -322,6 +322,8 @@ namespace Nekoyume.Action
                 }
             }
 
+            var isMimisbrunnrSubRecipe = subRecipeRow?.IsMimisbrunnrSubRecipe ??
+                subRecipeId.HasValue && recipeRow.SubRecipeIds[2] == subRecipeId.Value;
             var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
@@ -330,7 +332,7 @@ namespace Nekoyume.Action
                     throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
                 }
 
-                if (recipeRow.IsMimisBrunnrSubRecipe(subRecipeId))
+                if (isMimisbrunnrSubRecipe)
                 {
                     throw new ArgumentException(
                         $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
@@ -361,6 +363,7 @@ namespace Nekoyume.Action
                     hammerPointSheet,
                     petOptionSheet,
                     recipeRow,
+                    subRecipeRow,
                     requiredFungibleItems,
                     addressesHex);
             }
@@ -399,7 +402,8 @@ namespace Nekoyume.Action
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
                 endBlockIndex,
-                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                madeWithMimisbrunnrRecipe: isMimisbrunnrSubRecipe
+            );
 
             if (!(subRecipeRow is null))
             {
@@ -543,6 +547,7 @@ namespace Nekoyume.Action
             CrystalHammerPointSheet hammerPointSheet,
             PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
+            EquipmentItemSubRecipeSheetV2.Row subRecipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
         {
@@ -628,12 +633,21 @@ namespace Nekoyume.Action
                     .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
-            var isBasicSubRecipe = !subRecipeId.HasValue ||
-                                   recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+            int hammerPoint;
+            if (subRecipeRow?.RewardHammerPoint.HasValue ?? false)
+            {
+                hammerPoint = subRecipeRow.RewardHammerPoint.Value;
+            }
+            else
+            {
+                var isBasicSubRecipe = !subRecipeId.HasValue ||
+                                       recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+                hammerPoint = isBasicSubRecipe
+                    ? BasicSubRecipeHammerPoint
+                    : SpecialSubRecipeHammerPoint;
+            }
 
-            hammerPointState.AddHammerPoint(
-                isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
-                hammerPointSheet);
+            hammerPointState.AddHammerPoint(hammerPoint, hammerPointSheet);
             return states;
         }
 
