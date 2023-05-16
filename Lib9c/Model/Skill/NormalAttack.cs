@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -7,7 +8,12 @@ namespace Nekoyume.Model.Skill
     [Serializable]
     public class NormalAttack : AttackSkill
     {
-        public NormalAttack(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
+        public NormalAttack(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 

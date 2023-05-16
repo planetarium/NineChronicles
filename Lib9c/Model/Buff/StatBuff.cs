@@ -11,13 +11,13 @@ namespace Nekoyume.Model.Buff
         public StatBuffSheet.Row RowData { get; }
         public SkillCustomField? CustomField { get; }
 
-        protected StatBuff(StatBuffSheet.Row row) : base(
+        public StatBuff(StatBuffSheet.Row row) : base(
             new BuffInfo(row.Id, row.GroupId, row.Chance, row.Duration, row.TargetType))
         {
             RowData = row;
         }
 
-        protected StatBuff(SkillCustomField customField, StatBuffSheet.Row row) : base(
+        public StatBuff(SkillCustomField customField, StatBuffSheet.Row row) : base(
             new BuffInfo(row.Id, row.GroupId, row.Chance, customField.BuffDuration, row.TargetType))
         {
             RowData = row;
@@ -32,16 +32,14 @@ namespace Nekoyume.Model.Buff
 
         public StatModifier GetModifier()
         {
-            if (CustomField.HasValue)
-            {
-                var modifier = new StatModifier(
-                    RowData.StatModifier.StatType,
-                    RowData.StatModifier.Operation,
-                    CustomField.Value.BuffValue);
-                return modifier;
-            }
+            var value = CustomField.HasValue ?
+                CustomField.Value.BuffValue :
+                RowData.Value;
 
-            return RowData.StatModifier;
+            return new StatModifier(
+                RowData.StatType,
+                RowData.OperationType,
+                value);
         }
 
         public override object Clone()

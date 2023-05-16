@@ -2,27 +2,37 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill.Arena
 {
     [Serializable]
-    public abstract class ArenaSkill : IState, ISkill
+    public abstract class ArenaSkill : ISkill
     {
         public SkillSheet.Row SkillRow { get; }
         public int Power { get; private set; }
         public int Chance { get; private set; }
+        public int StatPowerRatio { get; private set; }
+        public StatType ReferencedStatType { get; private set; }
 
         // When used as model
         [field: NonSerialized]
         public SkillCustomField? CustomField { get; set; }
 
-        protected ArenaSkill(SkillSheet.Row skillRow, int power, int chance)
+        protected ArenaSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType)
         {
             SkillRow = skillRow;
             Power = power;
             Chance = chance;
+            StatPowerRatio = statPowerRatio;
+            ReferencedStatType = referencedStatType;
         }
 
         public abstract BattleStatus.Arena.ArenaSkill Use(
@@ -60,6 +70,8 @@ namespace Nekoyume.Model.Skill.Arena
                 var hashCode = SkillRow.GetHashCode();
                 hashCode = (hashCode * 397) ^ Power;
                 hashCode = (hashCode * 397) ^ Chance.GetHashCode();
+                hashCode = (hashCode * 397) ^ StatPowerRatio.GetHashCode();
+                hashCode = (hashCode * 397) ^ ReferencedStatType.GetHashCode();
                 return hashCode;
             }
         }
@@ -141,18 +153,11 @@ namespace Nekoyume.Model.Skill.Arena
         }
 
 
-        public void Update(int chance, int power)
+        public void Update(int chance, int power, int statPowerRatio)
         {
             Chance = chance;
             Power = power;
+            StatPowerRatio = statPowerRatio;
         }
-
-        public IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "skillRow"] = SkillRow.Serialize(),
-                [(Text) "power"] = Power.Serialize(),
-                [(Text) "chance"] = Chance.Serialize()
-            });
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -7,7 +8,12 @@ namespace Nekoyume.Model.Skill
     [Serializable]
     public class HealSkill : Skill
     {
-        public HealSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
+        public HealSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 
@@ -26,7 +32,13 @@ namespace Nekoyume.Model.Skill
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)
         {
             var infos = new List<BattleStatus.Skill.SkillInfo>();
-            var healPoint = caster.ATK + Power;
+
+            // Apply stat power ratio
+            var powerMultiplier = StatPowerRatio / 10000m;
+            var statAdditionalPower = ReferencedStatType != StatType.NONE ?
+                (int)(caster.Stats.GetStat(ReferencedStatType) * powerMultiplier) : default;
+
+            var healPoint = caster.ATK + Power + statAdditionalPower;
             foreach (var target in SkillRow.SkillTargetType.GetTarget(caster))
             {
                 target.Heal(healPoint);

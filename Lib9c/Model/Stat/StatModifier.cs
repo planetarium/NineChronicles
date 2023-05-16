@@ -21,13 +21,9 @@ namespace Nekoyume.Model.Stat
             Operation = operation;
             Value = value;
         }
-
-        public StatModifier(StatMap statMap) : this(statMap.StatType, OperationType.Add, statMap.ValueAsInt)
-        {
-        }
-
-        public StatModifier(StatMapEx statMapEx) : this(statMapEx.StatType, OperationType.Add,
-            statMapEx.TotalValueAsInt)
+        
+        public StatModifier(DecimalStat decimalStat) : this(decimalStat.StatType, OperationType.Add,
+            decimalStat.TotalValueAsInt)
         {
         }
 
@@ -38,7 +34,7 @@ namespace Nekoyume.Model.Stat
         /// <returns></returns>
         public int GetModifiedAll(int value)
         {
-            return value + GetModifiedPart(value);
+            return value + GetModifiedValue(value);
         }
 
         /// <summary>
@@ -48,7 +44,7 @@ namespace Nekoyume.Model.Stat
         /// <returns></returns>
         public decimal GetModifiedAll(decimal value)
         {
-            return value + GetModifiedPart(value);
+            return value + GetModifiedValue(value);
         }
 
         /// <summary>
@@ -57,14 +53,14 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public int GetModifiedPart(int value)
+        public int GetModifiedValue(int value)
         {
             switch (Operation)
             {
                 case OperationType.Add:
                     return Value;
                 case OperationType.Percentage:
-                    return (int) (value * Value / 100m);
+                    return (int)(value * Value / 100m);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -76,7 +72,7 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public decimal GetModifiedPart(decimal value)
+        public decimal GetModifiedValue(decimal value)
         {
             switch (Operation)
             {
@@ -94,51 +90,9 @@ namespace Nekoyume.Model.Stat
         /// </summary>
         /// <param name="value"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(IntStat value)
-        {
-            value.AddValue(GetModifiedPart(Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="ignoreCurrent"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(IntStatWithCurrent value, bool ignoreCurrent)
-        {
-            Modify(value);
-
-            if (ignoreCurrent)
-                return;
-
-            value.AddCurrent(GetModifiedPart(Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void Modify(DecimalStat value)
         {
-            value.AddValue(GetModifiedPart(Value));
-        }
-
-        /// <summary>
-        /// value를 변경시킨다.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="ignoreCurrent"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public void Modify(DecimalStatWithCurrent value, bool ignoreCurrent)
-        {
-            Modify(value);
-
-            if (ignoreCurrent)
-                return;
-
-            value.AddCurrent(GetModifiedPart(Value));
+            value.AddBaseValue(GetModifiedValue(Value));
         }
 
         public override string ToString() =>
