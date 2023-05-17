@@ -124,6 +124,25 @@
         <member name="M:Libplanet.Action.ActionContext.PutLog(System.String)">
             <inheritdoc cref="M:Libplanet.Action.IActionContext.PutLog(System.String)"/>
         </member>
+        <member name="M:Libplanet.Action.ActionContext.GasUsed">
+            <summary>
+            Returns the elapsed gas of the current action.
+            </summary>
+            <returns>
+            The elapsed gas of the current action.
+            </returns>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when <see cref="F:Libplanet.Action.ActionContext.GetGasMeter"/> is not initialized.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Action.ActionContext.GasLimit">
+            <summary>
+            Returns the gas limit of the current action.
+            </summary>
+            <returns>
+            The gas limit of the current action.
+            </returns>
+        </member>
         <member name="T:Libplanet.Action.ActionEvaluation">
             <summary>
             A record type to represent an evaluation plan and result of
@@ -178,7 +197,7 @@
             Class responsible for handling of <see cref="T:Libplanet.Action.IAction"/> evaluations.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator.#ctor(Libplanet.Action.PolicyBlockActionGetter,Libplanet.Blockchain.IBlockChainStates,System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie},System.Nullable{Libplanet.Blocks.BlockHash},System.Predicate{Libplanet.Assets.Currency},Libplanet.Action.IActionLoader,Libplanet.Action.IFeeCalculator)">
+        <member name="M:Libplanet.Action.ActionEvaluator.#ctor(Libplanet.Action.PolicyBlockActionGetter,Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.Loader.IActionLoader,Libplanet.Action.IFeeCalculator)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.ActionEvaluator"/>.
             </summary>
@@ -186,14 +205,7 @@
             at the end for each <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that gets evaluated.</param>
             <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates"/> to use to retrieve
             the states for a provided <see cref="T:Libplanet.Address"/>.</param>
-            <param name="trieGetter">The function to retrieve a trie for
-            a provided <see cref="T:Libplanet.Blocks.BlockHash"/>.</param>
-            <param name="genesisHash"> A <see cref="T:Libplanet.Blocks.BlockHash"/> value of the genesis block.
-            </param>
-            <param name="nativeTokenPredicate">A predicate function to determine whether
-            the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
-            <param name="actionTypeLoader"> A <see cref="T:Libplanet.Action.IActionLoader"/> implementation using action type lookup.</param>
+            <param name="actionTypeLoader"> A <see cref="T:Libplanet.Action.Loader.IActionLoader"/> implementation using action type lookup.</param>
             <param name="feeCalculator">Fee calculator.</param>
         </member>
         <member name="P:Libplanet.Action.ActionEvaluator.ActionLoader">
@@ -214,39 +226,18 @@
         <member name="M:Libplanet.Action.ActionEvaluator.Evaluate(Libplanet.Blocks.IPreEvaluationBlock)">
             <inheritdoc cref="M:Libplanet.Action.IActionEvaluator.Evaluate(Libplanet.Blocks.IPreEvaluationBlock)"/>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator.GetUpdatedAddresses``1(Libplanet.Tx.Transaction)">
-            <summary>
-            Retrieves the set of <see cref="T:Libplanet.Address"/>es that will be updated when
-            a given <see cref="T:Libplanet.Tx.Transaction"/> is evaluated.
-            </summary>
-            <param name="tx">The <see cref="T:Libplanet.Tx.Transaction"/> to evaluate.</param>
-            <returns>An <see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of updated <see cref="T:Libplanet.Address"/>es.
-            </returns>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            the <see cref="T:Libplanet.Blocks.Block"/>'s type parameter.</typeparam>
-            <remarks>
-            A mock evaluation is performed on <paramref name="tx"/> using a mock
-            <see cref="T:Libplanet.Blocks.Block"/> for its evaluation context and a mock
-            <see cref="T:Libplanet.Action.IAccountStateDelta"/> as its previous state to obtain the
-            <see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of updated <see cref="T:Libplanet.Address"/>es.
-            </remarks>
-        </member>
-        <member name="M:Libplanet.Action.ActionEvaluator.EvaluateActions(System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Predicate{Libplanet.Assets.Currency},System.Boolean,Libplanet.Store.Trie.ITrie,System.Boolean,Libplanet.Action.IFeeCalculator,Serilog.ILogger)">
+        <member name="M:Libplanet.Action.ActionEvaluator.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Int64,Libplanet.Store.Trie.ITrie,System.Boolean,Libplanet.Action.IFeeCalculator,Serilog.ILogger)">
             <summary>
             Executes <see cref="T:Libplanet.Action.IAction"/>s in <paramref name="actions"/>.  All other evaluation
             calls resolve to this method.
             </summary>
-            <param name="genesisHash"> A <see cref="T:Libplanet.Blocks.BlockHash"/> value of the genesis block.
-            </param>
             <param name="preEvaluationHash">The
             <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/> of
             the <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that <paramref name="actions"/> belong to.</param>
             <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block.Index"/> of the <see cref="T:Libplanet.Blocks.Block"/>
             that <paramref name="actions"/> belong to.</param>
             <param name="txid">The <see cref="P:Libplanet.Tx.ITransaction.Id"/> of the
-            <see cref="T:Libplanet.Tx.ITransaction"/> that <paramref name="actions"/> belong to.
-            This can be <see langword="null"/> on rehearsal mode or if an <see cref="T:Libplanet.Action.IAction"/> is a
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
+            <see cref="T:Libplanet.Tx.ITransaction"/> that <paramref name="actions"/> belong to.</param>
             <param name="previousStates">The states immediately before <paramref name="actions"/>
             being executed.</param>
             <param name="miner">An address of block miner.</param>
@@ -254,12 +245,9 @@
             <param name="signature"><see cref="T:Libplanet.Tx.ITransaction"/> signature used to generate random
             seeds.</param>
             <param name="actions">Actions to evaluate.</param>
-            <param name="nativeTokenPredicate">A predicate function to determine whether
-            the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
-            <param name="rehearsal">Pass <see langword="true"/> if it is intended
-            to be dry-run (i.e., the returned result will be never used).
-            The default value is <see langword="false"/>.</param>
+            <param name="gasLimit">
+            The maximum amount of gas that can be consumed by the transaction.
+            </param>
             <param name="previousBlockStatesTrie">The trie to contain states at previous block.
             </param>
             <param name="blockAction">Pass <see langword="true"/> if it is
@@ -856,7 +844,7 @@
             <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method can be called more
             than once, the time it's called is difficult to predict.
             <para>For changing in-memory game states or drawing graphics,
-            implement the <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> interface separately and
+            implement the <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/> interface separately and
             attach it to a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance.</para>
             <para>For randomness, <em>never</em> use <see cref="T:System.Random"/>
             nor any other PRNGs provided by other than Libplanet.
@@ -896,11 +884,6 @@
             <summary>
             Contextual data determined by a transaction and a block.
             Passed to <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.IActionContext.GenesisHash">
-            <summary>
-            The genesis block's hash.
             </summary>
         </member>
         <member name="P:Libplanet.Action.IActionContext.Signer">
@@ -976,16 +959,6 @@
             </summary>
             <param name="log">A log to record in <see cref="T:Libplanet.Tx.TxExecution"/>.</param>
         </member>
-        <member name="M:Libplanet.Action.IActionContext.IsNativeToken(Libplanet.Assets.Currency)">
-            <summary>
-            Checks whether the specified <paramref name="currency"/> is a native token defined by
-            chain's <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/>.
-            </summary>
-            <param name="currency">A token currency to check.</param>
-            <returns><see langword="true"/> if the specified <paramref name="currency"/> is a native
-            token, otherwise <see langword="false"/>.</returns>
-            <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/>
-        </member>
         <member name="M:Libplanet.Action.IActionContext.GetUnconsumedContext">
             <summary>
             Returns a clone of this context, except that its <see cref="P:Libplanet.Action.IActionContext.Random"/> has the unconsumed
@@ -995,6 +968,20 @@
             </summary>
             <returns>A clone instance, which is distinct from its original.  Its internal state
             is entirely equivalent to the original's unconsumed initial state.</returns>
+        </member>
+        <member name="M:Libplanet.Action.IActionContext.GasUsed">
+            <summary>
+            Returns the total gas used by the current action.
+            </summary>
+            <returns>The total gas used by the current action.</returns>
+        </member>
+        <member name="M:Libplanet.Action.IActionContext.GasLimit">
+            <summary>
+            Returns the limit gas of the current action.
+            </summary>
+            <returns>
+            The limit gas of the current action.
+            </returns>
         </member>
         <member name="P:Libplanet.Action.IActionEvaluation.Action">
             <summary>
@@ -1029,7 +1016,7 @@
         </member>
         <member name="P:Libplanet.Action.IActionEvaluator.ActionLoader">
             <summary>
-            The <see cref="T:Libplanet.Action.IActionLoader"/> used by this <see cref="T:Libplanet.Action.IActionEvaluator"/>
+            The <see cref="T:Libplanet.Action.Loader.IActionLoader"/> used by this <see cref="T:Libplanet.Action.IActionEvaluator"/>
             when evaluating <see cref="T:Libplanet.Blocks.Block"/>s.
             </summary>
         </member>
@@ -1048,42 +1035,6 @@
             evaluation of the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> held by the instance at
             the end.</para>
             </remarks>
-        </member>
-        <member name="T:Libplanet.Action.IActionLoader">
-            <summary>
-            An interface to load actions branched by block index.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Action.IActionLoader.Load(System.Int64)">
-            <summary>
-            Load action types branched by <paramref name="index"/>.
-            </summary>
-            <param name="index">The index of a block to use as context for deserializing
-            <see cref="T:Bencodex.Types.IValue"/>s to <see cref="T:Libplanet.Action.IAction"/>s.</param>
-            <returns>A dictionary made of action id to action type pairs.</returns>
-        </member>
-        <member name="M:Libplanet.Action.IActionLoader.LoadAllActionTypes(System.Int64)">
-            <summary>
-            Load action types branched by <paramref name="index"/>.
-            </summary>
-            <param name="index">The index of a block to use as context for deserializing
-            <see cref="T:Bencodex.Types.IValue"/>s to <see cref="T:Libplanet.Action.IAction"/>s.</param>
-            <returns>Types of available actions.  This also includes actions not having
-            <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</returns>
-        </member>
-        <member name="M:Libplanet.Action.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
-            <summary>
-            Loads a concrete <see cref="T:Libplanet.Action.IAction"/> from <paramref name="value"/>
-            given <paramref name="index"/>.
-            </summary>
-            <param name="index">The index of a block to use as context for deserializing
-            <paramref name="value"/>.</param>
-            <param name="value">The <see cref="T:Bencodex.Types.IValue"/> to deserialize to
-            an <see cref="T:Libplanet.Action.IAction"/>.</param>
-            <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when an <see cref="T:Libplanet.Action.IAction"/> cannot be
-            instantiated with given <paramref name="index"/> and <paramref name="value"/>.
-            </exception>
-            <returns>An <see cref="T:Libplanet.Action.IAction"/> instantiated with <paramref name="value"/>.</returns>
         </member>
         <member name="T:Libplanet.Action.IActionTypeLoaderContext">
             <summary>
@@ -1110,6 +1061,34 @@
             <remarks>As every metadata becomes a part of blockchain, which is replicated database
             on the network, for the equivalent exception, the same metadata should be extracted.
             </remarks>
+        </member>
+        <member name="T:Libplanet.Action.IGasMeter">
+            <summary>
+            An interface to provide a transition of the gas usage.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IGasMeter.GasAvailable">
+            <summary>
+            The available gas of the action.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IGasMeter.GasLimit">
+            <summary>
+            The gas limit of the action.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IGasMeter.GasUsed">
+            <summary>
+            The gas used by the action.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.IGasMeter.UseGas(System.Int64)">
+            <summary>
+            Use gas of the account.
+            </summary>
+            <param name="gas">
+            The gas usage of the action.
+            </param>
         </member>
         <member name="T:Libplanet.Action.InsufficientBalanceException">
             <summary>
@@ -1143,9 +1122,9 @@
             <summary>
             The <see cref="T:System.Exception"/> that is thrown when an <see cref="T:Bencodex.Types.IValue"/> that is
             supposedly a serialized <see cref="T:Libplanet.Action.IAction"/> cannot be deserialized via an
-            <see cref="T:Libplanet.Action.IActionLoader"/>.
+            <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.
             </summary>
-            <seealso cref="T:Libplanet.Action.IActionLoader"/>
+            <seealso cref="T:Libplanet.Action.Loader.IActionLoader"/>
         </member>
         <member name="M:Libplanet.Action.InvalidActionException.#ctor(System.String,Bencodex.Types.IValue,System.Exception)">
             <summary>
@@ -1249,6 +1228,139 @@
             <param name="validator">The <see cref="T:Libplanet.Consensus.Validator"/> instance to write.</param>
             <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance with
             <paramref name="validator"/> set.</returns>
+        </member>
+        <member name="T:Libplanet.Action.Loader.IActionLoader">
+            <summary>
+            An interface to load actions branched by block index.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.Loader.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
+            <summary>
+            Loads a concrete <see cref="T:Libplanet.Action.IAction"/> from <paramref name="value"/>
+            given <paramref name="index"/>.
+            </summary>
+            <param name="index">The index of a block to use as context for deserializing
+            <paramref name="value"/>.</param>
+            <param name="value">The <see cref="T:Bencodex.Types.IValue"/> to deserialize to
+            an <see cref="T:Libplanet.Action.IAction"/>.</param>
+            <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when an <see cref="T:Libplanet.Action.IAction"/> cannot be
+            instantiated with given <paramref name="index"/> and <paramref name="value"/>.
+            </exception>
+            <returns>An <see cref="T:Libplanet.Action.IAction"/> instantiated with <paramref name="value"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.Loader.IndexedActionLoader">
+            <summary>
+            An <see cref="T:Libplanet.Action.Loader.IActionLoader"/> implementation for dispatching
+            multiple <see cref="T:Libplanet.Action.Loader.IActionLoader"/>s.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.Loader.IndexedActionLoader.#ctor(System.Collections.Generic.IReadOnlyList{System.ValueTuple{System.Int64,Libplanet.Action.Loader.IActionLoader}})">
+            <summary>
+            Creates an <see cref="T:Libplanet.Action.Loader.IndexedActionLoader"/> instance.
+            </summary>
+            <param name="loaders">A list of inner <see cref="T:Libplanet.Action.Loader.IActionLoader"/>s to use.</param>
+            <exception cref="T:System.ArgumentException">Thrown for any of the following reasons:
+            <list type="bullet">
+                <item><description>
+                    If <paramref name="loaders"/> is empty.
+                </description></item>
+                <item><description>
+                    If <paramref name="loaders"/>'s first starting index is not zero.
+                </description></item>
+                <item><description>
+                    If <paramref name="loaders"/>'s starting indices are not strictly increasing.
+                </description></item>
+            </list>
+            </exception>
+        </member>
+        <member name="M:Libplanet.Action.Loader.IndexedActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
+            <inheritdoc cref="M:Libplanet.Action.Loader.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)"/>
+        </member>
+        <member name="T:Libplanet.Action.Loader.SingleActionLoader">
+            <summary>
+            An <see cref="T:Libplanet.Action.Loader.IActionLoader"/> implementation for a single <see cref="T:Libplanet.Action.IAction"/> type.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.Loader.SingleActionLoader.#ctor(System.Type)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.Loader.SingleActionLoader"/> instance.
+            The <see cref="T:Libplanet.Action.IAction"/> type to load is restricted to given type
+            <paramref name="type"/>, except for those handled by <see cref="T:Libplanet.Action.Sys.Registry"/>
+            for system <see cref="T:Libplanet.Action.IAction"/>s.
+            </summary>
+            <param name="type">The type of <see cref="T:Libplanet.Action.IAction"/> to load.  It should match
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</param>
+            <exception cref="T:System.ArgumentException">Thrown when given type <paramref name="type"/>
+            is not a <see langword="class"/> or cannot be assigned to <see cref="T:Libplanet.Action.IAction"/>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Action.Loader.SingleActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
+            <inheritdoc cref="M:Libplanet.Action.Loader.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)"/>.
+        </member>
+        <member name="T:Libplanet.Action.Loader.TypedActionLoader">
+            <summary>
+            An <see cref="T:Libplanet.Action.Loader.IActionLoader"/> implementation for multiple <see cref="T:Libplanet.Action.IAction"/> types.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.Loader.TypedActionLoader.#ctor(System.Collections.Generic.IDictionary{Bencodex.Types.IValue,System.Type})">
+            <summary>
+            <para>
+            Creates a new <see cref="T:Libplanet.Action.Loader.TypedActionLoader"/> instance with an explicit
+            <see cref="T:Bencodex.Types.IValue"/>s to <see cref="T:System.Type"/>s mapping.
+            </para>
+            <para>
+            The mapping can be generated semi-automatically using
+            <see cref="M:Libplanet.Action.Loader.TypedActionLoader.Create(System.Reflection.Assembly,System.Type)"/>.
+            </para>
+            </summary>
+            <param name="types">The <see cref="T:Bencodex.Types.IValue"/>s to <see cref="T:System.Type"/>s mapping to use.
+            </param>
+            <seealso cref="M:Libplanet.Action.Loader.TypedActionLoader.Create(System.Reflection.Assembly,System.Type)"/>
+        </member>
+        <member name="M:Libplanet.Action.Loader.TypedActionLoader.Create(System.Reflection.Assembly,System.Type)">
+            <inheritdoc cref="M:Libplanet.Action.Loader.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)"/>.
+            <summary>
+            <para>
+            Creates a new <see cref="T:Libplanet.Action.Loader.TypedActionLoader"/> instance.
+            </para>
+            <para>
+            The <see cref="T:Libplanet.Action.IAction"/> type to load is restricted to given
+            <paramref name="assembly"/> and <paramref name="baseType"/>,
+            except for those handled by <see cref="T:Libplanet.Action.Sys.Registry"/> for system <see cref="T:Libplanet.Action.IAction"/>s.
+            </para>
+            <para>
+            This automatically searches an <see cref="T:System.Reflection.Assembly"/> with all <see cref="T:Libplanet.Action.IAction"/>s
+            according to the following rule:
+            <list type="bullet">
+                <item><description>
+                    The <see cref="T:System.Reflection.Assembly"/> to search is <paramref name="assembly"/> if given,
+                    or the <see cref="T:System.Reflection.Assembly"/> of <paramref name="baseType"/> if not.
+                </description></item>
+                <item><description>
+                    From the <see cref="T:System.Reflection.Assembly"/> determined above, all <see cref="T:Libplanet.Action.IAction"/>s
+                    with <see cref="T:Libplanet.Action.ActionTypeAttribute"/> attached are collected.
+                </description></item>
+                <item><description>
+                    If <paramref name="baseType"/> is provided, only those <see cref="T:Libplanet.Action.IAction"/>
+                    types that are assignable to <paramref name="baseType"/> are selected.
+                </description></item>
+            </list>
+            </para>
+            <para>
+            Then a dictionary mapping from <see cref="T:Bencodex.Types.IValue"/>s to <see cref="T:System.Type"/>s created
+            from searched <see cref="T:Libplanet.Action.IAction"/>s and the explicit loader is created by
+            passing the map to <see cref="M:Libplanet.Action.Loader.TypedActionLoader.#ctor(System.Collections.Generic.IDictionary{Bencodex.Types.IValue,System.Type})"/>.
+            </para>
+            </summary>
+            <param name="assembly">The <see cref="T:System.Reflection.Assembly"/> to search <see cref="T:Libplanet.Action.IAction"/> types.
+            </param>
+            <param name="baseType">The type of <see cref="T:Libplanet.Action.IAction"/> to filter.</param>
+            <returns>A <see cref="T:Libplanet.Action.Loader.TypedActionLoader"/> created from provided
+            <paramref name="assembly"/> and <paramref name="baseType"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="assembly"/> and
+            <paramref name="baseType"/> are <see langword="null"/>.
+            </exception>
+            <seealso cref="M:Libplanet.Action.Loader.TypedActionLoader.#ctor(System.Collections.Generic.IDictionary{Bencodex.Types.IValue,System.Type})"/>
         </member>
         <member name="T:Libplanet.Action.MissingActionTypeException">
             <summary>
@@ -1389,11 +1501,11 @@
                 }
             }
             ]]></code>
-            Note that when it's rendered through <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
+            Note that when it's rendered through <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/>,
             an instance of <see cref="T:Libplanet.Action.PolymorphicAction`1"/> is passed instead of its
             <see cref="P:Libplanet.Action.PolymorphicAction`1.InnerAction"/>:
             <code>
-            public class Renderer : IActionRenderer&lt;PolymorphicAction&lt;ActionBase&gt;&gt;
+            public class Renderer : IActionRenderer;
             {
                 public void RenderAction(IAction action,
                                          IActionContext context,
@@ -1438,11 +1550,6 @@
             when the class of the given <paramref name="innerAction"/>
             is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
         </member>
-        <member name="P:Libplanet.Action.PolymorphicAction`1.ActionTypeLoader">
-            <summary>
-            <see cref="T:Libplanet.Action.StaticActionLoader"/> for <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
-            </summary>
-        </member>
         <member name="P:Libplanet.Action.PolymorphicAction`1.InnerAction">
             <summary>
             The wrapped action object of <typeparamref name="T"/>
@@ -1462,11 +1569,44 @@
             when the class of the given <paramref name="innerAction"/>
             is not annotated with <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.</exception>
         </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.ReloadLoader(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            <para>
+            Loads all action types from given <paramref name="assemblies"/>.
+            </para>
+            <para>
+            This is only for testing and development when one needs to include
+            additional actions for debugging.
+            </para>
+            </summary>
+            <param name="assemblies">The <see cref="T:System.Reflection.Assembly"/>s to load
+            all actions from.</param>
+        </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.LoadPlainValue(Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.Execute(Libplanet.Action.IActionContext)">
             <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Action.PolymorphicActionLoader">
+            <summary>
+            An <see cref="T:Libplanet.Action.Loader.IActionLoader"/> implementation internally used by
+            <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </summary>
+            <remarks>
+            This does not necessarily has to be an <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.
+            This will be deprecated and removed soon together with <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicActionLoader.#ctor(System.Type)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.PolymorphicActionLoader"/> instance.
+            </summary>
+            <param name="baseType">The base type of actions to load.  This corresponds to
+            the type parameter of <see cref="T:Libplanet.Action.PolymorphicAction`1"/>.</param>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
+            <inheritdoc cref="M:Libplanet.Action.Loader.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)"/>.
         </member>
         <member name="T:Libplanet.Action.RandomExtensions">
             <summary>
@@ -1484,28 +1624,6 @@
             <returns> Generated random <see cref="T:System.Guid"/>.
             </returns>
             <seealso cref="T:Libplanet.Action.IRandom"/>
-        </member>
-        <member name="T:Libplanet.Action.StaticActionLoader">
-            <summary>
-            An <see cref="T:Libplanet.Action.IActionLoader"/> implementation to load action types
-            without branching by block index.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Action.StaticActionLoader.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Type)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Action.StaticActionLoader"/> instance.
-            </summary>
-            <param name="assemblies">The assemblies to load actions from.</param>
-            <param name="baseType">The base type of actions to load.</param>
-        </member>
-        <member name="M:Libplanet.Action.StaticActionLoader.Load(System.Int64)">
-            <inheritdoc cref="M:Libplanet.Action.IActionLoader.Load(System.Int64)"/>.
-        </member>
-        <member name="M:Libplanet.Action.StaticActionLoader.LoadAllActionTypes(System.Int64)">
-            <inheritdoc cref="M:Libplanet.Action.IActionLoader.LoadAllActionTypes(System.Int64)"/>.
-        </member>
-        <member name="M:Libplanet.Action.StaticActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)">
-            <inheritdoc cref="M:Libplanet.Action.IActionLoader.LoadAction(System.Int64,Bencodex.Types.IValue)"/>.
         </member>
         <member name="T:Libplanet.Action.SupplyOverflowException">
             <summary>
@@ -1531,97 +1649,6 @@
             <summary>
             A system action that initializes the chain's beginning states.
             </summary>
-        </member>
-        <member name="T:Libplanet.Action.Sys.Mint">
-            <summary>
-            A system action that mints specified <see cref="P:Libplanet.Action.Sys.Mint.Amount"/> of tokens to a given
-            <see cref="P:Libplanet.Action.Sys.Mint.Recipient"/>.
-            </summary>
-            <remarks>Only native tokens can be minted.</remarks>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.#ctor(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
-            <summary>
-            Creates a new instance of <see cref="T:Libplanet.Action.Sys.Mint"/> action.
-            </summary>
-            <param name="recipient">The address of the recipient to receive the minted tokens.
-            </param>
-            <param name="amount">The amount of the asset to be minted.</param>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Mint.Recipient">
-            <summary>
-            The address of the recipient to receive the minted tokens.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Mint.Amount">
-            <summary>
-            The amount of the asset to be minted.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Mint.PlainValue">
-            <inheritdoc cref="P:Libplanet.Action.IAction.PlainValue"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.LoadPlainValue(Bencodex.Types.IValue)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.Execute(Libplanet.Action.IActionContext)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.Equals(Libplanet.Action.Sys.Mint)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.Equals(Libplanet.Action.IAction)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.Equals(System.Object)">
-            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Mint.GetHashCode">
-            <inheritdoc cref="M:System.Object.GetHashCode"/>
-        </member>
-        <member name="T:Libplanet.Action.Sys.Transfer">
-            <summary>
-            A system action that transfers the ownership of specified <see cref="P:Libplanet.Action.Sys.Transfer.Amount"/> of tokens to
-            another account.
-            </summary>
-            <remarks>Only native tokens can be transferred.</remarks>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.#ctor(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
-            <summary>
-            Creates a new instance of <see cref="T:Libplanet.Action.Sys.Transfer"/> action.
-            </summary>
-            <param name="recipient">The address of the recipient.</param>
-            <param name="amount">The amount of the asset to be transferred.</param>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Transfer.Recipient">
-            <summary>
-            The address of the recipient.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Transfer.Amount">
-            <summary>
-            The amount of the asset to be transferred.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.Sys.Transfer.PlainValue">
-            <inheritdoc cref="P:Libplanet.Action.IAction.PlainValue"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.LoadPlainValue(Bencodex.Types.IValue)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.LoadPlainValue(Bencodex.Types.IValue)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.Execute(Libplanet.Action.IActionContext)">
-            <inheritdoc cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.Equals(Libplanet.Action.Sys.Transfer)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.Equals(Libplanet.Action.IAction)">
-            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.Equals(System.Object)">
-            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
-        </member>
-        <member name="M:Libplanet.Action.Sys.Transfer.GetHashCode">
-            <inheritdoc cref="M:System.Object.GetHashCode"/>
         </member>
         <member name="T:Libplanet.Action.TotalSupplyGetter">
             <summary>
@@ -2608,26 +2635,6 @@
         <member name="M:Libplanet.Assets.FungibleAssetValue.ToString">
             <inheritdoc cref="M:System.Object.ToString"/>
         </member>
-        <member name="T:Libplanet.Assets.NonNativeTokenException">
-            <summary>
-            The exception that is thrown when a non-native asset is tried to be used for system actions.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Assets.NonNativeTokenException.#ctor(Libplanet.Assets.Currency,System.String)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Assets.NonNativeTokenException"/> instance.
-            </summary>
-            <param name="nonNativeToken">The non-native token which caused this exception.</param>
-            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
-        </member>
-        <member name="P:Libplanet.Assets.NonNativeTokenException.NonNativeToken">
-            <summary>
-            The non-native token which caused this exception.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Assets.NonNativeTokenException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <inheritdoc cref="M:System.Exception.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
-        </member>
         <member name="T:Libplanet.Blockchain.BlockChain`1">
             <summary>
             <para>
@@ -2635,8 +2642,8 @@
             information.
             </para>
             <para>
-            In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> interface
-            and pass it to the <see cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/> constructor.
+            In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/> interface
+            and pass it to the <see cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer})"/> constructor.
             </para>
             </summary>
             <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
@@ -2657,7 +2664,7 @@
             Cached genesis block.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class by loading
             the canonical chain from given <paramref name="store"/>.
@@ -2676,7 +2683,7 @@
             <param name="renderers">Listens state changes on the created chain.  Listens nothing
             by default or if it is <see langword="null"/>.  Note that action renderers receive
             events made by unsuccessful transactions too; see also
-            <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/> for workaround.</param>
+            <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer"/> for workaround.</param>
             <param name="stateStore"><see cref="T:Libplanet.Store.IStateStore"/> to store states.</param>
             <exception cref="T:System.ArgumentException">Thrown when <paramref name="store"/> does not
             have canonical chain id set, i.e. <see cref="M:Libplanet.Store.IStore.GetCanonicalChainId"/> is
@@ -2687,12 +2694,12 @@
             has a genesis block and it does not match to what the network expects
             (i.e., <paramref name="genesisBlock"/>).</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates)">
-            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})" />
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates)">
+            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer})" />
             <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates"/> implementation to state lookup.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.IActionEvaluator)">
-            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates)" />
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.IActionEvaluator)">
+            <inheritdoc cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates)" />
             <param name="actionEvaluator">The <see cref="P:Libplanet.Blockchain.BlockChain`1.ActionEvaluator" /> implementation to calculate next states when append new blocks.</param>
         </member>
         <member name="E:Libplanet.Blockchain.BlockChain`1.TipChanged">
@@ -2707,14 +2714,14 @@
             <remarks>
             Since this value is immutable, renderers cannot be registered after once a <see
             cref="T:Libplanet.Blockchain.BlockChain`1"/> object is instantiated; use <c>renderers</c> option of <see cref=
-            "M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/>
+            "M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer})"/>
             constructor instead.
             </remarks>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.ActionRenderers">
             <summary>
             A filtered list, from <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/>, which contains only <see
-            cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instances.
+            cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> instances.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Policy">
@@ -2785,7 +2792,7 @@
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block"/>
             with a given <paramref name="blockHash"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.ActionEvaluator)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,Libplanet.Action.ActionEvaluator,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates)">
             <summary>
             Creates a new instance of <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from an empty
             <see cref="T:Libplanet.Store.IStore"/>.
@@ -2882,6 +2889,9 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetValidatorSet(Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)" />
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTrie(Libplanet.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTrie(Libplanet.Blocks.BlockHash)" />
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
             <summary>
             Queries the recorded <see cref="T:Libplanet.Tx.TxExecution"/> for a successful or failed
@@ -2915,7 +2925,7 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given <paramref name="block"/>
             is invalid, in itself or according to the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
-            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.IActionLoader"/>.</exception>
+            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
             <see cref="P:Libplanet.Tx.Transaction.Nonce"/> is different from
             <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
@@ -3080,7 +3090,7 @@
             <exception cref="T:System.InvalidOperationException">Thrown when <see cref="P:Libplanet.Blockchain.BlockChain`1.IsCanonical"/> is
             <see langword="false"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.DetermineGenesisStateRootHash(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency},System.Collections.Generic.IReadOnlyList{Libplanet.Action.IActionEvaluation}@)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.DetermineGenesisStateRootHash(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction,System.Collections.Generic.IReadOnlyList{Libplanet.Action.IActionEvaluation}@)">
             <summary>
             Determines the state root hash of <paramref name="preEvaluationBlock"/>
             by evaluating on top of empty states.
@@ -3088,10 +3098,7 @@
             <param name="preEvaluationBlock">The <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> for which
             to determine the state root hash.</param>
             <param name="blockAction">The <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> to use.</param>
-            <param name="nativeTokenPredicate">The predicate function to determine whether
-            the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
-            <param name="evaluations">The evaluation result from <see cref="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency})"/>
+            <param name="evaluations">The evaluation result from <see cref="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction)"/>
             for <paramref name="preEvaluationBlock"/>.</param>
             <returns>The state root hash calculated by committing <paramref name="evaluations"/> to
             an empty <see cref="T:Libplanet.Store.IStateStore"/>.</returns>
@@ -3099,21 +3106,18 @@
             This method computes the state root hash by commiting <paramref name="evaluations"/>
             to an ephemeral empty <see cref="T:Libplanet.Store.IStateStore"/>.
             </remarks>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency})"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.EvaluateGenesis(Libplanet.Blocks.IPreEvaluationBlock,Libplanet.Action.IAction)">
             <summary>
             Evaluates <paramref name="preEvaluationBlock"/> on top of empty states.
             </summary>
             <param name="preEvaluationBlock">The <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> to
             evaluate.</param>
             <param name="blockAction">The <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> to use.</param>
-            <param name="nativeTokenPredicate">A predicate function to determine whether
-            the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.</param>
             <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Action.IActionEvaluation"/>s
             resulting from evaluating <paramref name="preEvaluationBlock"/> using
-            <paramref name="blockAction"/> and <paramref name="nativeTokenPredicate"/>.</returns>
+            <paramref name="blockAction"/>.</returns>
             <exception cref="T:System.ArgumentException">Thrown if <paramref name="preEvaluationBlock"/>s
             <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero.</exception>
         </member>
@@ -3127,7 +3131,7 @@
             <param name="evaluations">The list of <see cref="T:Libplanet.Action.IActionEvaluation"/>s
             from which to extract the states to commit.</param>
             <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
-            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.IActionLoader"/>.</exception>
+            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
             <returns>The state root hash given <paramref name="block"/> and
             its <paramref name="evaluations"/>.
             </returns>
@@ -3149,7 +3153,7 @@
             <returns>An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <ses cref="T:Libplanet.Action.IActionEvaluation"/>s for
             given <paramref name="block"/>.</returns>
             <exception cref="T:Libplanet.Action.InvalidActionException">Thrown when given <paramref name="block"/>
-            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.IActionLoader"/>.</exception>
+            contains an action that cannot be loaded with <see cref="T:Libplanet.Action.Loader.IActionLoader"/>.</exception>
             <seealso cref="M:Libplanet.Blockchain.BlockChain`1.ValidateBlockStateRootHash(Libplanet.Blocks.Block,System.Collections.Generic.IReadOnlyList{Libplanet.Action.IActionEvaluation}@)"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.EvaluateAndSign(Libplanet.Blocks.PreEvaluationBlock,Libplanet.Crypto.PrivateKey)">
@@ -3171,14 +3175,14 @@
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
             does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.ProposeGenesisBlock(Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Tx.Transaction},System.Nullable{System.DateTimeOffset},Libplanet.Action.IAction,System.Predicate{Libplanet.Assets.Currency})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ProposeGenesisBlock(Libplanet.Crypto.PrivateKey,System.Collections.Immutable.ImmutableList{Libplanet.Tx.Transaction},System.Nullable{System.DateTimeOffset},Libplanet.Action.IAction)">
             <summary>
             <para>
             Propose a genesis block for creating a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </para>
             <para>
             Note that a genesis <see cref="T:Libplanet.Blocks.Block"/> produced may not be suitable as
-            a genesis for <see cref="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.ActionEvaluator)"/> if given
+            a genesis for <see cref="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,Libplanet.Action.ActionEvaluator,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates)"/> if given
             <paramref name="transactions"/> is invalid.
             </para>
             <para>
@@ -3195,12 +3199,8 @@
             <param name="blockAction">A block action to execute and be rendered for every block.
             It must match to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.
             </param>
-            <param name="nativeTokenPredicate">A predicate function to determine whether
-            the specified <see cref="T:Libplanet.Assets.Currency"/> is a native token defined by chain's
-            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/> or not.
-            Treat no <see cref="T:Libplanet.Assets.Currency"/> as native token if the argument omitted.</param>
             <returns>A genesis <see cref="T:Libplanet.Blocks.Block"/> proposed with given parameters.</returns>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}},Libplanet.Blockchain.IBlockChainStates,Libplanet.Action.ActionEvaluator)"/>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.Create(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block,Libplanet.Action.ActionEvaluator,System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer},Libplanet.Blockchain.IBlockChainStates)"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.ProposeBlock(Libplanet.Crypto.PrivateKey,Libplanet.Blocks.BlockCommit,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction})">
             <summary>
@@ -3407,6 +3407,9 @@
         <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)"/>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(Libplanet.Blocks.BlockHash)">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTrie(Libplanet.Blocks.BlockHash)"/>
+        </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
             A class that contains <see cref="T:Libplanet.Blocks.BlockHash"/>es for a series of blocks.
@@ -3573,6 +3576,14 @@
             <paramref name="offset"/>.
             </returns>
         </member>
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetTrie(Libplanet.Blocks.BlockHash)">
+            <summary>
+            Returns the state trie for <paramref name="offset"/>.
+            </summary>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state.</param>
+            <returns>The merkle trie instance for given <paramref name="offset"/>.</returns>
+        </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
             An exception thrown when a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> have
@@ -3603,7 +3614,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction,Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block,Libplanet.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Collections.Immutable.IImmutableSet{Libplanet.Assets.Currency})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction,Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block,Libplanet.Blocks.BlockPolicyViolationException},System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> instance.
@@ -3644,14 +3655,9 @@
             a <see cref="T:Libplanet.Blocks.Block"/> given the <see cref="T:Libplanet.Blocks.Block"/>'s index.
             Goes to <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.  Set to
             <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/> by default.</param>
-            <param name="nativeTokens">A fixed set of <see cref="T:Libplanet.Assets.Currency"/> objects that are
-            supported by the blockchain as first-class citizens.  Empty by default.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
-        </member>
-        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.NativeTokens">
-            <inheritdoc cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval">
             <summary>
@@ -3699,12 +3705,6 @@
         <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction">
             <summary>
             An <see cref="T:Libplanet.Action.IAction"/> to execute and be rendered for every block, if any.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens">
-            <summary>
-            A fixed set of <see cref="T:Libplanet.Assets.Currency"/> objects that are supported by the blockchain
-            as first-class assets.
             </summary>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlockTx(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction)">
@@ -3891,9 +3891,6 @@
             </param>
             <returns>The next appropriate nonce for <paramref name="address"/>.</returns>
         </member>
-        <member name="P:Libplanet.Blockchain.Policies.NullBlockPolicy`1.NativeTokens">
-            <inheritdoc cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.NativeTokens"/>
-        </member>
         <member name="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1">
             <summary>
             <para>
@@ -3970,18 +3967,18 @@
             Therefore, we should manage the lock from its caller side.
             </remarks>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer">
             <summary>
-            An <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> that invokes its callbacks.
-            In other words, this is an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> version of
-            <see cref="T:Libplanet.Blockchain.Renderers.AnonymousRenderer`1"/>.
+            An <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> that invokes its callbacks.
+            In other words, this is an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> version of
+            <see cref="T:Libplanet.Blockchain.Renderers.AnonymousRenderer"/>.
             <para>This class is useful when you want an one-use ad-hoc implementation (i.e., Java-style
-            anonymous class) of <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> interface.</para>
+            anonymous class) of <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> interface.</para>
             </summary>
             <example>
             With object initializers, you can easily make an one-use action renderer:
             <code><![CDATA[
-            var actionRenderer = new AnonymousActionRenderer<ExampleAction>
+            var actionRenderer = new AnonymousActionRenderer
             {
                 ActionRenderer = (action, context, nextStates) =>
                 {
@@ -3990,48 +3987,46 @@
             };
             ]]></code>
             </example>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.ActionRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.ActionRenderer">
             <summary>
             A callback function to be invoked together with
-            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>.
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.ActionErrorRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.ActionErrorRenderer">
             <summary>
             A callback function to be invoked together with
-            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>.
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.BlockEndRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.BlockEndRenderer">
             <summary>
             A callback function to be invoked together with
-            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>.
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.AnonymousRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.AnonymousRenderer">
             <summary>
             A renderer that invokes its callbacks.
             <para>This class is useful when you want an one-use ad-hoc implementation (i.e., Java-style
-            anonymous class) of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> interface.</para>
+            anonymous class) of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/> interface.</para>
             </summary>
             <example>
             With object initializers, you can easily make an one-use renderer:
             <code>
-            var renderer = new AnonymousRenderer&lt;ExampleAction&gt;
+            var renderer = new AnonymousRenderer;
             {
                 BlockRenderer = (oldTip, newTip) =>
                 {
@@ -4040,171 +4035,161 @@
             };
             </code>
             </example>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.BlockRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer.BlockRenderer">
             <summary>
             A callback function to be invoked together with
-            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>.
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer">
             <summary>
             A middleware to make action render events to satisfy transactions' atomicity.
-            <para>Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance and filters out render events
+            <para>Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> instance and filters out render events
             made by unsuccessful transactions (i.e., transactions with one or more exception-throwing
             actions).</para>
             </summary>
-            <remarks>The wrapped <see cref="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.ActionRenderer"/> will not receive any
-            <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events except for block actions,
+            <remarks>The wrapped <see cref="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer.ActionRenderer"/> will not receive any
+            <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> events except for block actions,
             which do not belong to any transactions.
             </remarks>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0})">
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer)">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/> instance decorating the given
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer"/> instance decorating the given
             <paramref name="actionRenderer"/>.
             </summary>
             <param name="actionRenderer">The inner action renderer which has the <em>actual</em>
-            implementations and expects to receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events.
+            implementations and expects to receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> events.
             </param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.ActionRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer.ActionRenderer">
             <summary>
             The inner action renderer which has the <em>actual</em> implementations and expects to
-            receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events.
+            receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> events.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException">
             <summary>
-            Exception thrown by <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>.
+            Exception thrown by <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer"/>.
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.String,System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}})">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException.#ctor(System.String,System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord})">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer"/> instance.
             </summary>
             <param name="message">The exception message string.</param>
             <param name="records">Recorded render events.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Records">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException.Records">
             <summary>
             Recorded render events.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Message">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException.Message">
             <inheritdoc cref="P:System.Exception.Message"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer">
             <summary>
             Records every render events.
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.#ctor">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.#ctor">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1"/> instance.
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer"/> instance.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.Records">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.Records">
             <summary>
             The list of recorded render events.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.ResetRecords">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.ResetRecords">
             <summary>
-            Empties the render event <see cref="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.Records"/>.
+            Empties the render event <see cref="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.Records"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord">
             <summary>
-            A render event represented by <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1"/>.
+            A render event represented by <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer"/>.
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Index">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.Index">
             <summary>
             The ordinal number of the render event.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.StackTrace">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.StackTrace">
             <summary>
             The stack trace of the render event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString">
             <inheritdoc cref="M:System.Object.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase">
             <summary>
             Represents an action render/unrender event.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Action">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase.Action">
             <summary>
             The rendered action.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Context">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase.Context">
             <summary>
             The action evaluation context.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Render">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase.Render">
             <summary>
             Whether it is not an unrender event, but a render event.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Unrender">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase.Unrender">
             <summary>
             Whether it is a render event, but an unrender event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.ToString">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionBase.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess">
             <summary>
             Represents a succeeded action render/unrender event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.#ctor(System.Int64,System.String,Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Boolean)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess.#ctor(System.Int64,System.String,Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Boolean)">
             <summary>
             Creates a succeeded action render/unrender event record.
             </summary>
@@ -4215,20 +4200,20 @@
             <param name="nextStates">The resulting states after the action is evaluated.</param>
             <param name="unrender">Whether it is an unrender event.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.NextStates">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess.NextStates">
             <summary>
             The resulting states after the action is evaluated.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.ToString">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionError">
             <summary>
             Represents a failed action render/unrender event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.#ctor(System.Int64,System.String,Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception,System.Boolean)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionError.#ctor(System.Int64,System.String,Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception,System.Boolean)">
             <summary>
             Creates a failed action render/unrender event record.
             </summary>
@@ -4239,48 +4224,48 @@
             <param name="exception">The exception thrown by the action.</param>
             <param name="unrender">Whether it is an unrender event.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.Exception">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionError.Exception">
             <summary>
             The exception thrown by the action.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.ToString">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionError.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase">
             <summary>
             Represents a block event.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.OldTip">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase.OldTip">
             <summary>
             The tip before update.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.NewTip">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase.NewTip">
             <summary>
             The tip after update.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.Begin">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase.Begin">
             <summary>
             Whether it is not an <c>End</c> event.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.End">
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase.End">
             <summary>
             Whether it is an <c>End</c> event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.ToString">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockBase.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockEvent">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockEvent">
             <summary>
             Represents a block event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockEvent.#ctor(System.Int64,System.String,Libplanet.Blocks.Block,Libplanet.Blocks.Block,System.Boolean)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockEvent.#ctor(System.Int64,System.String,Libplanet.Blocks.Block,Libplanet.Blocks.Block,System.Boolean)">
             <summary>
             Creates a block event record.
             </summary>
@@ -4290,79 +4275,69 @@
             <param name="newTip">The tip after update.</param>
             <param name="end">Whether it is an <c>End</c> event.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockEvent.ToString">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.BlockEvent.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ToString"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer">
             <summary>
             Validates if rendering events are in the correct order according to the documented automata
-            (see also the docs for <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> and <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/>)
+            (see also the docs for <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/> and <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/>)
             using profiling-guided analysis.
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.#ctor(System.Action{Libplanet.Blockchain.Renderers.Debug.InvalidRenderException{`0}})">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.#ctor(System.Action{Libplanet.Blockchain.Renderers.Debug.InvalidRenderException})">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer"/> instance.
             </summary>
             <param name="onError">An optional event handler which is triggered when invalid
             render events occur.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.BlockChain">
-            <summary>
-            The chain that publishes the render events.  More stricter validations are conducted
-            if it's configured.
-            </summary>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.IActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.IActionRenderer">
             <summary>
             Listens state changes of every step of actions, besides blocks,
             on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
-            If you need more fine-grained events than <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
+            If you need more fine-grained events than <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/>,
             implement this interface instead.
             <para>The invocation order of methods for each <see cref="T:Libplanet.Blocks.Block"/> are:</para>
             <list type="number">
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)
             </description></item>
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
-            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> (zero or more
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> (zero or more
             times)</description>
             </item>
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)</description>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)</description>
             </item>
             </list>
             </summary>
             <remarks>Although <see cref="T:Libplanet.Tx.Transaction"/>s affect the states in
             the <see cref="T:Libplanet.Store.IStateStore"/> all or nothing at all (i.e., atomically),
-            <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> receives all action-related events
-            (<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>) <em>immediately</em>
+            <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> receives all action-related events
+            (<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>) <em>immediately</em>
             without buffering, which means actions are rendered <em>even before</em> whether there are
             any actions throwing an exception in the same transaction is determined.  In other words,
-            for <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/>s, it is not guaranteed that actions in a transaction
+            for <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/>s, it is not guaranteed that actions in a transaction
             are atomic.
             <para>If your action renderer expects to receive only render events about actions belonging
             successful transactions, wrap your action renderer with
-            <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/>.</para>
+            <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer"/>.</para>
             </remarks>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <summary>
             Does things that should be done right after an <paramref name="action"/>
             is executed and applied to the blockchain.
@@ -4380,22 +4355,18 @@
             It is guaranteed to be called only once for an <paramref name="action"/>,
             and only after applied to the blockchain, unless an exception is thrown during executing
             the <paramref name="action"/> (in that case <see
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> is called instead) or
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> is called instead) or
             once the <paramref name="action"/> has been unrendered.
             <para>Also note that this method is invoked after <see
-            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> method is called
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> method is called
             (where its second parameter <c>newTip</c> contains a transaction the <paramref
             name="action"/> belongs to).</para>
-            <para>The reason why the parameter <paramref name="action"/> takes
-            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
-            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
-            actions (<see cref="P:Libplanet.Tx.Transaction.Actions"/>).</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <summary>
             Does the similar things to <see cref=
-            "M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>, except that this method
+            "M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>, except that this method
             is invoked when <paramref name="action"/> has terminated with an exception.
             </summary>
             <param name="action">An action which threw an exception during execution.</param>
@@ -4407,16 +4378,12 @@
             name="action"/>.</param>
             <remarks>
             Also note that this method is invoked after <see
-            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> method is called
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> method is called
             (where its second parameter <c>newTip</c> contains a transaction the <paramref
             name="action"/> belongs to).
-            <para>The reason why the parameter <paramref name="action"/> takes
-            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
-            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
-            actions (<see cref="P:Libplanet.Tx.Transaction.Actions"/>).</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
             <summary>
             Does things that should be done right all actions in a new <see cref="T:Libplanet.Blocks.Block"/> are
             rendered.
@@ -4425,7 +4392,7 @@
             <param name="oldTip">The previous <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
             <param name="newTip">The current <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.IRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.IRenderer">
             <summary>
             Listens state changes on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             <para>Usually, implementations of this interface purpose to update the in-memory game states
@@ -4433,14 +4400,12 @@
             on the display is redrawn.</para>
             <para>The invocation order of methods for each <see cref="T:Libplanet.Blocks.Block"/> are:</para>
             <list type="number">
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)</description>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/> (one time)</description>
             </item>
             </list>
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
             <summary>
             Does things that should be done right after a new <see cref="T:Libplanet.Blocks.Block"/> is appended to
             a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> (so that its <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> has changed).
@@ -4450,23 +4415,21 @@
             <param name="oldTip">The previous <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
             <param name="newTip">The current <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer">
             <summary>
-            Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> so that all event messages are logged.
-            In other words, this is an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> version of
-            <see cref="T:Libplanet.Blockchain.Renderers.LoggedRenderer`1"/>.
+            Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> so that all event messages are logged.
+            In other words, this is an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> version of
+            <see cref="T:Libplanet.Blockchain.Renderers.LoggedRenderer"/>.
             <para>Every single event message causes two log messages: one is logged <em>before</em>
             rendering, and other one is logged <em>after</em> rendering.  If any exception is thrown
             it is also logged with the log level <see cref="F:Serilog.Events.LogEventLevel.Error"/> (regardless of
-            <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Level"/> configuration).</para>
+            <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Level"/> configuration).</para>
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
             <example>
             <code><![CDATA[
-            IActionRenderer<ExampleAction> actionRenderer = new SomeActionRenderer();
+            IActionRenderer actionRenderer = new SomeActionRenderer();
             // Wraps the action renderer with LoggedActionRenderer:
-            actionRenderer = new LoggedActionRenderer<ExampleAction>(
+            actionRenderer = new LoggedActionRenderer(
                 actionRenderer,
                 Log.Logger,
                 LogEventLevel.Information,
@@ -4474,9 +4437,9 @@
             ]]></code>
             </example>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},Serilog.ILogger,Serilog.Events.LogEventLevel)">
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer,Serilog.ILogger,Serilog.Events.LogEventLevel)">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1"/> instance which decorates the given
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer"/> instance which decorates the given
             action <paramref name="renderer"/>.
             </summary>
             <param name="renderer">The actual action renderer to forward all event messages to and
@@ -4486,52 +4449,50 @@
             type (with the context property <c>SourceContext</c>).</param>
             <param name="level">The log event level.  All log messages become this level.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.ActionRenderer">
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedActionRenderer.ActionRenderer">
             <summary>
             The inner action renderer to forward all event messages to and actually render things.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="T:Libplanet.Blockchain.Renderers.LoggedRenderer`1">
+        <member name="T:Libplanet.Blockchain.Renderers.LoggedRenderer">
             <summary>
-            Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> so that all event messages are logged.
+            Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/> so that all event messages are logged.
             <para>Every single event message causes two log messages: one is logged <em>before</em>
             rendering, and other one is logged <em>after</em> rendering.  If any exception is thrown
             it is also logged with the log level <see cref="F:Serilog.Events.LogEventLevel.Error"/> (regardless of
-            <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Level"/> configuration).</para>
+            <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Level"/> configuration).</para>
             </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
             <example>
             <code>
-            IRenderer&lt;ExampleAction&gt; renderer = new SomeRenderer();
+            IRenderer renderer = new SomeRenderer();
             // Wraps the renderer with LoggedRenderer:
-            renderer = new LoggedRenderer&lt;ExampleAction&gt;(
+            renderer = new LoggedRenderer(
                 renderer,
                 Log.Logger,
                 LogEventLevel.Information,
             );
             </code>
             </example>
-            <remarks>Since <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> is a subtype of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
-            <see cref="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},Serilog.ILogger,Serilog.Events.LogEventLevel)"/> constructor can take
-            an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance as well.  However, even it takes an action
+            <remarks>Since <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> is a subtype of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer"/>,
+            <see cref="M:Libplanet.Blockchain.Renderers.LoggedRenderer.#ctor(Libplanet.Blockchain.Renderers.IRenderer,Serilog.ILogger,Serilog.Events.LogEventLevel)"/> constructor can take
+            an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> instance as well.  However, even it takes an action
             renderer, action-level fine-grained events will not be logged.  For action renderers,
-            please use <see cref="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1"/> instead.</remarks>
+            please use <see cref="T:Libplanet.Blockchain.Renderers.LoggedActionRenderer"/> instead.</remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},Serilog.ILogger,Serilog.Events.LogEventLevel)">
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer.#ctor(Libplanet.Blockchain.Renderers.IRenderer,Serilog.ILogger,Serilog.Events.LogEventLevel)">
             <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.LoggedRenderer`1"/> instance which decorates the given
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.LoggedRenderer"/> instance which decorates the given
             <paramref name="renderer"/>.
             </summary>
             <param name="renderer">The actual renderer to forward all event messages to and actually
@@ -4541,25 +4502,25 @@
             type (with the context property <c>SourceContext</c>).</param>
             <param name="level">The log event level.  All log messages become this level.</param>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Renderer">
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Renderer">
             <summary>
             The inner renderer to forward all event messages to and actually render things.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Level">
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Level">
             <summary>
             The log event level.  All log messages become this level.
             </summary>
         </member>
-        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Logger">
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Logger">
             <summary>
             The logger to write log messages to.  Note that all log messages this decorator writes
-            become in the context of the <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Renderer"/>'s type (with the context
+            become in the context of the <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer.Renderer"/>'s type (with the context
             property <c>SourceContext</c>).
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Blocks.Block,Libplanet.Blocks.Block)"/>
         </member>
         <member name="T:Libplanet.Blocks.Block">
             <summary>
@@ -10116,7 +10077,7 @@
             </exception>
             <seealso cref="M:Libplanet.Tx.Transaction.Serialize"/>
         </member>
-        <member name="M:Libplanet.Tx.Transaction.Create``1(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{Libplanet.Action.IAction},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Tx.Transaction.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{Libplanet.Action.IAction},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction"/>.
             It automatically fills the following values from:
@@ -10142,32 +10103,6 @@
             <para>Note that the <paramref name="privateKey"/> in itself is not
             included in the created <see cref="T:Libplanet.Tx.Transaction"/>.</para>
             </summary>
-            <remarks>
-            This factory method tries its best to fill the <see
-            cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> property by actually evaluating
-            the given <paramref name="actions"/> (we call it &#x201c;rehearsal
-            mode&#x201d;), but remember that its result
-            is approximated in some degree, because the result of
-            <paramref name="actions"/> are not deterministic until
-            the <see cref="T:Libplanet.Tx.Transaction"/> belongs to a <see
-            cref="T:Libplanet.Blocks.Block"/>.
-            <para>If an <see cref="T:Libplanet.Action.IAction"/> depends on previous states or
-            some randomness to determine what <see cref="T:Libplanet.Address"/> to update,
-            the automatically filled <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> became
-            mismatched from the <see cref="T:Libplanet.Address"/>es
-            <paramref name="actions"/> actually update after
-            a <see cref="T:Libplanet.Blocks.Block"/> is mined.
-            Although such case would be rare, a programmer could manually give
-            the <paramref name="updatedAddresses"/> parameter
-            the <see cref="T:Libplanet.Address"/>es they predict to be updated.</para>
-            <para>If an <see cref="T:Libplanet.Action.IAction"/> oversimplifies the assumption
-            about the <see cref="T:Libplanet.Blocks.Block"/> it belongs to,
-            runtime exceptions could be thrown from this factory method.
-            The best solution to that is not to oversimplify things,
-            there is an option to check <see cref="T:Libplanet.Action.IActionContext"/>'s
-            <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> is <see langword="true"/> and
-            a conditional logic for the case.</para>
-            </remarks>
             <param name="nonce">The number of previous
             <see cref="T:Libplanet.Tx.Transaction"/>s committed by the <see cref="P:Libplanet.Tx.Transaction.Signer"/>
             of this transaction.  This goes to the
@@ -10184,28 +10119,20 @@
             </param>
             <param name="actions">A list of user-defined custom actions to include.  This can
             be empty, but cannot be <see langword="null"/>.  This goes to
-            the <see cref="P:Libplanet.Tx.Transaction.Actions"/> property, and these actionss are evaluated before
-            a <see cref="T:Libplanet.Tx.Transaction"/> is created in order to fill
-            the <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/>.  See also <em>Remarks</em> section.</param>
+            the <see cref="P:Libplanet.Tx.Transaction.Actions"/> property.</param>
             <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
-            states affected by <paramref name="actions"/>.
-            These <see cref="T:Libplanet.Address"/>es are also included in
-            the <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> property, besides
-            <see cref="T:Libplanet.Address"/>es projected by evaluating
-            <paramref name="actions"/>.  See also <em>Remarks</em> section.</param>
+            states affected by <paramref name="actions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction"/>
             is created and signed.  This goes to the <see cref="P:Libplanet.Tx.Transaction.Timestamp"/>
             property.  If <see langword="null"/> (which is default) is passed this will
             be the current time.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block"/>'s type parameter.</typeparam>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction"/> signed by
             the given <paramref name="privateKey"/>.</returns>
             <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/>
             is passed to <paramref name="privateKey"/> or <paramref name="actions"/>.
             </exception>
         </member>
-        <member name="M:Libplanet.Tx.Transaction.Create``1(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{Bencodex.Types.IValue},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Tx.Transaction.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{Bencodex.Types.IValue},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction"/>.
             It automatically fills the following values from:
@@ -10231,32 +10158,6 @@
             <para>Note that the <paramref name="privateKey"/> in itself is not
             included in the created <see cref="T:Libplanet.Tx.Transaction"/>.</para>
             </summary>
-            <remarks>
-            This factory method tries its best to fill the <see
-            cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> property by actually evaluating
-            the given <paramref name="actions"/> (we call it &#x201c;rehearsal
-            mode&#x201d;), but remember that its result
-            is approximated in some degree, because the result of
-            <paramref name="actions"/> are not deterministic until
-            the <see cref="T:Libplanet.Tx.Transaction"/> belongs to a <see
-            cref="T:Libplanet.Blocks.Block"/>.
-            <para>If an <see cref="T:Libplanet.Action.IAction"/> depends on previous states or
-            some randomness to determine what <see cref="T:Libplanet.Address"/> to update,
-            the automatically filled <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> became
-            mismatched from the <see cref="T:Libplanet.Address"/>es
-            <paramref name="actions"/> actually update after
-            a <see cref="T:Libplanet.Blocks.Block"/> is mined.
-            Although such case would be rare, a programmer could manually give
-            the <paramref name="updatedAddresses"/> parameter
-            the <see cref="T:Libplanet.Address"/>es they predict to be updated.</para>
-            <para>If an <see cref="T:Libplanet.Action.IAction"/> oversimplifies the assumption
-            about the <see cref="T:Libplanet.Blocks.Block"/> it belongs to,
-            runtime exceptions could be thrown from this factory method.
-            The best solution to that is not to oversimplify things,
-            there is an option to check <see cref="T:Libplanet.Action.IActionContext"/>'s
-            <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> is <see langword="true"/> and
-            a conditional logic for the case.</para>
-            </remarks>
             <param name="nonce">The number of previous
             <see cref="T:Libplanet.Tx.Transaction"/>s committed by the <see cref="P:Libplanet.Tx.Transaction.Signer"/>
             of this transaction.  This goes to the
@@ -10273,21 +10174,13 @@
             </param>
             <param name="actions">A list of user-defined custom actions to include.  This can
             be empty, but cannot be <see langword="null"/>.  This goes to
-            the <see cref="P:Libplanet.Tx.Transaction.Actions"/> property, and these actionss are evaluated before
-            a <see cref="T:Libplanet.Tx.Transaction"/> is created in order to fill
-            the <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/>.  See also <em>Remarks</em> section.</param>
+            the <see cref="P:Libplanet.Tx.Transaction.Actions"/> property.</param>
             <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
-            states affected by <paramref name="actions"/>.
-            These <see cref="T:Libplanet.Address"/>es are also included in
-            the <see cref="P:Libplanet.Tx.Transaction.UpdatedAddresses"/> property, besides
-            <see cref="T:Libplanet.Address"/>es projected by evaluating
-            <paramref name="actions"/>.  See also <em>Remarks</em> section.</param>
+            states affected by <paramref name="actions"/>.</param>
             <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction"/>
             is created and signed.  This goes to the <see cref="P:Libplanet.Tx.Transaction.Timestamp"/>
             property.  If <see langword="null"/> (which is default) is passed this will
             be the current time.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blocks.Block"/>'s type parameter.</typeparam>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction"/> signed by
             the given <paramref name="privateKey"/>.</returns>
             <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/>
