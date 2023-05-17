@@ -42,6 +42,8 @@ using NCTx = Libplanet.Tx.Transaction;
 
 namespace Nekoyume.BlockChain
 {
+    using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using System.Runtime.InteropServices;
     using UniRx;
 
@@ -159,6 +161,13 @@ namespace Nekoyume.BlockChain
                 string keyPath = path + "/states";
                 IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(keyPath);
                 _stateStore = new TrieStateStore(stateKeyValueStore);
+                var actionLoader = new SingleActionLoader(typeof(NCAction));
+                var blockChainStates = new BlockChainStates(store, _stateStore);
+                var actionEvaluator = new ActionEvaluator(
+                    _ => policy.BlockAction,
+                    blockChainStates,
+                    actionLoader,
+                    null);
 
                 if (store.GetCanonicalChainId() is null)
                 {
@@ -168,6 +177,7 @@ namespace Nekoyume.BlockChain
                         store,
                         _stateStore,
                         genesisBlock,
+                        actionEvaluator,
                         renderers: BlockPolicySource.GetRenderers());
                 }
                 else
@@ -178,7 +188,9 @@ namespace Nekoyume.BlockChain
                         store,
                         _stateStore,
                         genesisBlock,
-                        renderers: BlockPolicySource.GetRenderers());
+                        renderers: BlockPolicySource.GetRenderers(),
+                        blockChainStates,
+                        actionEvaluator);
                 }
             }
             catch (InvalidGenesisBlockException)
