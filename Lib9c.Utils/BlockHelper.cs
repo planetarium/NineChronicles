@@ -99,10 +99,10 @@ namespace Nekoyume
             return
                 BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
                     transactions: ImmutableList<Transaction>.Empty
-                        .Add(Transaction.Create<PolymorphicAction<ActionBase>>(
+                        .Add(Transaction.Create(
                             0, privateKey, null, actions))
                         .AddRange(systemActions.Select((sa, index) =>
-                            Transaction.Create<PolymorphicAction<ActionBase>>(
+                            Transaction.Create(
                                 index + 1, privateKey, null, new [] { sa }))),
                     privateKey: privateKey,
                     blockAction: blockAction,

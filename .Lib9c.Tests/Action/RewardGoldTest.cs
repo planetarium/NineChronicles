@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Lib9c.Tests.TestHelper;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -525,7 +526,7 @@ namespace Lib9c.Tests.Action
                 );
                 genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
                     transactions: ImmutableList<Transaction>.Empty
-                        .Add(Transaction.Create<PolymorphicAction<ActionBase>>(
+                        .Add(Transaction.Create(
                             0,
                             new PrivateKey(),
                             null,
@@ -541,6 +542,12 @@ namespace Lib9c.Tests.Action
                 stagePolicy: stagePolicy,
                 stateStore: stateStore,
                 genesisBlock: genesis,
+                actionEvaluator: new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: blockPolicySource.GetRenderers()
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);

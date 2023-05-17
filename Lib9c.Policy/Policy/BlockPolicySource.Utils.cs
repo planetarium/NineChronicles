@@ -5,6 +5,7 @@ using System.Reflection;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Tx;
@@ -43,25 +44,29 @@ namespace Nekoyume.BlockChain.Policy
             long blockIndex
         )
         {
-            if (!(transaction.Actions is { } customActions))
+            if (!(transaction.Actions is { } rawActions))
             {
                 return false;
             }
-
-            var types = actionLoader.Load(blockIndex);
-
-            // Comparison with ObsoleteIndex + 2 is intended to have backward
-            // compatibility with a bugged original implementation.
-            return customActions.Any(
-                ca => ca is Dictionary dictionary
-                    && dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue)
-                    && typeIdValue is Text typeId
-                    && types.TryGetValue(typeId, out Type actionType)
-                    && actionType.IsDefined(typeof(ActionObsoleteAttribute), false)
-                    && actionType.GetCustomAttributes()
-                        .OfType<ActionObsoleteAttribute>()
-                        .FirstOrDefault()?.ObsoleteIndex + 2 <= blockIndex
-            );
+            else
+            {
+                try
+                {
+                    // Comparison with ObsoleteIndex + 2 is intended to have backward
+                    // compatibility with a bugged original implementation.
+                    return rawActions
+                        .Select(rawAction => actionLoader.LoadAction(blockIndex, rawAction))
+                        .Select(action => action.GetType())
+                        .Any(actionType =>
+                            actionType.GetCustomAttribute<ActionObsoleteAttribute>(false) is { } attribute &&
+                            attribute.ObsoleteIndex + 2 <= blockIndex);
+                }
+                catch (Exception)
+                {
+                    // NOTE: Return false on fail to load
+                    return true;
+                }
+            }
         }
 
         internal static bool IsAdminTransaction(

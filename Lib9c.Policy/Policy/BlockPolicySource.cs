@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderers;
+using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -47,28 +48,23 @@ namespace Nekoyume.BlockChain.Policy
         public readonly BlockRenderer BlockRenderer = new BlockRenderer();
 
         // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedActionRenderer<NCAction> LoggedActionRenderer;
+        public readonly LoggedActionRenderer LoggedActionRenderer;
 
         // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedRenderer<NCAction> LoggedBlockRenderer;
+        public readonly LoggedRenderer LoggedBlockRenderer;
 
         public BlockPolicySource(
             ILogger logger,
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader = actionLoader ?? new StaticActionLoader(
-                Assembly.GetEntryAssembly() is Assembly entryAssembly
-                    ? new[] { typeof(ActionBase).Assembly, entryAssembly }
-                    : new[] { typeof(ActionBase).Assembly },
-                typeof(ActionBase)
-            );
+            _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
 
             LoggedActionRenderer =
-                new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
+                new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
 
             LoggedBlockRenderer =
-                new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
+                new LoggedRenderer(BlockRenderer, logger, logEventLevel);
         }
 
         /// <summary>
@@ -179,8 +175,8 @@ namespace Nekoyume.BlockChain.Policy
 #endif
         }
 
-        public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
-            new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
+        public IEnumerable<IRenderer> GetRenderers() =>
+            new IRenderer[] { BlockRenderer, LoggedActionRenderer };
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
@@ -206,39 +202,29 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                var actionTypes = actionLoader.Load(index);
-                // Check ActivateAccount
-                if (((ITransaction)transaction).Actions is { } customActions &&
-                    customActions.Count == 1 &&
-                    customActions.First() is Dictionary dictionary &&
-                    dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                    typeIdValue is Text typeId &&
-                    (typeId == "activate_account2" || typeId == "activate_account"))
+                // Check Activation
+                try
                 {
-                    if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
-                          valuesValue is Dictionary values))
+                    if (transaction.Actions is { } rawActions &&
+                        rawActions.Count == 1 &&
+                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
+                        polyAction.InnerAction is IActivateAccount activate)
                     {
-                        return new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id);
+                        return transaction.Nonce == 0 &&
+                            blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                            new PendingActivationState(rawPending).Verify(activate.Signature)
+                                ? null
+                                : new TxPolicyViolationException(
+                                    $"Transaction {transaction.Id} has an invalid activate action.",
+                                    transaction.Id);
                     }
-
-                    IAction action = (IAction)Activator.CreateInstance(actionTypes[typeId]);
-                    if (!(action is IActivateAccount activateAccount))
-                    {
-                        return new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid action.",
-                            transaction.Id);
-                    }
-                    action.LoadPlainValue(values);
-
-                    return transaction.Nonce == 0 &&
-                           blockChain.GetState(activateAccount.PendingAddress) is Dictionary rawPending &&
-                           new PendingActivationState(rawPending).Verify(activateAccount.Signature)
-                        ? null
-                        : new TxPolicyViolationException(
-                            $"Transaction {transaction.Id} has an invalid activate action.",
-                            transaction.Id);
+                }
+                catch (Exception e)
+                {
+                    return new TxPolicyViolationException(
+                        $"Transaction {transaction.Id} has an invalid action.",
+                        transaction.Id,
+                        e);
                 }
 
                 // Check admin

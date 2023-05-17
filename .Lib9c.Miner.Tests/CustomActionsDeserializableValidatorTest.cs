@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
@@ -69,7 +70,7 @@ public class CustomActionsDeserializableValidatorTest
 
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
-        public Dictionary? SystemAction { get; init; }
+        public IValue? SystemAction { get; init; }
         public IImmutableList<IValue>? CustomActions { get; init; }
         public bool Equals(ITxInvoice? other)
         {
@@ -95,24 +96,25 @@ public class CustomActionsDeserializableValidatorTest
 
     private class MockActionLoader : IActionLoader
     {
-        public IDictionary<IValue, Type> Load(long index)
-        {
-            return new Dictionary<IValue, Type>
-            {
-                [(Text)"daily_reward"] = typeof(DailyReward),
-            };
-        }
-
         public IAction LoadAction(long index, IValue value)
         {
-            var act = new DailyReward();
-            act.LoadPlainValue(value);
-            return act;
-        }
+            try
+            {
+                if ((Text)((Dictionary)value)["type_id"] != "daily_reward")
+                {
+                    throw new ArgumentException(
+                        $"Given {nameof(value)} should have daily_reward as its type_id");
+                }
 
-        public IEnumerable<Type> LoadAllActionTypes(long index)
-        {
-            return Load(index).Values;
+                var act = new DailyReward();
+                act.LoadPlainValue(((Dictionary)value)["values"]);
+                return act;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidActionException(
+                    $"Failed to load an action from given {nameof(value)}: {value}", value, e);
+            }
         }
     }
 }

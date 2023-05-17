@@ -106,7 +106,7 @@ namespace Lib9c.Tools.SubCommand
             {
                 parsedActions = new List<NCAction>();
             }
-            Transaction tx = Transaction.Create<PolymorphicAction<ActionBase>>(
+            Transaction tx = Transaction.Create(
                 nonce: nonce,
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
                 genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
