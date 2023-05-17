@@ -513,7 +513,7 @@ namespace Lib9c.DevExtensions.Action
                     if (option.StatType == StatType.NONE)
                     {
                         var skillRow = skillSheet[option.SkillId];
-                        var skill = SkillFactory.Get(
+                        var skill = SkillFactory.GetV1(
                             skillRow,
                             option.SkillDamageMax,
                             option.SkillChanceMax);

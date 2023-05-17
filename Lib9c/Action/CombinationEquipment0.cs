@@ -269,7 +269,7 @@ namespace Nekoyume.Action
                 var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
                 var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
                 var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
-                var skill = SkillFactory.Get(skillRow, dmg, chance);
+                var skill = SkillFactory.GetV1(skillRow, dmg, chance);
                 return skill;
             }
             catch (InvalidOperationException)

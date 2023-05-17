@@ -91,7 +91,7 @@ namespace Nekoyume.Model
                     skillRow.SkillType == SkillType.Buff ||
                     skillRow.SkillType == SkillType.Debuff;
 
-                var skill = SkillFactory.Get(skillRow, !isBuff ? dmg : 0, 100);
+                var skill = SkillFactory.GetV1(skillRow, !isBuff ? dmg : 0, 100);
                 Skills.Add(skill);
             }
         }

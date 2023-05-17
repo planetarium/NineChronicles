@@ -592,7 +592,7 @@ namespace Nekoyume.Model
                     var value = Stats.GetStatAsInt(optionInfo.SkillStatType);
                     power = (int)Math.Round(value * optionInfo.SkillValue);
                 }
-                var skill = SkillFactory.Get(skillRow, power, optionInfo.SkillChance);
+                var skill = SkillFactory.GetV1(skillRow, power, optionInfo.SkillChance);
                 var customField = new SkillCustomField
                 {
                     BuffDuration = optionInfo.BuffDuration,
