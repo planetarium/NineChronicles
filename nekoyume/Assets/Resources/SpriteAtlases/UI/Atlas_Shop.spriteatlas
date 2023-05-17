@@ -209,8 +209,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4fee7d49090114040afe8abfc3c07fa9, type: 3}
   - {fileID: 21300000, guid: e45a3e59f6b5dde4888d89f976ee2eac, type: 3}
   - {fileID: 21300000, guid: 093443892e6924920b499f4237e90c6f, type: 3}
+  - {fileID: 21300000, guid: 2cd99a89c732f4748aa92f637a1b70d1, type: 3}
   - {fileID: 21300000, guid: 37185899cca25ca4b893aba7c427478f, type: 3}
   - {fileID: 21300000, guid: f9942d99bd4f04db9a3b99ecd51aca5f, type: 3}
+  - {fileID: 21300000, guid: 48bdf0b9424ad42998aeb6636afbc309, type: 3}
   - {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
   - {fileID: 21300000, guid: a94d2be9dc0ea43feb0f058c8287713c, type: 3}
@@ -299,6 +301,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b7649e6edca75435ebf160f1674c7968, type: 3}
   - {fileID: 21300000, guid: bd420e9e797da42e6b8f8a430b1a6037, type: 3}
   - {fileID: 21300000, guid: 2ba464ae5f5ed45099296cab22f6aea8, type: 3}
+  - {fileID: 21300000, guid: 397853be1edc94b93976a61fec17bf1e, type: 3}
+  - {fileID: 21300000, guid: 7077dfbebc9b54c539530dc32ab9bc6a, type: 3}
   - {fileID: 21300000, guid: b00134ceb6ddd49d9b26b011d12ffb4b, type: 3}
   - {fileID: 21300000, guid: 03fb94ce603b3fa4d83f90720bcf8959, type: 3}
   - {fileID: 21300000, guid: d8af57eec015042759964f4e4b579c85, type: 3}
@@ -477,8 +481,10 @@ SpriteAtlas:
   - Common_TabSub_Normal
   - UI_icon_Block3
   - icon_Reregister
+  - icon_buff_down
   - Icon_Ticket_WB
   - Icon_infinity
+  - UI_main_icon_Goldfish
   - UI_icon_option_skill
   - Common_Gradiant_bg_01
   - item_bg_Plus
@@ -567,6 +573,8 @@ SpriteAtlas:
   - Common_Btn_Press
   - level_frame
   - icon_Inventory_01_black
+  - UI_main_icon_Goldpowder
+  - icon_buff_up
   - button_Round_Press
   - button_page_02
   - UI_Popup_icon_10
