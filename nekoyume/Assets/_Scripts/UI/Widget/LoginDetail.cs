@@ -271,9 +271,8 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            var tuples = player.Stats.GetBaseAndAdditionalStats();
             var idx = 0;
-            foreach (var (statType, value, additionalValue) in tuples)
+            foreach (var (statType, value) in player.Stats.GetStats())
             {
                 if (!visibleStats.Contains(statType))
                 {
@@ -281,7 +280,7 @@ namespace Nekoyume.UI
                 }
 
                 var info = statusRows[idx];
-                info.Show(statType, value + additionalValue, 0);
+                info.Show(statType, value, 0);
                 ++idx;
             }
         }

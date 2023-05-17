@@ -1,8 +1,10 @@
+using System;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using System.Collections.Generic;
+using Coffee.UIEffects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,11 +35,18 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        [SerializeField]
-        private TextMeshProUGUI nameText;
+        [Serializable]
+        private struct TitleContent
+        {
+            public TextMeshProUGUI nameText;
+            public Image[] gradeImages;
+        }
 
         [SerializeField]
-        private List<Image> gradeImages;
+        private TitleContent normalGradeTitleContent;
+
+        [SerializeField]
+        private TitleContent legendaryGradeTitleContent;
 
         [SerializeField]
         private List<RecipeCell> recipeCells;
@@ -49,6 +58,9 @@ namespace Nekoyume.UI.Scroller
         private CanvasGroup canvasGroup;
 
         [SerializeField]
+        private UIHsvModifier gradeEffectObject;
+
+        [SerializeField]
         private Sprite equipmentGradeSprite;
 
         [SerializeField]
@@ -58,11 +70,17 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(Model viewModel)
         {
-            nameText.text = viewModel.Name;
+            var isNormalGrade = viewModel.Grade < 5 || viewModel.ItemSubType == ItemSubType.Food;
+            normalGradeTitleContent.nameText.gameObject.SetActive(isNormalGrade);
+            legendaryGradeTitleContent.nameText.gameObject.SetActive(!isNormalGrade);
+            var titleContent = isNormalGrade
+                ? normalGradeTitleContent
+                : legendaryGradeTitleContent;
 
-            for (var i = 0; i < gradeImages.Count; ++i)
+            titleContent.nameText.text = viewModel.Name;
+            for (var i = 0; i < titleContent.gradeImages.Length; ++i)
             {
-                var image = gradeImages[i];
+                var image = titleContent.gradeImages[i];
 
                 if (i < viewModel.Grade)
                 {
@@ -77,6 +95,7 @@ namespace Nekoyume.UI.Scroller
                     image.enabled = false;
                 }
             }
+            gradeEffectObject.enabled = !isNormalGrade;
 
             for (var i = 0; i < recipeCells.Count; ++i)
             {

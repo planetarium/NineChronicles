@@ -188,7 +188,7 @@ namespace Nekoyume.UI
                 {
                     var (statMap, _) = option.Stats[i];
                     statViewList[i].gameObject.SetActive(true);
-                    statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
+                    statViewList[i].Show(statMap.StatType, statMap.TotalValueAsInt, true);
                 }
 
                 cpText.text = $"<size=80%>CP</size> {option.Cp}";
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
                 {
                     var (statMap, _) = option.Stats[i];
                     statViewList[i].gameObject.SetActive(true);
-                    statViewList[i].Show(statMap.StatType, statMap.ValueAsInt, true);
+                    statViewList[i].Show(statMap.StatType, statMap.TotalValueAsInt, true);
                 }
 
                 cpText.text = $"<size=80%>CP</size> {option.Cp}";

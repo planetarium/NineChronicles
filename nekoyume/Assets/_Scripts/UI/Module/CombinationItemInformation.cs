@@ -122,29 +122,29 @@ namespace Nekoyume.UI.Module
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
                 var uniqueStatType = equipment.UniqueStatType;
-                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
-                    if (!statMapEx.StatType.Equals(uniqueStatType))
+                    if (!stat.StatType.Equals(uniqueStatType))
                         continue;
 
-                    AddStat(statMapEx, true);
+                    AddStat(stat, true);
                     statCount++;
                 }
 
-                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                foreach (var stat in equipment.StatsMap.GetDecimalStats(true))
                 {
-                    if (statMapEx.StatType.Equals(uniqueStatType))
+                    if (stat.StatType.Equals(uniqueStatType))
                         continue;
 
-                    AddStat(statMapEx);
+                    AddStat(stat);
                     statCount++;
                 }
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
-                foreach (var statMapEx in itemUsable.StatsMap.GetStats())
+                foreach (var stat in itemUsable.StatsMap.GetDecimalStats(true))
                 {
-                    AddStat(statMapEx);
+                    AddStat(stat);
                     statCount++;
                 }
             }
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Module
             statsArea.root.gameObject.SetActive(true);
         }
 
-        private void AddStat(StatMapEx model, bool isMainStat = false)
+        private void AddStat(DecimalStat model, bool isMainStat = false)
         {
             var statView = GetDisabledStatView();
             if (statView is null)

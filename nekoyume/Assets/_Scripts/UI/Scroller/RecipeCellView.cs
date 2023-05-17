@@ -261,7 +261,7 @@ namespace Nekoyume.UI.Scroller
             Set(equipment);
 
             StatType = equipment.UniqueStatType;
-            optionText.text = equipment.StatsMap.GetStat(StatType, true).ToString();
+            optionText.text = equipment.StatsMap.GetBaseStat(StatType).ToString();
             SetLocked(false, EquipmentRowData.UnlockStage);
         }
 
@@ -369,7 +369,7 @@ namespace Nekoyume.UI.Scroller
 
             StatType = consumable.MainStat;
 
-            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
+            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).TotalValueAsInt}";
             optionText.text = optionString;
             SetLocked(false, UnlockStage);
         }

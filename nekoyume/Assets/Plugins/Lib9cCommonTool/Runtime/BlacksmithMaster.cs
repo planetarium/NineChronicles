@@ -58,7 +58,9 @@ namespace Lib9cCommonTool.Runtime
                     var skill = SkillFactory.Get(
                         skillRow,
                         option.SkillDamageMax,
-                        option.SkillChanceMax);
+                        option.SkillChanceMax,
+                        option.StatDamageRatioMax,
+                        option.ReferencedStatType);
                     equipment.Skills.Add(skill);
                     equipment.optionCountFromCombination++;
 
@@ -77,7 +79,7 @@ namespace Lib9cCommonTool.Runtime
             {
                 for (var i = 0; i < level; i++)
                 {
-                    equipment.LevelUpV2(random, enhancementCostRow, true);
+                    equipment.LevelUp(random, enhancementCostRow, true);
                 }
             }
 

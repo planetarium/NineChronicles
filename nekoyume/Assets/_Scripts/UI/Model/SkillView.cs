@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
@@ -20,46 +21,22 @@ namespace Nekoyume.UI.Model
             name.Value = skill.SkillRow.GetLocalizedName();
 
             chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
+
             if (skill is BuffSkill buffSkill)
             {
-                var sheets = Game.Game.instance.TableSheets;
-                var buffs = BuffFactory.GetBuffs(
-                    default,
-                    skill,
-                    sheets.SkillBuffSheet,
-                    sheets.StatBuffSheet,
-                    sheets.SkillActionBuffSheet,
-                    sheets.ActionBuffSheet).OfType<StatBuff>();
-                if (buffs.Any())
-                {
-                    var buff = buffs.First();
-                    var powerValue = buff.RowData.StatModifier.ToString();
-                    power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
-                }
+                var powerValue = buffSkill.EffectToString();
+                power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             }
             else
             {
-                power.Value = $"{L10nManager.Localize("UI_SKILL_POWER")}: {skill.Power}";
+                var powerValue = skill.EffectToString();
+                power.Value = $"{L10nManager.Localize("UI_SKILL_POWER")}: {powerValue}";
             }
         }
 
         public SkillView(BuffSkill skill)
         {
-            var powerValue = string.Empty;
-            var sheets = Game.Game.instance.TableSheets;
-            var buffs = BuffFactory.GetBuffs(
-                default,
-                skill,
-                sheets.SkillBuffSheet,
-                sheets.StatBuffSheet,
-                sheets.SkillActionBuffSheet,
-                sheets.ActionBuffSheet).OfType<StatBuff>();
-            if (buffs.Count() > 0)
-            {
-                var buff = buffs.First();
-                powerValue = buff.RowData.StatModifier.ToString();
-            }
-
+            var powerValue = skill.EffectToString();
             name.Value = skill.SkillRow.GetLocalizedName();
             power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";

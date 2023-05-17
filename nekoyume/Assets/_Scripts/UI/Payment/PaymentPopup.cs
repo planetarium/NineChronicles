@@ -53,6 +53,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
+                        Close(true);
                         var attractMessage = costType == CostType.Crystal
                             ? L10nManager.Localize("UI_GO_GRINDING")
                             : L10nManager.Localize("UI_YES");

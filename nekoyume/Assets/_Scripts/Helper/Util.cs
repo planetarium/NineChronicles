@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
-        private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
+        private static readonly List<int> CrystalEquipmentRecipes = new() { 168, 169, 170 };
 
         public static string GetBlockToTime(long block, int? secondsPerBlock = null)
         {

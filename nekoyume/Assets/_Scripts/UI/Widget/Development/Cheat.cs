@@ -279,7 +279,7 @@ namespace Nekoyume
             var skills = new List<Model.Skill.Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
-                var skill = SkillFactory.Get(skillRow, 50, 100);
+                var skill = SkillFactory.GetV1(skillRow, 50, 100);
                 skills.Add(skill);
                 Button newButton = Instantiate(buttonBase, skillList.content);
                 newButton.GetComponentInChildren<Text>().text =

@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Character
             }
 
             _hudContainer.UpdatePosition(Game.instance.RaidStage.Camera.Cam, gameObject, HUDOffset);
-            HPBar.Set(_currentHp, _characterModel.Stats.BuffStats.HP, _characterModel.HP);
+            HPBar.Set(_currentHp, _characterModel.AdditionalHP, _characterModel.HP);
             HPBar.SetBuffs(_characterModel.Buffs);
 
             // delete existing vfx

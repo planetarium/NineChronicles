@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
@@ -88,9 +88,9 @@ namespace Nekoyume.UI.Model
                 statArrows[i].gameObject.SetActive(true);
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
-                    info.statMap.StatType.ToString(),
-                    info.statMap.ValueAsInt.ToString(),
-                    nextInfo.statMap.ValueAsInt.ToString());
+                    info.stat.StatType.ToString(),
+                    info.stat.TotalValueAsInt.ToString(),
+                    nextInfo.stat.TotalValueAsInt.ToString());
             }
 
             if (option.SkillId != 0)
@@ -154,8 +154,8 @@ namespace Nekoyume.UI.Model
                 var info = option.Stats[i];
                 stats[i].gameObject.SetActive(true);
                 stats[i].Set(
-                    info.statMap.StatType.ToString(),
-                    info.statMap.ValueAsInt.ToString(),
+                    info.stat.StatType.ToString(),
+                    info.stat.TotalValueAsInt.ToString(),
                     string.Empty);
             }
 

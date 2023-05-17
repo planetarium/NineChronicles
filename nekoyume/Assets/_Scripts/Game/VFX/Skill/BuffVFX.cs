@@ -9,7 +9,7 @@ namespace Nekoyume.Game.VFX.Skill
         public CharacterBase Target { get; set; }
 
         [field: SerializeField]
-        public bool IsPersisting { get; set; } = false;
+        public virtual bool IsPersisting { get; set; } = false;
 
         public override void Play()
         {

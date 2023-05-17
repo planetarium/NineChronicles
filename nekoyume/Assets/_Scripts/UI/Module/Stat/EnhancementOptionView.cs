@@ -1,5 +1,8 @@
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -31,6 +34,25 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GameObject star;
+
+        [SerializeField]
+        private Button descriptionButton;
+
+        private RectTransform _descriptionRect;
+
+        public float3 DescriptionPosition =>
+            _descriptionRect.GetWorldPositionOfPivot(EnumType.PivotPresetType.MiddleLeft);
+
+        private System.Action _onClickButton;
+
+        private void Awake()
+        {
+            if (descriptionButton)
+            {
+                descriptionButton.onClick.AddListener(() => _onClickButton?.Invoke());
+                _descriptionRect = descriptionButton.GetComponent<RectTransform>();
+            }
+        }
 
         public void Set(string type, string currentValue, string addValue, int count = 1)
         {
@@ -80,6 +102,11 @@ namespace Nekoyume.UI.Module
             addExText.text = addExValue;
             etcText.text = etcValue;
             etcExText.text = etcExValue;
+        }
+
+        public void SetDescriptionButton(System.Action action)
+        {
+            _onClickButton = action;
         }
     }
 }
