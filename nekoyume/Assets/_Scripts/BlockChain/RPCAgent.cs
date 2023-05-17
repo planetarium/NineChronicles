@@ -480,7 +480,7 @@ namespace Nekoyume.BlockChain
         private async Task MakeTransaction(List<NCAction> actions)
         {
             var nonce = await GetNonceAsync();
-            var tx = NCTx.Create<NCAction>(
+            var tx = NCTx.Create(
                 nonce: nonce,
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
@@ -657,12 +657,10 @@ namespace Nekoyume.BlockChain
             _lastTipChangedAt = DateTimeOffset.UtcNow;
 
             Debug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
-            BlockRenderer.RenderReorg(null, null, null);
         }
 
         public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorgEnd(null, null, null);
         }
 
         public void OnException(int code, string message)
