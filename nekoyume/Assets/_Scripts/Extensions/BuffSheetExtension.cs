@@ -18,7 +18,7 @@ namespace Nekoyume
             var desc = L10nManager.Localize($"BUFF_DESCRIPTION_{buff.BuffInfo.Id}");
             if (buff is StatBuff stat)
             {
-                return string.Format(desc, stat.RowData.StatModifier.Value);
+                return string.Format(desc, stat.RowData.Value);
             }
             else if (buff is ActionBuff action)
             {

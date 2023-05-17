@@ -287,7 +287,9 @@ namespace Nekoyume.Game
             Character.ArenaCharacter target = affectedCharacter.Id == me.Id ? me : enemy;
             foreach (var info in skillInfos)
             {
+                yield return new WaitWhile(() => target.Actions.Any());
                 yield return StartCoroutine(target.CoProcessDamage(info, true));
+                yield return new WaitForSeconds(SkillDelay);
             }
         }
 

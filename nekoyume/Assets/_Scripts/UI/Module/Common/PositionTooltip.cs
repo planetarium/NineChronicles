@@ -1,4 +1,4 @@
-﻿using Nekoyume.Game.Character;
+using Nekoyume.Game.Character;
 using TMPro;
 using UnityEngine;
 
@@ -11,10 +11,10 @@ namespace Nekoyume.UI.Module.Common
         private TouchHandler touchHandler;
 
         [SerializeField]
-        private TextMeshProUGUI titleText;
+        protected TextMeshProUGUI titleText;
 
         [SerializeField]
-        private TextMeshProUGUI contentText;
+        protected TextMeshProUGUI contentText;
 
         private void Start()
         {

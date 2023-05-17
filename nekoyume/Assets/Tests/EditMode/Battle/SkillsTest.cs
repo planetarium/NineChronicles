@@ -78,7 +78,7 @@ namespace Tests.EditMode.Battle
             var skillRow = _skillSheet.First().Value;
             Assert.IsNotNull(skillRow);
 
-            var firstSkill = SkillFactory.Get(skillRow, 100, 100);
+            var firstSkill = SkillFactory.GetV1(skillRow, 100, 100);
             Assert.IsNotNull(firstSkill);
 
             return firstSkill;
@@ -129,12 +129,12 @@ namespace Tests.EditMode.Battle
         {
             var skillRow = _skillSheet.First().Value;
             Assert.NotNull(skillRow);
-            var firstSkill = SkillFactory.Get(skillRow, 100, 100);
+            var firstSkill = SkillFactory.GetV1(skillRow, 100, 100);
 
             var skillBuffRow = _skillBuffSheet.First();
             skillRow = _skillSheet.Values.FirstOrDefault(row => row.Id == skillBuffRow.Value.SkillId);
             Assert.NotNull(skillRow);
-            var firstBuffSkill = SkillFactory.Get(skillRow, 100, 100);
+            var firstBuffSkill = SkillFactory.GetV1(skillRow, 100, 100);
             Assert.IsFalse(firstSkill.Equals(firstBuffSkill));
 
             var skills = new Skills {firstSkill};

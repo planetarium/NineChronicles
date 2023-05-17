@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -931,14 +931,8 @@ namespace Nekoyume.UI.Module
             var characterStats = new CharacterStats(row, avatarState.level);
             var consumables = GetEquippedConsumables();
             var (equipments, costumes) = States.Instance.GetEquippedItems(_battleType);
-            characterStats.SetAll(
-                avatarState.level,
-                equipments,
-                costumes,
-                consumables,
-                equipmentSetEffectSheet,
-                costumeSheet);
 
+            var runeStatModifiers = new List<StatModifier>();
             var equippedRuneState = States.Instance.GetEquippedRuneStates(_battleType);
             foreach (var runeState in equippedRuneState)
             {
@@ -948,17 +942,22 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                var statModifiers = new List<StatModifier>();
-                statModifiers.AddRange(
+                runeStatModifiers.AddRange(
                     statInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-
-                characterStats.AddOption(statModifiers);
-                characterStats.EqualizeCurrentHPWithHP();
+                            x.stat.TotalValueAsInt)));
             }
+
+            characterStats.SetAll(
+                avatarState.level,
+                equipments,
+                costumes,
+                consumables,
+                runeStatModifiers,
+                equipmentSetEffectSheet,
+                costumeSheet);
 
             UpdateCp();
             stats.SetData(characterStats);
