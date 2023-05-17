@@ -17,7 +17,13 @@ namespace Nekoyume.Helper
             _disposables = new List<IDisposable>();
             _localMailBox = new ReactiveProperty<MailBox>(null);
             Event.OnUpdateAddresses.AsObservable()
-                .Subscribe(_ => Initialize(States.Instance.CurrentAvatarState.address));
+                .Subscribe(_ =>
+                {
+                    if (States.Instance.CurrentAvatarState?.address is { } addr)
+                    {
+                        Initialize(addr);
+                    }
+                });
             ReactiveAvatarState.MailBox.Subscribe(UpdateLocalMailBox);
         }
 
@@ -72,7 +78,7 @@ namespace Nekoyume.Helper
                 }
             }
 
-            if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState.address,
+            if (_localMailDictionary.TryGetValue(States.Instance.CurrentAvatarState?.address ?? new Address(),
                     out var localMailList))
             {
                 foreach (var mail in localMailList)
