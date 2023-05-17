@@ -27,15 +27,15 @@ namespace Tests.EditMode
             var stat = equipment.StatsMap.GetStat(equipment.UniqueStatType);
             Assert.AreEqual(0, equipment.level);
             Assert.IsEmpty(equipment.GetOptions());
-            equipment.LevelUp();
+            equipment.LevelUpV1();
             Assert.AreEqual(1, equipment.level);
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.1m),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
-            equipment.LevelUp();
+            equipment.LevelUpV1();
             Assert.AreEqual(2, equipment.level);
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.2m),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
-            equipment.LevelUp();
+            equipment.LevelUpV1();
             Assert.AreEqual(3, equipment.level);
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.3m),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
@@ -63,7 +63,7 @@ namespace Tests.EditMode
             Assert.IsNotEmpty(equipment.GetOptions());
             while (equipment.level < level)
             {
-                equipment.LevelUp();
+                equipment.LevelUpV1();
             }
             Assert.AreEqual(level, equipment.level);
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.1m * level),
@@ -85,7 +85,7 @@ namespace Tests.EditMode
             var row = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, default, default);
             var skillRow = _tableSheets.SkillSheet.Values.First(i => i.SkillType == skillType);
-            var skill = SkillFactory.Get(skillRow, 10, 10);
+            var skill = SkillFactory.GetV1(skillRow, 10, 10);
             if (skillType == SkillType.Debuff || skillType == SkillType.Buff)
             {
                 equipment.BuffSkills.Add((BuffSkill) skill);
@@ -100,7 +100,7 @@ namespace Tests.EditMode
             Assert.AreEqual(10, skill.Power);
             while (equipment.level < level)
             {
-                equipment.LevelUp();
+                equipment.LevelUpV1();
             }
             Assert.AreEqual(level, equipment.level);
             Assert.AreEqual(expectedSkillChance, skill.Chance);

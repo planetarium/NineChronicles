@@ -696,7 +696,7 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoMiner()
         {
             var miner = new Proposer(blocks, ProposerKey);
-            var sleepInterval = new WaitForSeconds(15);
+            var sleepInterval = new WaitForSeconds(1);
             while (true)
             {
                 var task = Task.Run(() => miner.ProposeBlockAsync(_cancellationTokenSource.Token));

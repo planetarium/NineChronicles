@@ -83,10 +83,12 @@ namespace Nekoyume.UI
         private CanvasGroup canvasGroup;
 
         public static RecipeModel SharedModel { get; set; }
+        public static List<SubRecipeTab> SubRecipeTabs { get; private set; }
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
+        private const string EquipmentSubRecipeTabs = "Recipe/EquipmentSubRecipeTab";
 
         private bool _isTutorial;
 
@@ -166,6 +168,12 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+
+            var jsonAsset = Resources.Load<TextAsset>(EquipmentSubRecipeTabs);
+            var subRecipeTabs = jsonAsset is null
+                ? null
+                : JsonSerializer.Deserialize<CombinationSubRecipeTabs>(jsonAsset.text);
+            SubRecipeTabs = subRecipeTabs?.SubRecipeTabs.ToList();
 
             ReactiveAvatarState.Address.Subscribe(address =>
             {

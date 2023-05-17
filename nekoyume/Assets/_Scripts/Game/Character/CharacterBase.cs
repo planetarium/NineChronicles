@@ -215,7 +215,7 @@ namespace Nekoyume.Game.Character
             }
 
             HudContainer.UpdatePosition(ActionCamera.instance.Cam, gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
+            HPBar.Set(CurrentHP, CharacterModel.AdditionalHP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
 

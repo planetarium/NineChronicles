@@ -846,7 +846,10 @@ namespace Nekoyume.Game
 
             foreach (var info in skillInfos)
             {
+                var characters = GetComponentsInChildren<Character.CharacterBase>();
+                yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
                 yield return StartCoroutine(character.CoProcessDamage(info, true, true));
+                yield return new WaitForSeconds(SkillDelay);
             }
         }
 

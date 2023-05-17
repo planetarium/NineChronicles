@@ -1,6 +1,7 @@
 using Coffee.UIEffects;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model.Stat;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,6 +98,13 @@ namespace Nekoyume.Helper
             {
                 return overrideData.Icon;
             }
+        }
+
+        public static Sprite GetStatBuffIcon(StatType statType, bool isDebuff)
+        {
+            var data = VFXData.DataList.FirstOrDefault(x => x.StatType == statType);
+            return data == null ? VFXData.FallbackIcon :
+                isDebuff ? data.MinusIcon : data.PlusIcon;
         }
     }
 }
