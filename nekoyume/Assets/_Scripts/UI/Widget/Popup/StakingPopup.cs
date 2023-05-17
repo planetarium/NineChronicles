@@ -309,7 +309,6 @@ namespace Nekoyume.UI
                 }
 
                 model.BenefitRate = _benefitRates[level];
-                model.RequiredDeposit = regular.RequiredGold;
                 if (stakingMultiplierSheet.TryGetValue(level, out var row))
                 {
                     model.CrystalBuff = row.Multiplier;

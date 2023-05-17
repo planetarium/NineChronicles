@@ -436,9 +436,9 @@ namespace Nekoyume.Helper
         public static void TryGetAppProtocolVersionFromToken(string token, out int apv)
         {
             apv = 0;
-            if (token is null)
+            if (string.IsNullOrEmpty(token))
             {
-                Debug.LogException(new ArgumentNullException(nameof(token)));
+                Debug.LogWarning("apv token is null.");
                 return;
             }
 
