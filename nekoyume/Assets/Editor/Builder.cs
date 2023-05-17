@@ -121,7 +121,7 @@ namespace Editor
             Debug.Log("Build iOS");
             PreProcessBuildForIOS();
             PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
-            Build(BuildTarget.iOS, BuildOptions.Development | BuildOptions.EnableDeepProfilingSupport | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging | BuildOptions.WaitForPlayerConnection, targetDirName: "iOS", useDevExtension: false);
+            Build(BuildTarget.iOS, targetDirName: "iOS", useDevExtension: false);
         }
 
         [MenuItem("Build/Development/Android")]
