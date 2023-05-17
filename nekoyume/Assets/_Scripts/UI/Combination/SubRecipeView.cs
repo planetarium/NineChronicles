@@ -290,6 +290,13 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    if (Util.IsEventEquipmentRecipe(equipmentRow.Id))
+                    {
+                        recipeCell.Show(equipmentRow, false);
+                        ChangeTab(0);
+                        break;
+                    }
+
                     if (_subrecipeIds != null && _subrecipeIds.Any())
                     {
                         var isNormalRecipe = resultItem.Grade < 5;
