@@ -23,7 +23,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             Address signer = context.Signer;
-            var states = context.PreviousStates.TransferAsset(ValkyrieAddress, signer, 1 * Currencies.Mead);
+            var states = context.PreviousStates;
             var contractAddress = signer.Derive(nameof(BringEinheri));
             if (!states.TryGetState(contractAddress, out List contract))
             {
