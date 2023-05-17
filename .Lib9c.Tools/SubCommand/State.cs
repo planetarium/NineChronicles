@@ -118,7 +118,6 @@ namespace Lib9c.Tools.SubCommand
                     ? BlockChain<NCAction>.DetermineGenesisStateRootHash(
                         preEvalBlock,
                         policy.BlockAction,
-                        policy.NativeTokens.Contains,
                         out delta)
                     : chain.DetermineBlockStateRootHash(
                         preEvalBlock,
