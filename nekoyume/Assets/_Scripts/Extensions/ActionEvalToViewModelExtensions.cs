@@ -91,7 +91,6 @@ namespace Nekoyume
                 }
             }
 
-            outAvatarForRendering ??= new AvatarState((Dictionary)avatarState.Serialize());
             return model;
         }
     }
