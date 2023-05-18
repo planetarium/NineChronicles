@@ -30,7 +30,6 @@ jobs:
           - StandaloneWindows
           - StandaloneLinux64
           - StandaloneOSX
-          - iOS
 
     steps:
       - name: Set CRLF
