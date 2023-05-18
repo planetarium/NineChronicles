@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module.Common
 
         private const string VariableColorTag = "<color=#f5e3c0>";
 
-        public void Set(SkillSheet.Row skillRow, EquipmentItemOptionSheet.Row optionRow)
+        public void Show(SkillSheet.Row skillRow, EquipmentItemOptionSheet.Row optionRow)
         {
             titleText.text = skillRow.GetLocalizedName();
 
@@ -91,9 +91,19 @@ namespace Nekoyume.UI.Module.Common
             }
 
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
+            gameObject.SetActive(true);
         }
 
-        public void Set(
+        public void Show(Skill skill)
+        {
+            Show(skill.SkillRow,
+                skill.Chance, skill.Chance,
+                skill.Power, skill.Power,
+                skill.StatPowerRatio, skill.StatPowerRatio,
+                skill.ReferencedStatType);
+        }
+
+        public void Show(
             SkillSheet.Row skillRow,
             int chanceMin,
             int chanceMax,
@@ -142,6 +152,12 @@ namespace Nekoyume.UI.Module.Common
             }
 
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {skillRow.Cooldown}";
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
 
         private void SetAttackSkillDescription(OptionDigest digest)
