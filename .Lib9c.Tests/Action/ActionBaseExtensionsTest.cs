@@ -29,5 +29,28 @@ namespace Lib9c.Tests.Action
                 actual
             );
         }
+
+        [Fact]
+        public void CalculateUpdateAddressesWithIncompatibles()
+        {
+            var actions = new PolymorphicAction<ActionBase>[]
+            {
+                new TransferAsset(
+                    sender: default,
+                    recipient: default,
+                    amount: Currencies.DailyRewardRune * 1
+                ),
+                new HackAndSlashRandomBuff(),
+            };
+
+            IImmutableSet<Address> actual = actions.CalculateUpdateAddresses();
+            Assert.Equal(
+                new Address[]
+                {
+                    default,
+                },
+                actual
+            );
+        }
     }
 }
