@@ -5,11 +5,9 @@ namespace Lib9c.Tests
     using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
-    using System.Reflection;
-    using Bencodex.Types;
-    using Lib9c.DevExtensions.Action;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -66,10 +64,16 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             Transaction txByStranger =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     new PrivateKey(),
                     genesis.Hash,
@@ -91,7 +95,7 @@ namespace Lib9c.Tests
             blockChain.Append(block, GenerateBlockCommit(block, adminPrivateKey));
 
             Transaction txByNewActivated =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
@@ -111,14 +115,14 @@ namespace Lib9c.Tests
                 new DailyReward(),
             };
             Transaction txWithSingleAction =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
                     singleAction
                 );
             Transaction txWithManyActions =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
@@ -136,7 +140,7 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            var actionTypeLoader = PolymorphicAction<ActionBase>.ActionTypeLoader;
+            var actionTypeLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
@@ -165,6 +169,12 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             Assert.Equal(1 * Currencies.Mead, blockChain.GetBalance(adminAddress, Currencies.Mead));
@@ -174,7 +184,7 @@ namespace Lib9c.Tests
             };
 
             Transaction txEmpty =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     adminPrivateKey,
                     genesis.Hash,
@@ -183,7 +193,7 @@ namespace Lib9c.Tests
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txEmpty, 0L));
 
             Transaction txByAdmin =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     adminPrivateKey,
                     genesis.Hash,
@@ -192,7 +202,7 @@ namespace Lib9c.Tests
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin, 0L));
 
             Transaction txByStranger =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     0,
                     new PrivateKey(),
                     genesis.Hash,
@@ -201,7 +211,7 @@ namespace Lib9c.Tests
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByStranger, 0L));
 
             Transaction txByAdmin2 =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     1,
                     adminPrivateKey,
                     genesis.Hash,
@@ -212,7 +222,7 @@ namespace Lib9c.Tests
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin2, 0L));
 
             Transaction txByAdmin3 =
-                Transaction.Create<PolymorphicAction<ActionBase>>(
+                Transaction.Create(
                     2,
                     adminPrivateKey,
                     genesis.Hash,
@@ -249,6 +259,12 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             blockChain.MakeTransaction(
@@ -298,6 +314,12 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
@@ -350,6 +372,12 @@ namespace Lib9c.Tests
                 store,
                 stateStore,
                 genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
@@ -394,7 +422,13 @@ namespace Lib9c.Tests
                 stagePolicy,
                 store,
                 stateStore,
-                genesis
+                genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                )
             );
 
             int nonce = 0;
@@ -403,7 +437,7 @@ namespace Lib9c.Tests
                 var list = new List<Transaction>();
                 for (int i = 0; i < count; i++)
                 {
-                    list.Add(Transaction.Create<PolymorphicAction<ActionBase>>(
+                    list.Add(Transaction.Create(
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
@@ -491,7 +525,13 @@ namespace Lib9c.Tests
                 stagePolicy,
                 store,
                 stateStore,
-                genesis
+                genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                )
             );
 
             int nonce = 0;
@@ -500,7 +540,7 @@ namespace Lib9c.Tests
                 var list = new List<Transaction>();
                 for (int i = 0; i < count; i++)
                 {
-                    list.Add(Transaction.Create<PolymorphicAction<ActionBase>>(
+                    list.Add(Transaction.Create(
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,

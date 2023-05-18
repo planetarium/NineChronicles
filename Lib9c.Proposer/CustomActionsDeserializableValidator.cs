@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Bencodex.Types;
-using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Tx;
 
 namespace Nekoyume.BlockChain
@@ -19,23 +19,21 @@ namespace Nekoyume.BlockChain
 
         public bool Validate(ITransaction transaction)
         {
-            var types = _actionLoader.Load(_nextBlockIndex);
-
-            return transaction.Actions?.All(ca =>
-                ca is Dictionary dictionary &&
-                dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                typeIdValue is Text typeId &&
-                types.ContainsKey(typeId) &&
-                dictionary.TryGetValue((Text)"values", out IValue values) &&
-                Activator.CreateInstance(types[typeId]) is IAction action &&
-                DoesNotThrowsAnyException(() => action.LoadPlainValue(values))) == true;
+            if (!(transaction.Actions is { } actions))
+            {
+                return true;
+            }
+            else
+            {
+                return actions.All(action => CanLoadAction(_nextBlockIndex, action));
+            }
         }
 
-        private bool DoesNotThrowsAnyException(System.Action action)
+        private bool CanLoadAction(long index, IValue value)
         {
             try
             {
-                action();
+                _ = _actionLoader.LoadAction(index, value);
                 return true;
             }
             catch (Exception)
