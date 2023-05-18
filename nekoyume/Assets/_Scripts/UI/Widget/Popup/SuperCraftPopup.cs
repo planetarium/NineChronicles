@@ -111,7 +111,9 @@ namespace Nekoyume.UI
             {
                 normalRecipeTabGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
-                normalRecipeTabGroup.SetAllTogglesOff();
+
+                premiumRecipeTab.isOn = true;
+                SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
             }
             else
             {
@@ -137,9 +139,9 @@ namespace Nekoyume.UI
                         recipeTab.enableText.text = tabNames[i];
                     }
                 }
-            }
 
-            SetSkillInfoText(null);
+                SetSkillInfoText(null);
+            }
         }
 
         private void SendAction(int? petId)
