@@ -1,7 +1,11 @@
 namespace Lib9c.Tests.Action.Scenario
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
@@ -51,6 +55,52 @@ namespace Lib9c.Tests.Action.Scenario
             var states6 = Execute(states5, takeSides, agentAddress);
             Assert.Equal(1 * mead, states6.GetBalance(valkyrie, mead));
             Assert.Equal(4 * mead, states6.GetBalance(agentAddress, mead));
+        }
+
+        [Fact]
+        public void UseGas()
+        {
+            Type baseType = typeof(Nekoyume.Action.ActionBase);
+            Type attrType = typeof(ActionTypeAttribute);
+            Type obsoleteType = typeof(ActionObsoleteAttribute);
+
+            bool IsTarget(Type type)
+            {
+                return baseType.IsAssignableFrom(type) &&
+                       type.IsDefined(attrType) &&
+                       type != typeof(InitializeStates) &&
+                       ActionTypeAttribute.ValueOf(type) is { } &&
+                       (
+                           !type.IsDefined(obsoleteType) ||
+                           type
+                               .GetCustomAttributes()
+                               .OfType<ActionObsoleteAttribute>()
+                               .Select(attr => attr.ObsoleteIndex)
+                               .FirstOrDefault() > MeadConfig.MeadTransferStartIndex
+                       );
+            }
+
+            var assembly = baseType.Assembly;
+            var typeIds = assembly.GetTypes()
+                .Where(IsTarget);
+            foreach (var typeId in typeIds)
+            {
+                var action = (IAction)Activator.CreateInstance(typeId)!;
+                var actionContext = new ActionContext
+                {
+                    PreviousStates = new State(),
+                };
+                try
+                {
+                    action.Execute(actionContext);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                Assert.True(actionContext.GasUsed() > 0, $"{action} not use gas");
+            }
         }
 
         private IAccountStateDelta Execute(IAccountStateDelta state, IAction action, Address signer)

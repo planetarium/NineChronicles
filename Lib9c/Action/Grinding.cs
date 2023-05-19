@@ -34,6 +34,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             IAccountStateDelta states = ctx.PreviousStates;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);

@@ -9,6 +9,8 @@ namespace Lib9c.Tests.Action
 
     public class ActionContext : IActionContext
     {
+        private long _gasUsed;
+
         public BlockHash? GenesisHash { get; set; }
 
         public Address Signer { get; set; }
@@ -35,6 +37,7 @@ namespace Lib9c.Tests.Action
 
         public void UseGas(long gas)
         {
+            _gasUsed += gas;
         }
 
         public IActionContext GetUnconsumedContext()
@@ -54,7 +57,7 @@ namespace Lib9c.Tests.Action
             };
         }
 
-        public long GasUsed() => 0;
+        public long GasUsed() => _gasUsed;
 
         public long GasLimit() => 0;
 

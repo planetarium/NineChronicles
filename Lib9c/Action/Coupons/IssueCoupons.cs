@@ -28,6 +28,7 @@ namespace Nekoyume.Action.Coupons
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
