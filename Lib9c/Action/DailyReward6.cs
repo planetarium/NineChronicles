@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("daily_reward6")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class DailyReward6 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
@@ -42,6 +43,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward exec started", addressesHex);

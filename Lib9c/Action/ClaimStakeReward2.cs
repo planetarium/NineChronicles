@@ -15,6 +15,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ObsoletedIndex)]
     public class ClaimStakeReward2 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         public const long ObsoletedIndex = 5_549_200L;
@@ -39,7 +40,6 @@ namespace Nekoyume.Action
             {
                 return context.PreviousStates;
             }
-
             var states = context.PreviousStates;
             CheckObsolete(ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);

@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash15")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class HackAndSlash15 : GameAction, IHackAndSlashV7
     {
         public List<Guid> costumes;
@@ -81,6 +82,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             return Execute(context.PreviousStates,
                 context.Signer,
                 context.BlockIndex,

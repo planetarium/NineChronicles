@@ -16,6 +16,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activations")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class CreatePendingActivations : ActionBase, ICreatePendingActivationsV1
     {
         public IList<(byte[] Address, byte[] Nonce, byte[] PublicKey)> PendingActivations { get; internal set; }
@@ -39,6 +40,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             CheckPermission(context);
             var state = context.PreviousStates;
             foreach ((byte[] address, byte[] nonce, byte[] publicKey) in PendingActivations)

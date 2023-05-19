@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("transfer_assets")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class TransferAssets0 : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
         public const int RecipientsCapacity = 100;
@@ -83,6 +84,7 @@ namespace Nekoyume.Action
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             if (Recipients.Count > RecipientsCapacity)
             {
                 throw new ArgumentOutOfRangeException($"{nameof(Recipients)} must be less than or equal {RecipientsCapacity}.");

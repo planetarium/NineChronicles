@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement10")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class ItemEnhancement10 : GameAction, IItemEnhancementV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Blacksmith.Derive("_0_0");
@@ -141,6 +142,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)

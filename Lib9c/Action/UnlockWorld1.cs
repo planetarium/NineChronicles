@@ -15,6 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("unlock_world")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class UnlockWorld1: GameAction, IUnlockWorldV1
     {
         public List<int> WorldIds;
@@ -40,6 +41,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
             {
                 throw new InvalidWorldException();

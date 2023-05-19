@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle10")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class MimisbrunnrBattle10 : GameAction, IMimisbrunnrBattleV4
     {
         public List<Guid> costumes;
@@ -77,6 +78,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var sw = new Stopwatch();
             sw.Start();

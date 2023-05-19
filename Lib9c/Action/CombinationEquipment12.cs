@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment12")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class CombinationEquipment12 : GameAction, ICombinationEquipmentV2
     {
         public const string AvatarAddressKey = "a";
@@ -83,6 +84,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
 
             if (recipeId != 1)
             {

@@ -26,6 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class HackAndSlash16 : GameAction, IHackAndSlashV8
     {
         public List<Guid> Costumes;
@@ -91,6 +92,8 @@ namespace Nekoyume.Action
             {
                 return context.PreviousStates;
             }
+
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
 
             return Execute(
                 context.PreviousStates,
