@@ -555,7 +555,7 @@ namespace Lib9c.Tests.Action
                 actionEvaluator: new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 ),
                 renderers: blockPolicySource.GetRenderers()

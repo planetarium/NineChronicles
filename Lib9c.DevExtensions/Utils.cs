@@ -86,13 +86,15 @@ namespace Lib9c.DevExtensions
                 genesisBlockHash
             );
             var blockChainStates = new BlockChainStates(store, stateStore);
+            var devActionLoader = TypedActionLoader.Create(typeof(Utils).Assembly, typeof(ActionBase));
+            var lib9cActionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            var actionLoader = new TypedActionLoader(
+                devActionLoader.Types.Union(lib9cActionLoader.Types).ToDictionary(kv => kv.Key, kv => kv.Value));
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,
-                new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                actionLoader,
                 null);
-            PolymorphicAction<ActionBase>.ReloadLoader(
-                new[] { typeof(ActionBase).Assembly, typeof(Utils).Assembly });
 
             BlockChain chain;
             if (store.GetCanonicalChainId() is null)

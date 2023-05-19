@@ -65,7 +65,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -159,7 +159,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -213,7 +213,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -270,7 +270,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -320,7 +320,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 )
             );
@@ -422,7 +422,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                     feeCalculator: null
                 )
             );

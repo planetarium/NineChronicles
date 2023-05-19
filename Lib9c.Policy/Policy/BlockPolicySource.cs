@@ -58,7 +58,7 @@ namespace Nekoyume.Blockchain.Policy
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            _actionLoader ??= TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
 
             LoggedActionRenderer =
                 new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
