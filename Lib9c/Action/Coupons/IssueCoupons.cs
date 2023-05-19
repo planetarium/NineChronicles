@@ -12,6 +12,10 @@ namespace Nekoyume.Action.Coupons
     [ActionType("issue_coupons")]
     public sealed class IssueCoupons : GameAction
     {
+        public IssueCoupons()
+        {
+        }
+
         public IssueCoupons(IImmutableDictionary<RewardSet, uint> rewards, Address recipient)
         {
             Rewards = rewards;

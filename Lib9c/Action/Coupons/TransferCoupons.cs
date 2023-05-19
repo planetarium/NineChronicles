@@ -11,6 +11,10 @@ namespace Nekoyume.Action.Coupons
     [ActionType("transfer_coupons")]
     public sealed class TransferCoupons : GameAction
     {
+        public TransferCoupons()
+        {
+        }
+
         public TransferCoupons(
             IImmutableDictionary<Address, IImmutableSet<Guid>> couponsPerRecipient)
         {
