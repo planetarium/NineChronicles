@@ -20,6 +20,8 @@ using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using Libplanet.Action;
 using Lib9c.Abstractions;
 using System.Reflection;
+using Lib9c;
+using Libplanet.Assets;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -181,7 +183,8 @@ namespace Nekoyume.BlockChain.Policy
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
             IActionLoader actionLoader,
-            Transaction transaction)
+            Transaction transaction,
+            long meadStartIndex = MeadConfig.MeadTransferStartIndex)
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
@@ -202,60 +205,85 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                // Check Activation
-                try
+                if (index < meadStartIndex)
                 {
-                    if (transaction.Actions is { } rawActions &&
-                        rawActions.Count == 1 &&
-                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
-                        polyAction.InnerAction is IActivateAccount activate)
+                    // Check ActivateAccount
+                    if (((ITransaction)transaction).Actions is { } customActions &&
+                        customActions.Count == 1 &&
+                        customActions.First() is Dictionary dictionary &&
+                        dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
+                        typeIdValue is Text typeId &&
+                        (typeId == "activate_account2" || typeId == "activate_account"))
                     {
+                        if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
+                                valuesValue is Dictionary values))
+                        {
+                            return new TxPolicyViolationException(
+                                $"Transaction {transaction.Id} has an invalid action.",
+                                transaction.Id);
+                        }
+
+                        IAction action = actionLoader.LoadAction(index, dictionary);
+                        if (!(action is IActivateAccount activateAccount))
+                        {
+                            return new TxPolicyViolationException(
+                                $"Transaction {transaction.Id} has an invalid action.",
+                                transaction.Id);
+                        }
+                        action.LoadPlainValue(values);
+
                         return transaction.Nonce == 0 &&
-                            blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
-                            new PendingActivationState(rawPending).Verify(activate.Signature)
+                            blockChain.GetState(activateAccount.PendingAddress) is Dictionary
+                                rawPending &&
+                            new PendingActivationState(rawPending).Verify(activateAccount.Signature)
                                 ? null
                                 : new TxPolicyViolationException(
                                     $"Transaction {transaction.Id} has an invalid activate action.",
                                     transaction.Id);
                     }
-                }
-                catch (Exception e)
-                {
-                    return new TxPolicyViolationException(
-                        $"Transaction {transaction.Id} has an invalid action.",
-                        transaction.Id,
-                        e);
-                }
 
-                // Check admin
-                if (IsAdminTransaction(blockChain, transaction))
-                {
+                    // Check admin
+                    if (IsAdminTransaction(blockChain, transaction))
+                    {
+                        return null;
+                    }
+
+                    switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                    {
+                        case null:
+                            // Fallback for pre-migration.
+                            if (blockChain.GetState(ActivatedAccountsState.Address)
+                                is Dictionary asDict)
+                            {
+                                IImmutableSet<Address> activatedAccounts =
+                                    new ActivatedAccountsState(asDict).Accounts;
+                                return !activatedAccounts.Any() ||
+                                    activatedAccounts.Contains(transaction.Signer)
+                                        ? null
+                                        : new TxPolicyViolationException(
+                                            $"Transaction {transaction.Id} is by a signer " +
+                                            $"without account activation: {transaction.Signer}",
+                                            transaction.Id);
+                            }
+                            return null;
+                        case Bencodex.Types.Boolean _:
+                            return null;
+                    }
+
                     return null;
                 }
-
-                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                if (transaction.MaxGasPrice is null || transaction.GasLimit is null)
                 {
-                    case null:
-                        // Fallback for pre-migration.
-                        if (blockChain.GetState(ActivatedAccountsState.Address)
-                            is Dictionary asDict)
-                        {
-                            IImmutableSet<Address> activatedAccounts =
-                                new ActivatedAccountsState(asDict).Accounts;
-                            return !activatedAccounts.Any() ||
-                                activatedAccounts.Contains(transaction.Signer)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} is by a signer " +
-                                    $"without account activation: {transaction.Signer}",
-                                    transaction.Id);
-                        }
-                        return null;
-                    case Bencodex.Types.Boolean _:
-                        return null;
+                    return new
+                        TxPolicyViolationException("Transaction has no gas price or limit.",
+                        transaction.Id);
                 }
-
-                return null;
+                if (transaction.MaxGasPrice * transaction.GasLimit > blockChain.GetBalance(transaction.Signer, Currencies.Mead))
+                {
+                    return new TxPolicyViolationException(
+                        $"Transaction {transaction.Id} signer insufficient transaction fee",
+                        transaction.Id);
+                }
             }
             catch (InvalidSignatureException)
             {
