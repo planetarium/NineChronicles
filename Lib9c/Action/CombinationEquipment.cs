@@ -716,24 +716,22 @@ namespace Nekoyume.Action
             SkillSheet skillSheet,
             IRandom random)
         {
-            try
-            {
-                var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
-                var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
-                var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
-
-                var hasStatDamageRatio = row.StatDamageRatioMin != default && row.StatDamageRatioMax != default;
-                var statDamageRatio = hasStatDamageRatio ?
-                    random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1) : default;
-                var refStatType = hasStatDamageRatio ? row.ReferencedStatType : StatType.NONE;
-
-                var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, refStatType);
-                return skill;
-            }
-            catch (InvalidOperationException)
+            var skillRow = skillSheet.OrderedList.FirstOrDefault(r => r.Id == row.SkillId);
+            if (skillRow == null)
             {
                 return null;
             }
+
+            var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
+            var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
+
+            var hasStatDamageRatio = row.StatDamageRatioMin != default && row.StatDamageRatioMax != default;
+            var statDamageRatio = hasStatDamageRatio ?
+                random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1) : default;
+            var refStatType = hasStatDamageRatio ? row.ReferencedStatType : StatType.NONE;
+
+            var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, refStatType);
+            return skill;
         }
 
         public static void AddSkillOption(
@@ -752,7 +750,6 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
                 var skill = GetSkill(optionRow, skillSheet, random);
                 if (!(skill is null))
                 {
