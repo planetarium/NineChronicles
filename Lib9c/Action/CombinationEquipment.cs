@@ -721,8 +721,13 @@ namespace Nekoyume.Action
                 var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
                 var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
                 var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
-                var statDamageRatio = random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1);
-                var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, row.ReferencedStatType);
+
+                var hasStatDamageRatio = row.StatDamageRatioMin != default && row.StatDamageRatioMax != default;
+                var statDamageRatio = hasStatDamageRatio ?
+                    random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1) : default;
+                var refStatType = hasStatDamageRatio ? row.ReferencedStatType : StatType.NONE;
+
+                var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, refStatType);
                 return skill;
             }
             catch (InvalidOperationException)
@@ -747,17 +752,8 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                Skill skill;
-                try
-                {
-                    var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
-                    skill = GetSkill(optionRow, skillSheet, random);
-                }
-                catch (InvalidOperationException)
-                {
-                    continue;
-                }
-
+                var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
+                var skill = GetSkill(optionRow, skillSheet, random);
                 if (!(skill is null))
                 {
                     equipment.Skills.Add(skill);
