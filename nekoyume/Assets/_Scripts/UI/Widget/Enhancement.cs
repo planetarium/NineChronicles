@@ -432,8 +432,7 @@ namespace Nekoyume.UI
                         var skillRow = skills[i].skillRow;
                         view.SetDescriptionButton(() =>
                         {
-                            skillTooltip.Set(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
-                            skillTooltip.gameObject.SetActive(true);
+                            skillTooltip.Show(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
                             skillTooltip.transform.position = view.DescriptionPosition;
                         });
                     }
@@ -461,9 +460,8 @@ namespace Nekoyume.UI
                         var skillRow = skills[i].skillRow;
                         view.SetDescriptionButton(() =>
                         {
-                            skillTooltip.Set(
+                            skillTooltip.Show(
                                 skillRow, totalChance, totalChance, totalPower, totalPower, totalRatio, totalRatio, refStatType);
-                            skillTooltip.gameObject.SetActive(true);
                             skillTooltip.transform.position = view.DescriptionPosition;
                         });
                     }

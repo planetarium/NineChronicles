@@ -16,14 +16,12 @@ namespace Nekoyume.UI.Module.Common
         [SerializeField]
         protected TextMeshProUGUI contentText;
 
-        private void Start()
+        public void Update()
         {
-            touchHandler.OnClick
-                .Subscribe(_ =>
-                {
-                    gameObject.SetActive(false);
-                })
-                .AddTo(gameObject);
+            if (Input.GetMouseButtonDown(0))
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         public void Set(string title, string content)

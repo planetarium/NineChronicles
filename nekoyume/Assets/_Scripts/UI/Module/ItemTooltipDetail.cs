@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -80,6 +81,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private List<SkillView> skills;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         public void Set(ItemBase itemBase, int itemCount, bool levelLimit)
         {
@@ -356,7 +360,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var skill in skills.Where(skill => !skill.IsShown))
             {
-                skill.SetData(model);
+                skill.SetData(model, skillTooltip);
                 skill.Show();
 
                 return;
