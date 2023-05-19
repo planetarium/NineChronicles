@@ -16,10 +16,8 @@ using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using Libplanet.Action;
 using Lib9c.Abstractions;
-using System.Reflection;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -207,8 +205,8 @@ namespace Nekoyume.Blockchain.Policy
                 {
                     if (transaction.Actions is { } rawActions &&
                         rawActions.Count == 1 &&
-                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
-                        polyAction.InnerAction is IActivateAccount activate)
+                        actionLoader.LoadAction(index, rawActions.First()) is ActionBase action &&
+                        action is IActivateAccount activate)
                     {
                         return transaction.Nonce == 0 &&
                             blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&

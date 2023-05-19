@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
@@ -12,7 +10,6 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using static Libplanet.Blocks.BlockMarshaler;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.Blockchain.Policy
 {

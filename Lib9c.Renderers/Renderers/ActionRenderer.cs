@@ -1,11 +1,11 @@
 using System;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 using Libplanet.State;
 using Nekoyume.Action;
-using static Nekoyume.Action.ActionBase;
 using Serilog;
 using Bencodex.Types;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -17,24 +17,30 @@ using System.Reactive.Linq;
 
 namespace Lib9c.Renderers
 {
-    using NCAction = PolymorphicAction<ActionBase>;
-    using NCBlock = Block;
-
     public class ActionRenderer : IActionRenderer
     {
+        private readonly IActionLoader _actionLoader;
+
         public Subject<ActionEvaluation<ActionBase>> ActionRenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
 
         public Subject<ActionEvaluation<ActionBase>> ActionUnrenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
 
-        public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockEndSubject =
-            new Subject<(NCBlock OldTip, NCBlock NewTip)>();
+        public readonly Subject<(Block OldTip, Block NewTip)> BlockEndSubject =
+            new Subject<(Block OldTip, Block NewTip)>();
+
+        public ActionRenderer()
+        {
+            _actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+        }
 
         public void RenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
+                Action = context.BlockAction
+                    ? new RewardGold()
+                    : (ActionBase)_actionLoader.LoadAction(context.BlockIndex, action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -46,7 +52,9 @@ namespace Lib9c.Renderers
         public void UnrenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>
             ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
+                Action = context.BlockAction
+                    ? new RewardGold()
+                    : (ActionBase)_actionLoader.LoadAction(context.BlockIndex, action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -64,7 +72,9 @@ namespace Lib9c.Renderers
             Log.Error(exception, "{action} execution failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
+                Action = context.BlockAction
+                    ? new RewardGold()
+                    : (ActionBase)_actionLoader.LoadAction(context.BlockIndex, action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -78,7 +88,9 @@ namespace Lib9c.Renderers
         public void UnrenderActionError(IValue action, IActionContext context, Exception exception) =>
             ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
-                Action = context.BlockAction ? new RewardGold() : GetActionBase(action),
+                Action = context.BlockAction
+                    ? new RewardGold()
+                    : (ActionBase)_actionLoader.LoadAction(context.BlockIndex, action),
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
@@ -89,12 +101,12 @@ namespace Lib9c.Renderers
             });
 
         [Obsolete("Use BlockRenderer.RenderBlock(oldTip, newTip)")]
-        public void RenderBlock(NCBlock oldTip, NCBlock newTip)
+        public void RenderBlock(Block oldTip, Block newTip)
         {
             // RenderBlock should be handled by BlockRenderer
         }
 
-        public void RenderBlockEnd(NCBlock oldTip, NCBlock newTip)
+        public void RenderBlockEnd(Block oldTip, Block newTip)
         {
             BlockEndSubject.OnNext((oldTip, newTip));
         }
@@ -165,13 +177,5 @@ namespace Lib9c.Renderers
                     RandomSeed = eval.RandomSeed,
                     Extra = eval.Extra,
                 });
-
-        private static ActionBase GetActionBase(IValue actionValue)
-        {
-            var action = new NCAction();
-            action.LoadPlainValue(actionValue);
-
-            return action.InnerAction;
-        }
     }
 }

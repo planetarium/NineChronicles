@@ -79,7 +79,7 @@ namespace Nekoyume
                 authorizedMinersState: authorizedMinersState,
                 creditsState: credits is null ? null : new CreditsState(credits)
             );
-            List<PolymorphicAction<ActionBase>> actions = new List<PolymorphicAction<ActionBase>>
+            List<ActionBase> actions = new List<ActionBase>
             {
                 initialStatesAction,
             };
@@ -95,11 +95,10 @@ namespace Nekoyume
             };
             if (!(actionBases is null))
             {
-                actions.AddRange(actionBases.Select(actionBase =>
-                    new PolymorphicAction<ActionBase>(actionBase)));
+                actions.AddRange(actionBases);
             }
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
-            var actionLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            var actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
             var actionEvaluator = new ActionEvaluator(
                 _ => blockAction,
                 new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),

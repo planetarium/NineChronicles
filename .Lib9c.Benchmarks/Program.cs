@@ -16,11 +16,11 @@ using Libplanet.RocksDBStore;
 using Libplanet.State;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Blockchain.Policy;
 using Serilog;
 using Serilog.Events;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Benchmarks
 {
@@ -90,7 +90,7 @@ namespace Lib9c.Benchmarks
             var actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 new BlockChainStates(store, stateStore),
-                new SingleActionLoader(typeof(NCAction)),
+                TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
                 null);
             var chain = new BlockChain(
                 policy,

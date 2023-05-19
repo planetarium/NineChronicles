@@ -22,9 +22,6 @@
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-#pragma warning disable SA1135
-    using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-#pragma warning restore SA1135
 
     public static class BlockChainHelper
     {

@@ -525,13 +525,14 @@ namespace Lib9c.Tests.Action
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
-                var actionLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+                var actionLoader = TypedActionLoader.Create(
+                    typeof(ActionBase).Assembly, typeof(ActionBase));
                 var tempActionEvaluator = new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(
                         new MemoryStore(),
                         new TrieStateStore(new MemoryKeyValueStore())),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: actionLoader,
                     feeCalculator: null);
                 genesis = BlockChain.ProposeGenesisBlock(
                     tempActionEvaluator,
@@ -540,7 +541,7 @@ namespace Lib9c.Tests.Action
                             0,
                             new PrivateKey(),
                             null,
-                            new PolymorphicAction<ActionBase>[] { initializeStates }))
+                            new ActionBase[] { initializeStates }))
                 );
             }
 

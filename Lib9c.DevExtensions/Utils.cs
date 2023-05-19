@@ -24,7 +24,6 @@ using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Core;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.DevExtensions
 {
