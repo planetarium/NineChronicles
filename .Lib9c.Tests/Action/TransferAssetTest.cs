@@ -323,13 +323,15 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
             Dictionary plainValue = (Dictionary)action.PlainValue;
+            Dictionary values = (Dictionary)plainValue["values"];
 
-            Assert.Equal(_sender, plainValue["sender"].ToAddress());
-            Assert.Equal(_recipient, plainValue["recipient"].ToAddress());
-            Assert.Equal(_currency * 100, plainValue["amount"].ToFungibleAssetValue());
+            Assert.Equal((Text)"transfer_asset3", plainValue["type_id"]);
+            Assert.Equal(_sender, values["sender"].ToAddress());
+            Assert.Equal(_recipient, values["recipient"].ToAddress());
+            Assert.Equal(_currency * 100, values["amount"].ToFungibleAssetValue());
             if (!(memo is null))
             {
-                Assert.Equal(memo, plainValue["memo"].ToDotnetString());
+                Assert.Equal(memo, values["memo"].ToDotnetString());
             }
         }
 
@@ -349,7 +351,9 @@ namespace Lib9c.Tests.Action
                 pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text)"memo", memo.Serialize()));
             }
 
-            var plainValue = new Dictionary(pairs);
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset3")
+                .Add("values", new Dictionary(pairs));
             var action = new TransferAsset();
             action.LoadPlainValue(plainValue);
 
@@ -390,13 +394,15 @@ namespace Lib9c.Tests.Action
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
             var action = new TransferAsset();
-            var plainValue = new Dictionary(new[]
-            {
-                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
-            });
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset3")
+                .Add("values", new Dictionary(new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+                }));
 
             Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
         }

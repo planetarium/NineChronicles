@@ -86,7 +86,9 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", "transfer_asset3")
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
@@ -151,7 +153,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();

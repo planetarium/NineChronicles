@@ -55,14 +55,18 @@ namespace Lib9c.Tests.Action
             byte[] nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             PublicKey pubKey = new PrivateKey().PublicKey;
             Address address = PendingActivationState.DeriveAddress(nonce, pubKey);
-            var pv = new List()
-                .Add(new List(address.Serialize(), (Binary)nonce, pubKey.Serialize()));
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "create_pending_activations")
+                .Add("values", new List()
+                    .Add(new List(address.Serialize(), (Binary)nonce, pubKey.Serialize())));
 
             var action = new CreatePendingActivations();
-            action.LoadPlainValue(pv);
+            action.LoadPlainValue(plainValue);
 
-            var pvFromAction = Assert.IsType<List>(action.PlainValue);
-            var activationFromAction = Assert.IsType<List>(pvFromAction[0]);
+            var plainValueFromAction = Assert.IsType<Dictionary>(action.PlainValue);
+            Assert.Equal((Text)"create_pending_activations", plainValueFromAction["type_id"]);
+            var valuesFromAction = Assert.IsType<List>(plainValueFromAction["values"]);
+            var activationFromAction = Assert.IsType<List>(valuesFromAction[0]);
 
             Assert.Equal(address, new Address(activationFromAction[0]));
             Assert.Equal(nonce, (Binary)activationFromAction[1]);

@@ -32,12 +32,13 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IValue PlainValue =>
-            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "stake")
+            .Add("values", Dictionary.Empty.Add(AmountKey, Amount));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dictionary = (Dictionary) plainValue;
+            var dictionary = (Dictionary)((Dictionary)plainValue)["values"];
             Amount = dictionary[AmountKey].ToBigInteger();
         }
 
