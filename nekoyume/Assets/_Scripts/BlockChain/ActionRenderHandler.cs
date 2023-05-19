@@ -2222,8 +2222,8 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = TableSheets.Instance;
-            var myDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.myAvatarAddress);
-            var enemyDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.enemyAvatarAddress);
+            (var myDigest, var enemyDigest) =
+                await GetArenaPlayerDigestAsync(eval.Action.myAvatarAddress, eval.Action.enemyAvatarAddress);
             var previousMyScore = RxProps.PlayersArenaParticipant.HasValue
                 ? RxProps.PlayersArenaParticipant.Value.Score
                 : ArenaScore.ArenaScoreDefault;
@@ -2298,20 +2298,43 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async Task<ArenaPlayerDigest> GetArenaPlayerDigestAsync(IAccountStateDelta states, Address avatarAddress)
+        private async Task<(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)> GetArenaPlayerDigestAsync(
+            Address myAvatarAddress,
+            Address enemyAvatarAddress)
         {
-            var avatarState = states.GetAvatarStateV2(avatarAddress);
-            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
-            var itemSlotState =
-                itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
-            var runeSlotState =
-                runeSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
-            var runeStates = await avatarState.GetRuneStatesAsync();
+            var avatarStates = await Game.Game.instance.Agent.GetAvatarStates(new[] { myAvatarAddress, enemyAvatarAddress });
+            var myAvatarState = avatarStates[myAvatarAddress];
+            var enemyAvatarState = avatarStates[enemyAvatarAddress];
 
-            return new ArenaPlayerDigest(avatarState,
-                itemSlotState.Equipments,
-                itemSlotState.Costumes,
-                runeStates);
+            var (myItemSlotStates, myRuneSlotStates) = await myAvatarState.GetSlotStatesAsync();
+            var myItemSlotState =
+                myItemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var myRuneSlotState =
+                myRuneSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var myRuneStates = (await myAvatarState.GetRuneStatesAsync())
+                .Where(x => myRuneSlotState.GetRuneSlot().Any(slot => x.RuneId == slot.RuneId))
+                .ToList();
+
+            var myDigest = new ArenaPlayerDigest(myAvatarState,
+                myItemSlotState.Equipments,
+                myItemSlotState.Costumes,
+                myRuneStates);
+
+            var (enemyItemSlotStates, enemyRuneSlotStates) = await enemyAvatarState.GetSlotStatesAsync();
+            var enemyItemSlotState =
+                enemyItemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var enemyRuneSlotState =
+                enemyRuneSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var enemyRuneStates = (await enemyAvatarState.GetRuneStatesAsync())
+                .Where(x => enemyRuneSlotState.GetRuneSlot().Any(slot => x.RuneId == slot.RuneId))
+                .ToList();
+
+            var enemyDigest = new ArenaPlayerDigest(enemyAvatarState,
+                enemyItemSlotState.Equipments,
+                enemyItemSlotState.Costumes,
+                enemyRuneStates);
+
+            return (myDigest, enemyDigest);
         }
 
         private async void ResponseBattleGrandFinaleAsync(ActionEvaluation<BattleGrandFinale> eval)
@@ -2361,9 +2384,8 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = TableSheets.Instance;
-            var myDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.myAvatarAddress);
-            var enemyDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.enemyAvatarAddress);
-
+            (var myDigest, var enemyDigest) =
+                await GetArenaPlayerDigestAsync(eval.Action.myAvatarAddress, eval.Action.enemyAvatarAddress);
             int outputMyScore = eval.OutputStates.TryGetState(
                 eval.Action.myAvatarAddress.Derive(
                     string.Format(
