@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
     [ActionType(ActionTypeName)]
     public class BattleGrandFinale : GameAction, IBattleGrandFinaleV1
     {
@@ -43,6 +44,7 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
+        // Todo : Remove this ExtraValue after hard fork
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
 
