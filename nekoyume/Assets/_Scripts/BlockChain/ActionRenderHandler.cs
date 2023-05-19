@@ -466,7 +466,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<BattleGrandFinale>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBattleGrandFinale)
+                .Subscribe(ResponseBattleGrandFinaleAsync)
                 .AddTo(_disposables);
         }
 
@@ -2222,89 +2222,27 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = TableSheets.Instance;
-            ArenaPlayerDigest? myDigest = null;
-            ArenaPlayerDigest? enemyDigest = null;
-            int? previousMyScore = null;
-            int? outputMyScore = null;
-            if (eval.Extra is { })
-            {
-                myDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
-                    out var myDigestValue)
-                    ? myDigestValue is List myDigestList
-                        ? new ArenaPlayerDigest(myDigestList)
-                        : null
-                    : null;
-
-                enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraEnemyArenaPlayerDigest),
-                    out var enemyDigestValue)
-                    ? enemyDigestValue is List enemyDigestList
-                        ? new ArenaPlayerDigest(enemyDigestList)
-                        : null
-                    : null;
-
-                previousMyScore = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraPreviousMyScore),
-                    out var previousMyScoreValue)
-                    ? previousMyScoreValue is Text previousMyScoreText
-                        ? previousMyScoreText.ToInteger()
-                        : ArenaScore.ArenaScoreDefault
-                    : ArenaScore.ArenaScoreDefault;
-
-                // TODO: Add `ExtraOutputMyScore` to `BattleArena`
-                outputMyScore = null;
-            }
-
-            if (!myDigest.HasValue)
-            {
-                var myAvatarState = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
-                var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
-                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Arena);
-                myDigest = new ArenaPlayerDigest(myAvatarState,
-                    itemSlotState.Equipments,
-                    itemSlotState.Costumes,
-                    runeStates);
-            }
-
-            if (!enemyDigest.HasValue)
-            {
-                var enemyAvatarState =
-                    eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
-                var (itemSlotStates, runeSlotStates) = await enemyAvatarState.GetSlotStatesAsync();
-                var itemSlotState =
-                    itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
-                var runeSlotState =
-                    runeSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
-                itemSlotState ??= new ItemSlotState(BattleType.Arena);
-                runeSlotState ??= new RuneSlotState(BattleType.Arena);
-
-                var runeStates = await enemyAvatarState.GetRuneStatesAsync();
-                enemyDigest = new ArenaPlayerDigest(
-                    enemyAvatarState,
-                    itemSlotState.Equipments,
-                    itemSlotState.Costumes,
-                    runeStates);
-            }
-
-            previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
+            var myDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.myAvatarAddress);
+            var enemyDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.enemyAvatarAddress);
+            var previousMyScore = RxProps.PlayersArenaParticipant.HasValue
                 ? RxProps.PlayersArenaParticipant.Value.Score
                 : ArenaScore.ArenaScoreDefault;
-
+            
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
+
+            int outMyScore = eval.OutputStates.TryGetState(
+                ArenaScore.DeriveAddress(eval.Action.myAvatarAddress, championshipId, round),
+                out List outputMyScoreList)
+                ? (Integer)outputMyScoreList[1]
+                : ArenaScore.ArenaScoreDefault;
+
             var hasMedalReward =
                 tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
                 row.ArenaType != ArenaType.OffSeason;
             var medalItem = ItemFactory.CreateMaterial(
                 tableSheets.MaterialItemSheet,
                 ArenaHelper.GetMedalItemId(championshipId, round));
-
-            outputMyScore ??= eval.OutputStates.TryGetState(
-                ArenaScore.DeriveAddress(eval.Action.myAvatarAddress, championshipId, round),
-                out List outputMyScoreList)
-                ? (Integer)outputMyScoreList[1]
-                : ArenaScore.ArenaScoreDefault;
 
             var random = new LocalRandom(eval.RandomSeed);
             var winCount = 0;
@@ -2315,16 +2253,16 @@ namespace Nekoyume.BlockChain
             {
                 var simulator = new ArenaSimulator(random);
                 var log = simulator.Simulate(
-                    myDigest.Value,
-                    enemyDigest.Value,
+                    myDigest,
+                    enemyDigest,
                     tableSheets.GetArenaSimulatorSheets());
 
                 var reward = RewardSelector.Select(
                     random,
                     tableSheets.WeeklyArenaRewardSheet,
                     tableSheets.MaterialItemSheet,
-                    myDigest.Value.Level,
-                    ArenaHelper.GetRewardCount(previousMyScore.Value));
+                    myDigest.Level,
+                    ArenaHelper.GetRewardCount(previousMyScore));
 
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
@@ -2340,7 +2278,7 @@ namespace Nekoyume.BlockChain
                     defeatCount++;
                 }
 
-                log.Score = outputMyScore.Value;
+                log.Score = outMyScore;
 
                 logs.Add(log);
                 rewards.AddRange(reward);
@@ -2352,15 +2290,31 @@ namespace Nekoyume.BlockChain
                 Game.Game.instance.Arena.Enter(
                     logs.First(),
                     rewards,
-                    myDigest.Value,
-                    enemyDigest.Value,
+                    myDigest,
+                    enemyDigest,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress,
                     winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
             }
         }
 
-        private void ResponseBattleGrandFinale(ActionEvaluation<BattleGrandFinale> eval)
+        private async Task<ArenaPlayerDigest> GetArenaPlayerDigestAsync(IAccountStateDelta states, Address avatarAddress)
+        {
+            var avatarState = states.GetAvatarStateV2(avatarAddress);
+            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
+            var itemSlotState =
+                itemSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var runeSlotState =
+                runeSlotStates.FirstOrDefault(x => x.BattleType == BattleType.Arena);
+            var runeStates = await avatarState.GetRuneStatesAsync();
+
+            return new ArenaPlayerDigest(avatarState,
+                itemSlotState.Equipments,
+                itemSlotState.Costumes,
+                runeStates);
+        }
+
+        private async void ResponseBattleGrandFinaleAsync(ActionEvaluation<BattleGrandFinale> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -2407,56 +2361,10 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = TableSheets.Instance;
-            ArenaPlayerDigest? myDigest = null;
-            ArenaPlayerDigest? enemyDigest = null;
-            if (eval.Extra is { })
-            {
-                myDigest = eval.Extra.TryGetValue(
-                    nameof(BattleGrandFinale.ExtraMyArenaPlayerDigest),
-                    out var myDigestValue)
-                    ? myDigestValue is List myDigestList
-                        ? new ArenaPlayerDigest(myDigestList)
-                        : (ArenaPlayerDigest?)null
-                    : null;
+            var myDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.myAvatarAddress);
+            var enemyDigest = await GetArenaPlayerDigestAsync(eval.OutputStates, eval.Action.enemyAvatarAddress);
 
-                enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleGrandFinale.ExtraEnemyArenaPlayerDigest),
-                    out var enemyDigestValue)
-                    ? enemyDigestValue is List enemyDigestList
-                        ? new ArenaPlayerDigest(enemyDigestList)
-                        : (ArenaPlayerDigest?)null
-                    : null;
-            }
-
-            if (!myDigest.HasValue)
-            {
-                var myAvatarState
-                    = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
-                if (!eval.OutputStates.TryGetArenaAvatarState(
-                        ArenaAvatarState.DeriveAddress(eval.Action.myAvatarAddress),
-                        out var myArenaAvatarState))
-                {
-                    Debug.LogError("Failed to get ArenaAvatarState of mine");
-                }
-
-                myDigest = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
-            }
-
-            if (!enemyDigest.HasValue)
-            {
-                var enemyAvatarState
-                    = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
-                if (!eval.OutputStates.TryGetArenaAvatarState(
-                        ArenaAvatarState.DeriveAddress(eval.Action.enemyAvatarAddress),
-                        out var enemyArenaAvatarState))
-                {
-                    Debug.LogError("Failed to get ArenaAvatarState of enemy");
-                }
-
-                enemyDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
-            }
-
-            int? outputMyScore = eval.OutputStates.TryGetState(
+            int outputMyScore = eval.OutputStates.TryGetState(
                 eval.Action.myAvatarAddress.Derive(
                     string.Format(
                         CultureInfo.InvariantCulture,
@@ -2469,10 +2377,10 @@ namespace Nekoyume.BlockChain
             var random = new LocalRandom(eval.RandomSeed);
             var simulator = new ArenaSimulator(random);
             var log = simulator.Simulate(
-                myDigest.Value,
-                enemyDigest.Value,
+                myDigest,
+                enemyDigest,
                 tableSheets.GetArenaSimulatorSheets());
-            log.Score = outputMyScore.Value;
+            log.Score = outputMyScore;
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
@@ -2480,8 +2388,8 @@ namespace Nekoyume.BlockChain
                 Game.Game.instance.Arena.Enter(
                     log,
                     new List<ItemBase>(),
-                    myDigest.Value,
-                    enemyDigest.Value,
+                    myDigest,
+                    enemyDigest,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
             }
