@@ -6,15 +6,18 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Action.Sys;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Consensus;
 using Libplanet.Crypto;
+using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -96,8 +99,15 @@ namespace Nekoyume
                     new PolymorphicAction<ActionBase>(actionBase)));
             }
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
+            var actionLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            var actionEvaluator = new ActionEvaluator(
+                _ => blockAction,
+                new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),
+                actionLoader,
+                null);
             return
-                BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
+                BlockChain.ProposeGenesisBlock(
+                    actionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
                         .Add(Transaction.Create(
                             0, privateKey, null, actions))

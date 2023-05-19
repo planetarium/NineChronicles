@@ -2,14 +2,13 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Lib9c.Formatters;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;

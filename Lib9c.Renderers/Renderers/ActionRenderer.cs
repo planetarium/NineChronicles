@@ -3,6 +3,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
+using Libplanet.State;
 using Nekoyume.Action;
 using static Nekoyume.Action.ActionBase;
 using Serilog;

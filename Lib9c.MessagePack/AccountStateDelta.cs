@@ -7,6 +7,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Libplanet.Assets;
 using Libplanet.Consensus;
 
@@ -116,7 +117,7 @@ namespace Lib9c.Formatters
                 return FungibleAssetValue.FromRawValue(currency, totalSupplyValue);
             }
 
-            return currency * 0; 
+            return currency * 0;
         }
 
         public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)

@@ -19,7 +19,7 @@ using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
@@ -41,7 +41,7 @@ namespace Lib9c.DevExtensions
         }
 
         public static (
-            BlockChain<NCAction> Chain,
+            BlockChain Chain,
             IStore Store,
             IKeyValueStore StateKVStore,
             IStateStore StateStore
@@ -53,8 +53,8 @@ namespace Lib9c.DevExtensions
         )
         {
             var policySource = new BlockPolicySource(logger);
-            IBlockPolicy<NCAction> policy = policySource.GetPolicy();
-            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
+            IBlockPolicy policy = policySource.GetPolicy();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             IStore store = new RocksDBStore(storePath);
             if (stateKeyValueStore is null)
             {
@@ -94,10 +94,10 @@ namespace Lib9c.DevExtensions
             PolymorphicAction<ActionBase>.ReloadLoader(
                 new[] { typeof(ActionBase).Assembly, typeof(Utils).Assembly });
 
-            BlockChain<NCAction> chain;
+            BlockChain chain;
             if (store.GetCanonicalChainId() is null)
             {
-                chain = BlockChain<NCAction>.Create(
+                chain = BlockChain.Create(
                     policy: policy,
                     stagePolicy: stagePolicy,
                     store: store,
@@ -108,7 +108,7 @@ namespace Lib9c.DevExtensions
             }
             else
             {
-                chain = new BlockChain<NCAction>(
+                chain = new BlockChain(
                     policy: policy,
                     stagePolicy: stagePolicy,
                     store: store,
@@ -152,9 +152,7 @@ namespace Lib9c.DevExtensions
         }
 
         public static Block ParseBlockOffset(
-            BlockChain<NCAction> chain,
-            string blockHashOrIndex,
-            long defaultIndex = -1)
+            BlockChain chain, string blockHashOrIndex, long defaultIndex = -1)
         {
             if (!(blockHashOrIndex is string blockStr))
             {

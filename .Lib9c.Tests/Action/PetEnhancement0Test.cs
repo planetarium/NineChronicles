@@ -4,9 +4,9 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
@@ -14,7 +14,6 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-    using Nekoyume.TableData.Pet;
     using Xunit;
 
     public class PetEnhancement0Test

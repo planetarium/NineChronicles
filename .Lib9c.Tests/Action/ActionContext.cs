@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Blocks;
+    using Libplanet.State;
     using Libplanet.Tx;
 
     public class ActionContext : IActionContext

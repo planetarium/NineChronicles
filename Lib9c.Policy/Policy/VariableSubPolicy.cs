@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Libplanet.Blocks;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     public abstract class VariableSubPolicy<T> : IVariableSubPolicy<T>
     {

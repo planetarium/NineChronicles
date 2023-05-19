@@ -6,16 +6,16 @@ using Libplanet.Tx;
 using System;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
-    public class BlockPolicy : BlockPolicy<NCAction>
+    public class NCBlockPolicy : BlockPolicy
     {
-        public BlockPolicy(
+        public NCBlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
-            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException>
+            Func<BlockChain, Transaction, TxPolicyViolationException>
                 validateNextBlockTx = null,
-            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException>
+            Func<BlockChain, Block, BlockPolicyViolationException>
                 validateNextBlock = null,
             Func<long, long> getMaxTransactionsBytes = null,
             Func<long, int> getMinTransactionsPerBlock = null,

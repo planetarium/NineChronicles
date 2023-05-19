@@ -3,7 +3,7 @@ namespace Lib9c.Tests.Model.State
     using Bencodex.Types;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model.State;
     using Xunit;
 

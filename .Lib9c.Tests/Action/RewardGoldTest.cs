@@ -18,14 +18,15 @@ namespace Lib9c.Tests.Action
     using Libplanet.Blockchain.Policies;
     using Libplanet.Blocks;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
-    using Nekoyume.BlockChain;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain;
+    using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
@@ -481,8 +482,8 @@ namespace Lib9c.Tests.Action
         public async Task Genesis_StateRootHash(bool mainnet)
         {
             BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
-            StagePolicy stagePolicy = new StagePolicy(default, 2);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
+            NCStagePolicy stagePolicy = new NCStagePolicy(default, 2);
+            IBlockPolicy policy = blockPolicySource.GetPolicy();
             Block genesis;
             if (mainnet)
             {
@@ -524,7 +525,16 @@ namespace Lib9c.Tests.Action
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
-                genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
+                var actionLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+                var tempActionEvaluator = new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(
+                        new MemoryStore(),
+                        new TrieStateStore(new MemoryKeyValueStore())),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null);
+                genesis = BlockChain.ProposeGenesisBlock(
+                    tempActionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
                         .Add(Transaction.Create(
                             0,
@@ -536,7 +546,7 @@ namespace Lib9c.Tests.Action
 
             var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy: policy,
                 store: store,
                 stagePolicy: stagePolicy,

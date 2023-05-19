@@ -4,7 +4,7 @@ using Libplanet;
 using Secp256k1Net;
 using Libplanet.Crypto;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class Secp256K1CryptoBackend<T> : ICryptoBackend<T>
         where T : HashAlgorithm

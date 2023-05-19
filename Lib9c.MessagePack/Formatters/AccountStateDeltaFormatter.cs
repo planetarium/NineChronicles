@@ -6,6 +6,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using MessagePack;
 using MessagePack.Formatters;
 
