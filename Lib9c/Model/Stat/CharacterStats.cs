@@ -67,6 +67,22 @@ namespace Nekoyume.Model.Stat
         public int AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
         public int AdditionalThorn => Thorn - _baseStats.Thorn;
 
+        private readonly Dictionary<StatType, decimal> MinimumStatValues =
+            new Dictionary<StatType, decimal>()
+            {
+                { StatType.HP, 0m },
+                { StatType.ATK, 0m },
+                { StatType.DEF, 0m },
+                { StatType.CRI, 0m },
+                { StatType.HIT, 1m },
+                { StatType.SPD, 1m },
+                { StatType.DRV, 0m },
+                { StatType.DRR, 0m },
+                { StatType.CDMG, 0m },
+                { StatType.ArmorPenetration, 0m },
+                { StatType.Thorn, 0m },
+            };
+
         public CharacterStats(
             CharacterSheet.Row row,
             int level
@@ -389,14 +405,15 @@ namespace Nekoyume.Model.Stat
 
             foreach (var stat in _statMap.GetDecimalStats(false))
             {
+                var minimumValue = MinimumStatValues[stat.StatType];
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {
-                    var value = Math.Max(0m, stat.BaseValueAsInt);
+                    var value = Math.Max(minimumValue, stat.BaseValueAsInt);
                     stat.SetBaseValue(value);
                 }
                 else
                 {
-                    var value = Math.Max(0m, stat.BaseValue);
+                    var value = Math.Max(minimumValue, stat.BaseValue);
                     stat.SetBaseValue(value);
                 }
             }
