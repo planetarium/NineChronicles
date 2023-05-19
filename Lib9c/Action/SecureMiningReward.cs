@@ -4,6 +4,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System.Linq;
 

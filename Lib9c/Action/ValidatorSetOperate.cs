@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
+using Libplanet.State;
 using Libplanet.Consensus;
 using Libplanet.Crypto;
 
