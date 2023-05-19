@@ -7,7 +7,6 @@ namespace Lib9c.Tests
     using System.Numerics;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -19,6 +18,7 @@ namespace Lib9c.Tests
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
@@ -65,7 +65,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -159,7 +159,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -204,7 +204,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            var actionLoader = new NCActionLoader();
             var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
@@ -268,7 +268,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -318,7 +318,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 )
             );
@@ -420,7 +420,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 )
             );

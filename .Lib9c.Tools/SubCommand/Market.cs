@@ -14,6 +14,7 @@ using Libplanet.Blocks;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model.Item;
 using Serilog.Core;
 
@@ -54,7 +55,7 @@ namespace Lib9c.Tools.SubCommand
             TextWriter stderr = Console.Error;
             (BlockChain chain, IStore store, _, _) =
                 Utils.GetBlockChain(logger, storePath, chainId);
-            IActionLoader actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            IActionLoader actionLoader = new NCActionLoader();
 
             HashSet<ItemSubType> itemTypes = null;
             if (itemType is {} t)

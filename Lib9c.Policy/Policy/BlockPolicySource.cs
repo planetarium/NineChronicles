@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Renderers;
+using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -12,12 +14,11 @@ using Libplanet.Tx;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
-using Libplanet.Action;
-using Lib9c.Abstractions;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -56,7 +57,7 @@ namespace Nekoyume.Blockchain.Policy
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader ??= TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            _actionLoader ??= new NCActionLoader();
 
             LoggedActionRenderer =
                 new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);

@@ -6,6 +6,7 @@ using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 using Libplanet.State;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Serilog;
 using Bencodex.Types;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -32,7 +33,7 @@ namespace Lib9c.Renderers
 
         public ActionRenderer()
         {
-            _actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            _actionLoader = new NCActionLoader();
         }
 
         public void RenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>

@@ -6,13 +6,13 @@ using Bencodex.Types;
 using Cocona;
 using Lib9c.DevExtensions;
 using Libplanet;
-using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model.State;
 using Serilog.Core;
 
@@ -46,8 +46,7 @@ namespace Lib9c.Tools.SubCommand
             Block offset = Utils.ParseBlockOffset(chain, block);
             stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
 
-            IActionLoader actionLoader =
-                TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            var actionLoader = new NCActionLoader();
 
             Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
                 chain.GetState(GoldCurrencyState.Address);

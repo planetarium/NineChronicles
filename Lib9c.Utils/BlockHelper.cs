@@ -6,7 +6,6 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Action.Loader;
 using Libplanet.Action.Sys;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
@@ -17,6 +16,7 @@ using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -98,7 +98,7 @@ namespace Nekoyume
                 actions.AddRange(actionBases);
             }
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
-            var actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            var actionLoader = new NCActionLoader();
             var actionEvaluator = new ActionEvaluator(
                 _ => blockAction,
                 new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),

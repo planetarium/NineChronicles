@@ -8,9 +8,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Bencodex;
 using Cocona;
+using Lib9c.DevExtensions.Action.Loader;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -18,7 +18,6 @@ using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -85,10 +84,7 @@ namespace Lib9c.DevExtensions
                 genesisBlockHash
             );
             var blockChainStates = new BlockChainStates(store, stateStore);
-            var devActionLoader = TypedActionLoader.Create(typeof(Utils).Assembly, typeof(ActionBase));
-            var lib9cActionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
-            var actionLoader = new TypedActionLoader(
-                devActionLoader.Types.Union(lib9cActionLoader.Types).ToDictionary(kv => kv.Key, kv => kv.Value));
+            var actionLoader = new NCDevActionLoader();
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,

@@ -5,14 +5,11 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Linq;
     using System.Net.Http;
-    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Lib9c.Tests.TestHelper;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -24,6 +21,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Battle;
     using Nekoyume.Blockchain;
     using Nekoyume.Blockchain.Policy;
@@ -525,14 +523,12 @@ namespace Lib9c.Tests.Action
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
-                var actionLoader = TypedActionLoader.Create(
-                    typeof(ActionBase).Assembly, typeof(ActionBase));
                 var tempActionEvaluator = new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(
                         new MemoryStore(),
                         new TrieStateStore(new MemoryKeyValueStore())),
-                    actionTypeLoader: actionLoader,
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null);
                 genesis = BlockChain.ProposeGenesisBlock(
                     tempActionEvaluator,
@@ -556,7 +552,7 @@ namespace Lib9c.Tests.Action
                 actionEvaluator: new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: blockPolicySource.GetRenderers()

@@ -9,7 +9,6 @@
     using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -19,6 +18,7 @@
     using Libplanet.Store.Trie;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -48,7 +48,7 @@
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: blockRenderers);

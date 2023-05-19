@@ -10,6 +10,7 @@ using Libplanet.Action.Loader;
 using MessagePack;
 using MessagePack.Formatters;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 
 namespace Lib9c.Formatters
 {
@@ -28,7 +29,7 @@ namespace Lib9c.Formatters
 
         public NCActionFormatter()
         {
-            _actionLoader = TypedActionLoader.Create(typeof(ActionBase).Assembly, typeof(ActionBase));
+            _actionLoader = new NCActionLoader();
         }
 
         public void Serialize(ref MessagePackWriter writer, ActionBase? value,
