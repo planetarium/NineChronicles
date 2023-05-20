@@ -28,21 +28,21 @@
 
     public static class BlockChainHelper
     {
-        public static BlockChain<NCAction> MakeBlockChain(
+        public static BlockChain MakeBlockChain(
             BlockRenderer[] blockRenderers,
-            IBlockPolicy<NCAction> policy = null,
-            IStagePolicy<NCAction> stagePolicy = null,
+            IBlockPolicy policy = null,
+            IStagePolicy stagePolicy = null,
             IStore store = null,
             IStateStore stateStore = null)
         {
             PrivateKey adminPrivateKey = new PrivateKey();
 
-            policy ??= new BlockPolicy<NCAction>();
-            stagePolicy ??= new VolatileStagePolicy<NCAction>();
+            policy ??= new BlockPolicy();
+            stagePolicy ??= new VolatileStagePolicy();
             store ??= new DefaultStore(null);
             stateStore ??= new TrieStateStore(new DefaultKeyValueStore(null));
             Block genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
-            return BlockChain<NCAction>.Create(
+            return BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,

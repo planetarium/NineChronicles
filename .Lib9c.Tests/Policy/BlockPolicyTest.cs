@@ -19,7 +19,7 @@ namespace Lib9c.Tests
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Serilog.Core;
@@ -46,10 +46,8 @@ namespace Lib9c.Tests
             var adminAddress = adminPrivateKey.ToAddress();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                null, null, null, null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -58,7 +56,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -142,10 +140,8 @@ namespace Lib9c.Tests
             var nonValidator = new PrivateKey();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                null, null, null, null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -154,7 +150,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -190,13 +186,12 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -209,7 +204,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -246,13 +241,12 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -267,7 +261,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -300,15 +294,14 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
                     .Default
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
@@ -318,7 +311,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new MemoryKeyValueStore());
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -401,7 +394,7 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
@@ -410,8 +403,7 @@ namespace Lib9c.Tests
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy
                     .Default
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)));
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
@@ -421,7 +413,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new MemoryKeyValueStore());
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -558,7 +550,7 @@ namespace Lib9c.Tests
         }
 
         private Block EvaluateAndSign(
-            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            BlockChain blockChain,
             PreEvaluationBlock preEvaluationBlock,
             PrivateKey privateKey
         )

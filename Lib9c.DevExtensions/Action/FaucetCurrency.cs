@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 

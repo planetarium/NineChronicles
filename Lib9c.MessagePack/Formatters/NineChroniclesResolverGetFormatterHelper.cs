@@ -5,6 +5,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Crypto;
+using Libplanet.State;
 using MessagePack.Formatters;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 

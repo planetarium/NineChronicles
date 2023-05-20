@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Extensions;

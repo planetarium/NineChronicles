@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action.Coupons
     using System.Linq;
     using Bencodex.Types;
     using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Action.Coupons;
     using Nekoyume.Model.Coupons;

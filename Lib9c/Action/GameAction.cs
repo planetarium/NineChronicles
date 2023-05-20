@@ -36,7 +36,7 @@ namespace Nekoyume.Action
             Id = dict["id"].ToGuid();
             LoadPlainValueInternal(dict);
         }
-        
+
         protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue);
     }
 }

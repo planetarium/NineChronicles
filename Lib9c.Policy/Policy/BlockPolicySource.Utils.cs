@@ -14,7 +14,7 @@ using Nekoyume.Model.State;
 using static Libplanet.Blocks.BlockMarshaler;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     // Collection of helper methods not directly used as a pluggable component.
     public partial class BlockPolicySource
@@ -69,15 +69,13 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction transaction)
+        internal static bool IsAdminTransaction(BlockChain blockChain, Transaction transaction)
         {
             return GetAdminState(blockChain) is AdminState admin
                 && admin.AdminAddress.Equals(transaction.Signer);
         }
 
-        internal static AdminState GetAdminState(
-            BlockChain<NCAction> blockChain)
+        internal static AdminState GetAdminState(BlockChain blockChain)
         {
             try
             {

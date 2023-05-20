@@ -5,12 +5,11 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using System.Text;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Exceptions;
     using Nekoyume.Extensions;
     using Nekoyume.Model.Event;

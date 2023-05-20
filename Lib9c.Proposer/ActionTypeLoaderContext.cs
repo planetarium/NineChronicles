@@ -1,6 +1,6 @@
 using Libplanet.Action;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class ActionTypeLoaderContext : IActionTypeLoaderContext
     {

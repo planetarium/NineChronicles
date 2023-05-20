@@ -6,7 +6,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;

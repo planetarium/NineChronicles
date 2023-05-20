@@ -6,7 +6,7 @@
     using System.Reflection;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;

@@ -7,9 +7,9 @@
     using Bencodex.Types;
     using Lib9c.Model.Order;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;

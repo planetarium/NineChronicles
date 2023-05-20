@@ -3,11 +3,10 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Immutable;
     using System.Globalization;
-    using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model.Coupons;

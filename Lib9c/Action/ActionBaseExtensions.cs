@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
+using Libplanet.State;
 using Libplanet.Tx;
 
 namespace Nekoyume.Action

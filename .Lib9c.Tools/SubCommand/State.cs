@@ -11,13 +11,14 @@ using Bencodex;
 using Bencodex.Types;
 using Cocona;
 using Lib9c.DevExtensions;
-using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
+using Libplanet.State;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Serilog.Core;
@@ -62,7 +63,7 @@ namespace Lib9c.Tools.SubCommand
             CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
             TextWriter stderr = Console.Error;
             (
-                BlockChain<NCAction> chain,
+                BlockChain chain,
                 IStore store,
                 IKeyValueStore stateKvStore,
                 IStateStore stateStore
@@ -83,7 +84,7 @@ namespace Lib9c.Tools.SubCommand
                 bottom.Hash);
             stderr.WriteLine("    ...to the block #{0} {1}.", top.Index, top.Hash);
 
-            IBlockPolicy<NCAction> policy = chain.Policy;
+            IBlockPolicy policy = chain.Policy;
             (Block, string)? invalidStateRootHashBlock = null;
             long totalBlocks = top.Index - bottom.Index + 1;
             long blocksExecuted = 0L;
@@ -114,8 +115,15 @@ namespace Lib9c.Tools.SubCommand
                     block.Hash
                 );
                 IReadOnlyList<IActionEvaluation> delta;
+                var actionLoader = new SingleActionLoader(typeof(NCAction));
+                var actionEvaluator = new ActionEvaluator(
+                    _ => policy.BlockAction,
+                    new BlockChainStates(store, stateStore),
+                    actionLoader,
+                    null);
                 HashDigest<SHA256> stateRootHash = block.Index < 1
-                    ? BlockChain<NCAction>.DetermineGenesisStateRootHash(
+                    ? BlockChain.DetermineGenesisStateRootHash(
+                        actionEvaluator,
                         preEvalBlock,
                         policy.BlockAction,
                         out delta)
@@ -211,7 +219,7 @@ namespace Lib9c.Tools.SubCommand
             CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
             TextWriter stderr = Console.Error;
             (
-                BlockChain<NCAction> chain,
+                BlockChain chain,
                 IStore store,
                 IKeyValueStore stateKvStore,
                 IStateStore stateStore
@@ -281,7 +289,7 @@ namespace Lib9c.Tools.SubCommand
         }
 
         private static Block BisectBlocks(
-            BlockChain<NCAction> chain,
+            BlockChain chain,
             long start,
             long end,
             Predicate<Block> willGoFurther

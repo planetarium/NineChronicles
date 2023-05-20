@@ -8,6 +8,7 @@ using Lib9c.Formatters;
 using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using MessagePack;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
