@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Bencodex.Types;
 using Nekoyume.Model.State;
@@ -128,6 +129,12 @@ namespace Nekoyume.Model.Stat
         public IEnumerable<DecimalStat> GetDecimalStats(bool ignoreZero)
         {
             return _statMap.GetDecimalStats(ignoreZero);
+        }
+
+        public IEnumerable<DecimalStat> GetAdditionalStats()
+        {
+            return _statMap.GetDecimalStats(true)
+                .Where(x => x.HasAdditionalValue);
         }
     }
 }
