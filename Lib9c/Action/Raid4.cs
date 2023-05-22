@@ -210,7 +210,7 @@ namespace Nekoyume.Action
             }
 
             // Simulate.
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV2(
                 row.BossId,
                 context.Random,
                 avatarState,

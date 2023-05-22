@@ -20,7 +20,7 @@
             Assert.Equal(10010001, row.Id);
             Assert.Equal(5, row.CostAP);
             Assert.Equal(150, row.TurnLimit);
-            Assert.Empty(row.EnemyOptionalStatModifiers);
+            Assert.Empty(row.EnemyInitialStatModifiers);
             Assert.Equal("chapter_01_01", row.Background);
             Assert.Equal("bgm_yggdrasil_01", row.BGM);
             Assert.Empty(row.Rewards);

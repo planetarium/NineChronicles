@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -15,7 +16,7 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public class StageSimulatorV2 : Simulator, IStageSimulator
+    public class StageSimulatorV3 : Simulator, IStageSimulator
     {
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
@@ -31,10 +32,11 @@ namespace Nekoyume.Battle
         private int TurnLimit { get; }
         public override IEnumerable<ItemBase> Reward => _waveRewards;
 
-        public StageSimulatorV2(
+        public StageSimulatorV3(
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
+            List<RuneState> runeStates,
             List<Model.Skill.Skill> skillsOnWaveStart,
             int worldId,
             int stageId,
@@ -42,7 +44,7 @@ namespace Nekoyume.Battle
             StageWaveSheet.Row stageWaveRow,
             bool isCleared,
             int exp,
-            SimulatorSheetsV1 simulatorSheets,
+            SimulatorSheets simulatorSheets,
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             List<ItemBase> waveRewards)
@@ -53,6 +55,10 @@ namespace Nekoyume.Battle
                 simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
+            if (runeStates != null)
+            {
+                Player.SetRuneV1(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+            }
 
             _waves = new List<Wave>();
             _waveRewards = waveRewards;

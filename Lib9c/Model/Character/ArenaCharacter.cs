@@ -313,7 +313,8 @@ namespace Nekoyume.Model
             }
         }
 
-        public void SetRune(
+        [Obsolete("Use SetRune instead.")]
+        public void SetRuneV2(
             List<RuneState> runes,
             RuneOptionSheet runeOptionSheet,
             SkillSheet skillSheet)
@@ -361,6 +362,59 @@ namespace Nekoyume.Model
                     BuffValue = power,
                 };
                 skill.CustomField = customField;
+                _runeSkills.Add(skill);
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
+            }
+        }
+
+        public void SetRune(
+            List<RuneState> runes,
+            RuneOptionSheet runeOptionSheet,
+            SkillSheet skillSheet)
+        {
+            foreach (var rune in runes)
+            {
+                if (!runeOptionSheet.TryGetValue(rune.RuneId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(rune.Level, out var optionInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    optionInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.stat.StatType,
+                            x.operationType,
+                            x.stat.TotalValueAsInt)));
+                Stats.SetRunes(statModifiers);
+                ResetCurrentHP();
+
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = 0;
+
+                if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                {
+                    power = (int)optionInfo.SkillValue;
+                }
+                else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    var value = Stats.GetStatAsInt(optionInfo.SkillStatType);
+                    power = (int)Math.Round(value * optionInfo.SkillValue);
+                }
+                var skill = SkillFactory.GetForArena(skillRow, power, optionInfo.SkillChance, default, StatType.NONE);
+                var customField = new SkillCustomField
+                {
+                    BuffDuration = optionInfo.BuffDuration,
+                    BuffValue = power,
+                };
+                skill.CustomField = customField;
+
                 _runeSkills.Add(skill);
                 RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
             }

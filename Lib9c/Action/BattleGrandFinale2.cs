@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -29,9 +29,9 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
     [ActionType(ActionTypeName)]
-    public class BattleGrandFinale : GameAction, IBattleGrandFinaleV1
+    public class BattleGrandFinale2 : GameAction, IBattleGrandFinaleV1
     {
-        private const string ActionTypeName = "battle_grand_finale3";
+        private const string ActionTypeName = "battle_grand_finale2";
         public const int WinScore = 20;
         public const int LoseScore = 1;
         public const int DefaultScore = 1000;
@@ -218,7 +218,7 @@ namespace Nekoyume.Action
             ExtraEnemyArenaPlayerDigest =
                 new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             var arenaSheets = sheets.GetArenaSimulatorSheets();
-            var simulator = new ArenaSimulator(context.Random);
+            var simulator = new ArenaSimulatorV3(context.Random);
             var log = simulator.Simulate(
                 ExtraMyArenaPlayerDigest,
                 ExtraEnemyArenaPlayerDigest,

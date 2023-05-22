@@ -26,6 +26,7 @@ namespace Nekoyume.Model.Stat
         private readonly Stats _buffStats = new Stats();
         private readonly Stats _optionalStats = new Stats();
 
+        private readonly List<StatModifier> _initialStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _equipmentStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _consumableStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _runeStatModifiers = new List<StatModifier>();
@@ -85,10 +86,15 @@ namespace Nekoyume.Model.Stat
 
         public CharacterStats(
             CharacterSheet.Row row,
-            int level
+            int level,
+            IReadOnlyList<StatModifier> initialStatModifiers = null
         )
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
+            if (initialStatModifiers != null)
+            {
+                _initialStatModifiers.AddRange(initialStatModifiers);
+            }
             SetStats(level);
         }
 
@@ -311,6 +317,12 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public void AddRune(IEnumerable<StatModifier> statModifiers)
+        {
+            _runeStatModifiers.AddRange(statModifiers);
+            UpdateRuneStats();
+        }
+
         public void AddOptional(IEnumerable<StatModifier> statModifiers)
         {
             _optionalStatModifiers.AddRange(statModifiers);
@@ -349,6 +361,11 @@ namespace Nekoyume.Model.Stat
             {
                 var statsData = _row.ToStats(Level);
                 _baseStats.Set(statsData);
+            }
+
+            if (_initialStatModifiers != null)
+            {
+                _baseStats.Modify(_initialStatModifiers);
             }
 
             UpdateEquipmentStats();

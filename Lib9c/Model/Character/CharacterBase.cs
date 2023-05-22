@@ -107,14 +107,16 @@ namespace Nekoyume.Model
             CharacterStats stat,
             int characterId,
             ElementalType elementalType,
+            CharacterSheet.Row rowData = null,
             SizeType sizeType = SizeType.XL,
             float attackRange = 4,
             float runSpeed = 0.3f)
         {
             Simulator = simulator;
             Stats = stat;
-
+            RowData = rowData;
             CharacterId = characterId;
+
             SizeType = sizeType;
             atkElementType = elementalType;
             defElementType = elementalType;

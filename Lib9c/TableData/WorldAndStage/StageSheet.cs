@@ -35,7 +35,7 @@ namespace Nekoyume.TableData
             public int Id { get; private set; }
             public int CostAP { get; private set; }
             public int TurnLimit { get; private set; }
-            public List<StatModifier> EnemyOptionalStatModifiers { get; private set; }
+            public List<StatModifier> EnemyInitialStatModifiers { get; private set; }
             public string Background { get; private set; }
             public string BGM { get; private set; }
             public List<RewardData> Rewards { get; private set; }
@@ -48,7 +48,7 @@ namespace Nekoyume.TableData
                 Id = TryParseInt(fields[0], out var id) ? id : 0;
                 CostAP = TryParseInt(fields[1], out var costAP) ? costAP : 0;
                 TurnLimit = TryParseInt(fields[2], out var turnLimit) ? turnLimit : 0;
-                EnemyOptionalStatModifiers = new List<StatModifier>();
+                EnemyInitialStatModifiers = new List<StatModifier>();
                 for (var i = 0; i < 6; i++)
                 {
                     if (!TryParseInt(fields[3 + i], out var option) ||
@@ -58,22 +58,22 @@ namespace Nekoyume.TableData
                     switch (i)
                     {
                         case 0:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Percentage, option));
                             break;
                         case 1:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Percentage, option));
                             break;
                         case 2:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Percentage, option));
                             break;
                         case 3:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Percentage, option));
                             break;
                         case 4:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Percentage, option));
                             break;
                         case 5:
-                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Percentage, option));
+                            EnemyInitialStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Percentage, option));
                             break;
                     }
                     
