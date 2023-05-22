@@ -28,8 +28,9 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena11")]
-    public class BattleArena : GameAction, IBattleArenaV1
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionType("battle_arena10")]
+    public class BattleArena10 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -391,7 +392,7 @@ namespace Nekoyume.Action
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV3(context.Random);
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
