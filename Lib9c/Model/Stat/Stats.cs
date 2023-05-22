@@ -67,6 +67,26 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public void Modify(IEnumerable<StatModifier> statModifiers)
+        {
+            foreach (var statModifier in statModifiers)
+            {
+                var statType = statModifier.StatType;
+                if (!LegacyDecimalStatTypes.Contains(statType))
+                {
+                    var originalStatValue = GetStatAsInt(statType);
+                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    _statMap[statModifier.StatType].AddBaseValue(result);
+                }
+                else
+                {
+                    var originalStatValue = GetStat(statType);
+                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    _statMap[statModifier.StatType].AddBaseValue(result);
+                }
+            }
+        }
+
         public void Set(IEnumerable<StatModifier> statModifiers, params Stats[] baseStats)
         {
             Reset();

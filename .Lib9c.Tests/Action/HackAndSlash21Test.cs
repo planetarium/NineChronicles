@@ -8,21 +8,25 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
+    using Nekoyume.Model.Rune;
     using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlash16Test
+    public class HackAndSlash21Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -41,7 +45,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlash16Test()
+        public HackAndSlash21Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -68,10 +72,14 @@ namespace Lib9c.Tests.Action
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
             agentState.avatarAddresses.Add(0, _avatarAddress);
-
             _weeklyArenaState = new WeeklyArenaState(0);
-
+#pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, null);
+#pragma warning restore CS0618
+            var goldCurrencyState = new GoldCurrencyState(currency);
             _initialState = new State()
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -80,19 +88,10 @@ namespace Lib9c.Tests.Action
                 .SetState(_questListAddress, _avatarState.questList.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
-            var keys = new List<string>
-            {
-                nameof(SkillActionBuffSheet),
-                nameof(ActionBuffSheet),
-                nameof(StatBuffSheet),
-            };
             foreach (var (key, value) in _sheets)
             {
-                if (!keys.Contains(key))
-                {
-                    _initialState = _initialState
-                        .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-                }
+                _initialState = _initialState
+                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             foreach (var address in _avatarState.combinationSlotAddresses)
@@ -192,11 +191,12 @@ namespace Lib9c.Tests.Action
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -208,7 +208,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                BlockIndex = 1,
+                BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
@@ -262,11 +262,12 @@ namespace Lib9c.Tests.Action
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = avatarState.address,
@@ -334,11 +335,12 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -395,11 +397,12 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments,
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -421,11 +424,12 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -456,11 +460,12 @@ namespace Lib9c.Tests.Action
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -479,11 +484,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -505,11 +511,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -544,11 +551,12 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 51, true)]
         public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -576,11 +584,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 3,
                 AvatarAddress = _avatarAddress,
@@ -616,11 +625,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 2,
                 AvatarAddress = _avatarAddress,
@@ -652,13 +662,14 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
+                RuneInfos = new List<RuneSlotInfo>(),
                 Foods = new List<Guid>(),
                 WorldId = 1,
                 StageId = 1,
@@ -699,13 +710,14 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
+                RuneInfos = new List<RuneSlotInfo>(),
                 Foods = new List<Guid>(),
                 WorldId = 1,
                 StageId = 1,
@@ -733,15 +745,16 @@ namespace Lib9c.Tests.Action
                 actionPoint = ap,
             };
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
-                PlayCount = playCount,
+                TotalPlayCount = playCount,
             };
 
             var state = _initialState;
@@ -800,11 +813,12 @@ namespace Lib9c.Tests.Action
                     _avatarAddress.Derive(LegacyQuestListKey),
                     previousAvatarState.questList.Serialize());
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = costumes,
                 Equipments = equipments,
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -869,11 +883,12 @@ namespace Lib9c.Tests.Action
                             avatarState.address.Derive(LegacyInventoryKey),
                             avatarState.inventory.Serialize());
 
-                    var action = new HackAndSlash16
+                    var action = new HackAndSlash
                     {
                         Costumes = costumes,
                         Equipments = equipments,
                         Foods = new List<Guid>(),
+                        RuneInfos = new List<RuneSlotInfo>(),
                         WorldId = 1,
                         StageId = 1,
                         AvatarAddress = avatarState.address,
@@ -892,37 +907,127 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowPlayCountIsZeroException()
+        public void ExecuteThrowInvalidItemCountException()
         {
-            for (var playCount = -10; playCount <= 0; playCount++)
+            var avatarState = new AvatarState(_avatarState)
             {
-                var avatarState = new AvatarState(_avatarState)
-                {
-                    actionPoint = 99999999,
-                    level = 1,
-                };
+                actionPoint = 99999999,
+                level = 1,
+            };
 
-                var state = _initialState;
-                var action = new HackAndSlash16
-                {
-                    Costumes = new List<Guid>(),
-                    Equipments = new List<Guid>(),
-                    Foods = new List<Guid>(),
-                    WorldId = 1,
-                    StageId = 1,
-                    AvatarAddress = avatarState.address,
-                    PlayCount = playCount,
-                };
+            var state = _initialState;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = avatarState.address,
+                TotalPlayCount = 24,
+                ApStoneCount = -1,
+            };
 
-                var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = state,
-                    Signer = avatarState.agentAddress,
-                    Random = new TestRandom(),
-                }));
+            var exec = Assert.Throws<InvalidItemCountException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
 
-                SerializeException<PlayCountIsZeroException>(exec);
-            }
+            SerializeException<InvalidItemCountException>(exec);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(-1, 0)]
+        [InlineData(0, 1)]
+        [InlineData(-1, 1)]
+        public void ExecuteThrowPlayCountIsZeroException(int totalPlayCount, int apStoneCount)
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 99999999,
+                level = 1,
+            };
+
+            var state = _initialState;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = avatarState.address,
+                TotalPlayCount = totalPlayCount,
+                ApStoneCount = apStoneCount,
+            };
+
+            var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<PlayCountIsZeroException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowUsageLimitExceedException()
+        {
+            var state = _initialState;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarState.address,
+                TotalPlayCount = 1,
+                ApStoneCount = 11,
+            };
+
+            var exec = Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<UsageLimitExceedException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughMaterialException()
+        {
+            var state = _initialState;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = _avatarState.address,
+                TotalPlayCount = 1,
+                ApStoneCount = 1,
+            };
+
+            var exec = Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<NotEnoughMaterialException>(exec);
         }
 
         [Theory]
@@ -1010,11 +1115,12 @@ namespace Lib9c.Tests.Action
                 Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
             );
 
-            var action = new HackAndSlash16
+            var action = new HackAndSlash
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
@@ -1070,20 +1176,26 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(false, false, false)]
-        [InlineData(false, true, true)]
-        [InlineData(false, true, false)]
-        [InlineData(true, false, false)]
-        [InlineData(true, true, false)]
-        [InlineData(true, true, true)]
-        public void CheckCrystalRandomSkillState(bool forceClear, bool skillStateExist, bool hasCrystalSkill)
+        [InlineData(false, false, false, false)]
+        [InlineData(false, true, true, false)]
+        [InlineData(false, true, true, true)]
+        [InlineData(false, true, false, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(true, true, false, false)]
+        [InlineData(true, true, true, false)]
+        [InlineData(true, true, true, true)]
+        public void CheckCrystalRandomSkillState(
+            bool clear,
+            bool skillStateExist,
+            bool useCrystalSkill,
+            bool setSkillByArgument)
         {
             const int worldId = 1;
-            const int stageId = 5;
-            const int clearedStageId = 4;
+            const int stageId = 10;
+            const int clearedStageId = 9;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = forceClear ? 400 : 3;
+            previousAvatarState.level = clear ? 400 : 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1147,27 +1259,42 @@ namespace Lib9c.Tests.Action
             if (skillStateExist)
             {
                 skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
-                if (hasCrystalSkill)
+                if (useCrystalSkill)
                 {
                     skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                    skillState.Update(_tableSheets.CrystalRandomBuffSheet
+                        .Select(pair => pair.Value.Id).ToList());
                 }
 
                 state = state.SetState(skillStateAddress, skillState.Serialize());
             }
 
-            var action = new HackAndSlash16
+            int? stageBuffId = null;
+            if (useCrystalSkill)
             {
-                Costumes = forceClear ? costumes : new List<Guid>(),
-                Equipments = forceClear
+                stageBuffId = skillState?.GetHighestRankSkill(_tableSheets.CrystalRandomBuffSheet);
+                Assert.NotNull(stageBuffId);
+            }
+
+            if (clear)
+            {
+                previousAvatarState.EquipItems(costumes.Concat(equipments.Select(e => e.ItemId)));
+            }
+
+            var action = new HackAndSlash
+            {
+                Costumes = clear ? costumes : new List<Guid>(),
+                Equipments = clear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
                 WorldId = worldId,
                 StageId = stageId,
                 AvatarAddress = _avatarAddress,
-                StageBuffId = skillState?.SkillIds
-                    .OrderBy(key => _tableSheets.CrystalRandomBuffSheet[key].Rank)
-                    .FirstOrDefault(),
+                StageBuffId = setSkillByArgument
+                    ? stageBuffId
+                    : null,
             };
 
             var ctx = new ActionContext
@@ -1179,19 +1306,33 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
+            var skillsOnWaveStart = new List<Skill>();
+            if (useCrystalSkill)
+            {
+                var skill = _tableSheets
+                    .SkillSheet
+                    .FirstOrDefault(pair => pair.Key == _tableSheets
+                        .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
+                if (skill.Value != null)
+                {
+                    skillsOnWaveStart.Add(SkillFactory.GetV1(skill.Value, default, 100));
+                }
+            }
+
             var contextRandom = new TestRandom(ctx.Random.Seed);
-            var simulator = new StageSimulatorV2(
+            var simulator = new StageSimulatorV3(
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
-                new List<Skill>(),
+                null,
+                skillsOnWaveStart,
                 worldId,
                 stageId,
                 _tableSheets.StageSheet[stageId],
                 _tableSheets.StageWaveSheet[stageId],
                 false,
                 StageRewardExpHelper.GetExp(previousAvatarState.level, stageId),
-                _tableSheets.GetSimulatorSheetsV1(),
+                _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 StageSimulatorV3.GetWaveRewards(
@@ -1206,7 +1347,6 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(serialized);
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
-
             if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
@@ -1215,14 +1355,439 @@ namespace Lib9c.Tests.Action
             else
             {
                 Assert.Equal(stageId, nextSkillState.StageId);
-                Assert.Equal(
-                    hasCrystalSkill
-                        ? _tableSheets.CrystalStageBuffGachaSheet[stageId].MaxStar
-                        : log.clearedWaveNumber,
-                    nextSkillState.StarCount);
+                skillState?.Update(log.clearedWaveNumber, _tableSheets.CrystalStageBuffGachaSheet);
+                Assert.Equal(skillState?.StarCount ?? log.clearedWaveNumber, nextSkillState.StarCount);
             }
 
             Assert.Empty(nextSkillState.SkillIds);
+        }
+
+        [Theory]
+        [InlineData(1, 24)]
+        [InlineData(2, 24)]
+        [InlineData(3, 30)]
+        [InlineData(4, 30)]
+        [InlineData(5, 40)]
+        public void CheckUsedApByStaking(int level, int playCount)
+        {
+            const int worldId = 1;
+            const int stageId = 5;
+            const int clearedStageId = 4;
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.actionPoint = 120;
+            previousAvatarState.level = 400;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize())
+                .SetState(stakeStateAddress, stakeState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize()))
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+
+            var expectedAp = previousAvatarState.actionPoint -
+                             _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
+                                 _tableSheets.StageSheet[stageId].CostAP, playCount, level);
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+                StageBuffId = null,
+                TotalPlayCount = playCount,
+            };
+
+            var ctx = new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            };
+            var nextState = action.Execute(ctx);
+            var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(expectedAp, nextAvatar.actionPoint);
+        }
+
+        [Theory]
+        [InlineData(1, 1, 24, 0)]
+        [InlineData(1, 1, 25, 5)]
+        [InlineData(2, 1, 24, 0)]
+        [InlineData(2, 1, 25, 5)]
+        [InlineData(3, 1, 30, 0)]
+        [InlineData(3, 1, 31, 4)]
+        [InlineData(4, 1, 30, 0)]
+        [InlineData(4, 1, 31, 4)]
+        [InlineData(5, 1, 40, 0)]
+        [InlineData(5, 1, 41, 3)]
+        public void CheckUsingApStoneWithStaking(int level, int apStoneCount, int totalRepeatCount, int expectedUsingAp)
+        {
+            const int worldId = 1;
+            const int stageId = 5;
+            const int clearedStageId = 4;
+            const int itemId = 303100;
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.actionPoint = expectedUsingAp;
+            previousAvatarState.level = 400;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+            var apStoneRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(apStoneRow);
+            previousAvatarState.inventory.AddItem(apStone, apStoneCount);
+            var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+            var stakeState = new StakeState(stakeStateAddress, 1);
+            var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize())
+                .SetState(stakeStateAddress, stakeState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize()))
+                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+
+            var itemCount = previousAvatarState.inventory.Items
+                .FirstOrDefault(i => i.item.Id == itemId)?.count ?? 0;
+            var expectedItemCount = itemCount + totalRepeatCount;
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+                StageBuffId = null,
+                TotalPlayCount = totalRepeatCount,
+                ApStoneCount = apStoneCount,
+            };
+
+            var ctx = new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            };
+            var nextState = action.Execute(ctx);
+            var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(expectedItemCount, nextAvatar.inventory.Items.First(i => i.item.Id == itemId).count);
+            Assert.False(nextAvatar.inventory.HasItem(apStoneRow.Id));
+            Assert.Equal(0, nextAvatar.actionPoint);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidRepeatPlayException()
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 99999999,
+                level = 1,
+            };
+
+            var apStoneRow = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(apStoneRow);
+            avatarState.inventory.AddItem(apStone);
+            var state = _initialState
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize());
+            var action = new HackAndSlash
+            {
+                Costumes = new List<Guid>(),
+                Equipments = new List<Guid>(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>(),
+                WorldId = 1,
+                StageId = 1,
+                AvatarAddress = avatarState.address,
+                TotalPlayCount = 1,
+                ApStoneCount = 1,
+            };
+
+            var exec = Assert.Throws<InvalidRepeatPlayException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = avatarState.agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<InvalidRepeatPlayException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteTwoRepetitions()
+        {
+            var avatarLevel = 50;
+            var worldId = 1;
+            var stageId = 20;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
+            clearedStageId = Math.Max(clearedStageId, stageId - 1);
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+                previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
+            }
+
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
+            var action = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(0, 30001),
+                    new RuneSlotInfo(1, 10002),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
+            });
+
+            var action2 = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(0, 10002),
+                    new RuneSlotInfo(1, 30001),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            action2.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
+            });
+        }
+
+        [Theory]
+        [InlineData(0, 30001, 1, 30001, typeof(DuplicatedRuneIdException))]
+        [InlineData(1, 10002, 1, 30001, typeof(DuplicatedRuneSlotIndexException))]
+        public void ExecuteDuplicatedException(int slotIndex, int runeId, int slotIndex2, int runeId2, Type exception)
+        {
+            var avatarLevel = 50;
+            var worldId = 1;
+            var stageId = 20;
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
+            clearedStageId = Math.Max(clearedStageId, stageId - 1);
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+                previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
+            }
+
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
+            var ncgCurrency = state.GetGoldCurrency();
+            state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+
+            var unlockRuneSlot = new UnlockRuneSlot()
+            {
+                AvatarAddress = _avatarAddress,
+                SlotIndex = 1,
+            };
+
+            state = unlockRuneSlot.Execute(new ActionContext
+            {
+                BlockIndex = 1,
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            });
+
+            var action = new HackAndSlash
+            {
+                Costumes = costumes,
+                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                Foods = new List<Guid>(),
+                RuneInfos = new List<RuneSlotInfo>()
+                {
+                    new RuneSlotInfo(slotIndex, runeId),
+                    new RuneSlotInfo(slotIndex2, runeId2),
+                },
+                WorldId = worldId,
+                StageId = stageId,
+                AvatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws(exception, () => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
 
         private static void SerializeException<T>(Exception exec)

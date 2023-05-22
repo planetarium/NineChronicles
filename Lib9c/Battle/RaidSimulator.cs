@@ -39,7 +39,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
             if (runeStates != null)
             {
-                Player.SetRune(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+                Player.SetRuneV1(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
             }
 
             BossId = bossId;

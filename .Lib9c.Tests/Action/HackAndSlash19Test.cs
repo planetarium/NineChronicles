@@ -1230,7 +1230,7 @@ namespace Lib9c.Tests.Action
             }
 
             var contextRandom = new TestRandom(ctx.Random.Seed);
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
@@ -1245,7 +1245,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     contextRandom,
                     _tableSheets.StageSheet[stageId],
                     _tableSheets.MaterialItemSheet));
