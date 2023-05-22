@@ -163,14 +163,14 @@ jobs:
 
 
 # job 분리되어야함?
-  update-latest:
+  update-latest-metadata:
     if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
     needs: [extract, release]
     environment:
       name: ${{ needs.extract.outputs.network }}
     steps:
-      - name: update-latest
+      - name: update-latest-metadata
         uses: planetarium/9c-toolbelt@update-player-verison
         with:
           COMMAND_LIST: "release|update-latest|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}"
