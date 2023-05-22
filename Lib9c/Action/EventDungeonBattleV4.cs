@@ -25,10 +25,11 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventDungeonBattle : GameAction, IEventDungeonBattleV2
+    public class EventDungeonBattleV4 : GameAction, IEventDungeonBattleV2
     {
-        private const string ActionTypeText = "event_dungeon_battle5";
+        private const string ActionTypeText = "event_dungeon_battle4";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;
@@ -327,7 +328,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 context.Random,
                 avatarState,
                 Foods,
@@ -342,7 +343,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     context.Random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),

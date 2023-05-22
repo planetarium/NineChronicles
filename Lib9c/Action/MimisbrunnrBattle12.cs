@@ -28,8 +28,9 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle13")]
-    public class MimisbrunnrBattle : GameAction, IMimisbrunnrBattleV5
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionType("mimisbrunnr_battle12")]
+    public class MimisbrunnrBattle12 : GameAction, IMimisbrunnrBattleV5
     {
         public List<Guid> Costumes;
         public List<Guid> Equipments;
@@ -331,7 +332,7 @@ namespace Nekoyume.Action
             itemSlotState.UpdateCostumes(Costumes);
             states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 context.Random,
                 avatarState,
                 Foods,
@@ -346,7 +347,7 @@ namespace Nekoyume.Action
                 sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
+                StageSimulatorV3.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",
