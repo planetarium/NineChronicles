@@ -86,18 +86,19 @@ namespace Nekoyume
 
             if (statPowerRatio > 0)
             {
-                var sign = statPowerRatio >= 0 ? "+" : "-";
                 if (referencedStatType != StatType.NONE)
                 {
                     var percentageFormat = new NumberFormatInfo { PercentPositivePattern = 1, PercentNegativePattern = 1 };
-                    var multiplierText = (Math.Abs(statPowerRatio) / 10000m).ToString("P2", percentageFormat);
                     if (power != 0)
                     {
+                        var sign = statPowerRatio >= 0 ? "+" : "-";
+                        var multiplierText = (Math.Abs(statPowerRatio) / 10000m).ToString("P2", percentageFormat);
                         valueText = $"({valueText} {sign} {multiplierText} {referencedStatType})";
                     }
                     else
                     {
-                        valueText = $"({sign}{multiplierText} {referencedStatType})";
+                        var multiplierText = (statPowerRatio / 10000m).ToString("P2", percentageFormat);
+                        valueText = $"({multiplierText} {referencedStatType})";
                     }
                 }
             }
