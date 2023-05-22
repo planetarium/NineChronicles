@@ -7,16 +7,16 @@ using Cocona;
 using Lib9c.DevExtensions;
 using Lib9c.Model.Order;
 using Libplanet;
+using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
-using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model.Item;
 using Serilog.Core;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
 {
@@ -55,6 +55,7 @@ namespace Lib9c.Tools.SubCommand
             TextWriter stderr = Console.Error;
             (BlockChain chain, IStore store, _, _) =
                 Utils.GetBlockChain(logger, storePath, chainId);
+            IActionLoader actionLoader = new NCActionLoader();
 
             HashSet<ItemSubType> itemTypes = null;
             if (itemType is {} t)
@@ -97,19 +98,19 @@ namespace Lib9c.Tools.SubCommand
                 stderr.WriteLine("Scanning block #{0} {1}...", block.Index, block.Hash);
                 stderr.Flush();
 
-                IEnumerable<(Transaction, NCAction)> actions = block.Transactions
+                IEnumerable<(Transaction, ActionBase)> actions = block.Transactions
                     .Reverse()
                     .Where(tx => includeFails ||
                         !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
                         e is TxSuccess)
-                    .SelectMany(tx => tx.Actions is { } ca
-                        ? ca.Reverse().Select(a => (tx, ToAction(a)))
-                        : Enumerable.Empty<(Transaction, NCAction)>());
+                    .SelectMany(tx => tx.Actions is { } actions
+                        ? actions.Reverse().Select(a => (tx, (ActionBase)actionLoader.LoadAction(block.Index, a)))
+                        : Enumerable.Empty<(Transaction, ActionBase)>());
 
                 foreach (var (tx, act) in actions)
                 {
-                    ActionBase a = act.InnerAction;
-                    IEnumerable<Order> orders = act.InnerAction switch
+                    ActionBase a = act;
+                    IEnumerable<Order> orders = act switch
                     {
                         IBuy0 b0 => new Order[]
                         {
@@ -193,15 +194,6 @@ namespace Lib9c.Tools.SubCommand
 
         private static Address GetOrderAddress(Guid orderId) =>
             Model.Order.Order.DeriveAddress(orderId);
-
-        private static NCAction ToAction(IValue plainValue)
-        {
-#pragma warning disable CS0612
-            var action = new NCAction();
-#pragma warning restore CS0612
-            action.LoadPlainValue(plainValue);
-            return action;
-        }
 
         struct Order
         {

@@ -27,13 +27,14 @@ namespace Nekoyume.Action
 
         Address IAddActivatedAccountV1.Address => Address;
 
-        public override IValue PlainValue =>
-            new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "add_activated_account2")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"a", Address.Serialize()),
                 }
-            );
+            ));
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -58,7 +59,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             Address = asDict["a"].ToAddress();
         }
     }

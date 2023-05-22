@@ -22,14 +22,15 @@ namespace Nekoyume.Action
         Address IActivateAccount.PendingAddress => PendingAddress;
         byte[] IActivateAccount.Signature => Signature;
 
-        public override IValue PlainValue =>
-            new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "activate_account2")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"pa", PendingAddress.Serialize()),
                     new KeyValuePair<IKey, IValue>((Text)"s", (Binary) Signature),
                 }
-            );
+            ));
 
         public ActivateAccount()
         {
@@ -81,7 +82,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             PendingAddress = asDict["pa"].ToAddress();
             Signature = (Binary) asDict["s"];
         }

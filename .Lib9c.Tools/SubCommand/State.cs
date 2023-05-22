@@ -21,8 +21,8 @@ using Libplanet.Blocks;
 using Libplanet.State;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Nekoyume.Action;
 using Serilog.Core;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
 {
@@ -115,7 +115,8 @@ namespace Lib9c.Tools.SubCommand
                     block.Hash
                 );
                 IReadOnlyList<IActionEvaluation> delta;
-                var actionLoader = new SingleActionLoader(typeof(NCAction));
+                var actionLoader = TypedActionLoader.Create(
+                    typeof(ActionBase).Assembly, typeof(ActionBase));
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
                     new BlockChainStates(store, stateStore),

@@ -9,7 +9,6 @@
     using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -19,12 +18,10 @@
     using Libplanet.Store.Trie;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-#pragma warning disable SA1135
-    using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-#pragma warning restore SA1135
 
     public static class BlockChainHelper
     {
@@ -51,7 +48,7 @@
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: blockRenderers);

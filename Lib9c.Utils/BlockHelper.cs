@@ -6,7 +6,6 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Action.Loader;
 using Libplanet.Action.Sys;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
@@ -17,6 +16,7 @@ using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -79,7 +79,7 @@ namespace Nekoyume
                 authorizedMinersState: authorizedMinersState,
                 creditsState: credits is null ? null : new CreditsState(credits)
             );
-            List<PolymorphicAction<ActionBase>> actions = new List<PolymorphicAction<ActionBase>>
+            List<ActionBase> actions = new List<ActionBase>
             {
                 initialStatesAction,
             };
@@ -95,11 +95,10 @@ namespace Nekoyume
             };
             if (!(actionBases is null))
             {
-                actions.AddRange(actionBases.Select(actionBase =>
-                    new PolymorphicAction<ActionBase>(actionBase)));
+                actions.AddRange(actionBases);
             }
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
-            var actionLoader = new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            var actionLoader = new NCActionLoader();
             var actionEvaluator = new ActionEvaluator(
                 _ => blockAction,
                 new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),
