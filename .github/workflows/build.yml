@@ -150,7 +150,7 @@ jobs:
       - name: release
         uses: planetarium/9c-toolbelt@update-player-verison
         with:
-          COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}"
+          COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}|--run-id=${{ github.run_id }}"
           ENV: production
           GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
