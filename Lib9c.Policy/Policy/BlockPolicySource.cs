@@ -207,39 +207,29 @@ namespace Nekoyume.BlockChain.Policy
             {
                 if (index < meadStartIndex)
                 {
-                    // Check ActivateAccount
-                    if (((ITransaction)transaction).Actions is { } customActions &&
-                        customActions.Count == 1 &&
-                        customActions.First() is Dictionary dictionary &&
-                        dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                        typeIdValue is Text typeId &&
-                        (typeId == "activate_account2" || typeId == "activate_account"))
+                    // Check Activation
+                    try
                     {
-                        if (!(dictionary.TryGetValue((Text)"values", out IValue valuesValue) &&
-                                valuesValue is Dictionary values))
+                        if (transaction.Actions is { } rawActions &&
+                            rawActions.Count == 1 &&
+                            actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
+                            polyAction.InnerAction is IActivateAccount activate)
                         {
-                            return new TxPolicyViolationException(
-                                $"Transaction {transaction.Id} has an invalid action.",
-                                transaction.Id);
+                            return transaction.Nonce == 0 &&
+                                blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                                new PendingActivationState(rawPending).Verify(activate.Signature)
+                                    ? null
+                                    : new TxPolicyViolationException(
+                                        $"Transaction {transaction.Id} has an invalid activate action.",
+                                        transaction.Id);
                         }
-
-                        IAction action = actionLoader.LoadAction(index, dictionary);
-                        if (!(action is IActivateAccount activateAccount))
-                        {
-                            return new TxPolicyViolationException(
-                                $"Transaction {transaction.Id} has an invalid action.",
-                                transaction.Id);
-                        }
-                        action.LoadPlainValue(values);
-
-                        return transaction.Nonce == 0 &&
-                            blockChain.GetState(activateAccount.PendingAddress) is Dictionary
-                                rawPending &&
-                            new PendingActivationState(rawPending).Verify(activateAccount.Signature)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} has an invalid activate action.",
-                                    transaction.Id);
+                    }
+                    catch (Exception e)
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id,
+                            e);
                     }
 
                     // Check admin
