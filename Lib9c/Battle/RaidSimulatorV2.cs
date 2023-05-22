@@ -14,7 +14,7 @@ using Nekoyume.Action;
 
 namespace Nekoyume.Battle
 {
-    public class RaidSimulator : Simulator
+    public class RaidSimulatorV2 : Simulator
     {
         public int BossId { get; private set; }
         public int DamageDealt { get; private set; }
@@ -27,7 +27,7 @@ namespace Nekoyume.Battle
         private RuneSheet _runeSheet;
         private WorldBossCharacterSheet.Row _currentBossRow;
 
-        public RaidSimulator(
+        public RaidSimulatorV2(
             int bossId,
             IRandom random,
             AvatarState avatarState,
@@ -39,7 +39,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
             if (runeStates != null)
             {
-                Player.SetRune(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
+                Player.SetRuneV1(runeStates, simulatorSheets.RuneOptionSheet, simulatorSheets.SkillSheet);
             }
 
             BossId = bossId;

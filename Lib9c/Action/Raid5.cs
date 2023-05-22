@@ -8,7 +8,6 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
@@ -22,12 +21,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1858
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
-    [ActionType("raid3")]
-    public class Raid3 : GameAction, IRaidV2
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionType("raid5")]
+    public class Raid5 : GameAction, IRaidV2
     {
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
@@ -50,8 +49,6 @@ namespace Nekoyume.Action
             {
                 return states;
             }
-
-            CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
             var addressHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -109,8 +106,11 @@ namespace Nekoyume.Action
             else
             {
                 raiderState = new RaiderState();
-                FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
-                states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                if (row.EntranceFee > 0)
+                {
+                    FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
+                    states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                }
                 Address raiderListAddress = Addresses.GetRaiderListAddress(raidId);
                 List<Address> raiderList =
                     states.TryGetState(raiderListAddress, out List rawRaiderList)
@@ -121,12 +121,14 @@ namespace Nekoyume.Action
                     new List(raiderList.Select(a => a.Serialize())));
             }
 
-            if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid4.RequiredInterval)
+            var gameConfigState = states.GetGameConfigState();
+            if (context.BlockIndex - raiderState.UpdatedBlockIndex < gameConfigState.WorldBossRequiredInterval)
             {
                 throw new RequiredBlockIntervalException($"wait for interval. {context.BlockIndex - raiderState.UpdatedBlockIndex}");
             }
 
-            if (WorldBossHelper.CanRefillTicketV1(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex,
+                    row.StartedBlockIndex, gameConfigState.DailyWorldBossInterval))
             {
                 raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
                 raiderState.RefillBlockIndex = context.BlockIndex;
@@ -162,7 +164,7 @@ namespace Nekoyume.Action
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Raid);
             var runeListSheet = sheets.GetSheet<RuneListSheet>();
-            runeSlotState.UpdateSlotV2(RuneInfos, runeListSheet);
+            runeSlotState.UpdateSlot(RuneInfos, runeListSheet);
             states = states.SetState(runeSlotStateAddress, runeSlotState.Serialize());
 
             // Update item slot
