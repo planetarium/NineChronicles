@@ -53,6 +53,7 @@ namespace Nekoyume.UI
 
         private EquipmentItemRecipeSheet.Row _recipeRow;
         private int _subRecipeIndex;
+        private bool _canSuperCraft;
 
         private const int SuperCraftIndex = 20;
         private const int BasicRecipeIndex = 0;
@@ -78,6 +79,9 @@ namespace Nekoyume.UI
                     if (!b) return;
                     _subRecipeIndex = index;
                     SetSkillInfoText(_recipeRow.SubRecipeIds[_subRecipeIndex]);
+                    superCraftButton.Interactable =
+                        superCraftButton.Interactable ||
+                        (Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) && _canSuperCraft);
                 });
             }
 
@@ -99,18 +103,19 @@ namespace Nekoyume.UI
             bool ignoreAnimation = false)
         {
             _recipeRow = recipeRow;
-            superCraftButton.Interactable =
-                Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) && canSuperCraft;
-            var sheets = TableSheets.Instance;
+            _canSuperCraft = canSuperCraft;
             superCraftButton.SetCost(
                 CostType.Crystal,
-                sheets.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
+                TableSheets.Instance.CrystalHammerPointSheet[_recipeRow.Id].CRYSTAL);
             base.Show(ignoreAnimation);
 
             if (_recipeRow.GetResultEquipmentItemRow().Grade < 5)
             {
                 normalRecipeTabGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                superCraftButton.Interactable =
+                    Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _) &&
+                    _canSuperCraft;
 
                 premiumRecipeTab.isOn = true;
                 SetSkillInfoText(_recipeRow.SubRecipeIds[PremiumRecipeIndex]);
@@ -120,6 +125,7 @@ namespace Nekoyume.UI
                 normalRecipeTabGroup.gameObject.SetActive(false);
                 legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(true);
                 legendaryRecipeTabGroup.toggleGroup.SetAllTogglesOff();
+                superCraftButton.Interactable = false;
 
                 var tabNames = SubRecipeView.DefaultTabNames;
                 var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
