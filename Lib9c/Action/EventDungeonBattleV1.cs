@@ -25,6 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class EventDungeonBattleV1 : GameAction, IEventDungeonBattleV1
     {
         private const string ActionTypeText = "event_dungeon_battle";
@@ -114,6 +115,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(

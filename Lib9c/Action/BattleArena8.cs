@@ -29,6 +29,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("battle_arena8")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class BattleArena8 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -99,6 +100,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
                 myAvatarAddress,

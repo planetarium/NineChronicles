@@ -16,6 +16,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("create_avatar6")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class CreateAvatar6 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -92,6 +93,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))

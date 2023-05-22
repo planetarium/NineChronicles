@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("update_sell5")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class UpdateSell : GameAction, IUpdateSellV2
     {
         private const int UpdateCapacity = 100;
@@ -61,6 +62,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             if (!(states.GetState(Addresses.Market) is null))
             {
                 throw new ActionObsoletedException("UpdateSell action is obsoleted. please use ReRegisterProduct.");

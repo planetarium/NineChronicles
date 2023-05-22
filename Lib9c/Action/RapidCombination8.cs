@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination8")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class RapidCombination8 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
@@ -52,6 +53,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}RapidCombination exec started", addressesHex);

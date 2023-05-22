@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("ranking_battle11")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class RankingBattle11 : GameAction, IRankingBattleV2
     {
         public const int StageId = 999999;
@@ -65,6 +66,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
             {

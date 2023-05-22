@@ -14,6 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class Stake0 : ActionBase, IStakeV1
     {
         internal BigInteger Amount { get; set; }
@@ -42,6 +43,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             IAccountStateDelta states = context.PreviousStates;
 
             // Restrict staking if there is a monster collection until now.

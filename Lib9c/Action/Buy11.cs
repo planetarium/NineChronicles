@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("buy11")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class Buy11 : GameAction, IBuy5, IBuyV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Shop.Derive("_0_0");
@@ -104,6 +105,7 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged);
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)

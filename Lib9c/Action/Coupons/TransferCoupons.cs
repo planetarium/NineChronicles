@@ -11,6 +11,10 @@ namespace Nekoyume.Action.Coupons
     [ActionType("transfer_coupons")]
     public sealed class TransferCoupons : GameAction
     {
+        public TransferCoupons()
+        {
+        }
+
         public TransferCoupons(
             IImmutableDictionary<Address, IImmutableSet<Guid>> couponsPerRecipient)
         {
@@ -25,6 +29,7 @@ namespace Nekoyume.Action.Coupons
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var signerWallet = states.GetCouponWallet(context.Signer);
             var orderedRecipients = CouponsPerRecipient.OrderBy(pair => pair.Key);

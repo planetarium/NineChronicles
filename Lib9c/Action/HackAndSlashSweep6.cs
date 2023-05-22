@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_sweep6")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class HackAndSlashSweep6 : GameAction, IHackAndSlashSweepV2
     {
         public const int UsableApStoneCount = 10;
@@ -75,6 +76,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (apStoneCount > UsableApStoneCount)

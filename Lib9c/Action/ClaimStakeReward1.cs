@@ -13,6 +13,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("claim_stake_reward")]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class ClaimStakeReward1 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         internal Address AvatarAddress { get; private set; }
@@ -30,6 +31,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var states = context.PreviousStates;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {

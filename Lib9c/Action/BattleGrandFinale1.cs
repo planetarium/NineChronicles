@@ -28,6 +28,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeName)]
+    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class BattleGrandFinale1 : GameAction, IBattleGrandFinaleV1
     {
         private const string ActionTypeName = "battle_grand_finale";
@@ -82,6 +83,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
                 myAvatarAddress,
