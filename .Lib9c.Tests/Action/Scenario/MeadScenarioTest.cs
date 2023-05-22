@@ -18,42 +18,42 @@ namespace Lib9c.Tests.Action.Scenario
         public void Contract()
         {
             Currency mead = Currencies.Mead;
-            var valkyrie = new PrivateKey().ToAddress();
-            IAccountStateDelta states = new State().MintAsset(valkyrie, 10 * mead);
+            var patron = new PrivateKey().ToAddress();
+            IAccountStateDelta states = new State().MintAsset(patron, 10 * mead);
 
             var agentAddress = new PrivateKey().ToAddress();
-            var bringEinheri = new BringEinheri
+            var requestPledge = new RequestPledge
             {
-                EinheriAddress = agentAddress,
+                AgentAddress = agentAddress,
             };
-            var states2 = Execute(states, bringEinheri, valkyrie);
-            Assert.Equal(8 * mead, states2.GetBalance(valkyrie, mead));
+            var states2 = Execute(states, requestPledge, patron);
+            Assert.Equal(8 * mead, states2.GetBalance(patron, mead));
             Assert.Equal(1 * mead, states2.GetBalance(agentAddress, mead));
 
-            var takeSides = new TakeSides
+            var approvePledge = new ApprovePledge
             {
-                ValkyrieAddress = valkyrie,
+                PatronAddress = patron,
             };
-            var states3 = Execute(states2, takeSides, agentAddress);
-            Assert.Equal(4 * mead, states3.GetBalance(valkyrie, mead));
+            var states3 = Execute(states2, approvePledge, agentAddress);
+            Assert.Equal(4 * mead, states3.GetBalance(patron, mead));
             Assert.Equal(4 * mead, states3.GetBalance(agentAddress, mead));
 
-            // release and return einheri mead
-            var releaseEinheri = new ReleaseEinheri
+            // release and return agent mead
+            var endPledge = new EndPledge
             {
-                EinheriAddress = agentAddress,
+                AgentAddress = agentAddress,
             };
-            var states4 = Execute(states3, releaseEinheri, valkyrie);
-            Assert.Equal(7 * mead, states4.GetBalance(valkyrie, mead));
+            var states4 = Execute(states3, endPledge, patron);
+            Assert.Equal(7 * mead, states4.GetBalance(patron, mead));
             Assert.Equal(0 * mead, states4.GetBalance(agentAddress, mead));
 
             // re-contract with Bencodex.Null
-            var states5 = Execute(states4, bringEinheri, valkyrie);
-            Assert.Equal(5 * mead, states5.GetBalance(valkyrie, mead));
+            var states5 = Execute(states4, requestPledge, patron);
+            Assert.Equal(5 * mead, states5.GetBalance(patron, mead));
             Assert.Equal(1 * mead, states5.GetBalance(agentAddress, mead));
 
-            var states6 = Execute(states5, takeSides, agentAddress);
-            Assert.Equal(1 * mead, states6.GetBalance(valkyrie, mead));
+            var states6 = Execute(states5, approvePledge, agentAddress);
+            Assert.Equal(1 * mead, states6.GetBalance(patron, mead));
             Assert.Equal(4 * mead, states6.GetBalance(agentAddress, mead));
         }
 

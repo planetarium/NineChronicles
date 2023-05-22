@@ -164,15 +164,15 @@ namespace Lib9c.Tests.Action
         [InlineData(4)]
         public void Mead(int agentBalance)
         {
-            var valkyrie = new PrivateKey().ToAddress();
+            var patron = new PrivateKey().ToAddress();
             var agentContractAddress = _agentAddress.GetPledgeAddress();
             var mead = Currencies.Mead;
-            var price = BringEinheri.RefillMead * mead;
+            var price = RequestPledge.RefillMead * mead;
             IAccountStateDelta states = new State()
                 .SetState(
                     agentContractAddress,
-                    List.Empty.Add(valkyrie.Serialize()).Add(true.Serialize()))
-                .MintAsset(valkyrie, price);
+                    List.Empty.Add(patron.Serialize()).Add(true.Serialize()))
+                .MintAsset(patron, price);
 
             if (agentBalance > 0)
             {
@@ -180,7 +180,7 @@ namespace Lib9c.Tests.Action
             }
 
             states = states.Mead(_agentAddress, 4);
-            Assert.Equal(agentBalance * mead, states.GetBalance(valkyrie, mead));
+            Assert.Equal(agentBalance * mead, states.GetBalance(patron, mead));
             Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }
     }

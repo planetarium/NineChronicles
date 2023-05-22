@@ -125,17 +125,17 @@ namespace Nekoyume.Action
                 if (balance < price)
                 {
                     var requiredMead = price - balance;
-                    var contractAddress = signer.Derive(nameof(BringEinheri));
+                    var contractAddress = signer.Derive(nameof(RequestPledge));
                     if (states.GetState(contractAddress) is List contract && contract[1].ToBoolean())
                     {
-                        var valkyrie = contract[0].ToAddress();
+                        var patron = contract[0].ToAddress();
                         try
                         {
-                            states = states.TransferAsset(valkyrie, signer, requiredMead);
+                            states = states.TransferAsset(patron, signer, requiredMead);
                         }
                         catch (InsufficientBalanceException)
                         {
-                            states = states.Mead(valkyrie, rawValue);
+                            states = states.Mead(patron, rawValue);
                             continue;
                         }
                     }

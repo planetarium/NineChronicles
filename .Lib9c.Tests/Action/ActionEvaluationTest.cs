@@ -89,9 +89,9 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ReRegisterProduct))]
         [InlineData(typeof(CancelProductRegistration))]
         [InlineData(typeof(BuyProduct))]
-        [InlineData(typeof(BringEinheri))]
-        [InlineData(typeof(TakeSides))]
-        [InlineData(typeof(ReleaseEinheri))]
+        [InlineData(typeof(RequestPledge))]
+        [InlineData(typeof(ApprovePledge))]
+        [InlineData(typeof(EndPledge))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -439,17 +439,17 @@ namespace Lib9c.Tests.Action
                         },
                     },
                 },
-                BringEinheri _ => new BringEinheri
+                RequestPledge _ => new RequestPledge
                 {
-                    EinheriAddress = new PrivateKey().ToAddress(),
+                    AgentAddress = new PrivateKey().ToAddress(),
                 },
-                TakeSides _ => new TakeSides
+                ApprovePledge _ => new ApprovePledge
                 {
-                    ValkyrieAddress = new PrivateKey().ToAddress(),
+                    PatronAddress = new PrivateKey().ToAddress(),
                 },
-                ReleaseEinheri _ => new ReleaseEinheri
+                EndPledge _ => new EndPledge
                 {
-                    EinheriAddress = new PrivateKey().ToAddress(),
+                    AgentAddress = new PrivateKey().ToAddress(),
                 },
                 _ => throw new InvalidCastException(),
             };

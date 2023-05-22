@@ -50,8 +50,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var contractAddress = _sender.Derive(nameof(BringEinheri));
-            var valkyrieAddress = new PrivateKey().ToAddress();
+            var contractAddress = _sender.Derive(nameof(RequestPledge));
+            var patronAddress = new PrivateKey().ToAddress();
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
