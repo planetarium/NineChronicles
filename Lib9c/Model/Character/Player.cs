@@ -571,8 +571,8 @@ namespace Nekoyume.Model
                         new StatModifier(
                             x.stat.StatType,
                             x.operationType,
-                            x.stat.TotalValueAsInt)));
-                Stats.SetRunes(statModifiers);
+                            x.stat.BaseValueAsInt)));
+                Stats.AddRune(statModifiers);
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||

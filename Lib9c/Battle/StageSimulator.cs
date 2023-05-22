@@ -270,9 +270,8 @@ namespace Nekoyume.Battle
                         out var row,
                         true);
 
-                    var stat = new CharacterStats(row, monsterData.Level);
-                    stat.Modify(initialStatModifiers);
-                    var enemyModel = new Enemy(Player, stat, monsterData.Level, row.ElementalType);
+                    var stat = new CharacterStats(row, monsterData.Level, initialStatModifiers);
+                    var enemyModel = new Enemy(Player, stat, row, row.ElementalType);
                     wave.Add(enemyModel);
                     wave.HasBoss = waveData.HasBoss;
                 }
