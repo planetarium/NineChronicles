@@ -10,34 +10,34 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class BringEinheriTest
+    public class RequestPledgeTest
     {
         [Fact]
         public void Execute()
         {
             Currency mead = Currencies.Mead;
-            Address valkyrie = new PrivateKey().ToAddress();
-            IAccountStateDelta states = new State().MintAsset(valkyrie, 2 * mead);
+            Address patron = new PrivateKey().ToAddress();
+            IAccountStateDelta states = new State().MintAsset(patron, 2 * mead);
             var address = new PrivateKey().ToAddress();
-            var action = new BringEinheri
+            var action = new RequestPledge
             {
-                EinheriAddress = address,
+                AgentAddress = address,
             };
 
             Assert.Equal(0 * mead, states.GetBalance(address, mead));
-            Assert.Equal(2 * mead, states.GetBalance(valkyrie, mead));
+            Assert.Equal(2 * mead, states.GetBalance(patron, mead));
 
             var nextState = action.Execute(new ActionContext
             {
-                Signer = valkyrie,
+                Signer = patron,
                 PreviousStates = states,
             });
-            var contract = Assert.IsType<List>(nextState.GetState(address.Derive(nameof(BringEinheri))));
+            var contract = Assert.IsType<List>(nextState.GetState(address.Derive(nameof(RequestPledge))));
 
-            Assert.Equal(valkyrie, contract[0].ToAddress());
+            Assert.Equal(patron, contract[0].ToAddress());
             Assert.False(contract[1].ToBoolean());
             Assert.Equal(1 * mead, nextState.GetBalance(address, mead));
-            Assert.Equal(1 * mead, nextState.GetBalance(valkyrie, mead));
+            Assert.Equal(1 * mead, nextState.GetBalance(patron, mead));
         }
     }
 }

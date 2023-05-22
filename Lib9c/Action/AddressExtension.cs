@@ -24,7 +24,7 @@ namespace Nekoyume.Action
 
         public static Address GetPledgeAddress(this Address address)
         {
-            return address.Derive(nameof(BringEinheri));
+            return address.Derive(nameof(RequestPledge));
         }
     }
 }

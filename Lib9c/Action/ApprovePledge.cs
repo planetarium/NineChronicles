@@ -6,18 +6,18 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("take_sides")]
-    public class TakeSides : ActionBase
+    [ActionType("approve_pledge")]
+    public class ApprovePledge : ActionBase
     {
-        public TakeSides()
+        public ApprovePledge()
         {
         }
 
-        public Address ValkyrieAddress;
-        public override IValue PlainValue => ValkyrieAddress.Serialize();
+        public Address PatronAddress;
+        public override IValue PlainValue => PatronAddress.Serialize();
         public override void LoadPlainValue(IValue plainValue)
         {
-            ValkyrieAddress = plainValue.ToAddress();
+            PatronAddress = plainValue.ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -25,13 +25,13 @@ namespace Nekoyume.Action
             context.UseGas(1);
             Address signer = context.Signer;
             var states = context.PreviousStates;
-            var contractAddress = signer.Derive(nameof(BringEinheri));
+            var contractAddress = signer.Derive(nameof(RequestPledge));
             if (!states.TryGetState(contractAddress, out List contract))
             {
                 throw new InvalidAddressException();
             }
 
-            if (contract[0].ToAddress() != ValkyrieAddress)
+            if (contract[0].ToAddress() != PatronAddress)
             {
                 throw new InvalidAddressException();
             }
@@ -44,7 +44,7 @@ namespace Nekoyume.Action
             return states.SetState(
                 contractAddress,
                 List.Empty
-                    .Add(ValkyrieAddress.Serialize())
+                    .Add(PatronAddress.Serialize())
                     .Add(true.Serialize())
             );
         }

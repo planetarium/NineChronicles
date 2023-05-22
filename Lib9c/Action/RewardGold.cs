@@ -316,7 +316,7 @@ namespace Nekoyume.Action
                 if (states.TryGetState(contractAddress, out List contract) &&
                     contract[1].ToBoolean())
                 {
-                    states = states.Mead(address, BringEinheri.RefillMead);
+                    states = states.Mead(address, RequestPledge.RefillMead);
                 }
             }
 

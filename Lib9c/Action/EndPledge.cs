@@ -6,18 +6,18 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("release_einheri")]
-    public class ReleaseEinheri : ActionBase
+    [ActionType("end_pledge")]
+    public class EndPledge : ActionBase
     {
-        public ReleaseEinheri()
+        public EndPledge()
         {
         }
 
-        public Address EinheriAddress;
-        public override IValue PlainValue => EinheriAddress.Serialize();
+        public Address AgentAddress;
+        public override IValue PlainValue => AgentAddress.Serialize();
         public override void LoadPlainValue(IValue plainValue)
         {
-            EinheriAddress = plainValue.ToAddress();
+            AgentAddress = plainValue.ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
             Address signer = context.Signer;
             var states = context.PreviousStates;
-            var contractAddress = EinheriAddress.Derive(nameof(BringEinheri));
+            var contractAddress = AgentAddress.GetPledgeAddress();
             if (states.TryGetState(contractAddress, out List contract))
             {
                 if (signer != contract[0].ToAddress())
@@ -33,10 +33,10 @@ namespace Nekoyume.Action
                     throw new InvalidAddressException();
                 }
 
-                var balance = states.GetBalance(EinheriAddress, Currencies.Mead);
+                var balance = states.GetBalance(AgentAddress, Currencies.Mead);
                 if (balance > 0 * Currencies.Mead)
                 {
-                    states = states.TransferAsset(EinheriAddress, signer, balance);
+                    states = states.TransferAsset(AgentAddress, signer, balance);
                 }
                 return states.SetState(contractAddress, Null.Value);
             }
