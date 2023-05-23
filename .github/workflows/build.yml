@@ -138,6 +138,15 @@ jobs:
       network: ${{ needs.extract.outputs.network }}
       signing: ${{ needs.extract.outputs.signing }}
       build_workflow: ${{ github.run_id }}
+    secrets:
+      P_GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
+      ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
+      ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
+      ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
   #   steps:
   #     - uses: actions/checkout@v3
 

@@ -14,6 +14,24 @@ on:
       build_workflow:
         required: true
         type: string
+    secrets:
+      P_GITHUB_TOKEN:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      SLACK_TOKEN:
+        required: true
+      ESIGNER_CREDENTIAL_ID:
+        required: true
+      ESIGNER_USERNAME:
+        required: true
+      ESIGNER_PASSWORD:
+        required: true
+      ESIGNER_TOTP_SECRET:
+        required: true
+
 jobs:
   release:
     runs-on: ubuntu-20.04
