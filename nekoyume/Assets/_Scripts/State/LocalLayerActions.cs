@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using UnityEngine;
 
@@ -51,7 +51,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// Set rendered or unrendered flag. 
+        /// Set rendered or unrendered flag.
         /// </summary>
         /// <param name="gameActionId">`GameAction.Id`</param>
         /// <param name="isRendered">Set `True` when rendered. Set `False` when unrendered.</param>

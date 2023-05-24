@@ -12,7 +12,7 @@ using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;

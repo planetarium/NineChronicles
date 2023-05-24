@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using Libplanet;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

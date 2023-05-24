@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
@@ -41,7 +42,7 @@ using Skill = Nekoyume.Model.Skill.Skill;
 using Lib9c.DevExtensions.Action;
 #endif
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using Model;
     using UI.Scroller;

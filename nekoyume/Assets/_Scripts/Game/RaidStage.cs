@@ -1,5 +1,5 @@
 using Libplanet.Assets;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;

@@ -1,6 +1,6 @@
 ﻿using System;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.State;
 
@@ -31,7 +31,7 @@ namespace Nekoyume.ActionExtensions
             {
                 throw new ArgumentNullException(nameof(tableSheets));
             }
-            
+
             var currentAvatarState = states.CurrentAvatarState;
             if (action.avatarAddress != currentAvatarState.address)
             {

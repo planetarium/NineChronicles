@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Tx;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class TransactionMap
     {

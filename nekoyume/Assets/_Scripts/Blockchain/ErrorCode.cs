@@ -1,6 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
+using Libplanet.State;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Exceptions;
@@ -12,7 +13,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public static class ErrorCode
     {

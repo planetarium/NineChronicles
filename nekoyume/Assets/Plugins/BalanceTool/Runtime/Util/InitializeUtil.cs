@@ -11,6 +11,7 @@ namespace BalanceTool.Runtime.Util
         using Libplanet.Action;
         using Libplanet.Assets;
         using Libplanet.Crypto;
+        using Libplanet.State;
         using Nekoyume;
         using Nekoyume.Action;
         using Nekoyume.Model.State;

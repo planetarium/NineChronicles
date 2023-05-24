@@ -18,7 +18,7 @@ using Nekoyume.UI.Scroller;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public abstract class ActionHandler
     {

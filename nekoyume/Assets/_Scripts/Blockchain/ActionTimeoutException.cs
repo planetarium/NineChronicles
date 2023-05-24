@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using Libplanet.Tx;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class ActionTimeoutException : TimeoutException
     {

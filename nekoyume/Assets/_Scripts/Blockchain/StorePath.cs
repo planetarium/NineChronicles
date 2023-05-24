@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.IO;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public static class StorePath
     {

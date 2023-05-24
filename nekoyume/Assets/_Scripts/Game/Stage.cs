@@ -5,7 +5,7 @@ using DG.Tweening;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;

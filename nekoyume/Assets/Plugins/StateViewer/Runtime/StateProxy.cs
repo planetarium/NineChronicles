@@ -5,7 +5,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 
 namespace StateViewer.Runtime
 {
@@ -35,9 +35,9 @@ namespace StateViewer.Runtime
             }
         }
 
-        // NOTE: Why not use <see cref="Nekoyume.BlockChain.IAgent.GetBalanceAsync()"/>?
+        // NOTE: Why not use <see cref="Nekoyume.Blockchain.IAgent.GetBalanceAsync()"/>?
         //       Because the implementation by
-        //       <see cref="Nekoyume.BlockChain.RPCAgent.GetBalanceAsync()"/> has a bug.
+        //       <see cref="Nekoyume.Blockchain.RPCAgent.GetBalanceAsync()"/> has a bug.
         public (Address addr, FungibleAssetValue fav) GetBalance(
             Address addr,
             Currency currency)

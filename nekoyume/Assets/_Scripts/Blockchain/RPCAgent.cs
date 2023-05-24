@@ -15,13 +15,14 @@ using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Libplanet.Tx;
 using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -35,10 +36,9 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using UniRx;
 
@@ -46,7 +46,7 @@ namespace Nekoyume.BlockChain
     {
         private const int RpcConnectionRetryCount = 20;
         private const float TxProcessInterval = 1.0f;
-        private readonly ConcurrentQueue<NCAction> _queuedActions = new ConcurrentQueue<NCAction>();
+        private readonly ConcurrentQueue<ActionBase> _queuedActions = new ConcurrentQueue<ActionBase>();
 
         private readonly TransactionMap _transactions = new TransactionMap(20);
 
@@ -95,10 +95,10 @@ namespace Nekoyume.BlockChain
 
         public BlockHash BlockTipHash { get; private set; }
 
-        private readonly Subject<(NCTx tx, List<NCAction> actions)> _onMakeTransactionSubject =
-                new Subject<(NCTx tx, List<NCAction> actions)>();
+        private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
+                new Subject<(NCTx tx, List<ActionBase> actions)>();
 
-        public IObservable<(NCTx tx, List<NCAction> actions)> OnMakeTransaction => _onMakeTransactionSubject;
+        public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -452,14 +452,14 @@ namespace Nekoyume.BlockChain
             {
                 yield return new WaitForSeconds(TxProcessInterval);
 
-                if (!_queuedActions.TryDequeue(out NCAction action))
+                if (!_queuedActions.TryDequeue(out ActionBase action))
                 {
                     continue;
                 }
                 Debug.Log($"[ActionDebug] before MakeTransaction {++i}");
                 Task task = Task.Run(async () =>
                 {
-                    await MakeTransaction(new List<NCAction> { action });
+                    await MakeTransaction(new List<ActionBase> { action });
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
 
@@ -477,7 +477,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private async Task MakeTransaction(List<NCAction> actions)
+        private async Task MakeTransaction(List<ActionBase> actions)
         {
             var nonce = await GetNonceAsync();
             var tx = NCTx.Create(
@@ -493,7 +493,7 @@ namespace Nekoyume.BlockChain
             {
                 actionsName += "\n#";
                 actionsName += action.ToString();
-                actionsName += ", id=" + ((GameAction)action.InnerAction)?.Id;
+                actionsName += ", id=" + ((GameAction)action)?.Id;
             }
             Debug.Log($"[Transaction]\nnonce={nonce}\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
                 $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
@@ -504,7 +504,7 @@ namespace Nekoyume.BlockChain
             {
                 Debug.Log($"[Transaction] action = {action.ToString()}");
 
-                if (action.InnerAction is GameAction gameAction)
+                if (action is GameAction gameAction)
                 {
                     _transactions.TryAdd(gameAction.Id, tx.Id);
                 }

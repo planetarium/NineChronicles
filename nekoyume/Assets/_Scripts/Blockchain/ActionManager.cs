@@ -30,7 +30,7 @@ using RedeemCode = Nekoyume.Action.RedeemCode;
 using Lib9c.DevExtensions.Action;
 #endif
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using UniRx;
 
@@ -88,7 +88,6 @@ namespace Nekoyume.BlockChain
             {
                 var (tx, actions) = tuple;
                 var gameActions = actions
-                    .Select(e => e.InnerAction)
                     .OfType<GameAction>()
                     .ToArray();
                 foreach (var gameAction in gameActions)

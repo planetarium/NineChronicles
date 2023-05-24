@@ -3,6 +3,7 @@ using BalanceTool.Runtime;
 using BalanceTool.Runtime.Util.Lib9c.Tests.Util;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using UnityEditor;
 using UnityEngine;
 

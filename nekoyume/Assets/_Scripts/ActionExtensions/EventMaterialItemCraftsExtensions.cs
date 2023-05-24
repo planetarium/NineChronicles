@@ -1,5 +1,5 @@
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.State;
 

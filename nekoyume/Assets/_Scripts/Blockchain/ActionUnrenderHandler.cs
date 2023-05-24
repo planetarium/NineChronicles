@@ -16,7 +16,7 @@ using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using UniRx;
 

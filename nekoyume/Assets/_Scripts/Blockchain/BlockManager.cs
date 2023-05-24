@@ -16,7 +16,7 @@ using Nekoyume.Action;
 using Nekoyume.Model.State;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public static class BlockManager
     {

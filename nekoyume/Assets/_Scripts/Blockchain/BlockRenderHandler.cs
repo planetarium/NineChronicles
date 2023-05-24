@@ -14,7 +14,7 @@ using Nekoyume.State.Subjects;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using Nekoyume.Helper;
     using Nekoyume.UI.Scroller;
