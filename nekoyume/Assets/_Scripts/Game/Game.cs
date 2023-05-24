@@ -822,7 +822,7 @@ namespace Nekoyume.Game
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
-            var storagePath = _commandLineOptions.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
+            var storagePath = _commandLineOptions.StoragePath ?? Blockchain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)

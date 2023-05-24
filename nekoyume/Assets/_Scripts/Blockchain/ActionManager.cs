@@ -88,7 +88,6 @@ namespace Nekoyume.Blockchain
             {
                 var (tx, actions) = tuple;
                 var gameActions = actions
-                    .Select(e => e.InnerAction)
                     .OfType<GameAction>()
                     .ToArray();
                 foreach (var gameAction in gameActions)

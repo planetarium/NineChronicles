@@ -39,7 +39,7 @@ namespace Nekoyume.Blockchain
 
         BlockHash BlockTipHash { get; }
 
-        IObservable<(Transaction tx, List<PolymorphicAction<ActionBase>> actions)>
+        IObservable<(Transaction tx, List<ActionBase> actions)>
             OnMakeTransaction { get; }
 
         IEnumerator Initialize(
