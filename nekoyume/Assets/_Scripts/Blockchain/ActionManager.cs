@@ -30,7 +30,7 @@ using RedeemCode = Nekoyume.Action.RedeemCode;
 using Lib9c.DevExtensions.Action;
 #endif
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using UniRx;
 

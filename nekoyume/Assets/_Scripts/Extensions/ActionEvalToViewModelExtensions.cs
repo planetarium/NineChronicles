@@ -4,7 +4,7 @@ using Bencodex.Types;
 using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;

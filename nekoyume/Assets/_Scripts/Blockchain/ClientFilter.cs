@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MagicOnion.Client;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class ClientFilter : IClientFilter
     {

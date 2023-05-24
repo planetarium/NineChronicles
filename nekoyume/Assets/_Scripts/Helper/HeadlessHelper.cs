@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Libplanet;
 using Libplanet.Crypto;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;

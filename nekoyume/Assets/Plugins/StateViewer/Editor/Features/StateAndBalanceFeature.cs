@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c;
 using Libplanet;
 using Libplanet.Assets;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;

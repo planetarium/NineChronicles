@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;

@@ -12,12 +12,12 @@ using Libplanet.Assets;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using UniRx;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public interface IAgent
     {

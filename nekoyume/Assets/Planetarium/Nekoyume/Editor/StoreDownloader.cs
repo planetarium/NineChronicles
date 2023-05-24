@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -88,7 +88,7 @@ namespace Planetarium.Nekoyume.Editor
             {
                 File.Delete(downloadFilePath);
             }
-            
+
             Debug.Log($"Download and extract the Main-net store finished. Extracted at \"{extractPath}\"");
         }
     }

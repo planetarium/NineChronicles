@@ -1,7 +1,7 @@
 using Libplanet;
 using System.Security.Cryptography;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public readonly struct ReorgInfo
     {

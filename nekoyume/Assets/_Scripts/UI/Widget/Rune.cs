@@ -5,7 +5,7 @@ using System.Numerics;
 using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;

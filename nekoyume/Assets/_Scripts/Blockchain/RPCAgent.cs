@@ -21,7 +21,7 @@ using MagicOnion.Client;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -38,7 +38,7 @@ using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using UniRx;
 

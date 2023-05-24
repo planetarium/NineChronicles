@@ -12,7 +12,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public static class ErrorCode
     {

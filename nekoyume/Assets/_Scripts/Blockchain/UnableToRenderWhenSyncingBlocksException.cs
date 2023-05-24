@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     [Serializable]
     public class UnableToRenderWhenSyncingBlocksException : Exception

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;

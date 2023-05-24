@@ -26,7 +26,7 @@ using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -40,7 +40,7 @@ using UnityEngine;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using Libplanet.Action;
     using Libplanet.Action.Loader;

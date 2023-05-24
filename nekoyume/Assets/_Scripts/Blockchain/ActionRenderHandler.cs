@@ -41,7 +41,7 @@ using Skill = Nekoyume.Model.Skill.Skill;
 using Lib9c.DevExtensions.Action;
 #endif
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using Model;
     using UI.Scroller;

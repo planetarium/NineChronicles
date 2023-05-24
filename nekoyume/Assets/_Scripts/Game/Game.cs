@@ -16,7 +16,7 @@ using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
