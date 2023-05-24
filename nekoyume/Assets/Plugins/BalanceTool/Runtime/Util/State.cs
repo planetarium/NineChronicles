@@ -11,6 +11,7 @@ namespace BalanceTool.Runtime.Util
         using Libplanet.Action;
         using Libplanet.Assets;
         using Libplanet.Consensus;
+        using Libplanet.State;
 
         public class State : IAccountStateDelta
         {

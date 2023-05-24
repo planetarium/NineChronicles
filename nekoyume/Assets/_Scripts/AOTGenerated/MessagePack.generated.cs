@@ -133,12 +133,12 @@ namespace MessagePack.Formatters.Nekoyume.Action
             options.Security.DepthStep(ref reader);
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __Action__ = default(global::Libplanet.Action.PolymorphicAction<global::Nekoyume.Action.ActionBase>);
+            var __Action__ = default(global::Nekoyume.Action.ActionBase);
             var __Signer__ = default(global::Libplanet.Address);
             var __BlockIndex__ = default(long);
-            var __OutputStates__ = default(global::Libplanet.Action.IAccountStateDelta);
+            var __OutputStates__ = default(global::Libplanet.State.IAccountStateDelta);
             var __Exception__ = default(global::System.Exception);
-            var __PreviousStates__ = default(global::Libplanet.Action.IAccountStateDelta);
+            var __PreviousStates__ = default(global::Libplanet.State.IAccountStateDelta);
             var __RandomSeed__ = default(int);
             var __Extra__ = default(global::System.Collections.Generic.Dictionary<string, global::Bencodex.Types.IValue>);
 
