@@ -15,7 +15,7 @@ namespace Nekoyume.Helper
         {
             _localMailDictionary = new Dictionary<Address, List<Mail>>();
             _disposables = new List<IDisposable>();
-            _localMailBox = new ReactiveProperty<MailBox>(null);
+            _localMailBox = new ReactiveProperty<MailBox>(States.Instance.CurrentAvatarState?.mailBox);
             Event.OnUpdateAddresses.AsObservable()
                 .Subscribe(_ =>
                 {
