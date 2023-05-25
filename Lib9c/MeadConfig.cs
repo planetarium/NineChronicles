@@ -2,6 +2,7 @@ namespace Nekoyume
 {
     public static class MeadConfig
     {
-        public const long MeadTransferStartIndex = 999_999_999L;
+        // Testnet mint block index
+        public const long MeadTransferStartIndex = 6_795_822L;
     }
 }
