@@ -36,10 +36,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            if (context.BlockIndex > MeadConfig.MeadTransferStartIndex)
-            {
-                states = TransferMead(states);
-            }
+            states = TransferMead(states);
             states = GenesisGoldDistribution(context, states);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
@@ -316,7 +313,13 @@ namespace Nekoyume.Action
                 if (states.TryGetState(contractAddress, out List contract) &&
                     contract[1].ToBoolean())
                 {
-                    states = states.Mead(address, RequestPledge.RefillMead);
+                    try
+                    {
+                        states = states.Mead(address, RequestPledge.RefillMead);
+                    }
+                    catch (InsufficientBalanceException)
+                    {
+                    }
                 }
             }
 
