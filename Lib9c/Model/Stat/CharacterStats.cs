@@ -68,6 +68,8 @@ namespace Nekoyume.Model.Stat
         public int AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
         public int AdditionalThorn => Thorn - _baseStats.Thorn;
 
+        public bool IsArenaCharacter { private get; set; } = false;
+
         private readonly Dictionary<StatType, decimal> MinimumStatValues =
             new Dictionary<StatType, decimal>()
             {
@@ -121,6 +123,7 @@ namespace Nekoyume.Model.Stat
             _runeStatModifiers = value._runeStatModifiers;
             _buffStatModifiers = value._buffStatModifiers;
             _optionalStatModifiers = value._optionalStatModifiers;
+            IsArenaCharacter = value.IsArenaCharacter;
 
             Level = value.Level;
         }
@@ -433,6 +436,11 @@ namespace Nekoyume.Model.Stat
                     var value = Math.Max(minimumValue, stat.BaseValue);
                     stat.SetBaseValue(value);
                 }
+            }
+
+            if (IsArenaCharacter)
+            {
+                IncreaseHpForArena();
             }
         }
 

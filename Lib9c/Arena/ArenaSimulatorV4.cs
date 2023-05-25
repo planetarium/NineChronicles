@@ -11,7 +11,7 @@ namespace Nekoyume.Arena
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1930
     /// </summary>
-    public class ArenaSimulator : IArenaSimulator
+    public class ArenaSimulatorV4 : IArenaSimulator
     {
         private const decimal TurnPriority = 100m;
         private const int MaxTurn = 200;
@@ -20,7 +20,7 @@ namespace Nekoyume.Arena
         public int Turn { get; private set; }
         public ArenaLog Log { get; private set; }
 
-        public ArenaSimulator(IRandom random)
+        public ArenaSimulatorV4(IRandom random)
         {
             Random = random;
             Turn = 1;
@@ -96,7 +96,7 @@ namespace Nekoyume.Arena
 
 
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
-            ArenaSimulator simulator,
+            ArenaSimulatorV4 simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,

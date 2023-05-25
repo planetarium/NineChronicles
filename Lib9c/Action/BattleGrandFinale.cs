@@ -24,7 +24,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1930
     /// </summary>
     [Serializable]
     [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
