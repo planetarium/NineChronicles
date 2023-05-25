@@ -32,7 +32,7 @@ namespace Nekoyume.Action
             var contractAddress = AgentAddress.GetPledgeAddress();
             if (states.TryGetState(contractAddress, out List _))
             {
-                throw new AlreadyReceivedException("");
+                throw new AlreadyContractedException($"{AgentAddress} already contracted.");
             }
 
             return states

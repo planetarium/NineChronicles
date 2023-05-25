@@ -32,12 +32,31 @@ namespace Lib9c.Tests.Action
                 Signer = patron,
                 PreviousStates = states,
             });
-            var contract = Assert.IsType<List>(nextState.GetState(address.Derive(nameof(RequestPledge))));
+            var contract = Assert.IsType<List>(nextState.GetState(address.GetPledgeAddress()));
 
             Assert.Equal(patron, contract[0].ToAddress());
             Assert.False(contract[1].ToBoolean());
             Assert.Equal(1 * mead, nextState.GetBalance(address, mead));
             Assert.Equal(1 * mead, nextState.GetBalance(patron, mead));
+        }
+
+        [Fact]
+        public void Execute_Throw_AlreadyContractedException()
+        {
+            Address patron = new PrivateKey().ToAddress();
+            var address = new PrivateKey().ToAddress();
+            Address contractAddress = address.GetPledgeAddress();
+            IAccountStateDelta states = new State().SetState(contractAddress, List.Empty);
+            var action = new RequestPledge
+            {
+                AgentAddress = address,
+            };
+
+            Assert.Throws<AlreadyContractedException>(() => action.Execute(new ActionContext
+            {
+                Signer = patron,
+                PreviousStates = states,
+            }));
         }
     }
 }

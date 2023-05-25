@@ -30,7 +30,7 @@ namespace Nekoyume.Action
             {
                 if (signer != contract[0].ToAddress())
                 {
-                    throw new InvalidAddressException();
+                    throw new InvalidAddressException($"{signer} is not patron.");
                 }
 
                 var balance = states.GetBalance(AgentAddress, Currencies.Mead);
@@ -41,7 +41,7 @@ namespace Nekoyume.Action
                 return states.SetState(contractAddress, Null.Value);
             }
 
-            throw new FailedLoadStateException("");
+            throw new FailedLoadStateException("failed to find pledge.");
         }
     }
 }

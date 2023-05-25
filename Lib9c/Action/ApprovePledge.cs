@@ -25,20 +25,20 @@ namespace Nekoyume.Action
             context.UseGas(1);
             Address signer = context.Signer;
             var states = context.PreviousStates;
-            var contractAddress = signer.Derive(nameof(RequestPledge));
+            var contractAddress = signer.GetPledgeAddress();
             if (!states.TryGetState(contractAddress, out List contract))
             {
-                throw new InvalidAddressException();
+                throw new FailedLoadStateException("failed to find requested pledge.");
             }
 
             if (contract[0].ToAddress() != PatronAddress)
             {
-                throw new InvalidAddressException();
+                throw new InvalidAddressException("invalid patron address.");
             }
 
             if (contract[1].ToBoolean())
             {
-                throw new AlreadyActivatedException("");
+                throw new AlreadyContractedException($"{signer} already contracted.");
             }
 
             return states.SetState(
