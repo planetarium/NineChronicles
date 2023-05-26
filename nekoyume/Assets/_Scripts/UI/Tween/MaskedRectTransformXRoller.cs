@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Tween
 
             if (scrollOnlyWhenNeed)
             {
-                if (_rectTransform.rect.x < content.rectTransform.rect.x)
+                if (_rectTransform.rect.x <= content.rectTransform.rect.x)
                 {
                     _coroutine = StartCoroutine(CoScrollContent());
                 }
