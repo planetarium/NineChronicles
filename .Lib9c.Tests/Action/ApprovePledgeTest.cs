@@ -12,8 +12,10 @@ namespace Lib9c.Tests.Action
 
     public class ApprovePledgeTest
     {
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(RequestPledge.RefillMead)]
+        [InlineData(100)]
+        public void Execute(int mead)
         {
             var address = new PrivateKey().ToAddress();
             var patron = new PrivateKey().ToAddress();
@@ -21,7 +23,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta states = new State()
                 .SetState(
                     contractAddress,
-                    List.Empty.Add(patron.Serialize()).Add(false.Serialize())
+                    List.Empty.Add(patron.Serialize()).Add(false.Serialize()).Add(mead.Serialize())
                 );
 
             var action = new ApprovePledge
@@ -35,8 +37,9 @@ namespace Lib9c.Tests.Action
             });
 
             var contract = Assert.IsType<List>(nextState.GetState(contractAddress));
-            Assert.Equal(contract[0].ToAddress(), patron);
+            Assert.Equal(patron, contract[0].ToAddress());
             Assert.True(contract[1].ToBoolean());
+            Assert.Equal(mead, contract[2].ToInteger());
         }
 
         [Theory]

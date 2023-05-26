@@ -17,12 +17,15 @@ namespace Nekoyume.Action
         // https://github.com/planetarium/lib9c/blob/b6c1e85abc0b93347dae8e1a12aaefd767b27632/Lib9c.Policy/Policy/MaxTransactionsPerSignerPerBlockPolicy.cs#L29
         public const int RefillMead = 4;
         public Address AgentAddress;
+        public int Mead;
 
-        public override IValue PlainValue => AgentAddress.Serialize();
+        public override IValue PlainValue => List.Empty.Add(AgentAddress.Serialize()).Add(Mead.Serialize());
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            AgentAddress = plainValue.ToAddress();
+            List values = (List) plainValue;
+            AgentAddress = values[0].ToAddress();
+            Mead = values[1].ToInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -42,6 +45,7 @@ namespace Nekoyume.Action
                     List.Empty
                         .Add(context.Signer.Serialize())
                         .Add(false.Serialize())
+                        .Add(Mead.Serialize())
                 );
         }
     }

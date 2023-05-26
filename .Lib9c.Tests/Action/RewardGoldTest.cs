@@ -555,6 +555,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(5, 4)]
+        [InlineData(101, 100)]
         // Skip mead when InsufficientBalanceException occured.
         [InlineData(1, 0)]
         public void TransferMead(int patronMead, int balance)
@@ -565,7 +566,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta states = new State()
                 .MintAsset(patronAddress, patronMead * Currencies.Mead)
                 .TransferAsset(patronAddress, agentAddress, 1 * Currencies.Mead)
-                .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()))
+                .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))
                 .BurnAsset(agentAddress, 1 * Currencies.Mead);
             Assert.Equal(balance * Currencies.Mead, states.GetBalance(patronAddress, Currencies.Mead));
             Assert.Equal(0 * Currencies.Mead, states.GetBalance(agentAddress, Currencies.Mead));

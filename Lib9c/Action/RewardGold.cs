@@ -315,7 +315,7 @@ namespace Nekoyume.Action
                 {
                     try
                     {
-                        states = states.Mead(address, RequestPledge.RefillMead);
+                        states = states.Mead(address, contract[2].ToInteger());
                     }
                     catch (InsufficientBalanceException)
                     {
