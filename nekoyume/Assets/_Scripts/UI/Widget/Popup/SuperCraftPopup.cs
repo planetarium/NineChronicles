@@ -90,7 +90,7 @@ namespace Nekoyume.UI
                 var craftInfo = new Craft.CraftInfo()
                 {
                     RecipeID = _recipeRow.Id,
-                    SubrecipeId = premiumRecipeTab.isOn ? PremiumRecipeIndex : BasicRecipeIndex,
+                    SubrecipeId = _recipeRow.SubRecipeIds[_subRecipeIndex],
                 };
 
                 Find<PetSelectionPopup>().Show(craftInfo, SendAction);
