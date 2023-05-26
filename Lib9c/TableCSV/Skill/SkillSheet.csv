@@ -42,8 +42,8 @@ _210001,공격 강화(전체),Normal,Buff,AttackBuff,Ally,1,1 // 미구현
 210005,ATK Up (DEF),Normal,Buff,AttackBuff,Self,1,10
 210006,ATK Down (HIT),Normal,Debuff,AttackBuff,Enemy,1,10
 210007,ATK Down (SPD),Normal,Debuff,AttackBuff,Enemy,1,10
-210008,ATK All Down (ATK),Normal,Debuff,AttackBuff,Enemies,1,10
-210009,ATK All Down (DEF),Normal,Debuff,AttackBuff,Enemies,1,10
+210008,ATK All Down (ATK),Normal,Debuff,AttackBuff,Enemies,1,14
+210009,ATK All Down (DEF),Normal,Debuff,AttackBuff,Enemies,1,14
 210010,ATK Down (HP),Normal,Debuff,AttackBuff,Enemy,1,10
 220000,방어 강화,Normal,Buff,DefenseBuff,Self,1,25
 _220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1 // 미구현
@@ -79,11 +79,11 @@ _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 270002,Thorn (SPD),Normal,Buff,Buff,Self,1,10
 300000,힐,Normal,Heal,Heal,Self,1,10
 300001,힐(전체),Normal,Heal,Heal,Ally,1,10
-300002,Heal (HP),Normal,Heal,Heal,Self,1,10
-300003,Heal (ATK),Normal,Heal,Heal,Self,1,10
-300004,Heal (DEF),Normal,Heal,Heal,Self,1,10
-300005,Heal (HIT),Normal,Heal,Heal,Self,1,10
-300006,Heal (SPD),Normal,Heal,Heal,Self,1,10
+300002,Heal (HP),Normal,Heal,Heal,Self,1,16
+300003,Heal (ATK),Normal,Heal,Heal,Self,1,16
+300004,Heal (DEF),Normal,Heal,Heal,Self,1,16
+300005,Heal (HIT),Normal,Heal,Heal,Self,1,16
+300006,Heal (SPD),Normal,Heal,Heal,Self,1,16
 400000,SS 올스텟,Normal,Buff,Buff,Self,1,999
 400001,SS 공격 치명,Normal,Buff,AttackBuff,Self,1,999
 400002,SS 방어 치명,Normal,Buff,DefenseBuff,Self,1,999
