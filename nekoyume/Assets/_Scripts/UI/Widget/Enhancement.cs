@@ -439,7 +439,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        var powerAdd = Math.Max(isBuff ? 0 : 1,
+                        var powerAdd = Math.Max(isBuff || power == 0 ? 0 : 1,
                             (int)(power *
                                   row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
                         var ratioAdd = Math.Max(0,
