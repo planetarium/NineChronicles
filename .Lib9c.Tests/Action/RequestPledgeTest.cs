@@ -12,8 +12,10 @@ namespace Lib9c.Tests.Action
 
     public class RequestPledgeTest
     {
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(RequestPledge.RefillMead)]
+        [InlineData(100)]
+        public void Execute(int contractedMead)
         {
             Currency mead = Currencies.Mead;
             Address patron = new PrivateKey().ToAddress();
@@ -22,6 +24,7 @@ namespace Lib9c.Tests.Action
             var action = new RequestPledge
             {
                 AgentAddress = address,
+                Mead = contractedMead,
             };
 
             Assert.Equal(0 * mead, states.GetBalance(address, mead));
@@ -36,6 +39,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(patron, contract[0].ToAddress());
             Assert.False(contract[1].ToBoolean());
+            Assert.Equal(contractedMead, contract[2].ToInteger());
             Assert.Equal(1 * mead, nextState.GetBalance(address, mead));
             Assert.Equal(1 * mead, nextState.GetBalance(patron, mead));
         }
@@ -50,6 +54,7 @@ namespace Lib9c.Tests.Action
             var action = new RequestPledge
             {
                 AgentAddress = address,
+                Mead = 1,
             };
 
             Assert.Throws<AlreadyContractedException>(() => action.Execute(new ActionContext

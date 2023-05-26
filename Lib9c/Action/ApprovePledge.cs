@@ -46,6 +46,7 @@ namespace Nekoyume.Action
                 List.Empty
                     .Add(PatronAddress.Serialize())
                     .Add(true.Serialize())
+                    .Add(contract[2])
             );
         }
     }
