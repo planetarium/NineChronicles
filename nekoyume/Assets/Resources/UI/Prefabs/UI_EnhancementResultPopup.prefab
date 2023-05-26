@@ -123417,7 +123417,7 @@ PrefabInstance:
     - target: {fileID: 3639714230947220709, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3639714230947220709, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
@@ -123427,6 +123427,11 @@ PrefabInstance:
     - target: {fileID: 3639714230947220709, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
       propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3639714230947220709, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3639714230947220709, guid: ede5d48cbaa6ef543940797748ac41ff,
@@ -123476,6 +123481,31 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4286840654
       objectReference: {fileID: 0}
+    - target: {fileID: 5807306123881722319, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807306123881722319, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807306123881722319, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807306123881722319, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807306123881722319, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6544527808654022341, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
       propertyPath: m_fontSize
@@ -123490,6 +123520,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4294935527
+      objectReference: {fileID: 0}
+    - target: {fileID: 7011611216317620079, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: isInfiniteScroll
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7503634083351651933, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7503634083351651933, guid: ede5d48cbaa6ef543940797748ac41ff,
+        type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7513580215289499060, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}

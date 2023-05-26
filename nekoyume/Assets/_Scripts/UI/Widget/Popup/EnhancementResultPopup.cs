@@ -264,14 +264,20 @@ namespace Nekoyume.UI
                 var (_, prePower, preChance, preRatio, _) = itemOptionInfoPre.SkillOptions[i];
                 var (skillRow, power, chance, ratio, type) = skillOptions[i];
                 var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
-                var ratioStr = $"{ratio - preRatio} {type}";
+                var plusPowerText = SkillExtensions.EffectToString(
+                    skillRow.Id,
+                    skillRow.SkillType,
+                    power - prePower,
+                    ratio - preRatio,
+                    type);
                 optionView.UpdateAsTotalAndPlusSkill(
                     skillRow.GetLocalizedName(),
                     powerText,
                     chance,
                     power - prePower,
+                    ratio - preRatio,
                     chance - preChance,
-                    ratioStr);
+                    plusPowerText);
             }
 
             // NOTE: Ignore Show Animation
