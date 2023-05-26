@@ -221,7 +221,10 @@ namespace Nekoyume.Model
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             CostumeStatSheet costumeStatSheet)
         {
-            var stats = new CharacterStats(characterRow, digest.Level);
+            var stats = new CharacterStats(characterRow, digest.Level)
+            {
+                IsArenaCharacter = true
+            };
             stats.SetEquipments(digest.Equipments, equipmentItemSetEffectSheet);
 
             var options = new List<StatModifier>();
@@ -234,7 +237,6 @@ namespace Nekoyume.Model
             }
 
             stats.SetOption(options);
-            stats.IncreaseHpForArena();
             return stats;
         }
 
@@ -273,7 +275,6 @@ namespace Nekoyume.Model
                             x.operationType,
                             x.stat.TotalValueAsInt)));
                 Stats.AddOptional(statModifiers);
-                Stats.IncreaseHpForArena();
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
@@ -335,7 +336,6 @@ namespace Nekoyume.Model
                             x.operationType,
                             x.stat.TotalValueAsInt)));
                 Stats.AddOptional(statModifiers);
-                Stats.IncreaseHpForArena();
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
@@ -387,7 +387,7 @@ namespace Nekoyume.Model
                             x.stat.StatType,
                             x.operationType,
                             x.stat.TotalValueAsInt)));
-                Stats.SetRunes(statModifiers);
+                Stats.AddRune(statModifiers);
                 ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
@@ -690,7 +690,6 @@ namespace Nekoyume.Model
                 return;
 
             Stats.SetBuffs(StatBuffs);
-            Stats.IncreaseHpForArena();
         }
 
         [Obsolete("Use RemoveBuffs")]
@@ -753,7 +752,6 @@ namespace Nekoyume.Model
                 var clone = (StatBuff)stat.Clone();
                 Buffs[stat.RowData.GroupId] = clone;
                 Stats.AddBuff(clone, updateImmediate);
-                Stats.IncreaseHpForArena();
             }
             else if (buff is ActionBuff action)
             {
@@ -806,7 +804,6 @@ namespace Nekoyume.Model
             {
                 Stats.RemoveBuff(removedBuff);
                 Buffs.Remove(removedBuff.RowData.GroupId);
-                Stats.IncreaseHpForArena();
             }
         }
 
