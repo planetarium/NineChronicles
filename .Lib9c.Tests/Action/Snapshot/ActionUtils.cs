@@ -2,11 +2,12 @@ namespace Lib9c.Tests.Action.Snapshot
 {
     using System;
     using System.Reflection;
+    using Bencodex.Types;
     using Libplanet.Action;
 
     public static class ActionUtils
     {
-        public static string GetActionTypeId<T>()
+        public static IValue GetActionTypeId<T>()
            where T : IAction
         {
             Type attrType = typeof(ActionTypeAttribute);

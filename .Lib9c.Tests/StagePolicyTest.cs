@@ -6,14 +6,17 @@ namespace Lib9c.Tests
     using System.Threading.Tasks;
     using Lib9c.Tests.TestHelper;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Crypto;
     using Libplanet.Tx;
+    using Nekoyume.Action;
     using Nekoyume.BlockChain;
     using Nekoyume.BlockChain.Policy;
     using Serilog.Core;
     using Xunit;
+
 #pragma warning disable SA1135
     using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 #pragma warning restore SA1135
@@ -22,7 +25,7 @@ namespace Lib9c.Tests
     {
         private readonly PrivateKey[] _accounts;
 
-        private readonly Dictionary<Address, Transaction<NCAction>[]> _txs;
+        private readonly Dictionary<Address, Transaction[]> _txs;
 
         public StagePolicyTest()
         {
@@ -38,7 +41,7 @@ namespace Lib9c.Tests
                 acc => Enumerable
                     .Range(0, 10)
                     .Select(
-                        n => Transaction<NCAction>.Create(
+                        n => Transaction.Create(
                             n,
                             acc,
                             default,
@@ -132,9 +135,9 @@ namespace Lib9c.Tests
         {
             StagePolicy stagePolicy = new StagePolicy(TimeSpan.FromHours(1), 2);
             BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
-            var txA = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
-            var txB = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
-            var txC = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
+            var txA = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
+            var txB = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
+            var txC = Transaction.Create(0, _accounts[0], default, new NCAction[0]);
 
             stagePolicy.Stage(chain, txA);
             stagePolicy.Stage(chain, txB);
@@ -207,17 +210,17 @@ namespace Lib9c.Tests
 
             long nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(0, nextTxNonce);
-            var txA = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txA = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txA);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(1, nextTxNonce);
-            var txB = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txB = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txB);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(2, nextTxNonce);
-            var txC = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            var txC = Transaction.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
             stagePolicy.Stage(chain, txC);
 
             nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
@@ -230,9 +233,9 @@ namespace Lib9c.Tests
                 txB);
         }
 
-        private void AssertTxs(BlockChain<NCAction> blockChain, StagePolicy policy, params Transaction<NCAction>[] txs)
+        private void AssertTxs(BlockChain<NCAction> blockChain, StagePolicy policy, params Transaction[] txs)
         {
-            foreach (Transaction<NCAction> tx in txs)
+            foreach (Transaction tx in txs)
             {
                 Assert.Equal(tx, policy.Get(blockChain, tx.Id, filtered: true));
             }

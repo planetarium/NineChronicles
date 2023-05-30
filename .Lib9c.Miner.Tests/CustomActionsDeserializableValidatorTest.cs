@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
@@ -14,7 +15,7 @@ public class CustomActionsDeserializableValidatorTest
     [Fact]
     public void Validate()
     {
-        var validator = new CustomActionsDeserializableValidator(new MockActionTypeLoader(), 10);
+        var validator = new CustomActionsDeserializableValidator(new MockActionLoader(), 10);
         Assert.False(validator.Validate(new MockTransaction
         {
             CustomActions =
@@ -59,10 +60,11 @@ public class CustomActionsDeserializableValidatorTest
         public DateTimeOffset Timestamp { get; init; }
         public PublicKey PublicKey { get; init; }
         public BlockHash? GenesisHash { get; init; }
-        public TxActionList Actions { get; init; }
+        public TxActionList Actions =>
+            new(SystemAction is { } sa ? new List(sa) : new List(CustomActions!));
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
-        public Dictionary? SystemAction { get; init; }
+        public IValue? SystemAction { get; init; }
         public IImmutableList<IValue>? CustomActions { get; init; }
         public bool Equals(ITxInvoice? other)
         {
@@ -86,19 +88,27 @@ public class CustomActionsDeserializableValidatorTest
         }
     }
 
-    private class MockActionTypeLoader : IActionTypeLoader
+    private class MockActionLoader : IActionLoader
     {
-        public IDictionary<string, Type> Load(IActionTypeLoaderContext context)
+        public IAction LoadAction(long index, IValue value)
         {
-            return new Dictionary<string, Type>
+            try
             {
-                ["daily_reward"] = typeof(DailyReward),
-            };
-        }
+                if ((Text)((Dictionary)value)["type_id"] != "daily_reward")
+                {
+                    throw new ArgumentException(
+                        $"Given {nameof(value)} should have daily_reward as its type_id");
+                }
 
-        public IEnumerable<Type> LoadAllActionTypes(IActionTypeLoaderContext context)
-        {
-            return Load(context).Values;
+                var act = new DailyReward();
+                act.LoadPlainValue(((Dictionary)value)["values"]);
+                return act;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidActionException(
+                    $"Failed to load an action from given {nameof(value)}: {value}", value, e);
+            }
         }
     }
 }

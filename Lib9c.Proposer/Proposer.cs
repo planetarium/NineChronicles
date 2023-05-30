@@ -24,12 +24,12 @@ namespace Nekoyume.BlockChain
         private readonly BlockChain<NCAction> _chain;
         private readonly PrivateKey _privateKey;
 
-        public Block<NCAction>? ProposeBlockAsync(CancellationToken cancellationToken)
+        public Block? ProposeBlockAsync(CancellationToken cancellationToken)
         {
-            var txs = new HashSet<Transaction<NCAction>>();
+            var txs = new HashSet<Transaction>();
             var invalidTxs = txs;
 
-            Block<NCAction>? block = null;
+            Block? block = null;
             try
             {
                 var lastCommit = _chain.GetBlockCommit(_chain.Tip.Hash);

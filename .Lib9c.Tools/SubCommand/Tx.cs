@@ -16,6 +16,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using Libplanet.Action;
 using Nekoyume.TableData;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -36,9 +37,10 @@ namespace Lib9c.Tools.SubCommand
         {
             byte[] genesisBytes = File.ReadAllBytes(genesisBlock);
             var genesisDict = (Bencodex.Types.Dictionary)_codec.Decode(genesisBytes);
-            IReadOnlyList<Transaction<NCAction>> genesisTxs =
-                BlockMarshaler.UnmarshalBlockTransactions<NCAction>(genesisDict);
-            var initStates = (InitializeStates)genesisTxs.Single().CustomActions!.Single().InnerAction;
+            IReadOnlyList<Transaction> genesisTxs =
+                BlockMarshaler.UnmarshalBlockTransactions(genesisDict);
+            var initStates = new InitializeStates();
+            initStates.LoadPlainValue(genesisTxs.Single().Actions!.Single());
             Currency currency = new GoldCurrencyState(initStates.GoldCurrency).Currency;
 
             var action = new TransferAsset(
@@ -104,12 +106,12 @@ namespace Lib9c.Tools.SubCommand
             {
                 parsedActions = new List<NCAction>();
             }
-            Transaction<NCAction> tx = Transaction<NCAction>.Create(
+            Transaction tx = Transaction.Create(
                 nonce: nonce,
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
                 genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
                 timestamp: (timestamp is null) ? default : DateTimeOffset.Parse(timestamp),
-                customActions: parsedActions
+                actions: parsedActions
             );
             byte[] raw = tx.Serialize();
 

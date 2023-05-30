@@ -10,6 +10,7 @@ using Bencodex;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -81,28 +82,41 @@ namespace Lib9c.DevExtensions
                     1
                 );
             }
-            Block<NCAction> genesis = store.GetBlock<NCAction>(
+            Block genesis = store.GetBlock(
                 genesisBlockHash
             );
+            var blockChainStates = new BlockChainStates(store, stateStore);
+            ActionEvaluator actionEvaluator = new ActionEvaluator(
+                _ => policy.BlockAction,
+                blockChainStates,
+                new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                null);
+            PolymorphicAction<ActionBase>.ReloadLoader(
+                new[] { typeof(ActionBase).Assembly, typeof(Utils).Assembly });
+
             BlockChain<NCAction> chain;
             if (store.GetCanonicalChainId() is null)
             {
                 chain = BlockChain<NCAction>.Create(
-                    policy,
-                    stagePolicy,
-                    store,
-                    stateStore,
-                    genesis
+                    policy: policy,
+                    stagePolicy: stagePolicy,
+                    store: store,
+                    stateStore: stateStore,
+                    genesisBlock: genesis,
+                    actionEvaluator: actionEvaluator
                 );
             }
             else
             {
                 chain = new BlockChain<NCAction>(
-                    policy,
-                    stagePolicy,
-                    store,
-                    stateStore,
-                    genesis
+                    policy: policy,
+                    stagePolicy: stagePolicy,
+                    store: store,
+                    stateStore: stateStore,
+                    genesisBlock: genesis,
+                    renderers: null,
+                    blockChainStates: blockChainStates,
+                    actionEvaluator: actionEvaluator
                 );
             }
             return (chain, store, stateKeyValueStore, stateStore);
@@ -137,7 +151,7 @@ namespace Lib9c.DevExtensions
             }
         }
 
-        public static Block<NCAction> ParseBlockOffset(
+        public static Block ParseBlockOffset(
             BlockChain<NCAction> chain,
             string blockHashOrIndex,
             long defaultIndex = -1)
@@ -261,7 +275,7 @@ namespace Lib9c.DevExtensions
                 .ToImmutableHashSet();
         }
 
-        public static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
+        public static void ExportBlock(Block block, string path)
         {
             Bencodex.Types.Dictionary dict = block.MarshalBlock();
             byte[] encoded = new Codec().Encode(dict);

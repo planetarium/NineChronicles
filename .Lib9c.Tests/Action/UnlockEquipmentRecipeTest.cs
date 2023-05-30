@@ -180,9 +180,9 @@ namespace Lib9c.Tests.Action
                 .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999 && i.CRYSTAL != 0);
 
             // Clear Stage
-            for (int i = 1; i <= 6; i++)
+            for (int i = 0; i < _tableSheets.WorldSheet.Count; i++)
             {
-                var worldRow = _tableSheets.WorldSheet[i];
+                var worldRow = _tableSheets.WorldSheet.OrderedList[i];
                 for (int v = worldRow.StageBegin; v < worldRow.StageEnd + 1; v++)
                 {
                     worldInformation.ClearStage(worldRow.Id, v, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);

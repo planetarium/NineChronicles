@@ -10,13 +10,13 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class RaidSimulatorTest
+    public class RaidSimulatorV2Test
     {
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly AvatarState _avatarState;
 
-        public RaidSimulatorTest()
+        public RaidSimulatorV2Test()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new TestRandom();
@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Model
         public void Simulate()
         {
             var bossId = _tableSheets.WorldBossListSheet.First().Value.BossId;
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV2(
                 bossId,
                 _random,
                 _avatarState,

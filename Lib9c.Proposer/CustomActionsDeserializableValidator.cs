@@ -1,41 +1,39 @@
 using System;
 using System.Linq;
 using Bencodex.Types;
-using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Tx;
 
 namespace Nekoyume.BlockChain
 {
     public class CustomActionsDeserializableValidator
     {
-        private readonly IActionTypeLoader _actionTypeLoader;
+        private readonly IActionLoader _actionLoader;
         private readonly long _nextBlockIndex;
 
-        public CustomActionsDeserializableValidator(IActionTypeLoader actionTypeLoader, long nextBlockIndex)
+        public CustomActionsDeserializableValidator(IActionLoader actionLoader, long nextBlockIndex)
         {
-            _actionTypeLoader = actionTypeLoader;
+            _actionLoader = actionLoader;
             _nextBlockIndex = nextBlockIndex;
         }
 
         public bool Validate(ITransaction transaction)
         {
-            var types = _actionTypeLoader.Load(new ActionTypeLoaderContext(_nextBlockIndex));
-
-            return transaction.CustomActions?.All(ca =>
-                ca is Dictionary dictionary &&
-                dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue) &&
-                typeIdValue is Text typeId &&
-                types.ContainsKey(typeId) &&
-                dictionary.TryGetValue((Text)"values", out IValue values) &&
-                Activator.CreateInstance(types[typeId]) is IAction action &&
-                DoesNotThrowsAnyException(() => action.LoadPlainValue(values))) == true;
+            if (!(transaction.Actions is { } actions))
+            {
+                return true;
+            }
+            else
+            {
+                return actions.All(action => CanLoadAction(_nextBlockIndex, action));
+            }
         }
 
-        private bool DoesNotThrowsAnyException(System.Action action)
+        private bool CanLoadAction(long index, IValue value)
         {
             try
             {
-                action();
+                _ = _actionLoader.LoadAction(index, value);
                 return true;
             }
             catch (Exception)

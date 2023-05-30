@@ -112,13 +112,13 @@ namespace Lib9c.Tests.Model
         [InlineData(SkillCategory.AreaAttack)]
         public void UseDoubleAttack(SkillCategory skillCategory)
         {
-            var skill = SkillFactory.Get(
+            var skill = SkillFactory.GetV1(
                 _tableSheets.SkillSheet.Values.First(r => r.SkillCategory == skillCategory),
                 100,
                 100
             );
 
-            var defaultAttack = SkillFactory.Get(
+            var defaultAttack = SkillFactory.GetV1(
                 _tableSheets.SkillSheet.Values.First(r => r.Id == GameConfig.DefaultAttackId),
                 100,
                 100

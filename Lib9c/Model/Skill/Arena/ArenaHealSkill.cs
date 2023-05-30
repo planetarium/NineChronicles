@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill.Arena
@@ -7,8 +8,12 @@ namespace Nekoyume.Model.Skill.Arena
     [Serializable]
     public class ArenaHealSkill : ArenaSkill
     {
-        public ArenaHealSkill(SkillSheet.Row skillRow, int power, int chance)
-            : base(skillRow, power, chance)
+        public ArenaHealSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 
@@ -44,7 +49,13 @@ namespace Nekoyume.Model.Skill.Arena
             int turn)
         {
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
-            var healPoint = caster.ATK + Power;
+
+            // Apply stat power ratio
+            var powerMultiplier = StatPowerRatio / 10000m;
+            var statAdditionalPower = ReferencedStatType != StatType.NONE ?
+                (int)(caster.Stats.GetStat(ReferencedStatType) * powerMultiplier) : default;
+
+            var healPoint = caster.ATK + Power + statAdditionalPower;
             caster.Heal(healPoint);
 
             infos.Add(new BattleStatus.Arena.ArenaSkill.ArenaSkillInfo(

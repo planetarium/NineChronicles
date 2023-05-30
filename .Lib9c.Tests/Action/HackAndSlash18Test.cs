@@ -1174,7 +1174,7 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, true, false)]
         [InlineData(true, true, true, true)]
         public void CheckCrystalRandomSkillState(
-            bool clear,
+            bool forceClear,
             bool skillStateExist,
             bool useCrystalSkill,
             bool setSkillByArgument)
@@ -1184,7 +1184,7 @@ namespace Lib9c.Tests.Action
             const int clearedStageId = 9;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = clear ? 400 : 1;
+            previousAvatarState.level = forceClear ? 400 : 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1265,15 +1265,15 @@ namespace Lib9c.Tests.Action
                 Assert.NotNull(stageBuffId);
             }
 
-            if (clear)
+            if (forceClear)
             {
                 previousAvatarState.EquipItems(costumes.Concat(equipments.Select(e => e.ItemId)));
             }
 
             var action = new HackAndSlash18
             {
-                Costumes = clear ? costumes : new List<Guid>(),
-                Equipments = clear
+                Costumes = forceClear ? costumes : new List<Guid>(),
+                Equipments = forceClear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 Foods = new List<Guid>(),
@@ -1303,7 +1303,7 @@ namespace Lib9c.Tests.Action
                         .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
                 if (skill.Value != null)
                 {
-                    skillsOnWaveStart.Add(SkillFactory.Get(skill.Value, default, 100));
+                    skillsOnWaveStart.Add(SkillFactory.GetV1(skill.Value, default, 100));
                 }
             }
 
@@ -1318,7 +1318,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StageSheet[stageId],
                 _tableSheets.StageWaveSheet[stageId],
                 false,
-                20,
+                StageRewardExpHelper.GetExp(previousAvatarState.level, stageId),
                 _tableSheets.GetSimulatorSheetsV1(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
@@ -45,6 +45,11 @@ namespace Nekoyume.Extensions
                 throw new SheetRowNotFoundException("EquipmentItemSubRecipeSheetV2", mimisSubRecipeId);
             }
 
+            if (subRecipeRow.IsMimisbrunnrSubRecipe.HasValue && !subRecipeRow.IsMimisbrunnrSubRecipe.Value)
+            {
+                return false;
+            }
+
             EquipmentItemOptionSheet.Row[] optionRows;
             try
             {
@@ -64,7 +69,7 @@ namespace Nekoyume.Extensions
                 return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, false);
             }
 
-            (StatType type, int value, int count) uniqueStatOption;
+            (StatType type, decimal value, int count) uniqueStatOption;
             try
             {
                 uniqueStatOption = itemOptionInfo.StatOptions
@@ -270,7 +275,7 @@ namespace Nekoyume.Extensions
                 subRecipeSheet,
                 itemOptionSheet
             );
-            
+
             return isMadeWithMimisbrunnrRecipe ? row.MimisLevel : row.Level;
         }
     }

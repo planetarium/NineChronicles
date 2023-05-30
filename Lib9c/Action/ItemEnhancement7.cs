@@ -328,7 +328,7 @@ namespace Nekoyume.Action
 
         public static Equipment UpgradeEquipment(Equipment equipment)
         {
-            equipment.LevelUp();
+            equipment.LevelUpV1();
             return equipment;
         }
 

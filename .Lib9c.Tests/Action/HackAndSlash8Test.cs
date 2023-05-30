@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -148,7 +148,7 @@
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -172,7 +172,7 @@
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
