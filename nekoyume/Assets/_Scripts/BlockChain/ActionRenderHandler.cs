@@ -2224,15 +2224,17 @@ namespace Nekoyume.BlockChain
             var tableSheets = TableSheets.Instance;
             (var myDigest, var enemyDigest) =
                 await GetArenaPlayerDigestAsync(eval.Action.myAvatarAddress, eval.Action.enemyAvatarAddress);
-            var previousMyScore = RxProps.PlayersArenaParticipant.HasValue
-                ? RxProps.PlayersArenaParticipant.Value.Score
-                : ArenaScore.ArenaScoreDefault;
-            
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
 
+            var myArenaScoreAdr = ArenaScore.DeriveAddress(
+                eval.Action.myAvatarAddress,
+                championshipId,
+                round);
+            var previousMyScore = eval.PreviousStates.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore) ?
+                myArenaScore.Score : ArenaScore.ArenaScoreDefault;
             int outMyScore = eval.OutputStates.TryGetState(
-                ArenaScore.DeriveAddress(eval.Action.myAvatarAddress, championshipId, round),
+                myArenaScoreAdr,
                 out List outputMyScoreList)
                 ? (Integer)outputMyScoreList[1]
                 : ArenaScore.ArenaScoreDefault;
