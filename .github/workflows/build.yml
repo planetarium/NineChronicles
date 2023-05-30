@@ -1,4 +1,4 @@
-name: Build
+name: Build and Release
 
 on:
   push:
@@ -6,10 +6,12 @@ on:
       - main
       - development
       - rc-v*
+      - release/*
+      - hotfix/*
+      - ci/*
     tags: ["*"]
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
-
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -55,10 +57,17 @@ jobs:
 
       - uses: game-ci/unity-builder@v2
         with:
+          androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
+          androidKeyaliasPass: ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
+          androidTargetSdkVersion: AndroidApiLevel28
+          androidAppBundle: true
+          androidExportType: 'androidAppBundle'
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
-          androidTargetSdkVersion: AndroidApiLevel28
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -89,14 +98,83 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
-      - run: sudo mv /tmp/packages ./packages # s3-upload-action이 상대 경로만 지원
-        if: success()
-        shell: bash
+  extract:
+    if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.event.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      network: ${{ steps.extract.outputs.network }}
+      signing: ${{ steps.extract.outputs.signing }}
+      version: ${{ steps.extract.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: extract
+        id: extract
+        run: |
+          if [[ "${{ startsWith(github.ref, 'refs/heads/ci/') }}" == "true" ]]; then
+              timestamp=$(date +%s)
 
-      - name: Upload Artifacts
-        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
-        run: aws s3 cp packages s3://9c-artifacts/${{ github.sha }}/ --recursive
-        env:
+              echo "::set-output name=network::internal"
+              echo "::set-output name=signing::--no-signing"
+              echo "::set-output name=version::$timestamp"
+          elif [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]]; then
+              TAG_NAME=${GITHUB_REF#refs/tags/}
+
+              echo "::set-output name=network::main"
+              echo "::set-output name=signing::--signing"
+              echo "::set-output name=version::$TAG_NAME"
+          else
+            echo "::set-output name=network::null"
+            echo "::set-output name=signing::null"
+            echo "::set-output name=version::null"
+          fi
+
+  release:
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        targetPlatform:
+          - Windows
+          - macOS
+          - Linux
+    needs: extract
+    environment:
+      name: ${{ needs.extract.outputs.network }}
+    outputs:
+      version: ${{ needs.extract.outputs.version }}
+      network: ${{ needs.extract.outputs.network }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: release
+        uses: planetarium/9c-toolbelt@main
+        with:
+          COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}|--run-id=${{ github.run_id }}"
+          ENV: production
+          GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
+          ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
+          ESIGNER_PASSWORD: ${{ secrets.ESIGNER_PASSWORD }}
+          ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
+
+
+  update-latest-metadata:
+    if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
+    runs-on: ubuntu-20.04
+    needs: [extract, release]
+    environment:
+      name: ${{ needs.extract.outputs.network }}
+    steps:
+      - name: update-latest-metadata
+        uses: planetarium/9c-toolbelt@main
+        with:
+          COMMAND_LIST: "release|update-latest|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}"
+          ENV: production
+          GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}

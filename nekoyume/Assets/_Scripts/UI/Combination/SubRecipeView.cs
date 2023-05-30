@@ -8,7 +8,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using System;
-using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
 using Nekoyume.Action;
@@ -20,12 +19,16 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.Event;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
+using ToggleGroup = UnityEngine.UI.ToggleGroup;
 
 namespace Nekoyume.UI
 {
     using Libplanet.Assets;
+    using Nekoyume.EnumType;
+    using Nekoyume.UI.Module.Common;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -42,12 +45,35 @@ namespace Nekoyume.UI
         }
 
         [Serializable]
+        public struct RecipeTabGroup
+        {
+            [Serializable]
+            public struct RecipeTab
+            {
+                public Toggle toggle;
+                public TextMeshProUGUI disableText;
+                public TextMeshProUGUI enableText;
+            }
+
+            public ToggleGroup toggleGroup;
+            public List<RecipeTab> recipeTabs;
+        }
+
+        [Serializable]
         private struct OptionView
         {
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
-            public TextMeshProUGUI PercentageText;
             public Slider PercentageSlider;
+        }
+
+        [Serializable]
+        private struct SkillView
+        {
+            public GameObject ParentObject;
+            public TextMeshProUGUI OptionText;
+            public Slider PercentageSlider;
+            public Button TooltipButton;
         }
 
         [Serializable]
@@ -71,37 +97,13 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private GameObject toggleParent;
-
-        [SerializeField]
-        private List<Toggle> categoryToggles;
-
-        [SerializeField]
         private RecipeCell recipeCell;
 
         [SerializeField]
         private TextMeshProUGUI titleText;
 
-        // [SerializeField]
-        // private TextMeshProUGUI statText;
-
-        [SerializeField]
-        private TextMeshProUGUI[] mainStatTexts;
-
         [SerializeField]
         private TextMeshProUGUI blockIndexText;
-
-        [SerializeField]
-        private TextMeshProUGUI greatSuccessRateText;
-
-        [SerializeField]
-        private List<OptionView> optionViews;
-
-        [SerializeField]
-        private List<OptionView> skillViews;
-
-        [SerializeField]
-        private List<GameObject> optionIcons;
 
         [SerializeField]
         private TextMeshProUGUI levelText;
@@ -119,9 +121,30 @@ namespace Nekoyume.UI
         private TextMeshProUGUI lockedText;
 
         [SerializeField]
-        private HammerPointView hammerPointView;
+        private TextMeshProUGUI[] mainStatTexts;
+
+        [SerializeField] [Header("[Equipment]")]
+        private RecipeTabGroup normalRecipeTabGroup;
 
         [SerializeField]
+        private RecipeTabGroup legendaryRecipeTabGroup;
+
+        [SerializeField]
+        private List<OptionView> optionViews;
+
+        [SerializeField]
+        private List<SkillView> skillViews;
+
+        [SerializeField]
+        private List<GameObject> optionIcons;
+
+        [SerializeField]
+        private TextMeshProUGUI greatSuccessRateText;
+
+        [SerializeField]
+        private HammerPointView hammerPointView;
+
+        [SerializeField] [Header("[EventMaterial]")]
         private ConditionalCostButton materialSelectButton;
 
         [SerializeField]
@@ -129,6 +152,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Image requiredNormalItemImage;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -145,13 +171,27 @@ namespace Nekoyume.UI
         private EquipmentItemOptionSheet.Row _skillOptionRow;
         private HammerPointState _hammerPointState;
 
+        public static string[] DefaultTabNames = new string[]{ "A", "B", "C" };
+
         private void Awake()
         {
-            for (int i = 0; i < categoryToggles.Count; ++i)
+            for (int i = 0; i < normalRecipeTabGroup.recipeTabs.Count; ++i)
             {
                 var innerIndex = i;
-                var toggle = categoryToggles[i];
-                toggle.onValueChanged.AddListener(value =>
+                var tab = normalRecipeTabGroup.recipeTabs[i];
+                tab.toggle.onValueChanged.AddListener(value =>
+                {
+                    if (!value) return;
+                    AudioController.PlayClick();
+                    ChangeTab(innerIndex);
+                });
+            }
+
+            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; ++i)
+            {
+                var innerIndex = i;
+                var tab = legendaryRecipeTabGroup.recipeTabs[i];
+                tab.toggle.onValueChanged.AddListener(value =>
                 {
                     if (!value) return;
                     AudioController.PlayClick();
@@ -235,10 +275,8 @@ namespace Nekoyume.UI
                         if (i == 0)
                         {
                             var stat = resultItem.GetUniqueStat();
-                            var statValueText = stat.Type is StatType.SPD or StatType.DRR or StatType.CDMG
-                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                                : stat.ValueAsInt.ToString();
-                            mainStatText.text = string.Format(StatTextFormat, stat.Type, statValueText);
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValueAsInt);
+                            mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                         }
                         else if (i == 1 && Util.IsEventEquipmentRecipe(equipmentRow.Id))
@@ -250,6 +288,61 @@ namespace Nekoyume.UI
                         {
                             mainStatText.gameObject.SetActive(false);
                         }
+                    }
+
+                    if (Util.IsEventEquipmentRecipe(equipmentRow.Id))
+                    {
+                        recipeCell.Show(equipmentRow, false);
+                        ChangeTab(0);
+                        break;
+                    }
+
+                    if (_subrecipeIds != null && _subrecipeIds.Any())
+                    {
+                        var isNormalRecipe = resultItem.Grade < 5;
+                        normalRecipeTabGroup.toggleGroup.gameObject.SetActive(isNormalRecipe);
+                        legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(!isNormalRecipe);
+
+                        if (!isNormalRecipe)
+                        {
+                            var tabNames = DefaultTabNames;
+                            var tab = Craft.SubRecipeTabs.FirstOrDefault(tab => tab.RecipeId == _recipeRow.Key);
+                            if (tab != null)
+                            {
+                                tabNames = tab.TabNames;
+                            }
+
+                            for (int i = 0; i < legendaryRecipeTabGroup.recipeTabs.Count; i++)
+                            {
+                                var recipeTab = legendaryRecipeTabGroup.recipeTabs[i];
+
+                                recipeTab.toggle.gameObject.SetActive(i < tabNames.Length);
+                                if (i < tabNames.Length)
+                                {
+                                    recipeTab.disableText.text = tabNames[i];
+                                    recipeTab.enableText.text = tabNames[i];
+                                }
+                            }
+                        }
+
+                        var recipeGroup = isNormalRecipe ? normalRecipeTabGroup : legendaryRecipeTabGroup;
+                        if (recipeGroup.recipeTabs.Any())
+                        {
+                            var selectedRecipeTab = recipeGroup.recipeTabs[0];
+                            if (selectedRecipeTab.toggle.isOn)
+                            {
+                                ChangeTab(0);
+                            }
+                            else
+                            {
+                                selectedRecipeTab.toggle.isOn = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        normalRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
+                        legendaryRecipeTabGroup.toggleGroup.gameObject.SetActive(false);
                     }
 
                     recipeCell.Show(equipmentRow, false);
@@ -267,12 +360,7 @@ namespace Nekoyume.UI
                         if (i < statsCount)
                         {
                             var stat = resultItem.Stats[i];
-                            var statValueText =
-                                    stat.StatType == StatType.SPD ||
-                                    stat.StatType == StatType.DRR ||
-                                    stat.StatType == StatType.CDMG
-                                ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
-                                : stat.ValueAsInt.ToString();
+                            var statValueText = stat.StatType.ValueToString(stat.TotalValueAsInt);
                             mainStatText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                             mainStatText.gameObject.SetActive(true);
                             continue;
@@ -282,6 +370,7 @@ namespace Nekoyume.UI
                     }
 
                     recipeCell.Show(consumableRow, false);
+                    ChangeTab(0);
                     break;
                 }
                 case EventMaterialItemRecipeSheet.Row materialRow :
@@ -290,28 +379,12 @@ namespace Nekoyume.UI
                     title = resultItem.GetLocalizedName(false, false);
                     mainStatTexts.First().text = resultItem.GetLocalizedDescription();
                     recipeCell.Show(materialRow, false);
+                    ChangeTab(0);
                     break;
                 }
             }
 
             titleText.text = title;
-
-            if (categoryToggles.Any())
-            {
-                var categoryToggle = categoryToggles[_selectedIndex];
-                if (categoryToggle.isOn)
-                {
-                    ChangeTab(_selectedIndex);
-                }
-                else
-                {
-                    categoryToggle.isOn = true;
-                }
-            }
-            else
-            {
-                ChangeTab(0);
-            }
 
             if (_disposableForOnDisable != null)
             {
@@ -351,12 +424,11 @@ namespace Nekoyume.UI
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
-            decimal greatSuccessRate = 0m;
             BigInteger costNCG = 0;
             int costAP = 0;
             int recipeId = 0;
             int? subRecipeId = null;
-            Dictionary<int, int> materialMap = new Dictionary<int, int>();
+            var materialMap = new Dictionary<int, int>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -384,15 +456,13 @@ namespace Nekoyume.UI
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
 
+                var greatSuccessRate = 0m;
+
                 // Add base material
                 materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
 
                 if (_subrecipeIds != null && _subrecipeIds.Any())
                 {
-                    if (toggleParent != null)
-                    {
-                        toggleParent.SetActive(true);
-                    }
                     subRecipeId = _subrecipeIds[index];
                     var subRecipe = TableSheets.Instance
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
@@ -408,18 +478,18 @@ namespace Nekoyume.UI
                     {
                         SetOptions(options);
 
+                        var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
+                                                     (subRecipe.IsMimisbrunnrSubRecipe ?? true);
                         var hammerPointStates = States.Instance.HammerPointStates;
                         var showHammerPoint = hammerPointStates is not null &&
                                               hammerPointStates.TryGetValue(recipeId, out _hammerPointState) &&
-                                              index != MimisbrunnrRecipeIndex;
-                        hammerPointView.parentObject.SetActive(showHammerPoint);
+                                              !isMimisbrunnrSubRecipe;
 
+                        hammerPointView.parentObject.SetActive(showHammerPoint);
                         if (showHammerPoint)
                         {
                             var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
-                            var increasePoint = index == 0
-                                ? CombinationEquipment.BasicSubRecipeHammerPoint
-                                : CombinationEquipment.SpecialSubRecipeHammerPoint;
+                            var increasePoint = subRecipe.RewardHammerPoint ?? 1;
                             var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
                             var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                             _canSuperCraft = _hammerPointState.HammerPoint == max;
@@ -444,13 +514,8 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
-                            levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
-                            var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= level;
-                            levelText.color = hasEnoughLevel
-                                ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                                : Palette.GetColor(EnumType.ColorType.TextDenial);
-
+                            var level = isMimisbrunnrSubRecipe ? row.MimisLevel : row.Level;
+                            levelText.text = $"Lv {level}";
                             levelText.enabled = true;
                         }
 
@@ -476,12 +541,13 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    if (toggleParent != null)
-                    {
-                        toggleParent.SetActive(false);
-                    }
                     requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
                 }
+
+                greatSuccessRateText.text = greatSuccessRate == 0m
+                    ? "-"
+                    : L10nManager.Localize("UI_COMBINATION_GREAT_SUCCESS_RATE_FORMAT",
+                        greatSuccessRate.ToString("0.0%"));
             }
             else if (consumableRow != null)
             {
@@ -500,12 +566,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
-                    var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
-                    levelText.color = hasEnoughLevel
-                        ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                        : Palette.GetColor(EnumType.ColorType.TextDenial);
-
+                    levelText.text = $"Lv {row.Level}";
                     levelText.enabled = true;
                 }
 
@@ -537,8 +598,6 @@ namespace Nekoyume.UI
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text =
-                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -703,32 +762,38 @@ namespace Nekoyume.UI
                 .Except(statOptions)
                 .ToList();
 
-            var siblingIndex = 0;
+            var siblingIndex = 1;  // 0 is for the main option
             foreach (var (ratio, option) in options)
             {
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = normalizedRatio.ToString("0%");
+                    optionView.OptionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1);
                     optionView.PercentageSlider.value = (float) normalizedRatio;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
-                    optionIcons[siblingIndex].SetActive(true);
+                    optionIcons[siblingIndex - 1].SetActive(true);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                    var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    skillView.OptionText.text = description;
-                    skillView.PercentageText.text = normalizedRatio.ToString("0%");
+                    skillView.OptionText.text = $"{skillName} ({normalizedRatio:0%})";
                     skillView.PercentageSlider.value = (float) normalizedRatio;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
+                    skillView.TooltipButton.onClick.RemoveAllListeners();
+                    skillView.TooltipButton.onClick.AddListener(() =>
+                    {
+                        var skillRow = TableSheets.Instance.SkillSheet[option.SkillId];
+                        var rect = skillView.TooltipButton.GetComponent<RectTransform>();
+                        skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
+                        skillTooltip.Show(skillRow, option);
+                    });
                     optionIcons.Last().SetActive(true);
                 }
 

@@ -40,9 +40,7 @@ namespace Nekoyume.BlockChain
         /// 블록은 인코딩하여 파일로 내보냅니다.
         /// </summary>
         /// <param name="path">블록이 저장될 파일경로.</param>
-        public static void ExportBlock(
-            Block<PolymorphicAction<ActionBase>> block,
-            string path)
+        public static void ExportBlock(Block block, string path)
         {
             Bencodex.Types.Dictionary dict = block.MarshalBlock();
             byte[] encoded = _codec.Encode(dict);
@@ -54,7 +52,7 @@ namespace Nekoyume.BlockChain
         /// </summary>
         /// <param name="path">블록이 저장되어있는 파일경로.</param>
         /// <returns>읽어들인 블록 객체.</returns>
-        public static Block<PolymorphicAction<ActionBase>> ImportBlock(string path)
+        public static Block ImportBlock(string path)
         {
             // read temp genesis-block
 #if UNITY_ANDROID
@@ -67,14 +65,14 @@ namespace Nekoyume.BlockChain
             byte[] buffer = www.bytes;
             Bencodex.Types.Dictionary dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
 
-            return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
+            return BlockMarshaler.UnmarshalBlock(dict);
 #else
             if (File.Exists(path))
             {
                 var buffer = File.ReadAllBytes(path);
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
 
-                return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
+                return BlockMarshaler.UnmarshalBlock(dict);
             }
 
             var uri = new Uri(path);
@@ -82,18 +80,18 @@ namespace Nekoyume.BlockChain
             {
                 byte[] rawGenesisBlock = client.DownloadData(uri);
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
-                return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
+                return BlockMarshaler.UnmarshalBlock(dict);
             }
 #endif
         }
 
-        public static async Task<Block<PolymorphicAction<ActionBase>>> ImportBlockAsync(string path)
+        public static async Task<Block> ImportBlockAsync(string path)
         {
             if (File.Exists(path))
             {
                 var buffer = File.ReadAllBytes(path);
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
-                return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
+                return BlockMarshaler.UnmarshalBlock(dict);
             }
 
             var uri = new Uri(path);
@@ -101,11 +99,11 @@ namespace Nekoyume.BlockChain
             {
                 byte[] rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
-                return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(dict);
+                return BlockMarshaler.UnmarshalBlock(dict);
             }
         }
 
-        public static Block<PolymorphicAction<ActionBase>> ProposeGenesisBlock(
+        public static Block ProposeGenesisBlock(
             PendingActivationState[] pendingActivationStates,
             [CanBeNull] PublicKey proposer)
         {

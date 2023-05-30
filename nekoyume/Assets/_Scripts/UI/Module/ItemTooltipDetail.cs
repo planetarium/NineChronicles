@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -80,6 +81,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private List<SkillView> skills;
+
+        [SerializeField]
+        private SkillPositionTooltip skillTooltip;
 
         public void Set(ItemBase itemBase, int itemCount, bool levelLimit)
         {
@@ -166,7 +170,7 @@ namespace Nekoyume.UI.Module
                         var statView = statViewList[i];
                         if (i == 0)
                         {
-                            statView.Show(mainStatType, mainStatTotalValue);
+                            statView.Show(mainStatType, (int)mainStatTotalValue);
                             continue;
                         }
 
@@ -175,7 +179,7 @@ namespace Nekoyume.UI.Module
 
                     foreach (var (type, value, count) in optionInfo.StatOptions)
                     {
-                        AddStat(type, value, count);
+                        AddStat(type, (int)value, count);
                         statCount += count;
                     }
 
@@ -194,7 +198,7 @@ namespace Nekoyume.UI.Module
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
 
-                    var stats = itemUsable.StatsMap.GetStats().ToList();
+                    var stats = itemUsable.StatsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
@@ -220,7 +224,7 @@ namespace Nekoyume.UI.Module
                         statsMap.AddStatValue(row.StatType, row.Stat);
                     }
 
-                    var stats = statsMap.GetStats().ToList();
+                    var stats = statsMap.GetDecimalStats(true).ToList();
                     var usableStatCount = stats.Count;
                     for(var i = 0; i < statViewList.Count; i++)
                     {
@@ -265,7 +269,7 @@ namespace Nekoyume.UI.Module
             return statCount;
         }
 
-        private void AddStat(StatMapEx model)
+        private void AddStat(DecimalStat model)
         {
             var statView = GetDisabledStatRow();
             if (statView.Equals(default) ||
@@ -356,7 +360,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var skill in skills.Where(skill => !skill.IsShown))
             {
-                skill.SetData(model);
+                skill.SetData(model, skillTooltip);
                 skill.Show();
 
                 return;

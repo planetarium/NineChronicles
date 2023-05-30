@@ -30,12 +30,12 @@ namespace Nekoyume.Helper
             return row.Stat ?? new DecimalStat(StatType.NONE);
         }
 
-        public static StatMap GetUniqueStat(this ConsumableItemSheet.Row row)
+        public static DecimalStat GetUniqueStat(this ConsumableItemSheet.Row row)
         {
-            return row.Stats.Any() ? row.Stats[0] : new StatMap(StatType.NONE);
+            return row.Stats.Any() ? row.Stats[0] : new DecimalStat(StatType.NONE);
         }
 
-        public static StatMap GetUniqueStat(this ConsumableItemRecipeSheet.Row recipeRow)
+        public static DecimalStat GetUniqueStat(this ConsumableItemRecipeSheet.Row recipeRow)
         {
             var resultItem = GetResultConsumableItemRow(recipeRow);
             return GetUniqueStat(resultItem);

@@ -349,5 +349,35 @@ namespace Nekoyume
             var beginPos = (corners[0] + corners[2]) / 2;
             return beginPos;
         }
+
+        public static float3 GetWorldPositionOfPivot(this RectTransform rectTransform, PivotPresetType pivotPresetType)
+        {
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            switch (pivotPresetType)
+            {
+                case PivotPresetType.TopLeft:
+                    return corners[1];
+                case PivotPresetType.TopCenter:
+                    return (corners[1] + corners[2]) / 2;
+                case PivotPresetType.TopRight:
+                    return corners[2];
+                case PivotPresetType.MiddleLeft:
+                    return (corners[0] + corners[1]) / 2;
+                case PivotPresetType.MiddleCenter:
+                    return (corners[0] + corners[2]) / 2;
+                case PivotPresetType.MiddleRight:
+                    return (corners[2] + corners[3]) / 2;
+                case PivotPresetType.BottomLeft:
+                    return corners[0];
+                case PivotPresetType.BottomCenter:
+                    return (corners[0] + corners[3]) / 2;
+                case PivotPresetType.BottomRight:
+                    return corners[3];
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
+            }
+        }
     }
 }

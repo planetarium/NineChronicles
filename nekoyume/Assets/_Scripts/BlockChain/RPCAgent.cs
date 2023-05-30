@@ -36,7 +36,7 @@ using UnityEngine;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
+using NCTx = Libplanet.Tx.Transaction;
 
 namespace Nekoyume.BlockChain
 {
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
 
         private Codec _codec = new Codec();
 
-        private Block<NCAction> _genesis;
+        private Block _genesis;
 
         private DateTimeOffset _lastTipChangedAt;
 
@@ -481,10 +481,11 @@ namespace Nekoyume.BlockChain
         {
             var nonce = await GetNonceAsync();
             var tx = NCTx.Create(
-                nonce,
-                PrivateKey,
-                _genesis?.Hash,
-                actions
+                nonce: nonce,
+                privateKey: PrivateKey,
+                genesisHash: _genesis?.Hash,
+                actions: actions,
+                updatedAddresses: actions.CalculateUpdateAddresses()
             );
 
             string actionsName = default;
@@ -548,7 +549,7 @@ namespace Nekoyume.BlockChain
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block<NCAction> newTipBlock = BlockMarshaler.UnmarshalBlock<NCAction>(dict);
+            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
@@ -648,7 +649,7 @@ namespace Nekoyume.BlockChain
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block<NCAction> newTipBlock = BlockMarshaler.UnmarshalBlock<NCAction>(dict);
+            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             BlockIndex = newTipBlock.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
@@ -656,12 +657,10 @@ namespace Nekoyume.BlockChain
             _lastTipChangedAt = DateTimeOffset.UtcNow;
 
             Debug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
-            BlockRenderer.RenderReorg(null, null, null);
         }
 
         public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorgEnd(null, null, null);
         }
 
         public void OnException(int code, string message)

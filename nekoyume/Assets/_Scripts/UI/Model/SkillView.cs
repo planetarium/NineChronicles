@@ -3,7 +3,9 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module.Common;
 using UniRx;
 using UnityEngine;
 
@@ -11,65 +13,43 @@ namespace Nekoyume.UI.Model
 {
     public class SkillView : IDisposable
     {
-        public readonly ReactiveProperty<string> name = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<string> power = new ReactiveProperty<string>();
-        public readonly ReactiveProperty<string> chance = new ReactiveProperty<string>();
+        public readonly Skill Skill;
+        public readonly ReactiveProperty<string> Name = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<string> Power = new ReactiveProperty<string>();
+        public readonly ReactiveProperty<string> Chance = new ReactiveProperty<string>();
 
         public SkillView(Skill skill)
         {
-            name.Value = skill.SkillRow.GetLocalizedName();
+            Skill = skill;
+            Name.Value = skill.SkillRow.GetLocalizedName();
+            Chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
 
-            chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
             if (skill is BuffSkill buffSkill)
             {
-                var sheets = Game.Game.instance.TableSheets;
-                var buffs = BuffFactory.GetBuffs(
-                    default,
-                    skill,
-                    sheets.SkillBuffSheet,
-                    sheets.StatBuffSheet,
-                    sheets.SkillActionBuffSheet,
-                    sheets.ActionBuffSheet).OfType<StatBuff>();
-                if (buffs.Any())
-                {
-                    var buff = buffs.First();
-                    var powerValue = buff.RowData.StatModifier.ToString();
-                    power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
-                }
+                var powerValue = buffSkill.EffectToString();
+                Power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
             }
             else
             {
-                power.Value = $"{L10nManager.Localize("UI_SKILL_POWER")}: {skill.Power}";
+                var powerValue = skill.EffectToString();
+                Power.Value = $"{L10nManager.Localize("UI_SKILL_POWER")}: {powerValue}";
             }
         }
 
         public SkillView(BuffSkill skill)
         {
-            var powerValue = string.Empty;
-            var sheets = Game.Game.instance.TableSheets;
-            var buffs = BuffFactory.GetBuffs(
-                default,
-                skill,
-                sheets.SkillBuffSheet,
-                sheets.StatBuffSheet,
-                sheets.SkillActionBuffSheet,
-                sheets.ActionBuffSheet).OfType<StatBuff>();
-            if (buffs.Count() > 0)
-            {
-                var buff = buffs.First();
-                powerValue = buff.RowData.StatModifier.ToString();
-            }
-
-            name.Value = skill.SkillRow.GetLocalizedName();
-            power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
-            chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
+            Skill = skill;
+            var powerValue = skill.EffectToString();
+            Name.Value = skill.SkillRow.GetLocalizedName();
+            Power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
+            Chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
         }
 
         public void Dispose()
         {
-            name.Dispose();
-            power.Dispose();
-            chance.Dispose();
+            Name.Dispose();
+            Power.Dispose();
+            Chance.Dispose();
         }
     }
 }

@@ -1,0 +1,279 @@
+
+208006.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+acc_01
+  rotate: false
+  xy: 2, 46
+  size: 34, 208
+  orig: 34, 208
+  offset: 0, 0
+  index: -1
+acc_02
+  rotate: false
+  xy: 102, 66
+  size: 22, 188
+  orig: 22, 188
+  offset: 0, 0
+  index: -1
+arm_L
+  rotate: true
+  xy: 2, 4
+  size: 40, 108
+  orig: 40, 108
+  offset: 0, 0
+  index: -1
+arm_R
+  rotate: false
+  xy: 306, 85
+  size: 59, 169
+  orig: 59, 169
+  offset: 0, 0
+  index: -1
+belt_04
+  rotate: false
+  xy: 200, 2
+  size: 33, 75
+  orig: 33, 75
+  offset: 0, 0
+  index: -1
+belt_05
+  rotate: true
+  xy: 38, 47
+  size: 15, 50
+  orig: 17, 50
+  offset: 2, 0
+  index: -1
+body_01
+  rotate: true
+  xy: 525, 91
+  size: 69, 88
+  orig: 71, 90
+  offset: 1, 1
+  index: -1
+body_02
+  rotate: false
+  xy: 126, 79
+  size: 80, 175
+  orig: 80, 175
+  offset: 0, 0
+  index: -1
+body_03
+  rotate: false
+  xy: 367, 89
+  size: 156, 165
+  orig: 156, 165
+  offset: 0, 0
+  index: -1
+body_04
+  rotate: false
+  xy: 525, 162
+  size: 49, 92
+  orig: 49, 92
+  offset: 0, 0
+  index: -1
+effect
+  rotate: true
+  xy: 685, 219
+  size: 35, 33
+  orig: 35, 33
+  offset: 0, 0
+  index: -1
+face_01
+  rotate: false
+  xy: 635, 196
+  size: 48, 58
+  orig: 50, 60
+  offset: 1, 1
+  index: -1
+face_02
+  rotate: false
+  xy: 615, 106
+  size: 49, 58
+  orig: 51, 60
+  offset: 1, 1
+  index: -1
+head_01
+  rotate: true
+  xy: 235, 5
+  size: 78, 137
+  orig: 80, 139
+  offset: 1, 1
+  index: -1
+head_02
+  rotate: true
+  xy: 682, 19
+  size: 32, 26
+  orig: 34, 28
+  offset: 1, 1
+  index: -1
+head_03
+  rotate: false
+  xy: 150, 2
+  size: 48, 54
+  orig: 50, 56
+  offset: 1, 1
+  index: -1
+head_04
+  rotate: true
+  xy: 672, 53
+  size: 33, 25
+  orig: 35, 27
+  offset: 1, 1
+  index: -1
+head_05
+  rotate: false
+  xy: 576, 166
+  size: 57, 88
+  orig: 59, 90
+  offset: 1, 1
+  index: -1
+shadow
+  rotate: true
+  xy: 38, 64
+  size: 190, 62
+  orig: 192, 64
+  offset: 1, 1
+  index: -1
+shoulder_L
+  rotate: false
+  xy: 566, 20
+  size: 48, 69
+  orig: 48, 69
+  offset: 0, 0
+  index: -1
+shoulder_R
+  rotate: false
+  xy: 374, 9
+  size: 58, 78
+  orig: 58, 78
+  offset: 0, 0
+  index: -1
+weapon_01
+  rotate: true
+  xy: 159, 72
+  size: 5, 34
+  orig: 7, 36
+  offset: 1, 1
+  index: -1
+weapon_02-1
+  rotate: false
+  xy: 90, 54
+  size: 32, 8
+  orig: 32, 8
+  offset: 0, 0
+  index: -1
+weapon_02-2
+  rotate: false
+  xy: 635, 166
+  size: 36, 28
+  orig: 36, 28
+  offset: 0, 0
+  index: -1
+weapon_03-1
+  rotate: true
+  xy: 126, 71
+  size: 6, 31
+  orig: 6, 31
+  offset: 0, 0
+  index: -1
+weapon_03-2
+  rotate: false
+  xy: 672, 88
+  size: 27, 35
+  orig: 27, 35
+  offset: 0, 0
+  index: -1
+weapon_04-1
+  rotate: true
+  xy: 124, 58
+  size: 6, 32
+  orig: 6, 32
+  offset: 0, 0
+  index: -1
+weapon_04-2
+  rotate: true
+  xy: 673, 166
+  size: 28, 35
+  orig: 28, 35
+  offset: 0, 0
+  index: -1
+weapon_05
+  rotate: true
+  xy: 462, 18
+  size: 69, 102
+  orig: 69, 102
+  offset: 0, 0
+  index: -1
+weapon_06
+  rotate: false
+  xy: 208, 85
+  size: 96, 169
+  orig: 96, 169
+  offset: 0, 0
+  index: -1
+weapon_06-2
+  rotate: false
+  xy: 434, 14
+  size: 26, 73
+  orig: 26, 73
+  offset: 0, 0
+  index: -1
+weapon_07
+  rotate: true
+  xy: 90, 46
+  size: 6, 34
+  orig: 8, 36
+  offset: 1, 1
+  index: -1
+weapon_08
+  rotate: false
+  xy: 616, 4
+  size: 30, 46
+  orig: 32, 48
+  offset: 1, 1
+  index: -1
+weapon_09
+  rotate: false
+  xy: 644, 53
+  size: 26, 51
+  orig: 28, 53
+  offset: 1, 1
+  index: -1
+weapon_10
+  rotate: true
+  xy: 112, 5
+  size: 39, 36
+  orig: 41, 38
+  offset: 1, 1
+  index: -1
+weapon_12
+  rotate: false
+  xy: 699, 60
+  size: 25, 26
+  orig: 27, 28
+  offset: 1, 1
+  index: -1
+weapon_13
+  rotate: true
+  xy: 616, 52
+  size: 52, 26
+  orig: 54, 28
+  offset: 1, 1
+  index: -1
+weapon_14
+  rotate: false
+  xy: 666, 125
+  size: 35, 39
+  orig: 37, 41
+  offset: 1, 1
+  index: -1
+weapon_15
+  rotate: true
+  xy: 648, 7
+  size: 44, 32
+  orig: 46, 34
+  offset: 1, 1
+  index: -1

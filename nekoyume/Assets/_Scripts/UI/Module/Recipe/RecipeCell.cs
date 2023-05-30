@@ -31,6 +31,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
         [SerializeField] private GameObject notificationObject = null;
+        [SerializeField] private GameObject gradeEffectObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
         [SerializeField] private TextMeshProUGUI unlockPriceText = null;
         [SerializeField] private Button button = null;
@@ -89,6 +90,7 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             selectedObject.SetActive(false);
+            gradeEffectObject.SetActive(false);
             _disposablesForOnDisable.DisposeAllAndClear();
         }
 
@@ -98,6 +100,7 @@ namespace Nekoyume.UI.Module
             var tableSheets = Game.Game.instance.TableSheets;
 
             loadingView.Hide();
+            gradeEffectObject.SetActive(false);
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
                 consumableView.Hide();
@@ -254,6 +257,7 @@ namespace Nekoyume.UI.Module
         {
             var resultItem = row.GetResultEquipmentItemRow();
             var viewData = recipeViewData.GetData(resultItem.Grade);
+            gradeEffectObject.SetActive(resultItem.Grade >= 5);
             equipmentView.Show(viewData, resultItem);
             consumableView.Hide();
             loadingView.Hide();

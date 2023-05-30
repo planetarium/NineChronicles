@@ -1168,7 +1168,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionEvaluation<Grinding>> Grinding(
             List<Equipment> equipmentList,
             bool chargeAp,
-            int gainedCrystal)
+            long gainedCrystal)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>

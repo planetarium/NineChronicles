@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
 
         public void SetData(CharacterStats stats)
         {
-            using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
+            using (var enumerator = stats.GetStats().GetEnumerator())
             {
                 foreach (var statView in statViews)
                 {
@@ -31,8 +31,8 @@ namespace Nekoyume.UI.Module
                         break;
                     }
 
-                    var (statType, baseValue, additionalValue) = enumerator.Current;
-                    statView.Show(statType, baseValue + additionalValue, 0);
+                    var (statType, value) = enumerator.Current;
+                    statView.Show(statType, value, 0);
                 }
             }
         }

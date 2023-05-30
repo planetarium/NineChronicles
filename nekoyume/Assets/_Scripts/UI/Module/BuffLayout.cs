@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
         public IReadOnlyDictionary<int, Buff> buffData = new Dictionary<int, Buff>();
 
         private Transform _buffParent;
-        [SerializeField] private List<BuffIcon> pool = new List<BuffIcon>(10);
+        [SerializeField] private List<BuffIcon> pool = new List<BuffIcon>(20);
 
         public bool IsBuffAdded(StatType statType) => AddedBuffs.Any(buff =>
         {
@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            return stat.RowData.StatModifier.StatType == statType;
+            return stat.RowData.StatType == statType;
         });
 
         public bool HasBuff(StatType statType) => buffData.Values.Any(buff =>
@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            return stat.RowData.StatModifier.StatType == statType;
+            return stat.RowData.StatType == statType;
         });
 
         public void Awake()
