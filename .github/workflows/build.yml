@@ -148,7 +148,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: release
-        uses: planetarium/9c-toolbelt@update-player-verison
+        uses: planetarium/9c-toolbelt@main
         with:
           COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}|--run-id=${{ github.run_id }}"
           ENV: production
@@ -162,7 +162,6 @@ jobs:
           ESIGNER_TOTP_SECRET: ${{ secrets.ESIGNER_TOTP_SECRET }}
 
 
-# job 분리되어야함?
   update-latest-metadata:
     if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
@@ -171,7 +170,7 @@ jobs:
       name: ${{ needs.extract.outputs.network }}
     steps:
       - name: update-latest-metadata
-        uses: planetarium/9c-toolbelt@update-player-verison
+        uses: planetarium/9c-toolbelt@main
         with:
           COMMAND_LIST: "release|update-latest|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}"
           ENV: production
