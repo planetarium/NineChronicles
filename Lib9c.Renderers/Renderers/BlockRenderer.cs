@@ -13,9 +13,9 @@ using System.Reactive.Linq;
 namespace Lib9c.Renderers
 {
     using NCAction = PolymorphicAction<ActionBase>;
-    using NCBlock = Block<PolymorphicAction<ActionBase>>;
+    using NCBlock = Block;
 
-    public class BlockRenderer : IRenderer<NCAction>
+    public class BlockRenderer : IRenderer
     {
         public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
@@ -28,11 +28,5 @@ namespace Lib9c.Renderers
 
         public void RenderBlock(NCBlock oldTip, NCBlock newTip) =>
             BlockSubject.OnNext((oldTip, newTip));
-
-        public void RenderReorg(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint) =>
-            ReorgSubject.OnNext((oldTip, newTip, branchpoint));
-
-        public void RenderReorgEnd(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint) =>
-            ReorgEndSubject.OnNext((oldTip, newTip, branchpoint));
     }
 }

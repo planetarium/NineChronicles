@@ -322,6 +322,8 @@ namespace Nekoyume.Action
                 }
             }
 
+            var isMimisbrunnrSubRecipe = subRecipeRow?.IsMimisbrunnrSubRecipe ??
+                subRecipeId.HasValue && recipeRow.SubRecipeIds[2] == subRecipeId.Value;
             var petOptionSheet = states.GetSheet<PetOptionSheet>();
             if (useHammerPoint)
             {
@@ -330,7 +332,7 @@ namespace Nekoyume.Action
                     throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
                 }
 
-                if (recipeRow.IsMimisBrunnrSubRecipe(subRecipeId))
+                if (isMimisbrunnrSubRecipe)
                 {
                     throw new ArgumentException(
                         $"Can not super craft with mimisbrunnr recipe. Subrecipe id: {subRecipeId}");
@@ -361,6 +363,7 @@ namespace Nekoyume.Action
                     hammerPointSheet,
                     petOptionSheet,
                     recipeRow,
+                    subRecipeRow,
                     requiredFungibleItems,
                     addressesHex);
             }
@@ -399,7 +402,8 @@ namespace Nekoyume.Action
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
                 endBlockIndex,
-                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                madeWithMimisbrunnrRecipe: isMimisbrunnrSubRecipe
+            );
 
             if (!(subRecipeRow is null))
             {
@@ -543,6 +547,7 @@ namespace Nekoyume.Action
             CrystalHammerPointSheet hammerPointSheet,
             PetOptionSheet petOptionSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
+            EquipmentItemSubRecipeSheetV2.Row subRecipeRow,
             Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
         {
@@ -628,12 +633,21 @@ namespace Nekoyume.Action
                     .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
-            var isBasicSubRecipe = !subRecipeId.HasValue ||
-                                   recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+            int hammerPoint;
+            if (subRecipeRow?.RewardHammerPoint.HasValue ?? false)
+            {
+                hammerPoint = subRecipeRow.RewardHammerPoint.Value;
+            }
+            else
+            {
+                var isBasicSubRecipe = !subRecipeId.HasValue ||
+                                       recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+                hammerPoint = isBasicSubRecipe
+                    ? BasicSubRecipeHammerPoint
+                    : SpecialSubRecipeHammerPoint;
+            }
 
-            hammerPointState.AddHammerPoint(
-                isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
-                hammerPointSheet);
+            hammerPointState.AddHammerPoint(hammerPoint, hammerPointSheet);
             return states;
         }
 
@@ -677,15 +691,15 @@ namespace Nekoyume.Action
 
                 if (optionRow.StatType != StatType.NONE)
                 {
-                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                    var stat = CombinationEquipment5.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                     equipment.Update(equipment.RequiredBlockIndex + optionInfo.RequiredBlockIndex);
                     equipment.optionCountFromCombination++;
                     agentState.unlockedOptions.Add(optionRow.Id);
                 }
                 else
                 {
-                    var skill = CombinationEquipment5.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
                     if (!(skill is null))
                     {
                         equipment.Skills.Add(skill);
@@ -695,6 +709,29 @@ namespace Nekoyume.Action
                     }
                 }
             }
+        }
+
+        public static Skill GetSkill(
+            EquipmentItemOptionSheet.Row row,
+            SkillSheet skillSheet,
+            IRandom random)
+        {
+            var skillRow = skillSheet.OrderedList.FirstOrDefault(r => r.Id == row.SkillId);
+            if (skillRow == null)
+            {
+                return null;
+            }
+
+            var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
+            var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
+
+            var hasStatDamageRatio = row.StatDamageRatioMin != default && row.StatDamageRatioMax != default;
+            var statDamageRatio = hasStatDamageRatio ?
+                random.Next(row.StatDamageRatioMin, row.StatDamageRatioMax + 1) : default;
+            var refStatType = hasStatDamageRatio ? row.ReferencedStatType : StatType.NONE;
+
+            var skill = SkillFactory.Get(skillRow, dmg, chance, statDamageRatio, refStatType);
+            return skill;
         }
 
         public static void AddSkillOption(
@@ -713,19 +750,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                Skill skill;
-                try
-                {
-                    var skillRow = skillSheet.OrderedList.First(r => r.Id == optionRow.SkillId);
-                    var dmg = random.Next(optionRow.SkillDamageMin, optionRow.SkillDamageMax + 1);
-                    var chance = random.Next(optionRow.SkillChanceMin, optionRow.SkillChanceMax + 1);
-                    skill = SkillFactory.Get(skillRow, dmg, chance);
-                }
-                catch (InvalidOperationException)
-                {
-                    continue;
-                }
-
+                var skill = GetSkill(optionRow, skillSheet, random);
                 if (!(skill is null))
                 {
                     equipment.Skills.Add(skill);

@@ -8,6 +8,8 @@
     using Lib9c.Renderers;
     using Lib9c.Tests.Action;
     using Libplanet;
+    using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -39,11 +41,23 @@
             stagePolicy ??= new VolatileStagePolicy<NCAction>();
             store ??= new DefaultStore(null);
             stateStore ??= new TrieStateStore(new DefaultKeyValueStore(null));
-            Block<NCAction> genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
-            return BlockChain<NCAction>.Create(policy, stagePolicy, store, stateStore, genesis, renderers: blockRenderers);
+            Block genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
+            return BlockChain<NCAction>.Create(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis,
+                new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
+                renderers: blockRenderers);
         }
 
-        public static Block<NCAction> MakeGenesisBlock(
+        public static Block MakeGenesisBlock(
             Address adminAddress,
             IImmutableSet<Address> activatedAddresses,
             AuthorizedMinersState authorizedMinersState = null,

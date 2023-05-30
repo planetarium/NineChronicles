@@ -23,7 +23,7 @@ namespace Nekoyume
 {
     public static class BlockHelper
     {
-        public static Block<PolymorphicAction<ActionBase>> ProposeGenesisBlock(
+        public static Block ProposeGenesisBlock(
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
@@ -98,12 +98,12 @@ namespace Nekoyume
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
-                    transactions: ImmutableList<Transaction<PolymorphicAction<ActionBase>>>.Empty
-                        .Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                    transactions: ImmutableList<Transaction>.Empty
+                        .Add(Transaction.Create(
                             0, privateKey, null, actions))
                         .AddRange(systemActions.Select((sa, index) =>
-                            Transaction<PolymorphicAction<ActionBase>>.Create(
-                                index + 1, privateKey, null, sa))),
+                            Transaction.Create(
+                                index + 1, privateKey, null, new [] { sa }))),
                     privateKey: privateKey,
                     blockAction: blockAction,
                     timestamp: timestamp);

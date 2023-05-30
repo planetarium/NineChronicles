@@ -25,12 +25,13 @@ namespace Nekoyume.Model.Item
         public int SetId { get; }
         public string SpineResourcePath { get; }
         public bool MadeWithMimisbrunnrRecipe { get; }
-        public StatType UniqueStatType => Stat.Type;
+        public StatType UniqueStatType => Stat.StatType;
         public bool Equipped => equipped;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
-            return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
+            var stat = StatsMap.GetBaseStat(UniqueStatType);
+            return Math.Max(1.0m, stat * 0.1m);
         }
 
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex, bool madeWithMimisbrunnrRecipe = false)
@@ -98,7 +99,7 @@ namespace Nekoyume.Model.Item
             var dict = ((Dictionary)base.Serialize())
                 .Add(LegacyEquippedKey, equipped.Serialize())
                 .Add(LegacyLevelKey, level.Serialize())
-                .Add(LegacyStatKey, Stat.Serialize())
+                .Add(LegacyStatKey, Stat.SerializeForLegacyEquipmentStat())
                 .Add(LegacySetIdKey, SetId.Serialize())
                 .Add(LegacySpineResourcePathKey, SpineResourcePath.Serialize());
 
@@ -126,13 +127,12 @@ namespace Nekoyume.Model.Item
             equipped = false;
         }
 
-        // FIXME: 기본 스탯을 복리로 증가시키고 있는데, 단리로 증가시켜야 한다.
-        // 이를 위해서는 기본 스탯을 유지하면서 추가 스탯에 더해야 하는데, UI 표현에 문제가 생기기 때문에 논의 후 개선한다.
-        // 장비가 보유한 스킬의 확률과 수치 강화가 필요한 상태이다.
-        public void LevelUp()
+        [Obsolete("Use LevelUp")]
+        public void LevelUpV1()
         {
             level++;
-            StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement());
+            var increment = GetIncrementAmountOfEnhancement();
+            StatsMap.AddStatValue(UniqueStatType, increment);
             if (new[] {4, 7, 10}.Contains(level) &&
                 GetOptionCount() > 0)
             {
@@ -140,13 +140,13 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        public void LevelUp(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
-                :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+                : random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
-            var baseStat = StatsMap.GetStat(UniqueStatType, true) * ratio;
+            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
             {
                 baseStat = Math.Max(1.0m, baseStat);
@@ -165,12 +165,12 @@ namespace Nekoyume.Model.Item
             var options = new List<object>();
             options.AddRange(Skills);
             options.AddRange(BuffSkills);
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var (statType, additionalValue) in StatsMap.GetAdditionalStats(true))
             {
                 options.Add(new StatModifier(
-                    statMapEx.StatType,
+                    statType,
                     StatModifier.OperationType.Add,
-                    statMapEx.AdditionalValueAsInt));
+                    additionalValue));
             }
 
             return options;
@@ -178,11 +178,11 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptions()
         {
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var stat in StatsMap.GetAdditionalStats())
             {
                 StatsMap.SetStatAdditionalValue(
-                    statMapEx.StatType,
-                    statMapEx.AdditionalValue * 1.3m);
+                    stat.StatType,
+                    stat.AdditionalValue * 1.3m);
             }
 
             var skills = new List<Skill.Skill>();
@@ -192,25 +192,26 @@ namespace Nekoyume.Model.Item
             {
                 var chance = decimal.ToInt32(skill.Chance * 1.3m);
                 var power = decimal.ToInt32(skill.Power * 1.3m);
-                skill.Update(chance, power);
+                var statPowerRatio = decimal.ToInt32(skill.StatPowerRatio * 1.3m);
+                skill.Update(chance, power, statPowerRatio);
             }
         }
 
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
-            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            foreach (var stat in StatsMap.GetAdditionalStats())
             {
                 var rand = isGreatSuccess
                     ? row.ExtraStatGrowthMax
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
                 var ratio = rand.NormalizeFromTenThousandths();
-                var addValue = statMapEx.AdditionalValue * ratio;
+                var addValue = stat.AdditionalValue * ratio;
                 if (addValue > 0)
                 {
                     addValue = Math.Max(1.0m, addValue);
                 }
 
-                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue + addValue);
+                StatsMap.SetStatAdditionalValue(stat.StatType, stat.AdditionalValue + addValue);
             }
 
             var skills = new List<Skill.Skill>();
@@ -235,8 +236,17 @@ namespace Nekoyume.Model.Item
                 {
                     addPower = Math.Max(1.0m, addPower);
                 }
+                var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
+                if (addStatPowerRatio > 0)
+                {
+                    addStatPowerRatio = Math.Max(1.0m, addStatPowerRatio);
+                }
 
-                skill.Update(skill.Chance + (int)addChance, skill.Power + (int)addPower);
+                var chance = skill.Chance + (int)addChance;
+                var power = skill.Power + (int)addPower;
+                var statPowerRatio = skill.StatPowerRatio + (int)addStatPowerRatio;
+
+                skill.Update(chance, power, statPowerRatio);
             }
         }
 

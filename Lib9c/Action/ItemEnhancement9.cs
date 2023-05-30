@@ -285,7 +285,7 @@ namespace Nekoyume.Action
             var equipmentResult = GetEnhancementResult(row, ctx.Random);
             if (equipmentResult != EnhancementResult.Fail)
             {
-                enhancementEquipment.LevelUpV2(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
+                enhancementEquipment.LevelUp(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
             var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
             var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;

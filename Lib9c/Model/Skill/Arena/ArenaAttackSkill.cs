@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill.Arena
@@ -9,8 +10,12 @@ namespace Nekoyume.Model.Skill.Arena
     [Serializable]
     public abstract class ArenaAttackSkill : ArenaSkill
     {
-        protected ArenaAttackSkill(SkillSheet.Row skillRow, int power, int chance)
-            : base(skillRow, power, chance)
+        protected ArenaAttackSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 
@@ -22,6 +27,11 @@ namespace Nekoyume.Model.Skill.Arena
         {
             var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
 
+            // Apply stat power ratio
+            var powerMultiplier = StatPowerRatio / 10000m;
+            var statAdditionalPower = ReferencedStatType != StatType.NONE ?
+                 (int)(caster.Stats.GetStat(ReferencedStatType) * powerMultiplier) : default;
+
             var multipliers = GetMultiplier(SkillRow.HitCount, 1m);
             var elementalType = isNormalAttack ? caster.OffensiveElementalType : SkillRow.ElementalType;
             for (var i = 0; i < SkillRow.HitCount; i++)
@@ -32,7 +42,7 @@ namespace Nekoyume.Model.Skill.Arena
 
                 if (target.IsHit(caster))
                 {
-                    damage = caster.ATK + Power;
+                    damage = caster.ATK + Power + statAdditionalPower;
                     damage = (int) (damage * multiplier);
                     damage = caster.GetDamage(damage, isNormalAttack);
                     damage = elementalType.GetDamage(target.DefenseElementalType, damage);
@@ -42,7 +52,9 @@ namespace Nekoyume.Model.Skill.Arena
                         damage = CriticalHelper.GetCriticalDamageForArena(caster, damage);
                     }
 
-                    damage = Math.Max(damage - target.DEF, 1);
+                    // Apply armor penetration and DEF.
+                    var finalDEF = Math.Clamp(target.DEF - caster.ArmorPenetration, 0, int.MaxValue);
+                    damage = Math.Max(damage - finalDEF, 1);
                     // Apply damage reduce
                     damage = (int)((damage - target.DRV) * (1 - target.DRR / 10000m));
                     target.CurrentHP -= damage;

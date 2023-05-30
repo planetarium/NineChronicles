@@ -1076,14 +1076,14 @@ namespace Lib9c.Tests.Action
         [InlineData(true, false, false)]
         [InlineData(true, true, false)]
         [InlineData(true, true, true)]
-        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
+        public void CheckCrystalRandomSkillState(bool forceClear, bool skillStateExist, bool hasCrystalSkill)
         {
             const int worldId = 1;
             const int stageId = 5;
             const int clearedStageId = 4;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = clear ? 400 : 3;
+            previousAvatarState.level = forceClear ? 400 : 3;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1157,8 +1157,8 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash17
             {
-                Costumes = clear ? costumes : new List<Guid>(),
-                Equipments = clear
+                Costumes = forceClear ? costumes : new List<Guid>(),
+                Equipments = forceClear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 Foods = new List<Guid>(),
@@ -1190,11 +1190,11 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StageSheet[stageId],
                 _tableSheets.StageWaveSheet[stageId],
                 false,
-                20,
+                StageRewardExpHelper.GetExp(previousAvatarState.level, stageId),
                 _tableSheets.GetSimulatorSheetsV1(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     contextRandom,
                     _tableSheets.StageSheet[stageId],
                     _tableSheets.MaterialItemSheet));

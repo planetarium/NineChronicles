@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Lib9c.Tests.TestHelper;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -482,7 +483,7 @@ namespace Lib9c.Tests.Action
             BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
             StagePolicy stagePolicy = new StagePolicy(default, 2);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
-            Block<PolymorphicAction<ActionBase>> genesis;
+            Block genesis;
             if (mainnet)
             {
                 const string genesisBlockPath = "https://release.nine-chronicles.com/genesis-block-9c-main";
@@ -490,7 +491,7 @@ namespace Lib9c.Tests.Action
                 using var client = new HttpClient();
                 var rawBlock = await client.GetByteArrayAsync(uri);
                 var blockDict = (Bencodex.Types.Dictionary)new Codec().Decode(rawBlock);
-                genesis = BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(blockDict);
+                genesis = BlockMarshaler.UnmarshalBlock(blockDict);
             }
             else
             {
@@ -524,8 +525,8 @@ namespace Lib9c.Tests.Action
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
                 genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
-                    transactions: ImmutableList<Transaction<PolymorphicAction<ActionBase>>>.Empty
-                        .Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                    transactions: ImmutableList<Transaction>.Empty
+                        .Add(Transaction.Create(
                             0,
                             new PrivateKey(),
                             null,
@@ -541,6 +542,12 @@ namespace Lib9c.Tests.Action
                 stagePolicy: stagePolicy,
                 stateStore: stateStore,
                 genesisBlock: genesis,
+                actionEvaluator: new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(store, stateStore),
+                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    feeCalculator: null
+                ),
                 renderers: blockPolicySource.GetRenderers()
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);

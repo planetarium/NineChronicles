@@ -331,7 +331,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 context.Random,
                 avatarState,
                 Foods,
@@ -346,7 +346,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     context.Random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),

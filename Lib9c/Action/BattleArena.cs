@@ -23,12 +23,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1649
-    /// Updated at https://github.com/planetarium/lib9c/pull/1679
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1938
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena9")]
+    [ActionType("battle_arena12")]
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -41,10 +39,6 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<RuneSlotInfo> runeInfos;
-
-        public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
-        public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
-        public int ExtraPreviousMyScore;
 
         Address IBattleArenaV1.MyAvatarAddress => myAvatarAddress;
 
@@ -226,7 +220,7 @@ namespace Nekoyume.Action
 
             var gameConfigState = states.GetGameConfigState();
             var battleArenaInterval = roundData.ArenaType == ArenaType.OffSeason
-                ? 0
+                ? 1
                 : gameConfigState.BattleArenaInterval;
             if (context.BlockIndex - myArenaAvatarState.LastBattleBlockIndex < battleArenaInterval)
             {
@@ -378,17 +372,17 @@ namespace Nekoyume.Action
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(
+            var myArenaPlayerDigest = new ArenaPlayerDigest(
                 avatarState,
                 equipments,
                 costumes,
                 runeStates);
-            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(
+            var enemyArenaPlayerDigest = new ArenaPlayerDigest(
                 enemyAvatarState,
                 enemyItemSlotState.Equipments,
                 enemyItemSlotState.Costumes,
                 enemyRuneStates);
-            ExtraPreviousMyScore = myArenaScore.Score;
+            var previousMyScore = myArenaScore.Score;
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
@@ -397,8 +391,8 @@ namespace Nekoyume.Action
             {
                 var simulator = new ArenaSimulator(context.Random);
                 var log = simulator.Simulate(
-                    ExtraMyArenaPlayerDigest,
-                    ExtraEnemyArenaPlayerDigest,
+                    myArenaPlayerDigest,
+                    enemyArenaPlayerDigest,
                     arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
@@ -413,8 +407,8 @@ namespace Nekoyume.Action
                     context.Random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
-                    ExtraMyArenaPlayerDigest.Level,
-                    maxCount: ArenaHelper.GetRewardCount(ExtraPreviousMyScore));
+                    myArenaPlayerDigest.Level,
+                    maxCount: ArenaHelper.GetRewardCount(previousMyScore));
                 rewards.AddRange(reward);
             }
 
@@ -425,8 +419,7 @@ namespace Nekoyume.Action
             }
 
             // add medal
-            if (roundData.ArenaType != ArenaType.OffSeason &&
-                winCount > 0)
+            if (roundData.ArenaType != ArenaType.OffSeason && winCount > 0)
             {
                 var materialSheet = sheets.GetSheet<MaterialItemSheet>();
                 var medal = ArenaHelper.GetMedal(
@@ -438,7 +431,7 @@ namespace Nekoyume.Action
 
             // update record
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                ArenaHelper.GetScores(ExtraPreviousMyScore, enemyArenaScore.Score);
+                ArenaHelper.GetScores(previousMyScore, enemyArenaScore.Score);
             var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
             myArenaScore.AddScore(myScore);
             enemyArenaScore.AddScore(enemyWinScore * winCount);

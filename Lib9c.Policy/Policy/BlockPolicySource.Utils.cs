@@ -5,6 +5,7 @@ using System.Reflection;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Tx;
@@ -29,7 +30,7 @@ namespace Nekoyume.BlockChain.Policy
         /// </para>
         /// </summary>
         /// <param name="transaction">The <see cref="Transaction{T}"/> to consider.</param>
-        /// <param name="actionTypeLoader">The loader to use <see cref="IAction"/>s included
+        /// <param name="actionLoader">The loader to use <see cref="IAction"/>s included
         /// in <paramref name="transaction"/>.</param>
         /// <param name="blockIndex">Either the index of a prospective block to include
         /// <paramref name="transaction"/> or the index of a <see cref="Block{T}"/> containing
@@ -39,33 +40,37 @@ namespace Nekoyume.BlockChain.Policy
         /// <seealso cref="ActionObsoleteAttribute"/>
         internal static bool IsObsolete(
             ITransaction transaction,
-            IActionTypeLoader actionTypeLoader,
+            IActionLoader actionLoader,
             long blockIndex
         )
         {
-            if (!(transaction.CustomActions is { } customActions))
+            if (!(transaction.Actions is { } rawActions))
             {
                 return false;
             }
-
-            var types = actionTypeLoader.Load(new ActionTypeLoaderContext(blockIndex));
-
-            // Comparison with ObsoleteIndex + 2 is intended to have backward
-            // compatibility with a bugged original implementation.
-            return customActions.Any(
-                ca => ca is Dictionary dictionary
-                    && dictionary.TryGetValue((Text)"type_id", out IValue typeIdValue)
-                    && typeIdValue is Text typeId
-                    && types.TryGetValue(typeId, out Type actionType)
-                    && actionType.IsDefined(typeof(ActionObsoleteAttribute), false)
-                    && actionType.GetCustomAttributes()
-                        .OfType<ActionObsoleteAttribute>()
-                        .FirstOrDefault()?.ObsoleteIndex + 2 <= blockIndex
-            );
+            else
+            {
+                try
+                {
+                    // Comparison with ObsoleteIndex + 2 is intended to have backward
+                    // compatibility with a bugged original implementation.
+                    return rawActions
+                        .Select(rawAction => actionLoader.LoadAction(blockIndex, rawAction))
+                        .Select(action => action.GetType())
+                        .Any(actionType =>
+                            actionType.GetCustomAttribute<ActionObsoleteAttribute>(false) is { } attribute &&
+                            attribute.ObsoleteIndex + 2 <= blockIndex);
+                }
+                catch (Exception)
+                {
+                    // NOTE: Return false on fail to load
+                    return true;
+                }
+            }
         }
 
         internal static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+            BlockChain<NCAction> blockChain, Transaction transaction)
         {
             return GetAdminState(blockChain) is AdminState admin
                 && admin.AdminAddress.Equals(transaction.Signer);
@@ -87,7 +92,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<long> maxTransactionsBytesPolicy)
         {
             long maxTransactionsBytes = maxTransactionsBytesPolicy.Getter(block.Index);
@@ -106,7 +111,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy)
         {
@@ -136,7 +141,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         private static BlockPolicyViolationException ValidateTxCountPerSignerPerBlockRaw(
-            Block<NCAction> block,
+            Block block,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
             int maxTransactionsPerSignerPerBlock =

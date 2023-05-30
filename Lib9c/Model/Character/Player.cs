@@ -516,7 +516,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    selectedSkill.Power,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -549,7 +549,7 @@ namespace Nekoyume.Model
                 );
             }
             Stats.SetOption(statModifiers);
-            Stats.EqualizeCurrentHPWithHP();
+            ResetCurrentHP();
         }
 
         public void SetRune(
@@ -569,11 +569,11 @@ namespace Nekoyume.Model
                 statModifiers.AddRange(
                     optionInfo.Stats.Select(x =>
                         new StatModifier(
-                            x.statMap.StatType,
+                            x.stat.StatType,
                             x.operationType,
-                            x.statMap.ValueAsInt)));
-                Stats.AddOption(statModifiers);
-                Stats.EqualizeCurrentHPWithHP();
+                            x.stat.BaseValueAsInt)));
+                Stats.AddRune(statModifiers);
+                ResetCurrentHP();
 
                 if (optionInfo.SkillId == default ||
                     !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
@@ -589,22 +589,64 @@ namespace Nekoyume.Model
                 }
                 else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
                 {
-                    switch (optionInfo.SkillStatType)
-                    {
-                        case StatType.HP:
-                            power = HP;
-                            break;
-                        case StatType.ATK:
-                            power = ATK;
-                            break;
-                        case StatType.DEF:
-                            power = DEF;
-                            break;
-                    }
-
-                    power = (int)Math.Round(power * optionInfo.SkillValue);
+                    var value = Stats.GetStatAsInt(optionInfo.SkillStatType);
+                    power = (int)Math.Round(value * optionInfo.SkillValue);
                 }
-                var skill = SkillFactory.Get(skillRow, power, optionInfo.SkillChance);
+                var skill = SkillFactory.GetV1(skillRow, power, optionInfo.SkillChance);
+                var customField = new SkillCustomField
+                {
+                    BuffDuration = optionInfo.BuffDuration,
+                    BuffValue = power,
+                };
+                skill.CustomField = customField;
+
+                RuneSkills.Add(skill);
+                RuneSkillCooldownMap[optionInfo.SkillId] = optionInfo.SkillCooldown;
+            }
+        }
+
+        [Obsolete("Use SetRune")]
+        public void SetRuneV1(
+            List<RuneState> runes,
+            RuneOptionSheet runeOptionSheet,
+            SkillSheet skillSheet)
+        {
+            foreach (var rune in runes)
+            {
+                if (!runeOptionSheet.TryGetValue(rune.RuneId, out var optionRow) ||
+                    !optionRow.LevelOptionMap.TryGetValue(rune.Level, out var optionInfo))
+                {
+                    continue;
+                }
+
+                var statModifiers = new List<StatModifier>();
+                statModifiers.AddRange(
+                    optionInfo.Stats.Select(x =>
+                        new StatModifier(
+                            x.stat.StatType,
+                            x.operationType,
+                            x.stat.TotalValueAsInt)));
+                Stats.AddOptional(statModifiers);
+                ResetCurrentHP();
+
+                if (optionInfo.SkillId == default ||
+                    !skillSheet.TryGetValue(optionInfo.SkillId, out var skillRow))
+                {
+                    continue;
+                }
+
+                var power = 0;
+
+                if (optionInfo.SkillValueType == StatModifier.OperationType.Add)
+                {
+                    power = (int)optionInfo.SkillValue;
+                }
+                else if (optionInfo.StatReferenceType == EnumType.StatReferenceType.Caster)
+                {
+                    var value = Stats.GetStatAsInt(optionInfo.SkillStatType);
+                    power = (int)Math.Round(value * optionInfo.SkillValue);
+                }
+                var skill = SkillFactory.GetV1(skillRow, power, optionInfo.SkillChance);
                 var customField = new SkillCustomField
                 {
                     BuffDuration = optionInfo.BuffDuration,

@@ -24,14 +24,14 @@ namespace Nekoyume.BlockChain.Policy
 
         public TxPolicyViolationException ValidateNextBlockTx(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Transaction<PolymorphicAction<ActionBase>> transaction)
+            Transaction transaction)
         {
             return null;
         }
 
         public BlockPolicyViolationException ValidateNextBlock(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Block<PolymorphicAction<ActionBase>> nextBlock)
+            Block nextBlock)
         {
             return null;
         }
@@ -45,7 +45,5 @@ namespace Nekoyume.BlockChain.Policy
         public int GetMaxTransactionsPerSignerPerBlock(long index) => int.MaxValue;
 
         public int GetMinBlockProtocolVersion(long index) => 0;
-
-        public IImmutableSet<Currency> NativeTokens => ImmutableHashSet<Currency>.Empty;
     }
 }

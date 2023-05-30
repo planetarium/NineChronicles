@@ -13,16 +13,8 @@ namespace Nekoyume.Model.Stat
         int DRV { get; }
         int DRR { get; }
         int CDMG { get; }
-
-        bool HasHP { get; }
-        bool HasATK { get; }
-        bool HasDEF { get; }
-        bool HasCRI { get; }
-        bool HasHIT { get; }
-        bool HasSPD { get; }
-        bool HasDRV { get; }
-        bool HasDRR { get; }
-        bool HasCDMG { get; }
+        int ArmorPenetration { get; }
+        int Thorn { get; }
 
         IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
     }

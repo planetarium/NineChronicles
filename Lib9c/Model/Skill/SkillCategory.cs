@@ -21,5 +21,6 @@ namespace Nekoyume.Model.Skill
         CriticalDamageBuff,
         Buff,
         Debuff,
+        TickDamage,
     }
 }

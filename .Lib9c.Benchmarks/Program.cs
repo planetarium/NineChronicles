@@ -82,7 +82,7 @@ namespace Lib9c.Benchmarks
             }
 
             DateTimeOffset started = DateTimeOffset.UtcNow;
-            Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
+            Block genesis = store.GetBlock(gHash);
             IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             var stateStore = new TrieStateStore(stateKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
@@ -102,11 +102,11 @@ namespace Lib9c.Benchmarks
                 blockHashes[0],
                 blockHashes.Last()
             );
-            Block<NCAction>[] blocks = blockHashes.Select(h => chain[h]).ToArray();
+            Block[] blocks = blockHashes.Select(h => chain[h]).ToArray();
             DateTimeOffset blocksLoaded = DateTimeOffset.UtcNow;
             long txs = 0;
             long actions = 0;
-            foreach (Block<NCAction> block in blocks)
+            foreach (Block block in blocks)
             {
                 Console.Error.WriteLine(
                     "Block #{0} {1}; {2} txs",
@@ -115,7 +115,7 @@ namespace Lib9c.Benchmarks
                     block.Transactions.Count()
                 );
 
-                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<ActionEvaluation> blockEvals);
+                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<IActionEvaluation> blockEvals);
                 SetStates(
                     chain.Id,
                     store,
@@ -126,8 +126,7 @@ namespace Lib9c.Benchmarks
                 );
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx =>
-                    (tx.CustomActions is { } customActions ? customActions.LongCount() : 0) +
-                    (tx.SystemAction is { } systemActions ? 1L : 0L)) + 1;
+                    tx.Actions is { } customActions ? customActions.LongCount() : 0);
             }
 
             DateTimeOffset ended = DateTimeOffset.UtcNow;
@@ -145,8 +144,8 @@ namespace Lib9c.Benchmarks
             Guid chainId,
             IStore store,
             IStateStore stateStore,
-            Block<NCAction> block,
-            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            Block block,
+            IReadOnlyList<IActionEvaluation> actionEvaluations,
             bool buildStateReferences
         )
         {
@@ -168,7 +167,7 @@ namespace Lib9c.Benchmarks
 
         // Copied from ActionEvaluationsExtensions.GetTotalDelta().
         private static ImmutableDictionary<string, IValue> GetTotalDelta(
-            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            IReadOnlyList<IActionEvaluation> actionEvaluations,
             Func<Address, string> toStateKey,
             Func<(Address, Currency), string> toFungibleAssetKey)
         {

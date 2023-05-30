@@ -97,6 +97,8 @@ namespace Lib9c.Tests.Action
         [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 1, true, false, false, false, false)]
         // Mimisbrunnr Equipment.
         [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 3, true, true, true, false, false)]
+        // 3rd sub recipe, not Mimisbrunnr Equipment.
+        [InlineData(null, true, true, true, true, false, 349, 0, true, 1L, 28, 101520003, true, false, false, false, false)]
         // Purchase CRYSTAL.
         [InlineData(null, true, true, true, true, false, 3, 0, true, 1L, 1, null, false, false, false, true, false)]
         // Purchase CRYSTAL with calculate previous cost.
@@ -370,16 +372,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(null, false, true, 1)]
-        [InlineData(null, false, false, 1)]
-        [InlineData(typeof(NotEnoughFungibleAssetValueException), true, true, 1)]
-        [InlineData(null, true, true, 1)]
-        [InlineData(typeof(ArgumentException), true, false, 1)]
-        [InlineData(typeof(NotEnoughHammerPointException), true, true, 1)]
-        public void ExecuteBySuperCraft(
+        [InlineData(null, false, 1, 1)]
+        [InlineData(null, false, 0, 1)]
+        [InlineData(typeof(NotEnoughFungibleAssetValueException), true, 1, 1)]
+        [InlineData(null, true, 1, 1)]
+        [InlineData(typeof(ArgumentException), true, 0, 2)]
+        [InlineData(typeof(NotEnoughHammerPointException), true, 1, 1)]
+        public void ExecuteWithCheckingHammerPointState(
             Type exc,
             bool doSuperCraft,
-            bool useBasicRecipe,
+            int subRecipeIndex,
             int recipeId)
         {
             IAccountStateDelta state = _initialState;
@@ -396,7 +398,7 @@ namespace Lib9c.Tests.Action
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
-            int? subRecipeId = useBasicRecipe ? row.SubRecipeIds.First() : row.SubRecipeIds.Skip(1).First();
+            int? subRecipeId = row.SubRecipeIds[subRecipeIndex];
             if (exc?.FullName?.Contains(nameof(ArgumentException)) ?? false)
             {
                 subRecipeId = row.SubRecipeIds.Last();
@@ -474,7 +476,7 @@ namespace Lib9c.Tests.Action
                     new HammerPointState(hammerPointAddress, serialized);
                 if (!doSuperCraft)
                 {
-                    Assert.Equal(useBasicRecipe ? 1 : 2, hammerPointState.HammerPoint);
+                    Assert.Equal(subRow.RewardHammerPoint, hammerPointState.HammerPoint);
                 }
                 else
                 {

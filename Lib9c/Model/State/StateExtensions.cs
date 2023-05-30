@@ -208,18 +208,47 @@ namespace Nekoyume.Model.State
 
         #region DecimalStat
 
-        public static IValue Serialize(this DecimalStat decimalStat) =>
+        public static IValue SerializeForLegacyEquipmentStat(this DecimalStat decimalStat) =>
             Dictionary.Empty
-                .Add("type", StatTypeExtension.Serialize(decimalStat.Type))
-                .Add("value", decimalStat.Value.Serialize());
+                .Add("type", StatTypeExtension.Serialize(decimalStat.StatType))
+                .Add("value", decimalStat.BaseValue.Serialize());
 
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
             ((Dictionary)serialized).ToDecimalStat();
 
-        public static DecimalStat ToDecimalStat(this Dictionary serialized) =>
-            new DecimalStat(
-                StatTypeExtension.Deserialize((Binary)serialized["type"]),
-                serialized["value"].ToDecimal());
+        public static (StatType statType, decimal baseValue, decimal additionalValue) GetStat(
+            this Dictionary serialized)
+        {
+            // Legacy Equipment Stat
+            if (serialized.TryGetValue((Text)"type", out var legacyStatType))
+            {
+                return (
+                    StatTypeExtension.Deserialize((Binary)legacyStatType),
+                    serialized["value"].ToDecimal(),
+                    default);
+            }
+            else if (serialized.TryGetValue((Text)"additionalValue", out var additionalValue))
+            {
+                return (
+                    StatTypeExtension.Deserialize((Binary)serialized["statType"]),
+                    serialized["value"].ToDecimal(),
+                    additionalValue.ToDecimal());
+            }
+            // Item before world 7 release
+            else
+            {
+                return (
+                    StatTypeExtension.Deserialize((Binary)serialized["statType"]),
+                    serialized["value"].ToDecimal(),
+                    default);
+            }
+        }
+
+        public static DecimalStat ToDecimalStat(this Dictionary serialized)
+        {
+            var (statType, baseValue, additionalValue) = GetStat(serialized);
+            return new DecimalStat(statType, baseValue, additionalValue);
+        }
 
         #endregion
 

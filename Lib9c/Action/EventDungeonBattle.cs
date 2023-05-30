@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class EventDungeonBattle : GameAction, IEventDungeonBattleV2
     {
-        private const string ActionTypeText = "event_dungeon_battle4";
+        private const string ActionTypeText = "event_dungeon_battle5";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;

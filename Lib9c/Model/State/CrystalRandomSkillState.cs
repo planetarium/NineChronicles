@@ -71,7 +71,7 @@ namespace Nekoyume.Model.State
                 throw new ArgumentException($"Buff/Debuff skill is only supported for now. skillType : {skillRow.SkillType}");
             }
 
-            return SkillFactory.Get(skillRow, default, 100);
+            return SkillFactory.GetV1(skillRow, default, 100);
         }
 
         public int GetHighestRankSkill(CrystalRandomBuffSheet crystalRandomBuffSheet)

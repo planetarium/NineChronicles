@@ -15,7 +15,7 @@ namespace Lib9c.Formatters
 {
     public class NCActionFormatter : IMessagePackFormatter<NCAction?>
     {
-        private static readonly IDictionary<string, Type> Types = typeof(ActionBase)
+        private static readonly IDictionary<IValue, Type> Types = typeof(ActionBase)
             .Assembly
             .GetTypes()
             .Where(t => t.IsDefined(typeof(ActionTypeAttribute)))
