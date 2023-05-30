@@ -2234,7 +2234,7 @@ namespace Nekoyume.BlockChain
             var previousMyScore = eval.PreviousStates.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore) ?
                 myArenaScore.Score : ArenaScore.ArenaScoreDefault;
             int outMyScore = eval.OutputStates.TryGetState(
-                ArenaScore.DeriveAddress(eval.Action.myAvatarAddress, championshipId, round),
+                myArenaScoreAdr,
                 out List outputMyScoreList)
                 ? (Integer)outputMyScoreList[1]
                 : ArenaScore.ArenaScoreDefault;
