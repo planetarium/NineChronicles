@@ -306,6 +306,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         // not enough block index.
         [InlineData(ProductType.Fungible, 1, 2L, 1L, false)]
+        [InlineData(ProductType.NonFungible, 1, 4L, 3L, false)]
         // not enough inventory items.
         [InlineData(ProductType.Fungible, 2, 3L, 3L, false)]
         // inventory has locked.
