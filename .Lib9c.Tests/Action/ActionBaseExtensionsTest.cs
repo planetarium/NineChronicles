@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void CalculateUpdateAddressesWithIncompatibles()
         {
-            var actions = new PolymorphicAction<ActionBase>[]
+            var actions = new ActionBase[]
             {
                 new TransferAsset(
                     sender: default,
