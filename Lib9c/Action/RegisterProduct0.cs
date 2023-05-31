@@ -17,8 +17,8 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("register_product2")]
-    public class RegisterProduct : GameAction
+    [ActionType("register_product")]
+    public class RegisterProduct0 : GameAction
     {
         public const int CostAp = 5;
         public const int Capacity = 100;
@@ -170,7 +170,7 @@ namespace Nekoyume.Action
                                 }
                             }
 
-                            if (tradableItem is null || tradableItem.RequiredBlockIndex > context.BlockIndex)
+                            if (tradableItem is null)
                             {
                                 throw new ItemDoesNotExistException($"can't find item: {tradableId}");
                             }

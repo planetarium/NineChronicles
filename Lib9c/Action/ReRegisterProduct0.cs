@@ -15,8 +15,8 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("re_register_product2")]
-    public class ReRegisterProduct : GameAction
+    [ActionType("re_register_product")]
+    public class ReRegisterProduct0 : GameAction
     {
         public const int CostAp = 5;
         public const int Capacity = 100;
@@ -157,7 +157,7 @@ namespace Nekoyume.Action
                     states = CancelProductRegistration.Cancel(productsState, productInfo,
                         states, avatarState, context);
                 }
-                states = RegisterProduct.Register(context, info, avatarState, productsState, states);
+                states = RegisterProduct0.Register(context, info, avatarState, productsState, states);
             }
 
             states = states

@@ -21,8 +21,8 @@ using Log = Serilog.Log;
 
 namespace Nekoyume.Action
 {
-    [ActionType("buy_product2")]
-    public class BuyProduct : GameAction
+    [ActionType("buy_product")]
+    public class BuyProduct0 : GameAction
     {
         // Capacity from Buy limits in NineChronicles
         // https://github.com/planetarium/NineChronicles/blob/v100372-1/nekoyume/Assets/_Scripts/UI/Shop/BuyView.cs#L127
@@ -148,19 +148,9 @@ namespace Nekoyume.Action
                     switch (itemProduct.TradableItem)
                     {
                         case Costume costume:
-                            // Fix RequiredBlockIndex from RegisterProduct0
-                            if (costume.RequiredBlockIndex > context.BlockIndex)
-                            {
-                                costume.RequiredBlockIndex = context.BlockIndex;
-                            }
                             buyerAvatarState.UpdateFromAddCostume(costume, false);
                             break;
                         case ItemUsable itemUsable:
-                            // Fix RequiredBlockIndex from RegisterProduct0
-                            if (itemUsable.RequiredBlockIndex > context.BlockIndex)
-                            {
-                                itemUsable.RequiredBlockIndex = context.BlockIndex;
-                            }
                             buyerAvatarState.UpdateFromAddItem(itemUsable, false);
                             break;
                         case TradableMaterial tradableMaterial:
