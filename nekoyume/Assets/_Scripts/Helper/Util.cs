@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
-        private static readonly List<int> CrystalEquipmentRecipes = new() { 168, 169, 170 };
+        private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
         public static string GetBlockToTime(long block, int? secondsPerBlock = null)
         {
@@ -436,9 +436,9 @@ namespace Nekoyume.Helper
         public static void TryGetAppProtocolVersionFromToken(string token, out int apv)
         {
             apv = 0;
-            if (token is null)
+            if (string.IsNullOrEmpty(token))
             {
-                Debug.LogException(new ArgumentNullException(nameof(token)));
+                Debug.LogWarning("apv token is null.");
                 return;
             }
 

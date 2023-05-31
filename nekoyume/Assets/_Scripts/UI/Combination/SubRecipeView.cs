@@ -290,6 +290,13 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    if (Util.IsEventEquipmentRecipe(equipmentRow.Id))
+                    {
+                        recipeCell.Show(equipmentRow, false);
+                        ChangeTab(0);
+                        break;
+                    }
+
                     if (_subrecipeIds != null && _subrecipeIds.Any())
                     {
                         var isNormalRecipe = resultItem.Grade < 5;
@@ -785,8 +792,7 @@ namespace Nekoyume.UI
                         var skillRow = TableSheets.Instance.SkillSheet[option.SkillId];
                         var rect = skillView.TooltipButton.GetComponent<RectTransform>();
                         skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
-                        skillTooltip.Set(skillRow, option);
-                        skillTooltip.gameObject.SetActive(true);
+                        skillTooltip.Show(skillRow, option);
                     });
                     optionIcons.Last().SetActive(true);
                 }

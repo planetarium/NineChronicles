@@ -266,7 +266,12 @@ namespace Nekoyume.State
                 {
                     var skillRow =
                         Game.Game.instance.TableSheets.SkillSheet[skillModel.SkillId];
-                    var skill = SkillFactory.GetV1(skillRow, skillModel.Power, skillModel.Chance);
+                    var skill = SkillFactory.Get(
+                        skillRow,
+                        skillModel.Power,
+                        skillModel.Chance,
+                        skillModel.StatPowerRatio,
+                        skillModel.ReferencedStatType);
                     itemUsable.Skills.Add(skill);
                 }
 
