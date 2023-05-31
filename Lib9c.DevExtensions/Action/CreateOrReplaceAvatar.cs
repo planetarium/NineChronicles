@@ -497,7 +497,7 @@ namespace Lib9c.DevExtensions.Action
                     optionSheet,
                     null,
                     skillSheet);
-                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
+                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats(false).ToArray();
                 foreach (var statMapEx in additionalOptionStats)
                 {
                     equipment.StatsMap.SetStatAdditionalValue(statMapEx.statType, 0);

@@ -38,6 +38,23 @@ namespace Nekoyume.Model
         public Enemy(
             CharacterBase player,
             CharacterStats stat,
+            CharacterSheet.Row rowData,
+            ElementalType elementalType)
+            : base(
+                player.Simulator,
+                stat,
+                rowData.Id,
+                elementalType,
+                rowData)
+        {
+            _stageSimulator = (IStageSimulator)player.Simulator;
+            Targets.Add(player);
+            PostConstruction();
+        }
+
+        public Enemy(
+            CharacterBase player,
+            CharacterStats stat,
             int characterId,
             ElementalType elementalType)
             : base(

@@ -83,7 +83,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var row = _tableSheets.EquipmentItemRecipeSheet[114];
+            var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem2(material, count: row.MaterialCount);

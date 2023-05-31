@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Action
         // Unlock Belt without Armor unlock.
         [InlineData(new[] { 83 }, true, false, false, true, 1, null)]
         // Unlock Weapon & Ring
-        [InlineData(new[] { 42, 43 }, true, false, false, true, 3, null)]
+        [InlineData(new[] { 2, 133 }, true, false, false, true, 3, null)]
         // AvatarState migration.
         [InlineData(new[] { 2 }, true, true, false, true, 2, null)]
         // Invalid recipe id.

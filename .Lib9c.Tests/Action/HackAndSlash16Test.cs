@@ -1195,7 +1195,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.GetSimulatorSheetsV1(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     contextRandom,
                     _tableSheets.StageSheet[stageId],
                     _tableSheets.MaterialItemSheet));

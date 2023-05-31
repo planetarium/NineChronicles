@@ -247,7 +247,7 @@ namespace Nekoyume.Battle
 
         private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
-            var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;
+            var enemyStatModifiers = stageRow.EnemyInitialStatModifiers;
             var waves = stageWaveRow.Waves;
             foreach (var wave in waves
                          .Select(e => SpawnWave(e, enemyStatModifiers)))
@@ -258,7 +258,7 @@ namespace Nekoyume.Battle
 
         private Wave SpawnWave(
             StageWaveSheet.WaveData waveData,
-            IReadOnlyList<StatModifier> optionalStatModifiers)
+            IReadOnlyList<StatModifier> initialStatModifiers)
         {
             var wave = new Wave();
             foreach (var monsterData in waveData.Monsters)
@@ -269,9 +269,9 @@ namespace Nekoyume.Battle
                         monsterData.CharacterId,
                         out var row,
                         true);
-                    var enemyModel = new Enemy(Player, row, monsterData.Level,
-                        optionalStatModifiers);
 
+                    var stat = new CharacterStats(row, monsterData.Level, initialStatModifiers);
+                    var enemyModel = new Enemy(Player, stat, row, row.ElementalType);
                     wave.Add(enemyModel);
                     wave.HasBoss = waveData.HasBoss;
                 }

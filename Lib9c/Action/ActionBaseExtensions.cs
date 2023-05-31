@@ -22,8 +22,15 @@ namespace Nekoyume.Action
 
             foreach (ActionBase action in actions)
             {
-                IAccountStateDelta nextStates = action.Execute(rehearsalContext);
-                addresses = addresses.Union(nextStates.UpdatedAddresses);
+                try
+                {
+                    IAccountStateDelta nextStates = action.Execute(rehearsalContext);
+                    addresses = addresses.Union(nextStates.UpdatedAddresses);
+                }
+                catch (NotSupportedException)
+                {
+                    // Ignore updated addresses from incompatible actions
+                }
             }
 
             return addresses;

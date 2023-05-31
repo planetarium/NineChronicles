@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1858
     /// </summary>
     [Serializable]
-    [ActionType("raid5")]
+    [ActionType("raid6")]
     public class Raid : GameAction, IRaidV2
     {
         public Address AvatarAddress;

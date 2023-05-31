@@ -26,6 +26,7 @@ namespace Nekoyume.Model.Stat
         private readonly Stats _buffStats = new Stats();
         private readonly Stats _optionalStats = new Stats();
 
+        private readonly List<StatModifier> _initialStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _equipmentStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _consumableStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _runeStatModifiers = new List<StatModifier>();
@@ -67,12 +68,35 @@ namespace Nekoyume.Model.Stat
         public int AdditionalArmorPenetration => ArmorPenetration - _baseStats.ArmorPenetration;
         public int AdditionalThorn => Thorn - _baseStats.Thorn;
 
+        public bool IsArenaCharacter { private get; set; } = false;
+
+        private readonly Dictionary<StatType, decimal> MinimumStatValues =
+            new Dictionary<StatType, decimal>()
+            {
+                { StatType.HP, 0m },
+                { StatType.ATK, 0m },
+                { StatType.DEF, 0m },
+                { StatType.CRI, 0m },
+                { StatType.HIT, 1m },
+                { StatType.SPD, 1m },
+                { StatType.DRV, 0m },
+                { StatType.DRR, 0m },
+                { StatType.CDMG, 0m },
+                { StatType.ArmorPenetration, 0m },
+                { StatType.Thorn, 0m },
+            };
+
         public CharacterStats(
             CharacterSheet.Row row,
-            int level
+            int level,
+            IReadOnlyList<StatModifier> initialStatModifiers = null
         )
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
+            if (initialStatModifiers != null)
+            {
+                _initialStatModifiers.AddRange(initialStatModifiers);
+            }
             SetStats(level);
         }
 
@@ -99,6 +123,7 @@ namespace Nekoyume.Model.Stat
             _runeStatModifiers = value._runeStatModifiers;
             _buffStatModifiers = value._buffStatModifiers;
             _optionalStatModifiers = value._optionalStatModifiers;
+            IsArenaCharacter = value.IsArenaCharacter;
 
             Level = value.Level;
         }
@@ -295,6 +320,12 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public void AddRune(IEnumerable<StatModifier> statModifiers)
+        {
+            _runeStatModifiers.AddRange(statModifiers);
+            UpdateRuneStats();
+        }
+
         public void AddOptional(IEnumerable<StatModifier> statModifiers)
         {
             _optionalStatModifiers.AddRange(statModifiers);
@@ -333,6 +364,11 @@ namespace Nekoyume.Model.Stat
             {
                 var statsData = _row.ToStats(Level);
                 _baseStats.Set(statsData);
+            }
+
+            if (_initialStatModifiers != null)
+            {
+                _baseStats.Modify(_initialStatModifiers);
             }
 
             UpdateEquipmentStats();
@@ -389,16 +425,22 @@ namespace Nekoyume.Model.Stat
 
             foreach (var stat in _statMap.GetDecimalStats(false))
             {
+                var minimumValue = MinimumStatValues[stat.StatType];
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {
-                    var value = Math.Max(0m, stat.BaseValueAsInt);
+                    var value = Math.Max(minimumValue, stat.BaseValueAsInt);
                     stat.SetBaseValue(value);
                 }
                 else
                 {
-                    var value = Math.Max(0m, stat.BaseValue);
+                    var value = Math.Max(minimumValue, stat.BaseValue);
                     stat.SetBaseValue(value);
                 }
+            }
+
+            if (IsArenaCharacter)
+            {
+                IncreaseHpForArena();
             }
         }
 

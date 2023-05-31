@@ -87,11 +87,11 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(false, 1, null)]
-        [InlineData(false, 145, 316)]
-        [InlineData(false, 145, 317)]
+        [InlineData(false, 145, 341)]
+        [InlineData(false, 145, 342)]
         [InlineData(true, 1, null)]
-        [InlineData(true, 145, 316)]
-        [InlineData(true, 145, 317)]
+        [InlineData(true, 145, 341)]
+        [InlineData(true, 145, 342)]
         public void Execute_Success(bool backward, int recipeId, int? subRecipeId) =>
             Execute(backward, recipeId, subRecipeId, 10000);
 

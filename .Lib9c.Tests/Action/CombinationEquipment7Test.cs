@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute(bool backward)
         {
-            var row = _tableSheets.EquipmentItemRecipeSheet[114];
+            var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, count: row.MaterialCount);

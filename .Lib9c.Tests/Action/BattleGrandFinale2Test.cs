@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BattleGrandFinaleTest
+    public class BattleGrandFinale2Test
     {
         private readonly int _validSeason;
         private readonly Dictionary<string, string> _sheets;
@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar4Address;
         private IAccountStateDelta _initialStates;
 
-        public BattleGrandFinaleTest(ITestOutputHelper outputHelper)
+        public BattleGrandFinale2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_AlreadyFoughtAvatarException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -225,7 +225,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidAddressException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -245,7 +245,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_FailedLoadStateException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = _avatar2Address,
                 enemyAvatarAddress = _avatar1Address,
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SheetRowNotFoundException()
         {
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -288,7 +288,7 @@ namespace Lib9c.Tests.Action
             var blockIndex =
                 _tableSheets.GrandFinaleScheduleSheet.GetRowByBlockIndex(0)?.StartBlockIndex - 1 ??
                 0;
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
@@ -335,7 +335,7 @@ namespace Lib9c.Tests.Action
                 .SetState(myAvatar.address, myAvatar.Serialize())
                 .SetState(enemyAvatar.address, enemyAvatar.Serialize());
 
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = myAvatar.address,
                 enemyAvatarAddress = enemyAvatar.address,
@@ -414,7 +414,7 @@ namespace Lib9c.Tests.Action
                         new ArenaAvatarState(enemyAvatar).Serialize());
             }
 
-            var action = new BattleGrandFinale
+            var action = new BattleGrandFinale2
             {
                 myAvatarAddress = myAvatarAddr,
                 enemyAvatarAddress = enemyAvatarAddr,
@@ -433,7 +433,7 @@ namespace Lib9c.Tests.Action
                 myAvatarAddr.Derive(
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        BattleGrandFinale.ScoreDeriveKey,
+                        BattleGrandFinale2.ScoreDeriveKey,
                         grandFinaleId)),
                 out var myScore));
             Assert.Equal<Integer>(setToWin ? 1020 : 1001, myScore);

@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash20")]
+    [ActionType("hack_and_slash21")]
     public class HackAndSlash : GameAction, IHackAndSlashV10
     {
         public const int UsableApStoneCount = 10;

@@ -25,13 +25,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1930
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
     [ActionType(ActionTypeName)]
     public class BattleGrandFinale : GameAction, IBattleGrandFinaleV1
     {
-        private const string ActionTypeName = "battle_grand_finale2";
+        private const string ActionTypeName = "battle_grand_finale3";
         public const int WinScore = 20;
         public const int LoseScore = 1;
         public const int DefaultScore = 1000;
@@ -44,6 +45,7 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
+        // Todo : Remove this ExtraValue after hard fork
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
 

@@ -23,9 +23,9 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value
 202000,202000,공격 약화,20,10,Enemy,ATK,Percentage,-25
 202001,202000,공격 약화,100,10,Enemy,ATK,Percentage,-25
 202002,202000,ATK Down (Stat conversion),100,10,Enemy,ATK,Add,0
-202003,202000,ATK ALL Down (Stat conversion),100,10,Enemies,ATK,Add,0
+202003,202000,ATK ALL Down (Stat conversion),100,6,Enemies,ATK,Add,0
 203001,203000,방어 약화,100,10,Enemy,DEF,Percentage,-25
-203002,203000,DEF Down (Stat conversion),100,10,Enemy,ATK,Add,0
+203002,203000,DEF Down (Stat conversion),100,10,Enemy,DEF,Add,0
 204001,204000,치명 감소,100,10,Enemy,CRI,Percentage,-25
 205001,205000,회피 감소,100,10,Enemy,HIT,Percentage,-25
 205002,205000,HIT Down (Stat conversion),100,10,Enemy,HIT,Add,0

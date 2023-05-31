@@ -178,7 +178,7 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptions()
         {
-            foreach (var stat in StatsMap.GetDecimalStats(true))
+            foreach (var stat in StatsMap.GetAdditionalStats())
             {
                 StatsMap.SetStatAdditionalValue(
                     stat.StatType,
@@ -199,7 +199,7 @@ namespace Nekoyume.Model.Item
 
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
-            foreach (var stat in StatsMap.GetDecimalStats(true))
+            foreach (var stat in StatsMap.GetAdditionalStats())
             {
                 var rand = isGreatSuccess
                     ? row.ExtraStatGrowthMax

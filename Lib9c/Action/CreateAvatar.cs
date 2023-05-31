@@ -180,12 +180,12 @@ namespace Nekoyume.Action
             }
 
             var recipeIds = new int[] {
-                21,     // 10134000, black crow sword (wind)
-                62,     // 10233000, black crow armor (land)
-                103,     // 10324000, leather belt (wind)
-                133,    // 10424000, guardian necklace (wind)
-                162,    // 10524000, guardian ring (wind)
-                158,    // 10523000, guardian ring (land)
+                21,
+                62,
+                103,
+                128,
+                148,
+                152,
             };
             var equipmentSheet = states.GetSheet<EquipmentItemSheet>();
             var recipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
