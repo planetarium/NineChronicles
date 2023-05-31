@@ -374,15 +374,25 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillRow, power, chance, _, _) = itemOptionInfo.SkillOptions[i];
-                var (_, prePower, preChance, _, _) = itemOptionInfoPre.SkillOptions[i];
-                var powerRate = prePower == power ? 0 : RateOfChange(prePower, power);
+                var (skillRow, power, chance, ratio, type) = itemOptionInfo.SkillOptions[i];
+                var (_, prePower, preChance, preRatio, _) = itemOptionInfoPre.SkillOptions[i];
+                int powerRate = 0;
+
+                if (prePower != power)
+                {
+                    powerRate = RateOfChange(prePower, power);
+                }
+                else if (preRatio != ratio)
+                {
+                    powerRate = RateOfChange(preRatio, ratio);
+                }
+
                 var chancePlus = chance - preChance;
                 var powerRateString = powerRate > 0 ? $" (+{powerRate}%)" : string.Empty;
                 var chanceRateString = chancePlus > 0 ? $" (+{chancePlus}%p)" : string.Empty;
-
+                var powerText = SkillExtensions.EffectToString(skillRow.Id, skillRow.SkillType, power, ratio, type);
                 optionView.UpdateView(
-                    $"{skillRow.GetLocalizedName()} {power}{powerRateString} / {chance}%{chanceRateString}",
+                    $"{skillRow.GetLocalizedName()} {powerText}{powerRateString} / {chance}%{chanceRateString}",
                     string.Empty);
                 optionView.Show();
             }

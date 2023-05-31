@@ -606,7 +606,7 @@ namespace Nekoyume.Blockchain
         private IEnumerator CoSwarmRunner()
         {
             BootstrapStarted?.Invoke(this, null);
-            Debug.Log("PreloadEndedAsync=" + PreloadEndedAsync == null ? "null" : "ok");
+            Debug.Log("PreloadEndedAsync=" + (PreloadEndedAsync == null ? "null" : "ok"));
 
             yield return PreloadEndedAsync?.Invoke().ToCoroutine();
 

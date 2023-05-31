@@ -67,11 +67,12 @@ namespace Nekoyume.UI.Module
             string totalPowerString,
             int totalChance,
             decimal plusPower,
+            decimal plusRatio,
             int plusChance,
-            string plusRatioString) =>
+            string plusPowerString) =>
             UpdateView(
                 $"{skillName} {totalPowerString} / {totalChance}%",
-                plusPower > 0 || plusChance > 0 ? $"+{plusPower}(+{plusRatioString}) / +{plusChance}%" : string.Empty);
+                plusPower > 0 || plusRatio > 0 || plusChance > 0 ? $"+{plusPowerString} / +{plusChance}%" : string.Empty);
 
         public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
 
