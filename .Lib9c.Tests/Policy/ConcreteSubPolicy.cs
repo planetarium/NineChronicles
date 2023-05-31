@@ -1,6 +1,6 @@
 namespace Lib9c.Tests.Policy
 {
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain.Policy;
 
     public sealed class ConcreteSubPolicy<T> : VariableSubPolicy<T>
     {

@@ -12,9 +12,12 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Consensus;
 using Libplanet.Crypto;
+using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Action.Loader;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -76,7 +79,7 @@ namespace Nekoyume
                 authorizedMinersState: authorizedMinersState,
                 creditsState: credits is null ? null : new CreditsState(credits)
             );
-            List<PolymorphicAction<ActionBase>> actions = new List<PolymorphicAction<ActionBase>>
+            List<ActionBase> actions = new List<ActionBase>
             {
                 initialStatesAction,
             };
@@ -92,12 +95,18 @@ namespace Nekoyume
             };
             if (!(actionBases is null))
             {
-                actions.AddRange(actionBases.Select(actionBase =>
-                    new PolymorphicAction<ActionBase>(actionBase)));
+                actions.AddRange(actionBases);
             }
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
+            var actionLoader = new NCActionLoader();
+            var actionEvaluator = new ActionEvaluator(
+                _ => blockAction,
+                new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),
+                actionLoader,
+                null);
             return
-                BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
+                BlockChain.ProposeGenesisBlock(
+                    actionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
                         .Add(Transaction.Create(
                             0, privateKey, null, actions))

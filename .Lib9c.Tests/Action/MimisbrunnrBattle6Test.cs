@@ -6,12 +6,11 @@
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
-    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;

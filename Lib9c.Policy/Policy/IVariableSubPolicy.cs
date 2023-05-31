@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Collections.Immutable;
 using Libplanet.Blocks;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     public interface IVariableSubPolicy<T>
     {

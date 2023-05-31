@@ -6,9 +6,9 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Consensus;
+    using Libplanet.State;
 
     /// <summary>
     /// An implementation of <see cref="IAccountStateDelta"/> for test. It handles states as raw like Libplanet does.

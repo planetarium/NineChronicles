@@ -1,8 +1,8 @@
 namespace Lib9c.Tests.Util
 {
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.State;
 
     public static class CurrencyUtil
     {

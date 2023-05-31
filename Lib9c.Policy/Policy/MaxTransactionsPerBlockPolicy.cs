@@ -1,4 +1,4 @@
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     public sealed class MaxTransactionsPerBlockPolicy : VariableSubPolicy<int>
     {

@@ -11,9 +11,8 @@ using Libplanet.Consensus;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Serilog;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     /// <summary>
     /// This is only for single node.
@@ -21,7 +20,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Proposer
     {
-        private readonly BlockChain<NCAction> _chain;
+        private readonly BlockChain _chain;
         private readonly PrivateKey _privateKey;
 
         public Block? ProposeBlockAsync(CancellationToken cancellationToken)
@@ -94,10 +93,7 @@ namespace Nekoyume.BlockChain
             return block;
         }
 
-        public Proposer(
-            BlockChain<NCAction> chain,
-            PrivateKey privateKey
-        )
+        public Proposer(BlockChain chain, PrivateKey privateKey)
         {
             _chain = chain ?? throw new ArgumentNullException(nameof(chain));
             _privateKey = privateKey;

@@ -7,7 +7,6 @@ namespace Lib9c.Tests
     using System.Numerics;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -19,7 +18,8 @@ namespace Lib9c.Tests
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Action.Loader;
+    using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Serilog.Core;
@@ -46,10 +46,8 @@ namespace Lib9c.Tests
             var adminAddress = adminPrivateKey.ToAddress();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                null, null, null, null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -58,7 +56,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -67,7 +65,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -77,7 +75,7 @@ namespace Lib9c.Tests
                     0,
                     new PrivateKey(),
                     genesis.Hash,
-                    new PolymorphicAction<ActionBase>[] { }
+                    new ActionBase[] { }
                 );
 
             // New private key which is not in activated addresses list is blocked.
@@ -89,7 +87,7 @@ namespace Lib9c.Tests
             // Activate with admin account.
             blockChain.MakeTransaction(
                 adminPrivateKey,
-                new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
+                new ActionBase[] { new AddActivatedAccount(newActivatedAddress) }
             );
             Block block = blockChain.ProposeBlock(adminPrivateKey);
             blockChain.Append(block, GenerateBlockCommit(block, adminPrivateKey));
@@ -99,17 +97,17 @@ namespace Lib9c.Tests
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
-                    new PolymorphicAction<ActionBase>[] { }
+                    new ActionBase[] { }
                 );
 
             // Test success because the key is activated.
             Assert.Null(policy.ValidateNextBlockTx(blockChain, txByNewActivated));
 
-            var singleAction = new PolymorphicAction<ActionBase>[]
+            var singleAction = new ActionBase[]
             {
                 new DailyReward(),
             };
-            var manyActions = new PolymorphicAction<ActionBase>[]
+            var manyActions = new ActionBase[]
             {
                 new DailyReward(),
                 new DailyReward(),
@@ -142,10 +140,8 @@ namespace Lib9c.Tests
             var nonValidator = new PrivateKey();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                null, null, null, null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -154,7 +150,7 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -163,14 +159,14 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             blockChain.MakeTransaction(
                 adminPrivateKey,
-                new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(adminPrivateKey.ToAddress()) }
+                new ActionBase[] { new AddActivatedAccount(adminPrivateKey.ToAddress()) }
             );
             Block block1 = blockChain.ProposeBlock(adminPrivateKey);
             Assert.Throws<InvalidBlockCommitException>(
@@ -190,13 +186,12 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -209,7 +204,8 @@ namespace Lib9c.Tests
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var actionLoader = new NCActionLoader();
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -218,19 +214,16 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: actionLoader,
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
-            Assert.Throws<MissingActionTypeException>(() =>
-            {
-                blockChain.MakeTransaction(
-                    adminPrivateKey,
-                    new PolymorphicAction<ActionBase>[] { new RewardGold() }
-                );
-            });
+            var unloadableAction = blockChain.MakeTransaction(
+                adminPrivateKey, new ActionBase[] { new RewardGold() }).Actions[0];
+            Assert.Throws<InvalidActionException>(() =>
+                actionLoader.LoadAction(blockChain.Tip.Index, unloadableAction));
         }
 
         [Fact]
@@ -246,13 +239,12 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
@@ -267,7 +259,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -276,7 +268,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
@@ -284,7 +276,7 @@ namespace Lib9c.Tests
 
             blockChain.MakeTransaction(
                 adminPrivateKey,
-                new PolymorphicAction<ActionBase>[] { new DailyReward(), }
+                new ActionBase[] { new DailyReward(), }
             );
 
             Block block = blockChain.ProposeBlock(adminPrivateKey);
@@ -300,15 +292,14 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
                     .Default
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
@@ -318,7 +309,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new MemoryKeyValueStore());
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -327,7 +318,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 )
             );
@@ -342,7 +333,7 @@ namespace Lib9c.Tests
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
-                        new PolymorphicAction<ActionBase>[] { }
+                        new ActionBase[] { }
                     ));
                 }
 
@@ -401,7 +392,7 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+            IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
@@ -410,8 +401,7 @@ namespace Lib9c.Tests
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy
                     .Default
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)));
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis =
                 MakeGenesisBlock(
                     adminPublicKey.ToAddress(),
@@ -421,7 +411,7 @@ namespace Lib9c.Tests
 
             using var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new MemoryKeyValueStore());
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -430,7 +420,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 )
             );
@@ -445,7 +435,7 @@ namespace Lib9c.Tests
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
-                        new PolymorphicAction<ActionBase>[] { }
+                        new ActionBase[] { }
                     ));
                 }
 
@@ -558,7 +548,7 @@ namespace Lib9c.Tests
         }
 
         private Block EvaluateAndSign(
-            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            BlockChain blockChain,
             PreEvaluationBlock preEvaluationBlock,
             PrivateKey privateKey
         )

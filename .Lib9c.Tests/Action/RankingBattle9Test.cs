@@ -3,13 +3,11 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using MessagePack;
     using Nekoyume;
     using Nekoyume.Action;

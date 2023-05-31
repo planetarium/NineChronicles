@@ -8,16 +8,13 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
+using Libplanet.State;
 using Libplanet.Tx;
 
 namespace Nekoyume.Action
 {
     public static class ActionBaseExtensions
     {
-        public static IImmutableSet<Address> CalculateUpdateAddresses(
-            this IEnumerable<PolymorphicAction<ActionBase>> actions
-        ) => CalculateUpdateAddresses(actions.Select(pa => pa.InnerAction));
-
         public static IImmutableSet<Address> CalculateUpdateAddresses(this IEnumerable<ActionBase> actions)
         {
             IImmutableSet<Address> addresses = ImmutableHashSet<Address>.Empty;

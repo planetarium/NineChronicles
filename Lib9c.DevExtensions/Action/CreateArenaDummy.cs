@@ -8,6 +8,7 @@ using Lib9c.DevExtensions.Model;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Arena;

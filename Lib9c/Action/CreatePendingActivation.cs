@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -19,8 +20,9 @@ namespace Nekoyume.Action
 
         IValue ICreatePendingActivationV1.PendingActivation => PendingActivation.Serialize();
 
-        public override IValue PlainValue
-            => new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "create_pending_activation")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>(
@@ -28,7 +30,7 @@ namespace Nekoyume.Action
                         PendingActivation.Serialize()
                     ),
                 }
-            );
+            ));
 
         public CreatePendingActivation()
         {
@@ -56,7 +58,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = ((Bencodex.Types.Dictionary) plainValue);
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             PendingActivation = new PendingActivationState((Dictionary) asDict["pending_activation"]);
         }
     }

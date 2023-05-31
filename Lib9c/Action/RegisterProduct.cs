@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -16,7 +17,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("register_product")]
+    [ActionType("register_product2")]
     public class RegisterProduct : GameAction
     {
         public const int CostAp = 5;
@@ -169,7 +170,7 @@ namespace Nekoyume.Action
                                 }
                             }
 
-                            if (tradableItem is null)
+                            if (tradableItem is null || tradableItem.RequiredBlockIndex > context.BlockIndex)
                             {
                                 throw new ItemDoesNotExistException($"can't find item: {tradableId}");
                             }

@@ -5,6 +5,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -29,12 +30,14 @@ namespace Nekoyume.Action
         }
 
         public override IValue PlainValue => Dictionary.Empty
-            .Add("r", RewardPoolAddress.Serialize())
-            .Add("a", new List(Assets.Select(a => a.Serialize())));
+            .Add("type_id", "prepare_reward_assets")
+            .Add("values", Dictionary.Empty
+                .Add("r", RewardPoolAddress.Serialize())
+                .Add("a", new List(Assets.Select(a => a.Serialize()))));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var serialized = (Dictionary) plainValue;
+            var serialized = (Dictionary)((Dictionary)plainValue)["values"];
             RewardPoolAddress = serialized["r"].ToAddress();
             Assets = serialized["a"].ToList(StateExtensions.ToFungibleAssetValue);
         }

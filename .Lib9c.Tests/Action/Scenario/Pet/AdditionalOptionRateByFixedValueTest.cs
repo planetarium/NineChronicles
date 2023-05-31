@@ -2,13 +2,12 @@
 
 namespace Lib9c.Tests.Action.Scenario.Pet
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Pet;

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Renderers;
+using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -12,14 +14,11 @@ using Libplanet.Tx;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-using Libplanet.Action;
-using Lib9c.Abstractions;
-using System.Reflection;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -31,7 +30,7 @@ using Lib9c.DevExtensions;
 using Lib9c.DevExtensions.Model;
 #endif
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     public partial class BlockPolicySource
     {
@@ -58,7 +57,7 @@ namespace Nekoyume.BlockChain.Policy
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            _actionLoader ??= new NCActionLoader();
 
             LoggedActionRenderer =
                 new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
@@ -70,7 +69,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-main deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetPolicy() =>
+        public IBlockPolicy GetPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -80,7 +79,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetInternalPolicy() =>
+        public IBlockPolicy GetInternalPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Internal,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -90,7 +89,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-permanent-test deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetPermanentPolicy() =>
+        public IBlockPolicy GetPermanentPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -101,7 +100,7 @@ namespace Nekoyume.BlockChain.Policy
         /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
         /// except with lower minimum difficulty for faster testing and benchmarking.
         /// </summary>
-        public IBlockPolicy<NCAction> GetTestPolicy() =>
+        public IBlockPolicy GetTestPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -112,7 +111,7 @@ namespace Nekoyume.BlockChain.Policy
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for networks
         /// with default options, without authorized mining and permissioned mining.
         /// </summary>
-        public IBlockPolicy<NCAction> GetDefaultPolicy() =>
+        public IBlockPolicy GetDefaultPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Default,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Default,
@@ -132,7 +131,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <see cref="Transaction{T}"/>s from a single miner that a <see cref="Block{T}"/>
         /// can have.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
-        internal IBlockPolicy<NCAction> GetPolicy(
+        internal IBlockPolicy GetPolicy(
             IVariableSubPolicy<long> maxTransactionsBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
@@ -151,10 +150,10 @@ namespace Nekoyume.BlockChain.Policy
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
 
-            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
+            Func<BlockChain, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
                     blockChain, _actionLoader, transaction);
-            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
+            Func<BlockChain, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
                     maxTransactionsBytesPolicy,
@@ -179,7 +178,7 @@ namespace Nekoyume.BlockChain.Policy
             new IRenderer[] { BlockRenderer, LoggedActionRenderer };
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
-            BlockChain<NCAction> blockChain,
+            BlockChain blockChain,
             IActionLoader actionLoader,
             Transaction transaction)
         {
@@ -207,8 +206,8 @@ namespace Nekoyume.BlockChain.Policy
                 {
                     if (transaction.Actions is { } rawActions &&
                         rawActions.Count == 1 &&
-                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
-                        polyAction.InnerAction is IActivateAccount activate)
+                        actionLoader.LoadAction(index, rawActions.First()) is ActionBase action &&
+                        action is IActivateAccount activate)
                     {
                         return transaction.Nonce == 0 &&
                             blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&

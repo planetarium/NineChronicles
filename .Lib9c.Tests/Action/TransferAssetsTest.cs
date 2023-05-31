@@ -5,13 +5,12 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
-    using System.Numerics;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -372,15 +371,17 @@ namespace Lib9c.Tests.Action
             );
 
             Dictionary plainValue = (Dictionary)action.PlainValue;
+            Dictionary values = (Dictionary)plainValue["values"];
 
-            var recipients = (List)plainValue["recipients"];
+            var recipients = (List)values["recipients"];
             var info = (List)recipients[0];
-            Assert.Equal(_sender, plainValue["sender"].ToAddress());
+            Assert.Equal((Text)"transfer_assets", plainValue["type_id"]);
+            Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, info[0].ToAddress());
             Assert.Equal(_currency * 100, info[1].ToFungibleAssetValue());
             if (!(memo is null))
             {
-                Assert.Equal(memo, plainValue["memo"].ToDotnetString());
+                Assert.Equal(memo, values["memo"].ToDotnetString());
             }
         }
 
@@ -399,7 +400,9 @@ namespace Lib9c.Tests.Action
                 pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text)"memo", memo.Serialize()));
             }
 
-            var plainValue = new Dictionary(pairs);
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_assets")
+                .Add("values", new Dictionary(pairs));
             var action = new TransferAssets();
             action.LoadPlainValue(plainValue);
 
@@ -413,12 +416,14 @@ namespace Lib9c.Tests.Action
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
             var action = new TransferAssets();
-            var plainValue = new Dictionary(new[]
-            {
-                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"recipients", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
-                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
-            });
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_assets")
+                .Add("values", new Dictionary(new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"recipients", List.Empty.Add(List.Empty.Add(_recipient.Serialize()).Add((_currency * 100).Serialize()))),
+                    new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+                }));
 
             Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
         }

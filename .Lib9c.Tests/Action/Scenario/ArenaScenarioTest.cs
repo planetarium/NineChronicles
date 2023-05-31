@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Arena;
