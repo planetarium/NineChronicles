@@ -183,8 +183,7 @@ namespace Nekoyume.BlockChain.Policy
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
             IActionLoader actionLoader,
-            Transaction transaction,
-            long meadStartIndex = MeadConfig.MeadTransferStartIndex)
+            Transaction transaction)
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Count > 0 ? blockChain.Tip.Index + 1: 0;
@@ -205,7 +204,7 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                if (index < meadStartIndex)
+                if (blockChain.GetBalance(MeadConfig.PatronAddress, Currencies.Mead) < 1 * Currencies.Mead)
                 {
                     // Check Activation
                     try
