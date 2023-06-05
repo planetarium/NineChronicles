@@ -98,6 +98,16 @@ namespace Nekoyume.BlockChain
                 return false;
             }
 
+            var deniedTxs = new[]
+            {
+                // CreatePledge Transaction
+                TxId.FromHex("300826da62b595d8cd663dadf04995a7411534d1cdc17dac75ce88754472f774")
+            };
+            if (deniedTxs.Contains(transaction.Id))
+            {
+                return false;
+            }
+
             return _impl.Stage(blockChain, transaction);
         }
 
