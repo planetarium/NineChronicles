@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -27,18 +27,28 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
-        public static string GetBlockToTime(long block, int? secondsPerBlock = null)
+        public static TimeSpan GetBlockToTime(long block, int? secondsPerBlock = null)
         {
             if (block < 0)
             {
-                return string.Empty;
+                return TimeSpan.Zero;
             }
 
             secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
 
             var remainSecond = block * secondsPerBlock;
             var timeSpan = TimeSpan.FromSeconds(remainSecond.Value);
+            return timeSpan;
+        }
 
+        public static string GetBlockToTimeString(long block, int? secondsPerBlock = null)
+        {
+            if (block < 0)
+            {
+                return string.Empty;
+            }
+
+            var timeSpan = GetBlockToTime(block, secondsPerBlock);
             var sb = new StringBuilder();
 
             if (timeSpan.Days > 0)

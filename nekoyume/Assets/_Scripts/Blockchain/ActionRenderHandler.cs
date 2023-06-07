@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
-using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.State;
@@ -45,6 +44,7 @@ using Lib9c.DevExtensions.Action;
 namespace Nekoyume.Blockchain
 {
     using Model;
+    using Nekoyume.Game.LiveAsset;
     using UI.Scroller;
     using UniRx;
 
@@ -1339,6 +1339,12 @@ namespace Nekoyume.Blockchain
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
+                var expectedNotifiedTime =
+                    Util.GetBlockToTime(Mathf.RoundToInt(States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
+
+                var notificationTitle = L10nManager.Localize("PUSH_PROSPERITY_METER_TITLE");
+                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+                PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
 
                 if (!RuneFrontHelper.TryGetRuneData(RuneHelper.DailyRewardRune.Ticker,
                         out var data))

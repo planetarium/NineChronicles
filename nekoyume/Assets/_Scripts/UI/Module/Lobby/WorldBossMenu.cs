@@ -214,7 +214,7 @@ namespace Nekoyume.UI.Module.Lobby
                     offSeason.SetActive(false);
                     timeContainer.SetActive(true);
                     timeBlock.SetTimeBlock($"{row.EndedBlockIndex - currentBlockIndex:#,0}",
-                        Util.GetBlockToTime(row.EndedBlockIndex - currentBlockIndex));
+                        Util.GetBlockToTimeString(row.EndedBlockIndex - currentBlockIndex));
 
                     var avatarAddress = States.Instance.CurrentAvatarState.address;
                     var raiderState = WorldBossStates.GetRaiderState(avatarAddress);
