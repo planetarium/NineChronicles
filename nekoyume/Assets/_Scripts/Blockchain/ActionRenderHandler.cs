@@ -69,6 +69,9 @@ namespace Nekoyume.Blockchain
 
         private ActionRenderer _actionRenderer;
 
+        // approximately 4h
+        private const int NotifiedBlockCount = 1;
+
         private ActionRenderHandler()
         {
         }
@@ -769,6 +772,16 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
+
+                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                if (blockCount >= NotifiedBlockCount)
+                {
+                    var expectedNotifiedTime =
+                        Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
+                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT");
+                    PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
+                }
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -978,6 +991,16 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
+
+                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                if (blockCount >= NotifiedBlockCount)
+                {
+                    var expectedNotifiedTime =
+                        Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
+                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT");
+                    PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
+                }
                 // ~Notify
 
                 var avatarSlotIndex = States.Instance.AvatarStates
@@ -1339,9 +1362,9 @@ namespace Nekoyume.Blockchain
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
+
                 var expectedNotifiedTime =
                     Util.GetBlockToTime(Mathf.RoundToInt(States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
-
                 var notificationTitle = L10nManager.Localize("PUSH_PROSPERITY_METER_TITLE");
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
                 PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);

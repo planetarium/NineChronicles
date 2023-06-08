@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 #if UNITY_ANDROID
+using UnityEngine.Android;
 using Unity.Notifications.Android;
 #endif
 
@@ -20,7 +21,7 @@ namespace Nekoyume
         public const string ChannelId = "NineChroniclesLocal";
 
 #if UNITY_ANDROID
-        private int androidApiLevel;
+        private static int androidApiLevel;
 #endif
 
         static PushNotifier()
@@ -33,12 +34,12 @@ namespace Nekoyume
         }
 
 #if UNITY_ANDROID
-        private void InitializeAndroid()
+        private static void InitializeAndroid()
         {
             var androidInfo = SystemInfo.operatingSystem;
-            Debug.Log("androidInfo: " + androidInfo);
+            Debug.Log("Android info : " + androidInfo);
             androidApiLevel = int.Parse(androidInfo.Substring(androidInfo.IndexOf("-") + 1, 2));
-            Debug.Log("apiLevel: " + androidApiLevel);
+            Debug.Log("Android API Level : " + androidApiLevel);
 
             if (androidApiLevel >= 33 &&
                 !Permission.HasUserAuthorizedPermission("android.permission.POST_NOTIFICATIONS"))
@@ -62,13 +63,17 @@ namespace Nekoyume
 
         public static void Push(string title, string text, TimeSpan timespan)
         {
+            Debug.Log($"FireTime : {DateTime.Now + timespan}");
+
 #if UNITY_ANDROID
+            var fireTime = DateTime.Now + timespan;
+
             var notification = new AndroidNotification()
             {
                 Title = title,
                 Text = text,
-                FireTime = DateTime.Now + timespan,
-                IntentData = $"Title : {title}, Text : {text}, FireToime : {expectedDate}",
+                FireTime = fireTime,
+                IntentData = $"Title : {title}, Text : {text}, FireTime : {fireTime}",
             };
             AndroidNotificationCenter.SendNotification(notification, ChannelId);
 #elif UNITY_IOS
@@ -80,7 +85,7 @@ namespace Nekoyume
 
             var notification = new iOSNotification()
             {
-                Identifier = "_9c_local",
+                Identifier = ChannelId,
                 Title = title,
                 Body = text,
                 Subtitle = title,
