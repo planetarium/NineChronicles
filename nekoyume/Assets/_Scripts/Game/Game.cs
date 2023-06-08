@@ -152,12 +152,12 @@ namespace Nekoyume.Game
             string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
             Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
 #elif UNITY_ANDROID
-            string loadPath = Application.dataPath.Split("/base.apk")[0];
-            loadPath = Path.Combine(loadPath, "lib");
-            loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
-            loadPath = Path.Combine(loadPath, "librocksdb.so");
-            Debug.LogWarning($"native load path = {loadPath}");
-            RocksDbSharp.Native.LoadLibrary(loadPath);
+            // string loadPath = Application.dataPath.Split("/base.apk")[0];
+            // loadPath = Path.Combine(loadPath, "lib");
+            // loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
+            // loadPath = Path.Combine(loadPath, "librocksdb.so");
+            // Debug.LogWarning($"native load path = {loadPath}");
+            // RocksDbSharp.Native.LoadLibrary(loadPath);
 
             bool HasStoragePermission() =>
                 Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
