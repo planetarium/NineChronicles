@@ -57,12 +57,15 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
   - {fileID: 21300000, guid: 5aeff051295524ccd9d27f538ad53788, type: 3}
   - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
+  - {fileID: 21300000, guid: 71e6a8e1cd2476844848e8331d2d346d, type: 3}
   - {fileID: 21300000, guid: f418ac628d270234fbb562ed8e254349, type: 3}
   - {fileID: 21300000, guid: f82f3482f3162ab4f93fd0bc5c2fb95f, type: 3}
   - {fileID: 21300000, guid: 120ee2b2c85ab66478d95777be81fe4e, type: 3}
+  - {fileID: 21300000, guid: 55622513e87f4cc4ea28e807db6e82de, type: 3}
   - {fileID: 21300000, guid: 089159331fd48491ba0f05d9a284b9f1, type: 3}
   - {fileID: 21300000, guid: 842315c383fd94aacba40c31c784a3a2, type: 3}
   - {fileID: 21300000, guid: f62d2c4415a334243a0218c3db3cd69e, type: 3}
+  - {fileID: 21300000, guid: 5df1587441b3c2f4db3f47a850cad9b1, type: 3}
   - {fileID: 21300000, guid: 66dd86555b3c4f34db69870ef9e97223, type: 3}
   - {fileID: 21300000, guid: ef5ce465b5dce7845bdf707d9abd8e11, type: 3}
   - {fileID: 21300000, guid: 3d1d97a5f0bfa8d43b9828c6453122b1, type: 3}
@@ -76,7 +79,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b5e74757ee5904c54a77990610344818, type: 3}
   - {fileID: 21300000, guid: 29f5c5674dc67c149a32414de212dce2, type: 3}
   - {fileID: 21300000, guid: 6b4b56b7c09ea6f488fd15f61bab7a59, type: 3}
+  - {fileID: 21300000, guid: da48fed79d24a3d48a8f2e915134b2a7, type: 3}
   - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
+  - {fileID: 21300000, guid: c314c188804015b4c898421ae9aab970, type: 3}
   - {fileID: 21300000, guid: e368b5d8e378942f9b77267457f38b74, type: 3}
   - {fileID: 21300000, guid: 85deaed82cd21ee4a848cb921b376f0d, type: 3}
   - {fileID: 21300000, guid: 062bcff8bbe031442bb1e3c7b4ca7a33, type: 3}
@@ -86,11 +91,17 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fe36c0b9f6e92fa45b7cb9dea6b7e215, type: 3}
   - {fileID: 21300000, guid: 434a57f964276774897e163780704f27, type: 3}
   - {fileID: 21300000, guid: 5adace8ac60d64a3ba97de48de6307ef, type: 3}
+  - {fileID: 21300000, guid: 87e8311b055baff4399c57995d08f1c9, type: 3}
   - {fileID: 21300000, guid: d794583b3484d694fbb7ee1813ecfbdf, type: 3}
+  - {fileID: 21300000, guid: 5efa607b687e1064a8de28d519ab0404, type: 3}
   - {fileID: 21300000, guid: b66179cb64c0241b3ad6ff165e4fd1fd, type: 3}
+  - {fileID: 21300000, guid: 87e7052c6c109bd4f8d661df10f87627, type: 3}
   - {fileID: 21300000, guid: c9d7094cb42bf4e79bb5a35e5876a498, type: 3}
+  - {fileID: 21300000, guid: 4ff22f6cb3b247c4184e235162d10a70, type: 3}
   - {fileID: 21300000, guid: 7e1e3b9caddbd49e18ebb126cc6eed33, type: 3}
   - {fileID: 21300000, guid: 0820847df079a5541a285462d72bb506, type: 3}
+  - {fileID: 21300000, guid: 5826b2ada90d9f54f84d383aff88f748, type: 3}
+  - {fileID: 21300000, guid: e305eaddaff34984191c8f6d4f5bfefe, type: 3}
   - {fileID: 21300000, guid: c1a996ce58ed7a447a72e1819f80d797, type: 3}
   - {fileID: 21300000, guid: e6f2407f53f03432f867584c025d5345, type: 3}
   - {fileID: 21300000, guid: c959c98f71f36534fb07a1d277d75d21, type: 3}
@@ -100,12 +111,15 @@ SpriteAtlas:
   - UI_icon_login_lock_Login
   - Common_bg_2R
   - UI_Popup_bg_02_Login
+  - Customizing_List_1
   - characterselect_archer_00
   - Button_White
   - bg_character_select_04
+  - Customizing_Hair
   - button_page_02_reverse
   - Common_Gradiant_bg_01
   - characterselect_acolyte_00
+  - Customizing_List_3
   - UI_box_03
   - bg_character_select_02
   - UI_Btn_bg_03
@@ -119,7 +133,9 @@ SpriteAtlas:
   - ui_line_07_Login
   - Guide_QRcode
   - button_Orange_03_Login
+  - Customizing_List_Bg
   - UI_box_01_Login
+  - Customizing_Eyes
   - UI_box_gold_01
   - bg_character_select_03
   - bg_character_select_01
@@ -129,11 +145,17 @@ SpriteAtlas:
   - Icon_Apple
   - bg_character_effect_01
   - UI_box_Inventory_04_Login
+  - Customizing_Ears
   - bg_character_select_05
+  - Common_TabBtn_Select
   - UI_icon_login_lock_check_Login
+  - Customizing_List_2
   - UI_bg_Start_00
+  - Common_TabBtn_Normal
   - UI_Btn_bg_02_Login
   - Icon_Discord
+  - UI_icon_select_02_Login
+  - Customizing_Tail
   - Icon_Google
   - characterselect_warrior_01
   - button_brown_01_Login
