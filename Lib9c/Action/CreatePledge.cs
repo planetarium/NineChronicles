@@ -30,6 +30,10 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousStates;
+            var contractList = List.Empty
+                .Add(PatronAddress.Serialize())
+                .Add(true.Serialize())
+                .Add(Mead.Serialize());
             foreach (var agentAddress in AgentAddresses)
             {
                 var contractAddress = agentAddress.GetPledgeAddress();
@@ -40,13 +44,7 @@ namespace Nekoyume.Action
 
                 states = states
                     .TransferAsset(PatronAddress, agentAddress, Mead * Currencies.Mead)
-                    .SetState(
-                        contractAddress,
-                        List.Empty
-                            .Add(PatronAddress.Serialize())
-                            .Add(true.Serialize())
-                            .Add(Mead.Serialize())
-                    );
+                    .SetState(contractAddress, contractList);
             }
 
             return states;
