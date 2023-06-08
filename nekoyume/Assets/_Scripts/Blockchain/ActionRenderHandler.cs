@@ -780,7 +780,7 @@ namespace Nekoyume.Blockchain
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
                     var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
                     var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
-                        result.itemUsable.GetLocalizedName());
+                        result.itemUsable.GetLocalizedNonColoredName(false));
                     PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
                 }
                 // ~Notify
@@ -1000,7 +1000,7 @@ namespace Nekoyume.Blockchain
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
                     var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_TITLE");
                     var notificationText = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
-                        result.itemUsable.GetLocalizedName());
+                        result.itemUsable.GetLocalizedNonColoredName(false));
                     Debug.LogError(notificationTitle);
                     PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
                 }
