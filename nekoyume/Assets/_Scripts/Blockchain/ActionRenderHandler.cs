@@ -70,7 +70,7 @@ namespace Nekoyume.Blockchain
         private ActionRenderer _actionRenderer;
 
         // approximately 4h
-        private const int NotifiedBlockCount = 1;
+        private const int NotifiedBlockCount = 0;
 
         private ActionRenderHandler()
         {
@@ -779,7 +779,8 @@ namespace Nekoyume.Blockchain
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
                     var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
-                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT");
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
+                        result.itemUsable.GetLocalizedName());
                     PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
                 }
                 // ~Notify
@@ -997,8 +998,10 @@ namespace Nekoyume.Blockchain
                 {
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
-                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
-                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT");
+                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_TITLE");
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
+                        result.itemUsable.GetLocalizedName());
+                    Debug.LogError(notificationTitle);
                     PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
                 }
                 // ~Notify
