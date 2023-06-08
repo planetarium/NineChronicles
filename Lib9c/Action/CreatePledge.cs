@@ -37,11 +37,6 @@ namespace Nekoyume.Action
             foreach (var agentAddress in AgentAddresses)
             {
                 var contractAddress = agentAddress.GetPledgeAddress();
-                if (states.TryGetState(contractAddress, out List _))
-                {
-                    continue;
-                }
-
                 states = states
                     .TransferAsset(PatronAddress, agentAddress, Mead * Currencies.Mead)
                     .SetState(contractAddress, contractList);
