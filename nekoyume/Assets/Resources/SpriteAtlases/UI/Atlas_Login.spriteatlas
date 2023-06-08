@@ -58,6 +58,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 66dd86555b3c4f34db69870ef9e97223, type: 3}
   - {fileID: 21300000, guid: 3d1d97a5f0bfa8d43b9828c6453122b1, type: 3}
   - {fileID: 21300000, guid: 901817d50b6854b4691a49a1b42099de, type: 3}
+  - {fileID: 21300000, guid: c81cbb06f93c7ec4a8f96ed89887a729, type: 3}
   - {fileID: 21300000, guid: 63ba0b6605fe647dab7391f2ab8e1f7d, type: 3}
   - {fileID: 21300000, guid: 4d321c6670b874a1880fb7f419933103, type: 3}
   - {fileID: 21300000, guid: 55e223766e2b1ae4bb89538f8f52f3de, type: 3}
@@ -65,6 +66,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
   - {fileID: 21300000, guid: b5e74757ee5904c54a77990610344818, type: 3}
   - {fileID: 21300000, guid: 29f5c5674dc67c149a32414de212dce2, type: 3}
+  - {fileID: 21300000, guid: 6b4b56b7c09ea6f488fd15f61bab7a59, type: 3}
   - {fileID: 21300000, guid: 76ca7c08578e94117904036584a951d7, type: 3}
   - {fileID: 21300000, guid: e368b5d8e378942f9b77267457f38b74, type: 3}
   - {fileID: 21300000, guid: 42b50f0957a2fd1469d7e41db2cf43c2, type: 3}
@@ -76,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7e1e3b9caddbd49e18ebb126cc6eed33, type: 3}
   - {fileID: 21300000, guid: 0820847df079a5541a285462d72bb506, type: 3}
   - {fileID: 21300000, guid: c1a996ce58ed7a447a72e1819f80d797, type: 3}
+  - {fileID: 21300000, guid: c959c98f71f36534fb07a1d277d75d21, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_Btn_Back_bg
   - UI_icon_login_lock_Login
@@ -85,6 +88,7 @@ SpriteAtlas:
   - UI_box_03
   - UI_Btn_bg_03
   - UI_main_icon_quest_02_Login
+  - UI_popup_title_bg_03_Login
   - button_page_02
   - UI_icon_login_id_Login
   - Guide_RedLine
@@ -92,6 +96,7 @@ SpriteAtlas:
   - button_gray_plus
   - ui_line_07_Login
   - Guide_QRcode
+  - button_Orange_03_Login
   - UI_box_01_Login
   - UI_box_gold_01
   - Icon_Twitter
@@ -103,6 +108,7 @@ SpriteAtlas:
   - UI_Btn_bg_02_Login
   - Icon_Discord
   - Icon_Google
+  - button_brown_01_Login
   m_RenderDataMap: {}
   m_Tag: Atlas_Login
   m_IsVariant: 0
