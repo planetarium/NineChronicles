@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Nekoyume.Pattern;
+using Nekoyume.Services;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -18,6 +19,15 @@ namespace Nekoyume
             UniTask<(bool initialized, InitializationFailureReason? initializationFailureReason)>
             InitializeAsync()
         {
+            if (!InitializeUnityServices.Initialized)
+            {
+                await InitializeUnityServices.InitializeAsync();
+                if (!InitializeUnityServices.Initialized)
+                {
+                    // return (
+                }
+            }
+
             Initialize();
             await UniTask.WaitUntil(() => _initialized || _initializationFailureReason.HasValue);
             return (_initialized, _initializationFailureReason);

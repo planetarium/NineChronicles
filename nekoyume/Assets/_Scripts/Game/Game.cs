@@ -297,6 +297,11 @@ namespace Nekoyume.Game
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
+
+#if !UNITY_ANDROID || UNITY_IOS
+            yield return IAPManager.instance.InitializeAsync().ToCoroutine();
+#endif
+
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize RequestManager and LiveAssetManager
