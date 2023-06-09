@@ -26,6 +26,11 @@ namespace Lib9c
             18,
             minters: null);
 
+        public static readonly Currency Garage = Currency.Uncapped(
+            "GARAGE",
+            18,
+            minters: null);
+
         public static readonly Currency StakeRune = Currency.Legacy(
             "RUNE_GOLDENLEAF",
             0,
@@ -35,6 +40,7 @@ namespace Lib9c
             "RUNE_ADVENTURER",
             0,
             minters: null);
+
 
         public static Currency GetRune(string? ticker) =>
             string.IsNullOrEmpty(ticker)
