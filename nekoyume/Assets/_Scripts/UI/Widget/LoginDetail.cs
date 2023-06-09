@@ -32,18 +32,10 @@ namespace Nekoyume.UI
         public GameObject btnLogin;
         public GameObject btnCreate;
         public TextMeshProUGUI levelAndNameInfo;
-        public GameObject palette;
-        public TextMeshProUGUI paletteHairText;
-        public TextMeshProUGUI paletteLensText;
-        public TextMeshProUGUI paletteEarText;
-        public TextMeshProUGUI paletteTailText;
+
         public TextMeshProUGUI jobDescriptionText;
         public DetailedStatView[] statusRows;
 
-        public Button warriorButton;
-        public Button archerButton;
-        public Button mageButton;
-        public Button acolyteButton;
         public Button backButton;
 
         private CostumeItemSheet _costumeItemSheet;
@@ -240,7 +232,6 @@ namespace Nekoyume.UI
                 player.SetCostumeStat(costumeStatSheet);
             }
 
-            palette.SetActive(_isCreateMode);
             // create new or login
             btnCreate.SetActive(_isCreateMode);
             levelAndNameInfo.gameObject.SetActive(!_isCreateMode);
@@ -288,9 +279,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            archerButton.onClick.AddListener(OnClickNotImplemented);
-            mageButton.onClick.AddListener(OnClickNotImplemented);
-            acolyteButton.onClick.AddListener(OnClickNotImplemented);
         }
 
         private void OnClickNotImplemented()
@@ -305,10 +293,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            warriorButton.gameObject.SetActive(_isCreateMode);
-            archerButton.gameObject.SetActive(_isCreateMode);
-            mageButton.gameObject.SetActive(_isCreateMode);
-            acolyteButton.gameObject.SetActive(_isCreateMode);
             if (_isCreateMode)
             {
                 _index[ItemSubType.HairCostume] = 0;
@@ -320,10 +304,10 @@ namespace Nekoyume.UI
                 var eyeIndex = _costumes[ItemSubType.EyeCostume][_index[ItemSubType.EyeCostume]];
                 var earIndex = _costumes[ItemSubType.EarCostume][_index[ItemSubType.EarCostume]];
                 var tailIndex = _costumes[ItemSubType.TailCostume][_index[ItemSubType.TailCostume]];
-                paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, hairIndex);
-                paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, eyeIndex);
-                paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, earIndex);
-                paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, tailIndex);
+                // paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, hairIndex);
+                // paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, eyeIndex);
+                // paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, earIndex);
+                // paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, tailIndex);
 
                 var player = Game.Game.instance.Stage.SelectedPlayer;
                 if (player is null)
@@ -387,19 +371,19 @@ namespace Nekoyume.UI
             switch (itemSubType)
             {
                 case ItemSubType.HairCostume:
-                    paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, index);
+                    // paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, index);
                     player.UpdateHairByCustomizeIndex(index);
                     break;
                 case ItemSubType.EyeCostume:
-                    paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, index);
+                    // paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, index);
                     player.UpdateEyeByCustomizeIndex(index);
                     break;
                 case ItemSubType.EarCostume:
-                    paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, index);
+                    // paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, index);
                     player.UpdateEarByCustomizeIndex(index);
                     break;
                 case ItemSubType.TailCostume:
-                    paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, index);
+                    // paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, index);
                     player.UpdateTailByCustomizeIndex(index);
                     break;
                 default:
