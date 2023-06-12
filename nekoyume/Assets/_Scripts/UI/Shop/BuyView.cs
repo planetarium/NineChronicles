@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -668,7 +669,10 @@ namespace Nekoyume
 
         protected override IEnumerable<ShopItem> GetSortedModels(List<ShopItem> items)
         {
-            return items;
+            // to check mimir equipment level
+            return _levelLimit.Value
+                ? items.Where(item => Util.IsUsableItem(item.ItemBase))
+                : items;
         }
 
         protected override void UpdateView()
