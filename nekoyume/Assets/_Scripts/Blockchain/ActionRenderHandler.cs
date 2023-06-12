@@ -70,7 +70,10 @@ namespace Nekoyume.Blockchain
         private ActionRenderer _actionRenderer;
 
         // approximately 4h
-        private const int NotifiedBlockCount = 0;
+        private const int WorkshopNotifiedBlockCount = 1200;
+
+        // approximately 1h
+        private const int SeasonNotifiedBlockCount = 300;
 
         private ActionRenderHandler()
         {
@@ -774,7 +777,7 @@ namespace Nekoyume.Blockchain
                     result.itemUsable.TradableId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-                if (blockCount >= NotifiedBlockCount)
+                if (blockCount >= WorkshopNotifiedBlockCount)
                 {
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
@@ -994,7 +997,7 @@ namespace Nekoyume.Blockchain
                     result.itemUsable.TradableId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-                if (blockCount >= NotifiedBlockCount)
+                if (blockCount >= WorkshopNotifiedBlockCount)
                 {
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
