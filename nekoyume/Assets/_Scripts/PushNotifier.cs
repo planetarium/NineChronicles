@@ -77,6 +77,8 @@ namespace Nekoyume
             };
             AndroidNotificationCenter.SendNotification(notification, ChannelId);
 #elif UNITY_IOS
+            // NOTE : This is not tested.
+
             var timeTrigger = new iOSNotificationTimeIntervalTrigger()
             {
                 TimeInterval = timespan,

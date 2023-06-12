@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -79,6 +80,8 @@ namespace Nekoyume.UI
 
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
+        
+        private const string NotifiedArendRoundKey = "ARENA_START_PUSH_ROUND";
 
         protected override void Awake()
         {
@@ -119,6 +122,7 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateScrolls();
             UpdateInfo();
+            NotifyNextSeason();
 
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
@@ -190,6 +194,31 @@ namespace Nekoyume.UI
                     return;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void NotifyNextSeason()
+        {
+            var arenaSheet = TableSheets.Instance.ArenaSheet;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var roundData = arenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            if (roundData.ArenaType == ArenaType.OffSeason &&
+                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
+            {
+                var lastNotifiedRound = PlayerPrefs.GetInt(NotifiedArendRoundKey, 0);
+                if (lastNotifiedRound >= nextRoundData.Round)
+                {
+                    return;
+                }
+
+                var targetBlockIndex = nextRoundData.StartBlockIndex
+                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
+                var timeSpan = Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+
+                var title = L10nManager.Localize("PUSH_ARENA_SEASON_START_TITLE");
+                var content = L10nManager.Localize("PUSH_ARENA_SEASON_START_CONTENT");
+                PushNotifier.Push(title, content, timeSpan);
+                PlayerPrefs.SetInt(NotifiedArendRoundKey, nextRoundData.Round);
             }
         }
 

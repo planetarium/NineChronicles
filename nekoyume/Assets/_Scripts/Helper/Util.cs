@@ -49,6 +49,11 @@ namespace Nekoyume.Helper
             }
 
             var timeSpan = GetBlockToTime(block, secondsPerBlock);
+            return TimespanToString(timeSpan);
+        }
+
+        public static string TimespanToString(TimeSpan timeSpan)
+        {
             var sb = new StringBuilder();
 
             if (timeSpan.Days > 0)
