@@ -114,7 +114,6 @@ namespace Nekoyume
                             Transaction.Create(
                                 index + 1, privateKey, null, new [] { sa }))),
                     privateKey: privateKey,
-                    blockAction: blockAction,
                     timestamp: timestamp);
         }
     }
