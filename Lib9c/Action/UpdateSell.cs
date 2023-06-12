@@ -62,6 +62,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             if (!(states.GetState(Addresses.Market) is null))
             {

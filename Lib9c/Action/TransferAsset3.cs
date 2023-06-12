@@ -98,6 +98,7 @@ namespace Nekoyume.Action
                 return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;

@@ -93,6 +93,7 @@ namespace Nekoyume.Action
                 return context.PreviousStates;
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
 
             return Execute(

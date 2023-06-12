@@ -52,6 +52,7 @@ namespace Nekoyume.Action
                     .SetState(activatedAddress, MarkChanged)
                     .SetState(PendingAddress, MarkChanged);
             }
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
 
             if (!(state.GetState(activatedAddress) is null))

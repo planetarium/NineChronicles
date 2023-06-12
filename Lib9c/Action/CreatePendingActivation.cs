@@ -47,6 +47,7 @@ namespace Nekoyume.Action
                 return context.PreviousStates.SetState(PendingActivation.address, MarkChanged);
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             CheckPermission(context);
 
