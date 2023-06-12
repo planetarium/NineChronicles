@@ -40,6 +40,7 @@ namespace Nekoyume.Action
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             CheckPermission(context);
 

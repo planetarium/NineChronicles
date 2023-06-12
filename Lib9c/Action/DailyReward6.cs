@@ -43,6 +43,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;

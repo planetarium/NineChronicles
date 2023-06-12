@@ -115,6 +115,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;

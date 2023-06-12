@@ -84,6 +84,7 @@ namespace Nekoyume.Action
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             if (Recipients.Count > RecipientsCapacity)
             {

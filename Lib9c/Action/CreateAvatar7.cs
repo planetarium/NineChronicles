@@ -95,6 +95,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
