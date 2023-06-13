@@ -72,9 +72,6 @@ namespace Nekoyume.Blockchain
         // approximately 4h
         private const int WorkshopNotifiedBlockCount = 1200;
 
-        // approximately 1h
-        private const int SeasonNotifiedBlockCount = 300;
-
         private ActionRenderHandler()
         {
         }
