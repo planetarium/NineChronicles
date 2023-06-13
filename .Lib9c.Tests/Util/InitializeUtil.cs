@@ -17,12 +17,14 @@ namespace Lib9c.Tests.Util
     {
         public static (
             TableSheets tableSheets,
-            Address agentAddress,
-            Address avatarAddress,
+            Address agentAddr,
+            Address avatarAddr,
             IAccountStateDelta initialStatesWithAvatarStateV1,
             IAccountStateDelta initialStatesWithAvatarStateV2
             ) InitializeStates(
                 Address? adminAddr = null,
+                Address? agentAddr = null,
+                int avatarIndex = 0,
                 bool isDevEx = false
             )
         {
@@ -57,23 +59,23 @@ namespace Lib9c.Tests.Util
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
-            var agentAddr = new PrivateKey().ToAddress();
-            var avatarAddr = Addresses.GetAvatarAddress(agentAddr, 0);
-            var agentState = new AgentState(agentAddr);
+            agentAddr ??= new PrivateKey().ToAddress();
+            var avatarAddr = Addresses.GetAvatarAddress(agentAddr.Value, avatarIndex);
+            var agentState = new AgentState(agentAddr.Value);
             var avatarState = new AvatarState(
                 avatarAddr,
-                agentAddr,
+                agentAddr.Value,
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 avatarAddr.Derive("ranking_map"));
-            agentState.avatarAddresses.Add(0, avatarAddr);
+            agentState.avatarAddresses.Add(avatarIndex, avatarAddr);
 
             var initialStatesWithAvatarStateV1 = states
-                .SetState(agentAddr, agentState.Serialize())
+                .SetState(agentAddr.Value, agentState.Serialize())
                 .SetState(avatarAddr, avatarState.Serialize());
             var initialStatesWithAvatarStateV2 = states
-                .SetState(agentAddr, agentState.Serialize())
+                .SetState(agentAddr.Value, agentState.Serialize())
                 .SetState(avatarAddr, avatarState.SerializeV2())
                 .SetState(
                     avatarAddr.Derive(SerializeKeys.LegacyInventoryKey),
@@ -87,7 +89,7 @@ namespace Lib9c.Tests.Util
 
             return (
                 tableSheets,
-                agentAddr,
+                agentAddr.Value,
                 avatarAddr,
                 initialStatesWithAvatarStateV1,
                 initialStatesWithAvatarStateV2);
