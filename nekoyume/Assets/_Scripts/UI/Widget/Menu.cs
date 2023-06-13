@@ -115,10 +115,6 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesAtShow = new();
         private GameObject _cachedCharacterTitle;
 
-        private const string NotifiedArendRoundKey = "ARENA_START_PUSH_ROUND";
-        private const string NotifiedArendChampionshipKey = "ARENA_START_PUSH_CHAMPIONSHIPID";
-        private const string NotifiedWorldBossSeasonKey = "WORLDBOSS_START_PUSH_SEASON";
-
         protected override void Awake()
         {
             base.Awake();
@@ -674,59 +670,6 @@ namespace Nekoyume.UI
             var player = Game.Game.instance.Stage.GetPlayer();
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
-        }
-
-        private void ReservePushNotifications()
-        {
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            PushArena(currentBlockIndex);
-            PushWorldboss(currentBlockIndex);
-        }
-
-        private void PushArena(long currentBlockIndex)
-        {
-            var arenaSheet = TableSheets.Instance.ArenaSheet;
-            var roundData = arenaSheet.GetRoundByBlockIndex(currentBlockIndex);
-            if (roundData.ArenaType == ArenaType.OffSeason &&
-                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
-            {
-                var lastNotifiedChampionshipId = PlayerPrefs.GetInt(NotifiedArendChampionshipKey, 0);
-                var lastNotifiedRound = PlayerPrefs.GetInt(NotifiedArendRoundKey, 0);
-                if (lastNotifiedChampionshipId == nextRoundData.ChampionshipId &&
-                    lastNotifiedRound == nextRoundData.Round)
-                {
-                    return;
-                }
-
-                var targetBlockIndex = nextRoundData.StartBlockIndex
-                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
-                var timeSpan = Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
-
-                var title = L10nManager.Localize("PUSH_ARENA_SEASON_START_TITLE");
-                var content = L10nManager.Localize("PUSH_ARENA_SEASON_START_CONTENT");
-                PushNotifier.Push(title, content, timeSpan);
-                PlayerPrefs.SetInt(NotifiedArendRoundKey, nextRoundData.Round);
-                PlayerPrefs.SetInt(NotifiedArendChampionshipKey, nextRoundData.ChampionshipId);
-            }
-        }
-
-        private void PushWorldboss(long currentBlockIndex)
-        {
-            var lastNotifiedSeason = PlayerPrefs.GetInt(NotifiedWorldBossSeasonKey, 0);
-            if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var row) ||
-                lastNotifiedSeason == row.Id)
-            {
-                return;
-            }
-
-            var targetBlockIndex = row.StartedBlockIndex
-                + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
-            var timeSpan = Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
-
-            var title = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_TITLE");
-            var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT");
-            PushNotifier.Push(title, content, timeSpan);
-            PlayerPrefs.SetInt(NotifiedWorldBossSeasonKey, row.Id);
         }
 
 #if UNITY_EDITOR

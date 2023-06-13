@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -60,8 +61,13 @@ namespace Nekoyume
             }
         }
 #endif
-
-        public static void Push(string title, string text, TimeSpan timespan)
+        /// <summary>
+        /// Reserves push notification. (Works in Android/iOS)
+        /// <returns>
+        /// Notification identifier.
+        /// This will be parsed as int in Android.
+        /// </returns>
+        public static string Push(string title, string text, TimeSpan timespan)
         {
             Debug.Log($"FireTime : {DateTime.Now + timespan}");
 
@@ -75,7 +81,9 @@ namespace Nekoyume
                 FireTime = fireTime,
                 IntentData = $"Title : {title}, Text : {text}, FireTime : {fireTime}",
             };
-            AndroidNotificationCenter.SendNotification(notification, ChannelId);
+
+            var identifier = AndroidNotificationCenter.SendNotification(notification, ChannelId);
+            return identifier.ToString();
 #elif UNITY_IOS
             // NOTE : This is not tested.
 
@@ -84,10 +92,11 @@ namespace Nekoyume
                 TimeInterval = timespan,
                 Repeats = false
             };
-
+            
+            var identifier = Random.Range(int.MinValue, int.MaxValue).ToString();
             var notification = new iOSNotification()
             {
-                Identifier = ChannelId,
+                Identifier = identifier,
                 Title = title,
                 Body = text,
                 Subtitle = title,
@@ -97,7 +106,21 @@ namespace Nekoyume
                 Trigger = timeTrigger,
             };
 
-            iOSNotificationCenter.ScheduleNotification(notification);      
+            iOSNotificationCenter.ScheduleNotification(notification);
+            return identifier;
+#else
+            return default;
+#endif
+        }
+
+        public static void CancelReservation(string identifier)
+        {
+#if UNITY_ANDROID
+            AndroidNotificationCenter.CancelNotification(int.Parse(identifier));
+#elif UNITY_IOS
+            iOSNotificationCenter.RemoveScheduledNotification(identifier);
+#else
+
 #endif
         }
     }

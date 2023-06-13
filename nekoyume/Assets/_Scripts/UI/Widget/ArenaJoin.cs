@@ -120,7 +120,6 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateScrolls();
             UpdateInfo();
-            NotifyNextSeason();
 
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())

@@ -39,6 +39,7 @@ using UnityEngine.Android;  // Don't remove this line. It's for another platform
 namespace Nekoyume.Game
 {
     using GraphQL;
+    using Nekoyume.Model.EnumType;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -129,6 +130,12 @@ namespace Nekoyume.Game
 
         private Thread headlessThread;
         private Thread marketThread;
+
+        private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
+        private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
+        private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
+        private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
+        private const int TicketPushBlockCountThreshold = 300;
 
         #region Mono & Initialization
 
@@ -343,6 +350,7 @@ namespace Nekoyume.Game
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
+            ReservePushNotifications();
         }
 
         protected override void OnDestroy()
@@ -994,6 +1002,115 @@ namespace Nekoyume.Game
         public void ResumeTimeline()
         {
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        }
+
+        private void ReservePushNotifications()
+        {
+            var currentBlockIndex = Agent.BlockIndex;
+            ReserveArenaSeasonPush(currentBlockIndex);
+            ReserveWorldbossSeasonPush(currentBlockIndex);
+            ReserveArenaTicketPush(currentBlockIndex);
+            ReserveWorldbossTicketPush(currentBlockIndex);
+        }
+
+        private void ReserveArenaSeasonPush(long currentBlockIndex)
+        {
+            var arenaSheet = TableSheets.Instance.ArenaSheet;
+            var roundData = arenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            if (roundData.ArenaType == ArenaType.OffSeason &&
+                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
+            {
+                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, default);
+                if (prevPushIdentifier != default)
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                }
+
+                var targetBlockIndex = nextRoundData.StartBlockIndex
+                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
+                var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+
+                var title = L10nManager.Localize("PUSH_ARENA_SEASON_START_TITLE");
+                var content = L10nManager.Localize("PUSH_ARENA_SEASON_START_CONTENT");
+                var identifier = PushNotifier.Push(title, content, timeSpan);
+                PlayerPrefs.SetString(ArenaSeasonPushIdentifierKey, identifier);
+            }
+        }
+
+        private void ReserveWorldbossSeasonPush(long currentBlockIndex)
+        {
+            if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var row))
+            {
+                return;
+            }
+
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, default);
+            if (prevPushIdentifier != default)
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+            }
+
+            var targetBlockIndex = row.StartedBlockIndex
+                + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
+            var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+
+            var title = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_TITLE");
+            var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT");
+            var identifier = PushNotifier.Push(title, content, timeSpan);
+            PlayerPrefs.SetString(WorldbossSeasonPushIdentifierKey, identifier);
+        }
+
+        private void ReserveArenaTicketPush(long currentBlockIndex)
+        {
+            var currentRoundData = TableSheets.Instance.ArenaSheet
+                .GetRoundByBlockIndex(currentBlockIndex);
+            var interval = States.Instance.GameConfigState.DailyArenaInterval;
+            var remainingBlockCount = interval - ((currentBlockIndex - currentRoundData.StartBlockIndex) % interval);
+            if (remainingBlockCount < TicketPushBlockCountThreshold)
+            {
+                return;
+            }
+
+            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, default);
+            if (prevPushIdentifier != default)
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+            }
+
+            var timeSpan = Helper.Util.GetBlockToTime(
+                remainingBlockCount - TicketPushBlockCountThreshold);
+            var title = L10nManager.Localize("PUSH_ARENA_TICKET_TITLE");
+            var content = L10nManager.Localize("PUSH_ARENA_TICKET_CONTENT");
+            var identifier = PushNotifier.Push(title, content, timeSpan);
+            PlayerPrefs.SetString(ArenaTicketPushIdentifierKey, identifier);
+        }
+
+        private void ReserveWorldbossTicketPush(long currentBlockIndex)
+        {
+            if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+            {
+                return;
+            }
+
+            var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            var remainingBlockCount = interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
+            if (remainingBlockCount < TicketPushBlockCountThreshold)
+            {
+                return;
+            }
+
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, default);
+            if (prevPushIdentifier != default)
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+            }
+
+            var timeSpan = Helper.Util.GetBlockToTime(
+                remainingBlockCount - TicketPushBlockCountThreshold);
+            var title = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_TITLE");
+            var content = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_CONTENT");
+            var identifier = PushNotifier.Push(title, content, timeSpan);
+            PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
         private void InitializeAnalyzer()
