@@ -54,6 +54,7 @@ namespace Nekoyume.Model.State
         public const long RewardInterval = 50400;
         public const long LockupInterval = 50400 * 4;
         public const long StakeRewardSheetV2Index = 6_700_000L;
+        public const long CurrencyAsRewardStartIndex = 6_910_000L;
 
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
@@ -154,7 +155,27 @@ namespace Nekoyume.Model.State
             return CalculateStep(blockIndex, startedBlockIndex, out v1Step, out v2Step);
         }
 
-        private int CalculateStep(long blockIndex, long startedBlockIndex, out int v1Step,
+        public int CalculateAccumulatedCurrencyRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
+        {
+            var targetBlockIndex = Math.Max(
+                Math.Max(StartedBlockIndex, ReceivedBlockIndex),
+                CurrencyAsRewardStartIndex);
+            v1Step = 0;
+            v2Step = (int)Math.DivRem(
+                blockIndex - targetBlockIndex,
+                RewardInterval,
+                out _
+            );
+            return v1Step + v2Step;
+        }
+
+        private int CalculateStep(
+            long blockIndex,
+            long startedBlockIndex,
+            out int v1Step,
             out int v2Step)
         {
             int totalStep = (int)Math.DivRem(
@@ -166,6 +187,10 @@ namespace Nekoyume.Model.State
             int previousStep = 0;
             if (ReceivedBlockIndex > 0)
             {
+                // NOTE: The previousStep can be negative
+                // if startedBlockIndex is greater than ReceivedBlockIndex property.
+                // The startedBlockIndex is argument of this method and
+                // it is not same as StartedBlockIndex property.
                 previousStep = (int)Math.DivRem(
                     ReceivedBlockIndex - startedBlockIndex,
                     RewardInterval,
