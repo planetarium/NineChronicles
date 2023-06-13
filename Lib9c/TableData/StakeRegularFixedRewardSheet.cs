@@ -9,8 +9,15 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.TableData
 {
+    /// <summary>
+    /// This sheet is used for setting the regular rewards for staking.
+    /// The difference between this sheet and <see cref="StakeRegularRewardSheet"/> is that
+    /// the <see cref="RewardInfo"/> of this sheet has a fixed count of reward.
+    /// </summary>
     [Serializable]
-    public class StakeRegularFixedRewardSheet : Sheet<int, StakeRegularFixedRewardSheet.Row>, IStakeRewardSheet
+    public class StakeRegularFixedRewardSheet :
+        Sheet<int, StakeRegularFixedRewardSheet.Row>,
+        IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
