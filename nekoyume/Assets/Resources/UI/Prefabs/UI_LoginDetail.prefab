@@ -2596,6 +2596,7 @@ MonoBehaviour:
   - {fileID: 7927548624426541125}
   loginDetailCostume: {fileID: 7697090954734313182}
   backButton: {fileID: 624408722794177572}
+  backButtonText: {fileID: 9205639236754350496}
 --- !u!114 &7697090954734313182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3517,7 +3518,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: UI_CREATE_CHARACTER
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

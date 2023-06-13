@@ -33,6 +33,7 @@ namespace Nekoyume.UI
         public LoginDetailCostume loginDetailCostume;
 
         public Button backButton;
+        public TextMeshProUGUI backButtonText;
 
         private readonly HashSet<StatType> visibleStats = new()
         {
@@ -191,7 +192,7 @@ namespace Nekoyume.UI
                 levelAndNameInfo.text = $"LV. {level} {name}";
             }
 
-            backButtonText.text = _isCreateMode ? L10nManager.Localize("UI_CREATE_CHARACTER") : "";
+            backButtonText.text = _isCreateMode ? L10nManager.Localize("UI_CHARACTER_CREATE") : "";
             SetInformation(player);
 
             if (_isCreateMode)
