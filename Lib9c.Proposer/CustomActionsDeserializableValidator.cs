@@ -4,7 +4,7 @@ using Bencodex.Types;
 using Libplanet.Action.Loader;
 using Libplanet.Tx;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class CustomActionsDeserializableValidator
     {

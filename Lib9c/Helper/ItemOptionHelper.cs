@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -16,8 +16,8 @@ namespace Nekoyume.Helper
         public readonly List<(StatType type, int value, int count)> StatOptions
             = new List<(StatType type, int value, int count)>();
 
-        public readonly List<(SkillSheet.Row skillRow, int power, int chance)> SkillOptions
-            = new List<(SkillSheet.Row skillRow, int power, int chance)>();
+        public readonly List<(SkillSheet.Row skillRow, int power, int chance, int statPowerRatio, StatType refStatType)> SkillOptions
+            = new List<(SkillSheet.Row skillRow, int power, int chance, int statPowerRatio, StatType refStatType)>();
 
         public readonly int CP;
 
@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
 
             MainStat = (
                 equipment.UniqueStatType,
-                equipment.StatsMap.GetStat(equipment.UniqueStatType, true),
+                equipment.StatsMap.GetBaseStat(equipment.UniqueStatType),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);
@@ -52,7 +52,9 @@ namespace Nekoyume.Helper
                 SkillOptions.Add((
                     skill.SkillRow,
                     skill.Power,
-                    skill.Chance));
+                    skill.Chance,
+                    skill.StatPowerRatio,
+                    skill.ReferencedStatType));
             }
 
             CP = CPHelper.GetCP(equipment);

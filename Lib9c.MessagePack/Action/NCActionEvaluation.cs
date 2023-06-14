@@ -1,15 +1,12 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Bencodex.Types;
 using Lib9c.Formatters;
 using Lib9c.Renderers;
 using Libplanet;
-using Libplanet.Action;
+using Libplanet.State;
 using MessagePack;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.Action
 {
@@ -19,7 +16,7 @@ namespace Nekoyume.Action
 #pragma warning disable MsgPack003
         [Key(0)]
         [MessagePackFormatter(typeof(NCActionFormatter))]
-        public NCAction? Action { get; set; }
+        public ActionBase? Action { get; set; }
 
         [Key(1)]
         [MessagePackFormatter(typeof(AddressFormatter))]
@@ -50,7 +47,7 @@ namespace Nekoyume.Action
 
         [SerializationConstructor]
         public NCActionEvaluation(
-            NCAction? action,
+            ActionBase? action,
             Address signer,
             long blockIndex,
             IAccountStateDelta outputStates,
@@ -74,7 +71,7 @@ namespace Nekoyume.Action
         {
             return new ActionEvaluation<ActionBase>
             {
-                Action =  Action is null ? new RewardGold() : Action.InnerAction,
+                Action =  Action is null ? new RewardGold() : Action,
                 Signer = Signer,
                 BlockIndex = BlockIndex,
                 OutputStates = OutputStates,

@@ -64,7 +64,7 @@ namespace Nekoyume.Battle
             player.Simulator = this;
             Player = player;
             Player.Use(foods);
-            Player.Stats.EqualizeCurrentHPWithHP();
+            Player.ResetCurrentHP();
         }
 
         public static List<ItemBase> SetReward(

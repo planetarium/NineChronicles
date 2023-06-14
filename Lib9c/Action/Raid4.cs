@@ -7,6 +7,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V200001ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200010ObsoleteIndex)]
     [ActionType("raid4")]
     public class Raid4 : GameAction, IRaidV2
     {
@@ -45,6 +46,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             if (context.Rehearsal)
             {
@@ -210,7 +212,7 @@ namespace Nekoyume.Action
             }
 
             // Simulate.
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV2(
                 row.BossId,
                 context.Random,
                 avatarState,

@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -10,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
@@ -1032,14 +1032,14 @@ namespace Lib9c.Tests.Action
         [InlineData(true, false, false)]
         [InlineData(true, true, false)]
         [InlineData(true, true, true)]
-        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
+        public void CheckCrystalRandomSkillState(bool forceClear, bool skillStateExist, bool hasCrystalSkill)
         {
             const int worldId = 1;
             const int stageId = 5;
             const int clearedStageId = 4;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = clear ? 400 : 3;
+            previousAvatarState.level = forceClear ? 400 : 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1113,8 +1113,8 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash15
             {
-                costumes = clear ? costumes : new List<Guid>(),
-                equipments = clear
+                costumes = forceClear ? costumes : new List<Guid>(),
+                equipments = forceClear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
                 foods = new List<Guid>(),
@@ -1153,7 +1153,7 @@ namespace Lib9c.Tests.Action
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
 
-            if (clear)
+            if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
                 Assert.Equal(0, nextSkillState.StarCount);

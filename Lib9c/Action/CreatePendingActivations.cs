@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -25,9 +26,11 @@ namespace Nekoyume.Action
             PendingActivations.Select(t =>
                 new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()));
 
-        public override IValue PlainValue
-            => PendingActivations.Select(t => new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()))
-            .Serialize();
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "create_pending_activations")
+            .Add("values", PendingActivations
+                .Select(t => new List(new Binary[] { t.Address, t.Nonce, t.PublicKey }.Cast<IValue>()))
+                .Serialize());
 
         public CreatePendingActivations()
         {
@@ -40,6 +43,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             CheckPermission(context);
             var state = context.PreviousStates;
@@ -63,7 +67,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            PendingActivations = ((List)plainValue)
+            PendingActivations = ((List)((Dictionary)plainValue)["values"])
                 .Cast<List>()
                 .Select(v => (((Binary)v[0]).ToByteArray(), ((Binary)v[1]).ToByteArray(), ((Binary)v[2]).ToByteArray()))
                 .ToImmutableList();

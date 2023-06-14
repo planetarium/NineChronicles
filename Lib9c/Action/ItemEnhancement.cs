@@ -10,6 +10,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -300,7 +301,7 @@ namespace Nekoyume.Action
             FungibleAssetValue crystal = 0 * CrystalCalculator.CRYSTAL;
             if (equipmentResult != EnhancementResult.Fail)
             {
-                enhancementEquipment.LevelUpV2(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
+                enhancementEquipment.LevelUp(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
             else
             {

@@ -38,6 +38,23 @@ namespace Nekoyume.Model
         public Enemy(
             CharacterBase player,
             CharacterStats stat,
+            CharacterSheet.Row rowData,
+            ElementalType elementalType)
+            : base(
+                player.Simulator,
+                stat,
+                rowData.Id,
+                elementalType,
+                rowData)
+        {
+            _stageSimulator = (IStageSimulator)player.Simulator;
+            Targets.Add(player);
+            PostConstruction();
+        }
+
+        public Enemy(
+            CharacterBase player,
+            CharacterStats stat,
             int characterId,
             ElementalType elementalType)
             : base(
@@ -87,7 +104,11 @@ namespace Nekoyume.Model
                 .ToList();
             foreach (var skillRow in enemySkills)
             {
-                var skill = SkillFactory.Get(skillRow, dmg, 100);
+                var isBuff =
+                    skillRow.SkillType == SkillType.Buff ||
+                    skillRow.SkillType == SkillType.Debuff;
+
+                var skill = SkillFactory.GetV1(skillRow, !isBuff ? dmg : 0, 100);
                 Skills.Add(skill);
             }
         }

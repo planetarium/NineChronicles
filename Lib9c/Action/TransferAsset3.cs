@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Lib9c.Abstractions;
+using Libplanet.State;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Serilog;
@@ -86,12 +87,15 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", "transfer_asset3")
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(4);
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
@@ -152,7 +156,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();

@@ -26,12 +26,12 @@ namespace Lib9c.Tests.Model
             {
                 var skillId = skillIds[index];
                 var skillRow = _tableSheets.SkillSheet[skillId];
-                var skill = SkillFactory.Get(skillRow, 1, index + 1);
+                var skill = SkillFactory.GetV1(skillRow, 1, index + 1);
                 itemUsable.Skills.Add(skill);
 
                 var buffId = buffIds[index];
                 var buffRow = _tableSheets.SkillSheet[buffId];
-                var buff = (BuffSkill)SkillFactory.Get(buffRow, 1, index + 1);
+                var buff = (BuffSkill)SkillFactory.GetV1(buffRow, 1, index + 1);
                 itemUsable.BuffSkills.Add(buff);
             }
 

@@ -6,8 +6,8 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash20")]
+    [ActionType("hack_and_slash21")]
     public class HackAndSlash : GameAction, IHackAndSlashV10
     {
         public const int UsableApStoneCount = 10;
@@ -375,7 +375,7 @@ namespace Nekoyume.Action
             CrystalRandomSkillState skillState = null;
             if (isNotClearedStage)
             {
-                // It has state, get CrystalRandomSkillState. If not, newly make.
+                // If state exists, get CrystalRandomSkillState. If not, create new state.
                 skillState = states.TryGetState<List>(skillStateAddress, out var serialized)
                     ? new CrystalRandomSkillState(skillStateAddress, serialized)
                     : new CrystalRandomSkillState(skillStateAddress, StageId);

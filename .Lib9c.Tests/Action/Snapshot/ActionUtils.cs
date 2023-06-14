@@ -14,8 +14,9 @@ namespace Lib9c.Tests.Action.Snapshot
             Type actionType = typeof(T);
             return actionType.IsDefined(attrType) &&
                 ActionTypeAttribute.ValueOf(actionType) is { } tid
-                    ? tid
-                    : throw new MissingActionTypeException("The action type", actionType);
+                ? tid
+                : throw new ArgumentException(
+                    $"The action type attribute is missing for {typeof(T)}.");
         }
     }
 }

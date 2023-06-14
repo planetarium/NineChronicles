@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -598,7 +599,7 @@ namespace Lib9c.Tests.Action
                         _tableSheets.EnhancementCostSheetV2,
                         out var costRow));
                     var equipmentResult = ItemEnhancement9.GetEnhancementResult(costRow, random);
-                    equipment.LevelUpV2(
+                    equipment.LevelUp(
                         random,
                         costRow,
                         equipmentResult == ItemEnhancement9.EnhancementResult.GreatSuccess);
@@ -623,7 +624,7 @@ namespace Lib9c.Tests.Action
                         _tableSheets.EnhancementCostSheetV2,
                         out var costRow));
                     var equipmentResult = ItemEnhancement10.GetEnhancementResult(costRow, random);
-                    equipment.LevelUpV2(
+                    equipment.LevelUp(
                         random,
                         costRow,
                         equipmentResult == ItemEnhancement10.EnhancementResult.GreatSuccess);
@@ -648,7 +649,7 @@ namespace Lib9c.Tests.Action
                         _tableSheets.EnhancementCostSheetV2,
                         out var costRow));
                     var equipmentResult = ItemEnhancement.GetEnhancementResult(costRow, random);
-                    equipment.LevelUpV2(
+                    equipment.LevelUp(
                         random,
                         costRow,
                         equipmentResult == ItemEnhancement.EnhancementResult.GreatSuccess);

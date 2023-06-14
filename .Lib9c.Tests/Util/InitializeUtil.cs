@@ -3,9 +3,9 @@ namespace Lib9c.Tests.Util
     using System.Collections.Immutable;
     using System.IO;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;

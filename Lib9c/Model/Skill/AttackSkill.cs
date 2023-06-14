@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -10,7 +11,12 @@ namespace Nekoyume.Model.Skill
     [Serializable]
     public abstract class AttackSkill : Skill
     {
-        protected AttackSkill(SkillSheet.Row skillRow, int power, int chance) : base(skillRow, power, chance)
+        protected AttackSkill(
+            SkillSheet.Row skillRow,
+            int power,
+            int chance,
+            int statPowerRatio,
+            StatType referencedStatType) : base(skillRow, power, chance, statPowerRatio, referencedStatType)
         {
         }
 
@@ -28,7 +34,13 @@ namespace Nekoyume.Model.Skill
             var infos = new List<BattleStatus.Skill.SkillInfo>();
             var targets = SkillRow.SkillTargetType.GetTarget(caster).ToList();
             var elementalType = SkillRow.ElementalType;
-            var totalDamage = caster.ATK + Power;
+
+            // Apply stat power ratio
+            var powerMultiplier = StatPowerRatio / 10000m;
+            var statAdditionalPower = ReferencedStatType != StatType.NONE ?
+                (int)(caster.Stats.GetStat(ReferencedStatType) * powerMultiplier) : default;
+
+            var totalDamage = caster.ATK + Power + statAdditionalPower;
             var multipliers = GetMultiplier(SkillRow.HitCount, 1m);
             for (var i = 0; i < SkillRow.HitCount; i++)
             {
@@ -42,7 +54,9 @@ namespace Nekoyume.Model.Skill
                     if (!isNormalAttack ||
                         target.IsHit(caster))
                     {
-                        damage = totalDamage - target.DEF;
+                        // Apply armor penetration and DEF.
+                        var finalDEF = Math.Clamp(target.DEF - caster.ArmorPenetration, 0, int.MaxValue);
+                        damage = totalDamage - finalDEF;
                         // Apply multiple hits
                         damage = (int) (damage * multiplier);
                         // Apply damage reduction

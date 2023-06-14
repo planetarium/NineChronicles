@@ -6,9 +6,9 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Consensus;
+    using Libplanet.State;
 
     public class State : IAccountStateDelta, IValidatorSupportStateDelta
     {
@@ -42,6 +42,11 @@ namespace Lib9c.Tests.Action
                 g => g.Key,
                 g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
             );
+
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+        {
+            get;
+        }
 
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
             _totalSupplies.Keys.ToImmutableHashSet();

@@ -6,10 +6,10 @@ namespace Lib9c.Tests.Action
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Battle;
     using Nekoyume.Helper;
-    using Nekoyume.Model.Item;
     using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
     using Xunit;

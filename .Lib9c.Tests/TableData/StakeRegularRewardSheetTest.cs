@@ -3,6 +3,7 @@ namespace Lib9c.Tests.TableData
     using System;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.State;
     using Nekoyume.Extensions;
     using Nekoyume.TableData;
     using Xunit;

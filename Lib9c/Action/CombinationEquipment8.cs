@@ -7,7 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
-
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -61,6 +61,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
@@ -360,8 +361,8 @@ namespace Nekoyume.Action
 
                 if (optionRow.StatType != StatType.NONE)
                 {
-                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                    var stat = CombinationEquipment5.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                     equipment.Update(equipment.RequiredBlockIndex + optionInfo.RequiredBlockIndex);
                     equipment.optionCountFromCombination++;
                     agentState.unlockedOptions.Add(optionRow.Id);

@@ -7,6 +7,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Libplanet.Assets;
 using Libplanet.Consensus;
 
@@ -28,6 +29,9 @@ namespace Lib9c.Formatters
                 g => g.Key,
                 g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
             );
+
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
+            new Dictionary<Address, IImmutableSet<Currency>>().ToImmutableDictionary();
 #pragma warning restore LAA1002
 
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
@@ -116,7 +120,7 @@ namespace Lib9c.Formatters
                 return FungibleAssetValue.FromRawValue(currency, totalSupplyValue);
             }
 
-            return currency * 0; 
+            return currency * 0;
         }
 
         public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)

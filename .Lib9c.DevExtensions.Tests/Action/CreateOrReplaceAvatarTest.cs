@@ -7,9 +7,9 @@ using Bencodex.Types;
 using Lib9c.DevExtensions.Action;
 using Lib9c.Tests.Action;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
@@ -506,9 +506,9 @@ namespace Lib9c.DevExtensions.Tests.Action
                 foreach (var statOption in statOptions)
                 {
                     Assert.Contains(
-                        equipment.StatsMap.GetAdditionalStats(),
-                        stat => stat.StatType == statOption.Key &&
-                                stat.AdditionalValue == statOption.Value);
+                        equipment.StatsMap.GetAdditionalStats(false),
+                        stat => stat.statType == statOption.Key &&
+                                stat.additionalValue == statOption.Value);
                 }
 
                 var skillOptions = options

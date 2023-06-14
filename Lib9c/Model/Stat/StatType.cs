@@ -55,6 +55,16 @@ namespace Nekoyume.Model.Stat
         /// Crit Damage (Permyriad)
         /// </summary>
         CDMG,
+
+        /// <summary>
+        /// Armor penetration
+        /// </summary>
+        ArmorPenetration,
+
+        /// <summary>
+        /// Apply {Thorn} damage to the attacker when an attack is attempted.
+        /// </summary>
+        Thorn,
     }
 
     [Serializable]

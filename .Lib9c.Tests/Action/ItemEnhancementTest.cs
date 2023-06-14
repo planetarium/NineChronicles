@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
@@ -216,7 +217,7 @@ namespace Lib9c.Tests.Action
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
+                    Assert.InRange(resultEquipment.StatsMap.ATK, baseMinAtk + extraMinAtk, baseMaxAtk + extraMaxAtk + 1);
                     break;
                 case ItemEnhancement.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
