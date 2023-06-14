@@ -64,7 +64,7 @@ namespace Nekoyume.Action
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
-            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
+            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewards(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);

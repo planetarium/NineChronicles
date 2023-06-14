@@ -116,7 +116,7 @@ namespace Nekoyume.Model.State
         {
             if (blockIndex >= ActionObsoleteConfig.V100290ObsoleteIndex)
             {
-                return CalculateAccumulatedRewards(blockIndex, out v1Step, out v2Step) > 0;
+                return CalculateAccumulatedItemRewards(blockIndex, out v1Step, out v2Step) > 0;
             }
 
             v1Step = 0;
@@ -134,12 +134,12 @@ namespace Nekoyume.Model.State
             ReceivedBlockIndex = blockIndex;
         }
 
-        public int CalculateAccumulatedRewards(long blockIndex)
+        public int CalculateAccumulatedItemRewards(long blockIndex)
         {
-            return CalculateAccumulatedRewards(blockIndex, out _, out _);
+            return CalculateAccumulatedItemRewards(blockIndex, out _, out _);
         }
 
-        public int CalculateAccumulatedRewards(long blockIndex, out int v1Step, out int v2Step)
+        public int CalculateAccumulatedItemRewards(long blockIndex, out int v1Step, out int v2Step)
         {
             return CalculateStep(blockIndex, StartedBlockIndex, out v1Step, out v2Step);
         }

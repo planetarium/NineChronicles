@@ -110,7 +110,7 @@ namespace Nekoyume.Action
             ref AvatarState avatarState,
             ItemSheet itemSheet,
             FungibleAssetValue stakedAmount,
-            int rewardStep,
+            int itemRewardStep,
             int runeRewardStep,
             int currencyRewardStep,
             List<StakeRegularFixedRewardSheet.RewardInfo> fixedReward,
@@ -135,7 +135,7 @@ namespace Nekoyume.Action
                         ItemBase item = row is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
                             : ItemFactory.CreateItem(row, context.Random);
-                        avatarState.inventory.AddItem(item, (int)quantity * rewardStep);
+                        avatarState.inventory.AddItem(item, (int)quantity * itemRewardStep);
                         break;
                     case StakeRegularRewardSheet.StakeRewardType.Rune:
                         var runeReward = runeRewardStep *
@@ -178,7 +178,7 @@ namespace Nekoyume.Action
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
                     : ItemFactory.CreateItem(row, context.Random);
-                avatarState.inventory.AddItem(item, reward.Count * rewardStep);
+                avatarState.inventory.AddItem(item, reward.Count * itemRewardStep);
             }
 
             return states;
@@ -241,10 +241,10 @@ namespace Nekoyume.Action
             var level =
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var itemSheet = sheets.GetItemSheet();
-            stakeState.CalculateAccumulatedRewards(
+            stakeState.CalculateAccumulatedItemRewards(
                 context.BlockIndex,
-                out var v1Step,
-                out var v2Step);
+                out var itemV1Step,
+                out var itemV2Step);
             stakeState.CalculateAccumulatedRuneRewards(
                 context.BlockIndex,
                 out var runeV1Step,
@@ -253,7 +253,7 @@ namespace Nekoyume.Action
                 context.BlockIndex,
                 out var currencyV1Step,
                 out var currencyV2Step);
-            if (v1Step > 0)
+            if (itemV1Step > 0)
             {
                 var v1Level = Math.Min(level, V1.MaxLevel);
                 var regularFixedSheetV1Row = (StakeRegularFixedRewardSheet)_stakeRewardHistoryDict[
@@ -268,14 +268,14 @@ namespace Nekoyume.Action
                     ref avatarState,
                     itemSheet,
                     stakedAmount,
-                    v1Step,
+                    itemV1Step,
                     runeV1Step,
                     currencyV1Step,
                     fixedRewardV1,
                     regularRewardV1);
             }
 
-            if (v2Step > 0)
+            if (itemV2Step > 0)
             {
                 var regularFixedReward =
                     states.TryGetSheet<StakeRegularFixedRewardSheet>(out var fixedRewardSheet)
@@ -288,7 +288,7 @@ namespace Nekoyume.Action
                     ref avatarState,
                     itemSheet,
                     stakedAmount,
-                    v2Step,
+                    itemV2Step,
                     runeV2Step,
                     currencyV2Step,
                     regularFixedReward,
