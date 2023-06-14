@@ -38,6 +38,7 @@ using UnityEngine.Android;  // Don't remove this line. It's for another platform
 namespace Nekoyume.Game
 {
     using GraphQL;
+    using Lib9c.Formatters;
     using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
     using UniRx;
