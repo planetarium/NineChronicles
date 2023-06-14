@@ -25,6 +25,7 @@ namespace Nekoyume.Action
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var sellerAvatarAddresses = _avatarAddressesHex.Select(a => new Address(a)).ToList();
 

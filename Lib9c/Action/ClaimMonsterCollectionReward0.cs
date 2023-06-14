@@ -28,6 +28,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
 

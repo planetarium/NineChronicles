@@ -50,6 +50,7 @@ public class CustomActionsDeserializableValidatorTest
 
         public IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             return context.PreviousStates;
         }
     }

@@ -32,6 +32,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
             var states = context.PreviousStates;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
