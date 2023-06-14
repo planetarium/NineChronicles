@@ -60,7 +60,7 @@ namespace Nekoyume.Action
 
             public void UseGas(long gas)
             {
-                throw new NotImplementedException();
+                // pass
             }
 
             public IActionContext GetUnconsumedContext() => null;
