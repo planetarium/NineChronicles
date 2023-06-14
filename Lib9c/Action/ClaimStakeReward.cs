@@ -32,6 +32,7 @@ namespace Nekoyume.Action
         /// </summary>
         public static class V1
         {
+            public const int MaxLevel = 5;
             public const string StakeRegularRewardSheetCsv =
                 @"level,required_gold,item_id,rate,type
 1,50,400000,10,Item
@@ -254,12 +255,13 @@ namespace Nekoyume.Action
                 out var currencyV2Step);
             if (v1Step > 0)
             {
+                var v1Level = Math.Min(level, V1.MaxLevel);
                 var regularFixedSheetV1Row = (StakeRegularFixedRewardSheet)_stakeRewardHistoryDict[
                     "StakeRegularFixedRewardSheet"][1];
-                var fixedRewardV1 = regularFixedSheetV1Row[level].Rewards;
+                var fixedRewardV1 = regularFixedSheetV1Row[v1Level].Rewards;
                 var regularSheetV1Row = (StakeRegularRewardSheet)_stakeRewardHistoryDict[
                     "StakeRegularRewardSheet"][1];
-                var regularRewardV1 = regularSheetV1Row[level].Rewards;
+                var regularRewardV1 = regularSheetV1Row[v1Level].Rewards;
                 states = ProcessReward(
                     context,
                     states,
