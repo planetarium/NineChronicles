@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Exceptions;
 using Nekoyume.Extensions;
@@ -331,7 +332,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 context.Random,
                 avatarState,
                 Foods,
@@ -346,7 +347,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     context.Random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),

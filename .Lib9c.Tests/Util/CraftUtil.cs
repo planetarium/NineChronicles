@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Util
     using System.Globalization;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;

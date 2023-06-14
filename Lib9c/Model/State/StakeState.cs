@@ -53,7 +53,7 @@ namespace Nekoyume.Model.State
 
         public const long RewardInterval = 50400;
         public const long LockupInterval = 50400 * 4;
-        public const long StakeRewardSheetV2Index = 6_650_000L;
+        public const long StakeRewardSheetV2Index = 6_700_000L;
 
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }

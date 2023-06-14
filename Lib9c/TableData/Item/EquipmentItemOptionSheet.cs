@@ -19,6 +19,9 @@ namespace Nekoyume.TableData
             public int SkillDamageMax { get; private set; }
             public int SkillChanceMin { get; private set; }
             public int SkillChanceMax { get; private set; }
+            public int StatDamageRatioMin { get; private set; }
+            public int StatDamageRatioMax { get; private set; }
+            public StatType ReferencedStatType { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -33,6 +36,15 @@ namespace Nekoyume.TableData
                 SkillDamageMax = ParseInt(fields[6], 0);
                 SkillChanceMin = ParseInt(fields[7], 0);
                 SkillChanceMax = ParseInt(fields[8], 0);
+
+                if (fields.Count > 9)
+                {
+                    StatDamageRatioMin = ParseInt(fields[9], 0);
+                    StatDamageRatioMax = ParseInt(fields[10], 0);
+                    ReferencedStatType = string.IsNullOrEmpty(fields[11])
+                        ? StatType.NONE
+                        : (StatType)Enum.Parse(typeof(StatType), fields[11]);
+                }
             }
         }
 

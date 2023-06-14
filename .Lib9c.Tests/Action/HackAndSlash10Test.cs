@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
@@ -148,7 +149,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -172,7 +173,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -945,7 +946,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -961,7 +962,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -976,7 +977,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Belt)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -991,7 +992,7 @@ namespace Lib9c.Tests.Action
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Necklace)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 

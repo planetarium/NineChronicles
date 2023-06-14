@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -32,12 +33,13 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IValue PlainValue =>
-            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "stake")
+            .Add("values", Dictionary.Empty.Add(AmountKey, Amount));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dictionary = (Dictionary) plainValue;
+            var dictionary = (Dictionary)((Dictionary)plainValue)["values"];
             Amount = dictionary[AmountKey].ToBigInteger();
         }
 

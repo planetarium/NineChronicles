@@ -3,7 +3,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;

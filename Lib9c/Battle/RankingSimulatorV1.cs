@@ -47,7 +47,7 @@ namespace Nekoyume.Battle
             {
                 Simulator = this
             };
-            _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
+            _enemyPlayer.ResetCurrentHP();
             _stageId = stageId;
             _arenaInfo = arenaInfo;
             _enemyInfo = enemyInfo;

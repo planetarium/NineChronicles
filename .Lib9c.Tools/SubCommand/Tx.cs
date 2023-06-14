@@ -18,7 +18,6 @@ using System.Linq;
 using System.Numerics;
 using Libplanet.Action;
 using Nekoyume.TableData;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
 {
@@ -69,7 +68,7 @@ namespace Lib9c.Tools.SubCommand
             [Option("bytes", new[] { 'b' }, Description = "Print raw bytes instead of base64.  No trailing LF appended.")] bool bytes = false
         )
         {
-            List<NCAction> parsedActions = null;
+            List<ActionBase> parsedActions = null;
             if (!(actions is null))
             {
                 parsedActions = actions.Select(a =>
@@ -99,12 +98,12 @@ namespace Lib9c.Tools.SubCommand
                     };
                     action.LoadPlainValue(plainValue);
 
-                    return (NCAction)action;
+                    return (ActionBase)action;
                 }).ToList();
             }
             else
             {
-                parsedActions = new List<NCAction>();
+                parsedActions = new List<ActionBase>();
             }
             Transaction tx = Transaction.Create(
                 nonce: nonce,

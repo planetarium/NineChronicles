@@ -1,86 +1,113 @@
 ﻿{
-  Bencodex.Types.Text "amount": [
-    {
-      Bencodex.Types.Text "decimalPlaces": [
-        2
-      ],
-      Bencodex.Types.Text "minters": {
-        Fingerprint: {
+  Bencodex.Types.Text "type_id": {
+    Value: transfer_asset,
+    Kind: Text,
+    Fingerprint: {
+      Kind: Text,
+      EncodingLength: 18,
+      Digest: [
+        116,
+        114,
+        97,
+        110,
+        115,
+        102,
+        101,
+        114,
+        95,
+        97,
+        115,
+        115,
+        101,
+        116
+      ]
+    },
+    EncodingLength: 18
+  },
+  Bencodex.Types.Text "values": {
+    Bencodex.Types.Text "amount": [
+      {
+        Bencodex.Types.Text "decimalPlaces": [
+          2
+        ],
+        Bencodex.Types.Text "minters": {
+          Fingerprint: {
+            EncodingLength: 1
+          },
           EncodingLength: 1
         },
-        EncodingLength: 1
-      },
-      Bencodex.Types.Text "ticker": {
-        Value: NNN,
-        Kind: Text,
-        Fingerprint: {
+        Bencodex.Types.Text "ticker": {
+          Value: NNN,
           Kind: Text,
-          EncodingLength: 6,
+          Fingerprint: {
+            Kind: Text,
+            EncodingLength: 6,
+            Digest: [
+              78,
+              78,
+              78
+            ]
+          },
+          EncodingLength: 6
+        }
+      },
+      {
+        Value: 10000,
+        Kind: Integer,
+        Fingerprint: {
+          Kind: Integer,
+          EncodingLength: 7,
           Digest: [
-            78,
-            78,
-            78
+            16,
+            39
           ]
         },
-        EncodingLength: 6
+        EncodingLength: 7
       }
-    },
-    {
-      Value: 10000,
-      Kind: Integer,
-      Fingerprint: {
-        Kind: Integer,
-        EncodingLength: 7,
-        Digest: [
-          16,
-          39
-        ]
-      },
-      EncodingLength: 7
-    }
-  ],
-  Bencodex.Types.Text "recipient": [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-  ],
-  Bencodex.Types.Text "sender": [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-  ]
+    ],
+    Bencodex.Types.Text "recipient": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    Bencodex.Types.Text "sender": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
 }

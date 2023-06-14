@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -264,7 +265,7 @@ namespace Nekoyume.Action
             CrystalRandomSkillState skillState = null;
             if (isNotClearedStage)
             {
-                // It has state, get CrystalRandomSkillState. If not, newly make.
+                // If state exists, get CrystalRandomSkillState. If not, create new state.
                 skillState = states.TryGetState<List>(skillStateAddress, out var serialized)
                     ? new CrystalRandomSkillState(skillStateAddress, serialized)
                     : new CrystalRandomSkillState(skillStateAddress, StageId);

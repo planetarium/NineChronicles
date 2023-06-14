@@ -7,8 +7,8 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -334,7 +334,7 @@ namespace Nekoyume.Action
             itemSlotState.UpdateCostumes(Costumes);
             states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 context.Random,
                 avatarState,
                 Foods,
@@ -349,7 +349,7 @@ namespace Nekoyume.Action
                 sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
+                StageSimulatorV3.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",

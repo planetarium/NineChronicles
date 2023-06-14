@@ -3,7 +3,7 @@ namespace Lib9c.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain.Policy;
     using Xunit;
 
     public class SpannedSubPolicyTest

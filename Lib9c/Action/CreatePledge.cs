@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Lib9c;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action

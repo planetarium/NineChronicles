@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 
 namespace Nekoyume.Action.Coupons
 {

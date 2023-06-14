@@ -7,8 +7,8 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
@@ -209,7 +209,7 @@ namespace Nekoyume.Action
             }
 
             // Simulate.
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV2(
                 row.BossId,
                 context.Random,
                 avatarState,

@@ -10,10 +10,10 @@ namespace Lib9c.Tests.Action
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
-    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
@@ -1225,12 +1225,12 @@ namespace Lib9c.Tests.Action
                         .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
                 if (skill.Value != null)
                 {
-                    skillsOnWaveStart.Add(SkillFactory.Get(skill.Value, default, 100));
+                    skillsOnWaveStart.Add(SkillFactory.GetV1(skill.Value, default, 100));
                 }
             }
 
             var contextRandom = new TestRandom(ctx.Random.Seed);
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV3(
                 contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
@@ -1241,11 +1241,11 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StageSheet[stageId],
                 _tableSheets.StageWaveSheet[stageId],
                 false,
-                20,
+                StageRewardExpHelper.GetExp(previousAvatarState.level, stageId),
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.GetWaveRewards(
+                StageSimulatorV3.GetWaveRewards(
                     contextRandom,
                     _tableSheets.StageSheet[stageId],
                     _tableSheets.MaterialItemSheet));

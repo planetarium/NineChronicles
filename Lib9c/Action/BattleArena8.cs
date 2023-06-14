@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
@@ -28,8 +29,8 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
     [ActionType("battle_arena8")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
     public class BattleArena8 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -397,7 +398,7 @@ namespace Nekoyume.Action
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulatorV3(context.Random);
                 var log = simulator.Simulate(
                     ExtraMyArenaPlayerDigest,
                     ExtraEnemyArenaPlayerDigest,

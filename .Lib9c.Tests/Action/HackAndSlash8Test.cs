@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -10,11 +10,11 @@
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
     using Nekoyume.Model;
-    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
@@ -148,7 +148,7 @@
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 
@@ -172,7 +172,7 @@
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
+                .OrderBy(r => r.Stat.BaseValueAsInt)
                 .Last()
                 .Id;
 

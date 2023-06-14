@@ -1,4 +1,4 @@
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     using System;
     using System.Collections.Concurrent;
@@ -9,11 +9,10 @@ namespace Nekoyume.BlockChain
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Tx;
-    using NCAction = Libplanet.Action.PolymorphicAction<Action.ActionBase>;
 
-    public class StagePolicy : IStagePolicy<NCAction>
+    public class NCStagePolicy : IStagePolicy
     {
-        private readonly VolatileStagePolicy<NCAction> _impl;
+        private readonly VolatileStagePolicy _impl;
         private readonly ConcurrentDictionary<Address, SortedList<Transaction, TxId>> _txs;
         private readonly int _quotaPerSigner;
 
@@ -35,7 +34,7 @@ namespace Nekoyume.BlockChain
             new Address("0xd7e1b90dea34108fb2d3a6ac7dbf3f33bae2c77d"),
         }.ToImmutableHashSet();
 
-        public StagePolicy(TimeSpan txLifeTime, int quotaPerSigner)
+        public NCStagePolicy(TimeSpan txLifeTime, int quotaPerSigner)
         {
             if (quotaPerSigner < 1)
             {
@@ -46,23 +45,23 @@ namespace Nekoyume.BlockChain
             _txs = new ConcurrentDictionary<Address, SortedList<Transaction, TxId>>();
             _quotaPerSigner = quotaPerSigner;
             _impl = (txLifeTime == default)
-                ? new VolatileStagePolicy<NCAction>()
-                : new VolatileStagePolicy<NCAction>(txLifeTime);
+                ? new VolatileStagePolicy()
+                : new VolatileStagePolicy(txLifeTime);
         }
 
-        public Transaction Get(BlockChain<NCAction> blockChain, TxId id, bool filtered = true)
+        public Transaction Get(BlockChain blockChain, TxId id, bool filtered = true)
             => _impl.Get(blockChain, id, filtered);
 
-        public long GetNextTxNonce(BlockChain<NCAction> blockChain, Address address)
+        public long GetNextTxNonce(BlockChain blockChain, Address address)
             => _impl.GetNextTxNonce(blockChain, address);
 
-        public void Ignore(BlockChain<NCAction> blockChain, TxId id)
+        public void Ignore(BlockChain blockChain, TxId id)
             => _impl.Ignore(blockChain, id);
 
-        public bool Ignores(BlockChain<NCAction> blockChain, TxId id)
+        public bool Ignores(BlockChain blockChain, TxId id)
             => _impl.Ignores(blockChain, id);
 
-        public IEnumerable<Transaction> Iterate(BlockChain<NCAction> blockChain, bool filtered = true)
+        public IEnumerable<Transaction> Iterate(BlockChain blockChain, bool filtered = true)
         {
             if (filtered)
             {
@@ -91,7 +90,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public bool Stage(BlockChain<NCAction> blockChain, Transaction transaction)
+        public bool Stage(BlockChain blockChain, Transaction transaction)
         {
             if (_bannedAccounts.Contains(transaction.Signer))
             {
@@ -113,7 +112,7 @@ namespace Nekoyume.BlockChain
             return _impl.Stage(blockChain, transaction);
         }
 
-        public bool Unstage(BlockChain<NCAction> blockChain, TxId id)
+        public bool Unstage(BlockChain blockChain, TxId id)
             => _impl.Unstage(blockChain, id);
 
         private class TxComparer : IComparer<Transaction>

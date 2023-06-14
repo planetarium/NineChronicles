@@ -56,6 +56,7 @@ namespace Nekoyume.TableData
                 }
             }
 
+            [Obsolete("It is obsoleted. Check EquipmentItemSubRecipeSheetV2.IsMimisbrunnrSubRecipe.")]
             public bool IsMimisBrunnrSubRecipe(int? subRecipeId)
             {
                 return subRecipeId.HasValue && SubRecipeIds[2] == subRecipeId.Value;

@@ -4,6 +4,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System.Linq;
 
@@ -50,7 +51,9 @@ namespace Nekoyume.Action
 
         public Address Recipient { get; private set; }
 
-        public override IValue PlainValue => Recipient.Bencoded;
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "secure_mining_reward")
+            .Add("values", Recipient.Bencoded);
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -83,7 +86,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            Recipient = plainValue.ToAddress();
+            Recipient = ((Dictionary)plainValue)["values"].ToAddress();
         }
     }
 }

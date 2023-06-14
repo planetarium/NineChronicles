@@ -1,106 +1,115 @@
-id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,icon_resource
-101000,101000,체력 강화,20,10,Self,HP,Percentage,50,icon_buff_plus_hp
-101001,101000,체력 강화,100,25,Self,HP,Percentage,50,icon_buff_plus_hp
-102000,102000,공격 강화,20,10,Self,ATK,Percentage,25,icon_buff_plus_attack
-102001,102000,공격 강화,100,25,Self,ATK,Percentage,50,icon_buff_plus_attack
-102002,102000,공격 강화,100,10,Self,ATK,Percentage,25,icon_buff_plus_attack
-103000,103000,방어 강화,20,10,Self,DEF,Percentage,25,icon_buff_plus_defense
-103001,103000,방어 강화,100,25,Self,DEF,Percentage,50,icon_buff_plus_defense
-103002,103000,방어 강화,100,10,Self,DEF,Percentage,25,icon_buff_plus_defense
-104000,104000,치명 증가,20,10,Self,CRI,Percentage,50,icon_buff_plus_critical
-104001,104000,치명 증가,100,25,Self,CRI,Percentage,75,icon_buff_plus_critical
-104002,104000,치명 증가,100,10,Self,CRI,Percentage,25,icon_buff_plus_critical
-105000,105000,회피 증가,20,10,Self,HIT,Percentage,50,icon_buff_plus_hit
-105001,105000,회피 증가,100,25,Self,HIT,Percentage,75,icon_buff_plus_hit
-105002,105000,회피 증가,100,10,Self,HIT,Percentage,25,icon_buff_plus_hit
-106000,106000,속도 증가,20,10,Self,SPD,Percentage,50,icon_buff_plus_speed
-106001,106000,속도 증가,100,25,Self,SPD,Percentage,75,icon_buff_plus_speed
-106002,106000,속도 증가,100,10,Self,SPD,Percentage,25,icon_buff_plus_speed
-202000,202000,공격 약화,20,10,Enemy,ATK,Percentage,-25,icon_buff_minus_attack
-202001,202000,공격 약화,100,10,Enemy,ATK,Percentage,-25,icon_buff_minus_attack
-203001,203000,방어 약화,100,10,Enemy,DEF,Percentage,-25,icon_buff_minus_defense
-204001,204000,치명 감소,100,10,Enemy,CRI,Percentage,-25,icon_buff_minus_critical
-205001,205000,회피 감소,100,10,Enemy,HIT,Percentage,-25,icon_buff_minus_hit
-206001,206000,속도 감소,100,10,Enemy,SPD,Percentage,-25,icon_buff_minus_speed
-301000,301000,체력 강화 (10),100,150,Self,HP,Percentage,10,icon_buff_plus_hp
-302000,302000,공격 강화 (2),100,150,Self,ATK,Percentage,2,icon_buff_plus_attack
-302001,302000,공격 강화 (2),100,150,Self,ATK,Percentage,2,icon_buff_plus_attack
-302002,302000,공격 강화 (3),100,150,Self,ATK,Percentage,3,icon_buff_plus_attack
-302003,302000,공격 강화 (6),100,150,Self,ATK,Percentage,6,icon_buff_plus_attack
-302004,302000,공격 강화 (3),100,150,Self,ATK,Percentage,3,icon_buff_plus_attack
-302005,302000,공격 강화 (5),100,150,Self,ATK,Percentage,5,icon_buff_plus_attack
-302006,302000,공격 강화 (8),100,150,Self,ATK,Percentage,8,icon_buff_plus_attack
-302007,302000,S 올스텟,100,150,Self,ATK,Percentage,20,icon_buff_plus_attack
-302008,302000,S 공격력2,100,150,Self,ATK,Percentage,35,icon_buff_plus_attack
-302009,302000,공격 강화 (18),100,150,Self,ATK,Percentage,18,icon_buff_plus_attack
-302010,302000,SS 올스탯,100,150,Self,ATK,Percentage,50,icon_buff_plus_attack
-302011,302000,S 공격력1,100,150,Self,ATK,Percentage,60,icon_buff_plus_attack
-302012,302000,SS 공격력,100,150,Self,ATK,Percentage,90,icon_buff_plus_attack
-303000,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2,icon_buff_plus_defense
-303001,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2,icon_buff_plus_defense
-303002,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3,icon_buff_plus_defense
-303003,303000,방어 강화 (6),100,150,Self,DEF,Percentage,6,icon_buff_plus_defense
-303004,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3,icon_buff_plus_defense
-303005,303000,방어 강화 (5),100,150,Self,DEF,Percentage,5,icon_buff_plus_defense
-303006,303000,방어 강화 (8),100,150,Self,DEF,Percentage,8,icon_buff_plus_defense
-303007,303000,S 올스텟,100,150,Self,DEF,Percentage,20,icon_buff_plus_defense
-303008,303000,S 방어력2,100,150,Self,DEF,Percentage,35,icon_buff_plus_defense
-303009,303000,방어 강화 (18),100,150,Self,DEF,Percentage,18,icon_buff_plus_defense
-303010,303000,SS 올스탯,100,150,Self,DEF,Percentage,50,icon_buff_plus_defense
-303011,303000,S 방어력1,100,150,Self,DEF,Percentage,60,icon_buff_plus_defense
-303012,303000,SS 방어력,100,150,Self,DEF,Percentage,90,icon_buff_plus_defense
-304000,304000,치명 증가 (100),100,150,Self,CRI,Percentage,100,icon_buff_plus_critical
-304001,304000,치명 증가 (250),100,150,Self,CRI,Percentage,250,icon_buff_plus_critical
-305000,305000,명중 강화 (2),100,150,Self,HIT,Percentage,2,icon_buff_plus_hit
-305001,305000,명중 강화 (2),100,150,Self,HIT,Percentage,2,icon_buff_plus_hit
-305002,305000,명중 강화 (3),100,150,Self,HIT,Percentage,3,icon_buff_plus_hit
-305003,305000,명중 강화 (6),100,150,Self,HIT,Percentage,6,icon_buff_plus_hit
-305004,305000,명중 강화 (3),100,150,Self,HIT,Percentage,3,icon_buff_plus_hit
-305005,305000,명중 강화 (5),100,150,Self,HIT,Percentage,5,icon_buff_plus_hit
-305006,305000,명중 강화 (8),100,150,Self,HIT,Percentage,8,icon_buff_plus_hit
-305007,305000,S 올스텟,100,150,Self,HIT,Percentage,20,icon_buff_plus_hit
-305008,305000,S 명중2,100,150,Self,HIT,Percentage,35,icon_buff_plus_hit
-305009,305000,명중 강화 (18),100,150,Self,HIT,Percentage,18,icon_buff_plus_hit
-305010,305000,SS 올스탯,100,150,Self,HIT,Percentage,50,icon_buff_plus_hit
-305011,305000,S 명중1,100,150,Self,HIT,Percentage,60,icon_buff_plus_hit
-305012,305000,SS 명중,100,150,Self,HIT,Percentage,90,icon_buff_plus_hit
-306000,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2,icon_buff_plus_speed
-306001,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2,icon_buff_plus_speed
-306002,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3,icon_buff_plus_speed
-306003,306000,속도 강화 (6),100,150,Self,SPD,Percentage,6,icon_buff_plus_speed
-306004,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3,icon_buff_plus_speed
-306005,306000,속도 강화 (5),100,150,Self,SPD,Percentage,5,icon_buff_plus_speed
-306006,306000,속도 강화 (8),100,150,Self,SPD,Percentage,8,icon_buff_plus_speed
-306007,306000,S 올스텟,100,150,Self,SPD,Percentage,20,icon_buff_plus_speed
-306008,306000,S 속도2,100,150,Self,SPD,Percentage,35,icon_buff_plus_speed
-306009,306000,속도 강화 (18),100,150,Self,SPD,Percentage,18,icon_buff_plus_speed
-306010,306000,SS 올스탯,100,150,Self,SPD,Percentage,50,icon_buff_plus_speed
-306011,306000,S 속도1,100,150,Self,SPD,Percentage,60,icon_buff_plus_speed
-306012,306000,SS 속도,100,150,Self,SPD,Percentage,90,icon_buff_plus_speed
-501001,501001,Fenrir Rage ATK,100,5,Self,ATK,Percentage,50,icon_buff_plus_attack
-502001,502001,Fenrir Rage SPD,100,5,Self,SPD,Percentage,50,icon_buff_plus_speed
-503011,503011,Berserk ATK(60) Wave 1,100,150,Self,ATK,Percentage,60,icon_buff_plus_attack
-503012,503012,Berserk DEF(-100) Wave 1,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
-503021,503011,Berserk ATK(80) Wave 2,100,150,Self,ATK,Percentage,80,icon_buff_plus_attack
-503022,503012,Berserk DEF(-100) Wave 2,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
-503031,503011,Berserk ATK(100) Wave 3,100,150,Self,ATK,Percentage,100,icon_buff_plus_attack
-503032,503012,Berserk DEF(-100) Wave 3,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
-503041,503011,Berserk ATK(120) Wave 4,100,150,Self,ATK,Percentage,120,icon_buff_plus_attack
-503042,503012,Berserk DEF(-100) Wave 4,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
-503051,503011,Berserk ATK(150) Wave 5,100,150,Self,ATK,Percentage,150,icon_buff_plus_attack
-503052,503012,Berserk DEF(-100) Wave 5,100,150,Self,DEF,Percentage,-100,icon_buff_minus_defense
-503015,503015,Berserk CRI(1500),100,150,Self,CRI,Percentage,1500,icon_buff_plus_critical
-504001,504001,Serimnir Rage ATK,100,5,Self,ATK,Percentage,50,icon_buff_plus_attack
-504002,504002,Serimnir Rage SPD,100,5,Self,SPD,Percentage,50,icon_buff_plus_speed
-504003,504003,Serimnir Corrosion,100,6,Enemy,DEF,Percentage,-50,icon_buff_minus_defense
-504004,504004,Serimnir a Series Of Hits,100,3,Self,ATK,Percentage,50,icon_buff_plus_attack
-504005,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,36,icon_buff_plus_critical
-504006,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,56,icon_buff_plus_critical
-504007,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,86,icon_buff_plus_critical
-504008,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,5000,icon_buff_plus_critical
-504009,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,10000,icon_buff_plus_critical
-504010,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,20000,icon_buff_plus_critical
-504011,504011,Serimnir Furious Enemy CDMG,100,8,Enemy,CDMG,Add,10000,icon_buff_plus_critical
-701000,701000,DRV (Rune),100,0,Self,DRV,Add,0,icon_buff_plus_damage_reduction_value
-702000,701000,DRR (Rune),100,0,Self,DRR,Add,0,icon_buff_plus_damage_reduction_rate
-703000,703000,CDMG (Rune),100,0,Self,CDMG,Add,0,icon_buff_plus_critical
+id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value
+101000,101000,체력 강화,20,10,Self,HP,Percentage,50
+101001,101000,체력 강화,100,25,Self,HP,Percentage,50
+102000,102000,공격 강화,20,10,Self,ATK,Percentage,25
+102001,102000,공격 강화,100,25,Self,ATK,Percentage,50
+102002,102000,공격 강화,100,10,Self,ATK,Percentage,25
+102003,102000,ATK UP (Stat conversion),100,10,Self,ATK,Add,0
+103000,103000,방어 강화,20,10,Self,DEF,Percentage,25
+103001,103000,방어 강화,100,25,Self,DEF,Percentage,50
+103002,103000,방어 강화,100,10,Self,DEF,Percentage,25
+103003,103000,DEF UP (Stat conversion),100,10,Self,DEF,Add,0
+104000,104000,치명 증가,20,10,Self,CRI,Percentage,50
+104001,104000,치명 증가,100,25,Self,CRI,Percentage,75
+104002,104000,치명 증가,100,10,Self,CRI,Percentage,25
+105000,105000,회피 증가,20,10,Self,HIT,Percentage,50
+105001,105000,회피 증가,100,25,Self,HIT,Percentage,75
+105002,105000,회피 증가,100,10,Self,HIT,Percentage,25
+106000,106000,속도 증가,20,10,Self,SPD,Percentage,50
+106001,106000,속도 증가,100,25,Self,SPD,Percentage,75
+106002,106000,속도 증가,100,10,Self,SPD,Percentage,25
+107000,107000,Armor Penetration (Stat conversion),100,10,Self,ArmorPenetration,Add,0
+108000,108000,Thorn (Stat conversion),100,10,Self,Thorn,Add,0
+202000,202000,공격 약화,20,10,Enemy,ATK,Percentage,-25
+202001,202000,공격 약화,100,10,Enemy,ATK,Percentage,-25
+202002,202000,ATK Down (Stat conversion),100,10,Enemy,ATK,Add,0
+202003,202000,ATK ALL Down (Stat conversion),100,6,Enemies,ATK,Add,0
+203001,203000,방어 약화,100,10,Enemy,DEF,Percentage,-25
+203002,203000,DEF Down (Stat conversion),100,10,Enemy,DEF,Add,0
+204001,204000,치명 감소,100,10,Enemy,CRI,Percentage,-25
+205001,205000,회피 감소,100,10,Enemy,HIT,Percentage,-25
+205002,205000,HIT Down (Stat conversion),100,10,Enemy,HIT,Add,0
+206001,206000,속도 감소,100,10,Enemy,SPD,Percentage,-25
+206002,206000,SPD Down (Stat conversion),100,10,Enemy,SPD,Add,0
+301000,301000,체력 강화 (10),100,150,Self,HP,Percentage,10
+302000,302000,공격 강화 (2),100,150,Self,ATK,Percentage,2
+302001,302000,공격 강화 (2),100,150,Self,ATK,Percentage,2
+302002,302000,공격 강화 (3),100,150,Self,ATK,Percentage,3
+302003,302000,공격 강화 (6),100,150,Self,ATK,Percentage,6
+302004,302000,공격 강화 (3),100,150,Self,ATK,Percentage,3
+302005,302000,공격 강화 (5),100,150,Self,ATK,Percentage,5
+302006,302000,공격 강화 (8),100,150,Self,ATK,Percentage,8
+302007,302000,S 올스텟,100,150,Self,ATK,Percentage,20
+302008,302000,S 공격력2,100,150,Self,ATK,Percentage,35
+302009,302000,공격 강화 (18),100,150,Self,ATK,Percentage,18
+302010,302000,SS 올스탯,100,150,Self,ATK,Percentage,50
+302011,302000,S 공격력1,100,150,Self,ATK,Percentage,60
+302012,302000,SS 공격력,100,150,Self,ATK,Percentage,90
+303000,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2
+303001,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2
+303002,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3
+303003,303000,방어 강화 (6),100,150,Self,DEF,Percentage,6
+303004,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3
+303005,303000,방어 강화 (5),100,150,Self,DEF,Percentage,5
+303006,303000,방어 강화 (8),100,150,Self,DEF,Percentage,8
+303007,303000,S 올스텟,100,150,Self,DEF,Percentage,20
+303008,303000,S 방어력2,100,150,Self,DEF,Percentage,35
+303009,303000,방어 강화 (18),100,150,Self,DEF,Percentage,18
+303010,303000,SS 올스탯,100,150,Self,DEF,Percentage,50
+303011,303000,S 방어력1,100,150,Self,DEF,Percentage,60
+303012,303000,SS 방어력,100,150,Self,DEF,Percentage,90
+304000,304000,치명 증가 (100),100,150,Self,CRI,Percentage,100
+304001,304000,치명 증가 (250),100,150,Self,CRI,Percentage,250
+305000,305000,명중 강화 (2),100,150,Self,HIT,Percentage,2
+305001,305000,명중 강화 (2),100,150,Self,HIT,Percentage,2
+305002,305000,명중 강화 (3),100,150,Self,HIT,Percentage,3
+305003,305000,명중 강화 (6),100,150,Self,HIT,Percentage,6
+305004,305000,명중 강화 (3),100,150,Self,HIT,Percentage,3
+305005,305000,명중 강화 (5),100,150,Self,HIT,Percentage,5
+305006,305000,명중 강화 (8),100,150,Self,HIT,Percentage,8
+305007,305000,S 올스텟,100,150,Self,HIT,Percentage,20
+305008,305000,S 명중2,100,150,Self,HIT,Percentage,35
+305009,305000,명중 강화 (18),100,150,Self,HIT,Percentage,18
+305010,305000,SS 올스탯,100,150,Self,HIT,Percentage,50
+305011,305000,S 명중1,100,150,Self,HIT,Percentage,60
+305012,305000,SS 명중,100,150,Self,HIT,Percentage,90
+306000,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2
+306001,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2
+306002,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3
+306003,306000,속도 강화 (6),100,150,Self,SPD,Percentage,6
+306004,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3
+306005,306000,속도 강화 (5),100,150,Self,SPD,Percentage,5
+306006,306000,속도 강화 (8),100,150,Self,SPD,Percentage,8
+306007,306000,S 올스텟,100,150,Self,SPD,Percentage,20
+306008,306000,S 속도2,100,150,Self,SPD,Percentage,35
+306009,306000,속도 강화 (18),100,150,Self,SPD,Percentage,18
+306010,306000,SS 올스탯,100,150,Self,SPD,Percentage,50
+306011,306000,S 속도1,100,150,Self,SPD,Percentage,60
+306012,306000,SS 속도,100,150,Self,SPD,Percentage,90
+501001,501001,Fenrir Rage ATK,100,5,Self,ATK,Percentage,50
+502001,502001,Fenrir Rage SPD,100,5,Self,SPD,Percentage,50
+503011,503011,Berserk ATK(60) Wave 1,100,150,Self,ATK,Percentage,60
+503012,503012,Berserk DEF(-100) Wave 1,100,150,Self,DEF,Percentage,-100
+503021,503011,Berserk ATK(80) Wave 2,100,150,Self,ATK,Percentage,80
+503022,503012,Berserk DEF(-100) Wave 2,100,150,Self,DEF,Percentage,-100
+503031,503011,Berserk ATK(100) Wave 3,100,150,Self,ATK,Percentage,100
+503032,503012,Berserk DEF(-100) Wave 3,100,150,Self,DEF,Percentage,-100
+503041,503011,Berserk ATK(120) Wave 4,100,150,Self,ATK,Percentage,120
+503042,503012,Berserk DEF(-100) Wave 4,100,150,Self,DEF,Percentage,-100
+503051,503011,Berserk ATK(150) Wave 5,100,150,Self,ATK,Percentage,150
+503052,503012,Berserk DEF(-100) Wave 5,100,150,Self,DEF,Percentage,-100
+503015,503015,Berserk CRI(1500),100,150,Self,CRI,Percentage,1500
+504001,504001,Serimnir Rage ATK,100,5,Self,ATK,Percentage,50
+504002,504002,Serimnir Rage SPD,100,5,Self,SPD,Percentage,50
+504003,504003,Serimnir Corrosion,100,6,Enemy,DEF,Percentage,-50
+504004,504004,Serimnir a Series Of Hits,100,3,Self,ATK,Percentage,50
+504005,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,36
+504006,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,56
+504007,504005,Serimnir Furious CRI,100,5,Self,CRI,Add,86
+504008,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,5000
+504009,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,10000
+504010,504008,Serimnir Furious CDMG,100,5,Self,CDMG,Add,20000
+504011,504011,Serimnir Furious Enemy CDMG,100,8,Enemy,CDMG,Add,10000
+701000,701000,DRV (Rune),100,0,Self,DRV,Add,0
+702000,701000,DRR (Rune),100,0,Self,DRR,Add,0
+703000,703000,CDMG (Rune),100,0,Self,CDMG,Add,0

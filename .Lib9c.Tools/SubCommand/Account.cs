@@ -9,13 +9,12 @@ using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
-using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model.State;
 using Serilog.Core;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
 {
@@ -41,11 +40,13 @@ namespace Lib9c.Tools.SubCommand
         {
             using Logger logger = Utils.ConfigureLogger(verbose);
             TextWriter stderr = Console.Error;
-            (BlockChain<NCAction> chain, IStore store, _, _) =
+            (BlockChain chain, IStore store, _, _) =
                 Utils.GetBlockChain(logger, storePath, chainId);
 
             Block offset = Utils.ParseBlockOffset(chain, block);
             stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
+
+            var actionLoader = new NCActionLoader();
 
             Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
                 chain.GetState(GoldCurrencyState.Address);
@@ -69,7 +70,7 @@ namespace Lib9c.Tools.SubCommand
                 IEnumerable<Address> addrs = digest.TxIds
                     .Select(txId => store.GetTransaction(new TxId(txId.ToArray())))
                     .SelectMany(tx => tx.Actions is { } ca
-                        ? ca.Select(a => ToAction(a).InnerAction)
+                        ? ca.Select(a => actionLoader.LoadAction(digest.Index, a))
                             .SelectMany(a => a is TransferAsset t
                                 ? new[] { t.Sender, t.Recipient }
                                 : a is InitializeStates i &&
@@ -100,15 +101,6 @@ namespace Lib9c.Tools.SubCommand
             }
 
             throw new InvalidOperationException($"Block #{blockHash} is not found in the store.");
-        }
-
-        private static NCAction ToAction(IValue plainValue)
-        {
-#pragma warning disable CS0612
-            var action = new NCAction();
-#pragma warning restore CS0612
-            action.LoadPlainValue(plainValue);
-            return action;
         }
     }
 }

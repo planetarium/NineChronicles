@@ -12,13 +12,14 @@ using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
+using Libplanet.State;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Nekoyume.BlockChain;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Action.Loader;
+using Nekoyume.Blockchain;
+using Nekoyume.Blockchain.Policy;
 using Serilog;
 using Serilog.Events;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Benchmarks
 {
@@ -59,13 +60,13 @@ namespace Lib9c.Benchmarks
             Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
-            IBlockPolicy<NCAction> policy =
+            IBlockPolicy policy =
                 policySource.GetPolicy(
                     maxTransactionsBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null);
-            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))
             {
@@ -85,7 +86,19 @@ namespace Lib9c.Benchmarks
             Block genesis = store.GetBlock(gHash);
             IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             var stateStore = new TrieStateStore(stateKeyValueStore);
-            var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
+            var actionEvaluator = new ActionEvaluator(
+                _ => policy.BlockAction,
+                new BlockChainStates(store, stateStore),
+                new NCActionLoader(),
+                null);
+            var chain = new BlockChain(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis,
+                new BlockChainStates(store, stateStore),
+                actionEvaluator);
             long height = chain.Tip.Index;
             if (offset + limit > (int)height)
             {

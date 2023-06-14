@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using BTAI;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
@@ -49,6 +50,7 @@ namespace Nekoyume.Model
         }
 
         public int HP => Stats.HP;
+        public int AdditionalHP => Stats.BuffStats.HP;
         public int ATK => Stats.ATK;
         public int DEF => Stats.DEF;
         public int CRI => Stats.CRI;
@@ -57,11 +59,15 @@ namespace Nekoyume.Model
         public int DRV => Stats.DRV;
         public int DRR => Stats.DRR;
         public int CDMG => Stats.CDMG;
+        public int ArmorPenetration => Stats.ArmorPenetration;
+        public int Thorn => Stats.Thorn;
+
+        private int _currentHP;
 
         public int CurrentHP
         {
-            get => Stats.CurrentHP;
-            set => Stats.CurrentHP = value;
+            get => _currentHP;
+            set => _currentHP = Math.Min(Math.Max(0, value), HP);
         }
 
         public bool IsDead => CurrentHP <= 0;
@@ -82,8 +88,9 @@ namespace Nekoyume.Model
             Stats = new CharacterStats(RowData, level);
             if (!(optionalStatModifiers is null))
             {
-                Stats.AddOption(optionalStatModifiers);
+                Stats.AddOptional(optionalStatModifiers);
             }
+            ResetCurrentHP();
 
             Skills.Clear();
 
@@ -92,7 +99,6 @@ namespace Nekoyume.Model
             defElementType = RowData.ElementalType;
             RunSpeed = RowData.RunSpeed;
             attackRange = RowData.AttackRange;
-            CurrentHP = HP;
             AttackCountMax = 0;
         }
 
@@ -101,14 +107,16 @@ namespace Nekoyume.Model
             CharacterStats stat,
             int characterId,
             ElementalType elementalType,
+            CharacterSheet.Row rowData = null,
             SizeType sizeType = SizeType.XL,
             float attackRange = 4,
             float runSpeed = 0.3f)
         {
             Simulator = simulator;
             Stats = stat;
-
+            RowData = rowData;
             CharacterId = characterId;
+
             SizeType = sizeType;
             atkElementType = elementalType;
             defElementType = elementalType;
@@ -116,7 +124,7 @@ namespace Nekoyume.Model
             RunSpeed = runSpeed;
 
             Skills.Clear();
-            CurrentHP = HP;
+            ResetCurrentHP();
             AttackCountMax = 0;
         }
 
@@ -151,6 +159,7 @@ namespace Nekoyume.Model
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
             AttackCountMax = value.AttackCountMax;
+            CurrentHP = value.CurrentHP;
         }
 
         public abstract object Clone();
@@ -235,7 +244,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -263,7 +272,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -286,7 +295,7 @@ namespace Nekoyume.Model
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    ATK,
+                    Stats,
                     selectedSkill,
                     Simulator.SkillBuffSheet,
                     Simulator.StatBuffSheet,
@@ -358,7 +367,7 @@ namespace Nekoyume.Model
             var minDuration = int.MaxValue;
             foreach (var buff in StatBuffs)
             {
-                if (buff.RowData.StatModifier.Value < 0)
+                if (buff.RowData.Value < 0)
                 {
                     continue;
                 }
@@ -388,6 +397,11 @@ namespace Nekoyume.Model
         }
 
         #endregion
+
+        public void ResetCurrentHP()
+        {
+            CurrentHP = Math.Max(0, Stats.HP);
+        }
 
         public bool IsCritical(bool considerAttackCount = true)
         {
@@ -467,7 +481,7 @@ namespace Nekoyume.Model
                 throw new KeyNotFoundException(GameConfig.DefaultAttackId.ToString(CultureInfo.InvariantCulture));
             }
 
-            var attack = SkillFactory.Get(skillRow, 0, 100);
+            var attack = SkillFactory.GetV1(skillRow, 0, 100);
             Skills.Add(attack);
         }
 
@@ -543,6 +557,22 @@ namespace Nekoyume.Model
                 Simulator.Log.Add(effect);
             }
 
+            // Apply thorn damage if target has thorn
+            foreach (var skillInfo in usedSkill.SkillInfos)
+            {
+                var isAttackSkill =
+                    skillInfo.SkillCategory == SkillCategory.NormalAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BlowAttack ||
+                    skillInfo.SkillCategory == SkillCategory.DoubleAttack ||
+                    skillInfo.SkillCategory == SkillCategory.AreaAttack ||
+                    skillInfo.SkillCategory == SkillCategory.BuffRemovalAttack;
+                if (isAttackSkill && skillInfo.Target.Thorn > 0)
+                {
+                    var effect = GiveThornDamage(skillInfo.Target.Thorn);
+                    Simulator.Log.Add(effect);
+                }
+            }
+
             if (IsDead)
             {
                 Die();
@@ -550,6 +580,33 @@ namespace Nekoyume.Model
 
             FinishTargetIfKilledForBeforeV100310(usedSkill);
             FinishTargetIfKilled(usedSkill);
+        }
+
+        private BattleStatus.Skill GiveThornDamage(int targetThorn)
+        {
+            var clone = (CharacterBase)Clone();
+            // minimum 1 damage
+            var thornDamage = Math.Max(1, targetThorn - DEF);
+            CurrentHP -= thornDamage;
+            var damageInfos = new List<BattleStatus.Skill.SkillInfo>()
+            {
+                new BattleStatus.Skill.SkillInfo(
+                    (CharacterBase)Clone(),
+                    thornDamage,
+                    false,
+                    SkillCategory.TickDamage,
+                    Simulator.WaveTurn,
+                    ElementalType.Normal,
+                    SkillTargetType.Enemy)
+            };
+
+            var tickDamage = new TickDamage(
+                default,
+                clone,
+                damageInfos,
+                null);
+
+            return tickDamage;
         }
 
         private void FinishTargetIfKilledForBeforeV100310(BattleStatus.Skill usedSkill)

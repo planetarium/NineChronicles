@@ -10,9 +10,9 @@ using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
-    public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
+    public class DebugPolicy : IBlockPolicy
     {
         public DebugPolicy()
         {
@@ -23,15 +23,13 @@ namespace Nekoyume.BlockChain.Policy
         public IFeeCalculator? FeeCalculator { get; }
 
         public TxPolicyViolationException ValidateNextBlockTx(
-            BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Transaction transaction)
+            BlockChain blockChain, Transaction transaction)
         {
             return null;
         }
 
         public BlockPolicyViolationException ValidateNextBlock(
-            BlockChain<PolymorphicAction<ActionBase>> blockChain,
-            Block nextBlock)
+            BlockChain blockChain, Block nextBlock)
         {
             return null;
         }
@@ -45,7 +43,5 @@ namespace Nekoyume.BlockChain.Policy
         public int GetMaxTransactionsPerSignerPerBlock(long index) => int.MaxValue;
 
         public int GetMinBlockProtocolVersion(long index) => 0;
-
-        public IImmutableSet<Currency> NativeTokens => ImmutableHashSet<Currency>.Empty;
     }
 }

@@ -6,8 +6,9 @@ using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Libplanet.Tx;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 
 namespace Lib9c.Proposer.Tests;
 
