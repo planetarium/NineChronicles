@@ -9,7 +9,6 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Lib9c.Formatters;
 using Libplanet;
 using Libplanet.Assets;
 using LruCacheNet;
@@ -39,6 +38,7 @@ using UnityEngine.Android;  // Don't remove this line. It's for another platform
 namespace Nekoyume.Game
 {
     using GraphQL;
+    using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
     using UniRx;
 
@@ -173,7 +173,8 @@ namespace Nekoyume.Game
             String[] permission = new String[]
             {
                 Permission.ExternalStorageRead,
-                Permission.ExternalStorageWrite
+                Permission.ExternalStorageWrite,
+                "android.permission.POST_NOTIFICATIONS",
             };
 
             while (!HasStoragePermission())
@@ -644,6 +645,8 @@ namespace Nekoyume.Game
 
         protected override void OnApplicationQuit()
         {
+            ReservePushNotifications();
+
             if (Analyzer.Instance != null)
             {
                 Analyzer.Instance.Track("Unity/Player Quit");
@@ -1020,10 +1023,11 @@ namespace Nekoyume.Game
             if (roundData.ArenaType == ArenaType.OffSeason &&
                 arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
             {
-                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, default);
-                if (prevPushIdentifier != default)
+                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
                 {
                     PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
                 var targetBlockIndex = nextRoundData.StartBlockIndex
@@ -1044,10 +1048,11 @@ namespace Nekoyume.Game
                 return;
             }
 
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, default);
-            if (prevPushIdentifier != default)
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
             {
                 PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
             var targetBlockIndex = row.StartedBlockIndex
@@ -1062,19 +1067,39 @@ namespace Nekoyume.Game
 
         private void ReserveArenaTicketPush(long currentBlockIndex)
         {
+            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
+            if (RxProps.ArenaTicketsProgress.HasValue &&
+                RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
+            {
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+                }
+                return;
+            }
+
             var currentRoundData = TableSheets.Instance.ArenaSheet
                 .GetRoundByBlockIndex(currentBlockIndex);
             var interval = States.Instance.GameConfigState.DailyArenaInterval;
             var remainingBlockCount = interval - ((currentBlockIndex - currentRoundData.StartBlockIndex) % interval);
-            if (remainingBlockCount < TicketPushBlockCountThreshold)
+
+            var row = TableSheets.Instance.ArenaSheet
+                .GetRowByBlockIndex(currentBlockIndex);
+            var medalTotalCount = ArenaHelper.GetMedalTotalCount(
+                row,
+                States.Instance.CurrentAvatarState);
+
+            if (medalTotalCount < currentRoundData.RequiredMedalCount ||
+                remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
             }
 
-            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, default);
-            if (prevPushIdentifier != default)
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
             {
                 PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
             }
 
             var timeSpan = Helper.Util.GetBlockToTime(
@@ -1087,22 +1112,34 @@ namespace Nekoyume.Game
 
         private void ReserveWorldbossTicketPush(long currentBlockIndex)
         {
-            if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
+            var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            var raiderState = WorldBossStates
+                .GetRaiderState(States.Instance.CurrentAvatarState.address);
+            var remainingTicket = WorldBossFrontHelper.GetRemainTicket(
+                raiderState, currentBlockIndex, interval);
+
+            if (remainingTicket <= 0 ||
+                !WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
             {
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
+                }
                 return;
             }
 
-            var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
             var remainingBlockCount = interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
             }
 
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, default);
-            if (prevPushIdentifier != default)
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
             {
                 PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
             }
 
             var timeSpan = Helper.Util.GetBlockToTime(

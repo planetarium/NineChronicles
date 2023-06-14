@@ -44,7 +44,6 @@ using Lib9c.DevExtensions.Action;
 namespace Nekoyume.Blockchain
 {
     using Model;
-    using Nekoyume.Game.LiveAsset;
     using UI.Scroller;
     using UniRx;
 

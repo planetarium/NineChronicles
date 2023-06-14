@@ -116,7 +116,10 @@ namespace Nekoyume
         public static void CancelReservation(string identifier)
         {
 #if UNITY_ANDROID
-            AndroidNotificationCenter.CancelNotification(int.Parse(identifier));
+            if (int.TryParse(identifier, out var outIdentifier))
+            {
+                AndroidNotificationCenter.CancelNotification(outIdentifier);
+            }
 #elif UNITY_IOS
             iOSNotificationCenter.RemoveScheduledNotification(identifier);
 #else
