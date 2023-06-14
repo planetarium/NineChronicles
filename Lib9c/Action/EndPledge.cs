@@ -10,15 +10,19 @@ namespace Nekoyume.Action
     [ActionType("end_pledge")]
     public class EndPledge : ActionBase
     {
+        public const string TypeIdentifier = "end_pledge";
         public EndPledge()
         {
         }
 
         public Address AgentAddress;
-        public override IValue PlainValue => AgentAddress.Serialize();
+        public override IValue PlainValue =>
+            Dictionary.Empty
+                .Add("type_id", TypeIdentifier)
+                .Add("values", AgentAddress.Serialize());
         public override void LoadPlainValue(IValue plainValue)
         {
-            AgentAddress = plainValue.ToAddress();
+            AgentAddress = ((Dictionary)plainValue)["values"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

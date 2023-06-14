@@ -90,6 +90,8 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(RequestPledge))]
         [InlineData(typeof(ApprovePledge))]
         [InlineData(typeof(EndPledge))]
+        [InlineData(typeof(CreatePledge))]
+        [InlineData(typeof(TransferAssets))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -448,6 +450,15 @@ namespace Lib9c.Tests.Action
                 {
                     AgentAddress = new PrivateKey().ToAddress(),
                 },
+                CreatePledge _ => new CreatePledge
+                {
+                    PatronAddress = new PrivateKey().ToAddress(),
+                    AgentAddresses = new[] { new PrivateKey().ToAddress() },
+                },
+                TransferAssets _ => new TransferAssets(_sender, new List<(Address, FungibleAssetValue)>
+                {
+                    (_signer, 1 * _currency),
+                }),
                 _ => throw new InvalidCastException(),
             };
         }

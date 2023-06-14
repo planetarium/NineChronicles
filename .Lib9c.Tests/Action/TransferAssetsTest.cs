@@ -284,7 +284,7 @@ namespace Lib9c.Tests.Action
 
             var recipients = (List)values["recipients"];
             var info = (List)recipients[0];
-            Assert.Equal((Text)"transfer_assets", plainValue["type_id"]);
+            Assert.Equal((Text)"transfer_assets2", plainValue["type_id"]);
             Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, info[0].ToAddress());
             Assert.Equal(_currency * 100, info[1].ToFungibleAssetValue());

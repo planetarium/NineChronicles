@@ -9,19 +9,23 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("create_pledge")]
+    [ActionType(TypeIdentifier)]
     public class CreatePledge : ActionBase
     {
+        public const string TypeIdentifier = "create_pledge";
         public Address PatronAddress;
         public int Mead;
         public IEnumerable<Address> AgentAddresses;
-        public override IValue PlainValue => List.Empty
-            .Add(PatronAddress.Serialize())
-            .Add(Mead.Serialize())
-            .Add(new List(AgentAddresses.Select(a => a.Serialize())));
+        public override IValue PlainValue =>
+            Dictionary.Empty
+                .Add("type_id", TypeIdentifier)
+                .Add("values", List.Empty
+                    .Add(PatronAddress.Serialize())
+                    .Add(Mead.Serialize())
+                    .Add(new List(AgentAddresses.Select(a => a.Serialize()))));
         public override void LoadPlainValue(IValue plainValue)
         {
-            var list = (List) plainValue;
+            var list = (List)((Dictionary)plainValue)["values"];
             PatronAddress = list[0].ToAddress();
             Mead = list[1].ToInteger();
             AgentAddresses = list[2].ToList(StateExtensions.ToAddress);

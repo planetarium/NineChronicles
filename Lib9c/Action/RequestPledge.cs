@@ -7,9 +7,11 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("request_pledge")]
+    [ActionType(TypeIdentifier)]
     public class RequestPledge : ActionBase
     {
+        public const string TypeIdentifier = "request_pledge";
+
         public RequestPledge()
         {
         }
@@ -20,11 +22,14 @@ namespace Nekoyume.Action
         public Address AgentAddress;
         public int Mead;
 
-        public override IValue PlainValue => List.Empty.Add(AgentAddress.Serialize()).Add(Mead.Serialize());
+        public override IValue PlainValue =>
+            Dictionary.Empty
+                .Add("type_id", TypeIdentifier)
+                .Add("values", List.Empty.Add(AgentAddress.Serialize()).Add(Mead.Serialize()));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            List values = (List) plainValue;
+            List values = (List)((Dictionary)plainValue)["values"];
             AgentAddress = values[0].ToAddress();
             Mead = values[1].ToInteger();
         }

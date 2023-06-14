@@ -20,9 +20,10 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("transfer_assets2")]
+    [ActionType(TypeIdentifier)]
     public class TransferAssets : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
+        public const string TypeIdentifier = "transfer_assets2";
         public const int RecipientsCapacity = 100;
         private const int MemoMaxLength = 80;
 
@@ -73,7 +74,7 @@ namespace Nekoyume.Action
                 }
 
                 return Dictionary.Empty
-                    .Add("type_id", "transfer_assets")
+                    .Add("type_id", TypeIdentifier)
                     .Add("values", new Dictionary(pairs));
             }
         }

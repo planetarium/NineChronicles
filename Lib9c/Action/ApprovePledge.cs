@@ -7,18 +7,22 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
-    [ActionType("approve_pledge")]
+    [ActionType(TypeIdentifier)]
     public class ApprovePledge : ActionBase
     {
+        public const string TypeIdentifier = "approve_pledge";
         public ApprovePledge()
         {
         }
 
         public Address PatronAddress;
-        public override IValue PlainValue => PatronAddress.Serialize();
+        public override IValue PlainValue =>
+        Dictionary.Empty
+            .Add("type_id", TypeIdentifier)
+            .Add("values", PatronAddress.Serialize());
         public override void LoadPlainValue(IValue plainValue)
         {
-            PatronAddress = plainValue.ToAddress();
+            PatronAddress = ((Dictionary)plainValue)["values"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

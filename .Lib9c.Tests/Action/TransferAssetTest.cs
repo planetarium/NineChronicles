@@ -248,7 +248,7 @@ namespace Lib9c.Tests.Action
             Dictionary plainValue = (Dictionary)action.PlainValue;
             Dictionary values = (Dictionary)plainValue["values"];
 
-            Assert.Equal((Text)"transfer_asset3", plainValue["type_id"]);
+            Assert.Equal((Text)"transfer_asset4", plainValue["type_id"]);
             Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, values["recipient"].ToAddress());
             Assert.Equal(_currency * 100, values["amount"].ToFungibleAssetValue());
