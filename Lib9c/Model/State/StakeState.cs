@@ -126,6 +126,11 @@ namespace Nekoyume.Model.State
                 return StartedBlockIndex + RewardInterval <= blockIndex;
             }
 
+            // FIXME:
+            // The ReceivedBlockIndex is not a baseline block index for the stake reward.
+            // It is the block index when the stake reward was received.
+            // So, we need to calculate the block index for the stake reward and use it
+            // instead of the ReceivedBlockIndex.
             return ReceivedBlockIndex + RewardInterval <= blockIndex;
         }
 
