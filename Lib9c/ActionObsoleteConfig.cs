@@ -64,7 +64,9 @@ namespace Nekoyume
 
         public const long V100310ExecutedBlockIndex = 5_217_577L;
 
-        // FIXME: This is temporary index.
-        public const long V200030ObsoleteIndex = 7_100_000;
+        // Current: 6_974_550 at 2023-06-14 16:10:00 KST
+        // Release plan: About 7_102_350 at 2023-06-29 12:00:00 KST
+        // Seconds per block: 10
+        public const long V200030ObsoleteIndex = 7_200_000;
     }
 }
