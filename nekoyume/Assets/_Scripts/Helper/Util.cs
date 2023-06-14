@@ -266,7 +266,7 @@ namespace Nekoyume.Helper
         {
             var s = size;
             var count = 0;
-            while (s > cellSize)
+            while (s >= cellSize)
             {
                 s -= cellSize;
                 s -= spacing;

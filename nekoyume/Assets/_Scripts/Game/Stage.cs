@@ -183,7 +183,7 @@ namespace Nekoyume.Game
                 var anim = player.Animator;
                 if (index == i)
                 {
-                    var moveTo = new Vector3(-0.05f, -0.5f);
+                    var moveTo = new Vector3(-0.5f, -0.5f);
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
                     playerObject.transform.DOMove(moveTo, 1.3f).SetDelay(0.2f);
                     var seqPos = new Vector3(
