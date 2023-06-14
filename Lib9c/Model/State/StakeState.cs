@@ -160,16 +160,88 @@ namespace Nekoyume.Model.State
             out int v1Step,
             out int v2Step)
         {
-            var targetBlockIndex = Math.Max(
-                Math.Max(StartedBlockIndex, ReceivedBlockIndex),
-                CurrencyAsRewardStartIndex);
             v1Step = 0;
-            v2Step = (int)Math.DivRem(
-                blockIndex - targetBlockIndex,
-                RewardInterval,
-                out _
-            );
+            v2Step = GetRewardStep(blockIndex, CurrencyAsRewardStartIndex);
             return v1Step + v2Step;
+        }
+
+        /// <summary>
+        /// Calculate accumulated rewards step.
+        /// </summary>
+        /// <param name="currentBlockIndex">The block index of the current block.</param>
+        /// <param name="rewardStartBlockIndex">
+        /// The block index of the reward start block.
+        /// If not null, the return value is calculated differently like below.
+        /// # Case 1
+        ///   RewardInterval: 10, StartedBlockIndex: 0, ReceivedBlockIndex: 0,
+        ///   currentBlockIndex: 100, rewardStartBlockIndex: null
+        ///   -> 10
+        /// # Case 2
+        ///   RewardInterval: 10, StartedBlockIndex: 0, ReceivedBlockIndex: 15,
+        ///   currentBlockIndex: 100, rewardStartBlockIndex: null
+        ///   -> 9
+        /// # Case 3
+        ///   RewardInterval: 10, StartedBlockIndex: 0, ReceivedBlockIndex: 0,
+        ///   currentBlockIndex: 100, rewardStartBlockIndex: 15
+        ///   -> 8
+        /// # Case 4
+        ///   RewardInterval: 10, StartedBlockIndex: 0, ReceivedBlockIndex: 55,
+        ///   currentBlockIndex: 100, rewardStartBlockIndex: 15
+        ///   -> 5
+        /// # Case 5
+        ///   RewardInterval: 10, StartedBlockIndex: 0, ReceivedBlockIndex: 15,
+        ///   currentBlockIndex: 100, rewardStartBlockIndex: 55
+        ///   -> 4
+        /// # Case 6
+        ///   RewardInterval: 10, StartedBlockIndex: 100, ReceivedBlockIndex: 0,
+        ///   currentBlockIndex: 200, rewardStartBlockIndex: 55
+        ///   -> 10
+        /// # Case 7
+        ///   RewardInterval: 10, StartedBlockIndex: 100, ReceivedBlockIndex: 115,
+        ///   currentBlockIndex: 200, rewardStartBlockIndex: 55
+        ///   -> 9
+        /// </param>
+        /// <returns>The accumulated rewards step.</returns>
+        internal int GetRewardStep(long currentBlockIndex, long? rewardStartBlockIndex)
+        {
+            var stepBlockIndexes = new List<long>();
+            while (true)
+            {
+                var nextStepBlockIndex =
+                    StartedBlockIndex + RewardInterval * (stepBlockIndexes.Count + 1);
+                if (nextStepBlockIndex > currentBlockIndex)
+                {
+                    break;
+                }
+
+                stepBlockIndexes.Add(nextStepBlockIndex);
+            }
+
+            if (stepBlockIndexes.Count == 0)
+            {
+                return 0;
+            }
+
+            if (ReceivedBlockIndex > 0)
+            {
+                stepBlockIndexes = stepBlockIndexes
+                    .Where(stepBlockIndex => stepBlockIndex > ReceivedBlockIndex)
+                    .ToList();
+                if (stepBlockIndexes.Count == 0)
+                {
+                    return 0;
+                }
+            }
+
+            if (rewardStartBlockIndex.HasValue)
+            {
+                var validStepBlockIndex = rewardStartBlockIndex + RewardInterval;
+                stepBlockIndexes = stepBlockIndexes
+                    .Where(stepBlockIndex => stepBlockIndex >= validStepBlockIndex)
+                    .ToList();
+            }
+
+            return stepBlockIndexes.Count;
         }
 
         private int CalculateStep(

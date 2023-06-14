@@ -70,5 +70,56 @@ namespace Lib9c.Tests.Model.State
             var state = new StakeState(default, startedBlockIndex);
             Assert.Equal(expected, state.CalculateAccumulatedRuneRewards(blockIndex));
         }
+
+        [Theory]
+        // default.
+        [InlineData(0L, 0L, 0L, null, 0)]
+        // control current block index.
+        [InlineData(0L, 0L, RewardInterval, null, 1)]
+        [InlineData(0L, 0L, RewardInterval * 99, null, 99)]
+        // control started block index.
+        [InlineData(1L, 0L, RewardInterval * 9, null, 8)]
+        [InlineData(RewardInterval, 0L, RewardInterval * 9, null, 8)]
+        [InlineData(RewardInterval + 1L, 0L, RewardInterval * 9, null, 7)]
+        // control received block index.
+        [InlineData(0L, 1L, RewardInterval * 9, null, 9)]
+        [InlineData(0L, RewardInterval - 1L, RewardInterval * 9, null, 9)]
+        [InlineData(0L, RewardInterval, RewardInterval * 9, null, 8)]
+        [InlineData(0L, RewardInterval + 1L, RewardInterval * 9, null, 8)]
+        // control reward start block index.
+        [InlineData(0L, 0L, RewardInterval * 9, 0L, 9)]
+        [InlineData(0L, 0L, RewardInterval * 9, 1L, 8)]
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval, 8)]
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval + 1L, 7)]
+        // control complex. reward start block index is inside of reward range.
+        [InlineData(1L, 0L, RewardInterval * 9, RewardInterval, 7)]
+        [InlineData(1L, 0L, RewardInterval * 9 + 1L, RewardInterval, 8)]
+        [InlineData(RewardInterval, 0L, RewardInterval * 9, RewardInterval, 8)]
+        // reward start block index is greater than reward range.
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval * 9 + 1L, 0)]
+        // reward start block index is less than reward range.
+        [InlineData(1L, 0L, RewardInterval * 9 + 1L, 0L, 9)]
+        public void GetRewardStep(
+            long startedBlockIndex,
+            long receivedBlockIndex,
+            long currentBlockIndex,
+            long? rewardStartBlockIndex,
+            int expectedStep)
+        {
+            var addr = new PrivateKey().ToAddress();
+            var stakeState = new StakeState(
+                addr,
+                startedBlockIndex);
+            Assert.Equal(addr, stakeState.address);
+            Assert.Equal(startedBlockIndex, stakeState.StartedBlockIndex);
+            Assert.Equal(0, stakeState.ReceivedBlockIndex);
+            Assert.Equal(
+                startedBlockIndex + LockupInterval,
+                stakeState.CancellableBlockIndex);
+            stakeState.Claim(receivedBlockIndex);
+            Assert.Equal(receivedBlockIndex, stakeState.ReceivedBlockIndex);
+            var actualStep = stakeState.GetRewardStep(currentBlockIndex, rewardStartBlockIndex);
+            Assert.Equal(expectedStep, actualStep);
+        }
     }
 }
