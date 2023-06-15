@@ -174,14 +174,8 @@ namespace Nekoyume.Game
             String[] permission = new String[]
             {
                 Permission.ExternalStorageRead,
-                Permission.ExternalStorageWrite,
-                "android.permission.POST_NOTIFICATIONS",
+                Permission.ExternalStorageWrite
             };
-
-            while (!HasStoragePermission())
-            {
-                Permission.RequestUserPermissions(permission);
-            }
 #endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -1087,9 +1081,11 @@ namespace Nekoyume.Game
 
             var row = TableSheets.Instance.ArenaSheet
                 .GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = ArenaHelper.GetMedalTotalCount(
+            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
+                ArenaHelper.GetMedalTotalCount(
                 row,
-                States.Instance.CurrentAvatarState);
+                States.Instance.CurrentAvatarState) :
+                default;
 
             if (medalTotalCount < currentRoundData.RequiredMedalCount ||
                 remainingBlockCount < TicketPushBlockCountThreshold)
@@ -1115,10 +1111,12 @@ namespace Nekoyume.Game
         {
             var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
             var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
-            var raiderState = WorldBossStates
-                .GetRaiderState(States.Instance.CurrentAvatarState.address);
-            var remainingTicket = WorldBossFrontHelper.GetRemainTicket(
-                raiderState, currentBlockIndex, interval);
+            var raiderState = States.Instance.CurrentAvatarState != null ?
+                WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address) :
+                null;
+            var remainingTicket = raiderState != null ?
+                WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval) :
+                default;
 
             if (remainingTicket <= 0 ||
                 !WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
