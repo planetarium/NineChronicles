@@ -20,6 +20,11 @@ namespace Nekoyume.Model.Item
             ItemId = data.ItemId;
         }
 
+        public Material(Material other) : base(other)
+        {
+            ItemId = other.ItemId;
+        }
+
         public Material(Dictionary serialized) : base(serialized)
         {
             if (serialized.TryGetValue((Text) "item_id", out var itemId))
