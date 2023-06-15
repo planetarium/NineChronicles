@@ -47,6 +47,9 @@ namespace BalanceTool.Runtime.Util
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
                 _totalSupplies.Keys.ToImmutableHashSet();
 
+            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
+                throw new NotSupportedException();
+
             public IValue GetState(Address address) =>
                 _state.TryGetValue(address, out IValue value) ? value : null;
 
