@@ -41,6 +41,7 @@ namespace Nekoyume.Game
     using Lib9c.Formatters;
     using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
+    using Nekoyume.TableData;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -1005,16 +1006,29 @@ namespace Nekoyume.Game
         private void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
-            ReserveArenaSeasonPush(currentBlockIndex);
+
+            var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            var row = TableSheets.Instance.ArenaSheet
+                .GetRowByBlockIndex(currentBlockIndex);
+            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
+                ArenaHelper.GetMedalTotalCount(
+                row,
+                States.Instance.CurrentAvatarState) :
+                default;
+
+            if (medalTotalCount >= roundData.RequiredMedalCount)
+            {
+                ReserveArenaSeasonPush(roundData, currentBlockIndex);
+                ReserveArenaTicketPush(roundData, currentBlockIndex);
+            }
+
             ReserveWorldbossSeasonPush(currentBlockIndex);
-            ReserveArenaTicketPush(currentBlockIndex);
             ReserveWorldbossTicketPush(currentBlockIndex);
         }
 
-        private void ReserveArenaSeasonPush(long currentBlockIndex)
+        private void ReserveArenaSeasonPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
         {
             var arenaSheet = TableSheets.Instance.ArenaSheet;
-            var roundData = arenaSheet.GetRoundByBlockIndex(currentBlockIndex);
             if (roundData.ArenaType == ArenaType.OffSeason &&
                 arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
             {
@@ -1029,11 +1043,44 @@ namespace Nekoyume.Game
                     + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
                 var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-                var title = L10nManager.Localize("PUSH_ARENA_SEASON_START_TITLE");
                 var content = L10nManager.Localize("PUSH_ARENA_SEASON_START_CONTENT");
-                var identifier = PushNotifier.Push(title, content, timeSpan);
+                var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
                 PlayerPrefs.SetString(ArenaSeasonPushIdentifierKey, identifier);
             }
+        }
+
+        private void ReserveArenaTicketPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        {
+            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
+            if (RxProps.ArenaTicketsProgress.HasValue &&
+                RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
+            {
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+                }
+                return;
+            }
+
+            var interval = States.Instance.GameConfigState.DailyArenaInterval;
+            var remainingBlockCount = interval - ((currentBlockIndex - roundData.StartBlockIndex) % interval);
+            if (remainingBlockCount < TicketPushBlockCountThreshold)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+            }
+
+            var timeSpan = Helper.Util.GetBlockToTime(
+                remainingBlockCount - TicketPushBlockCountThreshold);
+            var content = L10nManager.Localize("PUSH_ARENA_TICKET_CONTENT");
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
+            PlayerPrefs.SetString(ArenaTicketPushIdentifierKey, identifier);
         }
 
         private void ReserveWorldbossSeasonPush(long currentBlockIndex)
@@ -1054,57 +1101,9 @@ namespace Nekoyume.Game
                 + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
             var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-            var title = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_TITLE");
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT");
-            var identifier = PushNotifier.Push(title, content, timeSpan);
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
             PlayerPrefs.SetString(WorldbossSeasonPushIdentifierKey, identifier);
-        }
-
-        private void ReserveArenaTicketPush(long currentBlockIndex)
-        {
-            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
-            if (RxProps.ArenaTicketsProgress.HasValue &&
-                RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
-            {
-                if (!string.IsNullOrEmpty(prevPushIdentifier))
-                {
-                    PushNotifier.CancelReservation(prevPushIdentifier);
-                    PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
-                }
-                return;
-            }
-
-            var currentRoundData = TableSheets.Instance.ArenaSheet
-                .GetRoundByBlockIndex(currentBlockIndex);
-            var interval = States.Instance.GameConfigState.DailyArenaInterval;
-            var remainingBlockCount = interval - ((currentBlockIndex - currentRoundData.StartBlockIndex) % interval);
-
-            var row = TableSheets.Instance.ArenaSheet
-                .GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
-                ArenaHelper.GetMedalTotalCount(
-                row,
-                States.Instance.CurrentAvatarState) :
-                default;
-
-            if (medalTotalCount < currentRoundData.RequiredMedalCount ||
-                remainingBlockCount < TicketPushBlockCountThreshold)
-            {
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(prevPushIdentifier))
-            {
-                PushNotifier.CancelReservation(prevPushIdentifier);
-                PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
-            }
-
-            var timeSpan = Helper.Util.GetBlockToTime(
-                remainingBlockCount - TicketPushBlockCountThreshold);
-            var title = L10nManager.Localize("PUSH_ARENA_TICKET_TITLE");
-            var content = L10nManager.Localize("PUSH_ARENA_TICKET_CONTENT");
-            var identifier = PushNotifier.Push(title, content, timeSpan);
-            PlayerPrefs.SetString(ArenaTicketPushIdentifierKey, identifier);
         }
 
         private void ReserveWorldbossTicketPush(long currentBlockIndex)
@@ -1143,9 +1142,8 @@ namespace Nekoyume.Game
 
             var timeSpan = Helper.Util.GetBlockToTime(
                 remainingBlockCount - TicketPushBlockCountThreshold);
-            var title = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_TITLE");
             var content = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_CONTENT");
-            var identifier = PushNotifier.Push(title, content, timeSpan);
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 

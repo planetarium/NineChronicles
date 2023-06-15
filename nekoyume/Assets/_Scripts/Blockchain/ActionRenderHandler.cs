@@ -777,10 +777,9 @@ namespace Nekoyume.Blockchain
                 {
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
-                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_TITLE");
                     var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                         result.itemUsable.GetLocalizedNonColoredName(false));
-                    PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
+                    PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Workshop);
                 }
                 // ~Notify
 
@@ -997,11 +996,9 @@ namespace Nekoyume.Blockchain
                 {
                     var expectedNotifiedTime =
                         Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
-                    var notificationTitle = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_TITLE");
                     var notificationText = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                         result.itemUsable.GetLocalizedNonColoredName(false));
-                    Debug.LogError(notificationTitle);
-                    PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
+                    PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Workshop);
                 }
                 // ~Notify
 
@@ -1367,9 +1364,8 @@ namespace Nekoyume.Blockchain
 
                 var expectedNotifiedTime =
                     Util.GetBlockToTime(Mathf.RoundToInt(States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
-                var notificationTitle = L10nManager.Localize("PUSH_PROSPERITY_METER_TITLE");
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
-                PushNotifier.Push(notificationTitle, notificationText, expectedNotifiedTime);
+                PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Reward);
 
                 if (!RuneFrontHelper.TryGetRuneData(RuneHelper.DailyRewardRune.Ticker,
                         out var data))

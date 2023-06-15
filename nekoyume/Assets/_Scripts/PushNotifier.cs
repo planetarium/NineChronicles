@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Nekoyume.L10n;
 
 #if UNITY_ANDROID
 using UnityEngine.Android;
@@ -19,6 +20,14 @@ namespace Nekoyume
 {
     public class PushNotifier : MonoBehaviour
     {
+        public enum PushType
+        {
+            Reward,
+            Workshop,
+            Arena,
+            Worldboss
+        }
+
         public const string ChannelId = "NineChroniclesLocal";
 
 #if UNITY_ANDROID
@@ -67,9 +76,10 @@ namespace Nekoyume
         /// Notification identifier.
         /// This will be parsed as int in Android.
         /// </returns>
-        public static string Push(string title, string text, TimeSpan timespan)
+        public static string Push(string text, TimeSpan timespan, PushType pushType)
         {
             Debug.Log($"FireTime : {DateTime.Now + timespan}");
+            var title = L10nManager.Localize("TITLE");
 
 #if UNITY_ANDROID
             var fireTime = DateTime.Now + timespan;
@@ -80,6 +90,7 @@ namespace Nekoyume
                 Text = text,
                 FireTime = fireTime,
                 IntentData = $"Title : {title}, Text : {text}, FireTime : {fireTime}",
+                LargeIcon = pushType.ToString()
             };
 
             var identifier = AndroidNotificationCenter.SendNotification(notification, ChannelId);

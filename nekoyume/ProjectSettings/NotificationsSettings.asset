@@ -4,7 +4,7 @@
         "m_EditorHideFlags": 0,
         "m_Name": "",
         "m_EditorClassIdentifier": "",
-        "ToolbarIndex": 1,
+        "ToolbarIndex": 0,
         "m_iOSNotificationSettingsValues": {
             "m_Keys": [
                 "UnityNotificationRequestAuthorizationOnAppLaunch",
@@ -37,6 +37,43 @@
                 "com.unity3d.player.UnityPlayerActivity"
             ]
         },
-        "DrawableResources": []
+        "DrawableResources": [
+            {
+                "Id": "Reward",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "346b12d72fafc8c4eb6c6cbef8ef892c",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "Workshop",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "f27400e1a8ea62a4eb0e1b6a49c7d5d3",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "Arena",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "3d4fd6220f3eeae45a488c41ab020f90",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "Worldboss",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "e41b4705611f35f4795ffc2261b356c4",
+                    "type": 3
+                }
+            }
+        ]
     }
 }
