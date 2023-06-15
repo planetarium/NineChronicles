@@ -251,7 +251,6 @@ namespace Nekoyume.Action
                 out var runeV2Step);
             stakeState.CalculateAccumulatedCurrencyRewards(
                 context.BlockIndex,
-                out var currencyV1Step,
                 out var currencyV2Step);
             if (itemV1Step > 0)
             {
@@ -270,7 +269,7 @@ namespace Nekoyume.Action
                     stakedAmount,
                     itemV1Step,
                     runeV1Step,
-                    currencyV1Step,
+                    0,
                     fixedRewardV1,
                     regularRewardV1);
             }

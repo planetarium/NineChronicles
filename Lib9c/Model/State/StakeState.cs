@@ -160,14 +160,10 @@ namespace Nekoyume.Model.State
             return CalculateStep(blockIndex, startedBlockIndex, out v1Step, out v2Step);
         }
 
-        public int CalculateAccumulatedCurrencyRewards(
-            long blockIndex,
-            out int v1Step,
-            out int v2Step)
+        public int CalculateAccumulatedCurrencyRewards(long blockIndex, out int v2Step)
         {
-            v1Step = 0;
             v2Step = GetRewardStep(blockIndex, CurrencyAsRewardStartIndex);
-            return v1Step + v2Step;
+            return v2Step;
         }
 
         /// <summary>
