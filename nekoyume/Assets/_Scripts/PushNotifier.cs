@@ -30,6 +30,9 @@ namespace Nekoyume
 
         public const string ChannelId = "NineChroniclesLocal";
 
+        public static readonly TimeSpan NightStartTime = new TimeSpan(21, 0, 0);
+        public static readonly TimeSpan NightEndTime = new TimeSpan(8, 0, 0);
+
 #if UNITY_ANDROID
         private static int androidApiLevel;
 #endif
@@ -78,19 +81,61 @@ namespace Nekoyume
         /// </returns>
         public static string Push(string text, TimeSpan timespan, PushType pushType)
         {
-            Debug.Log($"FireTime : {DateTime.Now + timespan}");
+            if (!Settings.Instance.isPushEnabled)
+            {
+                return string.Empty;
+            }
+
+            // night-time push (21:00-08:00)
+            var fireTime = DateTime.Now + timespan;
+            var timeOfDay = fireTime.TimeOfDay;
+            if (!Settings.Instance.isNightTimePushEnabled &&
+                (timeOfDay >= NightStartTime || timeOfDay <= NightEndTime))
+            {
+                return string.Empty;
+            }
+
+            // filter by push type
+            switch (pushType)
+            {
+                case PushType.Reward:
+                    if (!Settings.Instance.isRewardPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+                    break;
+                case PushType.Workshop:
+                    if (!Settings.Instance.isWorkshopPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+                    break;
+                case PushType.Arena:
+                    if (!Settings.Instance.isArenaPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+                    break;
+                case PushType.Worldboss:
+                    if (!Settings.Instance.isWorldbossPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+                    break;
+            }
+
+            Debug.Log($"FireTime : {fireTime}");
             var title = L10nManager.Localize("TITLE");
+            var iconName = pushType.ToString().ToLower();
 
 #if UNITY_ANDROID
-            var fireTime = DateTime.Now + timespan;
-
             var notification = new AndroidNotification()
             {
                 Title = title,
                 Text = text,
                 FireTime = fireTime,
                 IntentData = $"Title : {title}, Text : {text}, FireTime : {fireTime}",
-                LargeIcon = pushType.ToString()
+                LargeIcon = iconName,
             };
 
             var identifier = AndroidNotificationCenter.SendNotification(notification, ChannelId);

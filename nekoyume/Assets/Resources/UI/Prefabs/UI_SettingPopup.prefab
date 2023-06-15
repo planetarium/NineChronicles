@@ -356,7 +356,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
+  m_fontSize: 20.9
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -523,7 +523,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
+  m_fontSize: 20.9
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1168,7 +1168,7 @@ RectTransform:
   - {fileID: 8319335544585673759}
   - {fileID: 4034655268165753603}
   m_Father: {fileID: 2610623906008013406}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -7335,13 +7335,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2610623906008013406}
-  m_RootOrder: 2
+  m_Father: {fileID: 3220504505747501226}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1}
-  m_SizeDelta: {x: -18, y: 50}
+  m_AnchoredPosition: {x: 0, y: 43.99983}
+  m_SizeDelta: {x: -102, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3436033553856654246
 CanvasRenderer:
@@ -7966,7 +7966,7 @@ RectTransform:
   - {fileID: 1922636957561561746}
   - {fileID: 9152862162578578439}
   m_Father: {fileID: 2610623906008013406}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -8977,6 +8977,7 @@ RectTransform:
   - {fileID: 3647888718177431565}
   - {fileID: 1141226652636211901}
   - {fileID: 5337077734423785762}
+  - {fileID: 8788447082755945851}
   m_Father: {fileID: 224898616830980190}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9998,7 +9999,6 @@ RectTransform:
   m_Children:
   - {fileID: 448542936629925816}
   - {fileID: 489833632461702486}
-  - {fileID: 8788447082755945851}
   - {fileID: 147550421583552655}
   - {fileID: 3458576190101604851}
   m_Father: {fileID: 2632471853301162451}

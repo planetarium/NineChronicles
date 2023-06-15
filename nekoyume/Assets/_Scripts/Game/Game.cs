@@ -1018,7 +1018,7 @@ namespace Nekoyume.Game
 
             if (medalTotalCount >= roundData.RequiredMedalCount)
             {
-                ReserveArenaSeasonPush(roundData, currentBlockIndex);
+                ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
                 ReserveArenaTicketPush(roundData, currentBlockIndex);
             }
 
@@ -1026,7 +1026,10 @@ namespace Nekoyume.Game
             ReserveWorldbossTicketPush(currentBlockIndex);
         }
 
-        private void ReserveArenaSeasonPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        private void ReserveArenaSeasonPush(
+            ArenaSheet.Row row,
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
         {
             var arenaSheet = TableSheets.Instance.ArenaSheet;
             if (roundData.ArenaType == ArenaType.OffSeason &&
@@ -1043,7 +1046,18 @@ namespace Nekoyume.Game
                     + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
                 var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-                var content = L10nManager.Localize("PUSH_ARENA_SEASON_START_CONTENT");
+                var arenaTypeText = roundData.ArenaType == ArenaType.Season ?
+                    L10nManager.Localize("UI_SEASON") :
+                    L10nManager.Localize("UI_CHAMPIONSHIP");
+
+                var arenaSeason = roundData.ArenaType == ArenaType.Championship ?
+                    roundData.ChampionshipId :
+                    row.GetSeasonNumber(roundData.Round);
+
+                var content = L10nManager.Localize(
+                    "PUSH_ARENA_SEASON_START_CONTENT",
+                    arenaTypeText,
+                    arenaSeason);
                 var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
                 PlayerPrefs.SetString(ArenaSeasonPushIdentifierKey, identifier);
             }
