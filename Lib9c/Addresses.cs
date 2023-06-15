@@ -36,6 +36,7 @@ namespace Nekoyume
         public static readonly Address Raid                  = new Address("0000000000000000000000000000000000000015");
         public static readonly Address Rune                  = new Address("0000000000000000000000000000000000000016");
         public static readonly Address Market                = new Address("0000000000000000000000000000000000000017");
+        public static readonly Address GarageWallet          = new Address("0000000000000000000000000000000000000018");
 
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
 
