@@ -59,6 +59,17 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
+        [InlineData(0L)]
+        [InlineData(long.MaxValue)]
+        [InlineData(long.MinValue)]
+        public void Claim(long blockIndex)
+        {
+            var stakeState = new StakeState(new PrivateKey().ToAddress(), 0L);
+            stakeState.Claim(blockIndex);
+            Assert.Equal(blockIndex, stakeState.ReceivedBlockIndex);
+        }
+
+        [Theory]
         [InlineData(1L, 1L, -110)]
         [InlineData(1L, ClaimStakeReward2.ObsoletedIndex, 0)]
         [InlineData(1L, ClaimStakeReward2.ObsoletedIndex + RewardInterval, 1)]
@@ -106,18 +117,10 @@ namespace Lib9c.Tests.Model.State
             long? rewardStartBlockIndex,
             int expectedStep)
         {
-            var addr = new PrivateKey().ToAddress();
             var stakeState = new StakeState(
-                addr,
+                new PrivateKey().ToAddress(),
                 startedBlockIndex);
-            Assert.Equal(addr, stakeState.address);
-            Assert.Equal(startedBlockIndex, stakeState.StartedBlockIndex);
-            Assert.Equal(0, stakeState.ReceivedBlockIndex);
-            Assert.Equal(
-                startedBlockIndex + LockupInterval,
-                stakeState.CancellableBlockIndex);
             stakeState.Claim(receivedBlockIndex);
-            Assert.Equal(receivedBlockIndex, stakeState.ReceivedBlockIndex);
             var actualStep = stakeState.GetRewardStep(currentBlockIndex, rewardStartBlockIndex);
             Assert.Equal(expectedStep, actualStep);
         }
