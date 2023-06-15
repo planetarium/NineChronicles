@@ -10,7 +10,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Android;
 
 namespace Nekoyume.UI
 {
@@ -29,37 +28,51 @@ namespace Nekoyume.UI
             CreatePassword,
         }
 
-        public IKeyStore KeyStore;
-        public InputField passPhraseField;
-        public InputField retypeField;
-        public InputField loginField;
-        public InputField findPassphraseField;
+        public GameObject bg;
+        public GameObject header;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
-        public GameObject passPhraseGroup;
-        public GameObject retypeGroup;
-        public GameObject loginGroup;
-        public TextMeshProUGUI findPassphraseTitle;
-        public GameObject findPassphraseGroup;
-        public GameObject accountGroup;
-        public GameObject header;
-        public GameObject bg;
-        public GameObject loginWarning;
-        public GameObject findPrivateKeyWarning;
+
         public GameObject createSuccessGroup;
-        public TextMeshProUGUI strongText;
-        public TextMeshProUGUI weakText;
-        public TextMeshProUGUI correctText;
-        public TextMeshProUGUI incorrectText;
-        public TextMeshProUGUI passPhraseText;
-        public TextMeshProUGUI retypeText;
+
+        [Space]
+        public GameObject accountGroup;
+        public Image accountImage;
         public TextMeshProUGUI accountAddressText;
         public TextMeshProUGUI accountAddressHolder;
         public TextMeshProUGUI accountWarningText;
+
+        [Space]
+        public GameObject passPhraseGroup;
+        public InputField passPhraseField;
+        public TextMeshProUGUI passPhraseText;
+        public TextMeshProUGUI weakText;
+        public TextMeshProUGUI strongText;
+
+        [Space]
+        public GameObject retypeGroup;
+        public InputField retypeField;
+        public TextMeshProUGUI retypeText;
+        public TextMeshProUGUI correctText;
+        public TextMeshProUGUI incorrectText;
+
+        [Space]
+        public GameObject loginGroup;
+        public InputField loginField;
+        public GameObject loginWarning;
+
+        [Space]
+        public TextMeshProUGUI findPassphraseTitle;
+        public GameObject findPassphraseGroup;
+        public InputField findPassphraseField;
+        public GameObject findPrivateKeyWarning;
+
+        [Space]
         public ConditionalButton submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
-        public Image accountImage;
+
+        public IKeyStore KeyStore;
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
         public bool Login { get; private set; }
         private string _privateKeyString;
@@ -83,26 +96,21 @@ namespace Nekoyume.UI
             _capturedImage = GetComponentInChildren<CapturedImage>();
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
+
             strongText.gameObject.SetActive(false);
             weakText.gameObject.SetActive(false);
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
-            passPhraseField.placeholder.GetComponent<Text>().text =
-                L10nManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
-            retypeField.placeholder.GetComponent<Text>().text =
-                L10nManager.Localize("UI_LOGIN_RETYPE_PASSPHRASE");
-            loginField.placeholder.GetComponent<Text>().text =
-                L10nManager.Localize("UI_LOGIN_LOGIN");
-            findPassphraseField.placeholder.GetComponent<Text>().text =
-                L10nManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
-            submitButton.OnSubmitSubject
-                .Subscribe(_ => Submit())
-                .AddTo(gameObject);
+            submitButton.OnSubmitSubject.Subscribe(_ => Submit()).AddTo(gameObject);
+
+            passPhraseField.onValueChanged.AddListener(CheckPassphrase);
+            retypeField.onValueChanged.AddListener(CheckRetypePassphrase);
 
             base.Awake();
             SubmitWidget = Submit;
         }
+
         private void SubscribeState(States states)
         {
             titleText.gameObject.SetActive(true);
@@ -199,9 +207,8 @@ namespace Nekoyume.UI
             UpdateSubmitButton();
         }
 
-        public void CheckPassphrase()
+        public void CheckPassphrase(string text)
         {
-            var text = passPhraseField.text;
             var strong = CheckPassWord(text);
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
@@ -215,7 +222,7 @@ namespace Nekoyume.UI
             return result.Score >= 2;
         }
 
-        public void CheckRetypePassphrase()
+        public void CheckRetypePassphrase(string text)
         {
             UpdateSubmitButton();
             var vaild = submitButton.IsSubmittable;
