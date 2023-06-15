@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Runtime.Serialization;
 
 namespace Nekoyume.Exceptions
@@ -6,13 +8,13 @@ namespace Nekoyume.Exceptions
     [Serializable]
     public class InvalidActionFieldException : Exception
     {
-        public InvalidActionFieldException(string message) : base(message)
+        public InvalidActionFieldException(string? message = null) : base(message)
         {
         }
 
         public InvalidActionFieldException(
-            string message,
-            Exception innerException = null)
+            string? message = null,
+            Exception? innerException = null)
             : base(message, innerException)
         {
         }
@@ -22,7 +24,7 @@ namespace Nekoyume.Exceptions
             string addressesHex,
             string fieldName,
             string message,
-            Exception innerException = null)
+            Exception? innerException = null)
             : base(
                 $"[{actionType}][{addressesHex}]" +
                 $" Invalid field({fieldName}): {message}",
