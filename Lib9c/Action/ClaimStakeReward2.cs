@@ -16,6 +16,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ObsoletedIndex)]
     public class ClaimStakeReward2 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         public const long ObsoletedIndex = 5_549_200L;
@@ -90,7 +91,7 @@ namespace Nekoyume.Action
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
-            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
+            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewards(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
