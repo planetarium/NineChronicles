@@ -102,6 +102,8 @@ namespace Nekoyume.Blockchain
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private readonly BlockHashCache _blockHashCache = new(100);
+
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -549,10 +551,13 @@ namespace Nekoyume.Blockchain
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
-            BlockIndex = newTipBlock.Index;
+            var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
+            var blockIndex = newTipBlock.Index;
+            var blockHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            _blockHashCache.Add(blockIndex, blockHash);
+            BlockIndex = blockIndex;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            BlockTipHash = blockHash;
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
 
@@ -747,5 +752,14 @@ namespace Nekoyume.Blockchain
 
         public async UniTask<bool> IsTxStagedAsync(TxId txId) =>
             await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
+
+        private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
+        {
+            return blockIndex.HasValue
+                ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
+                    ? outBlockHash
+                    : await Game.Game.instance.ApiClient.GetBlockHashAsync(blockIndex.Value)
+                : BlockTipHash;
+        }
     }
 }
