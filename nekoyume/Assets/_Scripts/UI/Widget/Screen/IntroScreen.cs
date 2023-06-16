@@ -17,17 +17,18 @@ namespace Nekoyume.UI
         [SerializeField] private Button signinButton;
 
         [SerializeField] private GameObject socialLoginContainer;
+        [SerializeField] private CapturedImage socialLoginBackground;
         [SerializeField] private Button googleLoginButton;
         [SerializeField] private Button twitterLoginButton;
         [SerializeField] private Button discordLoginButton;
         [SerializeField] private Button appleLoginButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
+        [SerializeField] private CapturedImage qrCodeGuideBackground;
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
 
-        [SerializeField] private GrayLoadingScreen grayLoadingScreen;
         [SerializeField] private SocialLogin socialLogin;
 
         private int _guideIndex = 0;
@@ -49,11 +50,13 @@ namespace Nekoyume.UI
             startButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
+                socialLoginBackground.Show();
                 socialLoginContainer.SetActive(true);
             });
             signinButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
+                qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
                 {
@@ -99,6 +102,15 @@ namespace Nekoyume.UI
 
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
+
+            touchScreenButton.interactable = true;
+            startButton.interactable = true;
+            signinButton.interactable = true;
+            qrCodeGuideNextButton.interactable = true;
+            googleLoginButton.interactable = true;
+            twitterLoginButton.interactable = true;
+            discordLoginButton.interactable = true;
+            appleLoginButton.interactable = true;
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -113,7 +125,6 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 socialLoginContainer.SetActive(false);
                 qrCodeGuideContainer.SetActive(false);
-                grayLoadingScreen.Close();
             }
             else
             {
