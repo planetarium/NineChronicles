@@ -17,25 +17,87 @@ namespace Nekoyume.UI
 {
     public class SettingPopup : PopupWidget
     {
-        public TextMeshProUGUI addressTitleText;
-        public TMP_InputField addressContentInputField;
-        public Button addressCopyButton;
-        public TextMeshProUGUI privateKeyTitleText;
-        public TMP_InputField privateKeyContentInputField;
-        public Button privateKeyCopyButton;
-        public Button closeButton;
-        public TextMeshProUGUI warningText;
-        public TextMeshProUGUI volumeMasterText;
-        public Slider volumeMasterSlider;
-        public Toggle volumeMasterToggle;
-        public List<TextMeshProUGUI> muteTexts;
-        public TextMeshProUGUI resetKeyStoreText;
-        public TextMeshProUGUI resetStoreText;
-        public TextMeshProUGUI confirmText;
-        public TextMeshProUGUI redeemCodeText;
-        public RedeemCode redeemCode;
-        public Dropdown resolutionDropdown;
-        public Toggle windowedToggle;
+        [SerializeField]
+        private TextMeshProUGUI addressTitleText;
+
+        [SerializeField]
+        private TMP_InputField addressContentInputField;
+
+        [SerializeField]
+        private Button addressCopyButton;
+
+        [SerializeField]
+        private TextMeshProUGUI privateKeyTitleText;
+
+        [SerializeField]
+        private TMP_InputField privateKeyContentInputField;
+
+        [SerializeField]
+        private Button privateKeyCopyButton;
+
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
+        private TextMeshProUGUI warningText;
+
+        [SerializeField]
+        private TextMeshProUGUI volumeMasterText;
+
+        [SerializeField]
+        private Slider volumeMasterSlider;
+
+        [SerializeField]
+        private Toggle volumeMasterToggle;
+
+        [SerializeField]
+        private List<TextMeshProUGUI> muteTexts;
+
+        [SerializeField]
+        private TextMeshProUGUI resetKeyStoreText;
+
+        [SerializeField]
+        private TextMeshProUGUI resetStoreText;
+
+        [SerializeField]
+        private TextMeshProUGUI confirmText;
+
+        [SerializeField]
+        private TextMeshProUGUI redeemCodeText;
+
+        [SerializeField]
+        private RedeemCode redeemCode;
+
+        [SerializeField]
+        private Dropdown resolutionDropdown;
+
+        [SerializeField]
+        private Toggle windowedToggle;
+
+
+        [SerializeField]
+        private Toggle pushToggle;
+
+        [SerializeField]
+        private Toggle nighttimePushToggle;
+
+        [SerializeField]
+        private Toggle rewardPushToggle;
+
+        [SerializeField]
+        private Toggle workshopPushToggle;
+
+        [SerializeField]
+        private Toggle arenaPushToggle;
+
+        [SerializeField]
+        private Toggle worldbossPushToggle;
+
+        [SerializeField]
+        private List<GameObject> mobileDisabledMenus;
+
+        [SerializeField]
+        private List<GameObject> mobileEnabledMenus;
 
         private PrivateKey _privateKey;
 
@@ -82,6 +144,13 @@ namespace Nekoyume.UI
             redeemCode.OnRequested.AddListener(() => Close(true));
             closeButton.onClick.AddListener(() => Close());
             redeemCode.Close();
+
+            pushToggle.onValueChanged.AddListener(SetPushEnabled);
+            nighttimePushToggle.onValueChanged.AddListener(SetNightTimePush);
+            rewardPushToggle.onValueChanged.AddListener(SetRewardPush);
+            workshopPushToggle.onValueChanged.AddListener(SetWorkshopPush);
+            arenaPushToggle.onValueChanged.AddListener(SetArenaPush);
+            worldbossPushToggle.onValueChanged.AddListener(SetWorldbossPush);
 
             InitResolution();
         }
@@ -150,8 +219,37 @@ namespace Nekoyume.UI
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
             windowedToggle.isOn = settings.isWindowed;
 
+            pushToggle.isOn = settings.isPushEnabled;
+            nighttimePushToggle.isOn = settings.isNightTimePushEnabled;
+            rewardPushToggle.isOn = settings.isRewardPushEnabled;
+            workshopPushToggle.isOn = settings.isWorkshopPushEnabled;
+            arenaPushToggle.isOn = settings.isArenaPushEnabled;
+            worldbossPushToggle.isOn = settings.isWorldbossPushEnabled;
+
             base.Show(true);
             HelpTooltip.HelpMe(100014, true);
+
+//#if UNITY_ANDROID || UNITY_IOS
+//            foreach (var menu in mobileEnabledMenus)
+//            {
+//                menu.SetActive(true);
+//            }
+
+//            foreach (var menu in mobileDisabledMenus)
+//            {
+//                menu.SetActive(false);
+//            }
+//#else
+//            foreach (var menu in mobileEnabledMenus)
+//            {
+//                menu.SetActive(false);
+//            }
+
+//            foreach (var menu in mobileDisabledMenus)
+//            {
+//                menu.SetActive(true);
+//            }
+//#endif
         }
 
         public void RevertSettings()
@@ -238,6 +336,48 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             settings.isWindowed = value;
             settings.ApplyCurrentResolution();
+        }
+
+        public void SetPushEnabled(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isPushEnabled = value;
+
+            nighttimePushToggle.isOn = value;
+            rewardPushToggle.isOn = value;
+            workshopPushToggle.isOn = value;
+            arenaPushToggle.isOn = value;
+            worldbossPushToggle.isOn = value;
+        }
+
+        public void SetNightTimePush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isNightTimePushEnabled = value;
+        }
+
+        public void SetRewardPush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isRewardPushEnabled = value;
+        }
+
+        public void SetWorkshopPush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isWorkshopPushEnabled = value;
+        }
+
+        public void SetArenaPush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isArenaPushEnabled = value;
+        }
+
+        public void SetWorldbossPush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isWorldbossPushEnabled = value;
         }
 
         public void ResetStore()
