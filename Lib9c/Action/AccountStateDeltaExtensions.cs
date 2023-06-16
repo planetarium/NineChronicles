@@ -20,9 +20,6 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
-        private const int SheetsCacheSize = 100;
-        private static readonly LruCache<string, ISheet> SheetsCache = new LruCache<string, ISheet>(SheetsCacheSize);
-
         public static IAccountStateDelta MarkBalanceChanged(
             this IAccountStateDelta states,
             Currency currency,

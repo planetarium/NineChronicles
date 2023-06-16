@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.TableData
 {
     using System;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.State;
     using Nekoyume.Extensions;
@@ -32,39 +31,56 @@ namespace Lib9c.Tests.TableData
         public void SetToSheet()
         {
             Assert.Equal(2, _sheet.Count);
-            Assert.Equal(0, _sheet[0].Level);
-            Assert.Equal(0, _sheet[0].RequiredGold);
-            Assert.Single(_sheet[0].Rewards);
-            Assert.Equal(0, _sheet[0].Rewards[0].ItemId);
-            Assert.Equal(0, _sheet[0].Rewards[0].Rate);
+            var row = _sheet[0];
+            Assert.Equal(0, row.Level);
+            Assert.Equal(0, row.RequiredGold);
+            Assert.Single(row.Rewards);
+            var reward = row.Rewards[0];
+            Assert.Equal(0, reward.ItemId);
+            Assert.Equal(0, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
+            Assert.Null(reward.CurrencyTicker);
 
-            Assert.Equal(10, _sheet[1].RequiredGold);
-            Assert.Equal(2, _sheet[1].Rewards.Count);
-            Assert.Equal(400000, _sheet[1].Rewards[0].ItemId);
-            Assert.Equal(50, _sheet[1].Rewards[0].Rate);
-            Assert.Equal(500000, _sheet[1].Rewards[1].ItemId);
-            Assert.Equal(50, _sheet[1].Rewards[1].Rate);
-
-            Assert.All(_sheet.Values, r => Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, r.Rewards[0].Type));
+            row = _sheet[1];
+            Assert.Equal(10, row.RequiredGold);
+            Assert.Equal(2, row.Rewards.Count);
+            reward = row.Rewards[0];
+            Assert.Equal(400000, reward.ItemId);
+            Assert.Equal(50, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
+            Assert.Null(reward.CurrencyTicker);
+            reward = row.Rewards[1];
+            Assert.Equal(500000, reward.ItemId);
+            Assert.Equal(50, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
+            Assert.Null(reward.CurrencyTicker);
 
             var patchedSheet = new StakeRegularRewardSheet();
-            const string tableContentWithRune = @"level,required_gold,item_id,rate,type
+            const string tableContentWithRune =
+                @"level,required_gold,item_id,rate,type,currency_ticker
 1,50,400000,10,Item
 1,50,500000,800,Item
 1,50,20001,6000,Rune
+1,50,,100,Currency,NCG
+1,50,,100,Currency,CRYSTAL
+1,50,,100,Currency,GARAGE
 ";
             patchedSheet.Set(tableContentWithRune);
             Assert.Single(patchedSheet);
-            Assert.Equal(50, patchedSheet[1].RequiredGold);
-            Assert.Equal(3, patchedSheet[1].Rewards.Count);
-            for (int i = 0; i < 3; i++)
+            row = patchedSheet[1];
+            Assert.Equal(50, row.RequiredGold);
+            Assert.Equal(6, row.Rewards.Count);
+            for (var i = 0; i < 6; i++)
             {
-                var reward = patchedSheet[1].Rewards[i];
+                reward = row.Rewards[i];
                 var itemId = i switch
                 {
                     0 => 400000,
                     1 => 500000,
                     2 => 20001,
+                    3 => 0,
+                    4 => 0,
+                    5 => 0,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 var rate = i switch
@@ -72,14 +88,35 @@ namespace Lib9c.Tests.TableData
                     0 => 10,
                     1 => 800,
                     2 => 6000,
+                    3 => 100,
+                    4 => 100,
+                    5 => 100,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                var rewardType = i == 2
-                    ? StakeRegularRewardSheet.StakeRewardType.Rune
-                    : StakeRegularRewardSheet.StakeRewardType.Item;
+                var rewardType = i switch
+                {
+                    0 => StakeRegularRewardSheet.StakeRewardType.Item,
+                    1 => StakeRegularRewardSheet.StakeRewardType.Item,
+                    2 => StakeRegularRewardSheet.StakeRewardType.Rune,
+                    3 => StakeRegularRewardSheet.StakeRewardType.Currency,
+                    4 => StakeRegularRewardSheet.StakeRewardType.Currency,
+                    5 => StakeRegularRewardSheet.StakeRewardType.Currency,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                var currencyTicker = i switch
+                {
+                    0 => null,
+                    1 => null,
+                    2 => null,
+                    3 => "NCG",
+                    4 => "CRYSTAL",
+                    5 => "GARAGE",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
                 Assert.Equal(itemId, reward.ItemId);
                 Assert.Equal(rate, reward.Rate);
                 Assert.Equal(rewardType, reward.Type);
+                Assert.Equal(currencyTicker, reward.CurrencyTicker);
             }
         }
 

@@ -26,6 +26,11 @@ namespace Lib9c
             18,
             minters: null);
 
+        public static readonly Currency Garage = Currency.Uncapped(
+            "GARAGE",
+            18,
+            minters: null);
+
         public static readonly Currency StakeRune = Currency.Legacy(
             "RUNE_GOLDENLEAF",
             0,
@@ -37,6 +42,34 @@ namespace Lib9c
             minters: null);
 
         public static readonly Currency Mead = Currency.Legacy("Mead", 18, null);
+
+        public static Currency GetMinterlessCurrency(string? ticker)
+        {
+            if (string.IsNullOrEmpty(ticker))
+            {
+                throw new ArgumentNullException(nameof(ticker));
+            }
+
+            switch (ticker)
+            {
+                case "CRYSTAL":
+                    return Crystal;
+                case "GARAGE":
+                    return Garage;
+            }
+
+            if (ticker.StartsWith("RUNE_"))
+            {
+                return GetRune(ticker);
+            }
+
+            if (ticker.StartsWith("SOULSTONE_"))
+            {
+                return GetSoulStone(ticker);
+            }
+
+            throw new ArgumentException($"Invalid ticker: {ticker}", nameof(ticker));
+        }
 
         public static Currency GetRune(string? ticker) =>
             string.IsNullOrEmpty(ticker)

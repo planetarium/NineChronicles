@@ -63,5 +63,10 @@ namespace Nekoyume
         public const long V100301ExecutedBlockIndex = 5_048_399L;
 
         public const long V100310ExecutedBlockIndex = 5_217_577L;
+
+        // Current: 6_974_550 at 2023-06-14 16:10:00 KST
+        // Release plan: About 7_102_350 at 2023-06-29 12:00:00 KST
+        // Seconds per block: 10
+        public const long V200030ObsoleteIndex = 7_200_000;
     }
 }
