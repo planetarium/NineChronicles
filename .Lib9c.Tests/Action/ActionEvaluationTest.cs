@@ -453,7 +453,7 @@ namespace Lib9c.Tests.Action
                 CreatePledge _ => new CreatePledge
                 {
                     PatronAddress = new PrivateKey().ToAddress(),
-                    AgentAddresses = new[] { new PrivateKey().ToAddress() },
+                    AgentAddresses = new[] { (new PrivateKey().ToAddress(), new PrivateKey().ToAddress()) },
                 },
                 TransferAssets _ => new TransferAssets(_sender, new List<(Address, FungibleAssetValue)>
                 {

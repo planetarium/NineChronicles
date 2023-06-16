@@ -15,20 +15,34 @@ namespace Nekoyume.Action
         public const string TypeIdentifier = "create_pledge";
         public Address PatronAddress;
         public int Mead;
-        public IEnumerable<Address> AgentAddresses;
+        public IEnumerable<(Address, Address)> AgentAddresses;
+
         public override IValue PlainValue =>
             Dictionary.Empty
                 .Add("type_id", TypeIdentifier)
                 .Add("values", List.Empty
                     .Add(PatronAddress.Serialize())
                     .Add(Mead.Serialize())
-                    .Add(new List(AgentAddresses.Select(a => a.Serialize()))));
+                    .Add(new List(AgentAddresses.Select(tuple =>
+                        List.Empty
+                            .Add(tuple.Item1.Serialize())
+                            .Add(tuple.Item2.Serialize())
+                    ))));
         public override void LoadPlainValue(IValue plainValue)
         {
             var list = (List)((Dictionary)plainValue)["values"];
             PatronAddress = list[0].ToAddress();
             Mead = list[1].ToInteger();
-            AgentAddresses = list[2].ToList(StateExtensions.ToAddress);
+            var serialized = (List) list[2];
+            var agentAddresses = new List<(Address, Address)>();
+            foreach (var value in serialized)
+            {
+                var innerList = (List) value;
+                var agentAddress = innerList[0].ToAddress();
+                var pledgeAddress = innerList[1].ToAddress();
+                agentAddresses.Add((agentAddress, pledgeAddress));
+            }
+            AgentAddresses = agentAddresses;
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -36,18 +50,17 @@ namespace Nekoyume.Action
             context.UseGas(1);
             CheckPermission(context);
             var states = context.PreviousStates;
+            var mead = Mead * Currencies.Mead;
             var contractList = List.Empty
                 .Add(PatronAddress.Serialize())
                 .Add(true.Serialize())
                 .Add(Mead.Serialize());
-            foreach (var agentAddress in AgentAddresses)
+            foreach (var (agentAddress, pledgeAddress) in AgentAddresses)
             {
-                var contractAddress = agentAddress.GetPledgeAddress();
                 states = states
-                    .TransferAsset(PatronAddress, agentAddress, Mead * Currencies.Mead)
-                    .SetState(contractAddress, contractList);
+                    .TransferAsset(PatronAddress, agentAddress, mead)
+                    .SetState(pledgeAddress, contractList);
             }
-
             return states;
         }
     }
