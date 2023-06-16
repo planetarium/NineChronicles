@@ -4,6 +4,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
@@ -12,6 +13,7 @@ namespace Nekoyume.UI
         [Header("Mobile")]
         [SerializeField] private GameObject mobileContainer;
         [SerializeField] private Button touchScreenButton;
+        [SerializeField] private RawImage videoImage;
 
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button startButton;
@@ -31,6 +33,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button qrCodeGuideNextButton;
 
         [SerializeField] private LoadingIndicator mobileIndicator;
+        [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private SocialLogin socialLogin;
 
         private int _guideIndex = 0;
@@ -49,6 +52,8 @@ namespace Nekoyume.UI
             {
                 touchScreenButton.gameObject.SetActive(false);
                 startButtonContainer.SetActive(true);
+                videoImage.gameObject.SetActive(true);
+                videoPlayer.Play();
             });
             startButton.onClick.AddListener(() =>
             {
@@ -106,6 +111,8 @@ namespace Nekoyume.UI
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
 
+            videoPlayer.loopPointReached += _ => videoImage.gameObject.SetActive(false);
+
             touchScreenButton.interactable = true;
             startButton.interactable = true;
             signinButton.interactable = true;
@@ -125,6 +132,7 @@ namespace Nekoyume.UI
             if (Platform.IsMobilePlatform())
             {
                 mobileContainer.SetActive(true);
+                videoImage.gameObject.SetActive(false);
                 startButtonContainer.SetActive(false);
                 socialLoginContainer.SetActive(false);
                 qrCodeGuideContainer.SetActive(false);

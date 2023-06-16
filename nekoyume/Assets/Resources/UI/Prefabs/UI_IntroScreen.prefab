@@ -631,6 +631,7 @@ MonoBehaviour:
   toolTipChangeButton: {fileID: 0}
   mobileContainer: {fileID: 6004842978331103633}
   touchScreenButton: {fileID: 1007397819372763151}
+  videoImage: {fileID: 5860571314653810958}
   startButtonContainer: {fileID: 5930269101659321614}
   startButton: {fileID: 6019283628801597050}
   signinButton: {fileID: 5168089873718842355}
@@ -649,6 +650,7 @@ MonoBehaviour:
   qrCodeGuideText: {fileID: 1866711333022364612}
   qrCodeGuideNextButton: {fileID: 5742771524616996886}
   mobileIndicator: {fileID: 8398331285720780686}
+  videoPlayer: {fileID: 8606067998831991754}
   socialLogin: {fileID: 1086791057139430957}
 --- !u!114 &1086791057139430957
 MonoBehaviour:
@@ -3425,7 +3427,7 @@ RectTransform:
   - {fileID: 6583391688730615879}
   - {fileID: 2962868006071389367}
   m_Father: {fileID: 2724005287680946405}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -3608,8 +3610,8 @@ RectTransform:
   - {fileID: 5127857628884666735}
   - {fileID: 600083845836585513}
   - {fileID: 3177529088344202938}
-  - {fileID: 379524854130658829}
   - {fileID: 6339923356958405929}
+  - {fileID: 379524854130658829}
   - {fileID: 3679596879929498216}
   - {fileID: 6294469023234133510}
   - {fileID: 2114699697447159591}
@@ -4697,12 +4699,12 @@ GameObject:
   - component: {fileID: 2446042640803269905}
   - component: {fileID: 5860571314653810958}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: VideoRawImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &379524854130658829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4716,7 +4718,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2724005287680946405}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
