@@ -1,5 +1,6 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
 
+        [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private SocialLogin socialLogin;
 
         private int _guideIndex = 0;
@@ -41,6 +43,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             indicator.Close();
+            mobileIndicator.Close();
 
             touchScreenButton.onClick.AddListener(() =>
             {
@@ -75,7 +78,7 @@ namespace Nekoyume.UI
             googleLoginButton.onClick.AddListener(() =>
             {
                 socialLoginContainer.SetActive(false);
-                Find<GrayLoadingScreen>().Show("Sign in...", false);
+                mobileIndicator.Show("Sign in...");
                 socialLogin.Signin(() =>
                 {
                     Find<LoginSystem>().Show(_keyStorePath, _privateKey);
@@ -84,21 +87,21 @@ namespace Nekoyume.UI
             twitterLoginButton.onClick.AddListener(() =>
             {
                 socialLoginContainer.SetActive(false);
-                Find<GrayLoadingScreen>().Show("Sign in...", false);
+                mobileIndicator.Show("Sign in...");
 
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
             discordLoginButton.onClick.AddListener(() =>
             {
                 socialLoginContainer.SetActive(false);
-                Find<GrayLoadingScreen>().Show("Sign in...", false);
+                mobileIndicator.Show("Sign in...");
 
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
             appleLoginButton.onClick.AddListener(() =>
             {
                 socialLoginContainer.SetActive(false);
-                Find<GrayLoadingScreen>().Show("Sign in...", false);
+                mobileIndicator.Show("Sign in...");
 
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
@@ -125,6 +128,7 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 socialLoginContainer.SetActive(false);
                 qrCodeGuideContainer.SetActive(false);
+                mobileIndicator.Close();
             }
             else
             {

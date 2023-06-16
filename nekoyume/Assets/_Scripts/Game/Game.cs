@@ -620,8 +620,8 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 IsInitialized = true;
-                var intro = Widget.Find<IntroScreen>();
-                intro.Close();
+                Widget.Find<IntroScreen>().Close();
+                Widget.Find<GrayLoadingScreen>().Close();
                 Widget.Find<PreloadingScreen>().Show();
                 StartCoroutine(ClosePreloadingScene(4));
             }

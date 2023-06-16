@@ -389,6 +389,27 @@ namespace Nekoyume.UI
                     SetImage(_privateKey.PublicKey.ToAddress());
                 }
 
+                switch (State.Value)
+                {
+                    case States.CreatePassword_Mobile:
+                    {
+                        {
+                            if (passPhraseField.isFocused)
+                            {
+                                retypeField.Select();
+                            }
+                            else
+                            {
+                                passPhraseField.Select();
+                            }
+                        }
+                        break;
+                    }
+                    case States.Login_Mobile:
+                        loginField.Select();
+                        break;
+                }
+
                 base.Show();
             }
             else
@@ -537,6 +558,7 @@ namespace Nekoyume.UI
                 {
                     case States.ResetPassphrase:
                     case States.CreatePassword:
+                    case States.CreatePassword_Mobile:
                     {
                         {
                             if (passPhraseField.isFocused)
@@ -551,6 +573,7 @@ namespace Nekoyume.UI
                         break;
                     }
                     case States.Login:
+                    case States.Login_Mobile:
                         loginField.Select();
                         break;
                     case States.FindPassphrase:
