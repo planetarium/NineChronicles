@@ -2341,21 +2341,23 @@ namespace Nekoyume.Blockchain
                 myRuneStates);
 
             var enemyItemSlotStateAddress = ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
-            var enemyItemSlotState = states.TryGetState(enemyItemSlotStateAddress, out List enemyRawItemSlotState)
-            ? new ItemSlotState(enemyRawItemSlotState)
-                : new ItemSlotState(BattleType.Arena);
+            var enemyItemSlotState = Game.Game.instance.Agent
+                .GetState(enemyItemSlotStateAddress) is List enemyRawItemSlotState ?
+                new ItemSlotState(enemyRawItemSlotState) :
+                new ItemSlotState(BattleType.Arena);
 
             var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
-            var enemyRuneSlotState = states.TryGetState(enemyRuneSlotStateAddress, out List enemyRawRuneSlotState)
-                ? new RuneSlotState(enemyRawRuneSlotState)
-                : new RuneSlotState(BattleType.Arena);
+            var enemyRuneSlotState = Game.Game.instance.Agent
+                .GetState(enemyRuneSlotStateAddress) is List enemyRawRuneSlotState ?
+                new RuneSlotState(enemyRawRuneSlotState) :
+                new RuneSlotState(BattleType.Arena);
 
             var enemyRuneStates = new List<RuneState>();
             var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
             foreach (var address in enemyRuneSlotInfos.Select(info =>
                 RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId)))
             {
-                if (states.TryGetState(address, out List rawRuneState))
+                if (Game.Game.instance.Agent.GetState(address) is List rawRuneState)
                 {
                     enemyRuneStates.Add(new RuneState(rawRuneState));
                 }
