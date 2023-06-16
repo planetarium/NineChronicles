@@ -34,6 +34,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
+            CheckPermission(context);
             var states = context.PreviousStates;
             var contractList = List.Empty
                 .Add(PatronAddress.Serialize())

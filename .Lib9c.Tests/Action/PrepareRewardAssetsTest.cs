@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true, false, null)]
         [InlineData(true, true, typeof(CurrencyPermissionException))]
-        [InlineData(false, false, null)]
+        [InlineData(false, false, typeof(PermissionDeniedException))]
         public void Execute(bool admin, bool includeNcg, Type exc)
         {
             var adminAddress = new PrivateKey().ToAddress();
