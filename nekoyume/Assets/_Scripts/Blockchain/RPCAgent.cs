@@ -25,6 +25,7 @@ using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
+using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -167,11 +168,12 @@ namespace Nekoyume.Blockchain
             return _codec.Decode(raw);
         }
 
-        public async Task<IValue> GetStateAsync(Address address)
+        public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
             var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+            if (!blockIndex.HasValue &&
+                game.CachedStateAddresses.TryGetValue(address, out var cached) &&
                 cached &&
                 game.CachedStates.TryGetValue(address, out var value) &&
                 !(value is Null))
@@ -180,7 +182,14 @@ namespace Nekoyume.Blockchain
                 return value;
             }
 
-            byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return null;
+            }
+
+            byte[] raw = await _service.GetState(address.ToByteArray(), blockHash.Value.ToByteArray());
             IValue result = _codec.Decode(raw);
             if (game.CachedStateAddresses.ContainsKey(address))
             {
@@ -245,11 +254,20 @@ namespace Nekoyume.Blockchain
             return balance;
         }
 
-        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+            IEnumerable<Address> addressList,
+            long? blockIndex = null)
         {
-            Dictionary<byte[], byte[]> raw =
-                await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()),
-                    BlockTipHash.ToByteArray());
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return null;
+            }
+
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStates(
+                addressList.Select(a => a.ToByteArray()),
+                blockHash.Value.ToByteArray());
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
