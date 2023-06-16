@@ -1,0 +1,11 @@
+id,_memo,cost_kind,currency_ticker,fungible_id,garage_cost_per_unit
+_id,int
+_cost_kind,CURRENCY|ITEM
+_currency_ticker,(empty)|NCG|CRYSTAL...
+_fungible_id,(empty)|3991e04dd808dc0bc24b21f5adb7bf1997312f8700daf1334bf34936e8a0813a|00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe...
+_garage_cost_per_unit,1|100|0.001...
+1,ap portion(500000),Item,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,0.16
+2,hourglass(400000),Item,,3991e04dd808dc0bc24b21f5adb7bf1997312f8700daf1334bf34936e8a0813a,0.0016
+3,golden meat(800201),Item,,1a755098a2bc0659a063107df62e2ff9b3cdaba34d96b79519f504b996f53820,1
+4,golden dust(600201),Item,,f8faf92c9c0d0e8e06694361ea87bfc8b29a8ae8de93044b98470a57636ed0e0,10
+5,golden leaf runestone,Currency,RUNE_GOLDENLEAF,,10

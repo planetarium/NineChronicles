@@ -50,7 +50,7 @@ namespace Nekoyume.Action
 
             var addresses = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             // NOTE: The `AvatarAddress` must contained in `Signer`'s `AgentState.avatarAddresses`.
-            if (!Addresses.IsContainedInAgent(context.Signer, AvatarAddress))
+            if (!Addresses.CheckAvatarAddrIsContainedInAgent(context.Signer, AvatarAddress))
             {
                 throw new InvalidActionFieldException(
                     ActionTypeIdentifier,

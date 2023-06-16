@@ -27,6 +27,15 @@ namespace Nekoyume.Model.Item
             ElementalType = data.ElementalType;
         }
 
+        protected ItemBase(ItemBase other)
+        {
+            Id = other.Id;
+            Grade = other.Grade;
+            ItemType = other.ItemType;
+            ItemSubType = other.ItemSubType;
+            ElementalType = other.ElementalType;
+        }
+
         protected ItemBase(Dictionary serialized)
         {
             if (serialized.TryGetValue((Text) "id", out var id))

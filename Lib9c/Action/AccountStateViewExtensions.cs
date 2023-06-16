@@ -17,7 +17,9 @@ using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
 using System.Collections.Immutable;
+using Nekoyume.Exceptions;
 using Nekoyume.Model.Coupons;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Action
 {
@@ -1333,6 +1335,27 @@ namespace Nekoyume.Action
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
+        }
+
+        public static IValue GetInventoryState(
+            this IAccountStateView accountStateView,
+            Address inventoryAddr)
+        {
+            var inventoryState = accountStateView.GetState(inventoryAddr);
+            if (inventoryState is null || inventoryState is Null)
+            {
+                throw new StateNullException(inventoryAddr);
+            }
+
+            return inventoryState;
+        }
+
+        public static Inventory GetInventory(
+            this IAccountStateView accountStateView,
+            Address inventoryAddr)
+        {
+            var inventoryState = GetInventoryState(accountStateView, inventoryAddr);
+            return new Inventory((List)inventoryState);
         }
     }
 }

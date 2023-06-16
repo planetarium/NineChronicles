@@ -275,6 +275,49 @@ namespace Nekoyume.Model.Item
             return nonFungibleItem;
         }
 
+        /// <summary>
+        /// Add tradable fungible item.
+        /// If there is same item which is not locked, add count to it.
+        /// The same item is item which has same item sheet id, fungible id, tradable id and
+        /// same required block index.
+        /// If there is no same item, add new item.
+        /// </summary>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentOutOfRangeException" />
+        public Item AddTradableFungibleItem(
+            ITradableFungibleItem tradableFungibleItem,
+            int count)
+        {
+            if (tradableFungibleItem is null)
+            {
+                throw new ArgumentNullException(nameof(tradableFungibleItem));
+            }
+
+            Item item;
+            if (!TryGetTradableFungibleItems(
+                    tradableFungibleItem.FungibleId,
+                    tradableFungibleItem.RequiredBlockIndex,
+                    null,
+                    out var outItems))
+            {
+                item = new Item((ItemBase)tradableFungibleItem, count);
+                _items.Add(item);
+                return item;
+            }
+
+            item = outItems.First();
+            if (item.count > int.MaxValue - count)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(count),
+                    count,
+                    $"Aborted because {nameof(item.count)} is overflow");
+            }
+
+            item.count += count;
+            return item;
+        }
+
         #endregion
 
         #region Remove
@@ -496,6 +539,52 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
+        /// <summary>
+        /// Remove tradable item from inventory.
+        /// Use the requiredBlockIndex when you want to remove the item that
+        /// has same requiredBlockIndex.
+        /// Use the blockIndex when you want to remove the item that has requiredBlockIndex
+        /// less than or equal to blockIndex.
+        /// Do not use both requiredBlockIndex and blockIndex at the same time.
+        /// </summary>
+        /// <exception cref="ArgumentNullException" />
+        public bool RemoveTradableFungibleItem(
+            HashDigest<SHA256> fungibleId,
+            long? requiredBlockIndex,
+            long? blockIndex,
+            int count)
+        {
+            if (!TryGetTradableFungibleItems(
+                    fungibleId,
+                    requiredBlockIndex,
+                    blockIndex,
+                    out var outItems))
+            {
+                return false;
+            }
+
+            var itemArray = outItems as Item[] ?? outItems.ToArray();
+            if (itemArray.Sum(item => item.count) < count)
+            {
+                return false;
+            }
+
+            foreach (var item in itemArray)
+            {
+                if (item.count > count)
+                {
+                    item.count -= count;
+                    break;
+                }
+
+                count -= item.count;
+                item.count = 0;
+                _items.Remove(item);
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Try Get
@@ -626,6 +715,38 @@ namespace Nekoyume.Model.Item
             return !(outItem is null);
         }
 
+        /// <summary>
+        /// Get ITradableFungibleItem from the inventory.
+        /// This method check the item is not locked,
+        /// and the item's required block index is less than or equal to the given block index.
+        /// Do not use both requiredBlockIndex and blockIndex at the same time.
+        /// </summary>
+        /// <exception cref="ArgumentNullException" />
+        public bool TryGetTradableFungibleItems(
+            HashDigest<SHA256> fungibleId,
+            long? requiredBlockIndex,
+            long? blockIndex,
+            out IEnumerable<Item> outItems)
+        {
+            if (requiredBlockIndex is null && blockIndex is null)
+            {
+                throw new ArgumentNullException(
+                    $"{nameof(requiredBlockIndex)} and {nameof(blockIndex)} cannot be null " +
+                    "at the same time");
+            }
+
+            var tradableId = TradableMaterial.DeriveTradableId(fungibleId);
+            outItems = _items
+                .Where(e =>
+                    !e.Locked &&
+                    e.item is ITradableFungibleItem tradableFungibleItem &&
+                    tradableFungibleItem.FungibleId.Equals(fungibleId) &&
+                    tradableFungibleItem.TradableId.Equals(tradableId) &&
+                    (requiredBlockIndex is null || tradableFungibleItem.RequiredBlockIndex == requiredBlockIndex) &&
+                    (blockIndex is null || tradableFungibleItem.RequiredBlockIndex <= blockIndex));
+            return outItems.Any();
+        }
+
         public bool TryGetLockedItem(ILock iLock, out Item outItem)
         {
             outItem = _items.FirstOrDefault(i => i.Locked && i.Lock.Equals(iLock));
@@ -680,6 +801,32 @@ namespace Nekoyume.Model.Item
                 tradableItem.TradableId.Equals(tradableId) &&
                 tradableItem.RequiredBlockIndex <= blockIndex)
             .Sum(i => i.count) >= count;
+
+        public bool HasTradableFungibleItem(
+            HashDigest<SHA256> fungibleId,
+            long? requiredBlockIndex,
+            long? blockIndex,
+            int count)
+        {
+            if (requiredBlockIndex is null && blockIndex is null)
+            {
+                throw new ArgumentNullException(
+                    $"{nameof(requiredBlockIndex)} and {nameof(blockIndex)} cannot be null " +
+                    "at the same time");
+            }
+
+            var tradableId = TradableMaterial.DeriveTradableId(fungibleId);
+            return _items
+                .Where(e =>
+                    !e.Locked &&
+                    e.item is ITradableFungibleItem tradableFungibleItem &&
+                    tradableFungibleItem.FungibleId.Equals(fungibleId) &&
+                    tradableFungibleItem.TradableId.Equals(tradableId) &&
+                    (requiredBlockIndex is null ||
+                     tradableFungibleItem.RequiredBlockIndex == requiredBlockIndex) &&
+                    (blockIndex is null || tradableFungibleItem.RequiredBlockIndex <= blockIndex))
+                .Sum(e => e.count) >= count;
+        }
 
         #endregion
 
