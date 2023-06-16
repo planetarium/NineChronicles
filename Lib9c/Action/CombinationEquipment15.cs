@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment15")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CombinationEquipment15 : GameAction, ICombinationEquipmentV3
     {
         public const string AvatarAddressKey = "a";
@@ -97,7 +97,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CombinationEquipment exec started", addressesHex);

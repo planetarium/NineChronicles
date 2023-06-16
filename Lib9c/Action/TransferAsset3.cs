@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("transfer_asset3")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class TransferAsset3 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
@@ -103,7 +103,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset3 exec started", addressesHex);

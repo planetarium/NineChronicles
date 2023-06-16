@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action.Scenario
                                .GetCustomAttributes()
                                .OfType<ActionObsoleteAttribute>()
                                .Select(attr => attr.ObsoleteIndex)
-                               .FirstOrDefault() > MeadConfig.MeadTransferStartIndex
+                               .FirstOrDefault() > ActionObsoleteConfig.V200030ObsoleteIndex
                        );
             }
 

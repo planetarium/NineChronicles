@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("migration_legacy_shop2")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class MigrationLegacyShop : GameAction, IMigrationLegacyShopV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
@@ -43,7 +43,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 
             Log.Debug("Start Migration Legacy Shop");

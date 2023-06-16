@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("unlock_equipment_recipe")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class UnlockEquipmentRecipe1: GameAction, IUnlockEquipmentRecipeV1
     {
         public List<int> RecipeIds = new List<int>();
@@ -49,7 +49,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}UnlockEquipmentRecipe exec started", addressesHex);

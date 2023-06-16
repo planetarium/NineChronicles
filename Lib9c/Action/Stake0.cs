@@ -45,7 +45,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             IAccountStateDelta states = context.PreviousStates;
 
             // Restrict staking if there is a monster collection until now.

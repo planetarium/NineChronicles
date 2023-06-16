@@ -12,7 +12,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_activated_account2")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class AddActivatedAccount : ActionBase, IAddActivatedAccountV1
     {
         public AddActivatedAccount(Address address)
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(state.GetState(address) is null))
             {
                 throw new AlreadyActivatedException($"{address} is already activated.");

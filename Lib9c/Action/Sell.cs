@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell12")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class Sell : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(states.GetState(Addresses.Market) is null))
             {
                 throw new ActionObsoletedException("Sell action is obsoleted. please use SellProduct.");

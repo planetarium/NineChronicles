@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("transfer_assets")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class TransferAssets0 : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
         public const int RecipientsCapacity = 100;
@@ -89,7 +89,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (Recipients.Count > RecipientsCapacity)
             {
                 throw new ArgumentOutOfRangeException($"{nameof(Recipients)} must be less than or equal {RecipientsCapacity}.");

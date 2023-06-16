@@ -14,7 +14,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activation")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CreatePendingActivation : ActionBase, ICreatePendingActivationV1
     {
         public PendingActivationState PendingActivation { get; private set; }
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 
             return context.PreviousStates.SetState(

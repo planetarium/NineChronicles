@@ -19,7 +19,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("combination_equipment9")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CombinationEquipment9 : GameAction, ICombinationEquipmentV1
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,

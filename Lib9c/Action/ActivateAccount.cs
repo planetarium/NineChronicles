@@ -13,7 +13,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("activate_account2")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class ActivateAccount : ActionBase, IActivateAccount
     {
         public Address PendingAddress { get; private set; }
@@ -56,7 +56,7 @@ namespace Nekoyume.Action
                     .SetState(PendingAddress, MarkChanged);
             }
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (!(state.GetState(activatedAddress) is null))
             {

@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class EventDungeonBattleV1 : GameAction, IEventDungeonBattleV1
     {
         private const string ActionTypeText = "event_dungeon_battle";
@@ -118,7 +118,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(

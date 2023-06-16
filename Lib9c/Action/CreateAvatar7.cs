@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_avatar7")]
-    [ActionObsolete(MeadConfig.MeadTransferStartIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CreateAvatar7 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -98,7 +98,7 @@ namespace Nekoyume.Action
             }
 
             context.UseGas(1);
-            CheckObsolete(MeadConfig.MeadTransferStartIndex, context);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
