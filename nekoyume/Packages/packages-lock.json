@@ -64,6 +64,13 @@
         "com.unity.render-pipelines.universal": "7.1.5"
       }
     },
+    "com.google.external-dependency-manager": {
+      "version": "1.2.172",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.laicasaane.texttyper": {
       "version": "https://github.com/laicasaane/unity-text-typer.git?path=Assets/TextTyper#3.1.0",
       "depth": 0,
