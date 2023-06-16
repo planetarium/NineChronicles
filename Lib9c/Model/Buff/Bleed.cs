@@ -36,15 +36,14 @@ namespace Nekoyume.Model.Buff
             int simulatorWaveTurn)
         {
             var clone = (CharacterBase)affectedCharacter.Clone();
-            var originalDamage = (int) decimal.Round(Power * RowData.ATKPowerRatio);
-            var damage = affectedCharacter.GetDamage(originalDamage, false);
+            var damage = affectedCharacter.GetDamage(Power, false);
             affectedCharacter.CurrentHP -= damage;
 
             var damageInfos = new List<BattleStatus.Skill.SkillInfo>
             {
                 new BattleStatus.Skill.SkillInfo((CharacterBase)affectedCharacter.Clone(), damage, false,
-                        SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
-                        RowData.TargetType)
+                    SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
+                    RowData.TargetType)
             };
 
             return new Model.BattleStatus.TickDamage(
@@ -66,8 +65,8 @@ namespace Nekoyume.Model.Buff
             var damageInfos = new List<ArenaSkill.ArenaSkillInfo>
             {
                 new ArenaSkill.ArenaSkillInfo((ArenaCharacter)affectedCharacter.Clone(), damage, false,
-                        SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
-                        RowData.TargetType)
+                    SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
+                    RowData.TargetType)
             };
 
             return new ArenaTickDamage(

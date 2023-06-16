@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
@@ -14,7 +15,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("re_register_product")]
+    [ActionType("re_register_product2")]
     public class ReRegisterProduct : GameAction
     {
         public const int CostAp = 5;

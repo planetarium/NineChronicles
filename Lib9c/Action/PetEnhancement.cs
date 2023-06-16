@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Exceptions;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;

@@ -9,6 +9,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -38,6 +39,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var slotAddress = AvatarAddress.Derive(
@@ -246,10 +248,10 @@ namespace Nekoyume.Action
             SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
-        private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
+        private static DecimalStat GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
         {
             var value = random.Next(row.StatMin, row.StatMax + 1);
-            return new StatMap(row.StatType, value);
+            return new DecimalStat(row.StatType, value);
         }
 
         private static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
@@ -260,7 +262,7 @@ namespace Nekoyume.Action
                 var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
                 var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
                 var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
-                var skill = SkillFactory.Get(skillRow, dmg, chance);
+                var skill = SkillFactory.GetV1(skillRow, dmg, chance);
                 return skill;
             }
             catch (InvalidOperationException)
@@ -310,8 +312,8 @@ namespace Nekoyume.Action
                 {
                     if (optionRow.StatType != StatType.NONE)
                     {
-                        var statMap = GetStat(optionRow, random);
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        var stat = GetStat(optionRow, random);
+                        equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
                     }
                     else
                     {

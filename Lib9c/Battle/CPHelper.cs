@@ -140,6 +140,10 @@ namespace Nekoyume.Battle
                     return GetCPOfDRR(statValue, characterLevel);
                 case StatType.CDMG:
                     return GetCPOfCDMG(statValue, characterLevel);
+                case StatType.ArmorPenetration:
+                    return GetCPOfArmorPenetration(statValue);
+                case StatType.Thorn:
+                    return GetCPOfThorn(statValue);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -168,6 +172,12 @@ namespace Nekoyume.Battle
         // NOTE : Temp formula
         public static decimal GetCPOfCDMG(decimal value, int characterLevel) =>
             value * characterLevel * 3m;
+
+        public static decimal GetCPOfArmorPenetration(decimal value) =>
+            value * 5m;
+
+        public static decimal GetCPOfThorn(decimal value) =>
+            value * 1m;
 
         public static decimal GetSkillsMultiplier(int skillsCount)
         {

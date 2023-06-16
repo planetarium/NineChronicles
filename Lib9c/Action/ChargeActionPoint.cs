@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;

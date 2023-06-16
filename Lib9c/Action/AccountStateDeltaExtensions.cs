@@ -8,6 +8,7 @@ using Lib9c;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using LruCacheNet;
 using Nekoyume.Helper;
 using Nekoyume.Model.Coupons;

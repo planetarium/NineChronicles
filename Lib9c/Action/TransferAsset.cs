@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,11 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1718
     /// </summary>
     [Serializable]
-    [ActionType("transfer_asset4")]
+    [ActionType(TypeIdentifier)]
     public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
+        public const string TypeIdentifier = "transfer_asset4";
 
         public TransferAsset()
         {
@@ -74,7 +76,9 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", TypeIdentifier)
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
@@ -120,7 +124,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();

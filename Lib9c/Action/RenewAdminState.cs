@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action

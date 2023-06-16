@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Model.Skill
     using Nekoyume.Model;
     using Nekoyume.Model.Buff;
     using Nekoyume.Model.Skill;
+    using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -32,7 +33,7 @@ namespace Lib9c.Tests.Model.Skill
             var tableSheets = new TableSheets(sheets);
 
             Assert.True(tableSheets.SkillSheet.TryGetValue(100000, out var skillRow));
-            var normalAttack = new NormalAttack(skillRow, 100, 100);
+            var normalAttack = new NormalAttack(skillRow, 100, 100, default, StatType.NONE);
 
             var avatarState = new AvatarState(
                 new PrivateKey().ToAddress(),

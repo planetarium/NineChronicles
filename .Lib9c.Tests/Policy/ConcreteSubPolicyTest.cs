@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Policy
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain.Policy;
     using Xunit;
 
     public class ConcreteSubPolicyTest

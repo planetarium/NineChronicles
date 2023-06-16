@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -107,6 +108,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var weeklyArenaState = new WeeklyArenaState(0);

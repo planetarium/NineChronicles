@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action.Coupons
     using System.Linq;
     using Bencodex.Types;
     using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Action.Coupons;
     using Nekoyume.Model.Coupons;
@@ -158,7 +159,7 @@ namespace Lib9c.Tests.Action.Coupons
                                     .Add("rewardSet", CouponsFixture.RewardSet2.Serialize())
                                     .Add("quantity", 1)))
                         .Select(kv => new KeyValuePair<IKey, IValue>((Text)kv.Key, kv.Value))),
-                ((Bencodex.Types.Dictionary)action.PlainValue).Remove((Text)"id"));
+                ((Dictionary)((Dictionary)action.PlainValue)["values"]).Remove((Text)"id"));
         }
 
         [Fact]
@@ -173,7 +174,9 @@ namespace Lib9c.Tests.Action.Coupons
                 ImmutableDictionary<RewardSet, uint>.Empty,
                 CouponsFixture.AgentAddress1);
             actual.LoadPlainValue(
-                new Bencodex.Types.Dictionary(
+                Dictionary.Empty
+                    .Add("type_id", "issue_coupons")
+                    .Add("values", new Bencodex.Types.Dictionary(
                         ImmutableDictionary<string, IValue>.Empty
                             .Add("recipient", new Binary(CouponsFixture.AgentAddress1.ByteArray))
                             .Add(
@@ -186,8 +189,7 @@ namespace Lib9c.Tests.Action.Coupons
                                         .Add("rewardSet", CouponsFixture.RewardSet2.Serialize())
                                         .Add("quantity", 1)))
                             .Select(kv => new KeyValuePair<IKey, IValue>((Text)kv.Key, kv.Value)))
-                    .SetItem("id", new Guid("6E69DC55-A0D0-435A-A787-C62356CBE517").Serialize())
-            );
+                    .SetItem("id", new Guid("6E69DC55-A0D0-435A-A787-C62356CBE517").Serialize())));
 
             Assert.Equal(expected.Rewards, actual.Rewards);
             Assert.Equal(expected.Recipient, actual.Recipient);

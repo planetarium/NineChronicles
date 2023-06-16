@@ -10,6 +10,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -70,6 +71,7 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var sellData = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
             var addedItemInfos = sellData.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(

@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using Serilog;
 using static Lib9c.SerializeKeys;
@@ -30,12 +31,13 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IValue PlainValue =>
-            Dictionary.Empty.Add(AvatarAddressKey, AvatarAddress.Serialize());
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "migrate_monster_collection")
+            .Add("values", Dictionary.Empty.Add(AvatarAddressKey, AvatarAddress.Serialize()));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dictionary = (Dictionary)plainValue;
+            var dictionary = (Dictionary)((Dictionary)plainValue)["values"];
             AvatarAddress = dictionary[AvatarAddressKey].ToAddress();
         }
 

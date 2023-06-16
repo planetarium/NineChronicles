@@ -5,9 +5,9 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
                 })
                 .StartedBlockIndex;
 
-            var action = new Raid
+            var action = new Raid5
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
                 var random = new TestRandom(randomSeed);
                 var bossListRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
                 var raidSimulatorSheets = _tableSheets.GetRaidSimulatorSheets();
-                var simulator = new RaidSimulator(
+                var simulator = new RaidSimulatorV2(
                     bossListRow.BossId,
                     random,
                     avatarState,
@@ -496,7 +496,7 @@ namespace Lib9c.Tests.Action
             var randomSeed = 0;
             var random = new TestRandom(randomSeed);
 
-            var simulator = new RaidSimulator(
+            var simulator = new RaidSimulatorV2(
                 worldBossRow.BossId,
                 random,
                 avatarState,

@@ -9,6 +9,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;

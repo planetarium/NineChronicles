@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Crypto;
+using Libplanet.State;
 using MessagePack.Formatters;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+using Nekoyume.Action;
 
 namespace Lib9c.Formatters
 {
@@ -22,7 +22,7 @@ namespace Lib9c.Formatters
             {typeof(PublicKey), new PublicKeyFormatter()},
             {typeof(Dictionary), new BencodexFormatter<Dictionary>()},
             {typeof(IValue), new BencodexFormatter<IValue>()},
-            {typeof(NCAction), new NCActionFormatter()}
+            {typeof(ActionBase), new NCActionFormatter()}
             // add more your own custom serializers.
         };
 

@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
@@ -364,6 +365,7 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
@@ -496,10 +498,10 @@ namespace Lib9c.DevExtensions.Action
                     optionSheet,
                     null,
                     skillSheet);
-                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats().ToArray();
+                var additionalOptionStats = equipment.StatsMap.GetAdditionalStats(false).ToArray();
                 foreach (var statMapEx in additionalOptionStats)
                 {
-                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.StatType, 0);
+                    equipment.StatsMap.SetStatAdditionalValue(statMapEx.statType, 0);
                 }
 
                 equipment.Skills.Clear();
@@ -513,7 +515,7 @@ namespace Lib9c.DevExtensions.Action
                     if (option.StatType == StatType.NONE)
                     {
                         var skillRow = skillSheet[option.SkillId];
-                        var skill = SkillFactory.Get(
+                        var skill = SkillFactory.GetV1(
                             skillRow,
                             option.SkillDamageMax,
                             option.SkillChanceMax);
@@ -533,7 +535,7 @@ namespace Lib9c.DevExtensions.Action
                 {
                     for (var j = 0; j < eLevel; j++)
                     {
-                        equipment.LevelUpV2(random, enhancementCostRow, true);
+                        equipment.LevelUp(random, enhancementCostRow, true);
                     }
                 }
 

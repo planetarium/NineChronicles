@@ -16,27 +16,27 @@ namespace Nekoyume.TableData
         public class Row : ItemSheet.Row, IState
         {
             public override ItemType ItemType => ItemType.Consumable;
-            public List<StatMap> Stats { get; private set; }
+            public List<DecimalStat> Stats { get; private set; }
             
             public Row() {}
 
             public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 Stats = ((Bencodex.Types.List) serialized["stats"]).Select(value =>
-                    new StatMap((Bencodex.Types.Dictionary) value)).ToList();
+                    new DecimalStat((Bencodex.Types.Dictionary) value)).ToList();
             }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                Stats = new List<StatMap>();
+                Stats = new List<DecimalStat>();
                 for (var i = 0; i < 2; i++)
                 {
                     if (string.IsNullOrEmpty(fields[4 + i * 2]) ||
                         string.IsNullOrEmpty(fields[5 + i * 2]))
                         return;
 
-                    Stats.Add(new StatMap(
+                    Stats.Add(new DecimalStat(
                         (StatType) Enum.Parse(typeof(StatType), fields[4 + i * 2]),
                         ParseDecimal(fields[5 + i * 2])));
                 }
@@ -46,7 +46,7 @@ namespace Nekoyume.TableData
 #pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "stats"] = new Bencodex.Types.List(Stats.Select(stat => stat.Serialize())),
+                    [(Text) "stats"] = new Bencodex.Types.List(Stats.Select(stat => stat.SerializeWithoutAdditional())),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
 

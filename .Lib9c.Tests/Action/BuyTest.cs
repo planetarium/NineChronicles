@@ -2,26 +2,20 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.IO;
     using System.Linq;
     using System.Numerics;
-    using System.Reflection;
     using Bencodex.Types;
     using Lib9c.DevExtensions;
-    using Lib9c.DevExtensions.Action;
     using Lib9c.DevExtensions.Model;
     using Lib9c.Model.Order;
     using Lib9c.Tests.TestHelper;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Arena;
     using Nekoyume.Model;
-    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Market;

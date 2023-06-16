@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Model
+namespace Lib9c.Tests.Model
 {
     using System;
     using System.Linq;
@@ -29,7 +29,7 @@
 
             Assert.Equal(GameConfig.DefaultAttackId, skillRow.Id);
 
-            var defaultAttack = SkillFactory.Get(skillRow, 100, 100);
+            var defaultAttack = SkillFactory.GetV1(skillRow, 100, 100);
             Assert.NotNull(defaultAttack);
             return defaultAttack;
         }
@@ -47,7 +47,7 @@
 
             const int skillId = 130005;
             _skillSheet.TryGetValue(skillId, out var skillRow);
-            var skill = SkillFactory.Get(skillRow, 100, 100);
+            var skill = SkillFactory.GetV1(skillRow, 100, 100);
             skills.Add(skill);
 
             var selectedSkill = skills.Select(_random);
@@ -73,7 +73,7 @@
             var skills = new Skills();
             const int skillId = 130005;
             _skillSheet.TryGetValue(skillId, out var skillRow);
-            var skill = SkillFactory.Get(skillRow, 100, 100);
+            var skill = SkillFactory.GetV1(skillRow, 100, 100);
             skills.Add(skill);
             Assert.Throws<Exception>(() => skills.Select(_random));
         }
@@ -90,7 +90,7 @@
             // add skill
             const int skillId = 130005;
             _skillSheet.TryGetValue(skillId, out var skillRow);
-            var skill = SkillFactory.Get(skillRow, 100, 0);
+            var skill = SkillFactory.GetV1(skillRow, 100, 0);
             skills.Add(skill);
 
             // select skill
@@ -111,7 +111,7 @@
             // add skill
             const int skillId = 130005;
             _skillSheet.TryGetValue(skillId, out var skillRow);
-            var skill = SkillFactory.Get(skillRow, 100, 100);
+            var skill = SkillFactory.GetV1(skillRow, 100, 100);
             skills.Add(skill);
 
             // select skill
@@ -131,12 +131,12 @@
 
             // add skill A
             _skillSheet.TryGetValue(130005, out var rowA);
-            var skillA = SkillFactory.Get(rowA, 100, 50);
+            var skillA = SkillFactory.GetV1(rowA, 100, 50);
             skills.Add(skillA);
 
             // add skill B
             _skillSheet.TryGetValue(140000, out var rowB);
-            var skillB = SkillFactory.Get(rowB, 100, 50);
+            var skillB = SkillFactory.GetV1(rowB, 100, 50);
             skills.Add(skillB);
 
             // select skill

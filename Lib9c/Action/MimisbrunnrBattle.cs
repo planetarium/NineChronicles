@@ -7,8 +7,8 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle12")]
+    [ActionType("mimisbrunnr_battle13")]
     public class MimisbrunnrBattle : GameAction, IMimisbrunnrBattleV5
     {
         public List<Guid> Costumes;

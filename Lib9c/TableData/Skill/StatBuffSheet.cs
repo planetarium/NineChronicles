@@ -33,8 +33,9 @@ namespace Nekoyume.TableData
             public int Duration { get; private set; }
 
             public SkillTargetType TargetType { get; private set; }
-            public StatModifier StatModifier { get; private set; }
-            public string IconResource { get; private set; }
+            public StatType StatType { get; private set; }
+            public StatModifier.OperationType OperationType { get; private set; }
+            public int Value { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -43,11 +44,11 @@ namespace Nekoyume.TableData
                 Chance = ParseInt(fields[2]);
                 Duration = ParseInt(fields[3]);
                 TargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
-                StatModifier = new StatModifier(
-                    (StatType) Enum.Parse(typeof(StatType), fields[5]),
-                    (StatModifier.OperationType) Enum.Parse(typeof(StatModifier.OperationType), fields[6]),
-                    ParseInt(fields[7]));
-                IconResource = fields[8];
+
+                // modifier
+                StatType = (StatType)Enum.Parse(typeof(StatType), fields[5]);
+                OperationType = (StatModifier.OperationType)Enum.Parse(typeof(StatModifier.OperationType), fields[6]);
+                Value = ParseInt(fields[7]);
             }
         }
 

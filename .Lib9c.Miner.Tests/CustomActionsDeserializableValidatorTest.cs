@@ -6,8 +6,9 @@ using Libplanet.Action.Loader;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Libplanet.Tx;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 
 namespace Lib9c.Proposer.Tests;
 
@@ -49,6 +50,7 @@ public class CustomActionsDeserializableValidatorTest
 
         public IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             return context.PreviousStates;
         }
     }

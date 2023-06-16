@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -119,6 +120,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var ctx = context;
             var states = ctx.PreviousStates;
             var slotAddress = avatarAddress.Derive(
@@ -303,7 +305,7 @@ namespace Nekoyume.Action
             var equipmentResult = GetEnhancementResult(row, ctx.Random);
             if (equipmentResult != EnhancementResult.Fail)
             {
-                enhancementEquipment.LevelUpV2(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
+                enhancementEquipment.LevelUp(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
             var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
             var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;

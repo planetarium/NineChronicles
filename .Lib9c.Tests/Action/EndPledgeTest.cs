@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
