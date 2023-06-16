@@ -4,7 +4,7 @@ namespace Nekoyume
 {
     public static class MeadConfig
     {
-        // Testnet mead patron address
-        public static readonly Address PatronAddress = new Address("0x441Ad1fD834BaB75c6E5859e5Bf736c97Ffa6cc5");
+        // mead patron address
+        public static readonly Address PatronAddress = new Address("0xc64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
     }
 }
