@@ -13,6 +13,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("activate_account2")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class ActivateAccount : ActionBase, IActivateAccount
     {
         public Address PendingAddress { get; private set; }
@@ -44,6 +45,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
             Address activatedAddress = context.Signer.Derive(ActivationKey.DeriveKey);
 
@@ -53,6 +55,8 @@ namespace Nekoyume.Action
                     .SetState(activatedAddress, MarkChanged)
                     .SetState(PendingAddress, MarkChanged);
             }
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (!(state.GetState(activatedAddress) is null))
             {

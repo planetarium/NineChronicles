@@ -25,6 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment12")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CombinationEquipment12 : GameAction, ICombinationEquipmentV2
     {
         public const string AvatarAddressKey = "a";
@@ -69,6 +70,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
@@ -84,6 +86,9 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (recipeId != 1)
             {

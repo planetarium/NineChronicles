@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -558,6 +559,30 @@ namespace Lib9c.Tests.Action
                 renderers: blockPolicySource.GetRenderers()
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);
+        }
+
+        [Theory]
+        [InlineData(5, 4)]
+        [InlineData(101, 100)]
+        // Skip mead when InsufficientBalanceException occured.
+        [InlineData(1, 0)]
+        public void TransferMead(int patronMead, int balance)
+        {
+            var agentAddress = new PrivateKey().ToAddress();
+            var patronAddress = new PrivateKey().ToAddress();
+            var contractAddress = agentAddress.GetPledgeAddress();
+            IAccountStateDelta states = new State()
+                .MintAsset(patronAddress, patronMead * Currencies.Mead)
+                .TransferAsset(patronAddress, agentAddress, 1 * Currencies.Mead)
+                .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))
+                .BurnAsset(agentAddress, 1 * Currencies.Mead);
+            Assert.Equal(balance * Currencies.Mead, states.GetBalance(patronAddress, Currencies.Mead));
+            Assert.Equal(0 * Currencies.Mead, states.GetBalance(agentAddress, Currencies.Mead));
+
+            var nextState = RewardGold.TransferMead(states);
+            // transfer mead from patron to agent
+            Assert.Equal(0 * Currencies.Mead, nextState.GetBalance(patronAddress, Currencies.Mead));
+            Assert.Equal(balance * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));
         }
     }
 }

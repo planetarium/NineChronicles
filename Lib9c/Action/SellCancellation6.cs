@@ -48,6 +48,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             if (context.Rehearsal)

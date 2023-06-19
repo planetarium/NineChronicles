@@ -1,4 +1,4 @@
-// Valkyrie increases block per hourglass by value.
+// patron increases block per hourglass by value.
 
 namespace Lib9c.Tests.Action.Scenario.Pet
 {

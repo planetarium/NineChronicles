@@ -8,7 +8,7 @@ namespace Lib9c.Tests.Action.Snapshot
     public static class ActionUtils
     {
         public static IValue GetActionTypeId<T>()
-           where T : IAction
+            where T : IAction
         {
             Type attrType = typeof(ActionTypeAttribute);
             Type actionType = typeof(T);

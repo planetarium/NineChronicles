@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Lib9c;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -35,7 +36,9 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
+            states = TransferMead(states);
             states = GenesisGoldDistribution(context, states);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
@@ -296,5 +299,34 @@ namespace Nekoyume.Action
 
             return states;
         }
+
+        public static IAccountStateDelta TransferMead(IAccountStateDelta states)
+        {
+#pragma warning disable LAA1002
+            var targetAddresses = states
+                .TotalUpdatedFungibleAssets
+#pragma warning restore LAA1002
+                .Where(d => d.Value.Contains(Currencies.Mead))
+                .Select(kv => kv.Key)
+                .Distinct();
+            foreach (var address in targetAddresses)
+            {
+                var contractAddress = address.GetPledgeAddress();
+                if (states.TryGetState(contractAddress, out List contract) &&
+                    contract[1].ToBoolean())
+                {
+                    try
+                    {
+                        states = states.Mead(address, contract[2].ToInteger());
+                    }
+                    catch (InsufficientBalanceException)
+                    {
+                    }
+                }
+            }
+
+            return states;
+        }
+
     }
 }

@@ -41,6 +41,8 @@ namespace Lib9c
             0,
             minters: null);
 
+        public static readonly Currency Mead = Currency.Legacy("Mead", 18, null);
+
         public static Currency GetMinterlessCurrency(string? ticker)
         {
             if (string.IsNullOrEmpty(ticker))

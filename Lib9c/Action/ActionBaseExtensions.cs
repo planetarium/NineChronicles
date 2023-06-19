@@ -58,6 +58,11 @@ namespace Nekoyume.Action
 
             public bool BlockAction => default;
 
+            public void UseGas(long gas)
+            {
+                // pass
+            }
+
             public IActionContext GetUnconsumedContext() => null;
 
             public long GasUsed() => 0;
@@ -90,6 +95,11 @@ namespace Nekoyume.Action
 
             public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets
                 => ImmutableDictionary<Address, IImmutableSet<Currency>>.Empty;
+
+            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+            {
+                get;
+            }
 
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies
                 => ImmutableHashSet<Currency>.Empty;

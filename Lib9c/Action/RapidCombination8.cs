@@ -22,6 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("rapid_combination8")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class RapidCombination8 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
@@ -32,6 +33,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
@@ -53,6 +55,8 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}RapidCombination exec started", addressesHex);

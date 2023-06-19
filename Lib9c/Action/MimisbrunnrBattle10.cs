@@ -25,6 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle10")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class MimisbrunnrBattle10 : GameAction, IMimisbrunnrBattleV4
     {
         public List<Guid> costumes;
@@ -69,6 +70,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
@@ -78,6 +80,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var sw = new Stopwatch();
             sw.Start();

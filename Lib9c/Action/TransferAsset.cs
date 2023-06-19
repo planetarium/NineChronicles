@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Lib9c;
 using Lib9c.Abstractions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -21,22 +22,11 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1718
     /// </summary>
     [Serializable]
-    [ActionType("transfer_asset3")]
+    [ActionType(TypeIdentifier)]
     public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
-
-        // FIXME justify this policy.
-        public const long CrystalTransferringRestrictionStartIndex = 6_220_000L;
-
-        // FIXME justify this policy.
-        public static readonly IReadOnlyList<Address> AllowedCrystalTransfers = new Address[]
-        {
-            // world boss service
-            new Address("CFCd6565287314FF70e4C4CF309dB701C43eA5bD"),
-            // world boss ops
-            new Address("3ac40802D359a6B51acB0AC0710cc90de19C9B81"),
-        };
+        public const string TypeIdentifier = "transfer_asset4";
 
         public TransferAsset()
         {
@@ -87,51 +77,32 @@ namespace Nekoyume.Action
                 }
 
                 return Dictionary.Empty
-                    .Add("type_id", "transfer_asset3")
+                    .Add("type_id", TypeIdentifier)
                     .Add("values", new Dictionary(pairs));
             }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(4);
+            Address signer = context.Signer;
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
+                return state.MarkBalanceChanged(Amount.Currency, new[] {Sender, Recipient});
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset3 exec started", addressesHex);
-            if (Sender != context.Signer)
+            Log.Debug("{AddressesHex}TransferAsset4 exec started", addressesHex);
+            if (Sender != signer)
             {
-                throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
+                throw new InvalidTransferSignerException(signer, Sender, Recipient);
             }
 
             if (Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
-            }
-
-            Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
-
-            // Check new type of activation first.
-            // If result of GetState is not null, it is assumed that it has been activated.
-            if (
-                state.GetState(recipientAddress) is null &&
-                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
-                state.GetState(Recipient) is null
-            )
-            {
-                var activatedAccountsState = new ActivatedAccountsState(asDict);
-                var activatedAccounts = activatedAccountsState.Accounts;
-                // if ActivatedAccountsState is empty, all user is activate.
-                if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient)
-                    && state.GetState(Recipient) is null)
-                {
-                    throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
-                }
             }
 
             Currency currency = Amount.Currency;
@@ -145,9 +116,9 @@ namespace Nekoyume.Action
                );
             }
 
-            CheckCrystalSender(currency, context.BlockIndex, Sender);
+            TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset3 Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}TransferAsset4 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(Sender, Recipient, Amount);
         }
 
@@ -166,15 +137,6 @@ namespace Nekoyume.Action
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("serialized", new Codec().Encode(PlainValue));
-        }
-
-        public static void CheckCrystalSender(Currency currency, long blockIndex, Address sender)
-        {
-            if (currency.Equals(CrystalCalculator.CRYSTAL) &&
-                blockIndex >= CrystalTransferringRestrictionStartIndex && !AllowedCrystalTransfers.Contains(sender))
-            {
-                throw new InvalidTransferCurrencyException($"transfer crystal not allowed {sender}");
-            }
         }
 
         private void CheckMemoLength(string memo)

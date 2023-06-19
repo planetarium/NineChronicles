@@ -88,6 +88,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;

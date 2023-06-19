@@ -78,12 +78,15 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
                 myAvatarAddress,

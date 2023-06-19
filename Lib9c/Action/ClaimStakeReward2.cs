@@ -37,11 +37,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
             }
-
             var states = context.PreviousStates;
             CheckObsolete(ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
