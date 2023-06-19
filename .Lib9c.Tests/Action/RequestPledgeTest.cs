@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     public class RequestPledgeTest
     {
         [Theory]
-        [InlineData(RequestPledge.RefillMead)]
+        [InlineData(RequestPledge.DefaultRefillMead)]
         [InlineData(100)]
         public void Execute(int contractedMead)
         {
@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
             var action = new RequestPledge
             {
                 AgentAddress = address,
-                Mead = contractedMead,
+                RefillMead = contractedMead,
             };
 
             Assert.Equal(0 * mead, states.GetBalance(address, mead));
@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
             var action = new RequestPledge
             {
                 AgentAddress = address,
-                Mead = 1,
+                RefillMead = 1,
             };
 
             Assert.Throws<AlreadyContractedException>(() => action.Execute(new ActionContext

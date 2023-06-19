@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action
             var action = new CreatePledge
             {
                 PatronAddress = patronAddress,
-                Mead = RequestPledge.RefillMead,
+                Mead = RequestPledge.DefaultRefillMead,
                 AgentAddresses = agentAddresses,
             };
 

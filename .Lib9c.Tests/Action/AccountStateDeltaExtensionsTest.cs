@@ -165,7 +165,7 @@ namespace Lib9c.Tests.Action
             var patron = new PrivateKey().ToAddress();
             var agentContractAddress = _agentAddress.GetPledgeAddress();
             var mead = Currencies.Mead;
-            var price = RequestPledge.RefillMead * mead;
+            var price = RequestPledge.DefaultRefillMead * mead;
             IAccountStateDelta states = new State()
                 .SetState(
                     agentContractAddress,

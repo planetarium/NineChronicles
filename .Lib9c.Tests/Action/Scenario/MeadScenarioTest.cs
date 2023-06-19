@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action.Scenario
             var requestPledge = new RequestPledge
             {
                 AgentAddress = agentAddress,
-                Mead = RequestPledge.RefillMead,
+                RefillMead = RequestPledge.DefaultRefillMead,
             };
             var states2 = Execute(states, requestPledge, patron);
             Assert.Equal(8 * mead, states2.GetBalance(patron, mead));

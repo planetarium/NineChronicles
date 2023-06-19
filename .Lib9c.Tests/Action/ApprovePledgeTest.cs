@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     public class ApprovePledgeTest
     {
         [Theory]
-        [InlineData(RequestPledge.RefillMead)]
+        [InlineData(RequestPledge.DefaultRefillMead)]
         [InlineData(100)]
         public void Execute(int mead)
         {
