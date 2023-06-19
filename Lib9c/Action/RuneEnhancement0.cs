@@ -17,7 +17,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("runeEnhancement")]
     public class RuneEnhancement0 : GameAction, IRuneEnhancementV1
     {

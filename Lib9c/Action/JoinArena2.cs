@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("join_arena2")]
     public class JoinArena2 : GameAction, IJoinArenaV1
     {

@@ -12,7 +12,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("migration_legacy_shop")]
     public class MigrationLegacyShop0 : GameAction, IMigrationLegacyShopV1
     {

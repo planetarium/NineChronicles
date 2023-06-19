@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash20")]
     public class HackAndSlash20 : GameAction, IHackAndSlashV10
     {

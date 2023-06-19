@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1321
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100340ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType(ActionTypeText)]
     public class EventDungeonBattleV2 : GameAction, IEventDungeonBattleV1
     {

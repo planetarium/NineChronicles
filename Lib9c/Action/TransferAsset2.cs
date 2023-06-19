@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionObsolete(TransferAsset.CrystalTransferringRestrictionStartIndex - 1)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("transfer_asset2")]
     public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {

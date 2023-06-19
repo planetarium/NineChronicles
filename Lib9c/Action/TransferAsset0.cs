@@ -14,7 +14,7 @@ using Lib9c.Abstractions;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("transfer_asset")]
     public class TransferAsset0 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {

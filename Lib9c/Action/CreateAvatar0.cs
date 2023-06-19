@@ -26,7 +26,7 @@ using Lib9c.DevExtensions.Model;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("create_avatar")]
     public class CreateAvatar0 : GameAction, ICreateAvatarV1
     {

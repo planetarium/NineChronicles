@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1173
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100300ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash_sweep5")]
     public class HackAndSlashSweep5 : GameAction, IHackAndSlashSweepV2
     {
