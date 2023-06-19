@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1264
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100282ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("combination_equipment13")]
     public class CombinationEquipment13 : GameAction, ICombinationEquipmentV3
     {

@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle8")]
-    [ActionObsolete(ObsoletedBlockIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class MimisbrunnrBattle8 : GameAction, IMimisbrunnrBattleV4
     {
         private const long ObsoletedBlockIndex =

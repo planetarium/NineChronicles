@@ -10,7 +10,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("add_activated_account")]
     public class AddActivatedAccount0 : ActionBase, IAddActivatedAccountV1
     {
