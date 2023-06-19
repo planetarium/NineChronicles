@@ -89,9 +89,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Toggle arenaPushToggle;
-
+        
         [SerializeField]
         private Toggle worldbossPushToggle;
+
+        [SerializeField]
+        private Image pushDisabledImage;
 
         [SerializeField]
         private List<GameObject> mobileDisabledMenus;
@@ -342,12 +345,7 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.isPushEnabled = value;
-
-            nighttimePushToggle.isOn = value;
-            rewardPushToggle.isOn = value;
-            workshopPushToggle.isOn = value;
-            arenaPushToggle.isOn = value;
-            worldbossPushToggle.isOn = value;
+            pushDisabledImage.enabled = !value;
         }
 
         public void SetNightTimePush(bool value)
