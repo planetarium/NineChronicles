@@ -304,7 +304,7 @@ namespace Nekoyume.Action
         {
 #pragma warning disable LAA1002
             var targetAddresses = states
-                .UpdatedFungibleAssets
+                .TotalUpdatedFungibleAssets
 #pragma warning restore LAA1002
                 .Where(d => d.Value.Contains(Currencies.Mead))
                 .Select(kv => kv.Key)

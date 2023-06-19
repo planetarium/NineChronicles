@@ -43,10 +43,8 @@ namespace Lib9c.Tests.Action
                 g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
             );
 
-        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
-        {
-            get;
-        }
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
+            UpdatedFungibleAssets;
 
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
             _totalSupplies.Keys.ToImmutableHashSet();
