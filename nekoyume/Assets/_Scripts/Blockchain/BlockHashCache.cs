@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Libplanet.Blocks;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.Blockchain
 {
     public class BlockHashCache
     {
