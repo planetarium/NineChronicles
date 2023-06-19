@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash18")]
-    [ActionObsolete(ActionObsoleteConfig.V100340ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class HackAndSlash18 : GameAction, IHackAndSlashV8
     {
         public List<Guid> Costumes;

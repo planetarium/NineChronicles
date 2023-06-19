@@ -21,7 +21,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("combination_equipment3")]
     public class CombinationEquipment3 : GameAction, ICombinationEquipmentV1
     {

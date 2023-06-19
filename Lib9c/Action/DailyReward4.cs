@@ -15,7 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("daily_reward4")]
     public class DailyReward4 : GameAction, IDailyRewardV1
     {

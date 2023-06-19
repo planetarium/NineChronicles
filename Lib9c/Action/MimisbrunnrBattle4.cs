@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("mimisbrunnr_battle4")]
     public class MimisbrunnrBattle4 : GameAction, IMimisbrunnrBattleV1
     {

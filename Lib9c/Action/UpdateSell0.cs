@@ -22,7 +22,7 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("update_sell")]
     public class UpdateSell0 : GameAction, IUpdateSellV1
     {

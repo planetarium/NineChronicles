@@ -21,7 +21,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("combination_equipment7")]
     public class CombinationEquipment7 : GameAction, ICombinationEquipmentV1
     {

@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("mimisbrunnr_battle11")]
     public class MimisbrunnrBattle11 : GameAction, IMimisbrunnrBattleV5
     {

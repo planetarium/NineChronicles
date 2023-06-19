@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100200ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash_sweep2")]
     public class HackAndSlashSweep2 : GameAction, IHackAndSlashSweepV1
     {

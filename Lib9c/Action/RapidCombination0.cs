@@ -16,7 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("rapid_combination")]
     public class RapidCombination0 : GameAction, IRapidCombinationV1
     {

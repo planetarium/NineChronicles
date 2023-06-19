@@ -20,7 +20,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("combination_consumable4")]
     public class CombinationConsumable4 : GameAction, ICombinationConsumableV1
     {

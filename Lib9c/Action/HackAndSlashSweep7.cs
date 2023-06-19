@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_sweep7")]
-    [ActionObsolete(ActionObsoleteConfig.V100340ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class HackAndSlashSweep7 : GameAction, IHackAndSlashSweepV2
     {
         public const int UsableApStoneCount = 10;

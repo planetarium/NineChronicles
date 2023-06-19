@@ -11,7 +11,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("daily_reward")]
     public class DailyReward0 : GameAction, IDailyRewardV1
     {

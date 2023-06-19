@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1679
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType(ActionTypeName)]
     public class BattleGrandFinale2 : GameAction, IBattleGrandFinaleV1
     {

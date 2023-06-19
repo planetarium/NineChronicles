@@ -28,7 +28,7 @@ namespace Nekoyume.Action
     /// Introduced at ...
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V200020ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType(ActionTypeName)]
     public class BattleGrandFinale1 : GameAction, IBattleGrandFinaleV1
     {

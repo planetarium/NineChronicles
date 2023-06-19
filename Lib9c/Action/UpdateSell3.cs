@@ -25,7 +25,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100320ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("update_sell3")]
     public class UpdateSell3 : GameAction, IUpdateSellV2
     {

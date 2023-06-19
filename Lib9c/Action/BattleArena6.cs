@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1464
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100340ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("battle_arena6")]
     public class BattleArena6 : GameAction, IBattleArenaV1
     {

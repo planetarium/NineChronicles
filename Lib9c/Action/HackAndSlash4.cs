@@ -17,7 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash4")]
     public class HackAndSlash4 : GameAction, IHackAndSlashV2
     {

@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell11")]
-    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class Sell11 : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
