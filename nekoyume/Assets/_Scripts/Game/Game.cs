@@ -1115,7 +1115,7 @@ namespace Nekoyume.Game
                 + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
             var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-            var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT");
+            var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
             var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
             PlayerPrefs.SetString(WorldbossSeasonPushIdentifierKey, identifier);
         }
