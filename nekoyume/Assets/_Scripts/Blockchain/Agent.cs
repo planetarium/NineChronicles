@@ -29,7 +29,6 @@ using Nekoyume.Action;
 using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
@@ -44,7 +43,6 @@ using NCTx = Libplanet.Tx.Transaction;
 namespace Nekoyume.Blockchain
 {
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using System.Runtime.InteropServices;
     using UniRx;
 
