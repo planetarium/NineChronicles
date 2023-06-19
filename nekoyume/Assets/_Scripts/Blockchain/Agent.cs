@@ -43,7 +43,6 @@ using NCTx = Libplanet.Tx.Transaction;
 namespace Nekoyume.Blockchain
 {
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using System.Runtime.InteropServices;
     using UniRx;
 
@@ -252,13 +251,25 @@ namespace Nekoyume.Blockchain
             return blocks.GetState(address);
         }
 
-        public Task<IValue> GetStateAsync(Address address)
+        public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
-            return Task.Run(() => blocks.GetState(address));
+            if (blockIndex.HasValue)
+            {
+                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+            }
+
+            return await Task.Run(() => blocks.GetState(address));
         }
 
-        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+            IEnumerable<Address> addressList,
+            long? blockIndex = null)
         {
+            if (blockIndex.HasValue)
+            {
+                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+            }
+
             return await Task.Run(async () =>
             {
                 var dict = new Dictionary<Address, AvatarState>();

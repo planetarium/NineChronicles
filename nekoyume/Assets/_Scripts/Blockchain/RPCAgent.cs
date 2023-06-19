@@ -15,7 +15,6 @@ using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.State;
 using Libplanet.Tx;
 using LruCacheNet;
 using MagicOnion.Client;
@@ -24,7 +23,7 @@ using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
-using Nekoyume.Game;
+using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -102,6 +101,8 @@ namespace Nekoyume.Blockchain
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private readonly BlockHashCache _blockHashCache = new(100);
+
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -165,11 +166,12 @@ namespace Nekoyume.Blockchain
             return _codec.Decode(raw);
         }
 
-        public async Task<IValue> GetStateAsync(Address address)
+        public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
             var game = Game.Game.instance;
             // Check state & cached because force update state after rpc disconnected.
-            if (game.CachedStateAddresses.TryGetValue(address, out var cached) &&
+            if (!blockIndex.HasValue &&
+                game.CachedStateAddresses.TryGetValue(address, out var cached) &&
                 cached &&
                 game.CachedStates.TryGetValue(address, out var value) &&
                 !(value is Null))
@@ -178,7 +180,14 @@ namespace Nekoyume.Blockchain
                 return value;
             }
 
-            byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return null;
+            }
+
+            byte[] raw = await _service.GetState(address.ToByteArray(), blockHash.Value.ToByteArray());
             IValue result = _codec.Decode(raw);
             if (game.CachedStateAddresses.ContainsKey(address))
             {
@@ -243,11 +252,20 @@ namespace Nekoyume.Blockchain
             return balance;
         }
 
-        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+            IEnumerable<Address> addressList,
+            long? blockIndex = null)
         {
-            Dictionary<byte[], byte[]> raw =
-                await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()),
-                    BlockTipHash.ToByteArray());
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (!blockHash.HasValue)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return null;
+            }
+
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStates(
+                addressList.Select(a => a.ToByteArray()),
+                blockHash.Value.ToByteArray());
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
@@ -549,10 +567,13 @@ namespace Nekoyume.Blockchain
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
-            Block newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
-            BlockIndex = newTipBlock.Index;
+            var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
+            var blockIndex = newTipBlock.Index;
+            var blockHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            _blockHashCache.Add(blockIndex, blockHash);
+            BlockIndex = blockIndex;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            BlockTipHash = blockHash;
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
 
@@ -747,5 +768,14 @@ namespace Nekoyume.Blockchain
 
         public async UniTask<bool> IsTxStagedAsync(TxId txId) =>
             await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
+
+        private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
+        {
+            return blockIndex.HasValue
+                ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
+                    ? outBlockHash
+                    : await Game.Game.instance.ApiClient.GetBlockHashAsync(blockIndex.Value)
+                : BlockTipHash;
+        }
     }
 }

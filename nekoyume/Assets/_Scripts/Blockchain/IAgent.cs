@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,7 +53,7 @@ namespace Nekoyume.Blockchain
         void EnqueueAction(ActionBase actionBase);
 
         IValue GetState(Address address);
-        Task<IValue> GetStateAsync(Address address);
+        Task<IValue> GetStateAsync(Address address, long? blockIndex = null);
 
         void SendException(Exception exc);
 
@@ -63,7 +65,9 @@ namespace Nekoyume.Blockchain
 
         Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency);
 
-        Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList);
+        Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+            IEnumerable<Address> addressList,
+            long? blockIndex = null);
 
         Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList);
     }
