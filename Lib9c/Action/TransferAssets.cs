@@ -94,11 +94,11 @@ namespace Nekoyume.Action
             }
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}transfer_assets2 exec started", addressesHex);
+            Log.Debug("{AddressesHex}{ActionName} exec started", addressesHex, TypeIdentifier);
 
             state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, context.BlockIndex));
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}transfer_assets2 Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}{ActionName} Total Executed Time: {Elapsed}", addressesHex, TypeIdentifier, ended - started);
 
             return state;
         }
