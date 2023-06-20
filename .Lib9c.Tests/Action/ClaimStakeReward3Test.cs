@@ -70,10 +70,7 @@ namespace Lib9c.Tests.Action
             ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
             40,
             4,
-            0,
-            null,
-            null,
-            0L
+            0
         )]
         [InlineData(
             ClaimStakeReward2.ObsoletedIndex,
@@ -82,10 +79,7 @@ namespace Lib9c.Tests.Action
             ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
             4800,
             36,
-            4,
-            null,
-            null,
-            0L
+            4
         )]
         // Calculate rune start from hard fork index
         [InlineData(
@@ -95,10 +89,7 @@ namespace Lib9c.Tests.Action
             ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
             136800,
             1026,
-            4,
-            null,
-            null,
-            0L
+            4
         )]
         // Stake reward v2
         // Stake before v2, prev. receive v1, receive v1 & v2
@@ -109,10 +100,7 @@ namespace Lib9c.Tests.Action
             StakeState.StakeRewardSheetV2Index + 1,
             5,
             1,
-            0,
-            null,
-            null,
-            0L
+            0
         )]
         // Stake before v2, prev. receive v2, receive v2
         [InlineData(
@@ -122,10 +110,7 @@ namespace Lib9c.Tests.Action
             StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
             5,
             1,
-            0,
-            null,
-            null,
-            0L
+            0
         )]
         // Stake after v2, no prev. receive, receive v2
         [InlineData(
@@ -135,10 +120,7 @@ namespace Lib9c.Tests.Action
             StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
             1200,
             9,
-            1,
-            null,
-            null,
-            0L
+            1
         )]
         // stake after v2, prev. receive v2, receive v2
         [InlineData(
@@ -148,10 +130,7 @@ namespace Lib9c.Tests.Action
             StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval * 2,
             5,
             1,
-            0,
-            null,
-            null,
-            0L
+            0
         )]
         // stake before currency as reward, non prev.
         [InlineData(
@@ -161,10 +140,7 @@ namespace Lib9c.Tests.Action
             StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval,
             3_000_000,
             37_506,
-            4_998,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
+            4_998
         )]
         // stake before currency as reward, prev.
         [InlineData(
@@ -174,10 +150,7 @@ namespace Lib9c.Tests.Action
             StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval,
             2_000_000,
             25_004,
-            3_332,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
+            3_332
         )]
         public void Execute_Success(
             long startedBlockIndex,
@@ -186,10 +159,7 @@ namespace Lib9c.Tests.Action
             long blockIndex,
             int expectedHourglass,
             int expectedApStone,
-            int expectedRune,
-            string expectedCurrencyAddrHex,
-            string expectedCurrencyTicker,
-            long expectedCurrencyAmount)
+            int expectedRune)
         {
             Execute(
                 _initialStatesWithAvatarStateV1,
@@ -201,10 +171,7 @@ namespace Lib9c.Tests.Action
                 blockIndex,
                 expectedHourglass,
                 expectedApStone,
-                expectedRune,
-                expectedCurrencyAddrHex,
-                expectedCurrencyTicker,
-                expectedCurrencyAmount);
+                expectedRune);
 
             Execute(
                 _initialStatesWithAvatarStateV2,
@@ -216,10 +183,7 @@ namespace Lib9c.Tests.Action
                 blockIndex,
                 expectedHourglass,
                 expectedApStone,
-                expectedRune,
-                expectedCurrencyAddrHex,
-                expectedCurrencyTicker,
-                expectedCurrencyAmount);
+                expectedRune);
         }
 
         private void Execute(
@@ -232,10 +196,7 @@ namespace Lib9c.Tests.Action
             long blockIndex,
             int expectedHourglass,
             int expectedApStone,
-            int expectedRune,
-            string expectedCurrencyAddrHex,
-            string expectedCurrencyTicker,
-            long expectedCurrencyAmount)
+            int expectedRune)
         {
             var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
             var initialStakeState = new StakeState(stakeStateAddr, startedBlockIndex);
@@ -267,14 +228,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(
                 expectedRune * RuneHelper.StakeRune,
                 states.GetBalance(avatarAddr, RuneHelper.StakeRune));
-            if (!string.IsNullOrEmpty(expectedCurrencyAddrHex))
-            {
-                var addr = new Address(expectedCurrencyAddrHex);
-                var currency = Currencies.GetMinterlessCurrency(expectedCurrencyTicker);
-                Assert.Equal(
-                    expectedCurrencyAmount * currency,
-                    states.GetBalance(addr, currency));
-            }
 
             Assert.True(states.TryGetStakeState(agentAddr, out StakeState stakeState));
             Assert.Equal(blockIndex, stakeState.ReceivedBlockIndex);

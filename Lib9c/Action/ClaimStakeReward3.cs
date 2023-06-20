@@ -114,7 +114,6 @@ namespace Nekoyume.Action
             FungibleAssetValue stakedAmount,
             int itemRewardStep,
             int runeRewardStep,
-            int currencyRewardStep,
             List<StakeRegularFixedRewardSheet.RewardInfo> fixedReward,
             List<StakeRegularRewardSheet.RewardInfo> regularReward)
         {
@@ -148,25 +147,6 @@ namespace Nekoyume.Action
                         }
 
                         states = states.MintAsset(AvatarAddress, runeReward);
-                        break;
-                    case StakeRegularRewardSheet.StakeRewardType.Currency:
-                        if (string.IsNullOrEmpty(reward.CurrencyTicker))
-                        {
-                            throw new NullReferenceException("currency ticker is null or empty");
-                        }
-
-                        var rewardCurrency =
-                            Currencies.GetMinterlessCurrency(reward.CurrencyTicker);
-                        var rewardCurrencyQuantity =
-                            stakedAmount.DivRem(reward.Rate * stakedAmount.Currency).Quotient;
-                        if (rewardCurrencyQuantity <= 0)
-                        {
-                            continue;
-                        }
-
-                        states = states.MintAsset(
-                            context.Signer,
-                            rewardCurrencyQuantity * currencyRewardStep * rewardCurrency);
                         break;
                     default:
                         break;
@@ -252,9 +232,6 @@ namespace Nekoyume.Action
                 context.BlockIndex,
                 out var runeV1Step,
                 out var runeV2Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
-                context.BlockIndex,
-                out var currencyV2Step);
             if (itemV1Step > 0)
             {
                 var v1Level = Math.Min(level, V1.MaxLevel);
@@ -272,7 +249,6 @@ namespace Nekoyume.Action
                     stakedAmount,
                     itemV1Step,
                     runeV1Step,
-                    0,
                     fixedRewardV1,
                     regularRewardV1);
             }
@@ -292,7 +268,6 @@ namespace Nekoyume.Action
                     stakedAmount,
                     itemV2Step,
                     runeV2Step,
-                    currencyV2Step,
                     regularFixedReward,
                     regularReward);
             }
