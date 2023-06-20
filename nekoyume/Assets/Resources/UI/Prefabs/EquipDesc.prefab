@@ -7990,7 +7990,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2579598078006708627
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8009,10 +8009,10 @@ RectTransform:
   m_Father: {fileID: 3436769837260208417}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 287.5, y: -27}
+  m_SizeDelta: {x: 115, y: 54}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &85928499554273976
 CanvasRenderer:
@@ -23020,10 +23020,10 @@ RectTransform:
   m_Father: {fileID: 884309162456135056}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 33.765, y: -27}
+  m_SizeDelta: {x: 57.53, y: 29.61}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6546210747900374869
 CanvasRenderer:
@@ -32703,7 +32703,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -52.47, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2113327395346914830
 MonoBehaviour:
@@ -33697,9 +33697,6 @@ MonoBehaviour:
     - toggle: {fileID: 1356632953561502174}
       disableText: {fileID: 376100366394573118}
       enableText: {fileID: 6801251912781755049}
-    - toggle: {fileID: 4901881353262940766}
-      disableText: {fileID: 6878760383959138734}
-      enableText: {fileID: 2400532601470442124}
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 2052619893874140298}
     recipeTabs:
@@ -54061,7 +54058,7 @@ PrefabInstance:
     - target: {fileID: 236527189773931093, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.45
       objectReference: {fileID: 0}
     - target: {fileID: 236527189773931093, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
@@ -54262,7 +54259,7 @@ PrefabInstance:
     - target: {fileID: 1197516935473065402, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.45
       objectReference: {fileID: 0}
     - target: {fileID: 1197516935473065402, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
@@ -55324,7 +55321,7 @@ PrefabInstance:
     - target: {fileID: 5666248065858080879, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.45
       objectReference: {fileID: 0}
     - target: {fileID: 5666248065858080879, guid: a1c4fa5a429c14614a172512d3d2b929,
         type: 3}
