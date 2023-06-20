@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -79,7 +80,7 @@ namespace Nekoyume.UI
 
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
-
+        
         protected override void Awake()
         {
             base.Awake();

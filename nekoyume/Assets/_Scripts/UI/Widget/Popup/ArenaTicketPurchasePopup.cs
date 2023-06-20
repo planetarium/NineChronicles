@@ -82,7 +82,7 @@ namespace Nekoyume.UI
                 remainingContainer.SetActive(true);
                 remainingSlider.thresholdRatio = (float)progressed / total;
                 remainingText.text =
-                    $"{total - progressed}({Util.GetBlockToTime(total - progressed)})";
+                    $"{total - progressed}({Util.GetBlockToTimeString(total - progressed)})";
             }
 
             costContainer.SetActive(false);

@@ -391,6 +391,9 @@ MonoBehaviour:
   raidStage: {fileID: 530859351}
   lobby: {fileID: 716216230}
   useSystemLanguage: 0
+  useLocalHeadless: 0
+  useLocalMarketService: 0
+  marketDbConnectionString: Host=localhost;Username=postgres;Database=market
   languageType:
     value: 0
   prologue: {fileID: 76870001}

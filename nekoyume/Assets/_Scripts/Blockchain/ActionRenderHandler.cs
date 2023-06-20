@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
-using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.State;
@@ -68,6 +67,9 @@ namespace Nekoyume.Blockchain
         private IDisposable _disposableForBattleEnd;
 
         private ActionRenderer _actionRenderer;
+
+        // approximately 4h
+        private const int WorkshopNotifiedBlockCount = 1200;
 
         private ActionRenderHandler()
         {
@@ -769,6 +771,16 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
+
+                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                if (blockCount >= WorkshopNotifiedBlockCount)
+                {
+                    var expectedNotifiedTime =
+                        Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
+                        result.itemUsable.GetLocalizedNonColoredName(false));
+                    PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Workshop);
+                }
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -978,6 +990,16 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
+
+                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                if (blockCount >= WorkshopNotifiedBlockCount)
+                {
+                    var expectedNotifiedTime =
+                        Util.GetBlockToTime(Mathf.RoundToInt(blockCount * 1.15f));
+                    var notificationText = L10nManager.Localize("PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
+                        result.itemUsable.GetLocalizedNonColoredName(false));
+                    PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Workshop);
+                }
                 // ~Notify
 
                 var avatarSlotIndex = States.Instance.AvatarStates
@@ -1339,6 +1361,11 @@ namespace Nekoyume.Blockchain
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
+
+                var expectedNotifiedTime =
+                    Util.GetBlockToTime(Mathf.RoundToInt(States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
+                var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
+                PushNotifier.Push(notificationText, expectedNotifiedTime, PushNotifier.PushType.Reward);
 
                 if (!RuneFrontHelper.TryGetRuneData(RuneHelper.DailyRewardRune.Ticker,
                         out var data))

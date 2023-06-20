@@ -114,7 +114,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             if (current < beginning)
             {
                 _seasonProgressFillImage.enabled = false;
-                _seasonProgressSliderFillText.text = Util.GetBlockToTime(beginning - current);
+                _seasonProgressSliderFillText.text = Util.GetBlockToTimeString(beginning - current);
                 _seasonProgressSliderFillText.enabled = true;
 
                 return;
@@ -125,7 +125,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             var sliderNormalizedValue = (float)progress / range;
             _seasonProgressSlider.NormalizedValue = sliderNormalizedValue;
             _seasonProgressFillImage.enabled = true;
-            _seasonProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
+            _seasonProgressSliderFillText.text = Util.GetBlockToTimeString(range - progress);
             _seasonProgressSliderFillText.enabled = true;
 
             if (current == beginning)
