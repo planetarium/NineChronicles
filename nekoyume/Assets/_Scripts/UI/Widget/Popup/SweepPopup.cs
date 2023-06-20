@@ -168,6 +168,13 @@ namespace Nekoyume.UI
             objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
             objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
             _useSweep = useSweep;
+            if (!useSweep)
+            {
+                // TODO: hotfix about HAS repeating bug. We have to delete it.
+                apStoneSlider.ForceMove(0);
+                _apStoneCount.Value = 0;
+            }
+
             UpdateView();
         }
 
