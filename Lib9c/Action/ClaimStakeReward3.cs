@@ -21,9 +21,11 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1458
     /// </summary>
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ObsoleteBlockIndex)]
     public class ClaimStakeReward3 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward3";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200030ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -192,10 +194,10 @@ namespace Nekoyume.Action
                 return context.PreviousStates;
             }
 
-            var states = context.PreviousStates;
             CheckActionAvailable(ClaimStakeReward2.ObsoletedIndex, context);
-            // TODO: Uncomment this when new version of action is created
-            // CheckObsolete(ObsoletedIndex, context);
+            CheckObsolete(ObsoleteBlockIndex, context);
+
+            var states = context.PreviousStates;
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
