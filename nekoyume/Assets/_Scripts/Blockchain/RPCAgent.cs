@@ -10,6 +10,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Ionic.Zlib;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
@@ -503,7 +504,9 @@ namespace Nekoyume.Blockchain
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
                 actions: actions,
-                updatedAddresses: actions.CalculateUpdateAddresses()
+                updatedAddresses: actions.CalculateUpdateAddresses(),
+                maxGasPrice: Currencies.Mead * 1,
+                gasLimit: 4
             );
 
             string actionsName = default;
