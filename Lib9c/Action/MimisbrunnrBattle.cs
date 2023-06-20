@@ -28,6 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle13")]
     public class MimisbrunnrBattle : GameAction, IMimisbrunnrBattleV5
     {
@@ -88,6 +89,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sw = new Stopwatch();
             sw.Start();
