@@ -33740,31 +33740,39 @@ MonoBehaviour:
   - ParentObject: {fileID: 2317275392032755833}
     OptionText: {fileID: 7007941882053913369}
     PercentageSlider: {fileID: 5130374587566211307}
+    SliderFillImage: {fileID: 541917692721911588}
   - ParentObject: {fileID: 3683889437496429271}
     OptionText: {fileID: 4203870925451154453}
     PercentageSlider: {fileID: 3065793058169248923}
+    SliderFillImage: {fileID: 7042317121531542221}
   - ParentObject: {fileID: 352168027689530766}
     OptionText: {fileID: 4058005955462118605}
     PercentageSlider: {fileID: 2607745756581976554}
+    SliderFillImage: {fileID: 1632925428134587453}
   - ParentObject: {fileID: 3842695064786974939}
     OptionText: {fileID: 6007981466290133102}
     PercentageSlider: {fileID: 3080736511884839616}
+    SliderFillImage: {fileID: 8269513062837202389}
   skillViews:
   - ParentObject: {fileID: 9050513799785241155}
     OptionText: {fileID: 1286713039018420594}
     PercentageSlider: {fileID: 6255765881195054527}
+    SliderFillImage: {fileID: 5169543295318795658}
     TooltipButton: {fileID: 9725730131200123}
   - ParentObject: {fileID: 4879357763268784036}
     OptionText: {fileID: 8971309981804837864}
     PercentageSlider: {fileID: 4393458099949333178}
+    SliderFillImage: {fileID: 1737168695183066798}
     TooltipButton: {fileID: 8414139559941368005}
   - ParentObject: {fileID: 7810903067382174946}
     OptionText: {fileID: 7369374683753153212}
     PercentageSlider: {fileID: 2997732510470868750}
+    SliderFillImage: {fileID: 3299752491210778828}
     TooltipButton: {fileID: 226106244850452509}
   - ParentObject: {fileID: 6109805421532089360}
     OptionText: {fileID: 1787128472986031346}
     PercentageSlider: {fileID: 3836262703484464086}
+    SliderFillImage: {fileID: 5603276525686642326}
     TooltipButton: {fileID: 7007428284781115946}
   optionIcons:
   - {fileID: 5843368351218467390}
@@ -33781,6 +33789,9 @@ MonoBehaviour:
     notEnoughHammerPointObject: {fileID: 3507207217033897318}
     enoughHammerPointObject: {fileID: 3469750189661190466}
     superCraftButton: {fileID: 8184389934724761391}
+  bgHsvModifiers:
+  - {fileID: 5306277865250358459}
+  - {fileID: 3182352976982576040}
   materialSelectButton: {fileID: 0}
   requiredNormalItemIcons: []
   requiredNormalItemImage: {fileID: 0}
