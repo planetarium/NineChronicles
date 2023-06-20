@@ -12,7 +12,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake")]
-    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
+    [ActionObsolete(ObsoleteIndex)]
     public class Stake0 : ActionBase, IStakeV1
     {
         public const long ObsoleteIndex = ActionObsoleteConfig.V200030ObsoleteIndex;
