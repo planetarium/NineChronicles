@@ -13,7 +13,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("claim_stake_reward")]
-    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
+    [ActionObsolete(ObsoleteIndex)]
     public class ClaimStakeReward1 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         public const long ObsoleteIndex = ActionObsoleteConfig.V200030ObsoleteIndex;
