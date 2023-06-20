@@ -42,8 +42,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward(_avatarAddr);
-            var deserialized = new ClaimStakeReward();
+            var action = new ClaimStakeReward3(_avatarAddr);
+            var deserialized = new ClaimStakeReward3();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
         [InlineData(ClaimStakeReward2.ObsoletedIndex - 1)]
         public void Execute_Throw_ActionUnAvailableException(long blockIndex)
         {
-            var action = new ClaimStakeReward(_avatarAddr);
+            var action = new ClaimStakeReward3(_avatarAddr);
             Assert.Throws<ActionUnavailableException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialStatesWithAvatarStateV2,
@@ -248,7 +248,7 @@ namespace Lib9c.Tests.Action
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
                 .MintAsset(stakeStateAddr, _ncg * stakeAmount);
 
-            var action = new ClaimStakeReward(avatarAddr);
+            var action = new ClaimStakeReward3(avatarAddr);
             var states = action.Execute(new ActionContext
             {
                 PreviousStates = prevState,

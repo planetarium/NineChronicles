@@ -615,7 +615,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.NotNull(stakeState);
             Assert.Equal(0 * RuneHelper.StakeRune, _initialStatesWithAvatarStateV2.GetBalance(_avatarAddr, RuneHelper.StakeRune));
 
-            action = new ClaimStakeReward(_avatarAddr);
+            action = new ClaimStakeReward3(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -672,7 +672,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _ncg * stakeAmount,
                 states.GetBalance(stakeState.address, _ncg));
 
-            action = new ClaimStakeReward(_avatarAddr);
+            action = new ClaimStakeReward3(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -745,7 +745,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _ncg * stakeAmount,
                 states.GetBalance(stakeState.address, _ncg));
 
-            action = new ClaimStakeReward(_avatarAddr);
+            action = new ClaimStakeReward3(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -801,7 +801,7 @@ namespace Lib9c.Tests.Action.Scenario
             // 201,600 블록 도달 이후 → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
             foreach ((long claimBlockIndex, (int itemId, int amount)[] expectedItems) in claimEvents)
             {
-                action = new ClaimStakeReward(_avatarAddr);
+                action = new ClaimStakeReward3(_avatarAddr);
                 states = action.Execute(new ActionContext
                 {
                     PreviousStates = states,
@@ -853,7 +853,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Throws<RequiredBlockIndexException>(() =>
                 {
                     // 현재 스테이킹된 NCG를 인출할 수 없다
-                    action = new ClaimStakeReward(_avatarAddr);
+                    action = new ClaimStakeReward3(_avatarAddr);
                     states = action.Execute(new ActionContext
                     {
                         PreviousStates = states,
@@ -888,7 +888,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            action = new ClaimStakeReward(_avatarAddr);
+            action = new ClaimStakeReward3(_avatarAddr);
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
