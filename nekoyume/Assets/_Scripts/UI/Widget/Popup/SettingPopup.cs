@@ -232,27 +232,27 @@ namespace Nekoyume.UI
             base.Show(true);
             HelpTooltip.HelpMe(100014, true);
 
-//#if UNITY_ANDROID || UNITY_IOS
-//            foreach (var menu in mobileEnabledMenus)
-//            {
-//                menu.SetActive(true);
-//            }
+#if UNITY_ANDROID || UNITY_IOS
+            foreach (var menu in mobileEnabledMenus)
+            {
+                menu.SetActive(true);
+            }
 
-//            foreach (var menu in mobileDisabledMenus)
-//            {
-//                menu.SetActive(false);
-//            }
-//#else
-//            foreach (var menu in mobileEnabledMenus)
-//            {
-//                menu.SetActive(false);
-//            }
+            foreach (var menu in mobileDisabledMenus)
+            {
+                menu.SetActive(false);
+            }
+#else
+            foreach (var menu in mobileEnabledMenus)
+            {
+                menu.SetActive(false);
+            }
 
-//            foreach (var menu in mobileDisabledMenus)
-//            {
-//                menu.SetActive(true);
-//            }
-//#endif
+            foreach (var menu in mobileDisabledMenus)
+            {
+                menu.SetActive(true);
+            }
+#endif
         }
 
         public void RevertSettings()
