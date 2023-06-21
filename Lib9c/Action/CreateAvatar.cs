@@ -212,7 +212,7 @@ namespace Nekoyume.Action
                     equipmentRow,
                     context.Random.GenerateRandomGuid(),
                     0L,
-                    madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                    madeWithMimisbrunnrRecipe: subRecipeRow.IsMimisbrunnrSubRecipe ?? false);
 
                 foreach (var option in subRecipeRow.Options)
                 {
