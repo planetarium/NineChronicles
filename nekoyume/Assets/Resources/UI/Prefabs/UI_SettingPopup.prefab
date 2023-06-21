@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 5356417291862586348}
   - component: {fileID: 4663720923108928441}
   m_Layer: 5
-  m_Name: ContentInputField
+  m_Name: Contents
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -373,7 +373,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 5
     m_Bottom: 5
-  m_ChildAlignment: 1
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 250, y: 40}
@@ -3272,9 +3272,9 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 18
   m_fontStyle: 33
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -6102,9 +6102,9 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 18
   m_fontStyle: 33
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -12454,9 +12454,9 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 18
   m_fontStyle: 33
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -13055,12 +13055,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 15.65
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 18
   m_fontStyle: 33
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -14350,9 +14350,9 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 18
   m_fontStyle: 33
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
