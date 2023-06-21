@@ -14,14 +14,15 @@ namespace Lib9c.Tests.Action.Scenario
     using Xunit;
     using Xunit.Abstractions;
 
-    public class StakeAndClaimStakeReward3ScenarioTest
+    public class StakeAndClaimStakeRewardScenarioTest
     {
-        private readonly Address _agentAddr;
+        private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
+        private readonly Address _agentAddr = new Address(AgentAddressHex);
         private readonly Address _avatarAddr;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
-        public StakeAndClaimStakeReward3ScenarioTest(ITestOutputHelper outputHelper)
+        public StakeAndClaimStakeRewardScenarioTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -30,10 +31,11 @@ namespace Lib9c.Tests.Action.Scenario
 
             (
                 _,
-                _agentAddr,
+                _,
                 _avatarAddr,
                 _,
-                _initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates();
+                _initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates(
+                agentAddr: _agentAddr);
             _ncg = _initialStatesWithAvatarStateV2.GetGoldCurrency();
         }
 
@@ -54,6 +56,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -65,6 +70,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
 
             // 2단계 수준(500~4,999NCG)의 deposit save 완료
@@ -81,6 +89,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -92,6 +103,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -103,6 +117,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
 
             // 3단계 수준(5,000~49,999NCG)의 deposit save 완료
@@ -119,6 +136,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -130,6 +150,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 8,
+                null,
+                null,
+                0L,
             };
 
             // 4단계 수준(50,000~499,999NCG)의 deposit save 완료
@@ -146,6 +169,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 8,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -157,6 +183,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 83,
+                null,
+                null,
+                0L,
             };
 
             // 5단계 수준(500,000~100,000,000NCG)의 deposit save 완료
@@ -173,6 +202,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 83,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -184,6 +216,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 50_400L,
                 16_666,
+                null,
+                null,
+                0L,
             };
 
             // 지연된 보상수령 확인
@@ -203,6 +238,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -214,6 +252,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
 
             // 2단계 수준(500~4,999NCG)의 deposit save 완료
@@ -232,6 +273,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -243,6 +287,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -254,6 +301,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
 
             // 3단계 수준(5,000~49,999NCG)의 deposit save 완료
@@ -272,6 +322,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 0,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -283,6 +336,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 72,
+                null,
+                null,
+                0L,
             };
 
             // 4단계 수준(50,000~499,999NCG)의 deposit save 완료
@@ -301,6 +357,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 72,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -312,6 +371,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 747,
+                null,
+                null,
+                0L,
             };
 
             // 5단계 수준(500,000~4,999,999NCG)의 deposit save 완료
@@ -334,6 +396,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 747,
+                null,
+                null,
+                0L,
             };
             yield return new object[]
             {
@@ -345,6 +410,9 @@ namespace Lib9c.Tests.Action.Scenario
                 },
                 ClaimStakeReward2.ObsoletedIndex + 500_800L,
                 7_497,
+                null,
+                null,
+                0L,
             };
         }
 
@@ -359,26 +427,38 @@ namespace Lib9c.Tests.Action.Scenario
                 const int hourglassItemId = 400_000, apPotionItemId = 500_000;
                 return new[]
                 {
-                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval, new[]
-                    {
-                        (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
-                    }),
-                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 2, new[]
-                    {
-                        (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
-                    }),
-                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 3, new[]
-                    {
-                        (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
-                    }),
-                    (ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 4, new[]
-                    {
-                        (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
-                    }),
+                    (
+                        ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval,
+                        new[]
+                        {
+                            (hourglassItemId, (int)(stakeAmount / hourglassRate)),
+                            (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
+                        }
+                    ),
+                    (
+                        ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 2,
+                        new[]
+                        {
+                            (hourglassItemId, (int)(stakeAmount / hourglassRate)),
+                            (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
+                        }
+                    ),
+                    (
+                        ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 3,
+                        new[]
+                        {
+                            (hourglassItemId, (int)(stakeAmount / hourglassRate)),
+                            (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
+                        }
+                    ),
+                    (
+                        ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval * 4,
+                        new[]
+                        {
+                            (hourglassItemId, (int)(stakeAmount / hourglassRate)),
+                            (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
+                        }
+                    ),
                 };
             }
 
@@ -599,7 +679,10 @@ namespace Lib9c.Tests.Action.Scenario
             long stakeAmount,
             (int ItemId, int Amount)[] expectedItems,
             long receiveBlockIndex,
-            int expectedRune)
+            int expectedRune,
+            string expectedCurrencyAddrHex,
+            string expectedCurrencyTicker,
+            long expectedCurrencyAmount)
         {
             var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * stakeAmount);
 
@@ -611,11 +694,13 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            Assert.True(states.TryGetStakeState(_agentAddr, out StakeState stakeState));
+            Assert.True(states.TryGetStakeState(_agentAddr, out var stakeState));
             Assert.NotNull(stakeState);
-            Assert.Equal(0 * RuneHelper.StakeRune, _initialStatesWithAvatarStateV2.GetBalance(_avatarAddr, RuneHelper.StakeRune));
+            Assert.Equal(
+                0 * RuneHelper.StakeRune,
+                _initialStatesWithAvatarStateV2.GetBalance(_avatarAddr, RuneHelper.StakeRune));
 
-            action = new ClaimStakeReward3(_avatarAddr);
+            action = new ClaimStakeReward(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -625,7 +710,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             // 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
             var avatarState = states.GetAvatarStateV2(_avatarAddr);
-            foreach ((int itemId, int amount) in expectedItems)
+            foreach (var (itemId, amount) in expectedItems)
             {
                 Assert.True(avatarState.inventory.HasItem(itemId, amount));
             }
@@ -634,7 +719,18 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(
                 _ncg * stakeAmount,
                 states.GetBalance(stakeState.address, _ncg));
-            Assert.Equal(expectedRune * RuneHelper.StakeRune, states.GetBalance(_avatarAddr, RuneHelper.StakeRune));
+            Assert.Equal(
+                expectedRune * RuneHelper.StakeRune,
+                states.GetBalance(_avatarAddr, RuneHelper.StakeRune));
+
+            if (!string.IsNullOrEmpty(expectedCurrencyAddrHex))
+            {
+                var addr = new Address(expectedCurrencyAddrHex);
+                var currency = Currencies.GetMinterlessCurrency(expectedCurrencyTicker);
+                Assert.Equal(
+                    expectedCurrencyAmount * currency,
+                    states.GetBalance(addr, currency));
+            }
         }
 
         [Theory]
@@ -649,11 +745,13 @@ namespace Lib9c.Tests.Action.Scenario
         [InlineData(500_000_000L, 500_000L, 500_000_000L)]
         public void StakeAndStakeMore(long initialBalance, long stakeAmount, long newStakeAmount)
         {
-            long newStakeBlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1;
+            var newStakeBlockIndex =
+                ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1;
             // Validate testcases
             Assert.True(stakeAmount < newStakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var states =
+                _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -663,7 +761,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            Assert.True(states.TryGetStakeState(_agentAddr, out StakeState stakeState));
+            Assert.True(states.TryGetStakeState(_agentAddr, out var stakeState));
             Assert.NotNull(stakeState);
             Assert.Equal(
                 _ncg * (initialBalance - stakeAmount),
@@ -672,7 +770,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _ncg * stakeAmount,
                 states.GetBalance(stakeState.address, _ncg));
 
-            action = new ClaimStakeReward3(_avatarAddr);
+            action = new ClaimStakeReward(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -726,7 +824,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(initialBalance >= stakeAmount);
             Assert.True(newStakeAmount < stakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var states =
+                _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -736,7 +835,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            Assert.True(states.TryGetStakeState(_agentAddr, out StakeState stakeState));
+            Assert.True(states.TryGetStakeState(_agentAddr, out var stakeState));
             Assert.NotNull(stakeState);
             Assert.Equal(
                 _ncg * (initialBalance - stakeAmount),
@@ -745,7 +844,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _ncg * stakeAmount,
                 states.GetBalance(stakeState.address, _ncg));
 
-            action = new ClaimStakeReward3(_avatarAddr);
+            action = new ClaimStakeReward(_avatarAddr);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -755,12 +854,13 @@ namespace Lib9c.Tests.Action.Scenario
 
             action = new Stake(newStakeAmount);
             // 락업기간 이전에 deposit을 감소해서 save할때 락업되어 거부되는가
-            Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _agentAddr,
-                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1,
-            }));
+            Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(
+                new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _agentAddr,
+                    BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval - 1,
+                }));
 
             Assert.True(states.TryGetStakeState(_agentAddr, out stakeState));
             Assert.NotNull(stakeState);
@@ -787,7 +887,8 @@ namespace Lib9c.Tests.Action.Scenario
             // Validate testcases
             Assert.True(stakeAmount > newStakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var states =
+                _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -799,9 +900,9 @@ namespace Lib9c.Tests.Action.Scenario
 
             // 1~3회까지 모든 보상을 수령함
             // 201,600 블록 도달 이후 → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            foreach ((long claimBlockIndex, (int itemId, int amount)[] expectedItems) in claimEvents)
+            foreach ((var claimBlockIndex, (int itemId, int amount)[] expectedItems) in claimEvents)
             {
-                action = new ClaimStakeReward3(_avatarAddr);
+                action = new ClaimStakeReward(_avatarAddr);
                 states = action.Execute(new ActionContext
                 {
                     PreviousStates = states,
@@ -810,7 +911,7 @@ namespace Lib9c.Tests.Action.Scenario
                 });
 
                 var avatarState = states.GetAvatarStateV2(_avatarAddr);
-                foreach ((int itemId, int amount) in expectedItems)
+                foreach (var (itemId, amount) in expectedItems)
                 {
                     Assert.True(avatarState.inventory.HasItem(itemId, amount));
                 }
@@ -837,10 +938,13 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.True(states.TryGetStakeState(_agentAddr, out stakeState));
                 Assert.NotNull(stakeState);
                 // 쌓여있던 보상 타이머가 정상적으로 리셋되는지
-                Assert.Equal(ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval, stakeState.StartedBlockIndex);
+                Assert.Equal(
+                    ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
+                    stakeState.StartedBlockIndex);
                 // 락업기간이 새롭게 201,600으로 갱신되는지 확인
                 Assert.Equal(
-                    ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval + StakeState.LockupInterval,
+                    ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval +
+                    StakeState.LockupInterval,
                     stakeState.CancellableBlockIndex);
                 // 기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인
                 Assert.Equal(
@@ -853,12 +957,13 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert.Throws<RequiredBlockIndexException>(() =>
                 {
                     // 현재 스테이킹된 NCG를 인출할 수 없다
-                    action = new ClaimStakeReward3(_avatarAddr);
+                    action = new ClaimStakeReward(_avatarAddr);
                     states = action.Execute(new ActionContext
                     {
                         PreviousStates = states,
                         Signer = _agentAddr,
-                        BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval + 1,
+                        BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval +
+                                     1,
                     });
                 });
                 // 현재 deposit 묶인 상태 확인
@@ -888,13 +993,14 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = ClaimStakeReward2.ObsoletedIndex,
             });
 
-            action = new ClaimStakeReward3(_avatarAddr);
-            Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _agentAddr,
-                BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval - 1,
-            }));
+            action = new ClaimStakeReward(_avatarAddr);
+            Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(
+                new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _agentAddr,
+                    BlockIndex = ClaimStakeReward2.ObsoletedIndex + StakeState.RewardInterval - 1,
+                }));
 
             var avatarState = states.GetAvatarStateV2(_avatarAddr);
             Assert.Empty(avatarState.inventory.Items.Where(x => x.item.Id == 400000));
