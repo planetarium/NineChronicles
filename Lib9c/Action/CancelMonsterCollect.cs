@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("cancel_monster_collect")]
     public class CancelMonsterCollect : GameAction, ICancelMonsterCollectV1
     {
@@ -34,6 +34,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectRound);
             if (context.Rehearsal)

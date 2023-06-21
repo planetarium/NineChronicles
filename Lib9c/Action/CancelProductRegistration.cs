@@ -27,6 +27,7 @@ namespace Nekoyume.Action
         public bool ChargeAp;
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             if (context.Rehearsal)
             {

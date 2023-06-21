@@ -76,18 +76,19 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-             if (Error != null)
-             {
-                 throw new InvalidOperationException(Error);
-             }
+            context.UseGas(1);
+            if (Error != null)
+            {
+                throw new InvalidOperationException(Error);
+            }
 
-             CheckPermission(context);
+            CheckPermission(context);
 
-             IAccountStateDelta previousState = context.PreviousStates;
-             ValidatorSet validatorSet = previousState.GetValidatorSet();
+            IAccountStateDelta previousState = context.PreviousStates;
+            ValidatorSet validatorSet = previousState.GetValidatorSet();
 
-             Func<ValidatorSet, Validator, Validator> func = Operator.ToFunc();
-             return previousState.SetValidator(func(validatorSet, Operand));
+            Func<ValidatorSet, Validator, Validator> func = Operator.ToFunc();
+            return previousState.SetValidator(func(validatorSet, Operand));
         }
 
         public override IValue PlainValue =>

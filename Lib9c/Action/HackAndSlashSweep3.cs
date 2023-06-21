@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100210ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash_sweep3")]
     public class HackAndSlashSweep3 : GameAction, IHackAndSlashSweepV2
     {
@@ -70,6 +70,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);

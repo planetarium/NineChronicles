@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class HackAndSlash16 : GameAction, IHackAndSlashV8
     {
         public List<Guid> Costumes;
@@ -88,10 +89,14 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
             }
+
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             return Execute(
                 context.PreviousStates,

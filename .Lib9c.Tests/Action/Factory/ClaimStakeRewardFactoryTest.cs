@@ -12,7 +12,7 @@ namespace Lib9c.Tests.Action.Factory
         [Theory]
         [InlineData(ClaimStakeReward2.ObsoletedIndex - 1, typeof(ClaimStakeReward2))]
         [InlineData(ClaimStakeReward2.ObsoletedIndex, typeof(ClaimStakeReward2))]
-        [InlineData(ClaimStakeReward2.ObsoletedIndex + 1, typeof(ClaimStakeReward))]
+        [InlineData(ClaimStakeReward2.ObsoletedIndex + 1, typeof(ClaimStakeReward3))]
         public void Create_ByBlockIndex_Success(
             long blockIndex,
             Type type)
@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action.Factory
         [Theory]
         [InlineData(1, typeof(ClaimStakeReward1))]
         [InlineData(2, typeof(ClaimStakeReward2))]
-        [InlineData(3, typeof(ClaimStakeReward))]
+        [InlineData(3, typeof(ClaimStakeReward3))]
         public void Create_ByVersion_Success(
             int version,
             Type type)

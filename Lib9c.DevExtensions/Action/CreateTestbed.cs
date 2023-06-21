@@ -71,6 +71,7 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var sellData = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
             var addedItemInfos = sellData.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(

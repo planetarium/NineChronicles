@@ -6,6 +6,7 @@ namespace Lib9c.Tests
     using System.Threading.Tasks;
     using Lib9c.Tests.TestHelper;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Crypto;

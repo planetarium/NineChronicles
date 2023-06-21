@@ -3,12 +3,17 @@ namespace Lib9c.Tests.Action
     using System.Security.Cryptography;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Blocks;
     using Libplanet.State;
     using Libplanet.Tx;
 
     public class ActionContext : IActionContext
     {
+        private long _gasUsed;
+
+        public BlockHash? GenesisHash { get; set; }
+
         public Address Signer { get; set; }
 
         public TxId? TxId { get; set; }
@@ -29,6 +34,13 @@ namespace Lib9c.Tests.Action
 
         public bool BlockAction { get; }
 
+        public bool IsNativeToken(Currency currency) => false;
+
+        public void UseGas(long gas)
+        {
+            _gasUsed += gas;
+        }
+
         public IActionContext GetUnconsumedContext()
         {
             // Unable to determine if Random has ever been consumed...
@@ -46,7 +58,7 @@ namespace Lib9c.Tests.Action
             };
         }
 
-        public long GasUsed() => 0;
+        public long GasUsed() => _gasUsed;
 
         public long GasLimit() => 0;
 

@@ -13,7 +13,7 @@ namespace Nekoyume.Action.Factory
         {
             if (blockIndex > ClaimStakeReward2.ObsoletedIndex)
             {
-                return new ClaimStakeReward(avatarAddress);
+                return new ClaimStakeReward3(avatarAddress);
             }
 
             // FIXME: This method should consider the starting block index of
@@ -29,7 +29,7 @@ namespace Nekoyume.Action.Factory
         {
             1 => new ClaimStakeReward1(avatarAddress),
             2 => new ClaimStakeReward2(avatarAddress),
-            3 => new ClaimStakeReward(avatarAddress),
+            3 => new ClaimStakeReward3(avatarAddress),
             _ => throw new ArgumentOutOfRangeException(
                 $"Invalid version: {version}"),
         };

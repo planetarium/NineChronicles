@@ -26,6 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class EventDungeonBattleV1 : GameAction, IEventDungeonBattleV1
     {
         private const string ActionTypeText = "event_dungeon_battle";
@@ -109,12 +110,15 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(

@@ -68,5 +68,10 @@ namespace Nekoyume
         // Release plan: About 7_102_350 at 2023-06-29 12:00:00 KST
         // Seconds per block: 10
         public const long V200030ObsoleteIndex = 7_200_000;
+
+        // While v200020, the action obsolete wasn't work well.
+        // So other previous `V*ObsoletedIndex`s lost its meaning and
+        // this block index will replace them.
+        public const long V200020AccidentObsoleteIndex = 7_000_000;
     }
 }

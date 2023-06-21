@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("monster_collect3")]
-    [ActionObsolete(ActionObsoleteConfig.V100220ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class MonsterCollect : GameAction, IMonsterCollectV2
     {
         public int level;
@@ -29,6 +29,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             if (context.Rehearsal)
             {

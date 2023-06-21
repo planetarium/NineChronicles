@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("daily_reward6")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class DailyReward6 : GameAction, IDailyRewardV1
     {
         public Address avatarAddress;
@@ -29,6 +30,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
@@ -43,6 +45,8 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward exec started", addressesHex);

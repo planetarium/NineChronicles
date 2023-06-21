@@ -33,8 +33,8 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             CheckObsolete(ObsoleteIndex, context);
-
             var states = context.PreviousStates;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
@@ -64,7 +64,7 @@ namespace Nekoyume.Action
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
-            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewards(context.BlockIndex);
+            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewardsV1(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
