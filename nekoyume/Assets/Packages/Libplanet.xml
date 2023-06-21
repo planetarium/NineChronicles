@@ -234,14 +234,14 @@
             the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy.BlockAction"/> held by the instance
             for the <paramref name="blockHeader"/>.</returns>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator.GetPreviousBlockOutputStates(Libplanet.Blocks.IPreEvaluationBlockHeader)">
+        <member name="M:Libplanet.Action.ActionEvaluator.PrepareInitialDelta(Libplanet.Blocks.IPreEvaluationBlock)">
             <summary>
-            Retrieves the last previous states for the previous block of
-            <paramref name="blockHeader"/>.
+            Prepares the initial <see cref="T:Libplanet.State.IAccountStateDelta"/> to for evaluating
+            <paramref name="block"/>.
             </summary>
-            <param name="blockHeader">The header of block to reference.</param>
-            <returns>The last previous <see cref="T:Libplanet.State.IAccountStateDelta"/> for the previous
-            <see cref="T:Libplanet.Blocks.Block"/>.
+            <param name="block">The <see cref="T:Libplanet.Blocks.Block"/> to evaluate..</param>
+            <returns>The initial <see cref="T:Libplanet.State.IAccountStateDelta"/> to be used
+            for evaluating <paramref name="block"/>.
             </returns>
         </member>
         <member name="T:Libplanet.Action.ActionTypeAttribute">
@@ -2221,64 +2221,58 @@
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no
             <see cref="T:Libplanet.Tx.Transaction"/> with a given <paramref name="txId"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetState(Libplanet.Address,System.Nullable{Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChain.GetState(Libplanet.Address)">
             <summary>
-            Gets the state of the given <paramref name="address"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>.
+            Gets the current state of given <paramref name="address"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             </summary>
             <param name="address">An <see cref="T:Libplanet.Address"/> to get the states of.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
-            the state.  It will be The tip of the <see cref="T:Libplanet.Blockchain.BlockChain"/> if it is
-            <see langword="null"/>.</param>
             <returns>The current state of given <paramref name="address"/>.  This can be
             <see langword="null"/> if <paramref name="address"/> has no value.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChain.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
             <summary>
             Gets multiple states associated to the specified <paramref name="addresses"/>.
             </summary>
             <param name="addresses">Addresses of states to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
-            the states.  <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> by default.</param>
             <returns>The states associated to the specified <paramref name="addresses"/>.
             Associated values are ordered in the same way to the corresponding
             <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
             </returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChain.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
             <summary>
-            Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>.
+            Queries <paramref name="address"/>'s current balance of the <paramref name="currency"/>
+            in the <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             </summary>
             <param name="address">The owner <see cref="T:Libplanet.Address"/> to query.</param>
             <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state. It will be the tip of the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> if it is <see langword="null"/>.</param>
-            <returns>The <paramref name="address"/>'s current balance (or balance as of the given
-            <paramref name="offset"/>) of the <paramref name="currency"/>.
+            <returns>The <paramref name="address"/>'s current balance.
             </returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Assets.Currency)">
             <summary>
-            Gets the total supply of a <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>, and if not found, derive
-            from the sum of all balances.
+            Gets the current total supply of a <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             </summary>
             <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
             <returns>The total supply value of <paramref name="currency"/> at
-            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
+            <see cref="P:Libplanet.Blockchain.BlockChain.Tip"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetValidatorSet(Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)" />
+        <member name="M:Libplanet.Blockchain.BlockChain.GetValidatorSet(System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Blocks.BlockHash})" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})" />
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
             <summary>
@@ -2787,17 +2781,43 @@
             A default implementation of <see cref="T:Libplanet.Blockchain.IBlockChainStates" /> interface.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)">
-            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Blocks.BlockHash})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStateRoot(System.Nullable{Libplanet.Blocks.BlockHash})">
+            <summary>
+            Returns the state root associated with <see cref="T:Libplanet.Blocks.BlockHash"/>
+            <paramref name="offset"/>.
+            </summary>
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> to look up in
+            the internally held <see cref="T:Libplanet.Store.IStore"/>.</param>
+            <returns>An <see cref="T:Libplanet.Store.Trie.ITrie"/> representing the state root associated with
+            <paramref name="offset"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown for one of the following reasons.
+            <list type="bullet">
+                <item><description>
+                    If <paramref name="offset"/> is not <see langword="null"/> and
+                    <paramref name="offset"/> cannot be found in <see cref="T:Libplanet.Store.IStore"/>.
+                </description></item>
+                <item><description>
+                    If <paramref name="offset"/> is not <see langword="null"/> and
+                    the state root hash associated with <paramref name="offset"/>
+                    cannot be found in <see cref="T:Libplanet.Store.IStateStore"/>.
+                </description></item>
+            </list>
+            </exception>
         </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
@@ -2914,79 +2934,106 @@
         </member>
         <member name="T:Libplanet.Blockchain.IBlockChainStates">
             <summary>
-            A minimal interface to get states from a blockchain.
+            A minimal interface to get states from a <see cref="T:Libplanet.Blockchain.BlockChain"/>.
             <para>Note that <see cref="T:Libplanet.Blockchain.BlockChain"/> implements this interface.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
-            Gets multiple states associated to the specified <paramref name="addresses"/>.
+            Gets multiple states associated to specified <paramref name="addresses"/>.
             </summary>
-            <param name="addresses">Addresses of states to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
-            the states.</param>
-            <returns>The states associated to the specified <paramref name="addresses"/>.
+            <param name="addresses">The <see cref="T:Libplanet.Address"/>es of the states to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Blocks.Block"/> to fetch
+            the states from.</param>
+            <returns>The states associated to specified <paramref name="addresses"/>.
             Associated values are ordered in the same way to the corresponding
             <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
             </returns>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="offset"/> is not
+            <see langword="null"/> and one of the following is true.
+            <list type="bullet">
+                <item><description>
+                    Corresponding <see cref="T:Libplanet.Blocks.Block"/> is not found in the <see cref="T:Libplanet.Store.IStore"/>.
+                </description></item>
+                <item><description>
+                    Corresponding <see cref="T:Libplanet.Blocks.Block"/> is found but its state root is not found
+                    in the <see cref="T:Libplanet.Store.IStateStore"/>.
+                </description></item>
+            </list>
+            </exception>
         </member>
-        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
-            Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>.
+            Gets <paramref name="address"/>'s balance for given <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain"/> at <paramref name="offset"/>.
             </summary>
             <param name="address">The owner <see cref="T:Libplanet.Address"/> to query.</param>
             <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
-            <returns>The <paramref name="address"/>'s current balance (or balance as of the given
-            <paramref name="offset"/>) of the <paramref name="currency"/>.
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Blocks.Block"/> to fetch
+            the states from.</param>
+            <returns>The <paramref name="address"/>'s balance for <paramref name="currency"/>
+            at <paramref name="offset"/>.  If absent, returns 0 <see cref="T:Libplanet.Assets.FungibleAssetValue"/>
+            for <paramref name="currency"/>.
             </returns>
+            <exception cref="T:System.ArgumentException">Thrown when <see cref="T:Libplanet.Blocks.IBlockStates"/> at
+            <paramref name="offset"/> cannot be created.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetTotalSupply(Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
             Gets the total supply of a <paramref name="currency"/> in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>, and if not found, return 0.
+            <see cref="T:Libplanet.Blockchain.BlockChain"/> at <paramref name="offset"/>, and if not found, returns 0.
             </summary>
             <param name="currency">The currency type to query.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Blocks.Block"/> to fetch
+            the states from.</param>
             <returns>The total supply value of <paramref name="currency"/> at
-            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.</returns>
+            <paramref name="offset"/> in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.
+            If absent, returns 0 <see cref="T:Libplanet.Assets.FungibleAssetValue"/>
+            for <paramref name="currency"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when <see cref="T:Libplanet.Blocks.IBlockStates"/> at
+            <paramref name="offset"/> cannot be created.</exception>
+            <exception cref="T:Libplanet.State.TotalSupplyNotTrackableException">Thrown when
+            given <paramref name="currency"/>'s <see cref="F:Libplanet.Assets.Currency.TotalSupplyTrackable"/>
+            is <see langword="false"/>.</exception>
+            <seealso cref="M:Libplanet.Blockchain.IBlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
             Returns the validator set in the
-            <see cref="T:Libplanet.Blockchain.BlockChain"/> from <paramref name="offset"/>.
+            <see cref="T:Libplanet.Blockchain.BlockChain"/> at <paramref name="offset"/>.
             </summary>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state.</param>
-            <returns>The validator set of type <see cref="T:Libplanet.Consensus.ValidatorSet"/> at the
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Blocks.Block"/> to fetch
+            the states from.</param>
+            <returns>The validator set of type <see cref="T:Libplanet.Consensus.ValidatorSet"/> at
             <paramref name="offset"/>.
             </returns>
+            <exception cref="T:System.ArgumentException">Thrown when <see cref="T:Libplanet.Blocks.IBlockStates"/> at
+            <paramref name="offset"/> cannot be created.</exception>
+            <seealso cref="M:Libplanet.Blockchain.IBlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})"/>
         </member>
-        <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
+        <member name="M:Libplanet.Blockchain.IBlockChainStates.GetBlockStates(System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
-            An exception thrown when a <see cref="T:Libplanet.Blockchain.BlockChain"/> have
-            not calculated the complete states for all blocks but an operation
-            is requested that requires the missing states.
+            Returns the <see cref="T:Libplanet.Blocks.IBlockStates"/> in the <see cref="T:Libplanet.Blockchain.BlockChain"/>
+            at <paramref name="offset"/>.
             </summary>
-        </member>
-        <member name="M:Libplanet.Blockchain.IncompleteBlockStatesException.#ctor(Libplanet.Blocks.BlockHash,System.String)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> object.
-            </summary>
-            <param name="blockHash">Specifies <see cref="P:Libplanet.Blockchain.IncompleteBlockStatesException.BlockHash"/>.
-            It is automatically included in the <see cref="P:System.Exception.Message"/>
-            string.</param>
-            <param name="message">Specifies the <see cref="P:System.Exception.Message"/>.
-            </param>
-        </member>
-        <member name="P:Libplanet.Blockchain.IncompleteBlockStatesException.BlockHash">
-            <summary>
-            The <see cref="P:Libplanet.Blocks.Block.Hash"/> of <see cref="T:Libplanet.Blocks.Block"/> that
-            a <see cref="T:Libplanet.Blockchain.BlockChain"/> lacks the states.
-            </summary>
+            <param name="offset">The <see cref="T:Libplanet.Blocks.BlockHash"/> of the <see cref="T:Libplanet.Blocks.Block"/> to create
+            for which to create an <see cref="T:Libplanet.Blocks.IBlockStates"/>.</param>
+            <returns>
+            The <see cref="T:Libplanet.Blocks.IBlockStates"/> at <paramref name="offset"/>.
+            </returns>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="offset"/> is not
+            <see langword="null"/> and one of the following is true.
+            <list type="bullet">
+                <item><description>
+                    Corresponding <see cref="T:Libplanet.Blocks.Block"/> is not found in the <see cref="T:Libplanet.Store.IStore"/>.
+                </description></item>
+                <item><description>
+                    Corresponding <see cref="T:Libplanet.Blocks.Block"/> is found but its state root is not found
+                    in the <see cref="T:Libplanet.Store.IStateStore"/>.
+                </description></item>
+            </list>
+            </exception>
+            <seealso cref="T:Libplanet.Blocks.IBlockStates"/>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.BlockPolicy">
             <summary>
@@ -4557,6 +4604,26 @@
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy"/>.
             </param>
         </member>
+        <member name="T:Libplanet.Blocks.BlockStates">
+            <summary>
+            A default implementation of <see cref="T:Libplanet.Blocks.IBlockStates"/> interface.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockStates.BlockHash">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockStates.BlockHash"/>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
+            <inheritdoc cref="M:Libplanet.Blocks.IBlockStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})"/>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
+            <inheritdoc cref="M:Libplanet.Blocks.IBlockStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)"/>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockStates.GetTotalSupply(Libplanet.Assets.Currency)">
+            <inheritdoc cref="M:Libplanet.Blocks.IBlockStates.GetTotalSupply(Libplanet.Assets.Currency)"/>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockStates.GetValidatorSet">
+            <inheritdoc cref="M:Libplanet.Blocks.IBlockStates.GetValidatorSet"/>
+        </member>
         <member name="T:Libplanet.Blocks.IBlockContent">
             <summary>
             A common interface for blocks that do not have any proofs, but have their metadata and
@@ -4707,6 +4774,61 @@
             <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is invalid.  For example,
             if <see cref="P:Libplanet.Blocks.IBlockMetadata.Timestamp"/> is too far in the future
             compared to <paramref name="currentTime"/>.</exception>
+        </member>
+        <member name="T:Libplanet.Blocks.IBlockStates">
+            <summary>
+            A minimal interface to get states from output states of a <see cref="T:Libplanet.Blocks.Block"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockStates.BlockHash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block.Hash"/> of the <see cref="T:Libplanet.Blocks.Block"/> that this
+            <see cref="T:Libplanet.Blocks.IBlockStates"/> represents.  This can be <see langword="null"/>
+            in which case represents initial default states.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockStates.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
+            <summary>
+            Gets multiple states associated to specified <paramref name="addresses"/>
+            at <see cref="P:Libplanet.Blocks.IBlockStates.BlockHash"/>.
+            </summary>
+            <param name="addresses">The <see cref="T:Libplanet.Address"/>es of the states to query.</param>
+            <returns>The states associated to specified <paramref name="addresses"/>.
+            Associated values are ordered the same to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockStates.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
+            <summary>
+            Gets <paramref name="address"/>'s balance for given <paramref name="currency"/>
+            at <see cref="P:Libplanet.Blocks.IBlockStates.BlockHash"/>.
+            </summary>
+            <param name="address">The owner <see cref="T:Libplanet.Address"/> to query.</param>
+            <param name="currency">The currency type to query.</param>
+            <returns>The <paramref name="address"/>'s balance for <paramref name="currency"/>.
+            If absent, returns 0 <see cref="T:Libplanet.Assets.FungibleAssetValue"/>
+            for <paramref name="currency"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockStates.GetTotalSupply(Libplanet.Assets.Currency)">
+            <summary>
+            Gets the total supply of a <paramref name="currency"/> at <see cref="P:Libplanet.Blocks.IBlockStates.BlockHash"/>.
+            </summary>
+            <param name="currency">The currency type to query.</param>
+            <returns>The total supply value of <paramref name="currency"/>
+            in <see cref="T:Libplanet.Assets.FungibleAssetValue"/>.  If absent, returns 0
+            <see cref="T:Libplanet.Assets.FungibleAssetValue"/> for <paramref name="currency"/>.</returns>
+            <exception cref="T:Libplanet.State.TotalSupplyNotTrackableException">Thrown when
+            given <paramref name="currency"/>'s <see cref="F:Libplanet.Assets.Currency.TotalSupplyTrackable"/>
+            is <see langword="false"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Blocks.IBlockStates.GetValidatorSet">
+            <summary>
+            Returns the validator set.
+            </summary>
+            <returns>The validator set of type <see cref="T:Libplanet.Consensus.ValidatorSet"/>
+            at <see cref="P:Libplanet.Blocks.IBlockStates.BlockHash"/>.
+            </returns>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
@@ -7462,14 +7584,10 @@
         <member name="M:Libplanet.State.AccountStateDeltaImpl.SetValidator(Libplanet.Consensus.Validator)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(System.Int32,Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter,Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{System.ValueTuple{Libplanet.Address,Libplanet.Assets.Currency},System.Numerics.BigInteger})">
+        <member name="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)">
             <summary>
-            Creates a null delta from the given <paramref name="accountStateGetter"/>,
-            <paramref name="accountBalanceGetter"/>, and <paramref name="totalSupplyGetter"/>,
-            with a subtype of <see cref="T:Libplanet.State.AccountStateDeltaImpl"/> that corresponds to the
-            <paramref name="protocolVersion"/>.
+            Creates a default null delta.
             </summary>
-            <param name="protocolVersion">The protocol version of which to create a delta.</param>
             <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
             <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
             </param>
@@ -7477,12 +7595,47 @@
             currencies.</param>
             <param name="validatorSetGetter">A view to the &#x201c;epoch&#x201d; validator
             set.</param>
-            <param name="signer">A signer address. Used for authenticating if a signer is allowed
-            to mint a currency.</param>
-            <param name="previousTotalUpdatedFungibles">The previous
-            <see cref="T:Libplanet.State.AccountStateDeltaImpl"/>'s total updated fungibles to keep track of.</param>
-            <returns>A instance of a subtype of <see cref="T:Libplanet.State.AccountStateDeltaImpl"/> which
-            corresponds to the <paramref name="protocolVersion"/>.</returns>
+            <returns>A null delta of type <see cref="T:Libplanet.State.AccountStateDeltaImplV0"/>
+            with <see langword="default"/> <see cref="T:Libplanet.Address"/> as its
+            <see cref="P:Libplanet.State.AccountStateDeltaImpl.Signer"/>.</returns>
+            <remarks>
+            This is not immediately usable.  Choose its proper type with <see cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)"/>
+            and signer with <see cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)"/> before use.
+            </remarks>
+            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)"/>
+            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)"/>
+        </member>
+        <member name="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)">
+            <summary>
+            Creates a null delta with given <paramref name="protocolVersion"/>.
+            </summary>
+            <param name="delta">The previous <see cref="T:Libplanet.State.IAccountStateDelta"/> to use.</param>
+            <param name="protocolVersion">The <see cref="P:Libplanet.Blocks.Block.ProtocolVersion"/> for which
+            this delta will be used.</param>
+            <returns>A null delta with an appropriate type as <see cref="T:Libplanet.State.IAccountStateDelta"/>
+            given <paramref name="protocolVersion"/>.</returns>
+            <remarks>
+            This clears <see cref="P:Libplanet.State.IAccountStateDelta.TotalUpdatedFungibleAssets"/> and should be
+            only used right after <see cref="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)"/>.
+            </remarks>
+            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)"/>
+        </member>
+        <member name="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)">
+            <summary>
+            Creates a null delta with given <paramref name="signer"/>.
+            </summary>
+            <param name="delta">The previous <see cref="T:Libplanet.State.IAccountStateDelta"/> to use.</param>
+            <param name="signer">The <see cref="T:Libplanet.Address"/> to set.</param>
+            <returns>A null delta with given <paramref name="signer"/> that is of the same type
+            as <paramref name="delta"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown if given <paramref name="delta"/>
+            is neither <see cref="T:Libplanet.State.AccountStateDeltaImplV0"/>
+            nor <see cref="T:Libplanet.State.AccountStateDeltaImpl"/>.
+            </exception>
+            <remarks>
+            This inherits <paramref name="delta"/>'s
+            <see cref="P:Libplanet.State.IAccountStateDelta.TotalUpdatedFungibleAssets"/>.
+            </remarks>
         </member>
         <member name="T:Libplanet.State.AccountStateDeltaImplV0">
             <summary>
