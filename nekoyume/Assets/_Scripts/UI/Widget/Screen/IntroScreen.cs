@@ -1,3 +1,4 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
@@ -51,15 +52,24 @@ namespace Nekoyume.UI
             touchScreenButton.onClick.AddListener(() =>
             {
                 touchScreenButton.gameObject.SetActive(false);
-                startButtonContainer.SetActive(true);
-                videoImage.gameObject.SetActive(true);
-                videoPlayer.Play();
+
+                var keystore = Find<LoginSystem>().KeyStore;
+                if (keystore.ListIds().Any())
+                {
+                    Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+                }
+                else
+                {
+                    startButtonContainer.SetActive(true);
+                }
             });
             startButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
                 socialLoginBackground.Show();
                 socialLoginContainer.SetActive(true);
+                videoImage.gameObject.SetActive(true);
+                videoPlayer.Play();
             });
             signinButton.onClick.AddListener(() =>
             {
