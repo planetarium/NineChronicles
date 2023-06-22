@@ -70,6 +70,7 @@ namespace Nekoyume.UI
         {
             _views.Clear();
             _currentSubType = default;
+            hairToggle.isOn = false;
             foreach (Transform oldCell in gridLayoutGroup.transform)
             {
                 Destroy(oldCell.gameObject);
