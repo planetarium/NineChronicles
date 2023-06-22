@@ -99,7 +99,7 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.event.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.event.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -163,7 +163,7 @@ jobs:
 
 
   update-latest-metadata:
-    if: startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
     needs: [extract, release]
     environment:
