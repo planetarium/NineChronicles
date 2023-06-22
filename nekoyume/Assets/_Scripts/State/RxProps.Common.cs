@@ -41,7 +41,7 @@ namespace Nekoyume.State
                     maxTickets,
                     progressedBlockRange,
                     totalBlockRange,
-                    Util.GetBlockToTime(totalBlockRange - progressedBlockRange, secondsPerBlock))
+                    Util.GetBlockToTimeString(totalBlockRange - progressedBlockRange, secondsPerBlock))
             {
             }
 
@@ -62,7 +62,7 @@ namespace Nekoyume.State
                 this.progressedBlockRange = progressedBlockRange;
                 this.totalBlockRange = totalBlockRange;
                 remainTimespanToReset
-                    = Util.GetBlockToTime(totalBlockRange - progressedBlockRange, secondsPerBlock);
+                    = Util.GetBlockToTimeString(totalBlockRange - progressedBlockRange, secondsPerBlock);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Nekoyume.State
                     maxTickets,
                     progressedBlockRange,
                     totalBlockRange,
-                    Util.GetBlockToTime(totalBlockRange - progressedBlockRange, secondsPerBlock),
+                    Util.GetBlockToTimeString(totalBlockRange - progressedBlockRange, secondsPerBlock),
                     purchasedCountDuringInterval)
             {
             }

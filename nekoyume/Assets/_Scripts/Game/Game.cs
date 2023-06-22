@@ -9,7 +9,6 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Lib9c.Formatters;
 using Libplanet;
 using Libplanet.Assets;
 using LruCacheNet;
@@ -39,6 +38,10 @@ using UnityEngine.Android;  // Don't remove this line. It's for another platform
 namespace Nekoyume.Game
 {
     using GraphQL;
+    using Lib9c.Formatters;
+    using Nekoyume.Arena;
+    using Nekoyume.Model.EnumType;
+    using Nekoyume.TableData;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -130,6 +133,12 @@ namespace Nekoyume.Game
         private Thread headlessThread;
         private Thread marketThread;
 
+        private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
+        private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
+        private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
+        private const string WorldbossTicketPushIdentifierKey = "WORLDBOSS_TICKET_PUSH_IDENTIFIER";
+        private const int TicketPushBlockCountThreshold = 300;
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -168,11 +177,6 @@ namespace Nekoyume.Game
                 Permission.ExternalStorageRead,
                 Permission.ExternalStorageWrite
             };
-
-            while (!HasStoragePermission())
-            {
-                Permission.RequestUserPermissions(permission);
-            }
 #endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -343,6 +347,7 @@ namespace Nekoyume.Game
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
+            ReservePushNotifications();
         }
 
         protected override void OnDestroy()
@@ -636,6 +641,8 @@ namespace Nekoyume.Game
 
         protected override void OnApplicationQuit()
         {
+            ReservePushNotifications();
+
             if (Analyzer.Instance != null)
             {
                 Analyzer.Instance.Track("Unity/Player Quit");
@@ -994,6 +1001,164 @@ namespace Nekoyume.Game
         public void ResumeTimeline()
         {
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        }
+
+        private void ReservePushNotifications()
+        {
+            var currentBlockIndex = Agent.BlockIndex;
+
+            var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            var row = TableSheets.Instance.ArenaSheet
+                .GetRowByBlockIndex(currentBlockIndex);
+            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
+                ArenaHelper.GetMedalTotalCount(
+                row,
+                States.Instance.CurrentAvatarState) :
+                default;
+
+            if (medalTotalCount >= roundData.RequiredMedalCount)
+            {
+                ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
+                ReserveArenaTicketPush(roundData, currentBlockIndex);
+            }
+
+            ReserveWorldbossSeasonPush(currentBlockIndex);
+            ReserveWorldbossTicketPush(currentBlockIndex);
+        }
+
+        private void ReserveArenaSeasonPush(
+            ArenaSheet.Row row,
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
+        {
+            var arenaSheet = TableSheets.Instance.ArenaSheet;
+            if (roundData.ArenaType == ArenaType.OffSeason &&
+                arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
+            {
+                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
+                }
+
+                var targetBlockIndex = nextRoundData.StartBlockIndex
+                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
+                var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+
+                var arenaTypeText = roundData.ArenaType == ArenaType.Season ?
+                    L10nManager.Localize("UI_SEASON") :
+                    L10nManager.Localize("UI_CHAMPIONSHIP");
+
+                var arenaSeason = roundData.ArenaType == ArenaType.Championship ?
+                    roundData.ChampionshipId :
+                    row.GetSeasonNumber(roundData.Round);
+
+                var content = L10nManager.Localize(
+                    "PUSH_ARENA_SEASON_START_CONTENT",
+                    arenaTypeText,
+                    arenaSeason);
+                var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
+                PlayerPrefs.SetString(ArenaSeasonPushIdentifierKey, identifier);
+            }
+        }
+
+        private void ReserveArenaTicketPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        {
+            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
+            if (RxProps.ArenaTicketsProgress.HasValue &&
+                RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
+            {
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+                }
+                return;
+            }
+
+            var interval = States.Instance.GameConfigState.DailyArenaInterval;
+            var remainingBlockCount = interval - ((currentBlockIndex - roundData.StartBlockIndex) % interval);
+            if (remainingBlockCount < TicketPushBlockCountThreshold)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
+            }
+
+            var timeSpan = Helper.Util.GetBlockToTime(
+                remainingBlockCount - TicketPushBlockCountThreshold);
+            var content = L10nManager.Localize("PUSH_ARENA_TICKET_CONTENT");
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
+            PlayerPrefs.SetString(ArenaTicketPushIdentifierKey, identifier);
+        }
+
+        private void ReserveWorldbossSeasonPush(long currentBlockIndex)
+        {
+            if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var row))
+            {
+                return;
+            }
+
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
+            }
+
+            var targetBlockIndex = row.StartedBlockIndex
+                + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
+            var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+
+            var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
+            PlayerPrefs.SetString(WorldbossSeasonPushIdentifierKey, identifier);
+        }
+
+        private void ReserveWorldbossTicketPush(long currentBlockIndex)
+        {
+            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
+            var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
+            var raiderState = States.Instance.CurrentAvatarState != null ?
+                WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address) :
+                null;
+            var remainingTicket = raiderState != null ?
+                WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval) :
+                default;
+
+            if (remainingTicket <= 0 ||
+                !WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+            {
+                if (!string.IsNullOrEmpty(prevPushIdentifier))
+                {
+                    PushNotifier.CancelReservation(prevPushIdentifier);
+                    PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
+                }
+                return;
+            }
+
+            var remainingBlockCount = interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
+            if (remainingBlockCount < TicketPushBlockCountThreshold)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
+            }
+
+            var timeSpan = Helper.Util.GetBlockToTime(
+                remainingBlockCount - TicketPushBlockCountThreshold);
+            var content = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_CONTENT");
+            var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
+            PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
         private void InitializeAnalyzer()

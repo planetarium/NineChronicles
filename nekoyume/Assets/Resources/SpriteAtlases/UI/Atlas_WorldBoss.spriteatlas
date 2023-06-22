@@ -263,6 +263,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 06992db84165d4e0ebee3d74dd8e2c0f, type: 3}
   - {fileID: 21300000, guid: ce045db8a9e3555428084733ed9f2a10, type: 3}
   - {fileID: 21300000, guid: 63112dd86b77e412e8005ef6e991a9d0, type: 3}
+  - {fileID: 21300000, guid: a1520ed8120a48f4697eddfca35b2ed8, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
   - {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
@@ -428,6 +429,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 02433fcf8ea93034fb9055a7d5fcd06e, type: 3}
   - {fileID: 21300000, guid: a18eb9df865d04b50b612032626d60b4, type: 3}
   - {fileID: 21300000, guid: 21f780ff017fe4d569549793625de121, type: 3}
+  - {fileID: 21300000, guid: d9d013ff80b152045b347770b33ba37c, type: 3}
   m_PackedSpriteNamesToIndex:
   - UI_icon_Mainmenu_02
   - WB_Grade_1
@@ -634,6 +636,7 @@ SpriteAtlas:
   - icon_Inventory_03_black
   - UI_icon_open
   - button_brown_minus
+  - Button_Tab_bg_Normal_05
   - button_page_02_reverse
   - UI_Btn_bg_04
   - Illust_Paper_Serimnir
@@ -799,6 +802,7 @@ SpriteAtlas:
   - icon_combination_05_black
   - UI_bg_frame_13_Round8
   - Common_mask_Gradient
+  - Button_Tab_bg_Press_05
   m_RenderDataMap: {}
   m_Tag: Atlas_WorldBoss
   m_IsVariant: 0

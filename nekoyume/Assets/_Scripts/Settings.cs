@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume
@@ -17,6 +17,13 @@ namespace Nekoyume
         private const string ResolutionIndexKey = "SETTINGS_RESOLUTION_INDEX";
         private const string ResolutionWindowedKey = "SETTINGS_WINDOWED";
 
+        private const string PushEnabledKey = "SETTINGS_PUSH_ENABLED";
+        private const string PushNightTimeEnabledKey = "SETTINGS_PUSH_NIGHTTIME_ENABLED";
+        private const string PushDailyRewardEnabledKey = "SETTINGS_PUSH_DAILYREWARD_ENABLED";
+        private const string PushWorkshopEnabledKey = "SETTINGS_PUSH_WORKSHOP_ENABLED";
+        private const string PushArenaEnabledKey = "SETTINGS_PUSH_ARENA_ENABLED";
+        private const string PushWorldbossEnabledKey = "SETTINGS_PUSH_WORLDBOSS_ENABLED";
+
         public float volumeMaster;
         public float volumeMusic;
         public float volumeSfx;
@@ -26,6 +33,13 @@ namespace Nekoyume
         public bool isVolumeMusicMuted;
         public bool isVolumeSfxMuted;
         public bool isWindowed = true;
+
+        public bool isPushEnabled = true;
+        public bool isNightTimePushEnabled = true;
+        public bool isRewardPushEnabled = true;
+        public bool isWorkshopPushEnabled = true;
+        public bool isArenaPushEnabled = true;
+        public bool isWorldbossPushEnabled = true;
 
         public class Resolution
         {
@@ -68,6 +82,14 @@ namespace Nekoyume
 
             resolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, 0);
             isWindowed = PlayerPrefs.GetInt(ResolutionWindowedKey, 1) == 1 ? true : false;
+
+            isPushEnabled = PlayerPrefs.GetInt(PushEnabledKey, 1) != 0;
+            isNightTimePushEnabled = PlayerPrefs.GetInt(PushNightTimeEnabledKey, 1) != 0;
+            isRewardPushEnabled = PlayerPrefs.GetInt(PushDailyRewardEnabledKey, 1) != 0;
+            isWorkshopPushEnabled = PlayerPrefs.GetInt(PushWorkshopEnabledKey, 1) != 0;
+            isArenaPushEnabled = PlayerPrefs.GetInt(PushArenaEnabledKey, 1) != 0;
+            isWorldbossPushEnabled = PlayerPrefs.GetInt(PushWorldbossEnabledKey, 1) != 0;
+
             SetResolution();
         }
 
@@ -80,6 +102,13 @@ namespace Nekoyume
             PlayerPrefs.SetInt(VolumeMasterIsMutedKey, isVolumeMasterMuted ? 1 : 0);
             PlayerPrefs.SetInt(VolumeMusicIsMutedKey, isVolumeMusicMuted ? 1 : 0);
             PlayerPrefs.SetInt(VolumeSfxIsMutedKey, isVolumeSfxMuted ? 1 : 0);
+
+            PlayerPrefs.SetInt(PushEnabledKey, isPushEnabled ? 1 : 0); 
+            PlayerPrefs.SetInt(PushNightTimeEnabledKey, isNightTimePushEnabled ? 1 : 0); 
+            PlayerPrefs.SetInt(PushDailyRewardEnabledKey, isRewardPushEnabled ? 1 : 0); 
+            PlayerPrefs.SetInt(PushWorkshopEnabledKey, isWorkshopPushEnabled ? 1 : 0); 
+            PlayerPrefs.SetInt(PushArenaEnabledKey, isArenaPushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushWorldbossEnabledKey, isWorldbossPushEnabled ? 1 : 0);
         }
 
         public void ApplyCurrentResolution()

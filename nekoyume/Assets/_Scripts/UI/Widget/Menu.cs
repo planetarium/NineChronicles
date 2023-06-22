@@ -54,9 +54,6 @@ namespace Nekoyume.UI
         private MainMenu btnRanking;
 
         [SerializeField]
-        private MainMenu btnMimisbrunnr;
-
-        [SerializeField]
         private MainMenu btnStaking;
 
         [SerializeField]
@@ -149,7 +146,6 @@ namespace Nekoyume.UI
                 var buttonList = new List<Button>
                 {
                     btnCombination.GetComponent<Button>(),
-                    btnMimisbrunnr.GetComponent<Button>(),
                     btnQuest.GetComponent<Button>(),
                     btnRanking.GetComponent<Button>(),
                     btnShop.GetComponent<Button>(),
@@ -275,7 +271,6 @@ namespace Nekoyume.UI
             btnCombination.Update();
             btnShop.Update();
             btnRanking.Update();
-            btnMimisbrunnr.Update();
             btnStaking.Update();
             btnWorldBoss.Update();
             btnDcc.Update();
@@ -305,9 +300,6 @@ namespace Nekoyume.UI
                 (btnQuest.IsUnlocked
                  && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
                 || hasNotificationInWorldMap);
-            mimisbrunnrExclamationMark.SetActive(
-                btnMimisbrunnr.IsUnlocked
-                && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -316,7 +308,6 @@ namespace Nekoyume.UI
             btnCombination.gameObject.SetActive(false);
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
-            btnMimisbrunnr.gameObject.SetActive(false);
             btnStaking.gameObject.SetActive(false);
         }
 
@@ -414,72 +405,72 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void MimisbrunnrClick()
-        {
-            if (!btnMimisbrunnr.IsUnlocked)
-            {
-                btnMimisbrunnr.JingleTheCat();
-                return;
-            }
+        //public void MimisbrunnrClick()
+        //{
+        //    if (!btnMimisbrunnr.IsUnlocked)
+        //    {
+        //        btnMimisbrunnr.JingleTheCat();
+        //        return;
+        //    }
 
-            const int worldId = GameConfig.MimisbrunnrWorldId;
-            var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
-            var worldRow =
-                worldSheet.OrderedList.FirstOrDefault(
-                    row => row.Id == worldId);
-            if (worldRow is null)
-            {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"),
-                    NotificationCell.NotificationType.Information);
-                return;
-            }
+        //    const int worldId = GameConfig.MimisbrunnrWorldId;
+        //    var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
+        //    var worldRow =
+        //        worldSheet.OrderedList.FirstOrDefault(
+        //            row => row.Id == worldId);
+        //    if (worldRow is null)
+        //    {
+        //        NotificationSystem.Push(MailType.System,
+        //            L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"),
+        //            NotificationCell.NotificationType.Information);
+        //        return;
+        //    }
 
-            var wi = States.Instance.CurrentAvatarState.worldInformation;
-            if (!wi.TryGetWorld(worldId, out var world))
-            {
-                LocalLayerModifier.AddWorld(
-                    States.Instance.CurrentAvatarState.address,
-                    worldId);
+        //    var wi = States.Instance.CurrentAvatarState.worldInformation;
+        //    if (!wi.TryGetWorld(worldId, out var world))
+        //    {
+        //        LocalLayerModifier.AddWorld(
+        //            States.Instance.CurrentAvatarState.address,
+        //            worldId);
 
-                if (!wi.TryGetWorld(worldId, out world))
-                {
-                    // Do nothing.
-                    return;
-                }
-            }
+        //        if (!wi.TryGetWorld(worldId, out world))
+        //        {
+        //            // Do nothing.
+        //            return;
+        //        }
+        //    }
 
-            if (!world.IsUnlocked)
-            {
-                // Do nothing.
-                return;
-            }
+        //    if (!world.IsUnlocked)
+        //    {
+        //        // Do nothing.
+        //        return;
+        //    }
 
-            var SharedViewModel = new WorldMap.ViewModel
-            {
-                WorldInformation = wi,
-            };
+        //    var SharedViewModel = new WorldMap.ViewModel
+        //    {
+        //        WorldInformation = wi,
+        //    };
 
-            if (mimisbrunnrExclamationMark.gameObject.activeSelf)
-            {
-                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
-                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
-                PlayerPrefs.SetInt(key, 1);
-            }
+        //    if (mimisbrunnrExclamationMark.gameObject.activeSelf)
+        //    {
+        //        var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+        //        var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
+        //        PlayerPrefs.SetInt(key, 1);
+        //    }
 
-            Close();
-            AudioController.PlayClick();
+        //    Close();
+        //    AudioController.PlayClick();
 
-            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
-            SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
-            var stageInfo = Find<StageInformation>();
-            stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
-            var status = Find<Status>();
-            status.Close(true);
-            Find<EventBanner>().Close(true);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-            HelpTooltip.HelpMe(100019, true);
-        }
+        //    SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
+        //    SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
+        //    var stageInfo = Find<StageInformation>();
+        //    stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
+        //    var status = Find<Status>();
+        //    status.Close(true);
+        //    Find<EventBanner>().Close(true);
+        //    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+        //    HelpTooltip.HelpMe(100019, true);
+        //}
 
         public void StakingClick()
         {
