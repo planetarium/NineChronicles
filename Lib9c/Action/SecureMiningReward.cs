@@ -62,6 +62,7 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 return state.MarkBalanceChanged(
+                    context,
                     NCG,
                     AuthorizedMiners.Add(Recipient).Add(Treasury).ToArray()
                 );

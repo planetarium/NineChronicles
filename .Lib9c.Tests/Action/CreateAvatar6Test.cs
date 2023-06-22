@@ -50,6 +50,7 @@ namespace Lib9c.Tests.Action
             }
 
             var sheets = TableSheetsImporter.ImportSheets();
+            var context = new ActionContext();
             var state = new State()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(
@@ -61,7 +62,7 @@ namespace Lib9c.Tests.Action
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
                 )
                 .SetState(Addresses.Ranking, ranking.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000);
 
             foreach (var (key, value) in sheets)
             {

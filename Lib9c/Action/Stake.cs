@@ -57,6 +57,7 @@ namespace Nekoyume.Action
             {
                 return states.SetState(StakeState.DeriveAddress(context.Signer), MarkChanged)
                     .MarkBalanceChanged(
+                        context,
                         GoldCurrencyMock,
                         context.Signer,
                         StakeState.DeriveAddress(context.Signer));

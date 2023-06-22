@@ -62,6 +62,7 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged)
                     .MarkBalanceChanged(
+                        ctx,
                         GoldCurrencyMock,
                         ctx.Signer,
                         sellerAgentAddress,

@@ -89,7 +89,7 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Amount.Currency, new[] {Sender, Recipient});
+                return state.MarkBalanceChanged(context, Amount.Currency, new[] {Sender, Recipient});
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, signer);

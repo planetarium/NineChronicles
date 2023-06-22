@@ -46,8 +46,8 @@ namespace Nekoyume.Action
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
                 states = states.SetState(AvatarAddress, MarkChanged);
                 states = states.SetState(context.Signer, MarkChanged);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                states = states.MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address);
+                states = states.MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
                 return states;
             }
 

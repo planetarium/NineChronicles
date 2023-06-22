@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Util
 {
     using System.Collections.Immutable;
     using System.IO;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Assets;
     using Libplanet.Crypto;
@@ -29,6 +30,7 @@ namespace Lib9c.Tests.Util
             )
         {
             adminAddr ??= new PrivateKey().ToAddress();
+            var context = new ActionContext();
             var states = new State().SetState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
@@ -54,7 +56,7 @@ namespace Lib9c.Tests.Util
             var goldCurrencyState = new GoldCurrencyState(goldCurrency);
             states = states
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .MintAsset(goldCurrencyState.address, goldCurrency * 1_000_000_000);
+                .MintAsset(context, goldCurrencyState.address, goldCurrency * 1_000_000_000);
 
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());

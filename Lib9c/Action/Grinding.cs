@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);

@@ -122,6 +122,7 @@ namespace Lib9c.Tests.Action
             Type exc
         )
         {
+            var context = new ActionContext();
             var state = _initialState;
             if (agentExist)
             {
@@ -175,7 +176,7 @@ namespace Lib9c.Tests.Action
                 {
                     state = state
                         .SetState(stakeStateAddress, stakeState.SerializeV2())
-                        .MintAsset(stakeStateAddress, requiredGold * _ncgCurrency);
+                        .MintAsset(context, stakeStateAddress, requiredGold * _ncgCurrency);
                 }
 
                 if (monsterCollect)
@@ -187,7 +188,7 @@ namespace Lib9c.Tests.Action
                             new MonsterCollectionState(mcAddress, monsterCollectLevel, 1)
                                 .Serialize()
                         )
-                        .MintAsset(mcAddress, requiredGold * _ncgCurrency);
+                        .MintAsset(context, mcAddress, requiredGold * _ncgCurrency);
                 }
             }
 

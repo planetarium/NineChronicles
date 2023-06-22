@@ -209,6 +209,7 @@ namespace Nekoyume.Action
                         .SetState(shardedShopAddress, MarkChanged)
                         .SetState(purchaseInfo.sellerAvatarAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             purchaseInfo.sellerAgentAddress,

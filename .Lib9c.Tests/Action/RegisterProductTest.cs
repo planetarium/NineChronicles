@@ -206,9 +206,10 @@ namespace Lib9c.Tests.Action
             _avatarState.inventory.AddItem(equipment);
             Assert.Equal(2, _avatarState.inventory.Items.Count);
             var asset = 3 * RuneHelper.DailyRewardRune;
+            var context = new ActionContext();
             _initialState = _initialState
                 .SetState(AvatarAddress, _avatarState.Serialize())
-                .MintAsset(AvatarAddress, asset);
+                .MintAsset(context, AvatarAddress, asset);
             var action = new RegisterProduct
             {
                 AvatarAddress = AvatarAddress,

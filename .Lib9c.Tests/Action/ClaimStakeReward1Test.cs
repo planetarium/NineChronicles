@@ -30,6 +30,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
+            var context = new ActionContext();
             _initialState = new State();
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -78,7 +79,7 @@ namespace Lib9c.Tests.Action
                     avatarState.questList.Serialize())
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(stakeStateAddress, _currency * 100);
+                .MintAsset(context, stakeStateAddress, _currency * 100);
         }
 
         [Fact]

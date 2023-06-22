@@ -220,6 +220,7 @@ namespace Nekoyume.Action
                     // calculate with previous high score.
                     int rank = WorldBossHelper.CalculateRank(bossRow, previousHighScore);
                     states = states.SetWorldBossKillReward(
+                        context,
                         worldBossKillRewardRecordAddress,
                         rewardRecord,
                         rank,

@@ -61,6 +61,7 @@ namespace Lib9c.Tests.Action
             Currency currency = _initialState.GetGoldCurrency();
             FungibleAssetValue balanceFav = currency * balance;
             FungibleAssetValue staked = currency * 0;
+            var context = new ActionContext();
             if (prevLevel is { } prevLevelNotNull)
             {
                 List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[prevLevelNotNull].Rewards;
@@ -75,13 +76,13 @@ namespace Lib9c.Tests.Action
                 {
                     MonsterCollectionSheet.Row row = _tableSheets.MonsterCollectionSheet[i + 1];
                     staked += row.RequiredGold * currency;
-                    _initialState = _initialState.MintAsset(monsterCollectionAddress, row.RequiredGold * currency);
+                    _initialState = _initialState.MintAsset(context, monsterCollectionAddress, row.RequiredGold * currency);
                 }
             }
 
             balanceFav -= staked;
 
-            _initialState = _initialState.MintAsset(_signer, balanceFav);
+            _initialState = _initialState.MintAsset(context, _signer, balanceFav);
             var action = new MonsterCollect
             {
                 level = level,

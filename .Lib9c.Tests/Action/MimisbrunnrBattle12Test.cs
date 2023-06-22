@@ -809,6 +809,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
+            var context = new ActionContext();
             var state = _initialState;
             state = _initialState
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
@@ -817,7 +818,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+            state = state.MintAsset(context, _agentAddress, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {

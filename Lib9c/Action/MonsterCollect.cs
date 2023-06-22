@@ -39,10 +39,10 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);

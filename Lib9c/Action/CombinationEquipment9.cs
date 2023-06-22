@@ -82,7 +82,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
 
             context.UseGas(1);

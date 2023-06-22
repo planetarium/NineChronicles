@@ -52,10 +52,11 @@ namespace Lib9c.DevExtensions.Action
                 return context.PreviousStates;
             }
 
-            return Execute(context.PreviousStates, StateList, BalanceList);
+            return Execute(context, context.PreviousStates, StateList, BalanceList);
         }
 
         public static IAccountStateDelta Execute(
+            IActionContext context,
             IAccountStateDelta prevStates,
             List<(Address addr, IValue value)> stateList,
             List<(Address addr, FungibleAssetValue fav)> balanceList)
@@ -82,6 +83,7 @@ namespace Lib9c.DevExtensions.Action
                         if (currentFav > fav)
                         {
                             states = states.TransferAsset(
+                                context,
                                 addr,
                                 GoldCurrencyState.Address,
                                 currentFav - fav);
@@ -89,6 +91,7 @@ namespace Lib9c.DevExtensions.Action
                         else
                         {
                             states = states.TransferAsset(
+                                context,
                                 GoldCurrencyState.Address,
                                 addr,
                                 fav - currentFav);
@@ -101,8 +104,8 @@ namespace Lib9c.DevExtensions.Action
                 }
 
                 states = currentFav > fav
-                    ? states.BurnAsset(addr, currentFav - fav)
-                    : states.MintAsset(addr, fav - currentFav);
+                    ? states.BurnAsset(context, addr, currentFav - fav)
+                    : states.MintAsset(context, addr, fav - currentFav);
             }
 
             return states;

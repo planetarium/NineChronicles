@@ -39,6 +39,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
+            var context = new ActionContext();
             _initialState = new State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -100,7 +101,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+                .MintAsset(context, _buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
         public static IEnumerable<object[]> GetExecuteMemberData()
@@ -639,6 +640,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_InsufficientBalance()
         {
+            var context = new ActionContext();
             Address shardedShopAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
             var itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
@@ -657,7 +659,7 @@ namespace Lib9c.Tests.Action
             shopState.Register(shopItem);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance)
+            _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance)
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(

@@ -235,6 +235,7 @@ namespace Nekoyume.Action
 
                     states = states.SetState(sellerAvatarAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             sellerAgentAddress,

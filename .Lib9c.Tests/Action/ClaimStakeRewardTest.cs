@@ -223,6 +223,7 @@ namespace Lib9c.Tests.Action
             string expectedCurrencyTicker,
             long expectedCurrencyAmount)
         {
+            var context = new ActionContext();
             var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
             var initialStakeState = new StakeState(stakeStateAddr, startedBlockIndex);
             if (!(previousRewardReceiveIndex is null))
@@ -232,7 +233,7 @@ namespace Lib9c.Tests.Action
 
             prevState = prevState
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
-                .MintAsset(stakeStateAddr, _ncg * stakeAmount);
+                .MintAsset(context, stakeStateAddr, _ncg * stakeAmount);
 
             var action = new ClaimStakeReward(avatarAddr);
             var states = action.Execute(new ActionContext

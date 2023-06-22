@@ -35,7 +35,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);

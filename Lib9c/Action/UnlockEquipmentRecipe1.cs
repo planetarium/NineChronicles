@@ -45,7 +45,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(unlockedRecipeIdsAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
             }
 
             context.UseGas(1);

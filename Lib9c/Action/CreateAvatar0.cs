@@ -91,7 +91,7 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(Addresses.Ranking, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);

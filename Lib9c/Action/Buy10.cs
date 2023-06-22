@@ -88,6 +88,7 @@ namespace Nekoyume.Action
                         .SetState(orderReceiptAddress, MarkChanged)
                         .SetState(digestListAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             purchaseInfo.SellerAgentAddress,

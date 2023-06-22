@@ -136,7 +136,7 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)

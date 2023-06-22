@@ -54,6 +54,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
+            var context = new ActionContext();
             var state = new State()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
@@ -104,9 +105,9 @@ namespace Lib9c.Tests.Action
                 throw new RuneNotFoundException($"[{nameof(Execute)}] ");
             }
 
-            state = state.MintAsset(agentAddress, ncgBal);
-            state = state.MintAsset(agentAddress, crystalBal);
-            state = state.MintAsset(avatarState.address, runeBal);
+            state = state.MintAsset(context, agentAddress, ncgBal);
+            state = state.MintAsset(context, agentAddress, crystalBal);
+            state = state.MintAsset(context, avatarState.address, runeBal);
 
             var action = new RuneEnhancement()
             {
@@ -153,9 +154,9 @@ namespace Lib9c.Tests.Action
             var costCrystal = tryCount * cost.CrystalQuantity * crystalCurrency;
             var costRune = tryCount * cost.RuneStoneQuantity * runeCurrency;
 
-            nextState = nextState.MintAsset(agentAddress, costNcg);
-            nextState = nextState.MintAsset(agentAddress, costCrystal);
-            nextState = nextState.MintAsset(avatarState.address, costRune);
+            nextState = nextState.MintAsset(context, agentAddress, costNcg);
+            nextState = nextState.MintAsset(context, agentAddress, costCrystal);
+            nextState = nextState.MintAsset(context, avatarState.address, costRune);
 
             var finalNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
             var finalCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
@@ -332,6 +333,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
+            var context = new ActionContext();
             var state = new State()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
@@ -374,17 +376,17 @@ namespace Lib9c.Tests.Action
 
             if (ncg)
             {
-                state = state.MintAsset(agentAddress, cost.NcgQuantity * ncgCurrency);
+                state = state.MintAsset(context, agentAddress, cost.NcgQuantity * ncgCurrency);
             }
 
             if (crystal)
             {
-                state = state.MintAsset(agentAddress, cost.CrystalQuantity * crystalCurrency);
+                state = state.MintAsset(context, agentAddress, cost.CrystalQuantity * crystalCurrency);
             }
 
             if (rune)
             {
-                state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
+                state = state.MintAsset(context, avatarState.address, cost.RuneStoneQuantity * runeCurrency);
             }
 
             var action = new RuneEnhancement()

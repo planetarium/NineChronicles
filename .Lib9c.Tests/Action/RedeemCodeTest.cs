@@ -70,11 +70,12 @@ namespace Lib9c.Tests.Action
             var goldState = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
 
+            var context = new ActionContext();
             var initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
-                .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
+                .MintAsset(context, GoldCurrencyState.Address, goldState.Currency * 100000000);
 
             if (backward)
             {

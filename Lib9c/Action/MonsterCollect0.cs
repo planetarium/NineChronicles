@@ -34,7 +34,7 @@ namespace Nekoyume.Action
                 return states
                     .SetState(monsterCollectionAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, monsterCollectionAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);

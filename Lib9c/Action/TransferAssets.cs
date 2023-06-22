@@ -85,7 +85,7 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
+                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
             if (Recipients.Count > RecipientsCapacity)
