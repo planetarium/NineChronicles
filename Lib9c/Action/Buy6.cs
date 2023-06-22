@@ -230,12 +230,14 @@ namespace Nekoyume.Action
 
                 // Transfer tax.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     GoldCurrencyState.Address,
                     tax);
 
                 // Transfer seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     sellerAgentAddress,
                     taxedPrice

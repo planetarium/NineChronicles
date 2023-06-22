@@ -103,7 +103,7 @@ namespace Nekoyume.Action
                     .SetState(
                         stakeStateAddress,
                         stakeState.SerializeV2())
-                    .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
+                    .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance);
             }
 
             if (stakeState.IsClaimable(context.BlockIndex))
@@ -124,14 +124,16 @@ namespace Nekoyume.Action
             {
                 if (stakeState.IsCancellable(context.BlockIndex))
                 {
-                    return states.SetState(stakeState.address, Null.Value)
-                        .TransferAsset(stakeState.address, context.Signer, stakedBalance);
+                    return states
+                        .SetState(stakeState.address, Null.Value)
+                        .TransferAsset(context, stakeState.address, context.Signer, stakedBalance);
                 }
             }
 
             // Stake with more or less amount.
-            return states.TransferAsset(stakeState.address, context.Signer, stakedBalance)
-                .TransferAsset(context.Signer, stakeState.address, targetStakeBalance)
+            return states
+                .TransferAsset(context, stakeState.address, context.Signer, stakedBalance)
+                .TransferAsset(context, context.Signer, stakeState.address, targetStakeBalance)
                 .SetState(
                     stakeState.address,
                     new StakeState(stakeState.address, context.BlockIndex).SerializeV2());

@@ -162,7 +162,7 @@ namespace Nekoyume.Action
             switch (product)
             {
                 case FavProduct favProduct:
-                    states = states.TransferAsset(productAddress, avatarState.address,
+                    states = states.TransferAsset(context, productAddress, avatarState.address,
                         favProduct.Asset);
                     break;
                 case ItemProduct itemProduct:

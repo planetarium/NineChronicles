@@ -137,7 +137,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}UnlockWorld Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
-                .TransferAsset(context.Signer, Addresses.UnlockWorld, cost);
+                .TransferAsset(context, context.Signer, Addresses.UnlockWorld, cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal

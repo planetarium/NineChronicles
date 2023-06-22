@@ -102,7 +102,7 @@ namespace Nekoyume.Action
                     context.Signer,
                     requiredGold);
             }
-            states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
+            states = states.TransferAsset(context, context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             return states;
         }

@@ -78,6 +78,7 @@ namespace Nekoyume.Action
             if (gameConfigState.DailyRuneRewardAmount > 0)
             {
                 states = states.MintAsset(
+                    context,
                     avatarAddress,
                     RuneHelper.DailyRewardRune * gameConfigState.DailyRuneRewardAmount);
             }

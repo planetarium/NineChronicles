@@ -267,7 +267,7 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(signer, 50 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, 50 * CrystalCalculator.CRYSTAL);
         }
     }
 }

@@ -212,7 +212,7 @@ namespace Nekoyume.Action
                         SellerAvatarAddress = assetInfo.AvatarAddress,
                     };
                     states = states
-                        .TransferAsset(avatarState.address, productAddress, asset)
+                        .TransferAsset(context, avatarState.address, productAddress, asset)
                         .SetState(productAddress, product.Serialize());
                     productsState.ProductIds.Add(productId);
                     break;

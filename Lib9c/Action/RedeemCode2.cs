@@ -109,6 +109,7 @@ namespace Nekoyume.Action
                         break;
                     case RewardType.Gold:
                         states = states.TransferAsset(
+                            context,
                             GoldCurrencyState.Address,
                             context.Signer,
                             states.GetGoldCurrency() * info.Quantity

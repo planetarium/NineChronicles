@@ -288,7 +288,7 @@ namespace Nekoyume.Action
                             continue;
                         }
 
-                        states = states.MintAsset(AvatarAddress, runeReward);
+                        states = states.MintAsset(context, AvatarAddress, runeReward);
                         break;
                     case StakeRegularRewardSheet.StakeRewardType.Currency:
                         if (string.IsNullOrEmpty(reward.CurrencyTicker))
@@ -306,6 +306,7 @@ namespace Nekoyume.Action
                         }
 
                         states = states.MintAsset(
+                            context,
                             context.Signer,
                             rewardCurrencyQuantity * currencyRewardStep * rewardCurrency);
                         break;

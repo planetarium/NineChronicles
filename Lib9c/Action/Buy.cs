@@ -263,12 +263,14 @@ namespace Nekoyume.Action
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
                 var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     feeStoreAddress,
                     tax);
 
                 // Transfer seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     sellerAgentAddress,
                     taxedPrice

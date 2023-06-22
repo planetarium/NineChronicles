@@ -133,7 +133,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset2 Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return state.TransferAsset(Sender, Recipient, Amount);
+            return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)

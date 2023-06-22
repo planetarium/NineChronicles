@@ -165,12 +165,14 @@ namespace Nekoyume.Action
 
             // 세금을 송금한다.
             states = states.TransferAsset(
+                context,
                 context.Signer,
                 GoldCurrencyState.Address,
                 tax);
 
             // 구매자의 돈을 판매자에게 송금한다.
             states = states.TransferAsset(
+                context,
                 context.Signer,
                 sellerAgentAddress,
                 taxedPrice

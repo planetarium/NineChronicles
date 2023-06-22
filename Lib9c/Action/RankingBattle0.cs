@@ -133,6 +133,7 @@ namespace Nekoyume.Action
                 if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
                 {
                     states = states.TransferAsset(
+                        ctx,
                         ctx.Signer,
                         WeeklyArenaAddress,
                         new FungibleAssetValue(

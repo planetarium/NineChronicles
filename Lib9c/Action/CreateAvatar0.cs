@@ -341,6 +341,7 @@ namespace Nekoyume.Action
         }
 
         public static IAccountStateDelta AddRunesForTest(
+            IActionContext context,
             Address avatarAddress,
             IAccountStateDelta states)
         {
@@ -348,7 +349,7 @@ namespace Nekoyume.Action
             foreach (var row in runeSheet.Values)
             {
                 var rune = RuneHelper.ToFungibleAssetValue(row, int.MaxValue);
-                states = states.MintAsset(avatarAddress, rune);
+                states = states.MintAsset(context, avatarAddress, rune);
             }
             return states;
         }

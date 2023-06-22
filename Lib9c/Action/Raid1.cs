@@ -103,7 +103,7 @@ namespace Nekoyume.Action
             {
                 raiderState = new RaiderState();
                 FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
-                states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                states = states.TransferAsset(context, context.Signer, worldBossAddress, crystalCost);
             }
 
             if (context.BlockIndex - raiderState.UpdatedBlockIndex < Raid4.RequiredInterval)
@@ -126,7 +126,7 @@ namespace Nekoyume.Action
                         throw new ExceedTicketPurchaseLimitException("");
                     }
                     var goldCurrency = states.GetGoldCurrency();
-                    states = states.TransferAsset(context.Signer, worldBossAddress,
+                    states = states.TransferAsset(context, context.Signer, worldBossAddress,
                         WorldBossHelper.CalculateTicketPrice(row, raiderState, goldCurrency));
                     raiderState.PurchaseCount++;
                 }
@@ -200,11 +200,11 @@ namespace Nekoyume.Action
             {
                 if (battleReward.Currency.Equals(CrystalCalculator.CRYSTAL))
                 {
-                    states = states.MintAsset(context.Signer, battleReward);
+                    states = states.MintAsset(context, context.Signer, battleReward);
                 }
                 else
                 {
-                    states = states.MintAsset(AvatarAddress, battleReward);
+                    states = states.MintAsset(context, AvatarAddress, battleReward);
                 }
             }
 

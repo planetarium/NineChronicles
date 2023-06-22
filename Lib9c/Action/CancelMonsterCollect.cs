@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}CancelMonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .TransferAsset(collectionAddress, context.Signer, balance);
+                .TransferAsset(context, collectionAddress, context.Signer, balance);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

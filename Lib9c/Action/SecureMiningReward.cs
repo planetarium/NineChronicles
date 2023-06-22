@@ -76,9 +76,9 @@ namespace Nekoyume.Action
                 FungibleAssetValue toRecipient = balance.DivRem(100, out _) * EarnRate;
                 FungibleAssetValue toBurn = balance - (toTreasury + toRecipient);
 
-                state = state.TransferAsset(minerAddress, Treasury, toTreasury);
-                state = state.TransferAsset(minerAddress, Recipient, toRecipient);
-                state = state.TransferAsset(minerAddress, Nil, toBurn);
+                state = state.TransferAsset(context, minerAddress, Treasury, toTreasury);
+                state = state.TransferAsset(context, minerAddress, Recipient, toRecipient);
+                state = state.TransferAsset(context, minerAddress, Nil, toBurn);
             }
 
             return state;

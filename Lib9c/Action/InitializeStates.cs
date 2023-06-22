@@ -196,7 +196,7 @@ namespace Nekoyume.Action
             }
 
             var currency = new GoldCurrencyState(GoldCurrency).Currency;
-            states = states.MintAsset(GoldCurrencyState.Address, currency * 1000000000);
+            states = states.MintAsset(ctx, GoldCurrencyState.Address, currency * 1000000000);
             return states;
         }
 

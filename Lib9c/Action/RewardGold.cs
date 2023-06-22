@@ -83,6 +83,7 @@ namespace Nekoyume.Action
                     fav = fav.DivRem(100, out FungibleAssetValue _);
                 }
                 states = states.TransferAsset(
+                    ctx,
                     fund,
                     distribution.Address,
                     fav
@@ -291,6 +292,7 @@ namespace Nekoyume.Action
             if (miningReward >= FungibleAssetValue.Parse(currency, "1.25"))
             {
                 states = states.TransferAsset(
+                    ctx,
                     GoldCurrencyState.Address,
                     ctx.Miner,
                     miningReward

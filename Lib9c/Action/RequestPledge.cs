@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             }
 
             return states
-                .TransferAsset(context.Signer, AgentAddress, 1 * Currencies.Mead)
+                .TransferAsset(context, context.Signer, AgentAddress, 1 * Currencies.Mead)
                 .SetState(
                     contractAddress,
                     List.Empty

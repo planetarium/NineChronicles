@@ -108,7 +108,7 @@ namespace Nekoyume.Action
                );
             }
 
-            return state.TransferAsset(Sender, Recipient, Amount);
+            return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)

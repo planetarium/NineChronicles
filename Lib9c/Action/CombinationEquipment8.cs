@@ -267,6 +267,7 @@ namespace Nekoyume.Action
             if (costNCG > 0L)
             {
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     BlacksmithAddress,
                     states.GetGoldCurrency() * costNCG

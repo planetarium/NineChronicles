@@ -63,7 +63,7 @@ namespace Nekoyume.Action
                 {
                     throw new CurrencyPermissionException(null, context.Signer, asset.Currency);
                 }
-                states = states.MintAsset(RewardPoolAddress, asset);
+                states = states.MintAsset(context, RewardPoolAddress, asset);
             }
 
             return states;

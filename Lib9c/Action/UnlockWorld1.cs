@@ -129,7 +129,7 @@ namespace Nekoyume.Action
 
             return states
                 .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
-                .TransferAsset(context.Signer, Addresses.UnlockWorld, cost);
+                .TransferAsset(context, context.Signer, Addresses.UnlockWorld, cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
