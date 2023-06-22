@@ -111,7 +111,7 @@ jobs:
       - name: extract
         id: extract
         run: |
-          if [[ "${{ startsWith(github.ref, 'refs/heads/ci/') }}" == "true" ]]; then
+          if [[ "${{ startsWith(github.ref, 'refs/heads/release/') }}" == "true" ]]; then
               timestamp=$(date +%s)
 
               echo "::set-output name=network::internal"
