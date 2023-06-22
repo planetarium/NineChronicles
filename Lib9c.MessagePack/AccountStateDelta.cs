@@ -29,6 +29,9 @@ namespace Lib9c.Formatters
                 g => g.Key,
                 g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
             );
+
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
+            new Dictionary<Address, IImmutableSet<Currency>>().ToImmutableDictionary();
 #pragma warning restore LAA1002
 
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>

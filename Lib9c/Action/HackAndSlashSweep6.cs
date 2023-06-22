@@ -22,6 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_sweep6")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class HackAndSlashSweep6 : GameAction, IHackAndSlashSweepV2
     {
         public const int UsableApStoneCount = 10;
@@ -68,6 +69,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
@@ -76,6 +78,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (apStoneCount > UsableApStoneCount)

@@ -24,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("buy11")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class Buy11 : GameAction, IBuy5, IBuyV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Shop.Derive("_0_0");
@@ -65,6 +66,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
@@ -105,6 +107,8 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)

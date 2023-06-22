@@ -10,7 +10,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("add_activated_account")]
     public class AddActivatedAccount0 : ActionBase, IAddActivatedAccountV1
     {
@@ -38,6 +38,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
 
             if (context.Rehearsal)

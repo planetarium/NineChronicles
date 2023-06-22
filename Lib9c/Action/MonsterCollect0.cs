@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("monster_collect")]
     public class MonsterCollect0 : GameAction, IMonsterCollectV1
     {
@@ -26,6 +26,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             Address monsterCollectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
             if (context.Rehearsal)

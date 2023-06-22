@@ -69,6 +69,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(InvalidCurrencyException))]
         [InlineData(typeof(InvalidProductTypeException))]
         [InlineData(typeof(ProductNotFoundException))]
+        [InlineData(typeof(AlreadyContractedException))]
         [InlineData(typeof(ItemNotFoundException))]
         [InlineData(typeof(NotEnoughItemException))]
         [InlineData(typeof(StateNullException))]

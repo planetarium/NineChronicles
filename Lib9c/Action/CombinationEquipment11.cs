@@ -21,7 +21,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100270ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("combination_equipment11")]
     public class CombinationEquipment11 : GameAction, ICombinationEquipmentV1
     {
@@ -62,6 +62,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(

@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100310ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("rapid_combination7")]
     public class RapidCombination7 : GameAction, IRapidCombinationV1
     {
@@ -32,6 +32,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(

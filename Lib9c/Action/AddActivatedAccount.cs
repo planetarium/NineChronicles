@@ -12,6 +12,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_activated_account2")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class AddActivatedAccount : ActionBase, IAddActivatedAccountV1
     {
         public AddActivatedAccount(Address address)
@@ -38,6 +39,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
             var address = Address.Derive(ActivationKey.DeriveKey);
 
@@ -47,6 +49,8 @@ namespace Nekoyume.Action
                     .SetState(address, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(state.GetState(address) is null))
             {
                 throw new AlreadyActivatedException($"{address} is already activated.");

@@ -31,6 +31,11 @@ namespace Lib9c.Tests.Action
         public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets =>
             throw new NotSupportedException($"Currently, {nameof(UpdatedFungibleAssets)} is not supported in this implementation.");
 
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+        {
+            get;
+        }
+
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
             throw new NotSupportedException($"Currently, {nameof(TotalSupplyUpdatedCurrencies)} is not supported in this implementation.");
 

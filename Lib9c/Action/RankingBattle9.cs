@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("ranking_battle9")]
-    [ActionObsolete(ActionObsoleteConfig.V100093ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class RankingBattle9 : GameAction, IRankingBattleV2
     {
         public const int StageId = 999999;
@@ -45,6 +45,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);

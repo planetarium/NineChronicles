@@ -19,6 +19,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
+using Lib9c;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -201,74 +202,79 @@ namespace Nekoyume.Blockchain.Policy
 
             try
             {
-                // Check Activation
-                try
+                if (blockChain.GetBalance(MeadConfig.PatronAddress, Currencies.Mead) < 1 * Currencies.Mead)
                 {
-                    if (transaction.Actions is { } rawActions &&
-                        rawActions.Count == 1 &&
-                        actionLoader.LoadAction(index, rawActions.First()) is ActionBase action &&
-                        action is IActivateAccount activate)
+                    // Check Activation
+                    try
                     {
-                        return transaction.Nonce == 0 &&
-                            blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
-                            new PendingActivationState(rawPending).Verify(activate.Signature)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} has an invalid activate action.",
-                                    transaction.Id);
+                        if (transaction.Actions is { } rawActions &&
+                            rawActions.Count == 1 &&
+                            actionLoader.LoadAction(index, rawActions.First()) is ActionBase action &&
+                            action is IActivateAccount activate)
+                        {
+                            return transaction.Nonce == 0 &&
+                                blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                                new PendingActivationState(rawPending).Verify(activate.Signature)
+                                    ? null
+                                    : new TxPolicyViolationException(
+                                        $"Transaction {transaction.Id} has an invalid activate action.",
+                                        transaction.Id);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id,
+                            e);
+                    }
+
+                    // Check admin
+                    if (IsAdminTransaction(blockChain, transaction))
+                    {
+                        return null;
+                    }
+
+                    switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                    {
+                        case null:
+                            // Fallback for pre-migration.
+                            if (blockChain.GetState(ActivatedAccountsState.Address)
+                                is Dictionary asDict)
+                            {
+                                IImmutableSet<Address> activatedAccounts =
+                                    new ActivatedAccountsState(asDict).Accounts;
+                                return !activatedAccounts.Any() ||
+                                    activatedAccounts.Contains(transaction.Signer)
+                                        ? null
+                                        : new TxPolicyViolationException(
+                                            $"Transaction {transaction.Id} is by a signer " +
+                                            $"without account activation: {transaction.Signer}",
+                                            transaction.Id);
+                            }
+                            return null;
+                        case Bencodex.Types.Boolean _:
+                            return null;
                     }
                 }
-                catch (Exception e)
+                if (transaction.MaxGasPrice is null || transaction.GasLimit is null)
+                {
+                    return new
+                        TxPolicyViolationException("Transaction has no gas price or limit.",
+                        transaction.Id);
+                }
+                if (transaction.MaxGasPrice * transaction.GasLimit > blockChain.GetBalance(transaction.Signer, Currencies.Mead))
                 {
                     return new TxPolicyViolationException(
-                        $"Transaction {transaction.Id} has an invalid action.",
-                        transaction.Id,
-                        e);
+                        $"Transaction {transaction.Id} signer insufficient transaction fee",
+                        transaction.Id);
                 }
-
-                // Check admin
-                if (IsAdminTransaction(blockChain, transaction))
-                {
-                    return null;
-                }
-
-                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
-                {
-                    case null:
-                        // Fallback for pre-migration.
-                        if (blockChain.GetState(ActivatedAccountsState.Address)
-                            is Dictionary asDict)
-                        {
-                            IImmutableSet<Address> activatedAccounts =
-                                new ActivatedAccountsState(asDict).Accounts;
-                            return !activatedAccounts.Any() ||
-                                activatedAccounts.Contains(transaction.Signer)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} is by a signer " +
-                                    $"without account activation: {transaction.Signer}",
-                                    transaction.Id);
-                        }
-                        return null;
-                    case Bencodex.Types.Boolean _:
-                        return null;
-                }
-
-                return null;
             }
             catch (InvalidSignatureException)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has invalid signautre.",
                     transaction.Id);
-            }
-            catch (IncompleteBlockStatesException)
-            {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
-                // state right away...
-                // FIXME: It should be removed after fix that Libplanet fills its state on IBD.
-                // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
-                return null;
             }
 
             return null;

@@ -22,6 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell12")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class Sell : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
@@ -62,6 +63,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
@@ -84,6 +86,8 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(states.GetState(Addresses.Market) is null))
             {
                 throw new ActionObsoletedException("Sell action is obsoleted. please use SellProduct.");

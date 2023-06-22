@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_avatar7")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CreateAvatar7 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -61,6 +62,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var avatarAddress = ctx.Signer.Derive(
@@ -95,6 +97,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))

@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
-        private const string ActionTypeText = "claim_stake_reward3";
+        private const string ActionTypeText = "claim_stake_reward4";
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -33,6 +33,7 @@ namespace Nekoyume.Action
         public static class V1
         {
             public const int MaxLevel = 5;
+
             public const string StakeRegularRewardSheetCsv =
                 @"level,required_gold,item_id,rate,type
 1,50,400000,10,Item
@@ -58,6 +59,37 @@ namespace Nekoyume.Action
 3,5000,500000,2
 4,50000,500000,2
 5,500000,500000,2";
+
+            private static StakeRegularRewardSheet _stakeRegularRewardSheet;
+            private static StakeRegularFixedRewardSheet _stakeRegularFixedRewardSheet;
+
+            public static StakeRegularRewardSheet StakeRegularRewardSheet
+            {
+                get
+                {
+                    if (_stakeRegularRewardSheet is null)
+                    {
+                        _stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                        _stakeRegularRewardSheet.Set(StakeRegularRewardSheetCsv);
+                    }
+
+                    return _stakeRegularRewardSheet;
+                }
+            }
+
+            public static StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet
+            {
+                get
+                {
+                    if (_stakeRegularFixedRewardSheet is null)
+                    {
+                        _stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                        _stakeRegularFixedRewardSheet.Set(StakeRegularFixedRewardSheetCsv);
+                    }
+
+                    return _stakeRegularFixedRewardSheet;
+                }
+            }
         }
 
         // NOTE: Use this when the <see cref="StakeRegularFixedRewardSheet"/> or
@@ -65,10 +97,6 @@ namespace Nekoyume.Action
         // public static class V2
         // {
         // }
-
-        private readonly ImmutableSortedDictionary<
-            string,
-            ImmutableSortedDictionary<int, IStakeRewardSheet>> _stakeRewardHistoryDict;
 
         internal Address AvatarAddress { get; private set; }
 
@@ -81,27 +109,142 @@ namespace Nekoyume.Action
 
         public ClaimStakeReward()
         {
-            var regularRewardSheetV1 = new StakeRegularRewardSheet();
-            regularRewardSheetV1.Set(V1.StakeRegularRewardSheetCsv);
-            var fixedRewardSheetV1 = new StakeRegularFixedRewardSheet();
-            fixedRewardSheetV1.Set(V1.StakeRegularFixedRewardSheetCsv);
-            _stakeRewardHistoryDict =
-                new Dictionary<string, ImmutableSortedDictionary<int, IStakeRewardSheet>>
-                {
-                    {
-                        "StakeRegularRewardSheet", new Dictionary<int, IStakeRewardSheet>
-                        {
-                            { 1, regularRewardSheetV1 },
-                        }.ToImmutableSortedDictionary()
-                    },
-                    {
-                        "StakeRegularFixedRewardSheet",
-                        new Dictionary<int, IStakeRewardSheet>
-                        {
-                            { 1, fixedRewardSheetV1 }
-                        }.ToImmutableSortedDictionary()
-                    },
-                }.ToImmutableSortedDictionary();
+        }
+
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            ImmutableDictionary<string, IValue>.Empty
+                .Add(AvatarAddressKey, AvatarAddress.Serialize());
+
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
+        {
+            AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
+        }
+
+        public override IAccountStateDelta Execute(IActionContext context)
+        {
+            context.UseGas(1);
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
+            var states = context.PreviousStates;
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            if (!states.TryGetStakeState(context.Signer, out var stakeState))
+            {
+                throw new FailedLoadStateException(
+                    ActionTypeText,
+                    addressesHex,
+                    typeof(StakeState),
+                    StakeState.DeriveAddress(context.Signer));
+            }
+
+            if (!stakeState.IsClaimable(context.BlockIndex, out _, out _))
+            {
+                throw new RequiredBlockIndexException(
+                    ActionTypeText,
+                    addressesHex,
+                    context.BlockIndex);
+            }
+
+            if (!states.TryGetAvatarStateV2(
+                    context.Signer,
+                    AvatarAddress,
+                    out var avatarState,
+                    out var migrationRequired))
+            {
+                throw new FailedLoadStateException(
+                    ActionTypeText,
+                    addressesHex,
+                    typeof(AvatarState),
+                    AvatarAddress);
+            }
+
+            var sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(StakeRegularRewardSheet),
+                typeof(ConsumableItemSheet),
+                typeof(CostumeItemSheet),
+                typeof(EquipmentItemSheet),
+                typeof(MaterialItemSheet),
+            });
+
+            var currency = states.GetGoldCurrency();
+            var stakedAmount = states.GetBalance(stakeState.address, currency);
+            var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
+            var level =
+                stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
+            var itemSheet = sheets.GetItemSheet();
+            stakeState.CalculateAccumulatedItemRewards(
+                context.BlockIndex,
+                out var itemV1Step,
+                out var itemV2Step);
+            stakeState.CalculateAccumulatedRuneRewards(
+                context.BlockIndex,
+                out var runeV1Step,
+                out var runeV2Step);
+            stakeState.CalculateAccumulatedCurrencyRewards(
+                context.BlockIndex,
+                out var currencyV1Step,
+                out var currencyV2Step);
+            if (itemV1Step > 0)
+            {
+                var v1Level = Math.Min(level, V1.MaxLevel);
+                var fixedRewardV1 = V1.StakeRegularFixedRewardSheet[v1Level].Rewards;
+                var regularRewardV1 = V1.StakeRegularRewardSheet[v1Level].Rewards;
+                states = ProcessReward(
+                    context,
+                    states,
+                    ref avatarState,
+                    itemSheet,
+                    stakedAmount,
+                    itemV1Step,
+                    runeV1Step,
+                    currencyV1Step,
+                    fixedRewardV1,
+                    regularRewardV1);
+            }
+
+            if (itemV2Step > 0)
+            {
+                var regularFixedReward =
+                    states.TryGetSheet<StakeRegularFixedRewardSheet>(out var fixedRewardSheet)
+                        ? fixedRewardSheet[level].Rewards
+                        : new List<StakeRegularFixedRewardSheet.RewardInfo>();
+                var regularReward = sheets.GetSheet<StakeRegularRewardSheet>()[level].Rewards;
+                states = ProcessReward(
+                    context,
+                    states,
+                    ref avatarState,
+                    itemSheet,
+                    stakedAmount,
+                    itemV2Step,
+                    runeV2Step,
+                    currencyV2Step,
+                    regularFixedReward,
+                    regularReward);
+            }
+
+            stakeState.Claim(context.BlockIndex);
+
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(avatarState.address, avatarState.SerializeV2())
+                    .SetState(
+                        avatarState.address.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        avatarState.address.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            return states
+                .SetState(stakeState.address, stakeState.Serialize())
+                .SetState(
+                    avatarState.address.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize());
         }
 
         private IAccountStateDelta ProcessReward(
@@ -182,147 +325,6 @@ namespace Nekoyume.Action
             }
 
             return states;
-        }
-
-        public override IAccountStateDelta Execute(IActionContext context)
-        {
-            if (context.Rehearsal)
-            {
-                return context.PreviousStates;
-            }
-
-            var states = context.PreviousStates;
-            CheckActionAvailable(ClaimStakeReward2.ObsoletedIndex, context);
-            // TODO: Uncomment this when new version of action is created
-            // CheckObsolete(ObsoletedIndex, context);
-            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
-            if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
-            {
-                throw new FailedLoadStateException(
-                    ActionTypeText,
-                    addressesHex,
-                    typeof(StakeState),
-                    StakeState.DeriveAddress(context.Signer));
-            }
-
-            if (!stakeState.IsClaimable(context.BlockIndex, out _, out _))
-            {
-                throw new RequiredBlockIndexException(
-                    ActionTypeText,
-                    addressesHex,
-                    context.BlockIndex);
-            }
-
-            if (!states.TryGetAvatarStateV2(
-                    context.Signer,
-                    AvatarAddress,
-                    out var avatarState,
-                    out var migrationRequired))
-            {
-                throw new FailedLoadStateException(
-                    ActionTypeText,
-                    addressesHex,
-                    typeof(AvatarState),
-                    AvatarAddress);
-            }
-
-            var sheets = states.GetSheets(sheetTypes: new[]
-            {
-                typeof(StakeRegularRewardSheet),
-                typeof(ConsumableItemSheet),
-                typeof(CostumeItemSheet),
-                typeof(EquipmentItemSheet),
-                typeof(MaterialItemSheet),
-            });
-
-            var currency = states.GetGoldCurrency();
-            var stakedAmount = states.GetBalance(stakeState.address, currency);
-            var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
-            var level =
-                stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
-            var itemSheet = sheets.GetItemSheet();
-            stakeState.CalculateAccumulatedItemRewards(
-                context.BlockIndex,
-                out var itemV1Step,
-                out var itemV2Step);
-            stakeState.CalculateAccumulatedRuneRewards(
-                context.BlockIndex,
-                out var runeV1Step,
-                out var runeV2Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
-                context.BlockIndex,
-                out var currencyV2Step);
-            if (itemV1Step > 0)
-            {
-                var v1Level = Math.Min(level, V1.MaxLevel);
-                var regularFixedSheetV1Row = (StakeRegularFixedRewardSheet)_stakeRewardHistoryDict[
-                    "StakeRegularFixedRewardSheet"][1];
-                var fixedRewardV1 = regularFixedSheetV1Row[v1Level].Rewards;
-                var regularSheetV1Row = (StakeRegularRewardSheet)_stakeRewardHistoryDict[
-                    "StakeRegularRewardSheet"][1];
-                var regularRewardV1 = regularSheetV1Row[v1Level].Rewards;
-                states = ProcessReward(
-                    context,
-                    states,
-                    ref avatarState,
-                    itemSheet,
-                    stakedAmount,
-                    itemV1Step,
-                    runeV1Step,
-                    0,
-                    fixedRewardV1,
-                    regularRewardV1);
-            }
-
-            if (itemV2Step > 0)
-            {
-                var regularFixedReward =
-                    states.TryGetSheet<StakeRegularFixedRewardSheet>(out var fixedRewardSheet)
-                        ? fixedRewardSheet[level].Rewards
-                        : new List<StakeRegularFixedRewardSheet.RewardInfo>();
-                var regularReward = sheets.GetSheet<StakeRegularRewardSheet>()[level].Rewards;
-                states = ProcessReward(
-                    context,
-                    states,
-                    ref avatarState,
-                    itemSheet,
-                    stakedAmount,
-                    itemV2Step,
-                    runeV2Step,
-                    currencyV2Step,
-                    regularFixedReward,
-                    regularReward);
-            }
-
-            stakeState.Claim(context.BlockIndex);
-
-            if (migrationRequired)
-            {
-                states = states
-                    .SetState(avatarState.address, avatarState.SerializeV2())
-                    .SetState(
-                        avatarState.address.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize())
-                    .SetState(
-                        avatarState.address.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());
-            }
-
-            return states
-                .SetState(stakeState.address, stakeState.Serialize())
-                .SetState(
-                    avatarState.address.Derive(LegacyInventoryKey),
-                    avatarState.inventory.Serialize());
-        }
-
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            ImmutableDictionary<string, IValue>.Empty
-                .Add(AvatarAddressKey, AvatarAddress.Serialize());
-
-        protected override void LoadPlainValueInternal(
-            IImmutableDictionary<string, IValue> plainValue)
-        {
-            AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
         }
     }
 }

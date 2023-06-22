@@ -28,6 +28,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle13")]
     public class MimisbrunnrBattle : GameAction, IMimisbrunnrBattleV5
     {
@@ -78,6 +79,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
@@ -87,6 +89,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var sw = new Stopwatch();
             sw.Start();

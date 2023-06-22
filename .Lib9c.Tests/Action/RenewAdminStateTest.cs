@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
         public RenewAdminStateTest()
         {
             _adminPrivateKey = new PrivateKey();
-            _validUntil = new Random().Next();
+            _validUntil = 1_500_000L;
             _adminState = new AdminState(_adminPrivateKey.ToAddress(), _validUntil);
             _stateDelta =
                 new State(ImmutableDictionary<Address, IValue>.Empty.Add(

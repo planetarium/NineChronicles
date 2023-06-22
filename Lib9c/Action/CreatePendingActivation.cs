@@ -14,6 +14,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_pending_activation")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CreatePendingActivation : ActionBase, ICreatePendingActivationV1
     {
         public PendingActivationState PendingActivation { get; private set; }
@@ -43,11 +44,14 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates.SetState(PendingActivation.address, MarkChanged);
             }
 
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 
             return context.PreviousStates.SetState(
