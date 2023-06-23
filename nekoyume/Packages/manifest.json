@@ -9,7 +9,6 @@
     "com.demigiant.dotween": "https://github.com/yoshida190/dotween.git#v1.2.420-upm",
     "com.elringus.spriteglow": "https://github.com/Elringus/SpriteGlow.git#package",
     "com.esotericsoftware.spine.urp-shaders": "file:../LocalPackages/com.esotericsoftware.spine.urp-shaders-3.8",
-    "com.google.external-dependency-manager": "1.2.172",
     "com.laicasaane.texttyper": "https://github.com/laicasaane/unity-text-typer.git?path=Assets/TextTyper#3.1.0",
     "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#master",
     "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
@@ -63,13 +62,5 @@
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
   },
-  "scopedRegistries": [
-    {
-      "name": "package.openupm.com",
-      "url": "https://package.openupm.com",
-      "scopes": [
-        "com.google.external-dependency-manager"
-      ]
-    }
-  ]
+  "scopedRegistries": []
 }
