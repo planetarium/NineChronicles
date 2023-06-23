@@ -381,6 +381,7 @@ namespace Lib9c.Tests.Action
             var arenaInfo = previousWeeklyArenaState.GetArenaInfo(_avatar1Address);
             previousWeeklyArenaState.Update(new ArenaInfo(arenaInfo));
 
+            var context = new ActionContext();
             var previousState = _initialState.SetState(
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
@@ -396,6 +397,7 @@ namespace Lib9c.Tests.Action
             if (previousAgentGoldState.Sign > 0)
             {
                 previousState = _initialState.TransferAsset(
+                    context,
                     _agent1Address,
                     Addresses.GoldCurrency,
                     previousAgentGoldState);

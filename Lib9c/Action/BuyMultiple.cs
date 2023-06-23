@@ -235,6 +235,7 @@ namespace Nekoyume.Action
 
                     states = states.SetState(sellerAvatarAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             sellerAgentAddress,
@@ -370,12 +371,14 @@ namespace Nekoyume.Action
 
                 // Transfer tax
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     GoldCurrencyState.Address,
                     tax);
 
                 // Transfer paid money (taxed) to the seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     productInfo.sellerAgentAddress,
                     taxedPrice

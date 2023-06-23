@@ -101,7 +101,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, signer);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -267,7 +267,7 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(signer, 50 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, 50 * CrystalCalculator.CRYSTAL);
         }
     }
 }

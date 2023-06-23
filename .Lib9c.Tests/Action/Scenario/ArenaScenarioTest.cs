@@ -94,13 +94,14 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         public IAccountStateDelta JoinArena(
+            IActionContext context,
             IRandom random,
             Address signer,
             Address avatarAddress,
             ArenaSheet.RoundData roundData)
         {
             var preCurrency = roundData.EntranceFee * _crystal;
-            _state = _state.MintAsset(signer, preCurrency);
+            _state = _state.MintAsset(context, signer, preCurrency);
 
             var action = new JoinArena()
             {

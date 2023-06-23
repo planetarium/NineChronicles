@@ -338,7 +338,7 @@ namespace Nekoyume.Action
                     }
 
                     states = states
-                        .TransferAsset(context.Signer, arenaAdr, ticketBalance)
+                        .TransferAsset(context, context.Signer, arenaAdr, ticketBalance)
                         .SetState(purchasedCountAddr, ++purchasedCountDuringInterval);
                 }
             }

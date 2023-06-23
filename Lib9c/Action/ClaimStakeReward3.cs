@@ -146,7 +146,7 @@ namespace Nekoyume.Action
                             continue;
                         }
 
-                        states = states.MintAsset(AvatarAddress, runeReward);
+                        states = states.MintAsset(context, AvatarAddress, runeReward);
                         break;
                     default:
                         break;

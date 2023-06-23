@@ -113,6 +113,7 @@ namespace Lib9c.Tests.Action
 
             var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
 
+            var context = new ActionContext();
             IAccountStateDelta state = new State()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
@@ -150,7 +151,7 @@ namespace Lib9c.Tests.Action
                 if (crystalExist)
                 {
                     var price = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
-                    state = state.MintAsset(_agentAddress, price * crystal);
+                    state = state.MintAsset(context, _agentAddress, price * crystal);
                 }
 
                 if (raiderStateExist)
@@ -184,7 +185,7 @@ namespace Lib9c.Tests.Action
                 if (ncgExist)
                 {
                     var row = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
-                    state = state.MintAsset(_agentAddress, (row.TicketPrice + row.AdditionalTicketPrice * purchaseCount) * _goldCurrency);
+                    state = state.MintAsset(context, _agentAddress, (row.TicketPrice + row.AdditionalTicketPrice * purchaseCount) * _goldCurrency);
                 }
 
                 state = state

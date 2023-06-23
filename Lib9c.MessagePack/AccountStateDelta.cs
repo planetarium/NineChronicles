@@ -123,7 +123,7 @@ namespace Lib9c.Formatters
             return currency * 0;
         }
 
-        public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+        public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
         {
             // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
             // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
@@ -169,6 +169,7 @@ namespace Lib9c.Formatters
         }
 
         public IAccountStateDelta TransferAsset(
+            IActionContext context,
             Address sender,
             Address recipient,
             FungibleAssetValue value,
@@ -198,7 +199,7 @@ namespace Lib9c.Formatters
             return new AccountStateDelta(_states, balances, _totalSupplies);
         }
 
-        public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
+        public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
         {
             // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
             // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.

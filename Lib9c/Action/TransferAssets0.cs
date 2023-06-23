@@ -85,7 +85,7 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
+                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
             context.UseGas(1);
@@ -102,7 +102,7 @@ namespace Nekoyume.Action
                 ? new ActivatedAccountsState(asDict)
                 : new ActivatedAccountsState();
 
-            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState, context.BlockIndex));
+            state = Recipients.Aggregate(state, (current, t) => Transfer(context, current, context.Signer, t.recipient, t.amount, activatedAccountsState, context.BlockIndex));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}transfer_assets Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
@@ -141,7 +141,8 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
+        private IAccountStateDelta Transfer(
+            IActionContext context, IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
         {
             if (Sender != signer)
             {
@@ -184,7 +185,7 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
-            return state.TransferAsset(Sender, recipient, amount);
+            return state.TransferAsset(context, Sender, recipient, amount);
         }
     }
 }

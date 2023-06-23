@@ -206,7 +206,8 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             avatarState = AddMedal(avatarState, row, 80);
 
-            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+            var context = new ActionContext();
+            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena()
             {
@@ -338,7 +339,8 @@ namespace Lib9c.Tests.Action
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             GetAvatarState(avatarState, out var equipments, out var costumes);
             var preCurrency = 99800100000 * _currency;
-            var state = _state.MintAsset(_signer, preCurrency);
+            var context = new ActionContext();
+            var state = _state.MintAsset(context, _signer, preCurrency);
 
             var action = new JoinArena()
             {
@@ -528,9 +530,10 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             avatarState = AddMedal(avatarState, row, 80);
 
-            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+            var context = new ActionContext();
+            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(_signer, 99999 * ncgCurrency);
+            state = state.MintAsset(context, _signer, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {

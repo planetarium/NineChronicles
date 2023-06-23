@@ -146,6 +146,7 @@
             bool previousCostStateExist
         )
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             if (unlockIdsExist)
             {
@@ -193,6 +194,7 @@
                             if (ncgBalanceExist)
                             {
                                 state = state.MintAsset(
+                                    context,
                                     _agentAddress,
                                     subRow.RequiredGold * state.GetGoldCurrency());
                             }
@@ -264,7 +266,7 @@
                 }
 
                 expectedCrystal = crystalBalance;
-                state = state.MintAsset(_agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
+                state = state.MintAsset(context, _agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
             }
 
             var dailyCostAddress =
@@ -381,6 +383,7 @@
             bool useBasicRecipe,
             int recipeId)
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             var unlockIds = List.Empty.Add(1.Serialize());
             for (int i = 2; i < recipeId + 1; i++)
@@ -410,6 +413,7 @@
             }
 
             state = state.MintAsset(
+                context,
                 _agentAddress,
                 subRow.RequiredGold * state.GetGoldCurrency());
 
@@ -439,6 +443,7 @@
                     var costCrystal = CrystalCalculator.CRYSTAL *
                                       hammerPointSheet[recipeId].CRYSTAL;
                     state = state.MintAsset(
+                        context,
                         _agentAddress,
                         costCrystal);
                 }

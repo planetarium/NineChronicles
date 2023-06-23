@@ -151,6 +151,7 @@ namespace Lib9c.Tests.Action
             bool previousCostStateExist
         )
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             if (unlockIdsExist)
             {
@@ -198,6 +199,7 @@ namespace Lib9c.Tests.Action
                             if (ncgBalanceExist)
                             {
                                 state = state.MintAsset(
+                                    context,
                                     _agentAddress,
                                     subRow.RequiredGold * state.GetGoldCurrency());
                             }
@@ -269,7 +271,7 @@ namespace Lib9c.Tests.Action
                 }
 
                 expectedCrystal = crystalBalance;
-                state = state.MintAsset(_agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
+                state = state.MintAsset(context, _agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
             }
 
             var dailyCostAddress =

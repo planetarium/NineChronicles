@@ -48,6 +48,8 @@ namespace Nekoyume.Action
 
             public long BlockIndex => default;
 
+            public int BlockProtocolVersion => default;
+
             public bool Rehearsal => true;
 
             public IAccountStateDelta PreviousStates => new AddressTraceStateDelta();
@@ -104,7 +106,7 @@ namespace Nekoyume.Action
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies
                 => ImmutableHashSet<Currency>.Empty;
 
-            public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
+            public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
             {
                 return new AddressTraceStateDelta(_updatedAddresses.Union(new [] { owner }));
             }
@@ -129,7 +131,7 @@ namespace Nekoyume.Action
                 throw new NotSupportedException();
             }
 
-            public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+            public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
             {
                 return new AddressTraceStateDelta(_updatedAddresses.Union(new[] { recipient }));
             }
@@ -140,6 +142,7 @@ namespace Nekoyume.Action
             }
 
             public IAccountStateDelta TransferAsset(
+                IActionContext context,
                 Address sender,
                 Address recipient,
                 FungibleAssetValue value,

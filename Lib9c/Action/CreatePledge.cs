@@ -58,7 +58,7 @@ namespace Nekoyume.Action
             foreach (var (agentAddress, pledgeAddress) in AgentAddresses)
             {
                 states = states
-                    .TransferAsset(PatronAddress, agentAddress, mead)
+                    .TransferAsset(context, PatronAddress, agentAddress, mead)
                     .SetState(pledgeAddress, contractList);
             }
             return states;

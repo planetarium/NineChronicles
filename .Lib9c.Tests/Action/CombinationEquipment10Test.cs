@@ -221,6 +221,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var context = new ActionContext();
             var previousState = _initialState
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(
@@ -229,7 +230,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-            previousState = previousState.MintAsset(_agentAddress, 10_000 * currency);
+            previousState = previousState.MintAsset(context, _agentAddress, 10_000 * currency);
 
             var action = new CombinationEquipment10
             {
@@ -304,6 +305,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var context = new ActionContext();
             IAccountStateDelta previousState;
             if (backward)
             {
@@ -320,7 +322,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            previousState = previousState.MintAsset(_agentAddress, mintNCG * currency);
+            previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
             var goldCurrencyState = previousState.GetGoldCurrency();
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);

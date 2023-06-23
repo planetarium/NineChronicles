@@ -50,6 +50,7 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 3, MonsterCollectionState0.RewardInterval * 4)]
         public void Execute(int prevLevel, int collectionLevel, long blockIndex)
         {
+            var context = new ActionContext();
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
             List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = _tableSheets.MonsterCollectionRewardSheet[prevLevel].Rewards;
             MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
@@ -67,7 +68,7 @@ namespace Lib9c.Tests.Action
 
             _state = _state
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .MintAsset(collectionAddress, balance);
+                .MintAsset(context, collectionAddress, balance);
 
             CancelMonsterCollect action = new CancelMonsterCollect
             {

@@ -145,7 +145,7 @@ namespace Nekoyume.Action
                 }
 
                 var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
-                states = states.TransferAsset(context.Signer, arenaAdr, fee);
+                states = states.TransferAsset(context, context.Signer, arenaAdr, fee);
             }
 
             // check medal

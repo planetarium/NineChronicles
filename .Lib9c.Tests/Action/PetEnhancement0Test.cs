@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
     using Libplanet.State;
@@ -285,6 +286,7 @@ namespace Lib9c.Tests.Action
             bool removePetCostRow = false,
             bool removePetCostRowWithTargetPetLevel = false)
         {
+            var context = new ActionContext();
             var petAddress = PetState.DeriveAddress(avatarAddr, petId);
             if (currentPetLevel > 0)
             {
@@ -314,8 +316,8 @@ namespace Lib9c.Tests.Action
                     targetPetLevel);
 
                 prevStates = prevStates
-                    .MintAsset(agentAddr, ncgCost * ncgCurrency)
-                    .MintAsset(avatarAddr, soulStoneCost * soulStoneCurrency);
+                    .MintAsset(context, agentAddr, ncgCost * ncgCurrency)
+                    .MintAsset(context, avatarAddr, soulStoneCost * soulStoneCurrency);
             }
 
             if (removePetRow)

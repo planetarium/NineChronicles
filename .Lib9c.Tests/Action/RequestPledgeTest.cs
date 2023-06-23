@@ -20,7 +20,8 @@ namespace Lib9c.Tests.Action
         {
             Currency mead = Currencies.Mead;
             Address patron = new PrivateKey().ToAddress();
-            IAccountStateDelta states = new State().MintAsset(patron, 2 * mead);
+            var context = new ActionContext();
+            IAccountStateDelta states = new State().MintAsset(context, patron, 2 * mead);
             var address = new PrivateKey().ToAddress();
             var action = new RequestPledge
             {

@@ -106,7 +106,7 @@ namespace Nekoyume.Action
                 states = states.SetState(context.Signer, agentState.Serialize());
                 if (gold > currency * 0)
                 {
-                    states = states.TransferAsset(collectionAddress, context.Signer, gold);
+                    states = states.TransferAsset(context, collectionAddress, context.Signer, gold);
                 }
             }
 

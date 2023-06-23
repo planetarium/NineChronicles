@@ -46,9 +46,10 @@ namespace Lib9c.Tests.Action
             _goldCurrencyState = new GoldCurrencyState(_currency);
 
             _signerAddress = new PrivateKey().ToAddress();
+            var context = new ActionContext();
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .MintAsset(_signerAddress, _currency * 100);
+                .MintAsset(context, _signerAddress, _currency * 100);
         }
 
         [Fact]
@@ -92,9 +93,10 @@ namespace Lib9c.Tests.Action
         public void Execute_Throws_WhenClaimableExisting()
         {
             Address stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
+            var context = new ActionContext();
             var states = _initialState
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(stakeStateAddress, _currency * 50);
+                .MintAsset(context, stakeStateAddress, _currency * 50);
             var action = new Stake(100);
             Assert.Throws<StakeExistingClaimableException>(() =>
                 action.Execute(new ActionContext

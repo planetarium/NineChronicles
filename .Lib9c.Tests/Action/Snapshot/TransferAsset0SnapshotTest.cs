@@ -38,7 +38,8 @@ namespace Lib9c.Tests.Action.Snapshot
             var senderAddress = senderPrivateKey.ToAddress();
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
-            var state = new State().MintAsset(senderAddress, crystal * 100);
+            var context = new ActionContext();
+            var state = new State().MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -66,7 +67,8 @@ namespace Lib9c.Tests.Action.Snapshot
             var senderAddress = senderPrivateKey.ToAddress();
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
-            var state = new State().MintAsset(senderAddress, crystal * 100);
+            var context = new ActionContext();
+            var state = new State().MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,

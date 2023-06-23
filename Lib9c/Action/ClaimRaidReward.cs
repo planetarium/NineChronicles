@@ -85,11 +85,11 @@ namespace Nekoyume.Action
                     {
                         if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
                         {
-                            states = states.MintAsset(context.Signer, reward);
+                            states = states.MintAsset(context, context.Signer, reward);
                         }
                         else
                         {
-                            states = states.MintAsset(AvatarAddress, reward);
+                            states = states.MintAsset(context, AvatarAddress, reward);
                         }
                     }
                 }

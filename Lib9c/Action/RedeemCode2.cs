@@ -53,8 +53,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address)
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -109,6 +109,7 @@ namespace Nekoyume.Action
                         break;
                     case RewardType.Gold:
                         states = states.TransferAsset(
+                            context,
                             GoldCurrencyState.Address,
                             context.Signer,
                             states.GetGoldCurrency() * info.Quantity

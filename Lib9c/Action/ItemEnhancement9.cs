@@ -132,7 +132,7 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
@@ -273,7 +273,7 @@ namespace Nekoyume.Action
             var requiredNcg = row.Cost;
             if (requiredNcg > 0)
             {
-                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency() * requiredNcg);
+                states = states.TransferAsset(ctx, ctx.Signer, BlacksmithAddress, states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items
