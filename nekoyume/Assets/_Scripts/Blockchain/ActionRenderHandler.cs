@@ -2328,7 +2328,7 @@ namespace Nekoyume.Blockchain
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {
-            var myAvatarState = prevStates.GetAvatarState(myAvatarAddress);
+            var myAvatarState = States.Instance.CurrentAvatarState;
             var enemyAvatarState = prevStates.GetAvatarState(enemyAvatarAddress);
 
             var myItemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
