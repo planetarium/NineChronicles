@@ -55,7 +55,6 @@ namespace Nekoyume.Action
                     .SetState(activatedAddress, MarkChanged)
                     .SetState(PendingAddress, MarkChanged);
             }
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (!(state.GetState(activatedAddress) is null))
