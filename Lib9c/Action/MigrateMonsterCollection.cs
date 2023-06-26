@@ -55,11 +55,7 @@ namespace Nekoyume.Action
 
             try
             {
-                var claimMonsterCollectionReward = new ClaimMonsterCollectionReward
-                {
-                    avatarAddress = AvatarAddress,
-                };
-                states = claimMonsterCollectionReward.Execute(context);
+                states = ClaimMonsterCollectionReward.Claim(context, AvatarAddress, addressesHex);
             }
             catch (Exception e)
             {

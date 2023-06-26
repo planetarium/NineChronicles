@@ -33,11 +33,16 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            return Claim(context, avatarAddress, addressesHex);
+        }
+
+        public static IAccountStateDelta Claim(IActionContext context, Address avatarAddress, string addressesHex)
+        {
             IAccountStateDelta states = context.PreviousStates;
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}ClaimMonsterCollection exec started", addressesHex);
 

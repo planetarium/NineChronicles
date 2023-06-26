@@ -80,7 +80,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var sw = new Stopwatch();

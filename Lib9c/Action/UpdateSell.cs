@@ -64,7 +64,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(states.GetState(Addresses.Market) is null))
             {

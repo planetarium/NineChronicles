@@ -49,7 +49,6 @@ namespace Nekoyume.Action
                     .SetState(address, MarkChanged);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(state.GetState(address) is null))
             {

@@ -95,7 +95,6 @@ namespace Nekoyume.Action
                 return context.PreviousStates;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             return Execute(
