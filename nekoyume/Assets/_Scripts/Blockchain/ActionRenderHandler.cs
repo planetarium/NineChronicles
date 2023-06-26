@@ -2250,9 +2250,8 @@ namespace Nekoyume.Blockchain
                 });
 
             var tableSheets = TableSheets.Instance;
-            (var myDigest, var enemyDigest) =
-                await GetArenaPlayerDigestAsync(
-                    eval.BlockIndex,
+            var (myDigest, enemyDigest) =
+                GetArenaPlayerDigest(eval.PreviousStates,
                     eval.OutputStates,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
@@ -2263,8 +2262,10 @@ namespace Nekoyume.Blockchain
                 eval.Action.myAvatarAddress,
                 championshipId,
                 round);
-            var previousMyScore = eval.PreviousStates.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore) ?
-                myArenaScore.Score : ArenaScore.ArenaScoreDefault;
+            var previousMyScore =
+                eval.PreviousStates.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore)
+                    ? myArenaScore.Score
+                    : ArenaScore.ArenaScoreDefault;
             int outMyScore = eval.OutputStates.TryGetState(
                 myArenaScoreAdr,
                 out List outputMyScoreList)
@@ -2283,13 +2284,14 @@ namespace Nekoyume.Blockchain
             var defeatCount = 0;
             var logs = new List<ArenaLog>();
             var rewards = new List<ItemBase>();
+            var arenaSheets = tableSheets.GetArenaSimulatorSheets();
             for (int i = 0; i < eval.Action.ticket; i++)
             {
                 var simulator = new ArenaSimulator(random);
                 var log = simulator.Simulate(
                     myDigest,
                     enemyDigest,
-                    tableSheets.GetArenaSimulatorSheets());
+                    arenaSheets);
 
                 var reward = RewardSelector.Select(
                     random,
@@ -2332,25 +2334,22 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private async Task<(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)> GetArenaPlayerDigestAsync(
-            long blockIndex,
-            IAccountStateDelta states,
+        private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
+            IAccountStateDelta prevStates,
+            IAccountStateDelta outputStates,
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {
-            var avatarStates = await Game.Game.instance.Agent
-                .GetAvatarStates(new[] { myAvatarAddress, enemyAvatarAddress },
-                blockIndex - 1);
-            var myAvatarState = avatarStates[myAvatarAddress];
-            var enemyAvatarState = avatarStates[enemyAvatarAddress];
+            var myAvatarState = prevStates.GetAvatarState(myAvatarAddress);
+            var enemyAvatarState = prevStates.GetAvatarState(enemyAvatarAddress);
 
             var myItemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
-            var myItemSlotState = states.TryGetState(myItemSlotStateAddress, out List rawItemSlotState)
+            var myItemSlotState = outputStates.TryGetState(myItemSlotStateAddress, out List rawItemSlotState)
                 ? new ItemSlotState(rawItemSlotState)
                 : new ItemSlotState(BattleType.Arena);
 
             var myRuneSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
-            var myRuneSlotState = states.TryGetState(myRuneSlotStateAddress, out List rawRuneSlotState)
+            var myRuneSlotState = outputStates.TryGetState(myRuneSlotStateAddress, out List rawRuneSlotState)
                 ? new RuneSlotState(rawRuneSlotState)
                 : new RuneSlotState(BattleType.Arena);
 
@@ -2359,7 +2358,7 @@ namespace Nekoyume.Blockchain
             foreach (var address in myRuneSlotInfos.Select(info =>
                 RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
             {
-                if (states.TryGetState(address, out List rawRuneState))
+                if (outputStates.TryGetState(address, out List rawRuneState))
                 {
                     myRuneStates.Add(new RuneState(rawRuneState));
                 }
@@ -2371,16 +2370,16 @@ namespace Nekoyume.Blockchain
                 myRuneStates);
 
             var enemyItemSlotStateAddress = ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
-            var enemyItemSlotState = await Game.Game.instance.Agent
-                .GetStateAsync(enemyItemSlotStateAddress, blockIndex - 1) is List enemyRawItemSlotState ?
-                new ItemSlotState(enemyRawItemSlotState) :
-                new ItemSlotState(BattleType.Arena);
+            var enemyItemSlotState =
+                prevStates.GetState(enemyItemSlotStateAddress) is List enemyRawItemSlotState
+                    ? new ItemSlotState(enemyRawItemSlotState)
+                    : new ItemSlotState(BattleType.Arena);
 
             var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
-            var enemyRuneSlotState = await Game.Game.instance.Agent
-                .GetStateAsync(enemyRuneSlotStateAddress, blockIndex - 1) is List enemyRawRuneSlotState ?
-                new RuneSlotState(enemyRawRuneSlotState) :
-                new RuneSlotState(BattleType.Arena);
+            var enemyRuneSlotState =
+                prevStates.GetState(enemyRuneSlotStateAddress) is List enemyRawRuneSlotState
+                    ? new RuneSlotState(enemyRawRuneSlotState)
+                    : new RuneSlotState(BattleType.Arena);
 
             var enemyRuneStates = new List<RuneState>();
             var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
@@ -2388,7 +2387,7 @@ namespace Nekoyume.Blockchain
                 RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId));
             foreach (var address in runeAddresses)
             {
-                if (await Game.Game.instance.Agent.GetStateAsync(address, blockIndex - 1) is List rawRuneState)
+                if (prevStates.GetState(address) is List rawRuneState)
                 {
                     enemyRuneStates.Add(new RuneState(rawRuneState));
                 }
