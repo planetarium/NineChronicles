@@ -162,9 +162,6 @@ namespace Nekoyume.Blockchain
             Raid();
             ClaimRaidReward();
 
-            // Grand Finale
-            HandleBattleGrandFinale();
-
             // Rune
             RuneEnhancement();
             UnlockRuneSlot();
@@ -461,15 +458,6 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimRaidRewardAsync)
-                .AddTo(_disposables);
-        }
-
-        private void HandleBattleGrandFinale()
-        {
-            _actionRenderer.EveryRender<BattleGrandFinale>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseBattleGrandFinaleAsync)
                 .AddTo(_disposables);
         }
 
@@ -2218,7 +2206,7 @@ namespace Nekoyume.Blockchain
                     arenaBattlePreparation.OnRenderBattleArena(eval);
                 }
 
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException ?? eval.Exception).Forget();
 
                 return;
             }
@@ -2399,90 +2387,6 @@ namespace Nekoyume.Blockchain
                 enemyRuneStates);
 
             return (myDigest, enemyDigest);
-        }
-
-        private async void ResponseBattleGrandFinaleAsync(ActionEvaluation<BattleGrandFinale> eval)
-        {
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
-                eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var arenaBattlePreparation = Widget.Find<ArenaBattlePreparation>();
-            if (eval.Exception != null)
-            {
-                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
-                {
-                    arenaBattlePreparation.OnRenderBattleArena(eval);
-                }
-
-                Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
-
-                return;
-            }
-
-            // NOTE: Start cache some arena info which will be used after battle ends.
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
-            States.Instance.GrandFinaleStates.UpdateGrandFinaleParticipantsOrderedWithScoreAsync()
-                .Forget();
-
-            _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
-                .First()
-                .Subscribe(_ =>
-                {
-                    UniTask.Run(() =>
-                        {
-                            UpdateAgentStateAsync(eval).Forget();
-                            UpdateCurrentAvatarStateAsync().Forget();
-                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
-                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
-                        }).ToObservable()
-                        .First()
-                        // ReSharper disable once ConvertClosureToMethodGroup
-                        .DoOnError(e => Debug.LogException(e));
-                });
-
-            var tableSheets = TableSheets.Instance;
-            (var myDigest, var enemyDigest) =
-                await GetArenaPlayerDigestAsync(
-                    eval.BlockIndex,
-                    eval.OutputStates,
-                    eval.Action.myAvatarAddress,
-                    eval.Action.enemyAvatarAddress);
-            int outputMyScore = eval.OutputStates.TryGetState(
-                eval.Action.myAvatarAddress.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        BattleGrandFinale.ScoreDeriveKey,
-                        eval.Action.grandFinaleId)),
-                out Integer outputScore)
-                ? outputScore
-                : BattleGrandFinale.DefaultScore;
-
-            var random = new LocalRandom(eval.RandomSeed);
-            var simulator = new ArenaSimulator(random);
-            var log = simulator.Simulate(
-                myDigest,
-                enemyDigest,
-                tableSheets.GetArenaSimulatorSheets());
-            log.Score = outputMyScore;
-
-            if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
-            {
-                arenaBattlePreparation.OnRenderBattleArena(eval);
-                Game.Game.instance.Arena.Enter(
-                    log,
-                    new List<ItemBase>(),
-                    myDigest,
-                    enemyDigest,
-                    eval.Action.myAvatarAddress,
-                    eval.Action.enemyAvatarAddress);
-            }
         }
 
         private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
