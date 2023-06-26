@@ -2330,7 +2330,8 @@ namespace Nekoyume.Blockchain
         {
             var myAvatarState = States.Instance.CurrentAvatarState;
             var enemyAvatarState = prevStates.GetAvatarState(enemyAvatarAddress);
-
+            enemyAvatarState.inventory =
+                new Model.Item.Inventory((List)prevStates.GetState(enemyAvatarAddress.Derive("inventory")));
             var myItemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
             var myItemSlotState = outputStates.TryGetState(myItemSlotStateAddress, out List rawItemSlotState)
                 ? new ItemSlotState(rawItemSlotState)
