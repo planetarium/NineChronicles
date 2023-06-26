@@ -2330,25 +2330,21 @@ namespace Nekoyume.Blockchain
         {
             var myAvatarState = States.Instance.CurrentAvatarState;
             var enemyAvatarState = prevStates.GetAvatarState(enemyAvatarAddress);
-
+            enemyAvatarState.inventory =
+                new Model.Item.Inventory((List)prevStates.GetState(enemyAvatarAddress.Derive("inventory")));
             var myItemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
             var myItemSlotState = outputStates.TryGetState(myItemSlotStateAddress, out List rawItemSlotState)
                 ? new ItemSlotState(rawItemSlotState)
                 : new ItemSlotState(BattleType.Arena);
 
-            var myRuneSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
-            var myRuneSlotState = outputStates.TryGetState(myRuneSlotStateAddress, out List rawRuneSlotState)
-                ? new RuneSlotState(rawRuneSlotState)
-                : new RuneSlotState(BattleType.Arena);
-
+            var myRuneSlotState = States.Instance.CurrentRuneSlotStates[BattleType.Arena];
             var myRuneStates = new List<RuneState>();
             var myRuneSlotInfos = myRuneSlotState.GetEquippedRuneSlotInfos();
-            foreach (var address in myRuneSlotInfos.Select(info =>
-                RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
+            foreach (var runeId in myRuneSlotInfos.Select(r => r.RuneId))
             {
-                if (outputStates.TryGetState(address, out List rawRuneState))
+                if (States.Instance.TryGetRuneState(runeId, out var runeState))
                 {
-                    myRuneStates.Add(new RuneState(rawRuneState));
+                    myRuneStates.Add(runeState);
                 }
             }
 
