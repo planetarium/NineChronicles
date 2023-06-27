@@ -544,7 +544,6 @@ GameObject:
   - component: {fileID: 1052931424594105523}
   - component: {fileID: 5854767765225111244}
   - component: {fileID: 2078029651489728636}
-  - component: {fileID: 1086791057139430957}
   m_Layer: 5
   m_Name: UI_IntroScreen
   m_TagString: Untagged
@@ -630,17 +629,10 @@ MonoBehaviour:
   toolTip: {fileID: 0}
   toolTipChangeButton: {fileID: 0}
   mobileContainer: {fileID: 6004842978331103633}
-  touchScreenButton: {fileID: 1007397819372763151}
   videoImage: {fileID: 5860571314653810958}
   startButtonContainer: {fileID: 5930269101659321614}
   startButton: {fileID: 6019283628801597050}
   signinButton: {fileID: 5168089873718842355}
-  socialLoginContainer: {fileID: 4527118712661793371}
-  socialLoginBackground: {fileID: 5402566117812050757}
-  googleLoginButton: {fileID: 467682804206911474}
-  twitterLoginButton: {fileID: 3638335176625513611}
-  discordLoginButton: {fileID: 3543545360431672327}
-  appleLoginButton: {fileID: 6376279925367727368}
   qrCodeGuideContainer: {fileID: 6429326594169325251}
   qrCodeGuideBackground: {fileID: 2185840641143328738}
   qrCodeGuideImages:
@@ -651,19 +643,6 @@ MonoBehaviour:
   qrCodeGuideNextButton: {fileID: 5742771524616996886}
   mobileIndicator: {fileID: 8398331285720780686}
   videoPlayer: {fileID: 8606067998831991754}
-  socialLogin: {fileID: 1086791057139430957}
---- !u!114 &1086791057139430957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052931424594105520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6eabdcb9558426ca8d994b39ab5d43d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1150622409532579200
 GameObject:
   m_ObjectHideFlags: 0
@@ -2870,7 +2849,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3177529088344202938
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5554,18 +5533,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2038541222261716666}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5402566117812050757 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6247512147125464575, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 2038541222261716666}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7e282d098fb41440b897c377726fb05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2176537126281516540
 PrefabInstance:
   m_ObjectHideFlags: 0

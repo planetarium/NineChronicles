@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -13,19 +14,12 @@ namespace Nekoyume.UI
     {
         [Header("Mobile")]
         [SerializeField] private GameObject mobileContainer;
-        [SerializeField] private Button touchScreenButton;
+        // [SerializeField] private Button touchScreenButton;
         [SerializeField] private RawImage videoImage;
 
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button startButton;
         [SerializeField] private Button signinButton;
-
-        [SerializeField] private GameObject socialLoginContainer;
-        [SerializeField] private CapturedImage socialLoginBackground;
-        [SerializeField] private Button googleLoginButton;
-        [SerializeField] private Button twitterLoginButton;
-        [SerializeField] private Button discordLoginButton;
-        [SerializeField] private Button appleLoginButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -35,7 +29,6 @@ namespace Nekoyume.UI
 
         [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;
-        [SerializeField] private SocialLogin socialLogin;
 
         private int _guideIndex = 0;
         private const int GuideCount = 3;
@@ -49,28 +42,14 @@ namespace Nekoyume.UI
             indicator.Close();
             mobileIndicator.Close();
 
-            touchScreenButton.onClick.AddListener(() =>
-            {
-                touchScreenButton.gameObject.SetActive(false);
+            videoPlayer.loopPointReached += _ => OnVideoEnd();
 
-                var keystore = Find<LoginSystem>().KeyStore;
-                if (keystore.ListIds().Any())
-                {
-                    Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-                }
-                else
-                {
-                    startButtonContainer.SetActive(true);
-                }
-            });
             startButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
-                socialLoginBackground.Show();
-                socialLoginContainer.SetActive(true);
-                videoImage.gameObject.SetActive(true);
-                videoPlayer.Play();
+                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
+
             signinButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
@@ -90,47 +69,9 @@ namespace Nekoyume.UI
                 ShowQrCodeGuide();
             });
 
-            googleLoginButton.onClick.AddListener(() =>
-            {
-                socialLoginContainer.SetActive(false);
-                mobileIndicator.Show("Sign in...");
-                socialLogin.Signin(() =>
-                {
-                    Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-                });
-            });
-            twitterLoginButton.onClick.AddListener(() =>
-            {
-                socialLoginContainer.SetActive(false);
-                mobileIndicator.Show("Sign in...");
-
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            });
-            discordLoginButton.onClick.AddListener(() =>
-            {
-                socialLoginContainer.SetActive(false);
-                mobileIndicator.Show("Sign in...");
-
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            });
-            appleLoginButton.onClick.AddListener(() =>
-            {
-                socialLoginContainer.SetActive(false);
-                mobileIndicator.Show("Sign in...");
-
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            });
-
-            videoPlayer.loopPointReached += _ => videoImage.gameObject.SetActive(false);
-
-            touchScreenButton.interactable = true;
             startButton.interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
-            googleLoginButton.interactable = true;
-            twitterLoginButton.interactable = true;
-            discordLoginButton.interactable = true;
-            appleLoginButton.interactable = true;
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -144,9 +85,10 @@ namespace Nekoyume.UI
                 mobileContainer.SetActive(true);
                 videoImage.gameObject.SetActive(false);
                 startButtonContainer.SetActive(false);
-                socialLoginContainer.SetActive(false);
                 qrCodeGuideContainer.SetActive(false);
                 mobileIndicator.Close();
+
+                StartCoroutine(CoShowMobile());
             }
             else
             {
@@ -155,6 +97,36 @@ namespace Nekoyume.UI
                 indicator.Show("Verifying transaction..");
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             }
+        }
+
+        private IEnumerator CoShowMobile()
+        {
+            yield return new WaitForSeconds(2);
+
+            // PlayerPrefs FirstPlay
+            if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)
+            {
+                PlayerPrefs.SetInt("FirstPlay", 1);
+                PlayerPrefs.Save();
+
+                videoImage.gameObject.SetActive(true);
+                videoPlayer.Play();
+            }
+
+            var keystore = Find<LoginSystem>().KeyStore;
+            if (keystore.ListIds().Any())
+            {
+                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+            }
+            else
+            {
+                startButtonContainer.SetActive(true);
+            }
+        }
+
+        private void OnVideoEnd()
+        {
+            videoImage.gameObject.SetActive(false);
         }
 
         private void ShowQrCodeGuide()
