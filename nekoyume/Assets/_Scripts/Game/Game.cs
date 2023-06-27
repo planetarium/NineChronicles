@@ -20,6 +20,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.IAPStore;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
@@ -77,6 +78,8 @@ namespace Nekoyume.Game
         public IAgent Agent { get; private set; }
 
         public Analyzer Analyzer { get; private set; }
+
+        public IAPStoreManager IAPStoreManager { get; private set; }
 
         public Stage Stage => stage;
         public Arena Arena => arena;
@@ -330,6 +333,7 @@ namespace Nekoyume.Game
             // Initialize D:CC NFT data
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
+            IAPStoreManager = new IAPStoreManager();
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {

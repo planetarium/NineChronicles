@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Purchasing;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -13,13 +14,19 @@ namespace Nekoyume.UI
             base.Awake();
             purchaseButton.onClick.AddListener(() =>
             {
-
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked("g_single_ap01");
             });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Game.Event.OnRoomEnter.Invoke(true);
+            base.Close(ignoreCloseAnimation);
         }
     }
 }
