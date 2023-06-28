@@ -45,6 +45,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 2, 200, null)]
         public void SetWorldBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
         {
+            var context = new ActionContext();
             IAccountStateDelta states = new State();
             var rewardInfoAddress = new PrivateKey().ToAddress();
             var rewardRecord = new WorldBossKillRewardRecord();
@@ -76,7 +77,7 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                var nextState = states.SetWorldBossKillReward(rewardInfoAddress, rewardRecord, 0, bossState, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress, _agentAddress);
+                var nextState = states.SetWorldBossKillReward(context, rewardInfoAddress, rewardRecord, 0, bossState, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress, _agentAddress);
                 Assert.Equal(expectedRune * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(rewardInfoAddress));
@@ -87,6 +88,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(
                     exc,
                     () => states.SetWorldBossKillReward(
+                        context,
                         rewardInfoAddress,
                         rewardRecord,
                         0,
@@ -166,18 +168,19 @@ namespace Lib9c.Tests.Action
             var agentContractAddress = _agentAddress.GetPledgeAddress();
             var mead = Currencies.Mead;
             var price = RequestPledge.DefaultRefillMead * mead;
+            ActionContext context = new ActionContext();
             IAccountStateDelta states = new State()
                 .SetState(
                     agentContractAddress,
                     List.Empty.Add(patron.Serialize()).Add(true.Serialize()))
-                .MintAsset(patron, price);
+                .MintAsset(context, patron, price);
 
             if (agentBalance > 0)
             {
-                states = states.MintAsset(_agentAddress, agentBalance * mead);
+                states = states.MintAsset(context, _agentAddress, agentBalance * mead);
             }
 
-            states = states.Mead(_agentAddress, 4);
+            states = states.Mead(context, _agentAddress, 4);
             Assert.Equal(agentBalance * mead, states.GetBalance(patron, mead));
             Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }

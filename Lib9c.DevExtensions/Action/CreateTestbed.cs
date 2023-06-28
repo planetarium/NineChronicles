@@ -121,8 +121,8 @@ namespace Lib9c.DevExtensions.Action
 
                     states = states.SetState(avatarAddress, MarkChanged)
                         .SetState(inventoryAddress, MarkChanged)
-                        .MarkBalanceChanged(GoldCurrencyMock, agentAddress,
-                            GoldCurrencyState.Address)
+                        .MarkBalanceChanged(
+                            context, GoldCurrencyMock, agentAddress, GoldCurrencyState.Address)
                         .SetState(orderReceiptAddress, MarkChanged)
                         .SetState(itemAddress, MarkChanged)
                         .SetState(orderAddress, MarkChanged)

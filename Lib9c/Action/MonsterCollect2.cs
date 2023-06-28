@@ -34,10 +34,10 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -85,7 +85,7 @@ namespace Nekoyume.Action
 
                 // Refund holding NCG to user
                 FungibleAssetValue gold = states.GetBalance(monsterCollectionAddress, currency);
-                states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
+                states = states.TransferAsset(context, monsterCollectionAddress, context.Signer, gold);
             }
 
             if (level == 0)
@@ -106,7 +106,7 @@ namespace Nekoyume.Action
                     context.Signer,
                     requiredGold);
             }
-            states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
+            states = states.TransferAsset(context, context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             return states;
         }

@@ -277,6 +277,7 @@ namespace Nekoyume.Action
                 if (cost > 0L)
                 {
                     states = states.TransferAsset(
+                        context,
                         context.Signer,
                         Addresses.EventDungeon,
                         cost * currency);

@@ -35,7 +35,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -93,6 +93,7 @@ namespace Nekoyume.Action
             if (gameConfigState.DailyRuneRewardAmount > 0)
             {
                 states = states.MintAsset(
+                    context,
                     avatarAddress,
                     RuneHelper.DailyRewardRune * gameConfigState.DailyRuneRewardAmount);
             }

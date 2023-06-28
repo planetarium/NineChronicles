@@ -116,7 +116,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}HackAndSlashRandomBuff Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(gachaStateAddress, gachaState.Serialize())
-                .TransferAsset(context.Signer, Addresses.StageRandomBuff, cost);
+                .TransferAsset(context, context.Signer, Addresses.StageRandomBuff, cost);
         }
 
         private static bool IsPitySystemNeeded(IEnumerable<int> buffIds, int gachaCount, CrystalRandomBuffSheet sheet)

@@ -59,13 +59,14 @@
             _slotAddress =
                 _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
+            var context = new ActionContext();
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
-                .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000)
+                .TransferAsset(context, Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
 
             Assert.Equal(gold.Currency * 99999999000, _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency));
             Assert.Equal(gold.Currency * 1000, _initialState.GetBalance(_agentAddress, gold.Currency));

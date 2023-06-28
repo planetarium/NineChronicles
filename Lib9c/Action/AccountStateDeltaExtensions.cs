@@ -22,13 +22,14 @@ namespace Nekoyume.Action
     {
         public static IAccountStateDelta MarkBalanceChanged(
             this IAccountStateDelta states,
+            IActionContext context,
             Currency currency,
             params Address[] accounts
         )
         {
             if (accounts.Length == 1)
             {
-                return states.MintAsset(accounts[0], currency * 1);
+                return states.MintAsset(context, accounts[0], currency * 1);
             }
             else if (accounts.Length < 1)
             {
@@ -37,7 +38,7 @@ namespace Nekoyume.Action
 
             for (int i = 1; i < accounts.Length; i++)
             {
-                states = states.TransferAsset(accounts[i - 1], accounts[i], currency * 1, true);
+                states = states.TransferAsset(context, accounts[i - 1], accounts[i], currency * 1, true);
             }
 
             return states;
@@ -46,6 +47,7 @@ namespace Nekoyume.Action
 
         public static IAccountStateDelta SetWorldBossKillReward(
             this IAccountStateDelta states,
+            IActionContext context,
             Address rewardInfoAddress,
             WorldBossKillRewardRecord rewardRecord,
             int rank,
@@ -82,11 +84,11 @@ namespace Nekoyume.Action
                 {
                     if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
                     {
-                        states = states.MintAsset(agentAddress, reward);
+                        states = states.MintAsset(context, agentAddress, reward);
                     }
                     else
                     {
-                        states = states.MintAsset(avatarAddress, reward);
+                        states = states.MintAsset(context, avatarAddress, reward);
                     }
                 }
             }
@@ -114,7 +116,8 @@ namespace Nekoyume.Action
         }
 #nullable disable
 
-        public static IAccountStateDelta Mead(this IAccountStateDelta states, Address signer, BigInteger rawValue)
+        public static IAccountStateDelta Mead(
+            this IAccountStateDelta states, IActionContext context, Address signer, BigInteger rawValue)
         {
             while (true)
             {
@@ -129,11 +132,11 @@ namespace Nekoyume.Action
                         var patron = contract[0].ToAddress();
                         try
                         {
-                            states = states.TransferAsset(patron, signer, requiredMead);
+                            states = states.TransferAsset(context, patron, signer, requiredMead);
                         }
                         catch (InsufficientBalanceException)
                         {
-                            states = states.Mead(patron, rawValue);
+                            states = states.Mead(context, patron, rawValue);
                             continue;
                         }
                     }

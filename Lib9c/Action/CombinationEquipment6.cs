@@ -62,7 +62,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -216,6 +216,7 @@ namespace Nekoyume.Action
             if (requiredGold > 0)
             {
                 states = states.TransferAsset(
+                    ctx,
                     ctx.Signer,
                     BlacksmithAddress,
                     states.GetGoldCurrency() * requiredGold

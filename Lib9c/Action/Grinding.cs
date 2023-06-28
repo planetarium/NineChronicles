@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
@@ -177,7 +177,7 @@ namespace Nekoyume.Action
             return states
                 .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .MintAsset(context.Signer, crystal);
+                .MintAsset(context, context.Signer, crystal);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

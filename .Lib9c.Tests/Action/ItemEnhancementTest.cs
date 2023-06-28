@@ -56,13 +56,14 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(_currency);
             var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
+            var context = new ActionContext();
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
-                .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000)
+                .TransferAsset(context, Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
 
             Assert.Equal(gold.Currency * 99999999000, _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency));
             Assert.Equal(gold.Currency * 1000, _initialState.GetBalance(_agentAddress, gold.Currency));
@@ -96,6 +97,7 @@ namespace Lib9c.Tests.Action
             bool stake
         )
         {
+            var context = new ActionContext();
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
             var materialId = Guid.NewGuid();
@@ -152,7 +154,7 @@ namespace Lib9c.Tests.Action
                     var stakeState = new StakeState(stakeStateAddress, 1);
                     _initialState = _initialState
                             .SetState(stakeStateAddress, stakeState.SerializeV2())
-                            .MintAsset(stakeStateAddress, requiredGold * _currency);
+                            .MintAsset(context, stakeStateAddress, requiredGold * _currency);
                 }
                 else
                 {
@@ -161,7 +163,7 @@ namespace Lib9c.Tests.Action
                         mcAddress,
                         new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
                     )
-                        .MintAsset(mcAddress, requiredGold * _currency);
+                        .MintAsset(context, mcAddress, requiredGold * _currency);
                 }
             }
 

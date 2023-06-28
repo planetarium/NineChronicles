@@ -60,6 +60,7 @@ namespace Nekoyume.Action
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             var worldBossState = new WorldBossState((List) states.GetState(worldBossAddress));
             return states.SetWorldBossKillReward(
+                context,
                 worldBossKillRewardRecordAddress,
                 rewardRecord,
                 rank,

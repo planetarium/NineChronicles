@@ -36,6 +36,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
+            var context = new ActionContext();
             _initialState = new State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -80,7 +81,7 @@
                 .SetState(Addresses.Shop, shopState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+                .MintAsset(context, _buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
         public static IEnumerable<object[]> GetExecuteMemberData()
@@ -519,6 +520,7 @@
                 100,
                 costume));
 
+            var context = new ActionContext();
             _initialState = _initialState
                 .SetState(Addresses.Shop, shopState.Serialize());
             shopState = _initialState.GetShopState();
@@ -533,7 +535,7 @@
             Assert.NotEmpty(products);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+            _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance);
 
             var action = new BuyMultiple
             {

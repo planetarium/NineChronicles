@@ -18,6 +18,9 @@ namespace Nekoyume.TableData
         public static bool TryParseInt(string value, out int result) =>
             int.TryParse(value, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
 
+        public static bool ParseBool(string value, bool defaultValue) =>
+            bool.TryParse(value, out var result) ? result : defaultValue;
+
         public static int ParseInt(string value)
         {
             if (TryParseInt(value, out var result))

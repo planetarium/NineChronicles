@@ -56,6 +56,7 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
 
+            var context = new ActionContext();
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
@@ -66,7 +67,7 @@ namespace Lib9c.Tests.Action
                         GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
                     ).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000);
 
             foreach (var (key, value) in _sheets)
             {

@@ -37,6 +37,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
+            var context = new ActionContext();
             _initialState = new State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -150,7 +151,7 @@
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, shopState.Products
+                .MintAsset(context, _buyerAgentAddress, shopState.Products
                     .Select(pair => pair.Value.Price)
                     .Aggregate((totalPrice, next) => totalPrice + next));
         }
@@ -314,6 +315,7 @@
         [Fact]
         public void ExecuteThrowInsufficientBalanceException()
         {
+            var context = new ActionContext();
             var shopState = _initialState.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
@@ -321,7 +323,7 @@
             Assert.NotNull(shopItem);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+            _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance);
 
             var action = new Buy4
             {

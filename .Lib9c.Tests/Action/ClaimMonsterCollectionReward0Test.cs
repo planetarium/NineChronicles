@@ -70,6 +70,7 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 3, 6)]
         public void Execute(int rewardLevel, int prevRewardLevel, int collectionLevel)
         {
+            var context = new ActionContext();
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
             List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[1].Rewards;
             MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, 1, 0, _tableSheets.MonsterCollectionRewardSheet);
@@ -130,7 +131,7 @@ namespace Lib9c.Tests.Action
 
                 collectionRound += 1;
                 _state = _state
-                    .MintAsset(collectionAddress, balance);
+                    .MintAsset(context, collectionAddress, balance);
             }
 
             Assert.Equal(prevRewardLevel, monsterCollectionState.RewardLevel);

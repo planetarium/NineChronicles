@@ -51,7 +51,7 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(WeeklyArenaAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
             // Avoid InvalidBlockStateRootHashException

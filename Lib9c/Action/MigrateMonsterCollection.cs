@@ -88,6 +88,7 @@ namespace Nekoyume.Action
             return states.SetState(monsterCollectionState.address, Null.Value)
                 .SetState(migratedStakeStateAddress, migratedStakeState.SerializeV2())
                 .TransferAsset(
+                    context,
                     monsterCollectionState.address,
                     migratedStakeStateAddress,
                     states.GetBalance(monsterCollectionState.address, currency));

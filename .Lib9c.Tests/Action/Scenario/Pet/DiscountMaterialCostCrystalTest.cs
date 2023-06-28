@@ -72,6 +72,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 stageList = stageList.Add(i.Serialize());
             }
 
+            var context = new ActionContext();
             var stateV2 = _initialStateV2.SetState(
                 _avatarAddr.Derive("recipe_ids"),
                 stageList
@@ -104,7 +105,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
 
             // Prepare
             stateV2 = CraftUtil.PrepareCombinationSlot(stateV2, _avatarAddr, 0);
-            stateV2 = CurrencyUtil.AddCurrency(stateV2, _agentAddr, crystal, expectedCrystal);
+            stateV2 = CurrencyUtil.AddCurrency(context, stateV2, _agentAddr, crystal, expectedCrystal);
             stateV2 = CraftUtil.UnlockStage(
                 stateV2,
                 _tableSheets,

@@ -45,7 +45,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(unlockedRecipeIdsAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
             }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
@@ -105,7 +105,7 @@ namespace Nekoyume.Action
                         (current, address) => current.Add(address.Serialize())));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}UnlockEquipmentRecipe Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return states.TransferAsset(context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
+            return states.TransferAsset(context, context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
         }
 
         public static List<int> UnlockedIds(

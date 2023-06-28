@@ -147,6 +147,7 @@ namespace Lib9c.Tests.Action
             bool previousCostStateExist
         )
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             if (unlockIdsExist)
             {
@@ -194,6 +195,7 @@ namespace Lib9c.Tests.Action
                             if (ncgBalanceExist)
                             {
                                 state = state.MintAsset(
+                                    context,
                                     _agentAddress,
                                     subRow.RequiredGold * state.GetGoldCurrency());
                             }
@@ -265,7 +267,7 @@ namespace Lib9c.Tests.Action
                 }
 
                 expectedCrystal = crystalBalance;
-                state = state.MintAsset(_agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
+                state = state.MintAsset(context, _agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
             }
 
             var dailyCostAddress =
@@ -383,6 +385,7 @@ namespace Lib9c.Tests.Action
             bool useBasicRecipe,
             int recipeId)
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             var unlockIds = List.Empty.Add(1.Serialize());
             for (int i = 2; i < recipeId + 1; i++)
@@ -412,6 +415,7 @@ namespace Lib9c.Tests.Action
             }
 
             state = state.MintAsset(
+                context,
                 _agentAddress,
                 subRow.RequiredGold * state.GetGoldCurrency());
 
@@ -441,6 +445,7 @@ namespace Lib9c.Tests.Action
                     var costCrystal = CrystalCalculator.CRYSTAL *
                                       hammerPointSheet[recipeId].CRYSTAL;
                     state = state.MintAsset(
+                        context,
                         _agentAddress,
                         costCrystal);
                 }

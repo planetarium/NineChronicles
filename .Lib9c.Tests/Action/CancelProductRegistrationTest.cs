@@ -128,7 +128,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_ProductNotFoundException()
         {
-            var prevState = _initialState.MintAsset(_avatarAddress, 1 * RuneHelper.StakeRune);
+            var context = new ActionContext();
+            var prevState = _initialState.MintAsset(context, _avatarAddress, 1 * RuneHelper.StakeRune);
             var registerProduct = new RegisterProduct
             {
                 AvatarAddress = _avatarAddress,

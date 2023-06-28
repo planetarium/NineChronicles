@@ -601,7 +601,8 @@ namespace Lib9c.Tests.Action.Scenario
             long receiveBlockIndex,
             int expectedRune)
         {
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * stakeAmount);
+            var context = new ActionContext();
+            var states = _initialStatesWithAvatarStateV2.MintAsset(context, _agentAddr, _ncg * stakeAmount);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -653,7 +654,8 @@ namespace Lib9c.Tests.Action.Scenario
             // Validate testcases
             Assert.True(stakeAmount < newStakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var context = new ActionContext();
+            var states = _initialStatesWithAvatarStateV2.MintAsset(context, _agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -726,7 +728,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(initialBalance >= stakeAmount);
             Assert.True(newStakeAmount < stakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var context = new ActionContext();
+            var states = _initialStatesWithAvatarStateV2.MintAsset(context, _agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -787,7 +790,8 @@ namespace Lib9c.Tests.Action.Scenario
             // Validate testcases
             Assert.True(stakeAmount > newStakeAmount);
 
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * initialBalance);
+            var context = new ActionContext();
+            var states = _initialStatesWithAvatarStateV2.MintAsset(context, _agentAddr, _ncg * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -879,7 +883,8 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void StakeAndClaimStakeRewardBeforeRewardInterval()
         {
-            var states = _initialStatesWithAvatarStateV2.MintAsset(_agentAddr, _ncg * 500);
+            var context = new ActionContext();
+            var states = _initialStatesWithAvatarStateV2.MintAsset(context, _agentAddr, _ncg * 500);
             IAction action = new Stake(500);
             states = action.Execute(new ActionContext
             {
