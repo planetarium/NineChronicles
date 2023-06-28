@@ -10,7 +10,7 @@ using UnityEngine;
 using System;
 using Nekoyume.State;
 using System.Numerics;
-using Nekoyume.Action;
+using Coffee.UIEffects;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Mail;
@@ -19,7 +19,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData.Event;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using ToggleGroup = UnityEngine.UI.ToggleGroup;
@@ -65,6 +64,7 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public Slider PercentageSlider;
+            public Image SliderFillImage;
         }
 
         [Serializable]
@@ -73,6 +73,7 @@ namespace Nekoyume.UI
             public GameObject ParentObject;
             public TextMeshProUGUI OptionText;
             public Slider PercentageSlider;
+            public Image SliderFillImage;
             public Button TooltipButton;
         }
 
@@ -144,6 +145,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private HammerPointView hammerPointView;
 
+        [SerializeField]
+        private UIHsvModifier[] bgHsvModifiers;
+
         [SerializeField] [Header("[EventMaterial]")]
         private ConditionalCostButton materialSelectButton;
 
@@ -164,7 +168,10 @@ namespace Nekoyume.UI
         private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
+        private const int PremiumRecipeIndex = 1;
         private const int MimisbrunnrRecipeIndex = 2;
+        private static readonly Color BaseColor = ColorHelper.HexToColorRGB("3E2524");
+        private static readonly Color PremiumColor = ColorHelper.HexToColorRGB("602F44");
         private IDisposable _disposableForOnDisable;
 
         private bool _canSuperCraft;
@@ -476,7 +483,11 @@ namespace Nekoyume.UI
                     var isEventEquipment = Util.IsEventEquipmentRecipe(recipeId);
                     if (!isEventEquipment)
                     {
-                        SetOptions(options);
+                        var isPremium = index == PremiumRecipeIndex &&
+                                        equipmentRow.GetResultEquipmentItemRow().Grade < 5;
+
+                        Array.ForEach(bgHsvModifiers, modifier => modifier.enabled = isPremium);
+                        SetOptions(options, isPremium);
 
                         var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
                                                      (subRecipe.IsMimisbrunnrSubRecipe ?? true);
@@ -743,7 +754,7 @@ namespace Nekoyume.UI
         }
 
         private void SetOptions(
-            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
+            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos, bool isPremium)
         {
             var tableSheets = TableSheets.Instance;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
@@ -771,6 +782,7 @@ namespace Nekoyume.UI
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     optionView.OptionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1);
                     optionView.PercentageSlider.value = (float) normalizedRatio;
+                    optionView.SliderFillImage.color = isPremium ? PremiumColor : BaseColor;
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
                     optionIcons[siblingIndex - 1].SetActive(true);
@@ -784,6 +796,7 @@ namespace Nekoyume.UI
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
                     skillView.OptionText.text = $"{skillName} ({normalizedRatio:0%})";
                     skillView.PercentageSlider.value = (float) normalizedRatio;
+                    skillView.SliderFillImage.color = isPremium ? PremiumColor : BaseColor;
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                     skillView.TooltipButton.onClick.RemoveAllListeners();

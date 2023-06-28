@@ -5,7 +5,7 @@ using System.Linq;
 using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Arena;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;

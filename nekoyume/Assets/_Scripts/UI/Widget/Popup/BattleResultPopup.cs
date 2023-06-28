@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;

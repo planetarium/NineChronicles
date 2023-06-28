@@ -11,6 +11,7 @@ namespace BalanceTool.Runtime.Util
         using Libplanet.Action;
         using Libplanet.Assets;
         using Libplanet.Consensus;
+        using Libplanet.State;
 
         public class State : IAccountStateDelta
         {
@@ -45,6 +46,9 @@ namespace BalanceTool.Runtime.Util
 
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
                 _totalSupplies.Keys.ToImmutableHashSet();
+
+            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
+                throw new NotSupportedException();
 
             public IValue GetState(Address address) =>
                 _state.TryGetValue(address, out IValue value) ? value : null;

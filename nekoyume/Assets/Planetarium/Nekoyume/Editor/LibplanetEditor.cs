@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Libplanet;
 using Libplanet.Crypto;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using UnityEditor;

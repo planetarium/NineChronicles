@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Arena;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -79,7 +80,7 @@ namespace Nekoyume.UI
 
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
-
+        
         protected override void Awake()
         {
             base.Awake();

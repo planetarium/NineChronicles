@@ -6,7 +6,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;

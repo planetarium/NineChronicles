@@ -17,7 +17,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using System.Linq;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;

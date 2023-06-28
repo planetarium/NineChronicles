@@ -1,5 +1,5 @@
 using System.Collections;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;

@@ -5,7 +5,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Arena;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;

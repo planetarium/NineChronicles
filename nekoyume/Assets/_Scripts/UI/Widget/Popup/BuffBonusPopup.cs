@@ -12,7 +12,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using mixpanel;
-    using Nekoyume.BlockChain;
+    using Nekoyume.Blockchain;
     using System.Linq;
     using UniRx;
 

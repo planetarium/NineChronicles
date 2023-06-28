@@ -1,0 +1,79 @@
+{
+    "MonoBehaviour": {
+        "m_Enabled": true,
+        "m_EditorHideFlags": 0,
+        "m_Name": "",
+        "m_EditorClassIdentifier": "",
+        "ToolbarIndex": 0,
+        "m_iOSNotificationSettingsValues": {
+            "m_Keys": [
+                "UnityNotificationRequestAuthorizationOnAppLaunch",
+                "UnityNotificationDefaultAuthorizationOptions",
+                "UnityAddRemoteNotificationCapability",
+                "UnityNotificationRequestAuthorizationForRemoteNotificationsOnAppLaunch",
+                "UnityRemoteNotificationForegroundPresentationOptions",
+                "UnityUseAPSReleaseEnvironment",
+                "UnityUseLocationNotificationTrigger"
+            ],
+            "m_Values": [
+                "True",
+                "7",
+                "True",
+                "True",
+                "-1",
+                "False",
+                "False"
+            ]
+        },
+        "m_AndroidNotificationSettingsValues": {
+            "m_Keys": [
+                "UnityNotificationAndroidRescheduleOnDeviceRestart",
+                "UnityNotificationAndroidUseCustomActivity",
+                "UnityNotificationAndroidCustomActivityString"
+            ],
+            "m_Values": [
+                "False",
+                "False",
+                "com.unity3d.player.UnityPlayerActivity"
+            ]
+        },
+        "DrawableResources": [
+            {
+                "Id": "reward",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "346b12d72fafc8c4eb6c6cbef8ef892c",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "workshop",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "f27400e1a8ea62a4eb0e1b6a49c7d5d3",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "arena",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "3d4fd6220f3eeae45a488c41ab020f90",
+                    "type": 3
+                }
+            },
+            {
+                "Id": "worldboss",
+                "Type": 1,
+                "Asset": {
+                    "fileID": 2800000,
+                    "guid": "e41b4705611f35f4795ffc2261b356c4",
+                    "type": 3
+                }
+            }
+        ]
+    }
+}

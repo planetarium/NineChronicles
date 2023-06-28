@@ -9,6 +9,7 @@ using Lib9c.DevExtensions;
 using Lib9c.DevExtensions.Action;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Battle;

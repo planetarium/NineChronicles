@@ -6,6 +6,7 @@ using BalanceTool.Runtime.Util.Lib9c.Tests.Util;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 

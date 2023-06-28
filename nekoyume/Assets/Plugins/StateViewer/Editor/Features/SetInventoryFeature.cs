@@ -8,7 +8,7 @@ using Bencodex.Types;
 using CsvHelper;
 using Lib9cCommonTool.Runtime;
 using Libplanet;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;

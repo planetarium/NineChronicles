@@ -197,6 +197,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 06992db84165d4e0ebee3d74dd8e2c0f, type: 3}
   - {fileID: 21300000, guid: ce045db8a9e3555428084733ed9f2a10, type: 3}
   - {fileID: 21300000, guid: 63112dd86b77e412e8005ef6e991a9d0, type: 3}
+  - {fileID: 21300000, guid: a1520ed8120a48f4697eddfca35b2ed8, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
   - {fileID: 21300000, guid: 23bc1f293e20d4c15b583a7a67bab116, type: 3}
@@ -327,6 +328,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 50b47dcf505c34e4d86179b86adfd223, type: 3}
   - {fileID: 21300000, guid: 02433fcf8ea93034fb9055a7d5fcd06e, type: 3}
   - {fileID: 21300000, guid: 21f780ff017fe4d569549793625de121, type: 3}
+  - {fileID: 21300000, guid: d9d013ff80b152045b347770b33ba37c, type: 3}
   - {fileID: 21300000, guid: 869bd3ff84d974503b5da91e86e6d30a, type: 3}
   m_PackedSpriteNamesToIndex:
   - Shop_bg_12
@@ -469,6 +471,7 @@ SpriteAtlas:
   - icon_Inventory_03_black
   - UI_icon_open
   - button_brown_minus
+  - Button_Tab_bg_Normal_05
   - button_page_02_reverse
   - UI_Btn_bg_04
   - UI_box_Inventory_01
@@ -599,6 +602,7 @@ SpriteAtlas:
   - button_tab_bg_normal
   - icon_combination_05_black
   - Common_mask_Gradient
+  - Button_Tab_bg_Press_05
   - Item_option_bg
   m_RenderDataMap: {}
   m_Tag: Atlas_Shop
