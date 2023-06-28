@@ -14,6 +14,7 @@ using Libplanet.Assets;
 using Libplanet.State;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action.Garages
@@ -127,12 +128,9 @@ namespace Nekoyume.Action.Garages
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(addressesHex);
-            states = TransferFungibleAssetValues(
-                context.Signer,
-                states);
-            return TransferFungibleItems(
-                context.Signer,
-                states);
+            states = TransferFungibleAssetValues(context.Signer, states);
+            states = TransferFungibleItems(context.Signer, states);
+            return SendMail(context.BlockIndex, context.Random, states);
         }
 
         private void ValidateFields(string addressesHex)
@@ -217,6 +215,39 @@ namespace Nekoyume.Action.Garages
             }
 
             return states.SetState(inventoryAddr, inventory.Serialize());
+        }
+
+        private IAccountStateDelta SendMail(
+            long blockIndex,
+            IRandom random,
+            IAccountStateDelta states)
+        {
+            var avatarValue = states.GetState(RecipientAvatarAddr);
+            if (!(avatarValue is Dictionary avatarDict))
+            {
+                throw new FailedLoadStateException(RecipientAvatarAddr, typeof(AvatarState));
+            }
+
+            // NOTE:
+            // This action supports the avatar state v2 only.
+            // So, we just check the mail box with a newer key.
+            if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey))
+            {
+                throw new KeyNotFoundException(
+                    $"Dictionary key is not found: {SerializeKeys.MailBoxKey}");
+            }
+
+            var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey]);
+            mailBox.Add(new UnloadFromMyGaragesRecipientMail(
+                blockIndex,
+                random.GenerateRandomGuid(),
+                blockIndex,
+                FungibleAssetValues,
+                FungibleIdAndCounts,
+                Memo));
+            mailBox.CleanUp();
+            avatarDict = avatarDict.SetItem(SerializeKeys.MailBoxKey, mailBox.Serialize());
+            return states.SetState(RecipientAvatarAddr, avatarDict);
         }
     }
 }

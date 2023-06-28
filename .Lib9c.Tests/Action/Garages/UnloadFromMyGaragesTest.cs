@@ -19,6 +19,7 @@ namespace Lib9c.Tests.Action.Garages
     using Nekoyume.Exceptions;
     using Nekoyume.Model.Garages;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Xunit;
 
     public class UnloadFromMyGaragesTest
@@ -130,15 +131,17 @@ namespace Lib9c.Tests.Action.Garages
         [Fact]
         public void Execute_Success()
         {
+            const long blockIndex = 0L;
+            const string memo = "memo";
             var (action, nextStates) = Execute(
                 AgentAddr,
-                0,
+                blockIndex,
                 _previousStates,
                 new TestRandom(),
                 _recipientAvatarAddr,
                 _fungibleAssetValues,
                 _fungibleIdAndCounts,
-                "memo");
+                memo);
             var garageBalanceAddr =
                 Addresses.GetGarageBalanceAddress(AgentAddr);
             if (action.FungibleAssetValues is { })
@@ -154,25 +157,35 @@ namespace Lib9c.Tests.Action.Garages
                 }
             }
 
-            if (action.FungibleIdAndCounts is null)
+            if (action.FungibleIdAndCounts is { })
             {
-                return;
+                var inventoryAddr = _recipientAvatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
+                var inventory = nextStates.GetInventory(inventoryAddr);
+                foreach (var (fungibleId, count) in action.FungibleIdAndCounts)
+                {
+                    var garageAddr = Addresses.GetGarageAddress(
+                        AgentAddr,
+                        fungibleId);
+                    Assert.True(nextStates.GetState(garageAddr) is Null);
+                    Assert.True(inventory.HasTradableFungibleItem(
+                        fungibleId,
+                        requiredBlockIndex: null,
+                        blockIndex: 0,
+                        count));
+                }
             }
 
-            var inventoryAddr = _recipientAvatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
-            var inventory = nextStates.GetInventory(inventoryAddr);
-            foreach (var (fungibleId, count) in action.FungibleIdAndCounts)
-            {
-                var garageAddr = Addresses.GetGarageAddress(
-                    AgentAddr,
-                    fungibleId);
-                Assert.True(nextStates.GetState(garageAddr) is Null);
-                Assert.True(inventory.HasTradableFungibleItem(
-                    fungibleId,
-                    requiredBlockIndex: null,
-                    blockIndex: 0,
-                    count));
-            }
+            var avatarDict = (Dictionary)nextStates.GetState(_recipientAvatarAddr)!;
+            var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey]);
+            Assert.Single(mailBox);
+            var mail = Assert.IsType<UnloadFromMyGaragesRecipientMail>(mailBox.First());
+            Assert.Equal(blockIndex, mail.blockIndex);
+            Assert.Equal(blockIndex, mail.requiredBlockIndex);
+            Assert.True(action.FungibleAssetValues?.SequenceEqual(mail.FungibleAssetValues!) ??
+                        mail.FungibleAssetValues is null);
+            Assert.True(action.FungibleIdAndCounts?.SequenceEqual(mail.FungibleIdAndCounts!) ??
+                        mail.FungibleIdAndCounts is null);
+            Assert.Equal(action.Memo, mail.Memo);
         }
 
         [Fact]
