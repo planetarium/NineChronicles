@@ -114,8 +114,8 @@ namespace Lib9c.Tests.Action.Garages
                 Assert.Equal(action.Memo, des.Memo);
                 Assert.Equal(ser, des.PlainValue);
 
-                var actionInter = (ILoadIntoMyGarages)action;
-                var desInter = (ILoadIntoMyGarages)des;
+                var actionInter = (ILoadIntoMyGaragesV1)action;
+                var desInter = (ILoadIntoMyGaragesV1)des;
                 Assert.True(
                     actionInter.FungibleAssetValues?.SequenceEqual(desInter.FungibleAssetValues!) ??
                     desInter.FungibleAssetValues is null);

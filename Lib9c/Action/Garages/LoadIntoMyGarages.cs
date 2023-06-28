@@ -20,7 +20,7 @@ using Nekoyume.TableData.Garages;
 namespace Nekoyume.Action.Garages
 {
     [ActionType("load_into_my_garages")]
-    public class LoadIntoMyGarages : GameAction, ILoadIntoMyGarages, IAction
+    public class LoadIntoMyGarages : GameAction, ILoadIntoMyGaragesV1, IAction
     {
         public IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
             FungibleAssetValues { get; private set; }

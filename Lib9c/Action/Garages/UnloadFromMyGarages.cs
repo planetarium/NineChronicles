@@ -17,7 +17,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action.Garages
 {
     [ActionType("unload_from_my_garages")]
-    public class UnloadFromMyGarages : GameAction, IUnloadFromMyGarages, IAction
+    public class UnloadFromMyGarages : GameAction, IUnloadFromMyGaragesV1, IAction
     {
         public IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
             FungibleAssetValues { get; private set; }
