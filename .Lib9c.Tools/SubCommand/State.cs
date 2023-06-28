@@ -441,14 +441,13 @@ namespace Lib9c.Tools.SubCommand
             string validatorSetKey)
         {
             IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
-                .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
+                .SelectMany(a => a.OutputStates.Delta.StateUpdatedAddresses)
                 .ToImmutableHashSet();
             IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
-                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .SelectMany(a => a.OutputStates.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
             IImmutableSet<Currency> updatedTotalSupplies = actionEvaluations
-                .SelectMany(a => a.OutputStates.TotalSupplyUpdatedCurrencies)
+                .SelectMany(a => a.OutputStates.Delta.UpdatedTotalSupplyCurrencies)
                 .ToImmutableHashSet();
 
             IAccountStateDelta lastStates = actionEvaluations.Count > 0

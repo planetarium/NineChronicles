@@ -311,11 +311,11 @@ namespace Lib9c.Tests.Action
                     _sender,
                     _recipient
                 ),
-                nextState.UpdatedFungibleAssets.Keys
+                nextState.UpdatedFungibleAssets.Select(pair => pair.Item1).ToImmutableHashSet()
             );
             Assert.Equal(
                 new[] { _currency },
-                nextState.UpdatedFungibleAssets.Values.SelectMany(v => v).ToImmutableHashSet());
+                nextState.UpdatedFungibleAssets.Select(pair => pair.Item2).ToImmutableHashSet());
         }
 
         [Theory]

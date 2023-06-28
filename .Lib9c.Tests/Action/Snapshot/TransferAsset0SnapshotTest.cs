@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action.Snapshot
     using Libplanet;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using VerifyXunit;
@@ -37,9 +38,17 @@ namespace Lib9c.Tests.Action.Snapshot
                     "f8960846e9ae4ad1c23686f74c8e5f80f22336b6f2175be21db82afa8823c92d"));
             var senderAddress = senderPrivateKey.ToAddress();
             var recipientAddress = recipientPrivateKey.ToAddress();
+
+            Assert.Equal("C61C376693E6B26717C9ee9aCA5A2453028f6ffA", senderAddress.ToHex());
+            Assert.Equal("99A06c2Bd71f0EAa8196fE45BE5ca424eE809733", recipientAddress.ToHex());
+
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
-            var state = new State().MintAsset(context, senderAddress, crystal * 100);
+            IAccountStateDelta state = new State().MintAsset(context, senderAddress, crystal * 100);
+
+            Assert.Equal((crystal * 100).RawValue, state.GetBalance(senderAddress, crystal).RawValue);
+            Assert.Equal(0, state.GetBalance(recipientAddress, crystal).RawValue);
+
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -49,9 +58,12 @@ namespace Lib9c.Tests.Action.Snapshot
                 senderAddress,
                 recipientAddress,
                 crystal * 100);
-            var states = action.Execute(actionContext);
+            var outputState = action.Execute(actionContext);
 
-            return Verifier.Verify(states)
+            Assert.Equal((crystal * 100).RawValue, outputState.GetBalance(recipientAddress, crystal).RawValue);
+            Assert.Equal(0, outputState.GetBalance(senderAddress, crystal).RawValue);
+
+            return Verifier.Verify(outputState)
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
         }
 
