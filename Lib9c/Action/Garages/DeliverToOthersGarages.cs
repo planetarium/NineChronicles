@@ -17,7 +17,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action.Garages
 {
     [ActionType("deliver_to_others_garages")]
-    public class DeliverToOthersGarages : GameAction, IDeliverToOthersGarages, IAction
+    public class DeliverToOthersGarages : GameAction, IDeliverToOthersGaragesV1, IAction
     {
         public Address RecipientAgentAddr { get; private set; }
         public IOrderedEnumerable<FungibleAssetValue>? FungibleAssetValues { get; private set; }
@@ -162,6 +162,7 @@ namespace Nekoyume.Action.Garages
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
@@ -5,10 +7,14 @@ using Libplanet.Assets;
 
 namespace Lib9c.Abstractions
 {
-    public interface IDeliverToOthersGarages
+    public interface ILoadIntoMyGaragesV1
     {
-        Address RecipientAgentAddr { get; }
-        IOrderedEnumerable<FungibleAssetValue>? FungibleAssetValues { get; }
+        IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>? FungibleAssetValues
+        {
+            get;
+        }
+
+        Address? InventoryAddr { get; }
         IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? FungibleIdAndCounts { get; }
         string? Memo { get; }
     }

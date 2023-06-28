@@ -10,164 +10,94 @@ using Libplanet.Assets;
 using Libplanet.State;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Garages;
-using Nekoyume.Model.State;
 
 namespace Nekoyume.Action.Garages
 {
     public static class GarageUtils
     {
-        public static (
-            IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
-            Address? inventoryAddr,
-            IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
-            string? memo)
-            Deserialize(IValue? serialized)
-        {
-            if (serialized is null || serialized is Null)
-            {
-                throw new ArgumentNullException(nameof(serialized));
-            }
-
-            if (!(serialized is List list))
-            {
-                throw new ArgumentException(
-                    $"The type of {nameof(serialized)} must be bencodex list.");
-            }
-
-            var fungibleAssetValues = list[0].Kind == ValueKind.Null
-                ? null
-                : ((List)list[0]).Select(e =>
-                {
-                    var l2 = (List)e;
-                    return (
-                        l2[0].ToAddress(),
-                        l2[1].ToFungibleAssetValue());
-                });
-            var inventoryAddr = list[1].Kind == ValueKind.Null
-                ? (Address?)null
-                : list[1].ToAddress();
-            var fungibleIdAndCounts = list[2].Kind == ValueKind.Null
-                ? null
-                : ((List)list[2]).Select(e =>
-                {
-                    var l2 = (List)e;
-                    return (
-                        l2[0].ToItemId(),
-                        (int)((Integer)l2[1]).Value);
-                });
-            var memo = list[3].Kind == ValueKind.Null
-                ? null
-                : (string)(Text)list[3];
-            return MergeAndSort(
-                fungibleAssetValues,
-                inventoryAddr,
-                fungibleIdAndCounts,
-                memo);
-        }
-
-        public static (
-            IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
-            Address? inventoryAddr,
-            IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
-            string? memo)
+        public static IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
             MergeAndSort(
-                IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
-                Address? inventoryAddr,
-                IEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
-                string? memo)
+                IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues)
         {
-            (
-                IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
-                fungibleAssetValues,
-                Address? inventoryAddr,
-                IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
-                string? memo)
-                result = (null, null, null, null);
             var favArr = fungibleAssetValues as (Address balanceAddr, FungibleAssetValue value)[] ??
                          fungibleAssetValues?.ToArray();
             if (favArr is null ||
                 favArr.Length == 0)
             {
-                result.fungibleAssetValues = null;
+                return null;
             }
-            else
-            {
-                var dict = new Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>();
-                foreach (var (balanceAddr, value) in favArr)
-                {
-                    if (!dict.ContainsKey(balanceAddr))
-                    {
-                        dict[balanceAddr] = new Dictionary<Currency, FungibleAssetValue>();
-                    }
 
-                    if (dict[balanceAddr].ContainsKey(value.Currency))
-                    {
-                        dict[balanceAddr][value.Currency] += value;
-                    }
-                    else
-                    {
-                        dict[balanceAddr][value.Currency] = value;
-                    }
+            var dict = new Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>();
+            foreach (var (balanceAddr, value) in favArr)
+            {
+                if (!dict.ContainsKey(balanceAddr))
+                {
+                    dict[balanceAddr] = new Dictionary<Currency, FungibleAssetValue>();
                 }
 
-#pragma warning disable LAA1002
-                var arr = dict
-#pragma warning restore LAA1002
-                    .Select(pair => (
-                        balanceAddr: pair.Key,
-                        value: pair.Value.Values.ToArray()))
-                    .SelectMany(tuple =>
-                        tuple.value.Select(value => (tuple.balanceAddr, value)))
-                    .Where(tuple => tuple.value.Sign != 0)
-                    .ToArray();
-                result.fungibleAssetValues = arr.Any()
-                    ? arr
-                        .OrderBy(tuple => tuple.balanceAddr)
-                        .ThenBy(tuple => tuple.value.GetHashCode())
-                    : null;
+                if (dict[balanceAddr].ContainsKey(value.Currency))
+                {
+                    dict[balanceAddr][value.Currency] += value;
+                }
+                else
+                {
+                    dict[balanceAddr][value.Currency] = value;
+                }
             }
 
-            result.inventoryAddr = inventoryAddr;
+#pragma warning disable LAA1002
+            var arr = dict
+#pragma warning restore LAA1002
+                .Select(pair => (
+                    balanceAddr: pair.Key,
+                    value: pair.Value.Values.ToArray()))
+                .SelectMany(tuple =>
+                    tuple.value.Select(value => (tuple.balanceAddr, value)))
+                .Where(tuple => tuple.value.Sign != 0)
+                .ToArray();
+            return arr.Any()
+                ? arr
+                    .OrderBy(tuple => tuple.balanceAddr)
+                    .ThenBy(tuple => tuple.value.GetHashCode())
+                : null;
+        }
 
+        public static IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>?
+            MergeAndSort(
+                IEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts)
+        {
             var fiArr = fungibleIdAndCounts as (HashDigest<SHA256> fungibleId, int count)[] ??
                         fungibleIdAndCounts?.ToArray();
             if (fiArr is null ||
                 fiArr.Length == 0)
             {
-                result.fungibleIdAndCounts = null;
+                return null;
             }
-            else
+
+            var dict = new Dictionary<HashDigest<SHA256>, int>();
+            foreach (var (fungibleId, count) in fiArr)
             {
-                var dict = new Dictionary<HashDigest<SHA256>, int>();
-                foreach (var (fungibleId, count) in fiArr)
+                if (dict.ContainsKey(fungibleId))
                 {
-                    if (dict.ContainsKey(fungibleId))
-                    {
-                        dict[fungibleId] += count;
-                    }
-                    else
-                    {
-                        dict[fungibleId] = count;
-                    }
+                    dict[fungibleId] += count;
                 }
+                else
+                {
+                    dict[fungibleId] = count;
+                }
+            }
 
 #pragma warning disable LAA1002
-                var arr = dict
+            var arr = dict
 #pragma warning restore LAA1002
-                    .Select(pair => (fungibleId: pair.Key, count: pair.Value))
-                    .Where(tuple => tuple.count != 0)
-                    .ToArray();
-                result.fungibleIdAndCounts = arr.Any()
-                    ? arr
-                        .OrderBy(tuple => tuple.fungibleId.GetHashCode())
-                        .ThenBy(tuple => tuple.count)
-                    : null;
-            }
-
-            result.memo = string.IsNullOrEmpty(memo)
-                ? null
-                : memo;
-            return result;
+                .Select(pair => (fungibleId: pair.Key, count: pair.Value))
+                .Where(tuple => tuple.count != 0)
+                .ToArray();
+            return arr.Any()
+                ? arr
+                    .OrderBy(tuple => tuple.fungibleId.GetHashCode())
+                    .ThenBy(tuple => tuple.count)
+                : null;
         }
 
         public static IOrderedEnumerable<(

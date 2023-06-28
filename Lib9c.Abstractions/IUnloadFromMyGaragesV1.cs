@@ -7,14 +7,15 @@ using Libplanet.Assets;
 
 namespace Lib9c.Abstractions
 {
-    public interface ILoadIntoMyGarages
+    public interface IUnloadFromMyGaragesV1
     {
+        Address RecipientAvatarAddr { get; }
+
         IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>? FungibleAssetValues
         {
             get;
         }
 
-        Address? InventoryAddr { get; }
         IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? FungibleIdAndCounts { get; }
         string? Memo { get; }
     }

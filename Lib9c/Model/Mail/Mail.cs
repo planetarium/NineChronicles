@@ -37,6 +37,8 @@ namespace Nekoyume.Model.Mail
                 [nameof(ProductBuyerMail)] = d => new ProductBuyerMail(d),
                 [nameof(ProductSellerMail)] = d => new ProductSellerMail(d),
                 [nameof(ProductCancelMail)] = d => new ProductCancelMail(d),
+                [nameof(UnloadFromMyGaragesRecipientMail)] = d =>
+                    new UnloadFromMyGaragesRecipientMail(d),
             };
 
         public Guid id;
@@ -149,11 +151,14 @@ namespace Nekoyume.Model.Mail
         }
 
         [Obsolete("Use CleanUp")]
-        public void CleanUp2()
+        public void CleanUpV1()
         {
             if (_mails.Count > 30)
             {
-                _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
+                _mails = _mails
+                    .OrderByDescending(m => m.blockIndex)
+                    .Take(30)
+                    .ToList();
             }
         }
 

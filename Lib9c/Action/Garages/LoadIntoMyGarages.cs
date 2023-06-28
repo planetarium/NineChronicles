@@ -20,7 +20,7 @@ using Nekoyume.TableData.Garages;
 namespace Nekoyume.Action.Garages
 {
     [ActionType("load_into_my_garages")]
-    public class LoadIntoMyGarages : GameAction, ILoadIntoMyGarages, IAction
+    public class LoadIntoMyGarages : GameAction, ILoadIntoMyGaragesV1, IAction
     {
         public IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
             FungibleAssetValues { get; private set; }
@@ -57,7 +57,7 @@ namespace Nekoyume.Action.Garages
                             : new List(FungibleIdAndCounts.Select(tuple => new List(
                                 tuple.fungibleId.Serialize(),
                                 (Integer)tuple.count))),
-                        Memo is null
+                        string.IsNullOrEmpty(Memo)
                             ? (IValue)Null.Value
                             : (Text)Memo)
                 }
@@ -69,16 +69,10 @@ namespace Nekoyume.Action.Garages
             IEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
             string? memo)
         {
-            (
-                FungibleAssetValues,
-                InventoryAddr,
-                FungibleIdAndCounts,
-                Memo
-            ) = GarageUtils.MergeAndSort(
-                fungibleAssetValues,
-                inventoryAddr,
-                fungibleIdAndCounts,
-                memo);
+            FungibleAssetValues = GarageUtils.MergeAndSort(fungibleAssetValues);
+            InventoryAddr = inventoryAddr;
+            FungibleIdAndCounts = GarageUtils.MergeAndSort(fungibleIdAndCounts);
+            Memo = memo;
         }
 
         public LoadIntoMyGarages()
@@ -88,16 +82,49 @@ namespace Nekoyume.Action.Garages
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            (
-                FungibleAssetValues,
-                InventoryAddr,
-                FungibleIdAndCounts,
-                Memo
-            ) = GarageUtils.Deserialize(plainValue["l"]);
+            var serialized = plainValue["l"];
+            if (serialized is null || serialized is Null)
+            {
+                throw new ArgumentNullException(nameof(serialized));
+            }
+
+            if (!(serialized is List list))
+            {
+                throw new ArgumentException(
+                    $"The type of {nameof(serialized)} must be bencodex list.");
+            }
+
+            var fungibleAssetValues = list[0].Kind == ValueKind.Null
+                ? null
+                : ((List)list[0]).Select(e =>
+                {
+                    var l2 = (List)e;
+                    return (
+                        l2[0].ToAddress(),
+                        l2[1].ToFungibleAssetValue());
+                });
+            FungibleAssetValues = GarageUtils.MergeAndSort(fungibleAssetValues);
+            InventoryAddr = list[1].Kind == ValueKind.Null
+                ? (Address?)null
+                : list[1].ToAddress();
+            var fungibleIdAndCounts = list[2].Kind == ValueKind.Null
+                ? null
+                : ((List)list[2]).Select(e =>
+                {
+                    var l2 = (List)e;
+                    return (
+                        l2[0].ToItemId(),
+                        (int)((Integer)l2[1]).Value);
+                });
+            FungibleIdAndCounts = GarageUtils.MergeAndSort(fungibleIdAndCounts);
+            Memo = list[3].Kind == ValueKind.Null
+                ? null
+                : (string)(Text)list[3];
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
