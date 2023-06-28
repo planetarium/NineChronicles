@@ -1,10 +1,12 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
@@ -19,16 +21,15 @@ namespace Nekoyume.Action.Garages
     [ActionType("unload_from_my_garages")]
     public class UnloadFromMyGarages : GameAction, IUnloadFromMyGaragesV1, IAction
     {
-        public IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
-            FungibleAssetValues { get; private set; }
-
         /// <summary>
-        /// This address does not need to consider its owner.
         /// If the avatar state is v1, there is no separate inventory,
         /// so it should be execute another action first to migrate the avatar state to v2.
         /// And then, the inventory address will be set.
         /// </summary>
-        public Address? InventoryAddr { get; private set; }
+        public Address RecipientAvatarAddr { get; private set; }
+
+        public IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
+            FungibleAssetValues { get; private set; }
 
         public IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>?
             FungibleIdAndCounts { get; private set; }
@@ -41,41 +42,33 @@ namespace Nekoyume.Action.Garages
                 {
                     "l",
                     new List(
+                        RecipientAvatarAddr.Serialize(),
                         FungibleAssetValues is null
                             ? (IValue)Null.Value
                             : new List(FungibleAssetValues.Select(tuple => new List(
                                 tuple.balanceAddr.Serialize(),
                                 tuple.value.Serialize()))),
-                        InventoryAddr is null
-                            ? Null.Value
-                            : InventoryAddr.Serialize(),
                         FungibleIdAndCounts is null
                             ? (IValue)Null.Value
                             : new List(FungibleIdAndCounts.Select(tuple => new List(
                                 tuple.fungibleId.Serialize(),
                                 (Integer)tuple.count))),
-                        Memo is null
+                        string.IsNullOrEmpty(Memo)
                             ? (IValue)Null.Value
                             : (Text)Memo)
                 }
             }.ToImmutableDictionary();
 
         public UnloadFromMyGarages(
+            Address recipientAvatarAddr,
             IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
-            Address? inventoryAddr,
             IEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
             string? memo)
         {
-            (
-                FungibleAssetValues,
-                InventoryAddr,
-                FungibleIdAndCounts,
-                Memo
-            ) = GarageUtils.MergeAndSort(
-                fungibleAssetValues,
-                inventoryAddr,
-                fungibleIdAndCounts,
-                memo);
+            RecipientAvatarAddr = recipientAvatarAddr;
+            FungibleAssetValues = GarageUtils.MergeAndSort(fungibleAssetValues);
+            FungibleIdAndCounts = GarageUtils.MergeAndSort(fungibleIdAndCounts);
+            Memo = memo;
         }
 
         public UnloadFromMyGarages()
@@ -85,12 +78,42 @@ namespace Nekoyume.Action.Garages
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            (
-                FungibleAssetValues,
-                InventoryAddr,
-                FungibleIdAndCounts,
-                Memo
-            ) = GarageUtils.Deserialize(plainValue["l"]);
+            var serialized = plainValue["l"];
+            if (serialized is null || serialized is Null)
+            {
+                throw new ArgumentNullException(nameof(serialized));
+            }
+
+            if (!(serialized is List list))
+            {
+                throw new ArgumentException(
+                    $"The type of {nameof(serialized)} must be bencodex list.");
+            }
+
+            RecipientAvatarAddr = list[0].ToAddress();
+            var fungibleAssetValues = list[1].Kind == ValueKind.Null
+                ? null
+                : ((List)list[1]).Select(e =>
+                {
+                    var l2 = (List)e;
+                    return (
+                        l2[0].ToAddress(),
+                        l2[1].ToFungibleAssetValue());
+                });
+            FungibleAssetValues = GarageUtils.MergeAndSort(fungibleAssetValues);
+            var fungibleIdAndCounts = list[2].Kind == ValueKind.Null
+                ? null
+                : ((List)list[2]).Select(e =>
+                {
+                    var l2 = (List)e;
+                    return (
+                        l2[0].ToItemId(),
+                        (int)((Integer)l2[1]).Value);
+                });
+            FungibleIdAndCounts = GarageUtils.MergeAndSort(fungibleIdAndCounts);
+            Memo = list[3].Kind == ValueKind.Null
+                ? null
+                : (string)(Text)list[3];
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -138,13 +161,6 @@ namespace Nekoyume.Action.Garages
                 return;
             }
 
-            if (!InventoryAddr.HasValue)
-            {
-                throw new InvalidActionFieldException(
-                    $"[{addressesHex}] {nameof(InventoryAddr)} is required when " +
-                    $"{nameof(FungibleIdAndCounts)} is set.");
-            }
-
             foreach (var (fungibleId, count) in FungibleIdAndCounts)
             {
                 if (count < 0)
@@ -179,13 +195,13 @@ namespace Nekoyume.Action.Garages
             Address signer,
             IAccountStateDelta states)
         {
-            if (InventoryAddr is null ||
-                FungibleIdAndCounts is null)
+            if (FungibleIdAndCounts is null)
             {
                 return states;
             }
 
-            var inventory = states.GetInventory(InventoryAddr.Value);
+            var inventoryAddr = RecipientAvatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
+            var inventory = states.GetInventory(inventoryAddr);
             var fungibleItemTuples = GarageUtils.WithGarageTuples(
                 signer,
                 states,
@@ -199,7 +215,7 @@ namespace Nekoyume.Action.Garages
                 states = states.SetState(garageAddr, garage.Serialize());
             }
 
-            return states.SetState(InventoryAddr.Value, inventory.Serialize());
+            return states.SetState(inventoryAddr, inventory.Serialize());
         }
     }
 }
