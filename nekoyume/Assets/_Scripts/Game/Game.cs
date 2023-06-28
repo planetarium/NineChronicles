@@ -33,7 +33,9 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-using RocksDbSharp;  // Don't remove this line. It's for another platform.
+using RocksDbSharp;
+using Unity.Services.Core;
+using Unity.Services.Core.Environments; // Don't remove this line. It's for another platform.
 using UnityEngine.Android;  // Don't remove this line. It's for another platform.
 
 namespace Nekoyume.Game
@@ -333,6 +335,19 @@ namespace Nekoyume.Game
             // Initialize D:CC NFT data
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
+            yield return UniTask.Run(async () =>
+            {
+                try
+                {
+                    var initializationOptions = new InitializationOptions()
+                        .SetEnvironmentName("dev");
+                    await UnityServices.InitializeAsync(initializationOptions);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogException(exception);
+                }
+            }).ToCoroutine();
             IAPStoreManager = new IAPStoreManager();
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>

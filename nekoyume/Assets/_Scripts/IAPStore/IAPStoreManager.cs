@@ -11,12 +11,8 @@ namespace Nekoyume.IAPStore
         public IAPStoreManager()
         {
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            builder.AddProduct("100_gold_coins", ProductType.Consumable, new IDs
-            {
-                {"100_gold_coins_google", GooglePlay.Name},
-                {"100_gold_coins_mac", AppleAppStore.Name}
-            });
-
+            builder.AddProduct("g_single_ap01", ProductType.Consumable);
+            builder.AddProduct("g_single_hourglass01", ProductType.Consumable);
             UnityPurchasing.Initialize(this, builder);
         }
 
