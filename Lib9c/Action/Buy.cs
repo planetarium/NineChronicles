@@ -9,6 +9,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
@@ -66,6 +67,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);

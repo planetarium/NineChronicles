@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -19,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("sell_cancellation7")]
     public class SellCancellation7 : GameAction, ISellCancellationV3
     {
@@ -82,6 +83,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);

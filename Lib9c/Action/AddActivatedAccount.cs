@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 
@@ -11,6 +12,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("add_activated_account2")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class AddActivatedAccount : ActionBase, IAddActivatedAccountV1
     {
         public AddActivatedAccount(Address address)
@@ -26,16 +28,18 @@ namespace Nekoyume.Action
 
         Address IAddActivatedAccountV1.Address => Address;
 
-        public override IValue PlainValue =>
-            new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "add_activated_account2")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"a", Address.Serialize()),
                 }
-            );
+            ));
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
             var address = Address.Derive(ActivationKey.DeriveKey);
 
@@ -45,6 +49,7 @@ namespace Nekoyume.Action
                     .SetState(address, MarkChanged);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(state.GetState(address) is null))
             {
                 throw new AlreadyActivatedException($"{address} is already activated.");
@@ -57,7 +62,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             Address = asDict["a"].ToAddress();
         }
     }

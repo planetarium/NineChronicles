@@ -8,16 +8,13 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
+using Libplanet.State;
 using Libplanet.Tx;
 
 namespace Nekoyume.Action
 {
     public static class ActionBaseExtensions
     {
-        public static IImmutableSet<Address> CalculateUpdateAddresses(
-            this IEnumerable<PolymorphicAction<ActionBase>> actions
-        ) => CalculateUpdateAddresses(actions.Select(pa => pa.InnerAction));
-
         public static IImmutableSet<Address> CalculateUpdateAddresses(this IEnumerable<ActionBase> actions)
         {
             IImmutableSet<Address> addresses = ImmutableHashSet<Address>.Empty;
@@ -61,6 +58,11 @@ namespace Nekoyume.Action
 
             public bool BlockAction => default;
 
+            public void UseGas(long gas)
+            {
+                // pass
+            }
+
             public IActionContext GetUnconsumedContext() => null;
 
             public long GasUsed() => 0;
@@ -93,6 +95,11 @@ namespace Nekoyume.Action
 
             public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets
                 => ImmutableDictionary<Address, IImmutableSet<Currency>>.Empty;
+
+            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+            {
+                get;
+            }
 
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies
                 => ImmutableHashSet<Currency>.Empty;

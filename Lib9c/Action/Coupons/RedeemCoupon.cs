@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Coupons;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -18,6 +19,10 @@ namespace Nekoyume.Action.Coupons
         public Guid CouponId { get; private set; }
         public Address AvatarAddress { get; private set; }
 
+        public RedeemCoupon()
+        {
+        }
+
         public RedeemCoupon(Guid couponId, Address avatarAddress)
         {
             CouponId = couponId;
@@ -26,6 +31,7 @@ namespace Nekoyume.Action.Coupons
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);

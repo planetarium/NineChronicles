@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
@@ -87,6 +88,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {

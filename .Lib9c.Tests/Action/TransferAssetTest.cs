@@ -4,13 +4,12 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
-    using System.Numerics;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -47,35 +46,15 @@ namespace Lib9c.Tests.Action
                 new TransferAsset(_sender, _recipient, _currency * 100, new string(' ', 100)));
         }
 
-        [Theory]
-        // activation by derive address.
-        [InlineData(true, false, false)]
-        // activation by ActivatedAccountsState.
-        [InlineData(false, true, false)]
-        // state exist.
-        [InlineData(false, false, true)]
-        public void Execute(bool activate, bool legacyActivate, bool stateExist)
+        [Fact]
+        public void Execute()
         {
+            var contractAddress = _sender.Derive(nameof(RequestPledge));
+            var patronAddress = new PrivateKey().ToAddress();
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
             var state = ImmutableDictionary<Address, IValue>.Empty;
-            if (activate)
-            {
-                state = state.Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
-            }
-
-            if (legacyActivate)
-            {
-                var activatedAccountState = new ActivatedAccountsState();
-                activatedAccountState = activatedAccountState.AddAccount(_recipient);
-                state = state.Add(activatedAccountState.address, activatedAccountState.Serialize());
-            }
-
-            if (stateExist)
-            {
-                state = state.Add(_recipient, new AgentState(_recipient).Serialize());
-            }
 
             var prevState = new State(
                 state: state,
@@ -99,11 +78,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteWithInvalidSigner()
+        public void Execute_Throw_InvalidTransferSignerException()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
-                .Add((_recipient, _currency), _currency * 10);
+                .Add((_recipient, _currency), _currency * 10)
+                .Add((_sender, Currencies.Mead), Currencies.Mead * 1);
             var prevState = new State(
                 balance: balance
             );
@@ -131,10 +111,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteWithInvalidRecipient()
+        public void Execute_Throw_InvalidTransferRecipientException()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000);
+                .Add((_sender, _currency), _currency * 1000)
+                .Add((_sender, Currencies.Mead), Currencies.Mead * 1);
             var prevState = new State(
                 balance: balance
             );
@@ -161,11 +142,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteWithInsufficientBalance()
+        public void Execute_Throw_InsufficientBalanceException()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
+
             var prevState = new State(
                 balance: balance
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
@@ -175,7 +157,7 @@ namespace Lib9c.Tests.Action
                 amount: _currency * 100000
             );
 
-            Assert.Throws<InsufficientBalanceException>(() =>
+            InsufficientBalanceException exc = Assert.Throws<InsufficientBalanceException>(() =>
             {
                 action.Execute(new ActionContext()
                 {
@@ -185,18 +167,25 @@ namespace Lib9c.Tests.Action
                     BlockIndex = 1,
                 });
             });
+
+            Assert.Equal(_sender, exc.Address);
+            Assert.Equal(_currency, exc.Balance.Currency);
         }
 
-        [Fact]
-        public void ExecuteWithMinterAsSender()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_Throw_InvalidTransferMinterException(bool minterAsSender)
         {
+            Address minter = minterAsSender ? _sender : _recipient;
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currencyBySender = Currency.Legacy("NCG", 2, _sender);
+            var currencyBySender = Currency.Legacy("NCG", 2, minter);
 #pragma warning restore CS0618
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, currencyBySender), _currency * 1000)
-                .Add((_recipient, currencyBySender), _currency * 10);
+                .Add((_recipient, currencyBySender), _currency * 10)
+                .Add((_sender, Currencies.Mead), Currencies.Mead * 1);
             var prevState = new State(
                 balance: balance
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
@@ -216,74 +205,7 @@ namespace Lib9c.Tests.Action
                 });
             });
 
-            Assert.Equal(new[] { _sender }, ex.Minters);
-            Assert.Equal(_sender, ex.Sender);
-            Assert.Equal(_recipient, ex.Recipient);
-        }
-
-        [Fact]
-        public void ExecuteWithMinterAsRecipient()
-        {
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var currencyByRecipient = Currency.Legacy("NCG", 2, _sender);
-#pragma warning restore CS0618
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, currencyByRecipient), _currency * 1000)
-                .Add((_recipient, currencyByRecipient), _currency * 10);
-            var prevState = new State(
-                balance: balance
-            ).SetState(_recipient, new AgentState(_recipient).Serialize());
-            var action = new TransferAsset(
-                sender: _sender,
-                recipient: _recipient,
-                amount: currencyByRecipient * 100
-            );
-            var ex = Assert.Throws<InvalidTransferMinterException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = prevState,
-                    Signer = _sender,
-                    Rehearsal = false,
-                    BlockIndex = 1,
-                });
-            });
-
-            Assert.Equal(new[] { _sender }, ex.Minters);
-            Assert.Equal(_sender, ex.Sender);
-            Assert.Equal(_recipient, ex.Recipient);
-        }
-
-        [Fact]
-        public void ExecuteWithUnactivatedRecipient()
-        {
-            var activatedAddress = new ActivatedAccountsState().AddAccount(new PrivateKey().ToAddress());
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000)
-                .Add((_recipient, _currency), _currency * 10);
-            var state = ImmutableDictionary<Address, IValue>.Empty
-                .Add(_sender.Derive(ActivationKey.DeriveKey), true.Serialize())
-                .Add(Addresses.ActivatedAccount, activatedAddress.Serialize());
-            var prevState = new State(
-                state: state,
-                balance: balance
-            );
-            var action = new TransferAsset(
-                sender: _sender,
-                recipient: _recipient,
-                amount: _currency * 100
-            );
-            var ex = Assert.Throws<InvalidTransferUnactivatedRecipientException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = prevState,
-                    Signer = _sender,
-                    Rehearsal = false,
-                    BlockIndex = 1,
-                });
-            });
+            Assert.Equal(new[] { minter }, ex.Minters);
             Assert.Equal(_sender, ex.Sender);
             Assert.Equal(_recipient, ex.Recipient);
         }
@@ -299,7 +221,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousStates = new State().MintAsset(_sender, Currencies.Mead * 1),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -313,7 +235,7 @@ namespace Lib9c.Tests.Action
                 nextState.UpdatedFungibleAssets.Keys
             );
             Assert.Equal(
-                new[] { _currency },
+                new[] { _currency, Currencies.Mead, }.ToImmutableHashSet(),
                 nextState.UpdatedFungibleAssets.Values.SelectMany(v => v).ToImmutableHashSet());
         }
 
@@ -324,13 +246,15 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
             Dictionary plainValue = (Dictionary)action.PlainValue;
+            Dictionary values = (Dictionary)plainValue["values"];
 
-            Assert.Equal(_sender, plainValue["sender"].ToAddress());
-            Assert.Equal(_recipient, plainValue["recipient"].ToAddress());
-            Assert.Equal(_currency * 100, plainValue["amount"].ToFungibleAssetValue());
+            Assert.Equal((Text)"transfer_asset4", plainValue["type_id"]);
+            Assert.Equal(_sender, values["sender"].ToAddress());
+            Assert.Equal(_recipient, values["recipient"].ToAddress());
+            Assert.Equal(_currency * 100, values["amount"].ToFungibleAssetValue());
             if (!(memo is null))
             {
-                Assert.Equal(memo, plainValue["memo"].ToDotnetString());
+                Assert.Equal(memo, values["memo"].ToDotnetString());
             }
         }
 
@@ -350,7 +274,9 @@ namespace Lib9c.Tests.Action
                 pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text)"memo", memo.Serialize()));
             }
 
-            var plainValue = new Dictionary(pairs);
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset3")
+                .Add("values", new Dictionary(pairs));
             var action = new TransferAsset();
             action.LoadPlainValue(plainValue);
 
@@ -365,7 +291,8 @@ namespace Lib9c.Tests.Action
         {
             var crystal = CrystalCalculator.CRYSTAL;
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, crystal), crystal * 1000);
+                .Add((_sender, crystal), crystal * 1000)
+                .Add((_sender, Currencies.Mead), Currencies.Mead * 1);
             var state = ImmutableDictionary<Address, IValue>.Empty
                 .Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
 
@@ -383,7 +310,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = prevState,
                 Signer = _sender,
                 Rehearsal = false,
-                BlockIndex = TransferAsset.CrystalTransferringRestrictionStartIndex,
+                BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,
             }));
         }
 
@@ -391,13 +318,15 @@ namespace Lib9c.Tests.Action
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
             var action = new TransferAsset();
-            var plainValue = new Dictionary(new[]
-            {
-                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
-            });
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset3")
+                .Add("values", new Dictionary(new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+                }));
 
             Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
         }

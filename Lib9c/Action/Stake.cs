@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Lib9c.Abstractions;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Extensions;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -43,6 +41,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
 
             // Restrict staking if there is a monster collection until now.

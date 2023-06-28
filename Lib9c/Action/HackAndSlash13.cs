@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
@@ -23,7 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash13")]
-    [ActionObsolete(ObsoletedBlockIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class HackAndSlash13 : GameAction, IHackAndSlashV6
     {
         private const long ObsoletedBlockIndex =
@@ -67,6 +68,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);

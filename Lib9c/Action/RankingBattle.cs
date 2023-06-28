@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Action;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model;
 using Nekoyume.Extensions;
@@ -44,6 +45,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var ctx = context;
             var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);

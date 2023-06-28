@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
-
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("claim_monster_collection_reward3")]
-    [ActionObsolete(ActionObsoleteConfig.V100220ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class ClaimMonsterCollectionReward : GameAction, IClaimMonsterCollectionRewardV2
     {
         public const long MonsterCollectionRewardEndBlockIndex = 4_481_909;
@@ -32,11 +32,17 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            return Claim(context, avatarAddress, addressesHex);
+        }
+
+        public static IAccountStateDelta Claim(IActionContext context, Address avatarAddress, string addressesHex)
+        {
             IAccountStateDelta states = context.PreviousStates;
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}ClaimMonsterCollection exec started", addressesHex);
 

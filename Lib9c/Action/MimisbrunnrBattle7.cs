@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -17,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100170ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("mimisbrunnr_battle7")]
     public class MimisbrunnrBattle7 : GameAction, IMimisbrunnrBattleV3
     {
@@ -66,6 +67,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);

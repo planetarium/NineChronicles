@@ -9,6 +9,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Serilog;
 using Nekoyume.Model.State;
 using Libplanet.Assets;

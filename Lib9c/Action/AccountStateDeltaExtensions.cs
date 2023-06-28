@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
+using Lib9c;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using LruCacheNet;
 using Nekoyume.Helper;
 using Nekoyume.Model.Coupons;
@@ -17,9 +20,6 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
-        private const int SheetsCacheSize = 100;
-        private static readonly LruCache<string, ISheet> SheetsCache = new LruCache<string, ISheet>(SheetsCacheSize);
-
         public static IAccountStateDelta MarkBalanceChanged(
             this IAccountStateDelta states,
             Currency currency,
@@ -113,5 +113,38 @@ namespace Nekoyume.Action
             return states.SetState(walletAddress, serializedWallet);
         }
 #nullable disable
+
+        public static IAccountStateDelta Mead(this IAccountStateDelta states, Address signer, BigInteger rawValue)
+        {
+            while (true)
+            {
+                var price = rawValue * Currencies.Mead;
+                var balance = states.GetBalance(signer, Currencies.Mead);
+                if (balance < price)
+                {
+                    var requiredMead = price - balance;
+                    var contractAddress = signer.Derive(nameof(RequestPledge));
+                    if (states.GetState(contractAddress) is List contract && contract[1].ToBoolean())
+                    {
+                        var patron = contract[0].ToAddress();
+                        try
+                        {
+                            states = states.TransferAsset(patron, signer, requiredMead);
+                        }
+                        catch (InsufficientBalanceException)
+                        {
+                            states = states.Mead(patron, rawValue);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        throw new InsufficientBalanceException("", signer, balance);
+                    }
+                }
+
+                return states;
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Lib9c.Action;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model;
 using Nekoyume.Extensions;
@@ -23,6 +24,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("ranking_battle11")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class RankingBattle11 : GameAction, IRankingBattleV2
     {
         public const int StageId = 999999;
@@ -50,6 +52,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
@@ -65,6 +68,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
             {

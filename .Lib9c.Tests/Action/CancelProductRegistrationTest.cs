@@ -2,25 +2,21 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Bencodex.Types;
     using Lib9c.Model.Order;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model;
-    using Nekoyume.Model.Item;
-    using Nekoyume.Model.Mail;
     using Nekoyume.Model.Market;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
 
     public class CancelProductRegistrationTest
     {

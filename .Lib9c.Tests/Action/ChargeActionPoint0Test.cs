@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;

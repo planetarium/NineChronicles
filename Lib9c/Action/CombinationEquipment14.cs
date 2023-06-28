@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -26,6 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment14")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CombinationEquipment14 : GameAction, ICombinationEquipmentV3
     {
         public const string AvatarAddressKey = "a";
@@ -77,6 +79,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
@@ -93,6 +96,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CombinationEquipment exec started", addressesHex);

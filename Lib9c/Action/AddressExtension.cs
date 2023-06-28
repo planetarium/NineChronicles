@@ -21,5 +21,10 @@ namespace Nekoyume.Action
 
         public static Address Derive(this Address address, string key) =>
             address.Derive(Encoding.UTF8.GetBytes(key));
+
+        public static Address GetPledgeAddress(this Address address)
+        {
+            return address.Derive(nameof(RequestPledge));
+        }
     }
 }

@@ -8,7 +8,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -22,7 +22,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("sell11")]
-    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class Sell11 : GameAction, ISellV2
     {
         public Address sellerAvatarAddress;
@@ -63,6 +63,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);

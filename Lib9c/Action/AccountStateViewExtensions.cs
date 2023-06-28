@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using LruCacheNet;
 using Nekoyume.Model.Arena;
 using Nekoyume.Helper;

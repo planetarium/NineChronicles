@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -26,6 +27,7 @@ namespace Nekoyume.Action
         public bool ChargeAp;
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             if (context.Rehearsal)
             {

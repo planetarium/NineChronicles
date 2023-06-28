@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -19,10 +20,12 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("migration_legacy_shop2")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class MigrationLegacyShop : GameAction, IMigrationLegacyShopV1
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var sellerAvatarAddresses = _avatarAddressesHex.Select(a => new Address(a)).ToList();
 
@@ -39,6 +42,7 @@ namespace Nekoyume.Action
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 
             Log.Debug("Start Migration Legacy Shop");

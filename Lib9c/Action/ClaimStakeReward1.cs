@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -13,8 +13,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("claim_stake_reward")]
+    [ActionObsolete(ObsoleteIndex)]
     public class ClaimStakeReward1 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
+        public const long ObsoleteIndex = ActionObsoleteConfig.V200030ObsoleteIndex;
+
         internal Address AvatarAddress { get; private set; }
 
         Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
@@ -30,6 +33,8 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
+            CheckObsolete(ObsoleteIndex, context);
             var states = context.PreviousStates;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
@@ -59,7 +64,7 @@ namespace Nekoyume.Action
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
-            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
+            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewardsV1(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
@@ -12,9 +10,8 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using static Libplanet.Blocks.BlockMarshaler;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     // Collection of helper methods not directly used as a pluggable component.
     public partial class BlockPolicySource
@@ -69,26 +66,17 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction transaction)
+        internal static bool IsAdminTransaction(BlockChain blockChain, Transaction transaction)
         {
             return GetAdminState(blockChain) is AdminState admin
                 && admin.AdminAddress.Equals(transaction.Signer);
         }
 
-        internal static AdminState GetAdminState(
-            BlockChain<NCAction> blockChain)
+        internal static AdminState GetAdminState(BlockChain blockChain)
         {
-            try
-            {
-                return blockChain.GetState(AdminState.Address) is Dictionary rawAdmin
-                    ? new AdminState(rawAdmin)
-                    : null;
-            }
-            catch (IncompleteBlockStatesException)
-            {
-                return null;
-            }
+            return blockChain.GetState(AdminState.Address) is Dictionary rawAdmin
+                ? new AdminState(rawAdmin)
+                : null;
         }
 
         private static InvalidBlockBytesLengthException ValidateTransactionsBytesRaw(

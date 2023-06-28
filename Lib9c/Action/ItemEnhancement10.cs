@@ -9,6 +9,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -24,6 +25,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement10")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class ItemEnhancement10 : GameAction, IItemEnhancementV2
     {
         public static Address GetFeeStoreAddress() => Addresses.Blacksmith.Derive("_0_0");
@@ -118,6 +120,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var ctx = context;
             var states = ctx.PreviousStates;
             var slotAddress = avatarAddress.Derive(
@@ -141,6 +144,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)

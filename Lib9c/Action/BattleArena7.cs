@@ -7,9 +7,9 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
-
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -29,7 +29,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1495
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100360ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("battle_arena7")]
     public class BattleArena7 : GameAction, IBattleArenaV1
     {
@@ -95,6 +95,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {

@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -88,6 +89,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);

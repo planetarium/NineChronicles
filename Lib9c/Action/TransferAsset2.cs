@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionObsolete(TransferAsset.CrystalTransferringRestrictionStartIndex - 1)]
+    [ActionObsolete(TransferAsset3.CrystalTransferringRestrictionStartIndex - 1)]
     [ActionType("transfer_asset2")]
     public class TransferAsset2 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
@@ -73,19 +74,22 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", "transfer_asset2")
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(4);
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
                 return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
             }
 
-            CheckObsolete(TransferAsset.CrystalTransferringRestrictionStartIndex - 1, context);
+            CheckObsolete(TransferAsset3.CrystalTransferringRestrictionStartIndex - 1, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset2 exec started", addressesHex);
@@ -134,7 +138,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();

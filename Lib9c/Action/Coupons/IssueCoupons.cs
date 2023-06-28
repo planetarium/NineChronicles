@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Coupons;
 
 namespace Nekoyume.Action.Coupons
@@ -12,6 +13,10 @@ namespace Nekoyume.Action.Coupons
     [ActionType("issue_coupons")]
     public sealed class IssueCoupons : GameAction
     {
+        public IssueCoupons()
+        {
+        }
+
         public IssueCoupons(IImmutableDictionary<RewardSet, uint> rewards, Address recipient)
         {
             Rewards = rewards;
@@ -24,6 +29,7 @@ namespace Nekoyume.Action.Coupons
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {

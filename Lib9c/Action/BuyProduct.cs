@@ -8,6 +8,7 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -20,7 +21,7 @@ using Log = Serilog.Log;
 
 namespace Nekoyume.Action
 {
-    [ActionType("buy_product")]
+    [ActionType("buy_product2")]
     public class BuyProduct : GameAction
     {
         // Capacity from Buy limits in NineChronicles
@@ -31,6 +32,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta states = context.PreviousStates;
             if (context.Rehearsal)
             {
@@ -147,9 +149,19 @@ namespace Nekoyume.Action
                     switch (itemProduct.TradableItem)
                     {
                         case Costume costume:
+                            // Fix RequiredBlockIndex from RegisterProduct0
+                            if (costume.RequiredBlockIndex > context.BlockIndex)
+                            {
+                                costume.RequiredBlockIndex = context.BlockIndex;
+                            }
                             buyerAvatarState.UpdateFromAddCostume(costume, false);
                             break;
                         case ItemUsable itemUsable:
+                            // Fix RequiredBlockIndex from RegisterProduct0
+                            if (itemUsable.RequiredBlockIndex > context.BlockIndex)
+                            {
+                                itemUsable.RequiredBlockIndex = context.BlockIndex;
+                            }
                             buyerAvatarState.UpdateFromAddItem(itemUsable, false);
                             break;
                         case TradableMaterial tradableMaterial:

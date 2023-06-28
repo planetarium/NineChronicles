@@ -4,8 +4,8 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
         public RenewAdminStateTest()
         {
             _adminPrivateKey = new PrivateKey();
-            _validUntil = new Random().Next();
+            _validUntil = 1_500_000L;
             _adminState = new AdminState(_adminPrivateKey.ToAddress(), _validUntil);
             _stateDelta =
                 new State(ImmutableDictionary<Address, IValue>.Empty.Add(

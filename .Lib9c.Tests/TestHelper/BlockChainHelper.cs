@@ -9,7 +9,6 @@
     using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -19,30 +18,28 @@
     using Libplanet.Store.Trie;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-#pragma warning disable SA1135
-    using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-#pragma warning restore SA1135
 
     public static class BlockChainHelper
     {
-        public static BlockChain<NCAction> MakeBlockChain(
+        public static BlockChain MakeBlockChain(
             BlockRenderer[] blockRenderers,
-            IBlockPolicy<NCAction> policy = null,
-            IStagePolicy<NCAction> stagePolicy = null,
+            IBlockPolicy policy = null,
+            IStagePolicy stagePolicy = null,
             IStore store = null,
             IStateStore stateStore = null)
         {
             PrivateKey adminPrivateKey = new PrivateKey();
 
-            policy ??= new BlockPolicy<NCAction>();
-            stagePolicy ??= new VolatileStagePolicy<NCAction>();
+            policy ??= new BlockPolicy();
+            stagePolicy ??= new VolatileStagePolicy();
             store ??= new DefaultStore(null);
             stateStore ??= new TrieStateStore(new DefaultKeyValueStore(null));
             Block genesis = MakeGenesisBlock(adminPrivateKey.ToAddress(), ImmutableHashSet<Address>.Empty);
-            return BlockChain<NCAction>.Create(
+            return BlockChain.Create(
                 policy,
                 stagePolicy,
                 store,
@@ -51,7 +48,7 @@
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: blockRenderers);

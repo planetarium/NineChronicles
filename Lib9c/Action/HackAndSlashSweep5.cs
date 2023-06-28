@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -20,7 +21,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1173
     /// </summary>
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100300ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("hack_and_slash_sweep5")]
     public class HackAndSlashSweep5 : GameAction, IHackAndSlashSweepV2
     {
@@ -68,6 +69,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);

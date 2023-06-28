@@ -4,13 +4,12 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
-    using System.Numerics;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
@@ -310,13 +309,15 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAsset2(_sender, _recipient, _currency * 100, memo);
             Dictionary plainValue = (Dictionary)action.PlainValue;
+            Dictionary values = (Dictionary)plainValue["values"];
 
-            Assert.Equal(_sender, plainValue["sender"].ToAddress());
-            Assert.Equal(_recipient, plainValue["recipient"].ToAddress());
-            Assert.Equal(_currency * 100, plainValue["amount"].ToFungibleAssetValue());
+            Assert.Equal((Text)"transfer_asset2", plainValue["type_id"]);
+            Assert.Equal(_sender, values["sender"].ToAddress());
+            Assert.Equal(_recipient, values["recipient"].ToAddress());
+            Assert.Equal(_currency * 100, values["amount"].ToFungibleAssetValue());
             if (!(memo is null))
             {
-                Assert.Equal(memo, plainValue["memo"].ToDotnetString());
+                Assert.Equal(memo, values["memo"].ToDotnetString());
             }
         }
 
@@ -336,7 +337,9 @@ namespace Lib9c.Tests.Action
                 pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text)"memo", memo.Serialize()));
             }
 
-            var plainValue = new Dictionary(pairs);
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset2")
+                .Add("values", new Dictionary(pairs));
             var action = new TransferAsset2();
             action.LoadPlainValue(plainValue);
 
@@ -350,13 +353,15 @@ namespace Lib9c.Tests.Action
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
             var action = new TransferAsset2();
-            var plainValue = new Dictionary(new[]
-            {
-                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
-                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
-            });
+            var plainValue = Dictionary.Empty
+                .Add("type_id", "transfer_asset2")
+                .Add("values", new Dictionary(new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+                }));
 
             Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
         }
@@ -392,7 +397,7 @@ namespace Lib9c.Tests.Action
                     PreviousStates = new State(),
                     Signer = _sender,
                     Rehearsal = false,
-                    BlockIndex = TransferAsset.CrystalTransferringRestrictionStartIndex,
+                    BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,
                 });
             });
         }

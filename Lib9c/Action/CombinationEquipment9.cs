@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -18,6 +19,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("combination_equipment9")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class CombinationEquipment9 : GameAction, ICombinationEquipmentV1
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
@@ -59,6 +61,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
@@ -82,6 +85,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,

@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using Lib9c.Abstractions;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("transfer_asset")]
     public class TransferAsset0 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
@@ -67,12 +68,15 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", "transfer_asset")
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(4);
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
@@ -109,7 +113,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();

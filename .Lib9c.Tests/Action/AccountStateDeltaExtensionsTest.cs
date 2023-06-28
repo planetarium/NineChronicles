@@ -3,11 +3,10 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Immutable;
     using System.Globalization;
-    using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model.Coupons;
@@ -153,6 +152,34 @@ namespace Lib9c.Tests.Action
                 Bencodex.Types.List.Empty
                     .Add(coupon3.Serialize()),
                 states.GetState(agentAddress2.Derive(SerializeKeys.CouponWalletKey)));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        public void Mead(int agentBalance)
+        {
+            var patron = new PrivateKey().ToAddress();
+            var agentContractAddress = _agentAddress.GetPledgeAddress();
+            var mead = Currencies.Mead;
+            var price = RequestPledge.DefaultRefillMead * mead;
+            IAccountStateDelta states = new State()
+                .SetState(
+                    agentContractAddress,
+                    List.Empty.Add(patron.Serialize()).Add(true.Serialize()))
+                .MintAsset(patron, price);
+
+            if (agentBalance > 0)
+            {
+                states = states.MintAsset(_agentAddress, agentBalance * mead);
+            }
+
+            states = states.Mead(_agentAddress, 4);
+            Assert.Equal(agentBalance * mead, states.GetBalance(patron, mead));
+            Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }
     }
 }

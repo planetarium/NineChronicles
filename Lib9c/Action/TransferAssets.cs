@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,10 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("transfer_assets")]
+    [ActionType(TypeIdentifier)]
     public class TransferAssets : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
+        public const string TypeIdentifier = "transfer_assets2";
         public const int RecipientsCapacity = 100;
         private const int MemoMaxLength = 80;
 
@@ -71,12 +73,15 @@ namespace Nekoyume.Action
                     pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
                 }
 
-                return new Dictionary(pairs);
+                return Dictionary.Empty
+                    .Add("type_id", TypeIdentifier)
+                    .Add("values", new Dictionary(pairs));
             }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(4);
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
@@ -89,22 +94,18 @@ namespace Nekoyume.Action
             }
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}transfer_assets exec started", addressesHex);
+            Log.Debug("{AddressesHex}{ActionName} exec started", addressesHex, TypeIdentifier);
 
-            var activatedAccountsState = state.GetState(Addresses.ActivatedAccount) is Dictionary asDict
-                ? new ActivatedAccountsState(asDict)
-                : new ActivatedAccountsState();
-
-            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, activatedAccountsState, context.BlockIndex));
+            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, context.BlockIndex));
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}transfer_assets Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}{ActionName} Total Executed Time: {Elapsed}", addressesHex, TypeIdentifier, ended - started);
 
             return state;
         }
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
 
             Sender = asDict["sender"].ToAddress();
             var rawMap = (List)asDict["recipients"];
@@ -134,7 +135,7 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
+        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, long blockIndex)
         {
             if (Sender != signer)
             {
@@ -144,25 +145,6 @@ namespace Nekoyume.Action
             if (Sender == recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, recipient);
-            }
-
-            Address recipientAddress = recipient.Derive(ActivationKey.DeriveKey);
-
-            // Check new type of activation first.
-            // If result of GetState is not null, it is assumed that it has been activated.
-            if (
-                state.GetState(recipientAddress) is null &&
-                state.GetState(recipient) is null
-            )
-            {
-                var activatedAccounts = activatedAccountsState.Accounts;
-                // if ActivatedAccountsState is empty, all user is activate.
-                if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(recipient)
-                    && state.GetState(recipient) is null)
-                {
-                    throw new InvalidTransferUnactivatedRecipientException(Sender, recipient);
-                }
             }
 
             Currency currency = amount.Currency;
@@ -176,7 +158,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            TransferAsset.CheckCrystalSender(currency, blockIndex, Sender);
+            TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
             return state.TransferAsset(Sender, recipient, amount);
         }
     }

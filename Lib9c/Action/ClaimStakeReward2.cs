@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -15,6 +16,7 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1371
     /// </summary>
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class ClaimStakeReward2 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         public const long ObsoletedIndex = 5_549_200L;
@@ -35,11 +37,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
             }
-
             var states = context.PreviousStates;
             CheckObsolete(ObsoletedIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
@@ -89,7 +91,7 @@ namespace Nekoyume.Action
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
-            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
+            var accumulatedRewards = stakeState.CalculateAccumulatedItemRewardsV1(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);

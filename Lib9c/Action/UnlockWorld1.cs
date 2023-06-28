@@ -6,6 +6,7 @@ using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.State;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -15,6 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("unlock_world")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class UnlockWorld1: GameAction, IUnlockWorldV1
     {
         public List<int> WorldIds;
@@ -25,6 +27,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
@@ -40,6 +43,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
             }
 
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
             {
                 throw new InvalidWorldException();

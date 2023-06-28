@@ -5,11 +5,9 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Linq;
     using System.Net.Http;
-    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Lib9c.Tests.TestHelper;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Action.Loader;
@@ -18,14 +16,16 @@ namespace Lib9c.Tests.Action
     using Libplanet.Blockchain.Policies;
     using Libplanet.Blocks;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
     using Libplanet.Tx;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Battle;
-    using Nekoyume.BlockChain;
-    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Blockchain;
+    using Nekoyume.Blockchain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
@@ -481,8 +481,8 @@ namespace Lib9c.Tests.Action
         public async Task Genesis_StateRootHash(bool mainnet)
         {
             BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
-            StagePolicy stagePolicy = new StagePolicy(default, 2);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
+            NCStagePolicy stagePolicy = new NCStagePolicy(default, 2);
+            IBlockPolicy policy = blockPolicySource.GetPolicy();
             Block genesis;
             if (mainnet)
             {
@@ -524,19 +524,27 @@ namespace Lib9c.Tests.Action
                     tableSheets: TableSheetsImporter.ImportSheets(),
                     pendingActivationStates: pendingActivationStates.ToArray()
                 );
-                genesis = BlockChain<PolymorphicAction<ActionBase>>.ProposeGenesisBlock(
+                var tempActionEvaluator = new ActionEvaluator(
+                    policyBlockActionGetter: _ => policy.BlockAction,
+                    blockChainStates: new BlockChainStates(
+                        new MemoryStore(),
+                        new TrieStateStore(new MemoryKeyValueStore())),
+                    actionTypeLoader: new NCActionLoader(),
+                    feeCalculator: null);
+                genesis = BlockChain.ProposeGenesisBlock(
+                    tempActionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
                         .Add(Transaction.Create(
                             0,
                             new PrivateKey(),
                             null,
-                            new PolymorphicAction<ActionBase>[] { initializeStates }))
+                            new ActionBase[] { initializeStates }))
                 );
             }
 
             var store = new DefaultStore(null);
             var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = BlockChain<PolymorphicAction<ActionBase>>.Create(
+            var blockChain = BlockChain.Create(
                 policy: policy,
                 store: store,
                 stagePolicy: stagePolicy,
@@ -545,12 +553,36 @@ namespace Lib9c.Tests.Action
                 actionEvaluator: new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                    actionTypeLoader: new NCActionLoader(),
                     feeCalculator: null
                 ),
                 renderers: blockPolicySource.GetRenderers()
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);
+        }
+
+        [Theory]
+        [InlineData(5, 4)]
+        [InlineData(101, 100)]
+        // Skip mead when InsufficientBalanceException occured.
+        [InlineData(1, 0)]
+        public void TransferMead(int patronMead, int balance)
+        {
+            var agentAddress = new PrivateKey().ToAddress();
+            var patronAddress = new PrivateKey().ToAddress();
+            var contractAddress = agentAddress.GetPledgeAddress();
+            IAccountStateDelta states = new State()
+                .MintAsset(patronAddress, patronMead * Currencies.Mead)
+                .TransferAsset(patronAddress, agentAddress, 1 * Currencies.Mead)
+                .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))
+                .BurnAsset(agentAddress, 1 * Currencies.Mead);
+            Assert.Equal(balance * Currencies.Mead, states.GetBalance(patronAddress, Currencies.Mead));
+            Assert.Equal(0 * Currencies.Mead, states.GetBalance(agentAddress, Currencies.Mead));
+
+            var nextState = RewardGold.TransferMead(states);
+            // transfer mead from patron to agent
+            Assert.Equal(0 * Currencies.Mead, nextState.GetBalance(patronAddress, Currencies.Mead));
+            Assert.Equal(balance * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));
         }
     }
 }

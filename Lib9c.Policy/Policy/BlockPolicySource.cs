@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Abstractions;
 using Lib9c.Renderers;
+using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -12,14 +14,12 @@ using Libplanet.Tx;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
 using Nekoyume.Action;
+using Nekoyume.Action.Loader;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-using Libplanet.Action;
-using Lib9c.Abstractions;
-using System.Reflection;
+using Lib9c;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -31,7 +31,7 @@ using Lib9c.DevExtensions;
 using Lib9c.DevExtensions.Model;
 #endif
 
-namespace Nekoyume.BlockChain.Policy
+namespace Nekoyume.Blockchain.Policy
 {
     public partial class BlockPolicySource
     {
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain.Policy
             LogEventLevel logEventLevel = LogEventLevel.Verbose,
             IActionLoader actionLoader = null)
         {
-            _actionLoader ??= new SingleActionLoader(typeof(PolymorphicAction<ActionBase>));
+            _actionLoader ??= new NCActionLoader();
 
             LoggedActionRenderer =
                 new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
@@ -70,7 +70,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-main deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetPolicy() =>
+        public IBlockPolicy GetPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -80,7 +80,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetInternalPolicy() =>
+        public IBlockPolicy GetInternalPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Internal,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-permanent-test deployment.
         /// </summary>
-        public IBlockPolicy<NCAction> GetPermanentPolicy() =>
+        public IBlockPolicy GetPermanentPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -101,7 +101,7 @@ namespace Nekoyume.BlockChain.Policy
         /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
         /// except with lower minimum difficulty for faster testing and benchmarking.
         /// </summary>
-        public IBlockPolicy<NCAction> GetTestPolicy() =>
+        public IBlockPolicy GetTestPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
@@ -112,7 +112,7 @@ namespace Nekoyume.BlockChain.Policy
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for networks
         /// with default options, without authorized mining and permissioned mining.
         /// </summary>
-        public IBlockPolicy<NCAction> GetDefaultPolicy() =>
+        public IBlockPolicy GetDefaultPolicy() =>
             GetPolicy(
                 maxTransactionsBytesPolicy: MaxTransactionsBytesPolicy.Default,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Default,
@@ -132,7 +132,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <see cref="Transaction{T}"/>s from a single miner that a <see cref="Block{T}"/>
         /// can have.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
-        internal IBlockPolicy<NCAction> GetPolicy(
+        internal IBlockPolicy GetPolicy(
             IVariableSubPolicy<long> maxTransactionsBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
@@ -151,10 +151,10 @@ namespace Nekoyume.BlockChain.Policy
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
 
-            Func<BlockChain<NCAction>, Transaction, TxPolicyViolationException> validateNextBlockTx =
+            Func<BlockChain, Transaction, TxPolicyViolationException> validateNextBlockTx =
                 (blockChain, transaction) => ValidateNextBlockTxRaw(
                     blockChain, _actionLoader, transaction);
-            Func<BlockChain<NCAction>, Block, BlockPolicyViolationException> validateNextBlock =
+            Func<BlockChain, Block, BlockPolicyViolationException> validateNextBlock =
                 (blockchain, block) => ValidateNextBlockRaw(
                     block,
                     maxTransactionsBytesPolicy,
@@ -179,7 +179,7 @@ namespace Nekoyume.BlockChain.Policy
             new IRenderer[] { BlockRenderer, LoggedActionRenderer };
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
-            BlockChain<NCAction> blockChain,
+            BlockChain blockChain,
             IActionLoader actionLoader,
             Transaction transaction)
         {
@@ -202,74 +202,79 @@ namespace Nekoyume.BlockChain.Policy
 
             try
             {
-                // Check Activation
-                try
+                if (blockChain.GetBalance(MeadConfig.PatronAddress, Currencies.Mead) < 1 * Currencies.Mead)
                 {
-                    if (transaction.Actions is { } rawActions &&
-                        rawActions.Count == 1 &&
-                        actionLoader.LoadAction(index, rawActions.First()) is PolymorphicAction<ActionBase> polyAction &&
-                        polyAction.InnerAction is IActivateAccount activate)
+                    // Check Activation
+                    try
                     {
-                        return transaction.Nonce == 0 &&
-                            blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
-                            new PendingActivationState(rawPending).Verify(activate.Signature)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} has an invalid activate action.",
-                                    transaction.Id);
+                        if (transaction.Actions is { } rawActions &&
+                            rawActions.Count == 1 &&
+                            actionLoader.LoadAction(index, rawActions.First()) is ActionBase action &&
+                            action is IActivateAccount activate)
+                        {
+                            return transaction.Nonce == 0 &&
+                                blockChain.GetState(activate.PendingAddress) is Dictionary rawPending &&
+                                new PendingActivationState(rawPending).Verify(activate.Signature)
+                                    ? null
+                                    : new TxPolicyViolationException(
+                                        $"Transaction {transaction.Id} has an invalid activate action.",
+                                        transaction.Id);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        return new TxPolicyViolationException(
+                            $"Transaction {transaction.Id} has an invalid action.",
+                            transaction.Id,
+                            e);
+                    }
+
+                    // Check admin
+                    if (IsAdminTransaction(blockChain, transaction))
+                    {
+                        return null;
+                    }
+
+                    switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                    {
+                        case null:
+                            // Fallback for pre-migration.
+                            if (blockChain.GetState(ActivatedAccountsState.Address)
+                                is Dictionary asDict)
+                            {
+                                IImmutableSet<Address> activatedAccounts =
+                                    new ActivatedAccountsState(asDict).Accounts;
+                                return !activatedAccounts.Any() ||
+                                    activatedAccounts.Contains(transaction.Signer)
+                                        ? null
+                                        : new TxPolicyViolationException(
+                                            $"Transaction {transaction.Id} is by a signer " +
+                                            $"without account activation: {transaction.Signer}",
+                                            transaction.Id);
+                            }
+                            return null;
+                        case Bencodex.Types.Boolean _:
+                            return null;
                     }
                 }
-                catch (Exception e)
+                if (transaction.MaxGasPrice is null || transaction.GasLimit is null)
+                {
+                    return new
+                        TxPolicyViolationException("Transaction has no gas price or limit.",
+                        transaction.Id);
+                }
+                if (transaction.MaxGasPrice * transaction.GasLimit > blockChain.GetBalance(transaction.Signer, Currencies.Mead))
                 {
                     return new TxPolicyViolationException(
-                        $"Transaction {transaction.Id} has an invalid action.",
-                        transaction.Id,
-                        e);
+                        $"Transaction {transaction.Id} signer insufficient transaction fee",
+                        transaction.Id);
                 }
-
-                // Check admin
-                if (IsAdminTransaction(blockChain, transaction))
-                {
-                    return null;
-                }
-
-                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
-                {
-                    case null:
-                        // Fallback for pre-migration.
-                        if (blockChain.GetState(ActivatedAccountsState.Address)
-                            is Dictionary asDict)
-                        {
-                            IImmutableSet<Address> activatedAccounts =
-                                new ActivatedAccountsState(asDict).Accounts;
-                            return !activatedAccounts.Any() ||
-                                activatedAccounts.Contains(transaction.Signer)
-                                ? null
-                                : new TxPolicyViolationException(
-                                    $"Transaction {transaction.Id} is by a signer " +
-                                    $"without account activation: {transaction.Signer}",
-                                    transaction.Id);
-                        }
-                        return null;
-                    case Bencodex.Types.Boolean _:
-                        return null;
-                }
-
-                return null;
             }
             catch (InvalidSignatureException)
             {
                 return new TxPolicyViolationException(
                     $"Transaction {transaction.Id} has invalid signautre.",
                     transaction.Id);
-            }
-            catch (IncompleteBlockStatesException)
-            {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
-                // state right away...
-                // FIXME: It should be removed after fix that Libplanet fills its state on IBD.
-                // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
-                return null;
             }
 
             return null;

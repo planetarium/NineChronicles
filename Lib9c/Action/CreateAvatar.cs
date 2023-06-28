@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -66,9 +67,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IActionContext ctx = context;
+            var signer = ctx.Signer;
             var states = ctx.PreviousStates;
-            var avatarAddress = ctx.Signer.Derive(
+            var avatarAddress = signer.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     DeriveFormat,
@@ -80,7 +83,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                states = states.SetState(ctx.Signer, MarkChanged);
+                states = states.SetState(signer, MarkChanged);
                 for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
                 {
                     var slotAddress = avatarAddress.Derive(
@@ -98,7 +101,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -113,8 +116,8 @@ namespace Nekoyume.Action
             sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CreateAvatar exec started", addressesHex);
-            AgentState existingAgentState = states.GetAgentState(ctx.Signer);
-            var agentState = existingAgentState ?? new AgentState(ctx.Signer);
+            AgentState existingAgentState = states.GetAgentState(signer);
+            var agentState = existingAgentState ?? new AgentState(signer);
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
@@ -209,7 +212,7 @@ namespace Nekoyume.Action
                     equipmentRow,
                     context.Random.GenerateRandomGuid(),
                     0L,
-                    madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                    madeWithMimisbrunnrRecipe: subRecipeRow.IsMimisbrunnrSubRecipe ?? false);
 
                 foreach (var option in subRecipeRow.Options)
                 {
@@ -259,12 +262,12 @@ namespace Nekoyume.Action
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
-                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(signer, agentState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(ctx.Signer, 50 * CrystalCalculator.CRYSTAL);
+                .MintAsset(signer, 50 * CrystalCalculator.CRYSTAL);
         }
     }
 }

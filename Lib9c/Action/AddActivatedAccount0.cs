@@ -4,12 +4,13 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("add_activated_account")]
     public class AddActivatedAccount0 : ActionBase, IAddActivatedAccountV1
     {
@@ -26,16 +27,18 @@ namespace Nekoyume.Action
 
         Address IAddActivatedAccountV1.Address => Address;
 
-        public override IValue PlainValue =>
-            new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "add_activated_account")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"address", Address.Serialize()),
                 }
-            );
+            ));
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
 
             if (context.Rehearsal)
@@ -61,7 +64,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             Address = asDict["address"].ToAddress();
         }
     }

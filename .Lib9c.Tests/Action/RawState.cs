@@ -6,9 +6,9 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Consensus;
+    using Libplanet.State;
 
     /// <summary>
     /// An implementation of <see cref="IAccountStateDelta"/> for test. It handles states as raw like Libplanet does.
@@ -30,6 +30,11 @@ namespace Lib9c.Tests.Action
 
         public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets =>
             throw new NotSupportedException($"Currently, {nameof(UpdatedFungibleAssets)} is not supported in this implementation.");
+
+        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+        {
+            get;
+        }
 
         public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
             throw new NotSupportedException($"Currently, {nameof(TotalSupplyUpdatedCurrencies)} is not supported in this implementation.");

@@ -8,8 +8,8 @@ using Lib9c.Abstractions;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
-
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("update_sell4")]
-    [ActionObsolete(ActionObsoleteConfig.V100351ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     public class UpdateSell4 : GameAction, IUpdateSellV2
     {
         private const int UpdateCapacity = 100;
@@ -54,6 +54,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             var states = context.PreviousStates;
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);

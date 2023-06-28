@@ -2,14 +2,12 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Lib9c.Formatters;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.State;
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;
@@ -89,12 +87,16 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ReRegisterProduct))]
         [InlineData(typeof(CancelProductRegistration))]
         [InlineData(typeof(BuyProduct))]
+        [InlineData(typeof(RequestPledge))]
+        [InlineData(typeof(ApprovePledge))]
+        [InlineData(typeof(EndPledge))]
+        [InlineData(typeof(CreatePledge))]
+        [InlineData(typeof(TransferAssets))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
-            var ncAction = action is null ? null : new PolymorphicAction<ActionBase>(action);
             var ncEval = new NCActionEvaluation(
-                ncAction,
+                action,
                 _signer,
                 1234,
                 _states,
@@ -118,12 +120,12 @@ namespace Lib9c.Tests.Action
             else
             {
                 Assert.NotNull(deserialized.Action);
-                Assert.IsType(actionType, deserialized.Action.InnerAction);
+                Assert.IsType(actionType, deserialized.Action);
             }
 
             if (action is GameAction gameAction)
             {
-                Assert.Equal(gameAction.Id, ((GameAction)deserialized.Action.InnerAction).Id);
+                Assert.Equal(gameAction.Id, ((GameAction)deserialized.Action).Id);
             }
         }
 
@@ -436,6 +438,28 @@ namespace Lib9c.Tests.Action
                         },
                     },
                 },
+                RequestPledge _ => new RequestPledge
+                {
+                    AgentAddress = new PrivateKey().ToAddress(),
+                },
+                ApprovePledge _ => new ApprovePledge
+                {
+                    PatronAddress = new PrivateKey().ToAddress(),
+                },
+                EndPledge _ => new EndPledge
+                {
+                    AgentAddress = new PrivateKey().ToAddress(),
+                },
+                CreatePledge _ => new CreatePledge
+                {
+                    PatronAddress = new PrivateKey().ToAddress(),
+                    AgentAddresses = new[] { (new PrivateKey().ToAddress(), new PrivateKey().ToAddress()) },
+                    Mead = 4,
+                },
+                TransferAssets _ => new TransferAssets(_sender, new List<(Address, FungibleAssetValue)>
+                {
+                    (_signer, 1 * _currency),
+                }),
                 _ => throw new InvalidCastException(),
             };
         }

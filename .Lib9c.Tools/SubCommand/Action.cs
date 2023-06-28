@@ -46,10 +46,12 @@ namespace Lib9c.Tools.SubCommand
             var typeIds = assembly.GetTypes()
                 .Where(IsTarget)
                 .Select(type => ActionTypeAttribute.ValueOf(type))
+                .Where(type => type is Text)
+                .Cast<Text>()
                 .OrderBy(type => type);
 
-            foreach (IValue typeId in typeIds) {
-                Console.WriteLine(typeId);
+            foreach (Text typeId in typeIds) {
+                Console.WriteLine(typeId.Value);
             }
         }
 

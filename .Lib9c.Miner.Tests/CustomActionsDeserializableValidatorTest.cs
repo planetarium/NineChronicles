@@ -3,10 +3,12 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
+using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.State;
 using Libplanet.Tx;
-using Nekoyume.BlockChain;
+using Nekoyume.Blockchain;
 
 namespace Lib9c.Proposer.Tests;
 
@@ -48,6 +50,7 @@ public class CustomActionsDeserializableValidatorTest
 
         public IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             return context.PreviousStates;
         }
     }
@@ -62,6 +65,11 @@ public class CustomActionsDeserializableValidatorTest
         public BlockHash? GenesisHash { get; init; }
         public TxActionList Actions =>
             new(SystemAction is { } sa ? new List(sa) : new List(CustomActions!));
+
+        public FungibleAssetValue? MaxGasPrice => null;
+
+        public long? GasLimit => null;
+
         public TxId Id { get; init; }
         public byte[] Signature { get; init; }
         public IValue? SystemAction { get; init; }

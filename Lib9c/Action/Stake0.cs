@@ -1,12 +1,10 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Lib9c.Abstractions;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Extensions;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -14,8 +12,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake")]
+    [ActionObsolete(ObsoleteIndex)]
     public class Stake0 : ActionBase, IStakeV1
     {
+        public const long ObsoleteIndex = ActionObsoleteConfig.V200030ObsoleteIndex;
+
         internal BigInteger Amount { get; set; }
 
         BigInteger IStakeV1.Amount => Amount;
@@ -31,17 +32,20 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IValue PlainValue =>
-            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "stake")
+            .Add("values", Dictionary.Empty.Add(AmountKey, Amount));
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dictionary = (Dictionary) plainValue;
+            var dictionary = (Dictionary)((Dictionary)plainValue)["values"];
             Amount = dictionary[AmountKey].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             IAccountStateDelta states = context.PreviousStates;
 
             // Restrict staking if there is a monster collection until now.
@@ -61,6 +65,8 @@ namespace Nekoyume.Action
                         context.Signer,
                         StakeState.DeriveAddress(context.Signer));
             }
+
+            CheckObsolete(ObsoleteIndex, context);
 
             if (Amount < 0)
             {

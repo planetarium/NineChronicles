@@ -9,7 +9,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
     using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;

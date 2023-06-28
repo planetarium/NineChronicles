@@ -2,8 +2,8 @@
 {
     using Lib9c.DevExtensions.Action;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.State;
     using Nekoyume.Model.State;
 
     public class MakeInitialStateResult

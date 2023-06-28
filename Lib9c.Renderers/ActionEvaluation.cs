@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Libplanet.Tx;
 using Nekoyume.Action;
 

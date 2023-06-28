@@ -4,13 +4,14 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Model.State;
 using Serilog;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(ActionObsoleteConfig.V100080ObsoleteIndex)]
+    [ActionObsolete(ActionObsoleteConfig.V200020AccidentObsoleteIndex)]
     [ActionType("activate_account")]
     public class ActivateAccount0 : ActionBase, IActivateAccount
     {
@@ -21,14 +22,15 @@ namespace Nekoyume.Action
         Address IActivateAccount.PendingAddress => PendingAddress;
         byte[] IActivateAccount.Signature => Signature;
 
-        public override IValue PlainValue =>
-            new Dictionary(
+        public override IValue PlainValue => Dictionary.Empty
+            .Add("type_id", "activate_account")
+            .Add("values", new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"pending_address", PendingAddress.Serialize()),
                     new KeyValuePair<IKey, IValue>((Text)"signature", (Binary) Signature),
                 }
-            );
+            ));
 
         public ActivateAccount0()
         {
@@ -42,6 +44,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             IAccountStateDelta state = context.PreviousStates;
 
             if (context.Rehearsal)
@@ -86,7 +89,7 @@ namespace Nekoyume.Action
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var asDict = (Dictionary) plainValue;
+            var asDict = (Dictionary)((Dictionary)plainValue)["values"];
             PendingAddress = asDict["pending_address"].ToAddress();
             Signature = (Binary) asDict["signature"];
         }

@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action.Coupons
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Action.Coupons;
     using Nekoyume.Model.Coupons;
@@ -236,7 +237,7 @@ namespace Lib9c.Tests.Action.Coupons
 
             Assert.Equal(
                 expected,
-                ((Bencodex.Types.Dictionary)action.PlainValue).Remove((Text)"id"));
+                ((Dictionary)((Dictionary)action.PlainValue)["values"]).Remove((Text)"id"));
         }
 
         [Fact]
@@ -254,8 +255,9 @@ namespace Lib9c.Tests.Action.Coupons
             var actual =
                 new TransferCoupons(ImmutableDictionary<Address, IImmutableSet<Guid>>.Empty);
 
-            actual.LoadPlainValue(
-                new Bencodex.Types.Dictionary(
+            actual.LoadPlainValue(Dictionary.Empty
+                .Add("type_id", "transfer_coupons")
+                .Add("values", new Bencodex.Types.Dictionary(
                     ImmutableDictionary<string, IValue>.Empty
                         .Add(
                             "couponsPerRecipient",
@@ -272,7 +274,7 @@ namespace Lib9c.Tests.Action.Coupons
                                 .Add(
                                     (Bencodex.Types.Binary)CouponsFixture.AgentAddress3.ByteArray,
                                     Bencodex.Types.List.Empty)))
-                    .SetItem("id", new Guid("AE3FA099-B97C-480F-9E3A-4E1FEF1EA783").Serialize()));
+                    .SetItem("id", new Guid("AE3FA099-B97C-480F-9E3A-4E1FEF1EA783").Serialize())));
             Assert.Equal(expected.CouponsPerRecipient, actual.CouponsPerRecipient);
         }
     }

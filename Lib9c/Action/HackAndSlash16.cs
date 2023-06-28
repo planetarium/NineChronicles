@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.State;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -26,6 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
+    [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class HackAndSlash16 : GameAction, IHackAndSlashV8
     {
         public List<Guid> Costumes;
@@ -87,10 +89,13 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            context.UseGas(1);
             if (context.Rehearsal)
             {
                 return context.PreviousStates;
             }
+
+            CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             return Execute(
                 context.PreviousStates,

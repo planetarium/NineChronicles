@@ -8,9 +8,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Bencodex;
 using Cocona;
+using Lib9c.DevExtensions.Action.Loader;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -18,13 +18,11 @@ using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Nekoyume.Action;
-using Nekoyume.BlockChain.Policy;
+using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Core;
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.DevExtensions
 {
@@ -41,7 +39,7 @@ namespace Lib9c.DevExtensions
         }
 
         public static (
-            BlockChain<NCAction> Chain,
+            BlockChain Chain,
             IStore Store,
             IKeyValueStore StateKVStore,
             IStateStore StateStore
@@ -53,8 +51,8 @@ namespace Lib9c.DevExtensions
         )
         {
             var policySource = new BlockPolicySource(logger);
-            IBlockPolicy<NCAction> policy = policySource.GetPolicy();
-            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
+            IBlockPolicy policy = policySource.GetPolicy();
+            IStagePolicy stagePolicy = new VolatileStagePolicy();
             IStore store = new RocksDBStore(storePath);
             if (stateKeyValueStore is null)
             {
@@ -86,18 +84,17 @@ namespace Lib9c.DevExtensions
                 genesisBlockHash
             );
             var blockChainStates = new BlockChainStates(store, stateStore);
+            var actionLoader = new NCDevActionLoader();
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,
-                new SingleActionLoader(typeof(PolymorphicAction<ActionBase>)),
+                actionLoader,
                 null);
-            PolymorphicAction<ActionBase>.ReloadLoader(
-                new[] { typeof(ActionBase).Assembly, typeof(Utils).Assembly });
 
-            BlockChain<NCAction> chain;
+            BlockChain chain;
             if (store.GetCanonicalChainId() is null)
             {
-                chain = BlockChain<NCAction>.Create(
+                chain = BlockChain.Create(
                     policy: policy,
                     stagePolicy: stagePolicy,
                     store: store,
@@ -108,7 +105,7 @@ namespace Lib9c.DevExtensions
             }
             else
             {
-                chain = new BlockChain<NCAction>(
+                chain = new BlockChain(
                     policy: policy,
                     stagePolicy: stagePolicy,
                     store: store,
@@ -152,9 +149,7 @@ namespace Lib9c.DevExtensions
         }
 
         public static Block ParseBlockOffset(
-            BlockChain<NCAction> chain,
-            string blockHashOrIndex,
-            long defaultIndex = -1)
+            BlockChain chain, string blockHashOrIndex, long defaultIndex = -1)
         {
             if (!(blockHashOrIndex is string blockStr))
             {

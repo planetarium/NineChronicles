@@ -54,6 +54,7 @@ namespace Nekoyume.Model.State
         public const long RewardInterval = 50400;
         public const long LockupInterval = 50400 * 4;
         public const long StakeRewardSheetV2Index = 6_700_000L;
+        public const long CurrencyAsRewardStartIndex = 6_910_000L;
 
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
@@ -115,7 +116,7 @@ namespace Nekoyume.Model.State
         {
             if (blockIndex >= ActionObsoleteConfig.V100290ObsoleteIndex)
             {
-                return CalculateAccumulatedRewards(blockIndex, out v1Step, out v2Step) > 0;
+                return CalculateAccumulatedItemRewardsV1(blockIndex, out v1Step, out v2Step) > 0;
             }
 
             v1Step = 0;
@@ -125,6 +126,11 @@ namespace Nekoyume.Model.State
                 return StartedBlockIndex + RewardInterval <= blockIndex;
             }
 
+            // FIXME:
+            // The ReceivedBlockIndex is not a baseline block index for the stake reward.
+            // It is the block index when the stake reward was received.
+            // So, we need to calculate the block index for the stake reward and use it
+            // instead of the ReceivedBlockIndex.
             return ReceivedBlockIndex + RewardInterval <= blockIndex;
         }
 
@@ -133,12 +139,29 @@ namespace Nekoyume.Model.State
             ReceivedBlockIndex = blockIndex;
         }
 
-        public int CalculateAccumulatedRewards(long blockIndex)
+        public int CalculateAccumulatedItemRewards(long blockIndex)
         {
-            return CalculateAccumulatedRewards(blockIndex, out _, out _);
+            return CalculateAccumulatedItemRewards(blockIndex, out _, out _);
         }
 
-        public int CalculateAccumulatedRewards(long blockIndex, out int v1Step, out int v2Step)
+        [Obsolete("Use CalculateAccumulatedItemRewards() instead.")]
+        public int CalculateAccumulatedItemRewardsV1(long blockIndex)
+        {
+            return CalculateAccumulatedItemRewardsV1(blockIndex, out _, out _);
+        }
+
+        public int CalculateAccumulatedItemRewards(long blockIndex, out int v1Step, out int v2Step)
+        {
+            v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index);
+            v1Step = GetRewardStep(blockIndex, null) - v2Step;
+            return v1Step + v2Step;
+        }
+
+        [Obsolete("Use CalculateAccumulatedItemRewards() instead.")]
+        public int CalculateAccumulatedItemRewardsV1(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
         {
             return CalculateStep(blockIndex, StartedBlockIndex, out v1Step, out v2Step);
         }
@@ -148,13 +171,73 @@ namespace Nekoyume.Model.State
             return CalculateAccumulatedRuneRewards(blockIndex, out _, out _);
         }
 
-        public int CalculateAccumulatedRuneRewards(long blockIndex, out int v1Step, out int v2Step)
+        [Obsolete("Use CalculateAccumulatedRuneRewards() instead.")]
+        public int CalculateAccumulatedRuneRewardsV1(long blockIndex)
         {
-            long startedBlockIndex = Math.Max(StartedBlockIndex, ClaimStakeReward2.ObsoletedIndex);
+            return CalculateAccumulatedRuneRewardsV1(blockIndex, out _, out _);
+        }
+
+        public int CalculateAccumulatedRuneRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
+        {
+            v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index);
+            v1Step = GetRewardStep(blockIndex, ClaimStakeReward2.ObsoletedIndex) - v2Step;
+            return v1Step + v2Step;
+        }
+
+        [Obsolete("Use CalculateAccumulatedRuneRewards() instead.")]
+        public int CalculateAccumulatedRuneRewardsV1(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
+        {
+            var startedBlockIndex = Math.Max(StartedBlockIndex, ClaimStakeReward2.ObsoletedIndex);
             return CalculateStep(blockIndex, startedBlockIndex, out v1Step, out v2Step);
         }
 
-        private int CalculateStep(long blockIndex, long startedBlockIndex, out int v1Step,
+        public int CalculateAccumulatedCurrencyRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
+        {
+            v1Step = 0;
+            v2Step = GetRewardStep(blockIndex, CurrencyAsRewardStartIndex);
+            return v2Step;
+        }
+
+        /// <summary>
+        /// Calculate accumulated rewards step.
+        /// </summary>
+        /// <param name="currentBlockIndex">The block index of the current block.</param>
+        /// <param name="rewardStartBlockIndex">
+        /// The block index of the reward start block.
+        /// If not null, the return value is calculated differently.
+        /// <seealso cref="StakeStateTest.GetRewardStep()"/>
+        /// </param>
+        /// <returns>The accumulated rewards step.</returns>
+        internal int GetRewardStep(long currentBlockIndex, long? rewardStartBlockIndex)
+        {
+            var validBlockIndex = Math.Max(StartedBlockIndex, ReceivedBlockIndex);
+            if (rewardStartBlockIndex.HasValue)
+            {
+                validBlockIndex = Math.Max(validBlockIndex, rewardStartBlockIndex.Value);
+            }
+
+            if (currentBlockIndex < validBlockIndex + RewardInterval)
+            {
+                return 0;
+            }
+
+            return (int)((currentBlockIndex - validBlockIndex) / RewardInterval);
+        }
+
+        [Obsolete("Use GetRewardStep() instead.")]
+        private int CalculateStep(
+            long blockIndex,
+            long startedBlockIndex,
+            out int v1Step,
             out int v2Step)
         {
             int totalStep = (int)Math.DivRem(
@@ -166,6 +249,10 @@ namespace Nekoyume.Model.State
             int previousStep = 0;
             if (ReceivedBlockIndex > 0)
             {
+                // NOTE: The previousStep can be negative
+                // if startedBlockIndex is greater than ReceivedBlockIndex property.
+                // The startedBlockIndex is argument of this method and
+                // it is not same as StartedBlockIndex property.
                 previousStep = (int)Math.DivRem(
                     ReceivedBlockIndex - startedBlockIndex,
                     RewardInterval,
