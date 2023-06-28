@@ -88,7 +88,6 @@ namespace Nekoyume.Action
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (Recipients.Count > RecipientsCapacity)
             {

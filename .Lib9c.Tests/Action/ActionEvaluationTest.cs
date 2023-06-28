@@ -455,6 +455,7 @@ namespace Lib9c.Tests.Action
                 {
                     PatronAddress = new PrivateKey().ToAddress(),
                     AgentAddresses = new[] { (new PrivateKey().ToAddress(), new PrivateKey().ToAddress()) },
+                    Mead = 4,
                 },
                 TransferAssets _ => new TransferAssets(_sender, new List<(Address, FungibleAssetValue)>
                 {

@@ -86,6 +86,8 @@ namespace Lib9c.Tests.Action.Scenario
             var assembly = baseType.Assembly;
             var typeIds = assembly.GetTypes()
                 .Where(IsTarget);
+            long expectedTransferActionGasLimit = 4L;
+            long expectedActionGasLimit = 1L;
             foreach (var typeId in typeIds)
             {
                 var action = (IAction)Activator.CreateInstance(typeId)!;
@@ -102,7 +104,11 @@ namespace Lib9c.Tests.Action.Scenario
                     // ignored
                 }
 
-                Assert.True(actionContext.GasUsed() > 0, $"{action} not use gas");
+                long expectedGasLimit = action is ITransferAsset || action is ITransferAssets
+                    ? expectedTransferActionGasLimit
+                    : expectedActionGasLimit;
+                long gasUsed = actionContext.GasUsed();
+                Assert.True(expectedGasLimit == gasUsed, $"{action} invalid used gas. {gasUsed}");
             }
         }
 

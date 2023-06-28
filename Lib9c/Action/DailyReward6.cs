@@ -45,7 +45,6 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;

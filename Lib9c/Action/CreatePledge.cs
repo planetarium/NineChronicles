@@ -22,7 +22,7 @@ namespace Nekoyume.Action
                 .Add("type_id", TypeIdentifier)
                 .Add("values", List.Empty
                     .Add(PatronAddress.Serialize())
-                    .Add(Mead.Serialize())
+                    .Add(Mead)
                     .Add(new List(AgentAddresses.Select(tuple =>
                         List.Empty
                             .Add(tuple.Item1.Serialize())
@@ -32,7 +32,7 @@ namespace Nekoyume.Action
         {
             var list = (List)((Dictionary)plainValue)["values"];
             PatronAddress = list[0].ToAddress();
-            Mead = list[1].ToInteger();
+            Mead = (Integer)list[1];
             var serialized = (List) list[2];
             var agentAddresses = new List<(Address, Address)>();
             foreach (var value in serialized)

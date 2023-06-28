@@ -95,7 +95,6 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
