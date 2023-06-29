@@ -72,11 +72,12 @@ namespace Nekoyume.State
 
         public static async UniTask SelectAvatarAsync(
             int avatarIndexToSelect,
-            bool forceNewSelection = false) =>
+            bool forceNewSelection = false)
+        {
+            await States.Instance.SelectAvatarAsync(
+                avatarIndexToSelect,
+                forceNewSelection: forceNewSelection);
             await UniTask.WhenAll(
-                States.Instance.SelectAvatarAsync(
-                    avatarIndexToSelect,
-                    forceNewSelection: forceNewSelection),
                 ArenaInfoTuple.UpdateAsync(),
                 EventDungeonInfo.UpdateAsync(),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
@@ -85,6 +86,7 @@ namespace Nekoyume.State
                 States.Instance.InitRuneStates(),
                 States.Instance.InitRuneSlotStates(),
                 States.Instance.InitItemSlotStates());
+        }
 
         private static void OnBlockIndex(long blockIndex)
         {
