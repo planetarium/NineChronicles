@@ -171,6 +171,9 @@ namespace Nekoyume.Blockchain
 
             PetEnhancement();
 
+            // GARAGE
+            UnloadFromMyGarages();
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
             ManipulateState();
@@ -502,6 +505,79 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void UnloadFromMyGarages()
+        {
+            _actionRenderer.EveryRender<UnloadFromMyGarages>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    if (eval.Exception is not null)
+                    {
+                        return;
+                    }
+
+                    var gameStates = Game.Game.instance.States;
+                    var agentAddr = gameStates.AgentState.address;
+                    var avatarAddr = gameStates.CurrentAvatarState.address;
+                    var states = eval.OutputStates;
+                    var action = eval.Action;
+                    if (action.FungibleAssetValues is not null)
+                    {
+                        foreach (var (balanceAddr, value) in action.FungibleAssetValues)
+                        {
+                            var balance = states.GetBalance(
+                                balanceAddr,
+                                value.Currency);
+                            if (balanceAddr.Equals(agentAddr))
+                            {
+                                if (value.Currency.Ticker == "NCG")
+                                {
+                                    AgentStateSubject.OnNextGold(value);
+                                }
+                                else if (value.Currency.Equals(Currencies.Crystal))
+                                {
+                                    AgentStateSubject.OnNextCrystal(value);
+                                }
+                                else if (value.Currency.Equals(Currencies.Garage))
+                                {
+                                    AgentStateSubject.OnNextGarage(value);
+                                }
+                            }
+                            else if (balanceAddr.Equals(avatarAddr))
+                            {
+                                gameStates.SetCurrentAvatarBalance(balance);
+                            }
+                        }
+                    }
+
+                    if (action.FungibleIdAndCounts is not null)
+                    {
+                        var inventoryAddr = avatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
+                        var inventory = states.GetInventory(inventoryAddr);
+                        ReactiveAvatarState.UpdateInventory(inventory);
+                    }
+
+                    var avatarValue = states.GetState(avatarAddr);
+                    if (avatarValue is not Dictionary avatarDict)
+                    {
+                        Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                        return;
+                    }
+
+                    if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                        avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                    {
+                        Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                        return;
+                    }
+
+                    var mailBox = new MailBox(mailBoxList);
+                    ReactiveAvatarState.UpdateMailBox(mailBox);
+                })
                 .AddTo(_disposables);
         }
 
