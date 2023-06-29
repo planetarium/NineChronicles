@@ -427,7 +427,7 @@ namespace Nekoyume.State
         /// <summary>
         /// For caching
         /// </summary>
-        public void SetBalance(FungibleAssetValue fav)
+        public void SetCurrentAvatarBalance(FungibleAssetValue fav)
         {
             var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
             var major = preFav.MajorUnit - fav.MajorUnit;
