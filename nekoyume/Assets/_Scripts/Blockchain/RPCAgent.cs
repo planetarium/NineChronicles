@@ -230,7 +230,7 @@ namespace Nekoyume.Blockchain
             }
 
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
-            byte[] raw = await _service.GetBalance(
+            var raw = await _service.GetBalance(
                 addr.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency)),
                 BlockTipHash.ToByteArray()
