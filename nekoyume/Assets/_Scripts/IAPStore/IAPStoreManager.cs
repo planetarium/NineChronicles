@@ -1,19 +1,37 @@
+using System;
+using System.Collections.Generic;
+using Unity.Services.Core;
+using Unity.Services.Core.Environments;
+using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
 namespace Nekoyume.IAPStore
 {
-    public class IAPStoreManager : IDetailedStoreListener
+    public class IAPStoreManager : MonoBehaviour, IDetailedStoreListener
     {
         private IStoreController _controller;
         private IExtensionProvider _extensions;
 
-        public IAPStoreManager()
+        public bool IsInitialized { get; private set; }
+
+        private async void Awake()
         {
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            builder.AddProduct("g_single_ap01", ProductType.Consumable);
-            builder.AddProduct("g_single_hourglass01", ProductType.Consumable);
-            UnityPurchasing.Initialize(this, builder);
+            try
+            {
+                var initializationOptions = new InitializationOptions()
+                    .SetEnvironmentName("dev");
+                await UnityServices.InitializeAsync(initializationOptions);
+                var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance(AppStore.GooglePlay));
+                builder.AddProduct("g_single_ap01", ProductType.Consumable);
+                builder.AddProduct("g_single_hourglass01", ProductType.Consumable);
+                UnityPurchasing.Initialize(this, builder);
+            }
+            catch (Exception exception)
+            {
+                // An error occurred during services initialization.
+                Debug.LogException(exception);
+            }
         }
 
         /// <summary>
@@ -23,6 +41,32 @@ namespace Nekoyume.IAPStore
         {
             _controller = controller;
             _extensions = extensions;
+            var additional = new HashSet<ProductDefinition>
+            {
+                new("g_pkg_daily01", ProductType.Consumable),
+                new("g_pkg_weekly01", ProductType.Consumable)
+            };
+
+            void OnSuccess()
+            {
+                Debug.Log("Fetched successfully!");
+                // The additional products are added to the set of
+                // previously retrieved products and are browseable
+                // and purchasable.
+                foreach (var product in _controller.products.all)
+                {
+                    Debug.Log(product.definition.id);
+                }
+
+                IsInitialized = true;
+            }
+
+            void OnFailure(InitializationFailureReason error, string message)
+            {
+                Debug.LogWarning($"Fetching failed for the specified reason: {error}\n{message}");
+            }
+
+            _controller.FetchAdditionalProducts(additional, OnSuccess, OnFailure);
         }
 
         /// <summary>
@@ -33,10 +77,12 @@ namespace Nekoyume.IAPStore
         /// </summary>
         public void OnInitializeFailed(InitializationFailureReason error)
         {
+            OnInitializeFailed(error, string.Empty);
         }
 
         public void OnInitializeFailed(InitializationFailureReason error, string message)
         {
+            Debug.LogError($"Initializing failed for the specified reason: {error}\n{message}");
         }
 
         public void OnPurchaseClicked(string productId) {
@@ -60,6 +106,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
         {
+            Debug.LogError($"PurchaseFail. reason: {p}, Product: {i}");
         }
 
         /// <summary>
@@ -67,6 +114,7 @@ namespace Nekoyume.IAPStore
         /// </summary>
         public void OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
+            Debug.LogError($"PurchaseFail. reason: {p}, Product: {i}");
         }
     }
 }

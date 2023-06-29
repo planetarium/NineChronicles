@@ -34,8 +34,6 @@ using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 using RocksDbSharp;
-using Unity.Services.Core;
-using Unity.Services.Core.Environments; // Don't remove this line. It's for another platform.
 using UnityEngine.Android;  // Don't remove this line. It's for another platform.
 
 namespace Nekoyume.Game
@@ -315,6 +313,9 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
+            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
+            Debug.Log("[Game] Start() IAPStoreManager initialized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -335,20 +336,6 @@ namespace Nekoyume.Game
             // Initialize D:CC NFT data
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
-            yield return UniTask.Run(async () =>
-            {
-                try
-                {
-                    var initializationOptions = new InitializationOptions()
-                        .SetEnvironmentName("dev");
-                    await UnityServices.InitializeAsync(initializationOptions);
-                }
-                catch (Exception exception)
-                {
-                    Debug.LogException(exception);
-                }
-            }).ToCoroutine();
-            IAPStoreManager = new IAPStoreManager();
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
