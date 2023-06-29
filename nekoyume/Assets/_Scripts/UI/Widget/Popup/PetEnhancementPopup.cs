@@ -233,7 +233,7 @@ namespace Nekoyume.UI
             var enoughNcg
                 = States.Instance.GoldBalanceState.Gold >= ncgCost;
             var enoughSoulStone
-                = States.Instance.AvatarBalance[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+                = States.Instance.CurrentAvatarBalances[soulStoneCost.Currency.Ticker] >= soulStoneCost;
             var enough = enoughNcg && enoughSoulStone;
             _enoughBalance = enough;
             soulStoneNotEnoughObject.SetActive(!enoughSoulStone);
@@ -252,7 +252,7 @@ namespace Nekoyume.UI
         {
             var popup = Find<MaterialNavigationPopup>();
             var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
-            var count = States.Instance.AvatarBalance[row.SoulStoneTicker].GetQuantityString();
+            var count = States.Instance.CurrentAvatarBalances[row.SoulStoneTicker].GetQuantityString();
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
             var buttonText = L10nManager.Localize("UI_SHOP");
 

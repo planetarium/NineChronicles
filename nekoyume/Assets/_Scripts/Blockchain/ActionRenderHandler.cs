@@ -1894,7 +1894,7 @@ namespace Nekoyume.Blockchain
             {
                 var amount = eval.Action.Amount;
                 var currency = amount.Currency;
-                States.Instance.AvatarBalance[currency.Ticker] = eval.OutputStates.GetBalance(
+                States.Instance.CurrentAvatarBalances[currency.Ticker] = eval.OutputStates.GetBalance(
                     currentAvatarAddress,
                     eval.Action.Amount.Currency
                 );
@@ -2694,7 +2694,7 @@ namespace Nekoyume.Blockchain
 
             UpdateAgentStateAsync(eval).Forget();
             var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
-            States.Instance.AvatarBalance[soulStoneTicker] = eval.OutputStates.GetBalance(
+            States.Instance.CurrentAvatarBalances[soulStoneTicker] = eval.OutputStates.GetBalance(
                 action.AvatarAddress,
                 Currency.Legacy(soulStoneTicker, 0, null)
             );
