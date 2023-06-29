@@ -1,5 +1,7 @@
 namespace Lib9c.Tests.Action.Snapshot
 {
+    using System.Collections.Immutable;
+    using System.Numerics;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -8,6 +10,7 @@ namespace Lib9c.Tests.Action.Snapshot
     using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Helper;
+    using VerifyTests;
     using VerifyXunit;
     using Xunit;
     using static ActionUtils;
@@ -15,6 +18,11 @@ namespace Lib9c.Tests.Action.Snapshot
     [UsesVerify]
     public class TransferAsset0SnapshotTest
     {
+        public TransferAsset0SnapshotTest()
+        {
+            VerifierSettings.SortPropertiesAlphabetically();
+        }
+
         [Fact]
         public Task PlainValue()
         {
@@ -23,7 +31,8 @@ namespace Lib9c.Tests.Action.Snapshot
                 default(Address),
                 Currency.Legacy("NNN", 2, null) * 100);
 
-            return Verifier.Verify(action.PlainValue)
+            return Verifier
+                .Verify(action.PlainValue)
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
         }
 
@@ -38,17 +47,9 @@ namespace Lib9c.Tests.Action.Snapshot
                     "f8960846e9ae4ad1c23686f74c8e5f80f22336b6f2175be21db82afa8823c92d"));
             var senderAddress = senderPrivateKey.ToAddress();
             var recipientAddress = recipientPrivateKey.ToAddress();
-
-            Assert.Equal("C61C376693E6B26717C9ee9aCA5A2453028f6ffA", senderAddress.ToHex());
-            Assert.Equal("99A06c2Bd71f0EAa8196fE45BE5ca424eE809733", recipientAddress.ToHex());
-
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
             IAccountStateDelta state = new State().MintAsset(context, senderAddress, crystal * 100);
-
-            Assert.Equal((crystal * 100).RawValue, state.GetBalance(senderAddress, crystal).RawValue);
-            Assert.Equal(0, state.GetBalance(recipientAddress, crystal).RawValue);
-
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -60,11 +61,18 @@ namespace Lib9c.Tests.Action.Snapshot
                 crystal * 100);
             var outputState = action.Execute(actionContext);
 
-            Assert.Equal((crystal * 100).RawValue, outputState.GetBalance(recipientAddress, crystal).RawValue);
-            Assert.Equal(0, outputState.GetBalance(senderAddress, crystal).RawValue);
-
-            return Verifier.Verify(outputState)
-                .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
+            // Verifier does not handle tuples well when nested.
+            var summary = Verifier
+                .Verify(outputState)
+                .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
+                .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
+                .UseMethodName($"{nameof(TransferCrystal)}.summary");
+            var fungibles = Verifier
+                .Verify(outputState.Delta.Fungibles)
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
+                .UseMethodName($"{nameof(TransferCrystal)}.fungibles");
+            return Task.WhenAll(summary, fungibles);
         }
 
         [Fact]
@@ -91,10 +99,20 @@ namespace Lib9c.Tests.Action.Snapshot
                 recipientAddress,
                 crystal * 100,
                 "MEMO");
-            var states = action.Execute(actionContext);
+            var outputState = action.Execute(actionContext);
 
-            return Verifier.Verify(states)
-                .UseTypeName((Text)GetActionTypeId<TransferAsset0>());
+            // Verifier does not handle tuples well when nested.
+            var summary = Verifier
+                .Verify(outputState)
+                .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
+                .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
+                .UseMethodName($"{nameof(TransferWithMemo)}.summary");
+            var fungibles = Verifier
+                .Verify(outputState.Delta.Fungibles)
+                .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
+                .UseMethodName($"{nameof(TransferWithMemo)}.fungibles");
+            return Task.WhenAll(summary, fungibles);
         }
     }
 }

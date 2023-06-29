@@ -1,10 +1,7 @@
 ﻿{
   Bencodex.Types.Text "type_id": {
-    Value: transfer_asset,
-    Kind: Text,
+    EncodingLength: 18,
     Fingerprint: {
-      Kind: Text,
-      EncodingLength: 18,
       Digest: [
         116,
         114,
@@ -20,9 +17,12 @@
         115,
         101,
         116
-      ]
+      ],
+      EncodingLength: 18,
+      Kind: Text
     },
-    EncodingLength: 18
+    Kind: Text,
+    Value: transfer_asset
   },
   Bencodex.Types.Text "values": {
     Bencodex.Types.Text "amount": [
@@ -31,38 +31,38 @@
           2
         ],
         Bencodex.Types.Text "minters": {
+          EncodingLength: 1,
           Fingerprint: {
             EncodingLength: 1
-          },
-          EncodingLength: 1
+          }
         },
         Bencodex.Types.Text "ticker": {
-          Value: NNN,
-          Kind: Text,
+          EncodingLength: 6,
           Fingerprint: {
-            Kind: Text,
-            EncodingLength: 6,
             Digest: [
               78,
               78,
               78
-            ]
+            ],
+            EncodingLength: 6,
+            Kind: Text
           },
-          EncodingLength: 6
+          Kind: Text,
+          Value: NNN
         }
       },
       {
-        Value: 10000,
-        Kind: Integer,
+        EncodingLength: 7,
         Fingerprint: {
-          Kind: Integer,
-          EncodingLength: 7,
           Digest: [
             16,
             39
-          ]
+          ],
+          EncodingLength: 7,
+          Kind: Integer
         },
-        EncodingLength: 7
+        Kind: Integer,
+        Value: 10000
       }
     ],
     Bencodex.Types.Text "recipient": [
