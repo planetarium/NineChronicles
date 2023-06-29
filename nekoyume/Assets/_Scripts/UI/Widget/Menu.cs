@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DG.Tweening;
+using Lib9c;
+using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -668,17 +670,49 @@ namespace Nekoyume.UI
         {
             base.Update();
 
-            if (!Find<CombinationResultPopup>().gameObject.activeSelf &&
-                !Find<EnhancementResultPopup>().gameObject.activeSelf &&
-                Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftControl))
             {
-                if (Input.GetKeyDown(KeyCode.C))
+                if (Input.GetKeyDown(KeyCode.C) &&
+                    !Find<CombinationResultPopup>().gameObject.activeSelf)
                 {
                     Find<CombinationResultPopup>().ShowWithEditorProperty();
                 }
-                else if (Input.GetKeyDown(KeyCode.E))
+                else if (Input.GetKeyDown(KeyCode.E) &&
+                         !Find<EnhancementResultPopup>().gameObject.activeSelf)
                 {
                     Find<EnhancementResultPopup>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.U) &&
+                         !Find<OneButtonSystem>().gameObject.activeSelf)
+                {
+                    var game = Game.Game.instance;
+                    var states = game.States;
+                    var sheet = game.TableSheets.MaterialItemSheet;
+                    var mail = new UnloadFromMyGaragesRecipientMail(
+                        default,
+                        default,
+                        default,
+                        fungibleAssetValue: new[]
+                        {
+                            (
+                                states.AgentState.address,
+                                new FungibleAssetValue(
+                                    states.GoldBalanceState.Gold.Currency,
+                                    9,
+                                    99)
+                            ),
+                            (states.CurrentAvatarState.address, 99 * Currencies.Crystal),
+                        },
+                        fungibleIdAndCount: sheet.OrderedList!.Take(3)
+                            .Select((row, index) => (
+                                row.ItemId,
+                                index + 1)),
+                        "memo");
+                    mail.New = true;
+                    var mailBox = states.CurrentAvatarState.mailBox;
+                    mailBox.Add(mail);
+                    mailBox.CleanUp();
+                    ReactiveAvatarState.UpdateMailBox(mailBox);
                 }
             }
         }

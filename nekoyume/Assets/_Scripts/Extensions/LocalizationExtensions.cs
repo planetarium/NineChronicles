@@ -29,6 +29,7 @@ namespace Nekoyume
 {
     public static class LocalizationExtensions
     {
+        // FIXME: Move to MailExtensions.
         public static async Task<string> ToInfo(this MailModel mail)
         {
             switch (mail)
@@ -38,16 +39,18 @@ namespace Nekoyume
                     string formatKey;
                     if (combinationMail.attachment.itemUsable is Equipment equipment)
                     {
-                        if (combinationMail.attachment is CombinationConsumable5.ResultModel result &&
+                        if (combinationMail.attachment is CombinationConsumable5.ResultModel
+                                result &&
                             result.subRecipeId.HasValue)
                         {
                             if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2 is null)
                             {
                                 if (TableSheets.Instance.EquipmentItemSubRecipeSheet.TryGetValue(
-                                    result.subRecipeId.Value,
-                                    out var row))
+                                        result.subRecipeId.Value,
+                                        out var row))
                                 {
-                                    formatKey = equipment.optionCountFromCombination == row.Options.Count
+                                    formatKey = equipment.optionCountFromCombination ==
+                                                row.Options.Count
                                         ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
                                         : "UI_COMBINATION_NOTIFY_FORMAT";
                                 }
@@ -57,10 +60,11 @@ namespace Nekoyume
                                 }
                             }
                             else if (TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                                result.subRecipeId.Value,
-                                out var row))
+                                         result.subRecipeId.Value,
+                                         out var row))
                             {
-                                formatKey = equipment.optionCountFromCombination == row.Options.Count
+                                formatKey = equipment.optionCountFromCombination ==
+                                            row.Options.Count
                                     ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
                                     : "UI_COMBINATION_NOTIFY_FORMAT";
                             }
@@ -85,7 +89,8 @@ namespace Nekoyume
                 }
 
                 case MaterialCraftMail materialCraftMail:
-                    var materialItemName = L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
+                    var materialItemName =
+                        L10nManager.Localize($"ITEM_NAME_{materialCraftMail.ItemId}");
                     return L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT", materialItemName);
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -113,9 +118,11 @@ namespace Nekoyume
                                     {
                                         formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
                                     }
+
                                     break;
                                 default:
-                                    Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                                    Debug.LogError(
+                                        $"Unexpected result.enhancementResult: {result.enhancementResult}");
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
                             }
@@ -127,7 +134,8 @@ namespace Nekoyume
                             formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
                         default:
-                            Debug.LogError("itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
+                            Debug.LogError(
+                                "itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
                             formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
                     }
@@ -136,7 +144,7 @@ namespace Nekoyume
                     {
                         return L10nManager.Localize(formatKey,
                             GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable),
-                            ((ItemEnhancement.ResultModel) itemEnhanceMail.attachment).CRYSTAL);
+                            ((ItemEnhancement.ResultModel)itemEnhanceMail.attachment).CRYSTAL);
                     }
 
                     return L10nManager.Localize(formatKey,
@@ -144,21 +152,26 @@ namespace Nekoyume
                 }
 
                 case OrderBuyerMail orderBuyerMail:
-                    var buyerItemName = await Util.GetItemNameByOrderId(orderBuyerMail.OrderId, true);
+                    var buyerItemName =
+                        await Util.GetItemNameByOrderId(orderBuyerMail.OrderId, true);
                     return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
                     var order = await Util.GetOrder(orderSellerMail.OrderId);
-                    var sellerItemName = await Util.GetItemNameByOrderId(orderSellerMail.OrderId, true);
+                    var sellerItemName =
+                        await Util.GetItemNameByOrderId(orderSellerMail.OrderId, true);
                     var taxedPrice = order.Price - order.GetTax();
-                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", taxedPrice, sellerItemName);
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", taxedPrice,
+                        sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItemName = await Util.GetItemNameByOrderId(orderExpirationMail.OrderId, true);
+                    var expiredItemName =
+                        await Util.GetItemNameByOrderId(orderExpirationMail.OrderId, true);
                     return L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT", expiredItemName);
 
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItemName = await Util.GetItemNameByOrderId(cancelOrderMail.OrderId, true);
+                    var cancelItemName =
+                        await Util.GetItemNameByOrderId(cancelOrderMail.OrderId, true);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", cancelItemName);
 
                 case BuyerMail buyerMail:
@@ -171,7 +184,8 @@ namespace Nekoyume
                     var attachment = sellerMail.attachment;
                     if (!(attachment is Buy7.SellerResult sellerResult))
                     {
-                        throw new InvalidCastException($"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
+                        throw new InvalidCastException(
+                            $"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
                     }
 
                     return L10nManager.Localize("UI_SELLER_MAIL_FORMAT",
@@ -189,24 +203,27 @@ namespace Nekoyume
                 case MonsterCollectionMail _:
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 case GrindingMail grindingMail:
-                    return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT", grindingMail.Asset.ToString());
+                    return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT",
+                        grindingMail.Asset.ToString());
                 case RaidRewardMail rewardMail:
                     return L10nManager.Localize("UI_RAID_SEASON_REWARD_MAIL_FORMAT",
                         rewardMail.RaidId, rewardMail.CurrencyName, rewardMail.Amount);
 
-                case ProductCancelMail productCancelMail :
-                    var (productName, _,  _) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productCancelMail
-                        .ProductId);
+                case ProductCancelMail productCancelMail:
+                    var (productName, _, _) =
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                            productCancelMail
+                                .ProductId);
                     return L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT", productName);
                 case ProductBuyerMail productBuyerMail:
-                    var (buyProductName, _,  _) =
+                    var (buyProductName, _, _) =
                         await Game.Game.instance.MarketServiceClient.GetProductInfo(productBuyerMail
-                        .ProductId);
+                            .ProductId);
                     return L10nManager.Localize("UI_BUYER_MAIL_FORMAT", buyProductName);
                 case ProductSellerMail productSellerMail:
                     var (sellProductName, item, fav) =
-                        await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
+                        await Game.Game.instance.MarketServiceClient.GetProductInfo(
+                            productSellerMail.ProductId);
                     var price = item?.Price ?? fav?.Price ?? 0;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;
                     var tp = price - tax;
@@ -214,8 +231,10 @@ namespace Nekoyume
                     var majorUnit = (int)tp;
                     var minorUnit = (int)((tp - majorUnit) * 100);
                     var fungibleAsset = new FungibleAssetValue(currency, majorUnit, minorUnit);
-                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset , sellProductName);
-
+                    return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset,
+                        sellProductName);
+                case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
+                    return unloadFromMyGaragesRecipientMail.GetCellContent();
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -234,7 +253,7 @@ namespace Nekoyume
                 return attachment.costume;
             }
 
-            return (ItemBase) attachment.tradableFungibleItem;
+            return (ItemBase)attachment.tradableFungibleItem;
         }
 
         public static string GetTitle(this QuestModel quest)
@@ -302,7 +321,8 @@ namespace Nekoyume
                         case QuestEventType.Complete:
                         case QuestEventType.Equipment:
                         case QuestEventType.Consumable:
-                            return L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT",
+                            return L10nManager.Localize(
+                                $"QUEST_GENERAL_{generalQuest.Event}_FORMAT",
                                 generalQuest.Goal);
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -311,25 +331,34 @@ namespace Nekoyume
                     return L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
                 case GoldQuest goldQuest:
                     return
-                        L10nManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT",
-                        goldQuest.Goal);
+                        L10nManager.Localize(
+                            $"QUEST_GOLD_{goldQuest.Type}_FORMAT",
+                            goldQuest.Goal);
                 case ItemEnhancementQuest itemEnhancementQuest:
-                    return L10nManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT",
-                        itemEnhancementQuest.Grade, itemEnhancementQuest.Goal,
+                    return L10nManager.Localize(
+                        "QUEST_ITEM_ENHANCEMENT_FORMAT",
+                        itemEnhancementQuest.Grade,
+                        itemEnhancementQuest.Goal,
                         itemEnhancementQuest.Count);
                 case ItemGradeQuest itemGradeQuest:
-                    return L10nManager.Localize("QUEST_ITEM_GRADE_FORMAT",
-                        itemGradeQuest.Grade, itemGradeQuest.Goal);
+                    return L10nManager.Localize(
+                        "QUEST_ITEM_GRADE_FORMAT",
+                        itemGradeQuest.Grade,
+                        itemGradeQuest.Goal);
                 case ItemTypeCollectQuest itemTypeCollectQuest:
-                    return L10nManager.Localize("QUEST_ITEM_TYPE_FORMAT",
+                    return L10nManager.Localize(
+                        "QUEST_ITEM_TYPE_FORMAT",
                         itemTypeCollectQuest.ItemType.GetLocalizedString(),
                         itemTypeCollectQuest.Goal);
                 case MonsterQuest monsterQuest:
-                    return L10nManager.Localize("QUEST_MONSTER_FORMAT",
+                    return L10nManager.Localize(
+                        "QUEST_MONSTER_FORMAT",
                         L10nManager.LocalizeCharacterName(monsterQuest.MonsterId));
                 case TradeQuest tradeQuest:
-                    return L10nManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT",
-                        tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal);
+                    return L10nManager.Localize(
+                        "QUEST_TRADE_CURRENT_INFO_FORMAT",
+                        tradeQuest.Type.GetLocalizedString(),
+                        tradeQuest.Goal);
                 case WorldQuest worldQuest:
                     if (TableSheets.Instance.WorldSheet.TryGetByStageId(
                             worldQuest.Goal,
@@ -337,12 +366,15 @@ namespace Nekoyume
                     {
                         if (worldQuest.Goal == worldRow.StageBegin)
                         {
-                            return L10nManager.Localize("QUEST_WORLD_FORMAT",
+                            return L10nManager.Localize(
+                                "QUEST_WORLD_FORMAT",
                                 worldRow.GetLocalizedName());
                         }
 
-                        return L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT",
-                            worldRow.GetLocalizedName(), worldQuest.Goal);
+                        return L10nManager.Localize(
+                            "QUEST_CLEAR_STAGE_FORMAT",
+                            worldRow.GetLocalizedName(),
+                            worldQuest.Goal);
                     }
 
                     if (!TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(
@@ -354,11 +386,13 @@ namespace Nekoyume
 
                     if (worldQuest.Goal == eventDungeonRow.StageBegin)
                     {
-                        return L10nManager.Localize("QUEST_WORLD_FORMAT",
+                        return L10nManager.Localize(
+                            "QUEST_WORLD_FORMAT",
                             eventDungeonRow.GetLocalizedName());
                     }
 
-                    return L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT",
+                    return L10nManager.Localize(
+                        "QUEST_CLEAR_STAGE_FORMAT",
                         eventDungeonRow.GetLocalizedName(),
                         worldQuest.Goal.ToEventDungeonStageNumber());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
@@ -366,14 +400,16 @@ namespace Nekoyume
                         .TryGetValue(combinationEquipmentQuest.RecipeId, out var recipeRow))
                     {
                         var itemRow = recipeRow.GetResultEquipmentItemRow();
-                        return L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT",
+                        return L10nManager.Localize(
+                            "QUEST_COMBINATION_EQUIPMENT_FORMAT",
                             itemRow.GetLocalizedName(false));
                     }
 
                     if (TableSheets.Instance.EventScheduleSheet
                         .TryGetValue(combinationEquipmentQuest.RecipeId, out var eventScheduleRow))
                     {
-                        return L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT",
+                        return L10nManager.Localize(
+                            "QUEST_COMBINATION_EQUIPMENT_FORMAT",
                             L10nManager.Localize("UI_EVENT_ITEM"));
                     }
 
@@ -471,30 +507,40 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(grade)}>{name}</color>";
         }
 
-        public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
+        public static string GetLocalizedNonColoredName(this ItemBase item,
+            bool useElementalIcon = true)
         {
-            return GetLocalizedNonColoredName(item.ElementalType, item.Id,
+            return GetLocalizedNonColoredName(
+                item.ElementalType,
+                item.Id,
                 useElementalIcon && item.ItemType.HasElementType());
         }
 
-        public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level, bool useElementalIcon = true)
+        public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level,
+            bool useElementalIcon = true)
         {
-            var name = GetLocalizedNonColoredName(equipmentRow.ElementalType, equipmentRow.Id, useElementalIcon);
+            var name = GetLocalizedNonColoredName(
+                equipmentRow.ElementalType,
+                equipmentRow.Id,
+                useElementalIcon);
 
             return level > 0
                 ? $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>+{level} {name}</color>"
                 : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
         }
 
-        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow, bool hasColor = true)
+        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow,
+            bool hasColor = true)
         {
-            var name = GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
-            return hasColor ?
-                $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>" :
-                name;
+            var name =
+                GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
+            return hasColor
+                ? $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>"
+                : name;
         }
 
-        public static string GetLocalizedNonColoredName(ElementalType elementalType, int equipmentId, bool useElementalIcon)
+        public static string GetLocalizedNonColoredName(ElementalType elementalType,
+            int equipmentId, bool useElementalIcon)
         {
             var elemental = useElementalIcon ? GetElementalIcon(elementalType) : string.Empty;
             var name = L10nManager.Localize($"ITEM_NAME_{equipmentId}");
@@ -536,10 +582,14 @@ namespace Nekoyume
         {
             return grade switch
             {
-                CrystalRandomBuffSheet.Row.BuffRank.SS => Palette.GetColor(EnumType.ColorType.TextGrade04),
-                CrystalRandomBuffSheet.Row.BuffRank.S => Palette.GetColor(EnumType.ColorType.TextGrade03),
-                CrystalRandomBuffSheet.Row.BuffRank.A => Palette.GetColor(EnumType.ColorType.TextGrade02),
-                CrystalRandomBuffSheet.Row.BuffRank.B => Palette.GetColor(EnumType.ColorType.TextGrade00),
+                CrystalRandomBuffSheet.Row.BuffRank.SS =>
+                    Palette.GetColor(EnumType.ColorType.TextGrade04),
+                CrystalRandomBuffSheet.Row.BuffRank.S =>
+                    Palette.GetColor(EnumType.ColorType.TextGrade03),
+                CrystalRandomBuffSheet.Row.BuffRank.A =>
+                    Palette.GetColor(EnumType.ColorType.TextGrade02),
+                CrystalRandomBuffSheet.Row.BuffRank.B =>
+                    Palette.GetColor(EnumType.ColorType.TextGrade00),
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }
@@ -625,6 +675,7 @@ namespace Nekoyume
             var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             return gradeText;
         }
+
         public static string GetSubTypeText(this ItemBase itemBase)
         {
             var subTypeText = GetLocalizedItemSubTypeText(itemBase.ItemSubType);
