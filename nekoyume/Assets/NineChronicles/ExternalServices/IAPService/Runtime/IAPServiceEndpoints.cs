@@ -8,7 +8,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public readonly Uri Ping;
         public readonly Uri Product;
         public readonly Uri Purchase;
-        public readonly Uri Poll;
+        public readonly Uri PurchaseStatus;
 
         public IAPServiceEndpoints(string url)
         {
@@ -16,7 +16,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Ping = new Uri(Url + "/ping");
             Product = new Uri(Url + "/api/product");
             Purchase = new Uri(Url + "/api/purchase/request");
-            Poll = new Uri(Url + "/api/purchase/poll");
+            PurchaseStatus = new Uri(Url + "/api/purchase/status");
         }
     }
 }
