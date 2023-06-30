@@ -137,6 +137,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async Task<PurchaseResponse200?> PurchaseAsync(
             string receipt,
+            Address agentAddr,
             Address inventoryAddr)
         {
             if (!IsInitialized)
@@ -146,7 +147,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
 
             var (code, error, mediaType, content) =
-                await _client.PurchaseAsync(receipt, inventoryAddr);
+                await _client.PurchaseAsync(receipt, agentAddr, inventoryAddr);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {

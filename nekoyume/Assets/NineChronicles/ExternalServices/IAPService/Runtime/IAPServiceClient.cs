@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -74,12 +73,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseAsync(
                 string receipt,
+                Address agentAddr,
                 Address inventoryAddr)
         {
             var reqJson = new JsonObject
             {
-                { "store", 0 },
+                { "store", 0 },  // FIXME: Set right store value
                 { "data", receipt },
+                { "agentAddress", agentAddr.ToHex() },
                 { "inventoryAddress", inventoryAddr.ToHex() }
             };
             var reqContent = new StringContent(
@@ -96,13 +97,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         {
             var reqJson = new JsonObject
             {
-                { "uuids", JsonSerializer.Serialize(uuids) }
+                { "uuid_list", JsonSerializer.Serialize(uuids) }
             };
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,
                 "application/json");
-            using var res = await _client.PostAsync(_endpoints.Poll, reqContent);
+            using var res = await _client.PostAsync(_endpoints.PurchaseStatus, reqContent);
             return await ProcessResponseAsync(res);
         }
 

@@ -22,6 +22,15 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
             public int Amount { get; set; }
         }
 
+        public class ProductPrice
+        {
+            [JsonPropertyName("currency")]
+            public string Currency { get; set; }
+
+            [JsonPropertyName("price")]
+            public float Price { get; set; }
+        }
+
         [JsonPropertyName("google_sku")]
         public string GoogleSku { get; set; }
 
@@ -45,5 +54,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
 
         [JsonPropertyName("item_list")]
         public FungibleItem[] ItemList { get; set; }
+
+        [JsonPropertyName("price_list")]
+        public ProductPrice[] PriceList { get; set; }
     }
 }
