@@ -260,8 +260,10 @@ namespace Lib9c.Tests.Action.Garages
         public void Execute_Throws_Exception()
         {
             // Balance does not enough to pay cost.
-            var previousStatesWithNotEnoughCost = _previousStates
-                .BurnAsset(AgentAddr, new FungibleAssetValue(Currencies.Garage, 1, 0));
+            var previousStatesWithNotEnoughCost = _previousStates.BurnAsset(
+                new ActionContext { Signer = AgentAddr },
+                AgentAddr,
+                new FungibleAssetValue(Currencies.Garage, 1, 0));
             Assert.Throws<InsufficientBalanceException>(() => Execute(
                 AgentAddr,
                 0,
@@ -275,8 +277,10 @@ namespace Lib9c.Tests.Action.Garages
             var previousStatesWithEmptyBalances = _previousStates;
             foreach (var (balanceAddr, value) in _fungibleAssetValues)
             {
-                previousStatesWithEmptyBalances = previousStatesWithEmptyBalances
-                    .BurnAsset(balanceAddr, value);
+                previousStatesWithEmptyBalances = previousStatesWithEmptyBalances.BurnAsset(
+                    new ActionContext { Signer = AgentAddr },
+                    balanceAddr,
+                    value);
             }
 
             Assert.Throws<InsufficientBalanceException>(() => Execute(
@@ -406,16 +410,15 @@ namespace Lib9c.Tests.Action.Garages
                 inventoryAddr,
                 fungibleIdAndCounts,
                 memo);
-            return (
-                action,
-                action.Execute(new ActionContext
-                {
-                    Signer = signer,
-                    BlockIndex = blockIndex,
-                    Rehearsal = false,
-                    PreviousStates = previousStates,
-                    Random = random,
-                }));
+            var context = new ActionContext
+            {
+                Signer = signer,
+                BlockIndex = blockIndex,
+                Rehearsal = false,
+                PreviousStates = previousStates,
+                Random = random,
+            };
+            return (action, action.Execute(context));
         }
 
         private static (Address balanceAddr, FungibleAssetValue value)[]
@@ -457,11 +460,13 @@ namespace Lib9c.Tests.Action.Garages
                 AgentAddr,
                 _avatarAddress,
                 _tableSheets);
+            var actionContext = new ActionContext { Signer = Addresses.Admin };
             foreach (var (balanceAddr, value) in fungibleAssetValues)
             {
                 if (value.Currency.Equals(_ncg))
                 {
                     previousStates = previousStates.TransferAsset(
+                        actionContext,
                         Addresses.Admin,
                         balanceAddr,
                         value);
@@ -469,6 +474,7 @@ namespace Lib9c.Tests.Action.Garages
                 }
 
                 previousStates = previousStates.MintAsset(
+                    actionContext,
                     balanceAddr,
                     value);
             }
@@ -491,6 +497,7 @@ namespace Lib9c.Tests.Action.Garages
                 fungibleItemAndCounts
                     .Select(tuple => (tuple.tradableFungibleItem.FungibleId, tuple.count)));
             previousStates = previousStates.MintAsset(
+                new ActionContext { Signer = AgentAddr },
                 AgentAddr,
                 garageCost);
             return (

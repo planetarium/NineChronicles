@@ -132,26 +132,20 @@ namespace Nekoyume.Action.Garages
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
-            ValidateFields(
-                context.Signer,
-                addressesHex);
+            ValidateFields(context.Signer, addressesHex);
 
             var sheet = states.GetSheet<LoadIntoMyGaragesCostSheet>();
             var garageCost = sheet.GetGarageCost(
                 FungibleAssetValues?.Select(tuple => tuple.value),
                 FungibleIdAndCounts);
             states = states.TransferAsset(
+                context,
                 context.Signer,
                 Addresses.GarageWallet,
                 garageCost);
 
-            states = TransferFungibleAssetValues(
-                context.Signer,
-                states);
-            return TransferFungibleItems(
-                context.Signer,
-                context.BlockIndex,
-                states);
+            states = TransferFungibleAssetValues(context, states);
+            return TransferFungibleItems(context.Signer, context.BlockIndex, states);
         }
 
         private void ValidateFields(
@@ -221,7 +215,7 @@ namespace Nekoyume.Action.Garages
         }
 
         private IAccountStateDelta TransferFungibleAssetValues(
-            Address signer,
+            IActionContext context,
             IAccountStateDelta states)
         {
             if (FungibleAssetValues is null)
@@ -230,10 +224,10 @@ namespace Nekoyume.Action.Garages
             }
 
             var garageBalanceAddress =
-                Addresses.GetGarageBalanceAddress(signer);
+                Addresses.GetGarageBalanceAddress(context.Signer);
             foreach (var (balanceAddr, value) in FungibleAssetValues)
             {
-                states = states.TransferAsset(balanceAddr, garageBalanceAddress, value);
+                states = states.TransferAsset(context, balanceAddr, garageBalanceAddress, value);
             }
 
             return states;

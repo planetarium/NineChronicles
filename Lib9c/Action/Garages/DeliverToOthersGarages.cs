@@ -171,12 +171,8 @@ namespace Nekoyume.Action.Garages
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(addressesHex);
-            states = SendBalances(
-                context.Signer,
-                states);
-            return SendFungibleItems(
-                context.Signer,
-                states);
+            states = SendBalances(context, states);
+            return SendFungibleItems(context.Signer, states);
         }
 
         private void ValidateFields(string addressesHex)
@@ -218,7 +214,7 @@ namespace Nekoyume.Action.Garages
         }
 
         private IAccountStateDelta SendBalances(
-            Address signer,
+            IActionContext context,
             IAccountStateDelta states)
         {
             if (FungibleAssetValues is null)
@@ -227,12 +223,13 @@ namespace Nekoyume.Action.Garages
             }
 
             var senderGarageBalanceAddress =
-                Addresses.GetGarageBalanceAddress(signer);
+                Addresses.GetGarageBalanceAddress(context.Signer);
             var recipientGarageBalanceAddr =
                 Addresses.GetGarageBalanceAddress(RecipientAgentAddr);
             foreach (var fav in FungibleAssetValues)
             {
                 states = states.TransferAsset(
+                    context,
                     senderGarageBalanceAddress,
                     recipientGarageBalanceAddr,
                     fav);

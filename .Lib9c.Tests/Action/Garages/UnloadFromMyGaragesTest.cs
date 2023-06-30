@@ -232,11 +232,14 @@ namespace Lib9c.Tests.Action.Garages
         {
             // Agent's FungibleAssetValue garages does not have enough balance.
             var previousStatesWithEmptyBalances = _previousStates;
+            var actionContext = new ActionContext { Signer = AgentAddr };
             var garageBalanceAddress = Addresses.GetGarageBalanceAddress(AgentAddr);
             foreach (var (_, value) in _fungibleAssetValues)
             {
-                previousStatesWithEmptyBalances = previousStatesWithEmptyBalances
-                    .BurnAsset(garageBalanceAddress, value);
+                previousStatesWithEmptyBalances = previousStatesWithEmptyBalances.BurnAsset(
+                    actionContext,
+                    garageBalanceAddress,
+                    value);
             }
 
             Assert.Throws<InsufficientBalanceException>(() => Execute(
@@ -409,6 +412,7 @@ namespace Lib9c.Tests.Action.Garages
             GetSuccessfulPreviousStatesWithPlainValue()
         {
             var previousStates = _initialStatesWithAvatarStateV2;
+            var actionContext = new ActionContext { Signer = Addresses.Admin };
             var garageBalanceAddress = Addresses.GetGarageBalanceAddress(AgentAddr);
             var fungibleAssetValues = GetFungibleAssetValues(
                 AgentAddr,
@@ -418,6 +422,7 @@ namespace Lib9c.Tests.Action.Garages
                 if (value.Currency.Equals(_ncg))
                 {
                     previousStates = previousStates.TransferAsset(
+                        actionContext,
                         Addresses.Admin,
                         garageBalanceAddress,
                         value);
@@ -425,6 +430,7 @@ namespace Lib9c.Tests.Action.Garages
                 }
 
                 previousStates = previousStates.MintAsset(
+                    actionContext,
                     garageBalanceAddress,
                     value);
             }
