@@ -4,11 +4,13 @@ using Nekoyume.Helper;
 
 namespace BalanceTool.Runtime.Util
 {
+    using Lib9c.Tests.Action;
+
     namespace Lib9c.Tests.Util
     {
         using System.Collections.Immutable;
+        using System.IO;
         using Libplanet;
-        using Libplanet.Action;
         using Libplanet.Assets;
         using Libplanet.Crypto;
         using Libplanet.State;
@@ -28,18 +30,17 @@ namespace BalanceTool.Runtime.Util
                 IAccountStateDelta initialStatesWithAvatarStateV2
                 ) InitializeStates(
                     Address? adminAddr = null,
-                    string tableCsvPath = null,
-                    int avatarIndex = 0)
+                    Address? agentAddr = null,
+                    int avatarIndex = 0,
+                    bool isDevEx = false
+                )
             {
                 adminAddr ??= new PrivateKey().ToAddress();
+                var context = new ActionContext();
                 var states = new State().SetState(
                     Addresses.Admin,
                     new AdminState(adminAddr.Value, long.MaxValue).Serialize());
-#if UNITY_EDITOR
                 var sheets = TableSheetsHelper.ImportSheets();
-#else
-                var sheets = TableSheetsImporter.ImportSheets(tableCsvPath);
-#endif
                 foreach (var (key, value) in sheets)
                 {
                     states = states.SetState(
@@ -55,28 +56,28 @@ namespace BalanceTool.Runtime.Util
                 var goldCurrencyState = new GoldCurrencyState(goldCurrency);
                 states = states
                     .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                    .MintAsset(goldCurrencyState.address, goldCurrency * 1_000_000_000);
+                    .MintAsset(context, goldCurrencyState.address, goldCurrency * 1_000_000_000);
 
                 var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
                 states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
-                var agentAddr = new PrivateKey().ToAddress();
-                var avatarAddr = Addresses.GetAvatarAddress(agentAddr, avatarIndex);
-                var agentState = new AgentState(agentAddr);
+                agentAddr ??= new PrivateKey().ToAddress();
+                var avatarAddr = Addresses.GetAvatarAddress(agentAddr.Value, avatarIndex);
+                var agentState = new AgentState(agentAddr.Value);
                 var avatarState = new AvatarState(
                     avatarAddr,
-                    agentAddr,
+                    agentAddr.Value,
                     0,
                     tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
                     avatarAddr.Derive("ranking_map"));
-                agentState.avatarAddresses.Add(0, avatarAddr);
+                agentState.avatarAddresses.Add(avatarIndex, avatarAddr);
 
                 var initialStatesWithAvatarStateV1 = states
-                    .SetState(agentAddr, agentState.Serialize())
+                    .SetState(agentAddr.Value, agentState.Serialize())
                     .SetState(avatarAddr, avatarState.Serialize());
                 var initialStatesWithAvatarStateV2 = states
-                    .SetState(agentAddr, agentState.Serialize())
+                    .SetState(agentAddr.Value, agentState.Serialize())
                     .SetState(avatarAddr, avatarState.SerializeV2())
                     .SetState(
                         avatarAddr.Derive(SerializeKeys.LegacyInventoryKey),
@@ -90,7 +91,7 @@ namespace BalanceTool.Runtime.Util
 
                 return (
                     tableSheets,
-                    agentAddr,
+                    agentAddr.Value,
                     avatarAddr,
                     initialStatesWithAvatarStateV1,
                     initialStatesWithAvatarStateV2);

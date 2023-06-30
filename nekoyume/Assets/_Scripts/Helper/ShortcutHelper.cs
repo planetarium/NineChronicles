@@ -51,6 +51,8 @@ namespace Nekoyume.Helper
             {
                 var stageRowList = TableSheets.Instance.StageSheet
                     .GetStagesContainsReward(itemBase.Id)
+                    // TODO: It is patch-work for blocking mimisbrunnr stage.
+                    .Where(r => r.Id < 10000000)
                     .OrderByDescending(s => s.Key)
                     .ToList();
                 var stages = SelectStagesByRecommendationPriority(stageRowList, itemBase.Id);

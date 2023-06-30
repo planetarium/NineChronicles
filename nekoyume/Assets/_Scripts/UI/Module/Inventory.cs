@@ -230,7 +230,7 @@ namespace Nekoyume.UI.Module
                 _runes.Add(new InventoryItem(runeState));
             }
 
-            foreach (var fav in States.Instance.AvatarBalance.Values)
+            foreach (var fav in States.Instance.CurrentAvatarBalances.Values)
             {
                 _fungibleAssets.Add(new InventoryItem(fav));
             }
@@ -810,7 +810,7 @@ namespace Nekoyume.UI.Module
         public void UpdateFungibleAssets()
         {
             _fungibleAssets.Clear();
-            foreach (var fav in States.Instance.AvatarBalance.Values)
+            foreach (var fav in States.Instance.CurrentAvatarBalances.Values)
             {
                 _fungibleAssets.Add(new InventoryItem(fav));
             }

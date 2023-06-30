@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             string name, count, content, buttonText;
             System.Action callback;
             name = L10nManager.Localize($"ITEM_NAME_{data.id}");
-            count = States.Instance.AvatarBalance[data.ticker].GetQuantityString();
+            count = States.Instance.CurrentAvatarBalances[data.ticker].GetQuantityString();
             content = L10nManager.Localize($"ITEM_DESCRIPTION_{data.id}");
             buttonText = L10nManager.Localize("UI_RUNE");
             callback = () =>

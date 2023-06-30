@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,8 +33,10 @@ using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
+#if UNITY_ANDROID
 using RocksDbSharp;
-using UnityEngine.Android;  // Don't remove this line. It's for another platform.
+using UnityEngine.Android;
+#endif
 
 namespace Nekoyume.Game
 {
@@ -49,26 +50,36 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField] private Stage stage = null;
+        [SerializeField]
+        private Stage stage;
 
-        [SerializeField] private Arena arena = null;
+        [SerializeField]
+        private Arena arena;
 
-        [SerializeField] private RaidStage raidStage = null;
+        [SerializeField]
+        private RaidStage raidStage;
 
-        [SerializeField] private Lobby lobby;
+        [SerializeField]
+        private Lobby lobby;
 
-        [SerializeField] private bool useSystemLanguage = true;
+        [SerializeField]
+        private bool useSystemLanguage = true;
 
-        [SerializeField] private bool useLocalHeadless = false;
+        [SerializeField]
+        private bool useLocalHeadless;
 
-        [SerializeField] private bool useLocalMarketService = false;
+        [SerializeField]
+        private bool useLocalMarketService;
 
-        [SerializeField] private string marketDbConnectionString =
+        [SerializeField]
+        private string marketDbConnectionString =
             "Host=localhost;Username=postgres;Database=market";
 
-        [SerializeField] private LanguageTypeReactiveProperty languageType = default;
+        [SerializeField]
+        private LanguageTypeReactiveProperty languageType;
 
-        [SerializeField] private Prologue prologue = null;
+        [SerializeField]
+        private Prologue prologue;
 
         public States States { get; private set; }
 
@@ -130,14 +141,14 @@ namespace Nekoyume.Game
 
         private string _msg;
 
-        public static string CommandLineOptionsJsonPath =
+        public static readonly string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
 
         private static readonly string UrlJsonPath =
             Platform.GetStreamingAssetsPath("url.json");
 
-        private Thread headlessThread;
-        private Thread marketThread;
+        private Thread _headlessThread;
+        private Thread _marketThread;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -189,7 +200,8 @@ namespace Nekoyume.Game
             base.Awake();
 
 #if UNITY_IOS
-            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            _commandLineOptions =
+ CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
@@ -203,8 +215,8 @@ namespace Nekoyume.Game
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
-                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
-                headlessThread.Start();
+                _headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
+                _headlessThread.Start();
             }
 
             if (useLocalHeadless || _commandLineOptions.RpcClient)
@@ -244,7 +256,7 @@ namespace Nekoyume.Game
                 );
             var resolver = StaticCompositeResolver.Instance;
 #else
-            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+            var resolver = CompositeResolver.Create(
                 NineChroniclesResolver.Instance,
                 StandardResolver.Instance
             );
@@ -298,8 +310,9 @@ namespace Nekoyume.Game
             // wait for headless connect.
             if (useLocalMarketService && MarketHelper.CheckPath())
             {
-                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
-                marketThread.Start();
+                _marketThread = new Thread(() =>
+                    MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                _marketThread.Start();
             }
 #endif
 
@@ -327,7 +340,9 @@ namespace Nekoyume.Game
             _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
             if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
-                _rpcClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
+                _rpcClient =
+                    new NineChroniclesAPIClient(
+                        $"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
@@ -363,14 +378,14 @@ namespace Nekoyume.Game
 
         protected override void OnDestroy()
         {
-            if (headlessThread is not null && headlessThread.IsAlive)
+            if (_headlessThread is not null && _headlessThread.IsAlive)
             {
-                headlessThread.Interrupt();
+                _headlessThread.Interrupt();
             }
 
-            if (marketThread is not null && marketThread.IsAlive)
+            if (_marketThread is not null && _marketThread.IsAlive)
             {
-                marketThread.Interrupt();
+                _marketThread.Interrupt();
             }
 
             ActionManager?.Dispose();
@@ -648,7 +663,7 @@ namespace Nekoyume.Game
             Widget.Find<PreloadingScreen>().Close();
         }
 
-#endregion
+        #endregion
 
         protected override void OnApplicationQuit()
         {
@@ -682,7 +697,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public static async UniTaskVoid BackToMainAsync(Exception exc, bool showLoadingScreen = false)
+        public static async UniTaskVoid BackToMainAsync(Exception exc,
+            bool showLoadingScreen = false)
         {
             Debug.LogException(exc);
 
@@ -709,7 +725,8 @@ namespace Nekoyume.Game
 
             if (IsInWorld)
             {
-                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
+                NotificationSystem.Push(
+                    Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
                     NotificationCell.NotificationType.Information);
                 yield break;
@@ -718,8 +735,9 @@ namespace Nekoyume.Game
             Event.OnNestEnter.Invoke();
 
             var deletableWidgets = Widget.FindWidgets().Where(widget =>
-                !(widget is SystemWidget) &&
-                !(widget is MessageCatTooltip) && widget.IsActive());
+                widget is not SystemWidget &&
+                widget is not MessageCatTooltip &&
+                widget.IsActive());
             foreach (var widget in deletableWidgets)
             {
                 widget.Close(true);
@@ -744,8 +762,11 @@ namespace Nekoyume.Game
                     code)
                 : errorMsg;
             var popup = Widget.Find<IconAndButtonSystem>();
-            popup.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                L10nManager.Localize("UI_OK"), false);
+            popup.Show(
+                L10nManager.Localize("UI_ERROR"),
+                errorMsg,
+                L10nManager.Localize("UI_OK"),
+                false);
             popup.SetCancelCallbackToExit();
         }
 
@@ -813,7 +834,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            var settings = Widget.Find<UI.SettingPopup>();
+            var settings = Widget.Find<SettingPopup>();
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
@@ -840,7 +861,8 @@ namespace Nekoyume.Game
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
-            var storagePath = _commandLineOptions.StoragePath ?? Blockchain.Agent.DefaultStoragePath;
+            var storagePath =
+                _commandLineOptions.StoragePath ?? Blockchain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
@@ -888,7 +910,8 @@ namespace Nekoyume.Game
         private async void UploadLog(string logString, string stackTrace, LogType type)
         {
             // Avoid NRE
-            if (Agent.PrivateKey == default)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (Agent.PrivateKey is null)
             {
                 _msg += logString + "\n";
                 if (!string.IsNullOrEmpty(stackTrace))
@@ -936,13 +959,17 @@ namespace Nekoyume.Game
                     LogStreamNamePrefix = streamName
                 };
                 var resp = await _logsClient.DescribeLogStreamsAsync(req);
-                var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
+                var token = resp.LogStreams.FirstOrDefault(s =>
+                    s.LogStreamName == streamName)?.UploadSequenceToken;
                 var ie = new InputLogEvent
                 {
                     Message = msg,
                     Timestamp = DateTime.UtcNow
                 };
-                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> { ie });
+                var request = new PutLogEventsRequest(
+                    groupName,
+                    streamName,
+                    new List<InputLogEvent> { ie });
                 if (!string.IsNullOrEmpty(token))
                 {
                     request.SequenceToken = token;
@@ -981,7 +1008,7 @@ namespace Nekoyume.Game
                 URL.DccAvatars,
                 URL.DccEthChainHeaderName,
                 URL.DccEthChainHeaderValue,
-                (json) =>
+                json =>
                 {
                     var responseData = DccAvatars.FromJson(json);
                     Dcc.instance.Init(responseData.Avatars);
@@ -994,13 +1021,8 @@ namespace Nekoyume.Game
                 $"{URL.DccMileageAPI}{Agent.Address}",
                 URL.DccEthChainHeaderName,
                 URL.DccEthChainHeaderValue,
-                _ =>
-                {
-                    Dcc.instance.IsConnected = true;
-                }, _ =>
-                {
-                    Dcc.instance.IsConnected = false;
-                });
+                _ => { Dcc.instance.IsConnected = true; },
+                _ => { Dcc.instance.IsConnected = false; });
         }
 
         public void PauseTimeline(PlayableDirector whichOne)
@@ -1017,16 +1039,14 @@ namespace Nekoyume.Game
         private void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
-
-            var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
-            var row = TableSheets.Instance.ArenaSheet
-                .GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
-                ArenaHelper.GetMedalTotalCount(
-                row,
-                States.Instance.CurrentAvatarState) :
-                default;
-
+            var tableSheets = TableSheets.Instance;
+            var roundData = tableSheets.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            var row = tableSheets.ArenaSheet.GetRowByBlockIndex(currentBlockIndex);
+            var medalTotalCount = States.Instance.CurrentAvatarState != null
+                ? ArenaHelper.GetMedalTotalCount(
+                    row,
+                    States.Instance.CurrentAvatarState)
+                : default;
             if (medalTotalCount >= roundData.RequiredMedalCount)
             {
                 ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
@@ -1037,7 +1057,7 @@ namespace Nekoyume.Game
             ReserveWorldbossTicketPush(currentBlockIndex);
         }
 
-        private void ReserveArenaSeasonPush(
+        private static void ReserveArenaSeasonPush(
             ArenaSheet.Row row,
             ArenaSheet.RoundData roundData,
             long currentBlockIndex)
@@ -1046,24 +1066,26 @@ namespace Nekoyume.Game
             if (roundData.ArenaType == ArenaType.OffSeason &&
                 arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
             {
-                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
+                var prevPushIdentifier =
+                    PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
                 if (!string.IsNullOrEmpty(prevPushIdentifier))
                 {
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var targetBlockIndex = nextRoundData.StartBlockIndex
-                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
+                var gameConfigState = States.Instance.GameConfigState;
+                var targetBlockIndex = nextRoundData.StartBlockIndex +
+                                       Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
                 var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-                var arenaTypeText = roundData.ArenaType == ArenaType.Season ?
-                    L10nManager.Localize("UI_SEASON") :
-                    L10nManager.Localize("UI_CHAMPIONSHIP");
+                var arenaTypeText = roundData.ArenaType == ArenaType.Season
+                    ? L10nManager.Localize("UI_SEASON")
+                    : L10nManager.Localize("UI_CHAMPIONSHIP");
 
-                var arenaSeason = roundData.ArenaType == ArenaType.Championship ?
-                    roundData.ChampionshipId :
-                    row.GetSeasonNumber(roundData.Round);
+                var arenaSeason = roundData.ArenaType == ArenaType.Championship
+                    ? roundData.ChampionshipId
+                    : row.GetSeasonNumber(roundData.Round);
 
                 var content = L10nManager.Localize(
                     "PUSH_ARENA_SEASON_START_CONTENT",
@@ -1074,9 +1096,12 @@ namespace Nekoyume.Game
             }
         }
 
-        private void ReserveArenaTicketPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        private static void ReserveArenaTicketPush(
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
         {
-            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
             if (RxProps.ArenaTicketsProgress.HasValue &&
                 RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
             {
@@ -1085,11 +1110,13 @@ namespace Nekoyume.Game
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
                 }
+
                 return;
             }
 
             var interval = States.Instance.GameConfigState.DailyArenaInterval;
-            var remainingBlockCount = interval - ((currentBlockIndex - roundData.StartBlockIndex) % interval);
+            var remainingBlockCount = interval -
+                                      (currentBlockIndex - roundData.StartBlockIndex) % interval;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1115,15 +1142,17 @@ namespace Nekoyume.Game
                 return;
             }
 
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
             if (!string.IsNullOrEmpty(prevPushIdentifier))
             {
                 PushNotifier.CancelReservation(prevPushIdentifier);
                 PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
-            var targetBlockIndex = row.StartedBlockIndex
-                + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
+            var gameConfigState = States.Instance.GameConfigState;
+            var targetBlockIndex = row.StartedBlockIndex +
+                                   Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
             var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
@@ -1133,14 +1162,15 @@ namespace Nekoyume.Game
 
         private void ReserveWorldbossTicketPush(long currentBlockIndex)
         {
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
             var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
-            var raiderState = States.Instance.CurrentAvatarState != null ?
-                WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address) :
-                null;
-            var remainingTicket = raiderState != null ?
-                WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval) :
-                default;
+            var raiderState = States.Instance.CurrentAvatarState != null
+                ? WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address)
+                : null;
+            var remainingTicket = raiderState != null
+                ? WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval)
+                : default;
 
             if (remainingTicket <= 0 ||
                 !WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -1150,10 +1180,12 @@ namespace Nekoyume.Game
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
                 }
+
                 return;
             }
 
-            var remainingBlockCount = interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
+            var remainingBlockCount =
+                interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;

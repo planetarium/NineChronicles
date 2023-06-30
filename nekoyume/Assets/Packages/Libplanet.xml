@@ -16,6 +16,9 @@
         <member name="P:Libplanet.Action.ActionContext.BlockIndex">
             <inheritdoc cref="P:Libplanet.Action.IActionContext.BlockIndex"/>
         </member>
+        <member name="P:Libplanet.Action.ActionContext.BlockProtocolVersion">
+            <inheritdoc cref="P:Libplanet.Action.IActionContext.BlockProtocolVersion"/>
+        </member>
         <member name="P:Libplanet.Action.ActionContext.Rehearsal">
             <inheritdoc cref="P:Libplanet.Action.IActionContext.Rehearsal"/>
         </member>
@@ -136,7 +139,7 @@
         <member name="M:Libplanet.Action.ActionEvaluator.Evaluate(Libplanet.Blocks.IPreEvaluationBlock)">
             <inheritdoc cref="M:Libplanet.Action.IActionEvaluator.Evaluate(Libplanet.Blocks.IPreEvaluationBlock)"/>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.State.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Int64,System.Nullable{Libplanet.Assets.FungibleAssetValue},Serilog.ILogger)">
+        <member name="M:Libplanet.Action.ActionEvaluator.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Int32,System.Nullable{Libplanet.Tx.TxId},Libplanet.State.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Int64,System.Nullable{Libplanet.Assets.FungibleAssetValue},Serilog.ILogger)">
             <summary>
             Executes <see cref="T:Libplanet.Action.IAction"/>s in <paramref name="actions"/>.  All other evaluation
             calls resolve to this method.
@@ -146,6 +149,8 @@
             the <see cref="T:Libplanet.Blocks.IPreEvaluationBlock"/> that <paramref name="actions"/> belong to.</param>
             <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block.Index"/> of the <see cref="T:Libplanet.Blocks.Block"/>
             that <paramref name="actions"/> belong to.</param>
+            <param name="blockProtocolVersion">The <see cref="P:Libplanet.Blocks.Block.ProtocolVersion"/> of the
+            <see cref="T:Libplanet.Blocks.Block"/> that <paramref name="actions"/> belong to.</param>
             <param name="txid">The <see cref="P:Libplanet.Tx.ITransaction.Id"/> of the
             <see cref="T:Libplanet.Tx.ITransaction"/> that <paramref name="actions"/> belong to.</param>
             <param name="previousStates">The states immediately before <paramref name="actions"/>
@@ -608,6 +613,12 @@
         <member name="P:Libplanet.Action.IActionContext.BlockIndex">
             <summary>
             The <see cref="P:Libplanet.Blocks.Block.Index"/> of the <see cref="T:Libplanet.Blocks.Block"/> that contains
+            the <see cref="T:Libplanet.Action.IAction"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.BlockProtocolVersion">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block.ProtocolVersion"/> of the <see cref="T:Libplanet.Blocks.Block"/> that contains
             the <see cref="T:Libplanet.Action.IAction"/>.
             </summary>
         </member>
@@ -1430,7 +1441,7 @@
             <remarks>
             Unlike <see langword="null"/>, an empty set means <em>no one</em> can mint the currency.
             </remarks>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
         <member name="F:Libplanet.Assets.Currency.Hash">
             <summary>
@@ -7523,12 +7534,12 @@
             The <paramref name="address"/>'s balance of the <paramref name="currency"/>.
             </returns>
         </member>
-        <member name="T:Libplanet.State.AccountStateDeltaImpl">
+        <member name="T:Libplanet.State.AccountStateDelta">
             <summary>
             An internal implementation of <see cref="T:Libplanet.State.IAccountStateDelta"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.#ctor(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter,Libplanet.Address)">
+        <member name="M:Libplanet.State.AccountStateDelta.#ctor(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)">
             <summary>
             Creates a null delta from the given <paramref name="accountStateGetter"/>.
             </summary>
@@ -7539,52 +7550,50 @@
             currencies.</param>
             <param name="validatorSetGetter">A view to the &#x201c;epoch&#x201d; validator
             set.</param>
-            <param name="signer">A signer address. Used for authenticating if a signer is allowed
-            to mint a currency.</param>
         </member>
-        <member name="P:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateDelta#UpdatedAddresses">
+        <member name="P:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateDelta#UpdatedAddresses">
             <inheritdoc/>
         </member>
-        <member name="P:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateDelta#StateUpdatedAddresses">
+        <member name="P:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateDelta#StateUpdatedAddresses">
             <inheritdoc/>
         </member>
-        <member name="P:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateDelta#UpdatedFungibleAssets">
+        <member name="P:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateDelta#UpdatedFungibleAssets">
             <inheritdoc/>
         </member>
-        <member name="P:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateDelta#TotalUpdatedFungibleAssets">
+        <member name="P:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateDelta#TotalUpdatedFungibleAssets">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateView#GetState(Libplanet.Address)">
+        <member name="M:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateView#GetState(Libplanet.Address)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateView#GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
+        <member name="M:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateView#GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
             <inheritdoc cref="M:Libplanet.State.IAccountStateView.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})"/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.Libplanet#State#IAccountStateDelta#SetState(Libplanet.Address,Bencodex.Types.IValue)">
+        <member name="M:Libplanet.State.AccountStateDelta.Libplanet#State#IAccountStateDelta#SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
+        <member name="M:Libplanet.State.AccountStateDelta.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.GetTotalSupply(Libplanet.Assets.Currency)">
+        <member name="M:Libplanet.State.AccountStateDelta.GetTotalSupply(Libplanet.Assets.Currency)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.GetValidatorSet">
+        <member name="M:Libplanet.State.AccountStateDelta.GetValidatorSet">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+        <member name="M:Libplanet.State.AccountStateDelta.MintAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
+        <member name="M:Libplanet.State.AccountStateDelta.TransferAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+        <member name="M:Libplanet.State.AccountStateDelta.BurnAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.SetValidator(Libplanet.Consensus.Validator)">
+        <member name="M:Libplanet.State.AccountStateDelta.SetValidator(Libplanet.Consensus.Validator)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)">
+        <member name="M:Libplanet.State.AccountStateDelta.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)">
             <summary>
             Creates a default null delta.
             </summary>
@@ -7595,59 +7604,36 @@
             currencies.</param>
             <param name="validatorSetGetter">A view to the &#x201c;epoch&#x201d; validator
             set.</param>
-            <returns>A null delta of type <see cref="T:Libplanet.State.AccountStateDeltaImplV0"/>
+            <returns>A null delta of type <see cref="T:Libplanet.State.AccountStateDelta"/>
             with <see langword="default"/> <see cref="T:Libplanet.Address"/> as its
-            <see cref="P:Libplanet.State.AccountStateDeltaImpl.Signer"/>.</returns>
+            <see cref="P:Libplanet.State.AccountStateDelta.Signer"/>.</returns>
             <remarks>
-            This is not immediately usable.  Choose its proper type with <see cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)"/>
-            and signer with <see cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)"/> before use.
+            This is not immediately usable.  Choose its proper signer with
+            <see cref="M:Libplanet.State.AccountStateDelta.Flush(Libplanet.State.IAccountStateDelta)"/> before use.
             </remarks>
-            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)"/>
-            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)"/>
+            <seealso cref="M:Libplanet.State.AccountStateDelta.Flush(Libplanet.State.IAccountStateDelta)"/>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.ChooseVersion(Libplanet.State.IAccountStateDelta,System.Int32)">
+        <member name="M:Libplanet.State.AccountStateDelta.Create(Libplanet.State.IAccountStateDelta)">
             <summary>
-            Creates a null delta with given <paramref name="protocolVersion"/>.
+            Creates a default null delta from <paramref name="delta"/>.
             </summary>
             <param name="delta">The previous <see cref="T:Libplanet.State.IAccountStateDelta"/> to use.</param>
-            <param name="protocolVersion">The <see cref="P:Libplanet.Blocks.Block.ProtocolVersion"/> for which
-            this delta will be used.</param>
-            <returns>A null delta with an appropriate type as <see cref="T:Libplanet.State.IAccountStateDelta"/>
-            given <paramref name="protocolVersion"/>.</returns>
-            <remarks>
-            This clears <see cref="P:Libplanet.State.IAccountStateDelta.TotalUpdatedFungibleAssets"/> and should be
-            only used right after <see cref="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)"/>.
-            </remarks>
-            <seealso cref="M:Libplanet.State.AccountStateDeltaImpl.Create(Libplanet.State.AccountStateGetter,Libplanet.State.AccountBalanceGetter,Libplanet.State.TotalSupplyGetter,Libplanet.State.ValidatorSetGetter)"/>
+            <returns>A null delta made from <paramref name="delta"/>.</returns>
         </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImpl.ChooseSigner(Libplanet.State.IAccountStateDelta,Libplanet.Address)">
+        <member name="M:Libplanet.State.AccountStateDelta.Flush(Libplanet.State.IAccountStateDelta)">
             <summary>
-            Creates a null delta with given <paramref name="signer"/>.
+            Creates a null delta while inheriting <paramref name="delta"/>s
+            total updated fungibles.
             </summary>
             <param name="delta">The previous <see cref="T:Libplanet.State.IAccountStateDelta"/> to use.</param>
-            <param name="signer">The <see cref="T:Libplanet.Address"/> to set.</param>
-            <returns>A null delta with given <paramref name="signer"/> that is of the same type
-            as <paramref name="delta"/>.</returns>
+            <returns>A null delta that is of the same type as <paramref name="delta"/>.</returns>
             <exception cref="T:System.ArgumentException">Thrown if given <paramref name="delta"/>
-            is neither <see cref="T:Libplanet.State.AccountStateDeltaImplV0"/>
-            nor <see cref="T:Libplanet.State.AccountStateDeltaImpl"/>.
+            is not <see cref="T:Libplanet.State.AccountStateDelta"/>.
             </exception>
             <remarks>
             This inherits <paramref name="delta"/>'s
             <see cref="P:Libplanet.State.IAccountStateDelta.TotalUpdatedFungibleAssets"/>.
             </remarks>
-        </member>
-        <member name="T:Libplanet.State.AccountStateDeltaImplV0">
-            <summary>
-            Equivalent to <see cref="T:Libplanet.State.AccountStateDeltaImpl"/> except that it maintains its old (v0)
-            incorrect behavior of <see cref="M:Libplanet.State.AccountStateDeltaImplV0.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImplV0.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.State.AccountStateDeltaImplV0.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
-            <inheritdoc/>
         </member>
         <member name="T:Libplanet.State.AccountStateGetter">
             <summary>
@@ -7667,8 +7653,8 @@
             The exception that is thrown when a <see cref="P:Libplanet.State.CurrencyPermissionException.TransactionSigner"/> has no rights
             to mint a <see cref="P:Libplanet.State.CurrencyPermissionException.Currency"/> or burn assets of a <see cref="P:Libplanet.State.CurrencyPermissionException.Currency"/>.
             </summary>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
         <member name="M:Libplanet.State.CurrencyPermissionException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.Currency)">
             <summary>
@@ -7776,11 +7762,13 @@
             with updated states instead.
             </remarks>
         </member>
-        <member name="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+        <member name="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <summary>
             Mints the fungible asset <paramref name="value"/> (i.e., in-game monetary),
             and give it to the <paramref name="recipient"/>.
             </summary>
+            <param name="context">The <see cref="T:Libplanet.Action.IActionContext"/> of the <see cref="T:Libplanet.Action.IAction"/>
+            executing this method.</param>
             <param name="recipient">The address who receives the minted asset.</param>
             <param name="value">The asset value to mint.</param>
             <returns>A new <see cref="T:Libplanet.State.IAccountStateDelta"/> instance that the given <paramref
@@ -7795,11 +7783,13 @@
             <see cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/> exceeds the
             <see cref="P:Libplanet.Assets.Currency.MaximumSupply"/>.</exception>
         </member>
-        <member name="M:Libplanet.State.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
+        <member name="M:Libplanet.State.IAccountStateDelta.TransferAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
             <summary>
             Transfers the fungible asset <paramref name="value"/> (i.e., in-game monetary)
             from the <paramref name="sender"/> to the <paramref name="recipient"/>.
             </summary>
+            <param name="context">The <see cref="T:Libplanet.Action.IActionContext"/> of the <see cref="T:Libplanet.Action.IAction"/>
+            executing this method.</param>
             <param name="sender">The address who sends the fungible asset to
             the <paramref name="recipient"/>.</param>
             <param name="recipient">The address who receives the fungible asset from
@@ -7815,12 +7805,20 @@
             <exception cref="T:Libplanet.State.InsufficientBalanceException">Thrown when the <paramref name="sender"/>
             has insufficient balance than <paramref name="value"/> to transfer and
             the <paramref name="allowNegativeBalance"/> option is turned off.</exception>
+            <remarks>
+            The behavior is different depending on <paramref name="context"/>'s
+            <see cref="P:Libplanet.Action.IActionContext.BlockProtocolVersion"/>.  There is a bug for version 0
+            where this may not act as intended.  Such behavior is left intact for backward
+            compatibility.
+            </remarks>
         </member>
-        <member name="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
+        <member name="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <summary>
             Burns the fungible asset <paramref name="value"/> (i.e., in-game monetary) from
             <paramref name="owner"/>'s balance.
             </summary>
+            <param name="context">The <see cref="T:Libplanet.Action.IActionContext"/> of the <see cref="T:Libplanet.Action.IAction"/>
+            executing this method.</param>
             <param name="owner">The address who owns the fungible asset to burn.</param>
             <param name="value">The fungible asset <paramref name="value"/> to burn.</param>
             <returns>A new <see cref="T:Libplanet.State.IAccountStateDelta"/> instance that the given <paramref
@@ -7905,8 +7903,8 @@
             The exception that is thrown when a sender has less <see cref="P:Libplanet.State.InsufficientBalanceException.Balance"/> than amount to
             transfer or an owner has less <see cref="P:Libplanet.State.InsufficientBalanceException.Balance"/> than amount to burn.
             </summary>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.TransferAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.BurnAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
         <member name="M:Libplanet.State.InsufficientBalanceException.#ctor(System.String,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <summary>
@@ -7949,7 +7947,7 @@
             The exception thrown when a minter tries to mint a currency such that the resulting total
             supply exceed the maximum amount.
             </summary>
-            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
+            <seealso cref="M:Libplanet.State.IAccountStateDelta.MintAsset(Libplanet.Action.IActionContext,Libplanet.Address,Libplanet.Assets.FungibleAssetValue)"/>
         </member>
         <member name="M:Libplanet.State.SupplyOverflowException.#ctor(System.String,Libplanet.Assets.FungibleAssetValue)">
             <summary>
