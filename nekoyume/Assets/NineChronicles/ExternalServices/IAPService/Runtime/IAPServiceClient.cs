@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Libplanet;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace NineChronicles.ExternalServices.IAPService.Runtime
@@ -29,19 +31,6 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             _endpoints = new IAPServiceEndpoints(url);
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromSeconds(10);
-            // _client.DefaultRequestHeaders.Add("User-Agent", "Nekoyume");
-            // _client.DefaultRequestHeaders.Add("Accept", "application/json");
-            // _client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
-            // _client.DefaultRequestHeaders.Add("Accept-Language", "en-US");
-            // _client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            // _client.DefaultRequestHeaders.Add("Keep-Alive", "timeout=5");
-            // _client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-            // _client.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
-            // _client.DefaultRequestHeaders.Add("X-Unity-Version", "2021.3.5f1");
-            // _client.DefaultRequestHeaders.Add("X-Unity-Platform", "OSXPlayer");
-            // _client.DefaultRequestHeaders.Add("X-Unity-Device-Model", "Mac");
-            // _client.DefaultRequestHeaders.Add("X-Unity-Device-Name", "Mac");
-            // _client.DefaultRequestHeaders.Add("X-Unity-Device-Unique-Id", "00000000-0000-0000-0000-000000000000");
         }
 
         public void Dispose()
@@ -71,14 +60,15 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
-            PurchaseAsync(
+            PurchaseRequestAsync(
+                Store store,
                 string receipt,
                 Address agentAddr,
                 Address inventoryAddr)
         {
             var reqJson = new JsonObject
             {
-                { "store", 0 },  // FIXME: Set right store value
+                { "store", (int)store },
                 { "data", receipt },
                 { "agentAddress", agentAddr.ToHex() },
                 { "inventoryAddress", inventoryAddr.ToHex() }
@@ -87,13 +77,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,
                 "application/json");
-            using var res = await _client.PostAsync(_endpoints.Purchase, reqContent);
+            using var res = await _client.PostAsync(_endpoints.PurchaseRequest, reqContent);
             return await ProcessResponseAsync(res);
         }
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
-            PollAsync(HashSet<string> uuids)
+            PurchaseStatusAsync(HashSet<string> uuids)
         {
             var reqJson = new JsonObject
             {
