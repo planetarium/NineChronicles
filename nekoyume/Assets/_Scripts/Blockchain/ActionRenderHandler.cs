@@ -546,6 +546,7 @@ namespace Nekoyume.Blockchain
                     {
                         var inventoryAddr = avatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
                         var inventory = states.GetInventory(inventoryAddr);
+                        gameStates.CurrentAvatarState.inventory = inventory;
                         ReactiveAvatarState.UpdateInventory(inventory);
                     }
 
@@ -564,6 +565,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     var mailBox = new MailBox(mailBoxList);
+                    gameStates.CurrentAvatarState.mailBox = mailBox;
                     ReactiveAvatarState.UpdateMailBox(mailBox);
                 })
                 .AddTo(_disposables);
