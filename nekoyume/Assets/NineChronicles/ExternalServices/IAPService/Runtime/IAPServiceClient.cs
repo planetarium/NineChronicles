@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -74,12 +73,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseAsync(
                 string receipt,
+                Address agentAddr,
                 Address inventoryAddr)
         {
             var reqJson = new JsonObject
             {
-                { "store", 0 },
+                { "store", 0 },  // FIXME: Set right store value
                 { "data", receipt },
+                { "agentAddress", agentAddr.ToHex() },
                 { "inventoryAddress", inventoryAddr.ToHex() }
             };
             var reqContent = new StringContent(
