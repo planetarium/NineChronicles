@@ -117,7 +117,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -278,6 +277,7 @@ namespace Nekoyume.Action
                 if (cost > 0L)
                 {
                     states = states.TransferAsset(
+                        context,
                         context.Signer,
                         Addresses.EventDungeon,
                         cost * currency);

@@ -87,7 +87,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (recipeId != 1)
@@ -324,7 +323,7 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(dailyCostState.Address, dailyCostState.Serialize())
                     .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
-                    .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+                    .TransferAsset(context, context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
             // Subtract Required ActionPoint
@@ -349,6 +348,7 @@ namespace Nekoyume.Action
                 var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
 
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     feeStoreAddress,
                     states.GetGoldCurrency() * costNCG

@@ -93,6 +93,7 @@ namespace Nekoyume.Action
                         .SetState(orderReceiptAddress, MarkChanged)
                         .SetState(digestListAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             purchaseInfo.SellerAgentAddress,
@@ -107,7 +108,6 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
@@ -305,12 +305,14 @@ namespace Nekoyume.Action
 
                 // Transfer tax.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     GetFeeStoreAddress(),
                     tax);
 
                 // Transfer seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     sellerAgentAddress,
                     taxedPrice

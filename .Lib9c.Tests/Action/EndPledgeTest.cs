@@ -19,12 +19,13 @@ namespace Lib9c.Tests.Action
         {
             var patron = new PrivateKey().ToAddress();
             var agent = new PrivateKey().ToAddress();
+            var context = new ActionContext();
             IAccountStateDelta states = new State()
                 .SetState(agent.GetPledgeAddress(), List.Empty.Add(patron.Serialize()).Add(true.Serialize()));
             var mead = Currencies.Mead;
             if (balance > 0)
             {
-                states = states.MintAsset(agent, mead * balance);
+                states = states.MintAsset(context, agent, mead * balance);
             }
 
             var action = new EndPledge

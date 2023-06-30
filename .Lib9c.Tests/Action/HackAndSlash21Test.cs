@@ -1386,6 +1386,7 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(
@@ -1401,7 +1402,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive("world_ids"),
                     List.Empty.Add(worldId.Serialize()))
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
 
             var expectedAp = previousAvatarState.actionPoint -
                              _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
@@ -1464,6 +1465,7 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(
@@ -1479,7 +1481,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive("world_ids"),
                     List.Empty.Add(worldId.Serialize()))
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
 
             var itemCount = previousAvatarState.inventory.Items
                 .FirstOrDefault(i => i.item.Id == itemId)?.count ?? 0;
@@ -1740,6 +1742,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
@@ -1752,7 +1755,7 @@ namespace Lib9c.Tests.Action
             );
 
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+            state = state.MintAsset(context, _agentAddress, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {

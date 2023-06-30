@@ -89,7 +89,7 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Amount.Currency, new[] {Sender, Recipient});
+                return state.MarkBalanceChanged(context, Amount.Currency, new[] {Sender, Recipient});
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset4 Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return state.TransferAsset(Sender, Recipient, Amount);
+            return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)

@@ -825,10 +825,11 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(stakeStateAddress, stakeState.Serialize())
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
             var stageSheet = _initialState.GetSheet<StageSheet>();
             if (stageSheet.TryGetValue(stageId, out var stageRow))
             {

@@ -61,13 +61,14 @@ namespace Lib9c.Tests.Action
         [InlineData(4)]
         public void Execute(int slotIndex)
         {
+            var context = new ActionContext();
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var gameConfig = state.GetGameConfigState();
             var cost = slotIndex == 1
                 ? gameConfig.RuneStatSlotUnlockCost
                 : gameConfig.RuneSkillSlotUnlockCost;
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(agentAddress, cost * ncgCurrency);
+            state = state.MintAsset(context, agentAddress, cost * ncgCurrency);
             var action = new UnlockRuneSlot()
             {
                 AvatarAddress = avatarAddress,
@@ -205,10 +206,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SlotIsAlreadyUnlockedException()
         {
+            var context = new ActionContext();
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var gameConfig = state.GetGameConfigState();
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(agentAddress, gameConfig.RuneStatSlotUnlockCost * ncgCurrency);
+            state = state.MintAsset(context, agentAddress, gameConfig.RuneStatSlotUnlockCost * ncgCurrency);
             var action = new UnlockRuneSlot()
             {
                 AvatarAddress = avatarAddress,

@@ -98,6 +98,7 @@
 
             var sheets = TableSheetsImporter.ImportSheets();
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(0);
+            var context = new ActionContext();
             var initialState = new Tests.Action.State()
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(
@@ -146,8 +147,8 @@
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
-                .MintAsset(GoldCurrencyState.Address, initCurrencyGold)
-                .TransferAsset(Addresses.GoldCurrency, agentAddress,  agentCurrencyGold);
+                .MintAsset(context, GoldCurrencyState.Address, initCurrencyGold)
+                .TransferAsset(context, Addresses.GoldCurrency, agentAddress,  agentCurrencyGold);
 
             var action = new CreateTestbed
             {

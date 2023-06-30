@@ -60,6 +60,7 @@ namespace Lib9c.Tests.Action
                 prevAgentState.IncreaseCollectionRound();
             }
 
+            var context = new ActionContext();
             _initialState = _initialState.SetState(_signer, prevAgentState.Serialize());
 
             Currency currency = _initialState.GetGoldCurrency();
@@ -69,7 +70,7 @@ namespace Lib9c.Tests.Action
                 if (i > prevLevel)
                 {
                     MonsterCollectionSheet.Row row = _tableSheets.MonsterCollectionSheet[i];
-                    _initialState = _initialState.MintAsset(_signer, row.RequiredGold * currency);
+                    _initialState = _initialState.MintAsset(context, _signer, row.RequiredGold * currency);
                 }
             }
 

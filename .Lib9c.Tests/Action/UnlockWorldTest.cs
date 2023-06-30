@@ -88,7 +88,8 @@ namespace Lib9c.Tests.Action
             Type exc
         )
         {
-            var state = _initialState.MintAsset(_agentAddress, balance * _currency);
+            var context = new ActionContext();
+            var state = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             var worldIds = ids.ToList();
 
             if (stateExist)

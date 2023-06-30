@@ -103,7 +103,8 @@ namespace Lib9c.Tests.Action
         [InlineData(20, false, 1, 10_000, typeof(NotEnoughFungibleAssetValueException))]
         public void Execute(int stageId, bool advancedGacha, int balance, int gatheredStar, Type excType)
         {
-            var states = _initialState.MintAsset(_agentAddress, balance * _currency);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -174,7 +175,8 @@ namespace Lib9c.Tests.Action
         [InlineData(true, CrystalRandomBuffSheet.Row.BuffRank.S)]
         public void ContainMinimumBuffRank(bool advancedGacha, CrystalRandomBuffSheet.Row.BuffRank minimumRank)
         {
-            var states = _initialState.MintAsset(_agentAddress, 100_000_000 * _currency);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _agentAddress, 100_000_000 * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,

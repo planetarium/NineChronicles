@@ -125,19 +125,19 @@ namespace Nekoyume.Action
             var ncgCost = cost.NcgQuantity * tryCount * ncgCurrency;
             if (cost.NcgQuantity > 0)
             {
-                states = states.TransferAsset(context.Signer, feeStoreAddress, ncgCost);
+                states = states.TransferAsset(context, context.Signer, feeStoreAddress, ncgCost);
             }
 
             var crystalCost = cost.CrystalQuantity * tryCount * crystalCurrency;
             if (cost.CrystalQuantity > 0)
             {
-                states = states.TransferAsset(context.Signer, feeStoreAddress, crystalCost);
+                states = states.TransferAsset(context, context.Signer, feeStoreAddress, crystalCost);
             }
 
             var runeCost = cost.RuneStoneQuantity * tryCount * runeCurrency;
             if (cost.RuneStoneQuantity > 0)
             {
-                states = states.TransferAsset(AvatarAddress, feeStoreAddress, runeCost);
+                states = states.TransferAsset(context, AvatarAddress, feeStoreAddress, runeCost);
             }
 
             return states;

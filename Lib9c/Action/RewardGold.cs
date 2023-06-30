@@ -38,7 +38,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousStates;
-            states = TransferMead(states);
+            states = TransferMead(context, states);
             states = GenesisGoldDistribution(context, states);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
@@ -83,6 +83,7 @@ namespace Nekoyume.Action
                     fav = fav.DivRem(100, out FungibleAssetValue _);
                 }
                 states = states.TransferAsset(
+                    ctx,
                     fund,
                     distribution.Address,
                     fav
@@ -291,6 +292,7 @@ namespace Nekoyume.Action
             if (miningReward >= FungibleAssetValue.Parse(currency, "1.25"))
             {
                 states = states.TransferAsset(
+                    ctx,
                     GoldCurrencyState.Address,
                     ctx.Miner,
                     miningReward
@@ -300,7 +302,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta TransferMead(IAccountStateDelta states)
+        public static IAccountStateDelta TransferMead(IActionContext context, IAccountStateDelta states)
         {
 #pragma warning disable LAA1002
             var targetAddresses = states
@@ -317,7 +319,7 @@ namespace Nekoyume.Action
                 {
                     try
                     {
-                        states = states.Mead(address, contract[2].ToInteger());
+                        states = states.Mead(context, address, contract[2].ToInteger());
                     }
                     catch (InsufficientBalanceException)
                     {

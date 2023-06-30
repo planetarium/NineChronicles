@@ -214,6 +214,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var context = new ActionContext();
             IAccountStateDelta previousState;
             if (backward)
             {
@@ -230,7 +231,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            previousState = previousState.MintAsset(_agentAddress, mintNCG * currency);
+            previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
             var goldCurrencyState = previousState.GetGoldCurrency();
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);

@@ -55,11 +55,7 @@ namespace Nekoyume.Action
 
             try
             {
-                var claimMonsterCollectionReward = new ClaimMonsterCollectionReward
-                {
-                    avatarAddress = AvatarAddress,
-                };
-                states = claimMonsterCollectionReward.Execute(context);
+                states = ClaimMonsterCollectionReward.Claim(context, AvatarAddress, addressesHex);
             }
             catch (Exception e)
             {
@@ -92,6 +88,7 @@ namespace Nekoyume.Action
             return states.SetState(monsterCollectionState.address, Null.Value)
                 .SetState(migratedStakeStateAddress, migratedStakeState.SerializeV2())
                 .TransferAsset(
+                    context,
                     monsterCollectionState.address,
                     migratedStakeStateAddress,
                     states.GetBalance(monsterCollectionState.address, currency));

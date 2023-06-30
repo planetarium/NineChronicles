@@ -41,7 +41,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(collectionAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, collectionAddress, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, collectionAddress, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}CancelMonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .TransferAsset(collectionAddress, context.Signer, balance);
+                .TransferAsset(context, collectionAddress, context.Signer, balance);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

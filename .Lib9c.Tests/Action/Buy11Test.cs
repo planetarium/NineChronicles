@@ -46,6 +46,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
+            var context = new ActionContext();
             _initialState = new State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -107,7 +108,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+                .MintAsset(context, _buyerAgentAddress, _goldCurrencyState.Currency * 100);
 
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             _arenaSheetState = _initialState.GetState(arenaSheetAddress);
@@ -473,6 +474,7 @@ namespace Lib9c.Tests.Action
         [MemberData(nameof(ErrorCodeMemberData))]
         public void Execute_ErrorCode(ErrorCodeMember errorCodeMember)
         {
+            var context = new ActionContext();
             var agentAddress = errorCodeMember.BuyerExist ? _buyerAgentAddress : default;
             var orderPrice = new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0);
             var sellerAvatarAddress = errorCodeMember.EqualSellerAvatar ? _sellerAvatarAddress : default;
@@ -558,7 +560,7 @@ namespace Lib9c.Tests.Action
             if (errorCodeMember.NotEnoughBalance)
             {
                 var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-                _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+                _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance);
             }
 
             PurchaseInfo purchaseInfo = new PurchaseInfo(

@@ -136,7 +136,7 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
@@ -144,7 +144,6 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
             var arenaSheetState = states.GetState(arenaSheetAddress);
@@ -291,7 +290,7 @@ namespace Nekoyume.Action
             var requiredNcg = row.Cost;
             if (requiredNcg > 0)
             {
-                states = states.TransferAsset(ctx.Signer, GetFeeStoreAddress(), states.GetGoldCurrency() * requiredNcg);
+                states = states.TransferAsset(ctx, ctx.Signer, GetFeeStoreAddress(), states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items

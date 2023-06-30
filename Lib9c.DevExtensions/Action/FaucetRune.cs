@@ -37,7 +37,7 @@ namespace Lib9c.DevExtensions.Action
                 {
                     foreach (var rune in FaucetRuneInfos)
                     {
-                        states = states.MintAsset(AvatarAddress, RuneHelper.ToFungibleAssetValue(
+                        states = states.MintAsset(context, AvatarAddress, RuneHelper.ToFungibleAssetValue(
                             runeSheet.OrderedList.First(r => r.Id == rune.RuneId),
                             rune.Amount
                         ));

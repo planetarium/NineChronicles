@@ -26,6 +26,7 @@ namespace Lib9c.Tests.Action
 
         public ActionEvaluationTest()
         {
+            var context = new ActionContext();
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             _currency = Currency.Legacy("NCG", 2, null);
@@ -35,7 +36,7 @@ namespace Lib9c.Tests.Action
             _states = new State()
                 .SetState(_signer, (Text)"ANYTHING")
                 .SetState(default, Dictionary.Empty.Add("key", "value"))
-                .MintAsset(_signer, _currency * 10000);
+                .MintAsset(context, _signer, _currency * 10000);
             var resolver = MessagePack.Resolvers.CompositeResolver.Create(
                 NineChroniclesResolver.Instance,
                 StandardResolver.Instance
@@ -454,6 +455,7 @@ namespace Lib9c.Tests.Action
                 {
                     PatronAddress = new PrivateKey().ToAddress(),
                     AgentAddresses = new[] { (new PrivateKey().ToAddress(), new PrivateKey().ToAddress()) },
+                    Mead = 4,
                 },
                 TransferAssets _ => new TransferAssets(_sender, new List<(Address, FungibleAssetValue)>
                 {

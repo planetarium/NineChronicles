@@ -219,9 +219,10 @@ namespace Lib9c.Tests.Action
                 amount: _currency * 100
             );
 
+            var context = new ActionContext();
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = new State().MintAsset(_sender, Currencies.Mead * 1),
+                PreviousStates = new State().MintAsset(context, _sender, Currencies.Mead * 1),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,

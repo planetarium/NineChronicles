@@ -286,7 +286,7 @@ namespace Nekoyume.Action
                 var arenaSheet = states.GetSheet<ArenaSheet>();
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
                 var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-                states = states.TransferAsset(ctx.Signer, feeStoreAddress, states.GetGoldCurrency() * requiredNcg);
+                states = states.TransferAsset(ctx, ctx.Signer, feeStoreAddress, states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items
@@ -336,7 +336,7 @@ namespace Nekoyume.Action
 
                 if (crystal > 0 * CrystalCalculator.CRYSTAL)
                 {
-                    states = states.MintAsset(context.Signer, crystal);
+                    states = states.MintAsset(context, context.Signer, crystal);
                 }
             }
 

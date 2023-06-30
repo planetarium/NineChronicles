@@ -102,7 +102,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
@@ -344,7 +343,7 @@ namespace Nekoyume.Action
 
                 purchasedCountDuringInterval++;
                 states = states
-                    .TransferAsset(context.Signer, arenaAdr, ticketBalance)
+                    .TransferAsset(context, context.Signer, arenaAdr, ticketBalance)
                     .SetState(purchasedCountAddr, purchasedCountDuringInterval);
             }
 

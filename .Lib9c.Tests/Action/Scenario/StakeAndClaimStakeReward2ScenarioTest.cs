@@ -631,7 +631,8 @@ namespace Lib9c.Tests.Action.Scenario
         [MemberData(nameof(StakeAndClaimStakeRewardTestCases))]
         public void StakeAndClaimStakeReward(long stakeAmount, (int ItemId, int Amount)[] expectedItems, long receiveBlockIndex)
         {
-            var states = _initialState.MintAsset(_signerAddress, _currency * stakeAmount);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _signerAddress, _currency * stakeAmount);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -681,7 +682,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(newStakeBlockIndex < StakeState.LockupInterval);
             Assert.True(stakeAmount < newStakeAmount);
 
-            var states = _initialState.MintAsset(_signerAddress, _currency * initialBalance);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -754,7 +756,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(initialBalance >= stakeAmount);
             Assert.True(newStakeAmount < stakeAmount);
 
-            var states = _initialState.MintAsset(_signerAddress, _currency * initialBalance);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -811,7 +814,8 @@ namespace Lib9c.Tests.Action.Scenario
             // Validate testcases
             Assert.True(stakeAmount > newStakeAmount);
 
-            var states = _initialState.MintAsset(_signerAddress, _currency * initialBalance);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
@@ -903,7 +907,8 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void StakeAndClaimStakeRewardBeforeRewardInterval()
         {
-            var states = _initialState.MintAsset(_signerAddress, _currency * 500);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _signerAddress, _currency * 500);
             IAction action = new Stake(500);
             states = action.Execute(new ActionContext
             {

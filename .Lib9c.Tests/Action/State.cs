@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Consensus;
     using Libplanet.State;
@@ -81,7 +82,7 @@ namespace Lib9c.Tests.Action
             return currency * 0;
         }
 
-        public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+        public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
         {
             var totalSupplies =
                 value.Currency.TotalSupplyTrackable
@@ -98,7 +99,7 @@ namespace Lib9c.Tests.Action
             );
         }
 
-        public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
+        public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
         {
             var totalSupplies =
                 value.Currency.TotalSupplyTrackable
@@ -115,6 +116,7 @@ namespace Lib9c.Tests.Action
         }
 
         public IAccountStateDelta TransferAsset(
+            IActionContext context,
             Address sender,
             Address recipient,
             FungibleAssetValue value,

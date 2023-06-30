@@ -50,7 +50,6 @@ namespace Nekoyume.Action
                 return context.PreviousStates.SetState(PendingActivation.address, MarkChanged);
             }
 
-            context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 

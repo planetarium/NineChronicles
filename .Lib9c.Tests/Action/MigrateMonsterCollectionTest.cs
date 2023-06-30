@@ -94,9 +94,10 @@ namespace Lib9c.Tests.Action
             var monsterCollectionState = new MonsterCollectionState(
                 monsterCollectionAddress, 1, ActionObsoleteConfig.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval);
             var currency = _state.GetGoldCurrency();
+            var context = new ActionContext();
             var states = _state
                 .SetState(monsterCollectionAddress, monsterCollectionState.Serialize())
-                .MintAsset(monsterCollectionAddress, currency * 100);
+                .MintAsset(context, monsterCollectionAddress, currency * 100);
             MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
             states = action.Execute(new ActionContext
             {
@@ -124,9 +125,10 @@ namespace Lib9c.Tests.Action
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
             Currency currency = _state.GetGoldCurrency();
 
+            var context = new ActionContext();
             var states = _state
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .MintAsset(monsterCollectionState.address, stakedAmount * currency);
+                .MintAsset(context, monsterCollectionState.address, stakedAmount * currency);
 
             Assert.Equal(0, states.GetAgentState(_signer).MonsterCollectionRound);
             Assert.Equal(0 * currency, states.GetBalance(_signer, currency));
