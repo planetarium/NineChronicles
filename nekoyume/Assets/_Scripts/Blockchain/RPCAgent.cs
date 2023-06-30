@@ -499,6 +499,7 @@ namespace Nekoyume.Blockchain
         private async Task MakeTransaction(List<ActionBase> actions)
         {
             var nonce = await GetNonceAsync();
+            long gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
             var tx = NCTx.Create(
                 nonce: nonce,
                 privateKey: PrivateKey,
@@ -506,7 +507,7 @@ namespace Nekoyume.Blockchain
                 actions: actions,
                 updatedAddresses: actions.CalculateUpdateAddresses(),
                 maxGasPrice: Currencies.Mead * 1,
-                gasLimit: 4
+                gasLimit: gasLimit
             );
 
             string actionsName = default;
