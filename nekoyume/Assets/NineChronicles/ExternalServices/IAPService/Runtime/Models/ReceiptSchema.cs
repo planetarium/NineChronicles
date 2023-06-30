@@ -10,6 +10,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("data")]
         public string Data { get; set; }
 
+        [JsonPropertyName("agentAddress")]
+        public string AgentAddress { get; set; }
+
         [JsonPropertyName("inventoryAddress")]
         public string InventoryAddress { get; set; }
     }

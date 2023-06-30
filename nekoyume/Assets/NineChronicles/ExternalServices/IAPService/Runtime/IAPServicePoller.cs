@@ -17,7 +17,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         private CancellationTokenSource? _cts;
         private readonly HashSet<string> _uuids = new();
 
-        public event Action<PurchaseProcessResultSchema[]> OnPoll = delegate { };
+        public event Action<ReceiptDetailSchema[]> OnPoll = delegate { };
 
         public IAPServicePoller(IAPServiceClient client)
         {
@@ -78,7 +78,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     continue;
                 }
 
-                var (code, error, mediaType, content) = await _client!.PollAsync(_uuids);
+                var (code, error, mediaType, content) = await _client!.PurchaseStatusAsync(_uuids);
                 if (code != HttpStatusCode.OK ||
                     !string.IsNullOrEmpty(error))
                 {
@@ -101,7 +101,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
                 try
                 {
-                    var results = JsonSerializer.Deserialize<PurchaseProcessResultSchema[]>(
+                    var results = JsonSerializer.Deserialize<ReceiptDetailSchema[]>(
                         content!,
                         IAPServiceClient.JsonSerializerOptions);
                     OnPoll.Invoke(results!);

@@ -67,13 +67,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             set => _productsCache.Value = value;
         }
 
-        public readonly Dictionary<string, PurchaseProcessResultSchema>
+        public readonly Dictionary<string, ReceiptDetailSchema>
             PurchaseProcessResults;
 
         public IAPServiceCache(TimeSpan? productsCacheLifetime = null)
         {
             _productsCache = new Cache<ProductSchema[]>(productsCacheLifetime);
-            PurchaseProcessResults = new Dictionary<string, PurchaseProcessResultSchema>();
+            PurchaseProcessResults = new Dictionary<string, ReceiptDetailSchema>();
         }
 
         public void SetOptions(TimeSpan? productsCacheLifetime = null)

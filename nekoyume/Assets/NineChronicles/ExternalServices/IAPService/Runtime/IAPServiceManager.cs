@@ -20,16 +20,46 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         private readonly IAPServiceClient _client;
         private readonly IAPServicePoller _poller;
         private readonly IAPServiceCache _cache;
+        private readonly Store _store;
 
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
 
-        public IAPServiceManager(string url)
+        public IAPServiceManager(string url, bool? isTest = false, bool? isSandbox = false)
         {
+            if (isTest is not null && isSandbox is not null)
+            {
+                throw new ArgumentException(
+                    "isTest and isSandbox cannot be set at the same time.");
+            }
+
             _client = new IAPServiceClient(url);
             _poller = new IAPServicePoller(_client);
             _poller.OnPoll += OnPoll;
             _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
+
+            if (isTest is not null)
+            {
+                _store = Store.Test;
+            }
+            else if (isSandbox is not null)
+            {
+                _store = Application.platform switch
+                {
+                    RuntimePlatform.Android => Store.GoogleTest,
+                    RuntimePlatform.IPhonePlayer => Store.AppleTest,
+                    _ => Store.Test,
+                };
+            }
+            else
+            {
+                _store = Application.platform switch
+                {
+                    RuntimePlatform.Android => Store.Google,
+                    RuntimePlatform.IPhonePlayer => Store.Apple,
+                    _ => Store.Test,
+                };
+            }
         }
 
         public async Task InitializeAsync(TimeSpan? productsCacheLifetime = null)
@@ -135,8 +165,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
-        public async Task<PurchaseResponse200?> PurchaseAsync(
+        public async Task<PurchaseRequestResponse200?> PurchaseRequestAsync(
             string receipt,
+            Address agentAddr,
             Address inventoryAddr)
         {
             if (!IsInitialized)
@@ -146,7 +177,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
 
             var (code, error, mediaType, content) =
-                await _client.PurchaseAsync(receipt, inventoryAddr);
+                await _client.PurchaseRequestAsync(
+                    _store,
+                    receipt,
+                    agentAddr,
+                    inventoryAddr);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
@@ -171,16 +206,17 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
             try
             {
-                var result = JsonSerializer.Deserialize<PurchaseProcessResultSchema>(
+                var result = JsonSerializer.Deserialize<ReceiptDetailSchema>(
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
                 _cache.PurchaseProcessResults[result.Uuid] = result;
-                if (result.Status != ReceiptStatus.Valid)
+                if (result.Status != ReceiptStatus.Invalid &&
+                    result.Status != ReceiptStatus.Unknown)
                 {
                     Poll(result.Uuid);
                 }
 
-                return new PurchaseResponse200 { Content = result };
+                return new PurchaseRequestResponse200 { Content = result };
             }
             catch (Exception e)
             {
@@ -194,16 +230,49 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             _poller.Register(uuid);
         }
 
-        private void OnPoll(PurchaseProcessResultSchema[] results)
+        private void OnPoll(ReceiptDetailSchema[] results)
         {
             // FIXME:
             // Actually, we should check the result of the tx.
             // ReceiptStatus.Valid just means that the receipt is valid.
             foreach (var result in results)
             {
-                if (result.Status != ReceiptStatus.Valid)
+                switch (result.Status)
                 {
-                    return;
+                    case ReceiptStatus.Init:
+                        break;
+                    case ReceiptStatus.ValidationRequest:
+                        break;
+                    case ReceiptStatus.Valid:
+                        break;
+                    case ReceiptStatus.Invalid:
+                        break;
+                    case ReceiptStatus.Unknown:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                switch (result.TxStatus)
+                {
+                    case TxStatus.Created:
+                        break;
+                    case TxStatus.Staged:
+                        break;
+                    case TxStatus.Success:
+                        break;
+                    case TxStatus.Failure:
+                        break;
+                    case TxStatus.Invalid:
+                        break;
+                    case TxStatus.NotFound:
+                        break;
+                    case TxStatus.FailToCreate:
+                        break;
+                    case TxStatus.Unknown:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 _poller.Unregister(result.Uuid);
