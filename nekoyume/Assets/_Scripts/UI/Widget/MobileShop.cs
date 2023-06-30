@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.Purchasing;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -14,7 +14,8 @@ namespace Nekoyume.UI
             base.Awake();
             purchaseButton.onClick.AddListener(() =>
             {
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked("g_single_ap01");
+                var storeManager = Game.Game.instance.IAPStoreManager;
+                storeManager.OnPurchaseClicked(storeManager.Products.First().GoogleSku);
             });
         }
 

@@ -330,7 +330,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
             IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost);
-            yield return IAPServiceManager.InitializeAsync();
+            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
             Debug.Log("[Game] Start() IAPStoreManager initialized");
