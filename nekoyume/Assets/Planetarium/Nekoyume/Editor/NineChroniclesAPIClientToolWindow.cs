@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Nekoyume.GraphQL;
 using UnityEditor;
@@ -18,13 +17,13 @@ namespace Planetarium.Nekoyume.Editor
             GetWindow<NineChroniclesAPIClientToolWindow>("API Client Tool", true).Show();
         }
 
-        private async void OnGUI()
+        private void OnGUI()
         {
             _client ??= new NineChroniclesAPIClient(_host);
 
             if (GUILayout.Button("Get block hash"))
             {
-                await GetBlockHashAsync();
+                Task.Run(GetBlockHashAsync);
             }
 
             EditorGUILayout.TextArea(_result);
