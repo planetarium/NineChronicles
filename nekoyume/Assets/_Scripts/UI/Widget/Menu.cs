@@ -13,7 +13,6 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
-using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -41,7 +40,9 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
-        private const string FirstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
+
+        private const string FirstOpenMimisbrunnrKeyFormat =
+            "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest;
@@ -123,14 +124,8 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
 
-            playerButton.onClick.AddListener(() =>
-            {
-                Game.Game.instance.Lobby.Character.Touch();
-            });
-            petButton.onClick.AddListener(() =>
-            {
-                Game.Game.instance.Lobby.Character.TouchPet();
-            });
+            playerButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.Touch());
+            petButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.TouchPet());
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))
                 .AddTo(gameObject);
@@ -155,7 +150,8 @@ namespace Nekoyume.UI
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
                 };
-                buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
+                buttonList.ForEach(button =>
+                    button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
             StakingLevelSubject.Level
@@ -173,7 +169,7 @@ namespace Nekoyume.UI
                 CloseWithOtherWidgets();
                 ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId, true);
             }
-            else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
+            else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
                 Find<Menu>().QuestClick();
             }
@@ -240,11 +236,12 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                });
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }

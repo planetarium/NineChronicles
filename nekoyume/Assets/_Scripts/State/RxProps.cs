@@ -81,8 +81,7 @@ namespace Nekoyume.State
                 ArenaInfoTuple.UpdateAsync(),
                 EventDungeonInfo.UpdateAsync(),
                 WorldBossStates.Set(States.Instance.CurrentAvatarState.address),
-                States.Instance.InitRuneStoneBalance(),
-                States.Instance.InitSoulStoneBalance(),
+                States.Instance.InitAvatarBalancesAsync(),
                 States.Instance.InitRuneStates(),
                 States.Instance.InitRuneSlotStates(),
                 States.Instance.InitItemSlotStates());
