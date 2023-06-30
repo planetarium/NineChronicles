@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.State;
+using NineChronicles.ExternalServices.IAPService.Runtime;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using UnityEngine;
@@ -10,6 +13,7 @@ namespace Nekoyume.IAPStore
 {
     public class IAPStoreManager : MonoBehaviour, IDetailedStoreListener
     {
+        private IAPServiceManager _serviceManager;
         private IStoreController _controller;
         private IExtensionProvider _extensions;
 
@@ -22,16 +26,33 @@ namespace Nekoyume.IAPStore
                 var initializationOptions = new InitializationOptions()
                     .SetEnvironmentName("dev");
                 await UnityServices.InitializeAsync(initializationOptions);
-                var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance(AppStore.GooglePlay));
-                builder.AddProduct("g_single_ap01", ProductType.Consumable);
-                builder.AddProduct("g_single_hourglass01", ProductType.Consumable);
-                UnityPurchasing.Initialize(this, builder);
             }
             catch (Exception exception)
             {
                 // An error occurred during services initialization.
                 Debug.LogException(exception);
             }
+
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance(AppStore.GooglePlay));
+            var products =
+                await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+                    States.Instance.AgentState.address);
+            if (products is null)
+            {
+                // TODO: not initialized case handling
+                Debug.LogError($"IAPServiceManager.GetProductsAsync({States.Instance.AgentState.address}): Products is null.");
+                return;
+            }
+
+            foreach (var schema in products.Where(s => s.Active))
+            {
+                builder.AddProduct(schema.GoogleSku,
+                    schema.FavList.Length > 0
+                        ? ProductType.Consumable
+                        : ProductType.NonConsumable);
+            }
+
+            UnityPurchasing.Initialize(this, builder);
         }
 
         /// <summary>

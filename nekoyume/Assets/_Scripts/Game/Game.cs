@@ -29,6 +29,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
+using NineChronicles.ExternalServices.IAPService.Runtime;
 using UnityEngine;
 using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
@@ -80,6 +81,8 @@ namespace Nekoyume.Game
         public Analyzer Analyzer { get; private set; }
 
         public IAPStoreManager IAPStoreManager { get; private set; }
+
+        public IAPServiceManager IAPServiceManager { get; private set; }
 
         public Stage Stage => stage;
         public Arena Arena => arena;
@@ -313,6 +316,8 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost);
+            yield return IAPServiceManager.InitializeAsync();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
             Debug.Log("[Game] Start() IAPStoreManager initialized");
