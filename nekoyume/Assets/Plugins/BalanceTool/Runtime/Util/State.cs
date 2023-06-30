@@ -13,23 +13,27 @@ namespace BalanceTool.Runtime.Util
         using Libplanet.Consensus;
         using Libplanet.State;
 
-        public class State : IAccountStateDelta
+        public class State : IAccountStateDelta, IValidatorSupportStateDelta
         {
             private readonly IImmutableDictionary<Address, IValue> _state;
             private readonly IImmutableDictionary<(Address, Currency), FungibleAssetValue> _balance;
             private readonly IImmutableDictionary<Currency, FungibleAssetValue> _totalSupplies;
+            private readonly ValidatorSet _validatorSet;
 
             public State(
                 IImmutableDictionary<Address, IValue> state = null,
                 IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue>
                     balance = null,
-                IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null)
+                IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null,
+                ValidatorSet validatorSet = null)
             {
                 _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
                 _balance = balance ??
                            ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty;
                 _totalSupplies =
                     totalSupplies ?? ImmutableDictionary<Currency, FungibleAssetValue>.Empty;
+                _validatorSet =
+                    validatorSet ?? new ValidatorSet();
             }
 
             public IImmutableSet<Address> UpdatedAddresses =>
@@ -44,11 +48,12 @@ namespace BalanceTool.Runtime.Util
                     g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
                 );
 
+            public IImmutableDictionary<Address, IImmutableSet<Currency>>
+                TotalUpdatedFungibleAssets =>
+                UpdatedFungibleAssets;
+
             public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
                 _totalSupplies.Keys.ToImmutableHashSet();
-
-            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
-                throw new NotSupportedException();
 
             public IValue GetState(Address address) =>
                 _state.TryGetValue(address, out IValue value) ? value : null;
@@ -84,7 +89,8 @@ namespace BalanceTool.Runtime.Util
                 return currency * 0;
             }
 
-            public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+            public IAccountStateDelta MintAsset(IActionContext context, Address recipient,
+                FungibleAssetValue value)
             {
                 var totalSupplies =
                     value.Currency.TotalSupplyTrackable
@@ -101,7 +107,8 @@ namespace BalanceTool.Runtime.Util
                 );
             }
 
-            public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
+            public IAccountStateDelta BurnAsset(IActionContext context, Address owner,
+                FungibleAssetValue value)
             {
                 var totalSupplies =
                     value.Currency.TotalSupplyTrackable
@@ -118,6 +125,7 @@ namespace BalanceTool.Runtime.Util
             }
 
             public IAccountStateDelta TransferAsset(
+                IActionContext context,
                 Address sender,
                 Address recipient,
                 FungibleAssetValue value,
@@ -152,10 +160,12 @@ namespace BalanceTool.Runtime.Util
 
             public IAccountStateDelta SetValidator(Validator validator)
             {
-                return new State(_state);
+                return new State(
+                    _state,
+                    validatorSet: GetValidatorSet().Update(validator));
             }
 
-            public virtual ValidatorSet GetValidatorSet() => new ValidatorSet();
+            public ValidatorSet GetValidatorSet() => _validatorSet;
         }
     }
 }
