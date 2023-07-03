@@ -25,41 +25,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
 
-        public IAPServiceManager(string url, bool? isTest = false, bool? isSandbox = false)
+        public IAPServiceManager(string url, Store store)
         {
-            if (isTest is not null && isSandbox is not null)
-            {
-                throw new ArgumentException(
-                    "isTest and isSandbox cannot be set at the same time.");
-            }
-
             _client = new IAPServiceClient(url);
             _poller = new IAPServicePoller(_client);
             _poller.OnPoll += OnPoll;
             _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
-
-            if (isTest is not null)
-            {
-                _store = Store.Test;
-            }
-            else if (isSandbox is not null)
-            {
-                _store = Application.platform switch
-                {
-                    RuntimePlatform.Android => Store.GoogleTest,
-                    RuntimePlatform.IPhonePlayer => Store.AppleTest,
-                    _ => Store.Test,
-                };
-            }
-            else
-            {
-                _store = Application.platform switch
-                {
-                    RuntimePlatform.Android => Store.Google,
-                    RuntimePlatform.IPhonePlayer => Store.Apple,
-                    _ => Store.Test,
-                };
-            }
+            _store = store;
         }
 
         public async Task InitializeAsync(TimeSpan? productsCacheLifetime = null)
@@ -210,10 +182,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
                 _cache.PurchaseProcessResults[result.Uuid] = result;
-                if (result.Status != ReceiptStatus.Invalid &&
-                    result.Status != ReceiptStatus.Unknown)
+                if (result.Status == ReceiptStatus.Invalid ||
+                    result.Status == ReceiptStatus.Unknown)
                 {
-                    Poll(result.Uuid);
+                    UnregisterAndCache(result);
+                }
+                else
+                {
+                    _poller.Register(result.Uuid);
                 }
 
                 return new PurchaseRequestResponse200 { Content = result };
@@ -225,30 +201,31 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
-        private void Poll(string uuid)
+        private void UnregisterAndCache(ReceiptDetailSchema result)
         {
-            _poller.Register(uuid);
+            _poller.Unregister(result.Uuid);
+            _cache.PurchaseProcessResults[result.Uuid] = result;
         }
 
         private void OnPoll(ReceiptDetailSchema[] results)
         {
-            // FIXME:
-            // Actually, we should check the result of the tx.
-            // ReceiptStatus.Valid just means that the receipt is valid.
             foreach (var result in results)
             {
                 switch (result.Status)
                 {
                     case ReceiptStatus.Init:
-                        break;
                     case ReceiptStatus.ValidationRequest:
-                        break;
+                        continue;
                     case ReceiptStatus.Valid:
                         break;
                     case ReceiptStatus.Invalid:
-                        break;
+                        Debug.LogWarning($"Invalid receipt: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case ReceiptStatus.Unknown:
-                        break;
+                        Debug.LogWarning($"Unknown receipt: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -256,27 +233,35 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 switch (result.TxStatus)
                 {
                     case TxStatus.Created:
-                        break;
                     case TxStatus.Staged:
-                        break;
+                        continue;
                     case TxStatus.Success:
-                        break;
+                        Debug.LogWarning($"Tx success: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case TxStatus.Failure:
-                        break;
+                        Debug.LogWarning($"Tx failure: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case TxStatus.Invalid:
-                        break;
+                        Debug.LogWarning($"Tx invalid: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case TxStatus.NotFound:
-                        break;
+                        Debug.LogWarning($"Tx not found: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case TxStatus.FailToCreate:
-                        break;
+                        Debug.LogWarning($"Tx failed to create: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     case TxStatus.Unknown:
-                        break;
+                        Debug.LogWarning($"Tx unknown: {result.Uuid}");
+                        UnregisterAndCache(result);
+                        continue;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
-                _poller.Unregister(result.Uuid);
-                _cache.PurchaseProcessResults[result.Uuid] = result;
             }
         }
     }

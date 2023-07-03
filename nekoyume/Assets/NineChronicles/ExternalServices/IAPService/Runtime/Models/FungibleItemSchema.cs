@@ -8,7 +8,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         public int SheetItemId { get; set; }
 
         [JsonPropertyName("fungible_item_id")]
-        public int FungibleItemId { get; set; }
+        public string FungibleItemId { get; set; }
 
         [JsonPropertyName("amount")]
         public int Amount { get; set; }
