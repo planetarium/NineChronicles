@@ -25,41 +25,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public bool IsInitialized { get; private set; }
         public bool IsDisposed { get; private set; }
 
-        public IAPServiceManager(string url, bool? isTest = false, bool? isSandbox = false)
+        public IAPServiceManager(string url, Store store)
         {
-            if (isTest is not null && isSandbox is not null)
-            {
-                throw new ArgumentException(
-                    "isTest and isSandbox cannot be set at the same time.");
-            }
-
             _client = new IAPServiceClient(url);
             _poller = new IAPServicePoller(_client);
             _poller.OnPoll += OnPoll;
             _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
-
-            if (isTest is not null)
-            {
-                _store = Store.Test;
-            }
-            else if (isSandbox is not null)
-            {
-                _store = Application.platform switch
-                {
-                    RuntimePlatform.Android => Store.GoogleTest,
-                    RuntimePlatform.IPhonePlayer => Store.AppleTest,
-                    _ => Store.Test,
-                };
-            }
-            else
-            {
-                _store = Application.platform switch
-                {
-                    RuntimePlatform.Android => Store.Google,
-                    RuntimePlatform.IPhonePlayer => Store.Apple,
-                    _ => Store.Test,
-                };
-            }
+            _store = store;
         }
 
         public async Task InitializeAsync(TimeSpan? productsCacheLifetime = null)
