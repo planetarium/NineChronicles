@@ -14,6 +14,8 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
         private string _host =
             "https://hihq3f4id5.execute-api.ap-northeast-2.amazonaws.com/development";
 
+        private Store _store = Store.Test;
+
         private IAPServiceManager _iapService;
 
         private IReadOnlyList<ProductSchema> _products;
@@ -27,7 +29,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
 
         private async void Awake()
         {
-            _iapService = new IAPServiceManager(_host);
+            _iapService = new IAPServiceManager(_host, _store);
             await _iapService.InitializeAsync();
         }
 
