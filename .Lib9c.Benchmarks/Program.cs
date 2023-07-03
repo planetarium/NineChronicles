@@ -166,8 +166,7 @@ namespace Lib9c.Benchmarks
                 .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
                 .ToImmutableHashSet();
             IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
-                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .SelectMany(a => a.OutputStates.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
 
             if (!stateStore.ContainsStateRoot(block.StateRootHash))
@@ -188,8 +187,7 @@ namespace Lib9c.Benchmarks
                 .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
                 .ToImmutableHashSet();
             IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
-                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .SelectMany(a => a.OutputStates.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
 
             IAccountStateDelta lastStates = actionEvaluations.Count > 0
