@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
             };
             agent.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(_agentAddress, agent.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
@@ -186,7 +186,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

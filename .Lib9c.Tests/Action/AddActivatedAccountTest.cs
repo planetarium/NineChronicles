@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
         public void Execute(bool isAdmin, long blockIndex, bool alreadyActivated, Type exc)
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(
+            var state = new MockStateDelta(
                 ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, new AdminState(admin, 100).Serialize())
             );
@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
             var activatedAddress = newComer.Derive(ActivationKey.DeriveKey);
             if (alreadyActivated)
             {
-                state = (State)state.SetState(activatedAddress, true.Serialize());
+                state = (MockStateDelta)state.SetState(activatedAddress, true.Serialize());
             }
 
             var action = new AddActivatedAccount(newComer);
@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
         public void Rehearsal()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(
+            var state = new MockStateDelta(
                 ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, new AdminState(admin, 100).Serialize())
             );

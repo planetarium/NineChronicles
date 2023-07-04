@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses[0] = AvatarAddress;
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize())
                 .SetState(Addresses.GetSheetAddress<MaterialItemSheet>(), _tableSheets.MaterialItemSheet.Serialize())
                 .SetState(Addresses.GameConfig, _gameConfigState.Serialize())

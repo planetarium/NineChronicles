@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Random = new TestRandom(),
                 Rehearsal = true,
                 Signer = _agentAddress,
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
 
         [Fact]
         public void Execute_Throw_FailedLoadStateException() =>
-            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new State()));
+            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new MockStateDelta()));
 
         [Theory]
         [InlineData(0, 0, true)]

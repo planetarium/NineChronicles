@@ -64,7 +64,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
 
             var context = new ActionContext();
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(
@@ -254,7 +254,7 @@ namespace Lib9c.Tests.Action
                 Addresses.Blacksmith,
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext
             {

@@ -58,7 +58,7 @@
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -294,7 +294,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                 });
             });
@@ -612,7 +612,7 @@
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

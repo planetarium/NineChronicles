@@ -37,7 +37,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -475,7 +475,7 @@
                 Addresses.GetItemAddress(default),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

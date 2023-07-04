@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 

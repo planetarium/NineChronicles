@@ -80,7 +80,7 @@
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
 
-            _initialState = new Tests.Action.State()
+            _initialState = new Tests.Action.MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())

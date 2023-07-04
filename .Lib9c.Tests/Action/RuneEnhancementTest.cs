@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -194,7 +194,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Action
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -456,7 +456,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -505,7 +505,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 

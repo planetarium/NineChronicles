@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(0, avatarState.actionPoint);
 
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(agentAddress, agent.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());

@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle6Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -443,7 +443,7 @@ namespace Lib9c.Tests.Action
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(_ncgCurrency);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(
                     Addresses.GetSheetAddress<CrystalMonsterCollectionMultiplierSheet>(),
                     _tableSheets.CrystalMonsterCollectionMultiplierSheet.Serialize())

@@ -52,7 +52,7 @@ namespace Lib9c.Tests.Action
 
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(Addresses.GetSheetAddress<EquipmentItemSheet>(), _tableSheets.EquipmentItemSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<EquipmentItemRecipeSheet>(), _tableSheets.EquipmentItemRecipeSheet.Serialize())

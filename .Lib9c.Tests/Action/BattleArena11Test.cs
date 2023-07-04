@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in _sheets)

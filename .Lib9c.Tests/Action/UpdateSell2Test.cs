@@ -38,7 +38,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -257,7 +257,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _agentAddress,
             }));
         }
@@ -348,7 +348,7 @@
                 OrderDigestListState.DeriveAddress(_avatarAddress),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

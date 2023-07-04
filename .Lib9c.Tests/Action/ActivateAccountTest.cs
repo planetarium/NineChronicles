@@ -26,16 +26,16 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
-            var state = new State();
+            var state = new MockStateDelta();
 
             if (pendingExist)
             {
-                state = (State)state.SetState(pendingActivation.address, pendingActivation.Serialize());
+                state = (MockStateDelta)state.SetState(pendingActivation.address, pendingActivation.Serialize());
             }
 
             if (alreadyActivated)
             {
-                state = (State)state.SetState(activatedAddress, true.Serialize());
+                state = (MockStateDelta)state.SetState(activatedAddress, true.Serialize());
             }
 
             ActivateAccount action = activationKey.CreateActivateAccount(invalid ? new byte[] { 0x00 } : nonce);
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,

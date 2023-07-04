@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattleTest(ITestOutputHelper outputHelper)
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var keys = new List<string>
             {

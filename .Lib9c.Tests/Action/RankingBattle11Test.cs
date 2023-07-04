@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle11Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var keys = new List<string>
             {
@@ -680,7 +680,7 @@ namespace Lib9c.Tests.Action
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext
             {

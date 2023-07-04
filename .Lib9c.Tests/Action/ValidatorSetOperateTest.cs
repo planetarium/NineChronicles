@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             _validator = new Validator(new PrivateKey().PublicKey, BigInteger.One);
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
             var initStates =
                 ImmutableDictionary<Address, IValue>.Empty
                     .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(
+            var state = new MockStateDelta(
                 initStates,
                 validatorSet: new ValidatorSet());
             var action = ValidatorSetOperate.Append(_validator);
@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
             var initStates =
                 ImmutableDictionary<Address, IValue>.Empty
                     .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(
+            var state = new MockStateDelta(
                 initStates,
                 validatorSet: new ValidatorSet());
             var action = ValidatorSetOperate.Append(_validator);
@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Update_Throws_WhenDoNotExistValidator()
         {
-            var state = new State();
+            var state = new MockStateDelta();
             var action = ValidatorSetOperate.Update(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
@@ -122,7 +122,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Remove_Throws_WhenDoNotExistValidator()
         {
-            var state = new State();
+            var state = new MockStateDelta();
             var action = ValidatorSetOperate.Remove(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext

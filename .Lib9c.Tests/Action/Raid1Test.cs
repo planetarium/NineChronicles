@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
             var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
 
             var context = new ActionContext();
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -528,7 +528,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 

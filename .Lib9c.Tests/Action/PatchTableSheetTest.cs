@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
                 .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates);
+            var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = tableName,
@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Action
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
                 .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates);
+            var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = nameof(CostumeStatSheet),

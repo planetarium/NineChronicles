@@ -24,7 +24,7 @@
 
         public SheetsExtensionsTest()
         {
-            _states = new Tests.Action.State();
+            _states = new Tests.Action.MockStateDelta();
             InitSheets(
                 _states,
                 out _sheetNameAndFiles,

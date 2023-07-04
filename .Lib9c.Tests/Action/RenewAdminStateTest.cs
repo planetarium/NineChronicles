@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
             _validUntil = 1_500_000L;
             _adminState = new AdminState(_adminPrivateKey.ToAddress(), _validUntil);
             _stateDelta =
-                new State(ImmutableDictionary<Address, IValue>.Empty.Add(
+                new MockStateDelta(ImmutableDictionary<Address, IValue>.Empty.Add(
                     Addresses.Admin,
                     _adminState.Serialize()));
         }

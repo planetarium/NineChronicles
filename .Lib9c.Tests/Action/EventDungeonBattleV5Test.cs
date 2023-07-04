@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleV5Test()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319

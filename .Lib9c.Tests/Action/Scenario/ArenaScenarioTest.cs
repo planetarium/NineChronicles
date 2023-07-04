@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new Tests.Action.State();
+            _state = new Tests.Action.MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(_sheets);

@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
 
         public EventMaterialItemCraftsTest()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
