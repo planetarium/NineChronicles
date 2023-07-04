@@ -24,10 +24,10 @@ namespace Lib9c.DevExtensions.Action.Stage
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var worldInformation = new WorldInformation(
                 context.BlockIndex,
                 states.GetSheet<WorldSheet>(),

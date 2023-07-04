@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
             MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
             Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signer,
                 BlockIndex = 0,
                 Random = new TestRandom(),
@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
             MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signer,
                 BlockIndex = ActionObsoleteConfig.V100220ObsoleteIndex + 1,
                 Random = new TestRandom(),
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
             MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signer,
                 BlockIndex = claimBlockIndex,
                 Random = new TestRandom(),

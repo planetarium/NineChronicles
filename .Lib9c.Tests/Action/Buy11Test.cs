@@ -337,7 +337,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -463,7 +463,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -581,7 +581,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -706,7 +706,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -815,13 +815,13 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _buyerAgentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Fact]
@@ -866,7 +866,7 @@ namespace Lib9c.Tests.Action
             nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = result.GetAgentState().address,
@@ -985,7 +985,7 @@ namespace Lib9c.Tests.Action
                 buyAction.Execute(new ActionContext()
                 {
                     BlockIndex = 100,
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = result.GetAgentState().address,

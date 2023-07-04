@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward1(_avatarAddress);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });

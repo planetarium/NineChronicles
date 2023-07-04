@@ -403,7 +403,7 @@
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -529,7 +529,7 @@
             Assert.Throws(exc, () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -631,7 +631,7 @@
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -690,13 +690,13 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _buyerAgentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(

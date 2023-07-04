@@ -70,13 +70,13 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Random = new TestRandom(),
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
 
-            var updatedAddress = Assert.Single(nextState.UpdatedAddresses);
+            var updatedAddress = Assert.Single(nextState.Delta.UpdatedAddresses);
             Assert.Equal(_avatarAddress, updatedAddress);
         }
 
@@ -183,7 +183,7 @@ rune_skill_slot_unlock_cost,500";
             return dailyRewardAction.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

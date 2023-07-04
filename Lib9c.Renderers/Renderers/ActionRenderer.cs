@@ -42,8 +42,8 @@ namespace Lib9c.Renderers
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
-                OutputStates = nextStates,
-                PreviousStates = context.PreviousStates,
+                OutputState = nextStates,
+                PreviousState = context.PreviousState,
                 RandomSeed = context.Random.Seed
             });
 
@@ -62,9 +62,9 @@ namespace Lib9c.Renderers
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
-                OutputStates = context.PreviousStates,
+                OutputState = context.PreviousState,
                 Exception = exception,
-                PreviousStates = context.PreviousStates,
+                PreviousState = context.PreviousState,
                 RandomSeed = context.Random.Seed
             });
         }
@@ -90,9 +90,9 @@ namespace Lib9c.Renderers
                     Signer = eval.Signer,
                     BlockIndex = eval.BlockIndex,
                     TxId = eval.TxId,
-                    OutputStates = eval.OutputStates,
+                    OutputState = eval.OutputState,
                     Exception = eval.Exception,
-                    PreviousStates = eval.PreviousStates,
+                    PreviousState = eval.PreviousState,
                     RandomSeed = eval.RandomSeed,
                     Extra = eval.Extra,
                 });
@@ -100,16 +100,16 @@ namespace Lib9c.Renderers
         public IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress) =>
             ActionRenderSubject
                 .AsObservable()
-                .Where(eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress))
+                .Where(eval => eval.OutputState.Delta.UpdatedAddresses.Contains(updatedAddress))
                 .Select(eval => new ActionEvaluation<ActionBase>
                 {
                     Action = eval.Action,
                     Signer = eval.Signer,
                     BlockIndex = eval.BlockIndex,
                     TxId = eval.TxId,
-                    OutputStates = eval.OutputStates,
+                    OutputState = eval.OutputState,
                     Exception = eval.Exception,
-                    PreviousStates = eval.PreviousStates,
+                    PreviousState = eval.PreviousState,
                     RandomSeed = eval.RandomSeed,
                     Extra = eval.Extra,
                 });

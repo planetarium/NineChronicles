@@ -28,7 +28,7 @@ namespace Nekoyume.Action
 
         [Key(3)]
         [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccountStateDelta OutputStates { get; set; }
+        public IAccountStateDelta OutputState { get; set; }
 
         [Key(4)]
         [MessagePackFormatter(typeof(ExceptionFormatter<Exception>))]
@@ -36,7 +36,7 @@ namespace Nekoyume.Action
 
         [Key(5)]
         [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccountStateDelta PreviousStates { get; set; }
+        public IAccountStateDelta PreviousState { get; set; }
 
         [Key(6)]
         public int RandomSeed { get; set; }
@@ -60,9 +60,9 @@ namespace Nekoyume.Action
             Action = action;
             Signer = signer;
             BlockIndex = blockIndex;
-            OutputStates = outputStates;
+            OutputState = outputStates;
             Exception = exception;
-            PreviousStates = previousStates;
+            PreviousState = previousStates;
             RandomSeed = randomSeed;
             Extra = extra;
         }
@@ -74,9 +74,9 @@ namespace Nekoyume.Action
                 Action =  Action is null ? new RewardGold() : Action,
                 Signer = Signer,
                 BlockIndex = BlockIndex,
-                OutputStates = OutputStates,
+                OutputState = OutputState,
                 Exception = Exception,
-                PreviousStates = PreviousStates,
+                PreviousState = PreviousState,
                 RandomSeed = RandomSeed,
                 Extra = Extra
             };

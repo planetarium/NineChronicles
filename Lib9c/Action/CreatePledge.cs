@@ -49,7 +49,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             CheckPermission(context);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var mead = Mead * Currencies.Mead;
             var contractList = List.Empty
                 .Add(PatronAddress.Serialize())

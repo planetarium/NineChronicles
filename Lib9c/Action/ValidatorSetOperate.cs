@@ -84,7 +84,7 @@ namespace Nekoyume.Action
 
             CheckPermission(context);
 
-            IAccountStateDelta previousState = context.PreviousStates;
+            IAccountStateDelta previousState = context.PreviousState;
             ValidatorSet validatorSet = previousState.GetValidatorSet();
 
             Func<ValidatorSet, Validator, Validator> func = Operator.ToFunc();

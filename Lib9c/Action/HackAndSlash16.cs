@@ -92,13 +92,13 @@ namespace Nekoyume.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             return Execute(
-                context.PreviousStates,
+                context.PreviousState,
                 context.Signer,
                 context.BlockIndex,
                 context.Random);

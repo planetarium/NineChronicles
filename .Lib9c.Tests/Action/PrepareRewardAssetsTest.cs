@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = admin ? adminAddress : poolAddress,
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                 });
                 foreach (var asset in assets)
                 {
@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = admin ? adminAddress : poolAddress,
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             }
         }

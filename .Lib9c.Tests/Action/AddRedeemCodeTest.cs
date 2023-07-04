@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext
                     {
                         BlockIndex = 101,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = adminAddress,
                     }
                 );
@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext
                     {
                         BlockIndex = 5,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = adminAddress,
                 BlockIndex = 0,
-                PreviousStates = new State()
+                PreviousState = new State()
                     .SetState(Addresses.Admin, adminState.Serialize())
                     .SetState(Addresses.RedeemCode, new RedeemCodeState(new RedeemCodeListSheet()).Serialize()),
             });
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<SheetRowValidateException>(() => action.Execute(new ActionContext
                 {
                     BlockIndex = 0,
-                    PreviousStates = state,
+                    PreviousState = state,
                 })
             );
         }
@@ -118,12 +118,12 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Rehearsal = true,
             });
 
             Assert.Equal(
-                nextState.UpdatedAddresses,
+                nextState.Delta.UpdatedAddresses,
                 new[] { Addresses.RedeemCode }.ToImmutableHashSet()
             );
         }

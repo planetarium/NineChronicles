@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,

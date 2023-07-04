@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
             });
@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     BlockIndex = 0,
                 })
@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -177,7 +177,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AvatarIndexOutOfRangeException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -207,7 +207,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AvatarIndexAlreadyUsedException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -260,7 +260,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
@@ -268,7 +268,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(
                 updatedAddresses.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

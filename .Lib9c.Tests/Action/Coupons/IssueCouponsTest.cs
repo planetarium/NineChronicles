@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action.Coupons
                     .Execute(
                         new ActionContext
                         {
-                            PreviousStates = state,
+                            PreviousState = state,
                             Rehearsal = false,
                             Random = random,
                             BlockIndex = long.MaxValue,
@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action.Coupons
                     .Execute(
                         new ActionContext
                         {
-                            PreviousStates = state,
+                            PreviousState = state,
                             Rehearsal = false,
                             Random = random,
                             BlockIndex = 0,
@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action.Coupons
                     .Execute(
                         new ActionContext
                         {
-                            PreviousStates = state,
+                            PreviousState = state,
                             Rehearsal = false,
                             Random = random,
                             BlockIndex = 0,
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action.Coupons
                     .Execute(
                         new ActionContext
                         {
-                            PreviousStates = state,
+                            PreviousState = state,
                             Rehearsal = true,
                             Random = random,
                             BlockIndex = 0,
@@ -95,7 +95,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Rehearsal = false,
                         Random = random,
                         BlockIndex = 0,
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Rehearsal = false,
                         Random = random,
                         BlockIndex = 0,

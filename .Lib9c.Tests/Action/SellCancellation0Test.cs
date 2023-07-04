@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action
             var nextState = sellCancellationAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

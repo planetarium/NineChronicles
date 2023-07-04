@@ -52,7 +52,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(
                 new ActionContext
                 {
-                    PreviousStates = _previousState,
+                    PreviousState = _previousState,
                     Signer = _admin,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<PermissionDeniedException>(() => action.Execute(
                 new ActionContext
                 {
-                    PreviousStates = _previousState,
+                    PreviousState = _previousState,
                     Signer = invalidSigner,
                     Rehearsal = false,
                     BlockIndex = 1,

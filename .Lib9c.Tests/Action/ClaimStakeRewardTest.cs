@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward(avatarAddr);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = agentAddr,
                 BlockIndex = blockIndex,
             });

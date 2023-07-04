@@ -193,7 +193,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -226,7 +226,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -271,7 +271,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = signer,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -306,7 +306,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -338,7 +338,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -372,7 +372,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -413,7 +413,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -447,13 +447,13 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Fact]
@@ -470,7 +470,7 @@
             };
             action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -535,7 +535,7 @@
 
             Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,

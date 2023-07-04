@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
                     Signer = agentAddress,
                     BlockIndex = 5055201L,
                     Random = new TestRandom(randomSeed),
-                    PreviousStates = state,
+                    PreviousState = state,
                 });
 
                 var crystalCurrency = CrystalCalculator.CRYSTAL;
@@ -117,7 +117,7 @@ namespace Lib9c.Tests.Action
                     Signer = default,
                     BlockIndex = 5055201L,
                     Random = new TestRandom(randomSeed),
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             }
         }

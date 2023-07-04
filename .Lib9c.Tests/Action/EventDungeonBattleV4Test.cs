@@ -367,7 +367,7 @@ namespace Lib9c.Tests.Action
             _initialStates = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -471,7 +471,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

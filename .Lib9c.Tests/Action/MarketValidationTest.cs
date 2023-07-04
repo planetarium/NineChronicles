@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             var actionContext = new ActionContext
             {
                 Signer = AgentAddress,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
             };
             foreach (var validateMember in validateMembers)
@@ -231,7 +231,7 @@ namespace Lib9c.Tests.Action
             var actionContext = new ActionContext
             {
                 Signer = AgentAddress,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
             };
             foreach (var validateMember in validateMembers)

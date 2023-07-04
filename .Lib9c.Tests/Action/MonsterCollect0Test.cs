@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = blockIndex,
             });
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidMonsterCollectionRoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -175,7 +175,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -198,7 +198,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<MonsterCollectionExpiredException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = prevMonsterCollectionState.ExpiredBlockIndex + 1,
             }));
@@ -221,7 +221,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidLevelException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
             };
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Signer = _signer,
                 Rehearsal = true,
             });
@@ -249,7 +249,7 @@ namespace Lib9c.Tests.Action
                 collectionAddress,
             };
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

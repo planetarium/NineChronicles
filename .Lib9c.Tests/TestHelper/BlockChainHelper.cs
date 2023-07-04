@@ -157,7 +157,7 @@
             var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
             });

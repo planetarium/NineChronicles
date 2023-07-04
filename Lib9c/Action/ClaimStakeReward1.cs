@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             CheckObsolete(ObsoleteIndex, context);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
                 throw new FailedLoadStateException(nameof(StakeState));

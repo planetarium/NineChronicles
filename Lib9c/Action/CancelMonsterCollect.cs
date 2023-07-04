@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectRound);
             if (context.Rehearsal)
             {

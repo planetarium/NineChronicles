@@ -71,7 +71,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);

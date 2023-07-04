@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -140,7 +140,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
@@ -156,7 +156,7 @@ namespace Lib9c.Tests.Action
                     _avatarAddress.Derive(LegacyWorldInformationKey),
                     _avatarAddress.Derive(LegacyQuestListKey),
                 }.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
     }

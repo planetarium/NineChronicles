@@ -57,7 +57,7 @@ namespace Lib9c.DevExtensions.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -95,7 +95,7 @@ namespace Lib9c.DevExtensions.Action
                 var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
                 var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
 
-                var rankingState = context.PreviousStates.GetRankingState();
+                var rankingState = context.PreviousState.GetRankingState();
                 var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
                 // create ArenaScore
@@ -117,9 +117,9 @@ namespace Lib9c.DevExtensions.Action
                     agentAddress,
                     avatarAddress,
                     context.BlockIndex,
-                    context.PreviousStates.GetAvatarSheets(),
-                    context.PreviousStates.GetSheet<WorldSheet>(),
-                    context.PreviousStates.GetGameConfigState(),
+                    context.PreviousState.GetAvatarSheets(),
+                    context.PreviousState.GetSheet<WorldSheet>(),
+                    context.PreviousState.GetGameConfigState(),
                     rankingMapAddress);
 
                 if (!states.TryGetAvatarStateV2(context.Signer, myAvatarAddress,

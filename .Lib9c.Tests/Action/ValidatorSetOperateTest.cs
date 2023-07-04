@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(
                 new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = adminAddress,
                 });
             Assert.Single(nextState.GetValidatorSet().Validators);
@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 5,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                 }));
             Assert.Equal(
                 "Cannot append validator when its already exist.",
@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             Assert.Equal(
                 "Cannot update validator when its do not exist.",
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             Assert.Equal(
                 "Cannot remove validator when its do not exist.",
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Append(validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();
@@ -157,7 +157,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Update(validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();
@@ -171,7 +171,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Remove(_validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();

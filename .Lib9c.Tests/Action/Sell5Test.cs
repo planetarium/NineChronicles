@@ -179,7 +179,7 @@ namespace Lib9c.Tests.Action
             var nextState = sellAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -300,7 +300,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Signer = _agentAddress,
             }));
         }
@@ -331,7 +331,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -351,7 +351,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -381,7 +381,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InvalidItemTypeException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 11,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));

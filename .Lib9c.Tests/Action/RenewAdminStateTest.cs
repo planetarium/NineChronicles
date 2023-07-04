@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
             var action = new RenewAdminState(newValidUntil);
             var stateDelta = action.Execute(new ActionContext
             {
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
                 var userPrivateKey = new PrivateKey();
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _stateDelta,
+                    PreviousState = _stateDelta,
                     Signer = userPrivateKey.ToAddress(),
                 });
             });
@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
             var stateDelta = action.Execute(new ActionContext
             {
                 BlockIndex = _validUntil + 1,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<PolicyExpiredException>(() => createPendingActivations.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             }));
 
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
             var stateDelta = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
             stateDelta = createPendingActivations.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = stateDelta,
+                PreviousState = stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 

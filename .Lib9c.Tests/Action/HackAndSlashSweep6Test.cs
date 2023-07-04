@@ -224,7 +224,7 @@ namespace Lib9c.Tests.Action
 
                 state = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = _random,
                 });
@@ -269,7 +269,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -294,7 +294,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -320,7 +320,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -364,7 +364,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -429,7 +429,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -483,7 +483,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -561,7 +561,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 }));
@@ -636,7 +636,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<NotEnoughActionPointException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -711,7 +711,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<PlayCountIsZeroException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -785,7 +785,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<NotEnoughCombatPointException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -857,7 +857,7 @@ namespace Lib9c.Tests.Action
 
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });

@@ -56,7 +56,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward3(_avatarAddr);
             Assert.Throws<ActionUnavailableException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStatesWithAvatarStateV2,
+                PreviousState = _initialStatesWithAvatarStateV2,
                 Signer = _agentAddr,
                 BlockIndex = blockIndex,
             }));
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward3(avatarAddr);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = agentAddr,
                 BlockIndex = blockIndex,
             });

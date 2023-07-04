@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Random = new TestRandom(),
                 Rehearsal = true,
                 Signer = _agentAddress,
@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
             };
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Theory]
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
             return dailyRewardAction.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

@@ -86,7 +86,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             Address signer = context.Signer;
-            var state = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
                 return state.MarkBalanceChanged(context, Amount.Currency, new[] {Sender, Recipient});

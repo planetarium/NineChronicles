@@ -63,14 +63,14 @@ namespace Nekoyume.Action
             values.CopyTo(prependedValues, 2);
             string msg = $"#{{BlockIndex}} {actionType} (by {{Signer}}): {message}";
             Log.Error(msg, prependedValues);
-            return context.PreviousStates;
+            return context.PreviousState;
         }
 
         protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
         {
             state = default;
 
-            IValue rawState = ctx.PreviousStates.GetState(AdminState.Address);
+            IValue rawState = ctx.PreviousState.GetState(AdminState.Address);
             if (rawState is Bencodex.Types.Dictionary asDict)
             {
                 state = new AdminState(asDict);

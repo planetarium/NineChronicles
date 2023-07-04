@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 stateV2 = action.Execute(new ActionContext
                 {
-                    PreviousStates = stateV2,
+                    PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
                     Random = random,
@@ -214,7 +214,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 stateV2 = action.Execute(new ActionContext
                 {
-                    PreviousStates = stateV2,
+                    PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
                     Random = random,
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 stateV2 = action.Execute(new ActionContext
                 {
-                    PreviousStates = stateV2,
+                    PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
                     Random = random,
@@ -396,7 +396,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 stateV2 = action.Execute(new ActionContext
                 {
-                    PreviousStates = stateV2,
+                    PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
                     Random = random,

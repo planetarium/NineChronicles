@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _agentAddress,
                 });
             });
@@ -290,7 +290,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -315,7 +315,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -357,7 +357,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -442,7 +442,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
             });
         }
@@ -481,7 +481,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = _agentAddress,
                 });
             });
@@ -525,7 +525,7 @@ namespace Lib9c.Tests.Action
 
             action.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
                 Random = new TestRandom(),
@@ -616,7 +616,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = avatarState.agentAddress,
                     Random = random,
                 }));
@@ -722,7 +722,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -829,7 +829,7 @@ namespace Lib9c.Tests.Action
             state = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -852,7 +852,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws(exception, () => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

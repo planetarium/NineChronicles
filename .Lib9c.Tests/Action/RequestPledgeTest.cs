@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 Signer = patron,
-                PreviousStates = states,
+                PreviousState = states,
             });
             var contract = Assert.IsType<List>(nextState.GetState(address.GetPledgeAddress()));
 
@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<AlreadyContractedException>(() => action.Execute(new ActionContext
             {
                 Signer = patron,
-                PreviousStates = states,
+                PreviousState = states,
             }));
         }
     }

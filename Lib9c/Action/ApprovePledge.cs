@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             Address signer = context.Signer;
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var contractAddress = signer.GetPledgeAddress();
             if (!states.TryGetState(contractAddress, out List contract))
             {

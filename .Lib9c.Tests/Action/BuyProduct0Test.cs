@@ -304,7 +304,7 @@ namespace Lib9c.Tests.Action
                     };
                     Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
-                        PreviousStates = previousState,
+                        PreviousState = previousState,
                         Random = new TestRandom(),
                         Signer = BuyerAgentAddress,
                     }));

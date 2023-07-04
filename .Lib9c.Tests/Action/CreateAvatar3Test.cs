@@ -71,7 +71,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
             });
@@ -121,7 +121,7 @@
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     BlockIndex = 0,
                 })
@@ -162,7 +162,7 @@
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -188,7 +188,7 @@
 
             Assert.Throws<AvatarIndexOutOfRangeException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -224,7 +224,7 @@
 
             Assert.Throws<AvatarIndexAlreadyUsedException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -288,7 +288,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
@@ -296,7 +296,7 @@
 
             Assert.Equal(
                 updatedAddresses.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

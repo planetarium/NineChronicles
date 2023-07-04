@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
             });
 
             var addresses = new List<Address>()
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
             });
 
             var fetchedState = new AuthorizedMinersState(
@@ -175,7 +175,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
             });
 
             var fetchedState = new ActivatedAccountsState(
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
             });
 
             var fetchedState = new CreditsState(
@@ -271,7 +271,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new State(),
             });
 
             var fetchedState = new ActivatedAccountsState(

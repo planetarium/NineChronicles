@@ -295,7 +295,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,
@@ -366,7 +366,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,
@@ -471,7 +471,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -499,7 +499,7 @@ namespace Lib9c.Tests.Action
                 {
                     action.Execute(new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
                         Random = _random,

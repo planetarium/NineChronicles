@@ -167,7 +167,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -257,7 +257,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -284,7 +284,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _agentAddress,
                 });
             });
@@ -311,7 +311,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -338,7 +338,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -365,7 +365,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -408,7 +408,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -495,7 +495,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
             });
         }
@@ -537,7 +537,7 @@
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = _agentAddress,
                 });
             });
@@ -583,7 +583,7 @@
 
             action.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
                 Random = new TestRandom(),

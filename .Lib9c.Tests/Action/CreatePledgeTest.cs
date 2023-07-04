@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Action
             var actionContext = new ActionContext
             {
                 Signer = singer,
-                PreviousStates = states,
+                PreviousState = states,
             };
 
             if (exc is null)

@@ -7,7 +7,7 @@ namespace Nekoyume.Action
     {
         public static bool IsMainNet(this IActionContext context)
         {
-            var goldCurrency = context.PreviousStates.GetGoldCurrency();
+            var goldCurrency = context.PreviousState.GetGoldCurrency();
             return goldCurrency.Minters
                        .Contains(new Address("47d082a115c63e7b58b1532d20e631538eafadde"))
                    && goldCurrency.Ticker == "NCG"

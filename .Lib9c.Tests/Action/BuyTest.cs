@@ -346,7 +346,7 @@ namespace Lib9c.Tests.Action
             var expectedState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -360,7 +360,7 @@ namespace Lib9c.Tests.Action
             var actualState = buyProductAction.Execute(new ActionContext
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -491,7 +491,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -621,7 +621,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -655,7 +655,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => buyProductAction.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             }));
@@ -775,7 +775,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -883,7 +883,7 @@ namespace Lib9c.Tests.Action
             nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = result.GetAgentState().address,
