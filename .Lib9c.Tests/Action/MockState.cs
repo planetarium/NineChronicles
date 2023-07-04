@@ -185,5 +185,13 @@ namespace Lib9c.Tests.Action
                 _fungibles,
                 _totalSupplies,
                 _validatorSet.Update(validator));
+
+        public IImmutableDictionary<Address, IValue> States => _states;
+
+        public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => _fungibles;
+
+        public IImmutableDictionary<Currency, BigInteger> TotalSupplies => _totalSupplies;
+
+        public ValidatorSet ValidatorSet => _validatorSet;
     }
 }
