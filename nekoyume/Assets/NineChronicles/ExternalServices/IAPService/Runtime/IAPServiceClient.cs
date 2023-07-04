@@ -9,7 +9,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Libplanet;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace NineChronicles.ExternalServices.IAPService.Runtime
@@ -66,12 +65,13 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 Address agentAddr,
                 Address inventoryAddr)
         {
+            var receiptJson = JsonNode.Parse(receipt);
             var reqJson = new JsonObject
             {
                 { "store", (int)store },
-                { "data", receipt },
+                { "data", receiptJson },
                 { "agentAddress", agentAddr.ToHex() },
-                { "inventoryAddress", inventoryAddr.ToHex() }
+                { "avatarAddress", inventoryAddr.ToHex() }
             };
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),

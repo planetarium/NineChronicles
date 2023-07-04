@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.L10n;
 using Nekoyume.State;
+using Nekoyume.UI;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
@@ -47,10 +49,7 @@ namespace Nekoyume.IAPStore
 
             foreach (var schema in Products.Where(s => s.Active))
             {
-                builder.AddProduct(schema.GoogleSku,
-                    schema.FavList.Length > 0
-                        ? ProductType.Consumable
-                        : ProductType.NonConsumable);
+                builder.AddProduct(schema.GoogleSku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
@@ -70,32 +69,6 @@ namespace Nekoyume.IAPStore
             }
 
             IsInitialized = true;
-
-            // void OnSuccess()
-            // {
-            //     Debug.Log("Fetched successfully!");
-            //     // The additional products are added to the set of
-            //     // previously retrieved products and are browseable
-            //     // and purchasable.
-            //     foreach (var product in _controller.products.all)
-            //     {
-            //         Debug.Log(product.definition.id);
-            //     }
-            //
-            //     IsInitialized = true;
-            // }
-            //
-            // void OnFailure(InitializationFailureReason error, string message)
-            // {
-            //     Debug.LogWarning($"Fetching failed for the specified reason: {error}\n{message}");
-            // }
-            //
-            // var additional = new HashSet<ProductDefinition>
-            // {
-            //     new("g_pkg_daily01", ProductType.Consumable),
-            //     new("g_pkg_weekly01", ProductType.Consumable)
-            // };
-            // _controller.FetchAdditionalProducts(additional, OnSuccess, OnFailure);
         }
 
         /// <summary>
@@ -128,23 +101,46 @@ namespace Nekoyume.IAPStore
             var states = States.Instance;
             var inventoryAddress =
                 Addresses.GetInventoryAddress(states.AgentState.address, states.CurrentAvatarKey);
-            Game.Game.instance.IAPServiceManager
-                .PurchaseAsync(e.purchasedProduct.receipt, inventoryAddress)
-                .ContinueWith(
-                    task =>
-                    {
-                        if (task.Result is null)
+
+            var result = ParsePayloadJson(e.purchasedProduct.receipt);
+            if (!string.IsNullOrEmpty(result))
+            {
+                var popup = Widget.Find<IconAndButtonSystem>();
+
+                Game.Game.instance.IAPServiceManager
+                    .PurchaseRequestAsync(
+                        e.purchasedProduct.receipt,
+                        states.AgentState.address,
+                        inventoryAddress)
+                    .ContinueWith(
+                        task =>
                         {
-                            Debug.LogError(
-                                "IAP Service Purchasing failed. result is not HTTPSCODE:200" +
-                                $"\nreceipt: {e.purchasedProduct.receipt}");
-                        }
-                        else
-                        {
-                            _controller.ConfirmPendingPurchase(e.purchasedProduct);
-                        }
-                    });
-            return PurchaseProcessingResult.Pending;
+                            if (task.Result is null)
+                            {
+                                popup.Show(
+                                    L10nManager.Localize("UI_ERROR"),
+                                    "IAP Service Purchasing failed. result is not HTTPSCODE:200\n" +
+                                    $"receipt: {e.purchasedProduct.receipt}",
+                                    L10nManager.Localize("UI_OK"),
+                                    false);
+                            }
+                            else
+                            {
+                                popup.Show(
+                                    L10nManager.Localize("UI_COMPLETED"),
+                                    "IAP Service Purchasing completed.\n" +
+                                    $"receipt: {e.purchasedProduct.receipt}",
+                                    L10nManager.Localize("UI_OK"),
+                                    false,
+                                    IconAndButtonSystem.SystemType.Information);
+                                _controller.ConfirmPendingPurchase(e.purchasedProduct);
+                            }
+                        });
+                return PurchaseProcessingResult.Pending;
+            }
+
+            Debug.Log("Invalid receipt, not unlocking content");
+            return PurchaseProcessingResult.Complete;
         }
 
         /// <summary>
@@ -171,6 +167,36 @@ namespace Nekoyume.IAPStore
             {
                 // IAP may be disabled in device settings.
             }
+        }
+
+        private static string ParsePayloadJson(string unityIAPReceipt)
+        {
+            try
+            {
+                var wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(unityIAPReceipt);
+                if (wrapper == null)
+                {
+                    Debug.LogError($"receipt is invalid.: {unityIAPReceipt}");
+                    return string.Empty;
+                }
+
+                var store = (string)wrapper["Store"];
+                var payload = (string)wrapper["Payload"];
+
+                if (store == "GooglePlay")
+                {
+                    var details = (Dictionary<string, object>) MiniJson.JsonDecode(payload);
+                    var json = (string)details["json"];
+                    return json;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Cannot validate due to unhandled exception. (" + ex + ")");
+                return string.Empty;
+            }
+
+            return string.Empty;
         }
     }
 }
