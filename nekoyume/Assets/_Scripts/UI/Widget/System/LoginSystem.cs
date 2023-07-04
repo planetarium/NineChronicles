@@ -316,15 +316,8 @@ namespace Nekoyume.UI
                     break;
                 case States.CreatePassword_Mobile:
                     CreateProtectedPrivateKey(_privateKey);
-
-                    Find<GrayLoadingScreen>().Show("Sign in...", false);
-                    DeepLinkManager.instance.OpenPortal(
-                        _privateKey.PublicKey.ToAddress(),
-                        () =>
-                        {
-                            Login = _privateKey is not null;
-                            Close();
-                        });
+                    Login = _privateKey is not null;
+                    Close();
                     break;
                 case States.Login_Mobile:
                     // Login 하고 Login_Mobile의 동작이 지금까지는 동일한데 이후에도 크게 다른게 없을 경우 아예 없애도 될 듯

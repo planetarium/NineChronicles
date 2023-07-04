@@ -288,6 +288,35 @@ namespace Nekoyume.Game
 
             yield return new WaitUntil(() => agentInitialized);
 
+            // NOTE: Create ActionManager after Agent initialized.
+            ActionManager = new ActionManager(Agent);
+
+#if UNITY_ANDROID || UNITY_EDITOR
+            // Check MeadPledge
+            Debug.LogError(States.Instance.PledgeApproved);
+            Widget.Find<GrayLoadingScreen>().Show("Check Mead Pledge", false);
+
+            if (!States.Instance.PledgeApproved.HasValue)
+            {
+                DeepLinkManager.instance.OpenPortal(States.AgentState.address);
+
+                yield return new WaitUntil(() => States.Instance.PledgeApproved.HasValue);
+            }
+
+            if (States.Instance.PledgeApproved.HasValue && !States.Instance.PledgeApproved.Value)
+            {
+                var patronAddress = new Address("c64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
+                ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                yield return new WaitUntil(() => States.Instance.PledgeApproved.Value);
+            }
+
+            yield return new WaitUntil(() =>
+                States.Instance.PledgeApproved.HasValue && States.Instance.PledgeApproved.Value);
+            Debug.LogError(States.Instance.PledgeApproved);
+            Widget.Find<GrayLoadingScreen>().Close();
+#endif
+
 #if UNITY_EDITOR
             // wait for headless connect.
             if (useLocalMarketService && MarketHelper.CheckPath())
@@ -299,8 +328,6 @@ namespace Nekoyume.Game
 
             InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
-            // NOTE: Create ActionManager after Agent initialized.
-            ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize RequestManager and LiveAssetManager

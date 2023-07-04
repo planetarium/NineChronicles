@@ -1,7 +1,5 @@
 ﻿using Libplanet;
-using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
-using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -12,8 +10,7 @@ namespace Nekoyume.UI
         private string _deeplinkURL;
 
         private const string PortalUrlFormat =
-            // "https://nine-chronicles.com/start?step=2&address={0}";
-            "https://feat-mead.d3mkl7om8mgjhs.amplifyapp.com/start?step=2&address={0}";
+            "https://nine-chronicles.com/start?step=2&address={0}";
 
         protected override void Awake()
         {
@@ -30,18 +27,15 @@ namespace Nekoyume.UI
         private void OnDeepLinkActivated(string url)
         {
             _deeplinkURL = url;
-            Debug.Log("DeepLinkManager - Received deep link: " + _deeplinkURL);
 
             if (_onPortalEnd != null)
             {
                 _onPortalEnd();
                 _onPortalEnd = null;
             }
-
-            NotificationSystem.Push(MailType.System, "DeepLinkManager - Received deep link: " + _deeplinkURL, NotificationCell.NotificationType.Information);
         }
 
-        public void OpenPortal(Address avatarAddress, System.Action onPortalEnd)
+        public void OpenPortal(Address avatarAddress, System.Action onPortalEnd = null)
         {
             _onPortalEnd = onPortalEnd;
 

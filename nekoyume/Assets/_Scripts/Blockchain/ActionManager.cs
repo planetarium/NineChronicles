@@ -1464,6 +1464,25 @@ namespace Nekoyume.Blockchain
                 }).Finally(() => Analyzer.Instance.FinishTrace(sentryTrace));
         }
 
+
+        public IObservable<ActionEvaluation<ApprovePledge>> ApprovePledge(Address patronAddress)
+        {
+            var action = new ApprovePledge
+            {
+                PatronAddress = patronAddress,
+            };
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ApprovePledge>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PatronAddress.Equals(action.PatronAddress))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

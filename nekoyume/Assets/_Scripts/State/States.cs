@@ -80,6 +80,8 @@ namespace Nekoyume.State
         /// </summary>
         public IReadOnlyDictionary<int, HammerPointState> HammerPointStates => _hammerPointStates;
 
+        public bool? PledgeApproved { get; private set; }
+
         public States()
         {
             DeselectAvatar();
@@ -856,6 +858,11 @@ namespace Nekoyume.State
                     petId,
                     petRawStates[petAddress] is List rawState ? new PetState(rawState) : null);
             }
+        }
+
+        public void SetPledgeApproved(bool? isApproved)
+        {
+            PledgeApproved = isApproved;
         }
     }
 }

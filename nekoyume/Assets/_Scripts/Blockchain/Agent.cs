@@ -450,6 +450,13 @@ namespace Nekoyume.Blockchain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
+                var agentAddress = States.Instance.AgentState.address;
+                var pledgeAddress = agentAddress.GetPledgeAddress();
+                bool? approved = await GetStateAsync(pledgeAddress) is List list
+                    ? list[1].ToBoolean()
+                    : null;
+                States.Instance.SetPledgeApproved(approved);
+
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
                 ActionRenderHandler.Instance.Start(ActionRenderer);
