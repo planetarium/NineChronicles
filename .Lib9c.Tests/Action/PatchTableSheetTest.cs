@@ -86,9 +86,9 @@ namespace Lib9c.Tests.Action
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             const string tableName = "TestTable";
-            var initStates = ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize())
+                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
@@ -129,9 +129,9 @@ namespace Lib9c.Tests.Action
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             const string tableName = "TestTable";
-            var initStates = ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize())
+                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
