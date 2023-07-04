@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -142,12 +142,12 @@ namespace Lib9c.Tests.Action
                 var currentWeeklyState = nextState.GetWeeklyArenaState(0);
                 var nextWeeklyState = nextState.GetWeeklyArenaState(1);
 
-                Assert.Contains(WeeklyArenaState.DeriveAddress(0), nextState.UpdatedAddresses);
-                Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(0), nextState.Delta.UpdatedAddresses);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.Delta.UpdatedAddresses);
 
                 if (updateNext)
                 {
-                    Assert.Contains(WeeklyArenaState.DeriveAddress(2), nextState.UpdatedAddresses);
+                    Assert.Contains(WeeklyArenaState.DeriveAddress(2), nextState.Delta.UpdatedAddresses);
                     Assert.Equal(blockIndex, nextWeeklyState.ResetIndex);
                 }
 
@@ -233,7 +233,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -313,7 +313,7 @@ namespace Lib9c.Tests.Action
             var migrationCtx = new ActionContext
             {
                 BlockIndex = RankingBattle11.UpdateTargetBlockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -342,7 +342,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Miner = default,
             };
 
@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
             };
 
             IAccountStateDelta delta;
@@ -442,7 +442,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = miner,
             };
 

@@ -60,7 +60,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var avatarAddress = ctx.Signer.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -137,9 +137,9 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = ctx.PreviousState.GetSheet<MaterialItemSheet>();
 
-            RankingState rankingState = ctx.PreviousStates.GetRankingState();
+            RankingState rankingState = ctx.PreviousState.GetRankingState();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 

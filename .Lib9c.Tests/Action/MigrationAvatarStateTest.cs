@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = admin,
                 BlockIndex = 1,
             });

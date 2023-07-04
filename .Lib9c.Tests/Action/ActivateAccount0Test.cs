@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = default,
                 BlockIndex = 1,
             });
@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
                     ActivatedAccountsState.Address,
                     pendingActivation.address
                 ),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 
@@ -83,7 +83,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                     BlockIndex = 1,
                 });
@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                     BlockIndex = 1,
                 });
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                     BlockIndex = 1,
                 });
@@ -151,7 +151,7 @@ namespace Lib9c.Tests.Action
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = default,
                 BlockIndex = 1,
             });
@@ -160,7 +160,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730"),
                     BlockIndex = 2,
                 });

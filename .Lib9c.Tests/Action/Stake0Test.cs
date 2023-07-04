@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                 }));
@@ -83,7 +83,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<MonsterCollectionExistingException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                 }));
@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<StakeExistingClaimableException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _signerAddress,
                     BlockIndex = StakeState.RewardInterval,
                 }));
@@ -113,7 +113,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake0(51);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -122,7 +122,7 @@ namespace Lib9c.Tests.Action
             var updateAction = new Stake0(0);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
             updateAction = new Stake0(50);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
             updateAction = new Stake0(51);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 4611070,
             }));
@@ -155,7 +155,7 @@ namespace Lib9c.Tests.Action
             // At 4611070 - 99, it should be updated.
             Assert.True(updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 4611070 - 99,
             }).TryGetStakeState(_signerAddress, out stakeState));
@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake0(100);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -201,7 +201,7 @@ namespace Lib9c.Tests.Action
             var cancelAction = new Stake0(0);
             states = cancelAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake0(50);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -232,7 +232,7 @@ namespace Lib9c.Tests.Action
             var updateAction = new Stake0(100);
             states = updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             });

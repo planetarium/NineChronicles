@@ -40,7 +40,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);

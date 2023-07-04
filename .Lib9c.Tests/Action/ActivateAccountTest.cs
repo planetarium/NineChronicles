@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Action
             {
                 IAccountStateDelta nextState = action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                     BlockIndex = 1,
                 });
@@ -56,7 +56,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                     BlockIndex = 1,
                 }));
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -86,7 +86,7 @@ namespace Lib9c.Tests.Action
                     activatedAddress,
                     pendingActivation.address
                 ),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

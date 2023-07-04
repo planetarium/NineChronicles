@@ -26,7 +26,7 @@ namespace Nekoyume.Action
                 try
                 {
                     IAccountStateDelta nextStates = action.Execute(rehearsalContext);
-                    addresses = addresses.Union(nextStates.UpdatedAddresses);
+                    addresses = addresses.Union(nextStates.Delta.UpdatedAddresses);
                 }
                 catch (NotSupportedException)
                 {
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
 
             public bool Rehearsal => true;
 
-            public IAccountStateDelta PreviousStates => new AddressTraceStateDelta();
+            public IAccountStateDelta PreviousState => new AddressTraceStateDelta();
 
             public IRandom Random => default;
 

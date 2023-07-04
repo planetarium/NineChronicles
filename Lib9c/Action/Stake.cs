@@ -42,7 +42,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
 
             // Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&

@@ -126,7 +126,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
 
             stateV2 = action.Execute(new ActionContext
             {
-                PreviousStates = stateV2,
+                PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
                 Random = random,

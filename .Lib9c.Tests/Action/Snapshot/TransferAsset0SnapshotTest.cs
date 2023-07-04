@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
-                PreviousStates = state,
+                PreviousState = state,
             };
             var action = new TransferAsset0(
                 senderAddress,
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
-                PreviousStates = state,
+                PreviousState = state,
             };
             var action = new TransferAsset0(
                 senderAddress,

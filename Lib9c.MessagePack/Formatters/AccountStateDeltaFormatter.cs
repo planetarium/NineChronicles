@@ -16,14 +16,14 @@ namespace Lib9c.Formatters
             MessagePackSerializerOptions options)
         {
             var state = new Dictionary(
-                value.UpdatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
+                value.Delta.UpdatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
                     (Binary)addr.ToByteArray(),
                     value.GetState(addr) ?? new Bencodex.Types.Null()
                 ))
             );
             var balance = new Bencodex.Types.List(
 #pragma warning disable LAA1002
-                value.UpdatedFungibleAssets.Select(pair =>
+                value.Delta.UpdatedFungibleAssets.Select(pair =>
 #pragma warning restore LAA1002
                     new Bencodex.Types.Dictionary(new[]
                     {
@@ -34,7 +34,7 @@ namespace Lib9c.Formatters
                 ).Cast<IValue>()
             );
             var totalSupply = new Dictionary(
-                value.UpdatedTotalSupplyCurrencies.Select(currency =>
+                value.Delta.UpdatedTotalSupplyCurrencies.Select(currency =>
                     new KeyValuePair<IKey, IValue>(
                         (Binary)new Codec().Encode(currency.Serialize()),
                         (Integer)value.GetTotalSupply(currency).RawValue)));

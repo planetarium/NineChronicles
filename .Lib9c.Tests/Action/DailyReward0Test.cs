@@ -65,7 +65,7 @@
             var nextState = dailyRewardAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -85,7 +85,7 @@
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })

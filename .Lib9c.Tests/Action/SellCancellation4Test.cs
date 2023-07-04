@@ -131,7 +131,7 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = previousStates,
+                        PreviousState = previousStates,
                         Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
@@ -161,7 +161,7 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = previousStates,
+                        PreviousState = previousStates,
                         Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,

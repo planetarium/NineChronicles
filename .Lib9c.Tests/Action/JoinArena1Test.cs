@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action
 
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = _random,
                 Rehearsal = false,
@@ -294,7 +294,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
             }));
@@ -319,7 +319,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RoundNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -347,7 +347,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMedalException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 100,
@@ -374,7 +374,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughFungibleAssetValueException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = blockIndex,
@@ -399,7 +399,7 @@ namespace Lib9c.Tests.Action
 
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = _random,
                 Rehearsal = false,
@@ -408,7 +408,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaScoreAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 2,
@@ -440,7 +440,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaScoreAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -472,7 +472,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaInformationAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -493,7 +493,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _signer2,
                 Random = new TestRandom(),
             }));

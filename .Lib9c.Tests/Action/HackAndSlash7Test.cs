@@ -222,7 +222,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -319,7 +319,7 @@ namespace Lib9c.Tests.Action
             // First Execute
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -327,7 +327,7 @@ namespace Lib9c.Tests.Action
             // Second Execute
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -381,7 +381,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -444,7 +444,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -471,7 +471,7 @@ namespace Lib9c.Tests.Action
             var exec = Assert.Throws<InvalidAddressException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -509,7 +509,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -534,7 +534,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -561,7 +561,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -589,7 +589,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -625,7 +625,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<FailedAddWorldException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -652,7 +652,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -694,7 +694,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -722,7 +722,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -764,7 +764,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -809,7 +809,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -842,7 +842,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<NotEnoughActionPointException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -880,13 +880,13 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         private static void SerializeException<T>(Exception exec)

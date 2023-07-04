@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action
                 var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(randomSeed),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -400,7 +400,7 @@ namespace Lib9c.Tests.Action
                     state = unlockRuneSlot.Execute(new ActionContext
                     {
                         BlockIndex = 1,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     });
@@ -409,7 +409,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -524,7 +524,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = worldBossRow.StartedBlockIndex + Raid4.RequiredInterval,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -625,7 +625,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,

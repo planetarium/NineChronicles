@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex,
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = signer,
                 });
 
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex,
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = signer,
                 }));
             }

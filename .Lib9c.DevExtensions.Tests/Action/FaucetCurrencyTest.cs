@@ -67,7 +67,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 FaucetNcg = faucetNcg,
                 FaucetCrystal = faucetCrystal,
             };
-            var state = action.Execute(new ActionContext { PreviousStates = _initialState });
+            var state = action.Execute(new ActionContext { PreviousState = _initialState });
             AgentState agentState = state.GetAgentState(_agentAddress);
             FungibleAssetValue expectedNcgAsset =
                 new FungibleAssetValue(_ncg, expectedNcg, 0);

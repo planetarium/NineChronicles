@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex,
                     Miner = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = signer,
                 });
                 Assert.True(nextState.GetState(activatedAddress).ToBoolean());
@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex,
                     Miner = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = signer,
                 }));
             }
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = admin,
                 Rehearsal = true,
             });
@@ -83,7 +83,7 @@ namespace Lib9c.Tests.Action
                     AdminState.Address,
                     newComer.Derive(ActivationKey.DeriveKey),
                 }.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

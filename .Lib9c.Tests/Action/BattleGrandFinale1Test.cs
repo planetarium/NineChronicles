@@ -208,14 +208,14 @@ namespace Lib9c.Tests.Action
 
             var next = action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
             });
             Assert.Throws<AlreadyFoughtAvatarException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = next,
+                PreviousState = next,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 2,
@@ -236,7 +236,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -276,7 +276,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -299,7 +299,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ThisArenaIsClosedException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = blockIndex,
@@ -347,7 +347,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<AddressNotFoundInArenaParticipantsException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousStates,
+                    PreviousState = previousStates,
                     Signer = myAvatar.agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = row.StartBlockIndex,
@@ -426,7 +426,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = myAgentAddr,
                 BlockIndex = blockIndex,
-                PreviousStates = states,
+                PreviousState = states,
                 Random = new TestRandom(randomSeed),
             });
             Assert.True(nextStates.TryGetState<Integer>(

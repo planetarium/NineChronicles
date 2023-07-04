@@ -368,11 +368,11 @@ namespace Lib9c.DevExtensions.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
             return Execute(
-                context.PreviousStates,
+                context.PreviousState,
                 context.Random,
                 context.BlockIndex,
                 context.Signer);

@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -157,7 +157,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -184,7 +184,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidCastException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -272,7 +272,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<EquipmentLevelExceededException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -302,7 +302,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<DuplicateMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -418,7 +418,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -510,13 +510,13 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

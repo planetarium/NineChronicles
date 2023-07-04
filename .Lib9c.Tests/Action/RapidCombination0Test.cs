@@ -121,7 +121,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             });
@@ -155,7 +155,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotResultNullException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = contextBlockIndex,
             }));
@@ -333,7 +333,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));

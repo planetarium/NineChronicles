@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 Signer = address,
-                PreviousStates = states,
+                PreviousState = states,
             });
 
             var contract = Assert.IsType<List>(nextState.GetState(contractAddress));
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => action.Execute(new ActionContext
             {
                 Signer = address,
-                PreviousStates = states,
+                PreviousState = states,
             }));
         }
     }

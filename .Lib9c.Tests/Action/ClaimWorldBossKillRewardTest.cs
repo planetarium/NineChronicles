@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex,
                     Signer = agentAddress,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(randomSeed),
                 });
 
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex,
                     Signer = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(),
                 }));
             }

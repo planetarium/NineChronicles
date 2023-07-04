@@ -358,7 +358,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 
             return action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = int.MaxValue / 2
             });

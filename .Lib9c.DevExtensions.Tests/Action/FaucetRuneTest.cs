@@ -86,7 +86,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 AvatarAddress = _avatarAddress,
                 FaucetRuneInfos = faucetRuneInfos,
             };
-            var states = action.Execute(new ActionContext { PreviousStates = _initialState });
+            var states = action.Execute(new ActionContext { PreviousState = _initialState });
             foreach (var rune in faucetRuneInfos)
             {
                 var expectedRune = RuneHelper.ToCurrency(

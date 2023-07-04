@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action.Scenario
                 nextStates = sellAction.Execute(new ActionContext
                 {
                     Signer = _agentAddress,
-                    PreviousStates = nextStates,
+                    PreviousState = nextStates,
                     BlockIndex = sellBlockIndex,
                     Random = random,
                     Rehearsal = false,
@@ -140,7 +140,7 @@ namespace Lib9c.Tests.Action.Scenario
                 nextStates = sellCancellationAction.Execute(new ActionContext
                 {
                     Signer = _agentAddress,
-                    PreviousStates = nextStates,
+                    PreviousState = nextStates,
                     BlockIndex = sellBlockIndex + 1L,
                     Random = random,
                     Rehearsal = false,
@@ -161,7 +161,7 @@ namespace Lib9c.Tests.Action.Scenario
             nextStates = newSellAction.Execute(new ActionContext
             {
                 Signer = _agentAddress,
-                PreviousStates = nextStates,
+                PreviousState = nextStates,
                 BlockIndex = sellBlockIndex + 2L,
                 Random = random,
                 Rehearsal = false,

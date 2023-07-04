@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 51,
             });
@@ -171,7 +171,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotResultNullException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -225,7 +225,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -281,7 +281,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = contextBlockIndex,
             }));
@@ -357,7 +357,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 51,
             }));
@@ -393,13 +393,13 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Theory]
@@ -525,7 +525,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AppraiseBlockNotReachedException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));

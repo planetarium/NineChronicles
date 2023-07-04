@@ -188,7 +188,7 @@
             var random = new TestRandom(randomSeed);
             nextState = combinationEquipmentAction.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 BlockIndex = 0,
                 Random = random,
                 Signer = _agentAddress,
@@ -284,7 +284,7 @@
 
             nextState = rapidCombinationAction.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 BlockIndex = GameConfig.RequiredAppraiseBlock,
                 Random = random,
                 Signer = _agentAddress,

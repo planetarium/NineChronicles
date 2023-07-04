@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             var nextState = patchTableSheetAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
             });
 
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             nextState = patchTableSheetAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
             });
 
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 101,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = adminAddress,
                     }
                 );
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 5,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(
                 new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = adminAddress,
                 }
             );

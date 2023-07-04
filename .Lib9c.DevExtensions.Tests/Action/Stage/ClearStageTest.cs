@@ -39,7 +39,7 @@ namespace Lib9c.DevExtensions.Tests.Action.Stage
 
             var state = action.Execute(new ActionContext
             {
-                PreviousStates = _initialStateV2,
+                PreviousState = _initialStateV2,
                 Signer = _agentAddress,
                 BlockIndex = 0L,
             });

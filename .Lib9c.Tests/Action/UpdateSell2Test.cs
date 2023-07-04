@@ -225,7 +225,7 @@
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 101,
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -257,7 +257,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new State(),
                 Signer = _agentAddress,
             }));
         }
@@ -279,7 +279,7 @@
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -312,7 +312,7 @@
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -352,13 +352,13 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

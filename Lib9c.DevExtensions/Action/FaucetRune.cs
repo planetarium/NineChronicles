@@ -26,10 +26,10 @@ namespace Lib9c.DevExtensions.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (!(FaucetRuneInfos is null))
             {
                 RuneSheet runeSheet = states.GetSheet<RuneSheet>();

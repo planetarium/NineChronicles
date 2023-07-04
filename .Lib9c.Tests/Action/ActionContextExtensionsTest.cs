@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
             var state = new State().SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
             IActionContext context = new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
             };
 
             Assert.Equal(expected, context.IsMainNet());

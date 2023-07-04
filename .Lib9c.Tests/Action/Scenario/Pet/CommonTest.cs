@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             };
             stateV2 = action1.Execute(new ActionContext
             {
-                PreviousStates = stateV2,
+                PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
                 Random = random,
@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             Assert.Throws<PetIsLockedException>(() => action2.Execute(
                 new ActionContext
                 {
-                    PreviousStates = stateV2,
+                    PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 1L,
                     Random = random,

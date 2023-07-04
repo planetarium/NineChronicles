@@ -104,7 +104,7 @@
                 {
                     action.Execute(new ActionContext
                     {
-                        PreviousStates = _state,
+                        PreviousState = _state,
                         Signer = _signer,
                         BlockIndex = claimBlockIndex,
                         Random = new TestRandom(),
@@ -115,7 +115,7 @@
             {
                 IAccountStateDelta nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = claimBlockIndex,
                     Random = new TestRandom(),
@@ -156,7 +156,7 @@
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = new PrivateKey().ToAddress(),
                     BlockIndex = 0,
                 })
@@ -173,7 +173,7 @@
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -194,7 +194,7 @@
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -211,7 +211,7 @@
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _signer,
                     BlockIndex = 0,
                     Rehearsal = true,
@@ -229,7 +229,7 @@
                 MonsterCollectionState.DeriveAddress(_signer, 2),
                 MonsterCollectionState.DeriveAddress(_signer, 3),
             };
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         private class ExecuteFixture : IEnumerable<object[]>

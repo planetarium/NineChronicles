@@ -243,7 +243,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _agentAddress,
             });
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action
                     };
                     Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
-                        PreviousStates = _initialState,
+                        PreviousState = _initialState,
                         Random = new TestRandom(),
                         Signer = _agentAddress,
                     }));
@@ -369,7 +369,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = blockIndex,
                 Random = new TestRandom(),
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             }));
         }
 

@@ -93,7 +93,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -172,7 +172,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -202,7 +202,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -234,7 +234,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,

@@ -372,7 +372,7 @@ namespace Lib9c.Tests.Action
             var nextStates = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = prevStates,
+                PreviousState = prevStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = agentAddr,

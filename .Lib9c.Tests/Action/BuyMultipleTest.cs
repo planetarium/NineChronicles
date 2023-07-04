@@ -336,7 +336,7 @@
             var nextState = buyMultipleAction.Execute(new ActionContext()
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -410,7 +410,7 @@
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -429,7 +429,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -458,7 +458,7 @@
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -476,7 +476,7 @@
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -546,7 +546,7 @@
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -600,7 +600,7 @@
             action.Execute(new ActionContext()
             {
                 BlockIndex = 11,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -657,7 +657,7 @@
             action.Execute(new ActionContext()
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });

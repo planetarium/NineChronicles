@@ -137,7 +137,7 @@
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             });
@@ -171,7 +171,7 @@
 
             Assert.Throws<CombinationSlotResultNullException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -225,7 +225,7 @@
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -281,7 +281,7 @@
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = contextBlockIndex,
             }));
@@ -357,7 +357,7 @@
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = tempState,
+                PreviousState = tempState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
@@ -393,13 +393,13 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Theory]

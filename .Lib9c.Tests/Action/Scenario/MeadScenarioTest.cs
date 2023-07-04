@@ -93,7 +93,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var action = (IAction)Activator.CreateInstance(typeId)!;
                 var actionContext = new ActionContext
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new State(),
                 };
                 try
                 {
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action.Scenario
             var executedState = action.Execute(new ActionContext
             {
                 Signer = signer,
-                PreviousStates = nextState,
+                PreviousState = nextState,
             });
             return RewardGold.TransferMead(context, executedState);
         }

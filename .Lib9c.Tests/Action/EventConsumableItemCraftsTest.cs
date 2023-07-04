@@ -154,7 +154,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

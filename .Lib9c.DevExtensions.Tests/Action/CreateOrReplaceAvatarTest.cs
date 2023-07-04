@@ -443,7 +443,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 crystalRandomBuff);
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = agentAddr,
                 Random = new TestRandom(),
                 Rehearsal = false,

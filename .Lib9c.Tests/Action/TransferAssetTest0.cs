@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
             );
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = _sender,
                 Rehearsal = false,
                 BlockIndex = 1,
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
             {
                 _ = action.Execute(new ActionContext()
                 {
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     // 송금자가 직접 사인하지 않으면 실패해야 합니다.
                     Signer = _recipient,
                     Rehearsal = false,
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
             // No exception should be thrown when its index is less then 380000.
             _ = action.Execute(new ActionContext()
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = _sender,
                 Rehearsal = false,
                 BlockIndex = 1,
@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action
             {
                 _ = action.Execute(new ActionContext()
                 {
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 380001,
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -189,7 +189,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -257,11 +257,11 @@ namespace Lib9c.Tests.Action
                     _sender,
                     _recipient
                 ),
-                nextState.UpdatedFungibleAssets.Select(pair => pair.Item1).ToImmutableHashSet()
+                nextState.Delta.UpdatedFungibleAssets.Select(pair => pair.Item1).ToImmutableHashSet()
             );
             Assert.Equal(
                 new[] { _currency },
-                nextState.UpdatedFungibleAssets.Select(pair => pair.Item2).ToImmutableHashSet());
+                nextState.Delta.UpdatedFungibleAssets.Select(pair => pair.Item2).ToImmutableHashSet());
         }
 
         [Theory]

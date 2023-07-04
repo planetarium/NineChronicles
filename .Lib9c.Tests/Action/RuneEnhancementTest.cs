@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = rand,
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -222,7 +222,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostDataNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -398,7 +398,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -422,7 +422,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -485,7 +485,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<TryCountIsZeroException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -537,7 +537,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,

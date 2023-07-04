@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             states = TransferMead(context, states);
             states = GenesisGoldDistribution(context, states);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);

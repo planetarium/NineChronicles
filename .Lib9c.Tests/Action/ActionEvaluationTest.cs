@@ -111,9 +111,9 @@ namespace Lib9c.Tests.Action
             var deserialized = MessagePackSerializer.Deserialize<NCActionEvaluation>(b);
             Assert.Equal(evaluation.Signer, deserialized.Signer);
             Assert.Equal(evaluation.BlockIndex, deserialized.BlockIndex);
-            var dict = (Dictionary)deserialized.OutputStates.GetState(default)!;
+            var dict = (Dictionary)deserialized.OutputState.GetState(default)!;
             Assert.Equal("value", (Text)dict["key"]);
-            Assert.Equal(_currency * 10000, deserialized.OutputStates.GetBalance(_signer, _currency));
+            Assert.Equal(_currency * 10000, deserialized.OutputState.GetBalance(_signer, _currency));
             if (actionType == typeof(RewardGold))
             {
                 Assert.Null(deserialized.Action);
