@@ -207,9 +207,7 @@ namespace Nekoyume.Action.Garages
             foreach (var (_, count, garageAddr, garage) in fungibleItemTuples)
             {
                 garage.Unload(count);
-                inventory.AddTradableFungibleItem(
-                    (ITradableFungibleItem)garage.Item,
-                    count);
+                inventory.AddFungibleItem((ItemBase)garage.Item, count);
                 states = states.SetState(garageAddr, garage.Serialize());
             }
 
