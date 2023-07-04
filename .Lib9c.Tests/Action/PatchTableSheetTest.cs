@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
                 .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var state = new State(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = tableName,
@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Action
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
                 .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var state = new State(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = nameof(CostumeStatSheet),

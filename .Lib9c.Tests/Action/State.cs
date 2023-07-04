@@ -20,6 +20,15 @@ namespace Lib9c.Tests.Action
         private readonly ValidatorSet _validatorSet;
         private readonly IAccountDelta _delta;
 
+        public State()
+            : this(
+                ImmutableDictionary<Address, IValue>.Empty,
+                ImmutableDictionary<(Address Address, Currency Currency), BigInteger>.Empty,
+                ImmutableDictionary<Currency, BigInteger>.Empty,
+                new ValidatorSet())
+        {
+        }
+
         // Pretends all given arguments are part of the delta, i.e., have been modified
         // using appropriate methods such as Transfer/Mint/Burn to set the values.
         // Also convert to internal data types.

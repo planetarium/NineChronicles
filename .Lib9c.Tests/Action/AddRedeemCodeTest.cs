@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var state = new State(initStates);
             var action = new AddRedeemCode
             {
                 redeemCsv = "New Value",

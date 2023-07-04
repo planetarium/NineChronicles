@@ -247,7 +247,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new State(),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,

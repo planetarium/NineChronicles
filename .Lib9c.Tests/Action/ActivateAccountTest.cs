@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new State(),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,

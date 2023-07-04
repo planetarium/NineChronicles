@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = 101,
                     Signer = default,
                     Rehearsal = true,
-                    PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
+                    PreviousState = new State(),
                 }
             );
             Assert.Equal(
