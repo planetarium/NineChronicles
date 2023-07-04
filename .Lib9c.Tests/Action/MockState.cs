@@ -50,12 +50,13 @@ namespace Lib9c.Tests.Action
     /// </remarks>
     public class MockState : IAccountState
     {
+        private static readonly MockState _empty = new MockState();
         private readonly IImmutableDictionary<Address, IValue> _states;
         private readonly IImmutableDictionary<(Address, Currency), BigInteger> _fungibles;
         private readonly IImmutableDictionary<Currency, BigInteger> _totalSupplies;
         private readonly ValidatorSet _validatorSet;
 
-        public MockState()
+        private MockState()
             : this(
                 ImmutableDictionary<Address, IValue>.Empty,
                 ImmutableDictionary<(Address Address, Currency Currency), BigInteger>.Empty,
@@ -75,6 +76,16 @@ namespace Lib9c.Tests.Action
             _totalSupplies = totalSupplies;
             _validatorSet = validatorSet;
         }
+
+        public static MockState Empty => _empty;
+
+        public IImmutableDictionary<Address, IValue> States => _states;
+
+        public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => _fungibles;
+
+        public IImmutableDictionary<Currency, BigInteger> TotalSupplies => _totalSupplies;
+
+        public ValidatorSet ValidatorSet => _validatorSet;
 
         public IValue? GetState(Address address) => _states.TryGetValue(address, out IValue? value)
             ? value
@@ -185,13 +196,5 @@ namespace Lib9c.Tests.Action
                 _fungibles,
                 _totalSupplies,
                 _validatorSet.Update(validator));
-
-        public IImmutableDictionary<Address, IValue> States => _states;
-
-        public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => _fungibles;
-
-        public IImmutableDictionary<Currency, BigInteger> TotalSupplies => _totalSupplies;
-
-        public ValidatorSet ValidatorSet => _validatorSet;
     }
 }

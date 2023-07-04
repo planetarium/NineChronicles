@@ -46,12 +46,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000)
-                .Add((_recipient, _currency), _currency * 10);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000)
+                    .SetBalance(_recipient, _currency * 10));
             var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
@@ -72,12 +70,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidSigner()
         {
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000)
-                .Add((_recipient, _currency), _currency * 10);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000)
+                    .SetBalance(_recipient, _currency * 10));
             var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
@@ -104,11 +100,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidRecipient()
         {
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000));
             // Should not allow TransferAsset with same sender and recipient.
             var action = new TransferAsset0(
                 sender: _sender,
@@ -143,12 +137,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInsufficientBalance()
         {
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, _currency), _currency * 1000)
-                .Add((_recipient, _currency), _currency * 10);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000)
+                    .SetBalance(_recipient, _currency * 10));
             var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
@@ -174,12 +166,10 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyBySender = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, currencyBySender), _currency * 1000)
-                .Add((_recipient, currencyBySender), _currency * 10);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, currencyBySender * 1000)
+                    .SetBalance(_recipient, currencyBySender * 10));
             var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
@@ -208,12 +198,10 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyByRecipient = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_sender, currencyByRecipient), _currency * 1000)
-                .Add((_recipient, currencyByRecipient), _currency * 10);
             var prevState = new MockStateDelta(
-                balances: balance
-            );
+                MockState.Empty
+                    .SetBalance(_sender, currencyByRecipient * 1000)
+                    .SetBalance(_recipient, currencyByRecipient * 10));
             var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,

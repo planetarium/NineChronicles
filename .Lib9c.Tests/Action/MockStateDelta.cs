@@ -21,11 +21,16 @@ namespace Lib9c.Tests.Action
         private readonly IAccountDelta _delta;
 
         public MockStateDelta()
+            : this(MockState.Empty)
+        {
+        }
+
+        public MockStateDelta(MockState mockState)
             : this(
-                ImmutableDictionary<Address, IValue>.Empty,
-                ImmutableDictionary<(Address Address, Currency Currency), BigInteger>.Empty,
-                ImmutableDictionary<Currency, BigInteger>.Empty,
-                new ValidatorSet())
+                mockState.States,
+                mockState.Fungibles,
+                mockState.TotalSupplies,
+                mockState.ValidatorSet)
         {
         }
 

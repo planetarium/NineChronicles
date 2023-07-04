@@ -44,12 +44,9 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var initStates =
-                ImmutableDictionary<Address, IValue>.Empty
-                    .Add(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(
-                initStates,
-                validatorSet: new ValidatorSet());
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize());
+            var state = new MockStateDelta(initStates);
             var action = ValidatorSetOperate.Append(_validator);
             var nextState = action.Execute(
                 new ActionContext()
@@ -68,12 +65,9 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var initStates =
-                ImmutableDictionary<Address, IValue>.Empty
-                    .Add(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(
-                initStates,
-                validatorSet: new ValidatorSet());
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize());
+            var state = new MockStateDelta(initStates);
             var action = ValidatorSetOperate.Append(_validator);
 
             PermissionDeniedException exc1 = Assert.Throws<PermissionDeniedException>(() =>

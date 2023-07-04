@@ -35,15 +35,13 @@ namespace Lib9c.Tests.Action
         }.ToImmutableList();
 
         private static readonly MockStateDelta _previousState = new MockStateDelta(
-            states: ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, new AdminState(_admin, 100).Serialize())
-                .Add(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize()),
-            balances: ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_authMiners[0], NCG), NCG * 1000)
-                .Add((_authMiners[1], NCG), NCG * 2000)
-                .Add((_authMiners[2], NCG), NCG * 3000)
-                .Add((_authMiners[3], NCG), NCG * 4000)
-        );
+            MockState.Empty
+                .SetState(AdminState.Address, new AdminState(_admin, 100).Serialize())
+                .SetState(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize())
+                .SetBalance(_authMiners[0], NCG * 1000)
+                .SetBalance(_authMiners[1], NCG * 2000)
+                .SetBalance(_authMiners[2], NCG * 3000)
+                .SetBalance(_authMiners[3], NCG * 4000));
 
         [Fact]
         public void Execute()
