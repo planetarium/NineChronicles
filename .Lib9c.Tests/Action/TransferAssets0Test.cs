@@ -100,9 +100,9 @@ namespace Lib9c.Tests.Action
                     .Add(_recipient2, new AgentState(_recipient2).Serialize());
             }
 
-            var prevState = new State(
-                state: state,
-                balance: balance
+            var prevState = new MockStateDelta(
+                states: state,
+                balances: balance
             );
             var action = new TransferAssets0(
                 sender: _sender,
@@ -131,8 +131,8 @@ namespace Lib9c.Tests.Action
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
-            var prevState = new State(
-                balance: balance
+            var prevState = new MockStateDelta(
+                balances: balance
             );
             var action = new TransferAssets0(
                 sender: _sender,
@@ -164,8 +164,8 @@ namespace Lib9c.Tests.Action
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000);
-            var prevState = new State(
-                balance: balance
+            var prevState = new MockStateDelta(
+                balances: balance
             );
             // Should not allow TransferAsset with same sender and recipient.
             var action = new TransferAssets0(
@@ -197,8 +197,8 @@ namespace Lib9c.Tests.Action
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
-            var prevState = new State(
-                balance: balance
+            var prevState = new MockStateDelta(
+                balances: balance
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets0(
                 sender: _sender,
@@ -230,8 +230,8 @@ namespace Lib9c.Tests.Action
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, currencyBySender), _currency * 1000)
                 .Add((_recipient, currencyBySender), _currency * 10);
-            var prevState = new State(
-                balance: balance
+            var prevState = new MockStateDelta(
+                balances: balance
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets0(
                 sender: _sender,
@@ -266,8 +266,8 @@ namespace Lib9c.Tests.Action
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, currencyByRecipient), _currency * 1000)
                 .Add((_recipient, currencyByRecipient), _currency * 10);
-            var prevState = new State(
-                balance: balance
+            var prevState = new MockStateDelta(
+                balances: balance
             ).SetState(_recipient, new AgentState(_recipient).Serialize());
             var action = new TransferAssets0(
                 sender: _sender,
@@ -302,9 +302,9 @@ namespace Lib9c.Tests.Action
             var state = ImmutableDictionary<Address, IValue>.Empty
                 .Add(_sender.Derive(ActivationKey.DeriveKey), true.Serialize())
                 .Add(Addresses.ActivatedAccount, activatedAddress.Serialize());
-            var prevState = new State(
-                state: state,
-                balance: balance
+            var prevState = new MockStateDelta(
+                states: state,
+                balances: balance
             );
             var action = new TransferAssets0(
                 sender: _sender,
@@ -340,7 +340,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new MockStateDelta(),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -472,7 +472,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -489,9 +489,9 @@ namespace Lib9c.Tests.Action
             var state = ImmutableDictionary<Address, IValue>.Empty
                 .Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
 
-            var prevState = new State(
-                state: state,
-                balance: balance
+            var prevState = new MockStateDelta(
+                states: state,
+                balances: balance
             );
             var action = new TransferAssets0(
                 sender: _sender,

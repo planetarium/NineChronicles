@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
-            IAccountStateDelta state = new State().MintAsset(context, senderAddress, crystal * 100);
+            IAccountStateDelta state = new MockStateDelta().MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
-            var state = new State().MintAsset(context, senderAddress, crystal * 100);
+            var state = new MockStateDelta().MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,

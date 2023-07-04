@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             _signer = new PrivateKey().ToAddress();
             _sender = new PrivateKey().ToAddress();
-            _states = new State()
+            _states = new MockStateDelta()
                 .SetState(_signer, (Text)"ANYTHING")
                 .SetState(default, Dictionary.Empty.Add("key", "value"))
                 .MintAsset(context, _signer, _currency * 10000);

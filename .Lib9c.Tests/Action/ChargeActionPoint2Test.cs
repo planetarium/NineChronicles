@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Action
             };
             agent.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(_agentAddress, agent.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousState = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = default,
                 })

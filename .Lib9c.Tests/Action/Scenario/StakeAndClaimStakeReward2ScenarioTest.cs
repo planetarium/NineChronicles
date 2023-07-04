@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Xunit;
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
-    using State = Lib9c.Tests.Action.State;
+    using State = Lib9c.Tests.Action.MockStateDelta;
 
     public class StakeAndClaimStakeReward2ScenarioTest
     {

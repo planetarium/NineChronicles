@@ -50,7 +50,7 @@
 
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GetSheetAddress<WorldUnlockSheet>(), _tableSheets.WorldUnlockSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }

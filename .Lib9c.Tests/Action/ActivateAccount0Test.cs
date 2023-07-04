@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
+            var state = new MockStateDelta(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                 .Add(pendingActivation.address, pendingActivation.Serialize()));
 
@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new State(ImmutableDictionary<Address, IValue>.Empty),
+                PreviousState = new MockStateDelta(),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
+            var state = new MockStateDelta(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                 .Add(pendingActivation.address, pendingActivation.Serialize())
             );
@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             // state에는 pendingActivation에 해당하는 대기가 없는 상태를 가정합니다.
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
+            var state = new MockStateDelta(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
@@ -123,7 +123,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             // state가 올바르게 초기화되지 않은 상태를 가정합니다.
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty);
+            var state = new MockStateDelta();
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             Assert.Throws<ActivatedAccountsDoesNotExistsException>(() =>
@@ -144,7 +144,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
+            var state = new MockStateDelta(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                 .Add(pendingActivation.address, pendingActivation.Serialize()));
 

@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
             var currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
@@ -435,7 +435,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta state = backward ? new State() : _initialState;
+            IAccountStateDelta state = backward ? new MockStateDelta() : _initialState;
             if (!backward)
             {
                 state = _initialState

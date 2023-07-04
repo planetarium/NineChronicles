@@ -35,7 +35,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             var balance =
                 ImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue>.Empty
                     .Add((GoldCurrencyState.Address, _ncg), _ncg * int.MaxValue);
-            _initialState = new Lib9c.Tests.Action.State(balance: balance);
+            _initialState = new Lib9c.Tests.Action.MockStateDelta(balances: balance);
 
             var goldCurrencyState = new GoldCurrencyState(_ncg);
             _agentAddress = new PrivateKey().ToAddress();

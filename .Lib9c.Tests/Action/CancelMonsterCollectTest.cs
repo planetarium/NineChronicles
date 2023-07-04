@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
         public CancelMonsterCollectTest()
         {
             _signer = default;
-            _state = new State();
+            _state = new MockStateDelta();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var agentState = new AgentState(_signer);

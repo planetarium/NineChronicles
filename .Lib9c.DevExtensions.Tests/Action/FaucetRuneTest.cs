@@ -33,7 +33,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new Lib9c.Tests.Action.State();
+            _initialState = new Lib9c.Tests.Action.MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {

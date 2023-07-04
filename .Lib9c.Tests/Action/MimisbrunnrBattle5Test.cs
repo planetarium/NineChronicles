@@ -55,7 +55,7 @@
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
@@ -286,7 +286,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                 });
             });
@@ -596,7 +596,7 @@
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

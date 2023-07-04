@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         {
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new State();
+            _state = new MockStateDelta();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();

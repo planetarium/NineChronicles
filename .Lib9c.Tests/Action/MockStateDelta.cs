@@ -12,25 +12,34 @@ namespace Lib9c.Tests.Action
     using Libplanet.Consensus;
     using Libplanet.State;
 
-    public class State : IAccountStateDelta
+    public class MockStateDelta : IAccountStateDelta
     {
-        private readonly IImmutableDictionary<Address, IValue> _state;
-        private readonly IImmutableDictionary<(Address, Currency), BigInteger> _balance;
+        private readonly IImmutableDictionary<Address, IValue> _states;
+        private readonly IImmutableDictionary<(Address, Currency), BigInteger> _fungibles;
         private readonly IImmutableDictionary<Currency, BigInteger> _totalSupplies;
         private readonly ValidatorSet _validatorSet;
         private readonly IAccountDelta _delta;
 
+        public MockStateDelta()
+            : this(
+                ImmutableDictionary<Address, IValue>.Empty,
+                ImmutableDictionary<(Address Address, Currency Currency), BigInteger>.Empty,
+                ImmutableDictionary<Currency, BigInteger>.Empty,
+                new ValidatorSet())
+        {
+        }
+
         // Pretends all given arguments are part of the delta, i.e., have been modified
         // using appropriate methods such as Transfer/Mint/Burn to set the values.
         // Also convert to internal data types.
-        public State(
-            IImmutableDictionary<Address, IValue> state = null,
-            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balance = null,
+        public MockStateDelta(
+            IImmutableDictionary<Address, IValue> states = null,
+            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balances = null,
             IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null,
             ValidatorSet validatorSet = null)
         {
-            _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
-            _balance = balance is { } b
+            _states = states ?? ImmutableDictionary<Address, IValue>.Empty;
+            _fungibles = balances is { } b
                 ? b.ToImmutableDictionary(kv => kv.Key, kv => kv.Value.RawValue)
                 : ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
             _totalSupplies = totalSupplies is { } t
@@ -39,22 +48,22 @@ namespace Lib9c.Tests.Action
             _validatorSet =
                 validatorSet ?? new ValidatorSet();
 
-            _delta = new Delta(_state, _balance, _totalSupplies, _validatorSet);
+            _delta = new MockDelta(_states, _fungibles, _totalSupplies, _validatorSet);
         }
 
         // For Transfer/Mint/Burn
-        private State(
+        private MockStateDelta(
             IImmutableDictionary<Address, IValue> state,
             IImmutableDictionary<(Address Address, Currency Currency), BigInteger> balance,
             IImmutableDictionary<Currency, BigInteger> totalSupplies,
             ValidatorSet validatorSet)
         {
-            _state = state;
-            _balance = balance;
+            _states = state;
+            _fungibles = balance;
             _totalSupplies = totalSupplies;
             _validatorSet = validatorSet;
 
-            _delta = new Delta(_state, _balance, _totalSupplies, _validatorSet);
+            _delta = new MockDelta(_states, _fungibles, _totalSupplies, _validatorSet);
         }
 
         public IAccountDelta Delta => _delta;
@@ -77,9 +86,9 @@ namespace Lib9c.Tests.Action
             addresses.Select(GetState).ToArray();
 
         public IAccountStateDelta SetState(Address address, IValue state) =>
-            new State(
-                _state.SetItem(address, state),
-                _balance,
+            new MockStateDelta(
+                _states.SetItem(address, state),
+                _fungibles,
                 _totalSupplies,
                 _validatorSet);
 
@@ -113,9 +122,9 @@ namespace Lib9c.Tests.Action
                         value.Currency,
                         (GetTotalSupply(value.Currency) + value).RawValue)
                     : _totalSupplies;
-            return new State(
-                _state,
-                _balance.SetItem(
+            return new MockStateDelta(
+                _states,
+                _fungibles.SetItem(
                     (recipient, value.Currency),
                     (GetBalance(recipient, value.Currency) + value).RawValue),
                 totalSupplies,
@@ -131,9 +140,9 @@ namespace Lib9c.Tests.Action
                         value.Currency,
                         (GetTotalSupply(value.Currency) - value).RawValue)
                     : _totalSupplies;
-            return new State(
-                _state,
-                _balance.SetItem(
+            return new MockStateDelta(
+                _states,
+                _fungibles.SetItem(
                     (owner, value.Currency),
                     (GetBalance(owner, value.Currency) - value).RawValue),
                 totalSupplies,
@@ -168,72 +177,17 @@ namespace Lib9c.Tests.Action
                 throw new InsufficientBalanceException(msg, sender, senderBalance);
             }
 
-            IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _balance
+            IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _fungibles
                 .SetItem((sender, currency), (senderBalance - value).RawValue)
                 .SetItem((recipient, currency), (recipientBalance + value).RawValue);
-            return new State(_state, newBalance, _totalSupplies, _validatorSet);
+            return new MockStateDelta(_states, newBalance, _totalSupplies, _validatorSet);
         }
 
         public IAccountStateDelta SetValidator(Validator validator)
         {
-            return new State(_state, _balance, _totalSupplies, GetValidatorSet().Update(validator));
+            return new MockStateDelta(_states, _fungibles, _totalSupplies, GetValidatorSet().Update(validator));
         }
 
         public ValidatorSet GetValidatorSet() => _validatorSet;
     }
-
-#pragma warning disable SA1402
-    public class Delta : IAccountDelta
-    {
-        private readonly IImmutableDictionary<Address, IValue> _state;
-        private readonly IImmutableDictionary<(Address, Currency), BigInteger> _balance;
-        private readonly IImmutableDictionary<Currency, BigInteger> _totalSupplies;
-        private readonly ValidatorSet _validatorSet;
-
-        public Delta()
-            : this(
-                ImmutableDictionary<Address, IValue>.Empty,
-                ImmutableDictionary<(Address, Currency), BigInteger>.Empty,
-                ImmutableDictionary<Currency, BigInteger>.Empty,
-                null)
-        {
-        }
-
-        public Delta(
-            IImmutableDictionary<Address, IValue> state,
-            IImmutableDictionary<(Address Address, Currency Currency), BigInteger> balance,
-            IImmutableDictionary<Currency, BigInteger> totalSupplies,
-            ValidatorSet validatorSet)
-        {
-            _state = state;
-            _balance = balance;
-            _totalSupplies = totalSupplies;
-            _validatorSet = validatorSet;
-        }
-
-        public IImmutableSet<Address> UpdatedAddresses =>
-            StateUpdatedAddresses.Union(FungibleUpdatedAddresses);
-
-        public IImmutableSet<Address> StateUpdatedAddresses => _state.Keys.ToImmutableHashSet();
-
-        public IImmutableDictionary<Address, IValue> States => _state;
-
-        public IImmutableSet<Address> FungibleUpdatedAddresses =>
-            UpdatedFungibleAssets.Select(pair => pair.Item1).ToImmutableHashSet();
-
-        public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets =>
-            Fungibles.Keys.ToImmutableHashSet();
-
-        public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles =>
-            _balance;
-
-        public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies =>
-            TotalSupplies.Keys.ToImmutableHashSet();
-
-        public IImmutableDictionary<Currency, BigInteger> TotalSupplies =>
-            _totalSupplies;
-
-        public ValidatorSet ValidatorSet => _validatorSet;
-    }
-#pragma warning restore SA1402
 }

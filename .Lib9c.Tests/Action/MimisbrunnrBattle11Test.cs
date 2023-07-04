@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
@@ -258,7 +258,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousState = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                 });
             });

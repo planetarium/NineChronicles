@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action
 
             var sheets = TableSheetsImporter.ImportSheets();
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(
                     Addresses.GoldDistribution,
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action
                 name = nickName,
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
@@ -156,7 +156,7 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var state = new State().SetState(avatarAddress, avatarState.Serialize());
+            var state = new MockStateDelta().SetState(avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
@@ -173,7 +173,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
             var action = new CreateAvatar2()
             {
                 index = index,
@@ -208,7 +208,7 @@ namespace Lib9c.Tests.Action
                 )
             );
             agentState.avatarAddresses[index] = avatarAddress;
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
 
             var action = new CreateAvatar2()
             {
@@ -277,7 +277,7 @@ namespace Lib9c.Tests.Action
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(Addresses.Ranking, new RankingState0().Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 

@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
             var agentAddress = new PrivateKey().ToAddress();
             var pledgeAddress = agentAddress.GetPledgeAddress();
             var context = new ActionContext();
-            IAccountStateDelta states = new State()
+            IAccountStateDelta states = new MockStateDelta()
                 .SetState(Addresses.Admin, adminState.Serialize())
                 .MintAsset(context, patronAddress, 4 * 500 * mead);
 

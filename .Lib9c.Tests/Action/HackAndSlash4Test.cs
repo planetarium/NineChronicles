@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
@@ -379,7 +379,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));

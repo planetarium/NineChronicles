@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var state = new MockStateDelta(initStates);
             var action = new AddRedeemCode
             {
                 redeemCsv = "New Value",
@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = adminAddress,
                 BlockIndex = 0,
-                PreviousState = new State()
+                PreviousState = new MockStateDelta()
                     .SetState(Addresses.Admin, adminState.Serialize())
                     .SetState(Addresses.RedeemCode, new RedeemCodeState(new RedeemCodeListSheet()).Serialize()),
             });
@@ -91,7 +91,7 @@ namespace Lib9c.Tests.Action
             var sheet = new RedeemCodeListSheet();
             sheet.Set(csv);
 
-            var state = new State()
+            var state = new MockStateDelta()
                     .SetState(Addresses.RedeemCode, new RedeemCodeState(sheet).Serialize());
 
             var action = new AddRedeemCode
@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Rehearsal = true,
             });
 

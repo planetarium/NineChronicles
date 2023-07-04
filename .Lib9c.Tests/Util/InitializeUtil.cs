@@ -11,7 +11,7 @@ namespace Lib9c.Tests.Util
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-    using State = Lib9c.Tests.Action.State;
+    using State = Lib9c.Tests.Action.MockStateDelta;
     using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
     public static class InitializeUtil

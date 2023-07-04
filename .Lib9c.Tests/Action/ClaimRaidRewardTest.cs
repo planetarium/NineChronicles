@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
         {
             var tableCsv = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(tableCsv);
-            _state = new State();
+            _state = new MockStateDelta();
             foreach (var kv in tableCsv)
             {
                 _state = _state.SetState(Addresses.GetSheetAddress(kv.Key), kv.Value.Serialize());

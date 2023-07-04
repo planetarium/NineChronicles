@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -290,7 +290,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _agentAddress,
             }));
         }
@@ -459,7 +459,7 @@ namespace Lib9c.Tests.Action
                 OrderDigestListState.DeriveAddress(_avatarAddress),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {

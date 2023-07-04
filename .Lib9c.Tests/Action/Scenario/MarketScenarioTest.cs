@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action.Scenario
             agentState3.avatarAddresses[0] = _buyerAvatarAddress;
 
             _currency = Currency.Legacy("NCG", 2, minters: null);
-            _initialState = new Tests.Action.State()
+            _initialState = new Tests.Action.MockStateDelta()
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(_currency).Serialize())
                 .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
                 .SetState(Addresses.GetSheetAddress<MaterialItemSheet>(), _tableSheets.MaterialItemSheet.Serialize())

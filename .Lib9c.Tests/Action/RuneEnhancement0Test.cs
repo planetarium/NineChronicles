@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -292,7 +292,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -405,7 +405,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 

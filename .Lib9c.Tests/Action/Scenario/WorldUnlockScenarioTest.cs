@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new Lib9c.Tests.Action.State()
+            _initialState = new Lib9c.Tests.Action.MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())

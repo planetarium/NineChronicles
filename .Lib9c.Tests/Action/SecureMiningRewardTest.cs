@@ -34,11 +34,11 @@ namespace Lib9c.Tests.Action
             new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
         }.ToImmutableList();
 
-        private static readonly State _previousState = new State(
-            state: ImmutableDictionary<Address, IValue>.Empty
+        private static readonly MockStateDelta _previousState = new MockStateDelta(
+            states: ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, new AdminState(_admin, 100).Serialize())
                 .Add(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize()),
-            balance: ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+            balances: ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_authMiners[0], NCG), NCG * 1000)
                 .Add((_authMiners[1], NCG), NCG * 2000)
                 .Add((_authMiners[2], NCG), NCG * 3000)
