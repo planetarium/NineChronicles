@@ -64,23 +64,16 @@ namespace Lib9c.Tests.Action.Scenario
         public void UseGas()
         {
             Type baseType = typeof(Nekoyume.Action.ActionBase);
-            Type attrType = typeof(ActionTypeAttribute);
-            Type obsoleteType = typeof(ActionObsoleteAttribute);
 
             bool IsTarget(Type type)
             {
                 return baseType.IsAssignableFrom(type) &&
-                       type.IsDefined(attrType) &&
-                       type != typeof(InitializeStates) &&
-                       ActionTypeAttribute.ValueOf(type) is { } &&
-                       (
-                           !type.IsDefined(obsoleteType) ||
-                           type
-                               .GetCustomAttributes()
-                               .OfType<ActionObsoleteAttribute>()
-                               .Select(attr => attr.ObsoleteIndex)
-                               .FirstOrDefault() > ActionObsoleteConfig.V200030ObsoleteIndex
-                       );
+                    type != typeof(InitializeStates) &&
+                    type.GetCustomAttribute<ActionTypeAttribute>() is { } &&
+                    (
+                        !(type.GetCustomAttribute<ActionObsoleteAttribute>()?.ObsoleteIndex is { } obsoleteIndex) ||
+                        obsoleteIndex > ActionObsoleteConfig.V200030ObsoleteIndex
+                    );
             }
 
             var assembly = baseType.Assembly;

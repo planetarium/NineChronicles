@@ -63,8 +63,10 @@ namespace Lib9c.Tests.Action.Factory
         {
             var addr = new PrivateKey().ToAddress();
             var action = ClaimStakeRewardFactory.CreateByVersion(version, addr);
-            var actualActionType = (string)(Text)ActionTypeAttribute.ValueOf(action.GetType())!;
-            Assert.Equal(expectActionType, actualActionType);
+            var actualActionType = action
+                .GetType()
+                .GetCustomAttribute<ActionTypeAttribute>()?.TypeIdentifier;
+            Assert.Equal(new Text(expectActionType), actualActionType);
         }
     }
 }
