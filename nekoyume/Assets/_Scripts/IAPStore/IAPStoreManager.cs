@@ -4,7 +4,6 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using UnityEngine;
@@ -19,8 +18,8 @@ namespace Nekoyume.IAPStore
         private IStoreController _controller;
         private IExtensionProvider _extensions;
 
+        public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
-        public IReadOnlyList<ProductSchema> Products { get; private set; }
 
         private async void Awake()
         {
@@ -37,9 +36,9 @@ namespace Nekoyume.IAPStore
             }
 
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            Products = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
-                    States.Instance.AgentState.address);
-            if (Products is null)
+            var products = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+                States.Instance.AgentState.address);
+            if (products is null)
             {
                 // TODO: not initialized case handling
                 Debug.LogError(
@@ -47,7 +46,7 @@ namespace Nekoyume.IAPStore
                 return;
             }
 
-            foreach (var schema in Products.Where(s => s.Active))
+            foreach (var schema in products.Where(s => s.Active))
             {
                 builder.AddProduct(schema.GoogleSku, ProductType.Consumable);
             }
@@ -55,17 +54,24 @@ namespace Nekoyume.IAPStore
             UnityPurchasing.Initialize(this, builder);
         }
 
+        public void OnPurchaseClicked(string productId)
+        {
+            _controller.InitiatePurchase(productId);
+        }
+
         /// <summary>
         /// Called when Unity IAP is ready to make purchases.
         /// </summary>
-        public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
+        void IStoreListener.OnInitialized(IStoreController controller,
+            IExtensionProvider extensions)
         {
             _controller = controller;
             _extensions = extensions;
             Debug.Log("IAP Store Manager Initialized successfully!");
             foreach (var product in _controller.products.all)
             {
-                Debug.Log(product.definition.id);
+                Debug.Log(
+                    $"{product.definition.id}: {product.metadata.localizedTitle}, {product.metadata.localizedDescription}, {product.metadata.localizedPriceString}");
             }
 
             IsInitialized = true;
@@ -87,11 +93,6 @@ namespace Nekoyume.IAPStore
             Debug.LogError($"Initializing failed for the specified reason: {error}\n{message}");
         }
 
-        public void OnPurchaseClicked(string productId)
-        {
-            _controller.InitiatePurchase(productId);
-        }
-
         /// <summary>
         /// Called when a purchase completes.
         /// May be called at any time after OnInitialized().
@@ -99,8 +100,6 @@ namespace Nekoyume.IAPStore
         PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs e)
         {
             var states = States.Instance;
-            var inventoryAddress =
-                Addresses.GetInventoryAddress(states.AgentState.address, states.CurrentAvatarKey);
 
             var result = ParsePayloadJson(e.purchasedProduct.receipt);
             if (!string.IsNullOrEmpty(result))
@@ -111,7 +110,7 @@ namespace Nekoyume.IAPStore
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address,
-                        inventoryAddress)
+                        states.CurrentAvatarState.address)
                     .ContinueWith(
                         task =>
                         {

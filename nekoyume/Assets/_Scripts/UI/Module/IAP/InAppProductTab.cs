@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Purchasing;
 
 namespace Nekoyume.UI.Module
 {
+    [RequireComponent(typeof(Toggle))]
     public class InAppProductTab : MonoBehaviour
     {
         [SerializeField]
@@ -13,9 +13,17 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI enabledText;
 
-        public void SetText(string productName)
+        [field:SerializeField]
+        public Toggle Toggle { get; private set; }
+
+        public string ProductId { get; private set; }
+        public int DisplayOrder { get; private set; }
+
+        public void Set(Product product, int displayOrder)
         {
-            disabledText.text = enabledText.text = productName;
+            disabledText.text = enabledText.text = product.metadata.localizedTitle;
+            ProductId = product.definition.id;
+            DisplayOrder = displayOrder;
         }
     }
 }
