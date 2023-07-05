@@ -207,7 +207,9 @@ namespace Lib9c.Tests.Action
             avatarState = AddMedal(avatarState, row, 80);
 
             var context = new ActionContext();
-            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
+            var state = (balance == "0")
+                ? _state
+                : _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena()
             {
@@ -518,7 +520,6 @@ namespace Lib9c.Tests.Action
         {
             int championshipId = 1;
             int round = 1;
-            string balance = "0";
             var arenaSheet = _state.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var row))
             {
@@ -531,9 +532,8 @@ namespace Lib9c.Tests.Action
             avatarState = AddMedal(avatarState, row, 80);
 
             var context = new ActionContext();
-            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
-            var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(context, _signer, 99999 * ncgCurrency);
+            var ncgCurrency = _state.GetGoldCurrency();
+            var state = _state.MintAsset(context, _signer, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {

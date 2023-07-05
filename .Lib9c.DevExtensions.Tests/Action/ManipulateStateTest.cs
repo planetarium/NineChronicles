@@ -28,10 +28,12 @@ namespace Lib9c.DevExtensions.Tests.Action
     {
         private static readonly Address AdminAddr = new PrivateKey().ToAddress();
 
+        // See also InitializeUtil.cs
         private static readonly Currency Ncg = Currency.Legacy(
             "NCG",
             2,
-            new[] { AdminAddr }.ToImmutableHashSet());
+            null
+        );
 
         private static readonly Currency Crystal = CrystalCalculator.CRYSTAL;
 

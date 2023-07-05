@@ -105,9 +105,20 @@ namespace Lib9c.Tests.Action
                 throw new RuneNotFoundException($"[{nameof(Execute)}] ");
             }
 
-            state = state.MintAsset(context, agentAddress, ncgBal);
-            state = state.MintAsset(context, agentAddress, crystalBal);
-            state = state.MintAsset(context, avatarState.address, runeBal);
+            if (ncgBal.Sign > 0)
+            {
+                state = state.MintAsset(context, agentAddress, ncgBal);
+            }
+
+            if (crystalBal.Sign > 0)
+            {
+                state = state.MintAsset(context, agentAddress, crystalBal);
+            }
+
+            if (runeBal.Sign > 0)
+            {
+                state = state.MintAsset(context, avatarState.address, runeBal);
+            }
 
             var action = new RuneEnhancement()
             {
@@ -154,9 +165,20 @@ namespace Lib9c.Tests.Action
             var costCrystal = tryCount * cost.CrystalQuantity * crystalCurrency;
             var costRune = tryCount * cost.RuneStoneQuantity * runeCurrency;
 
-            nextState = nextState.MintAsset(context, agentAddress, costNcg);
-            nextState = nextState.MintAsset(context, agentAddress, costCrystal);
-            nextState = nextState.MintAsset(context, avatarState.address, costRune);
+            if (costNcg.Sign > 0)
+            {
+                nextState = nextState.MintAsset(context, agentAddress, costNcg);
+            }
+
+            if (costCrystal.Sign > 0)
+            {
+                nextState = nextState.MintAsset(context, agentAddress, costCrystal);
+            }
+
+            if (costRune.Sign > 0)
+            {
+                nextState = nextState.MintAsset(context, avatarState.address, costRune);
+            }
 
             var finalNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
             var finalCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
@@ -374,12 +396,12 @@ namespace Lib9c.Tests.Action
             var crystalCurrency = CrystalCalculator.CRYSTAL;
             var runeCurrency = Currency.Legacy(runeRow.Ticker, 0, minters: null);
 
-            if (ncg)
+            if (ncg && cost.NcgQuantity > 0)
             {
                 state = state.MintAsset(context, agentAddress, cost.NcgQuantity * ncgCurrency);
             }
 
-            if (crystal)
+            if (crystal && cost.CrystalQuantity > 0)
             {
                 state = state.MintAsset(context, agentAddress, cost.CrystalQuantity * crystalCurrency);
             }

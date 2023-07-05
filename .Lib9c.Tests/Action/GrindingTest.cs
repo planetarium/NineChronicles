@@ -174,21 +174,30 @@ namespace Lib9c.Tests.Action
 
                 if (stake)
                 {
-                    state = state
-                        .SetState(stakeStateAddress, stakeState.SerializeV2())
-                        .MintAsset(context, stakeStateAddress, requiredGold * _ncgCurrency);
+                    state = state.SetState(stakeStateAddress, stakeState.SerializeV2());
+
+                    if (requiredGold > 0)
+                    {
+                        state = state.MintAsset(
+                            context,
+                            stakeStateAddress,
+                            requiredGold * _ncgCurrency
+                        );
+                    }
                 }
 
                 if (monsterCollect)
                 {
                     var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
-                    state = state
-                        .SetState(
-                            mcAddress,
-                            new MonsterCollectionState(mcAddress, monsterCollectLevel, 1)
-                                .Serialize()
-                        )
-                        .MintAsset(context, mcAddress, requiredGold * _ncgCurrency);
+                    state = state.SetState(
+                        mcAddress,
+                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 1).Serialize()
+                    );
+
+                    if (requiredGold > 0)
+                    {
+                        state = state.MintAsset(context, mcAddress, requiredGold * _ncgCurrency);
+                    }
                 }
             }
 

@@ -50,7 +50,8 @@ namespace Lib9c.Tests.Util
             var goldCurrency = Currency.Legacy(
                 "NCG",
                 2,
-                minters: new[] { adminAddr.Value }.ToImmutableHashSet());
+                minters: default
+            );
             var goldCurrencyState = new GoldCurrencyState(goldCurrency);
             states = states
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
