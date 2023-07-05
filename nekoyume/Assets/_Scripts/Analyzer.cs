@@ -60,7 +60,7 @@ namespace Nekoyume
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
             Mixpanel.Identify(uniqueId);
             Mixpanel.Register("AgentAddress", uniqueId);
-            Mixpanel.People.Set("AgentAddress", uniqueId);
+            Mixpanel.People.Set("AgentAddress", uniqueId); 
             Mixpanel.People.Name = uniqueId;
             Mixpanel.Init();
 
