@@ -17,7 +17,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         private CancellationTokenSource? _cts;
         private readonly HashSet<string> _uuids = new();
 
-        public event Action<ReceiptDetailSchema[]> OnPoll = delegate { };
+        public event Action<Dictionary<string, ReceiptDetailSchema?>> OnPoll = delegate { };
 
         public IAPServicePoller(IAPServiceClient client)
         {
@@ -101,10 +101,16 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
                 try
                 {
-                    var results = JsonSerializer.Deserialize<ReceiptDetailSchema[]>(
-                        content!,
-                        IAPServiceClient.JsonSerializerOptions);
-                    OnPoll.Invoke(results!);
+                    var result =
+                        JsonSerializer.Deserialize<Dictionary<string, ReceiptDetailSchema?>>(
+                            content!,
+                            IAPServiceClient.JsonSerializerOptions);
+                    if (result is null)
+                    {
+                        throw new JsonException("Failed to deserialize.");
+                    }
+
+                    OnPoll.Invoke(result);
                 }
                 catch (Exception e)
                 {
