@@ -200,18 +200,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
-        public async Task<ReceiptDetailSchema[]?> PurchaseStatusAsync(HashSet<string> uuids)
+        public async Task<Dictionary<string, ReceiptDetailSchema?>?> PurchaseStatusAsync(
+            HashSet<string> uuids)
         {
             if (!IsInitialized)
             {
                 Debug.LogWarning("IAPServiceManager is not initialized.");
                 return null;
             }
-
-            // if (!force && _cache.Products is not null)
-            // {
-            //     return _cache.Products;
-            // }
 
             var (code, error, mediaType, content) = await _client.PurchaseStatusAsync(uuids);
             if (code != HttpStatusCode.OK ||
@@ -238,24 +234,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
             try
             {
-                var results = JsonSerializer.Deserialize<ReceiptDetailSchema[]>(
+                return JsonSerializer.Deserialize<Dictionary<string, ReceiptDetailSchema?>>(
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
-                foreach (var result in results)
-                {
-                    _cache.PurchaseProcessResults[result.Uuid] = result;
-                    if (result.Status == ReceiptStatus.Invalid ||
-                        result.Status == ReceiptStatus.Unknown)
-                    {
-                        UnregisterAndCache(result);
-                    }
-                    else
-                    {
-                        _poller.Register(result.Uuid);
-                    }
-                }
-
-                return results;
             }
             catch (Exception e)
             {
@@ -270,11 +251,17 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             _cache.PurchaseProcessResults[result.Uuid] = result;
         }
 
-        private void OnPoll(ReceiptDetailSchema[] results)
+        private void OnPoll(Dictionary<string, ReceiptDetailSchema?> result)
         {
-            foreach (var result in results)
+            foreach (var pair in result)
             {
-                switch (result.Status)
+                var (uuid, receiptDetailSchema) = pair;
+                if (receiptDetailSchema is null)
+                {
+                    continue;
+                }
+
+                switch (receiptDetailSchema.Status)
                 {
                     case ReceiptStatus.Init:
                     case ReceiptStatus.ValidationRequest:
@@ -282,45 +269,45 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     case ReceiptStatus.Valid:
                         break;
                     case ReceiptStatus.Invalid:
-                        Debug.LogWarning($"Invalid receipt: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Invalid receipt: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case ReceiptStatus.Unknown:
-                        Debug.LogWarning($"Unknown receipt: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Unknown receipt: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-                switch (result.TxStatus)
+                switch (receiptDetailSchema.TxStatus)
                 {
                     case TxStatus.Created:
                     case TxStatus.Staged:
                         continue;
                     case TxStatus.Success:
-                        Debug.LogWarning($"Tx success: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx success: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case TxStatus.Failure:
-                        Debug.LogWarning($"Tx failure: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx failure: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case TxStatus.Invalid:
-                        Debug.LogWarning($"Tx invalid: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx invalid: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case TxStatus.NotFound:
-                        Debug.LogWarning($"Tx not found: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx not found: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case TxStatus.FailToCreate:
-                        Debug.LogWarning($"Tx failed to create: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx failed to create: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     case TxStatus.Unknown:
-                        Debug.LogWarning($"Tx unknown: {result.Uuid}");
-                        UnregisterAndCache(result);
+                        Debug.LogWarning($"Tx unknown: {uuid}");
+                        UnregisterAndCache(receiptDetailSchema);
                         continue;
                     default:
                         throw new ArgumentOutOfRangeException();

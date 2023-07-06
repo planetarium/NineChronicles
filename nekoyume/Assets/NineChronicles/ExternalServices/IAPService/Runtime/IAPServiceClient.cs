@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -85,23 +86,18 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseStatusAsync(HashSet<string> uuids)
         {
-            var jsonArray = new JsonArray();
+            var sb = new StringBuilder();
             foreach (var uuid in uuids)
             {
-                jsonArray.Add(uuid);
+                sb.Append($"&uuid={uuid}");
             }
 
-            var reqContent = new StringContent(
-                jsonArray.ToJsonString(),
-                System.Text.Encoding.UTF8,
-                "application/json");
-            var reqMsg = new HttpRequestMessage(
-                HttpMethod.Get,
-                _endpoints.PurchaseStatus)
-            {
-                Content = reqContent,
-            };
-            using var res = await _client.SendAsync(reqMsg);
+            var query = sb.ToString()[1..];
+            var uriBuilder = new UriBuilder(_endpoints.PurchaseStatus);
+            uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
+                ? query
+                : uriBuilder.Query[1..] + query;
+            using var res = await _client.GetAsync(uriBuilder.Uri);
             return await ProcessResponseAsync(res);
         }
 

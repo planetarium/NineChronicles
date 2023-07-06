@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Nekoyume;
 using NineChronicles.ExternalServices.IAPService.Runtime;
@@ -11,6 +12,11 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
 {
     public class IAPServiceToolWindow : EditorWindow
     {
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+        };
+
         private string _host =
             "https://hihq3f4id5.execute-api.ap-northeast-2.amazonaws.com/development";
 
@@ -22,6 +28,8 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
 
         // private string _purchaseRequestResultText;
         private string _purchaseStatusResultsText;
+
+        private Vector2 _scrollPosition;
 
         [MenuItem("Tools/9C/IAP Service Tool")]
         private static void Init()
@@ -43,6 +51,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
                 return;
             }
 
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             if (GUILayout.Button("Fetch products"))
             {
                 Task.Run(GetProductsAsync);
@@ -56,6 +65,8 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
             }
 
             EditorGUILayout.TextArea(_purchaseStatusResultsText);
+
+            EditorGUILayout.EndScrollView();
         }
 
         private async Task GetProductsAsync()
@@ -63,18 +74,21 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
             var productResponse = await _iapService.GetProductsAsync(
                 Addresses.Admin,
                 force: true);
-            _productsText = productResponse?.ToString() ?? "null";
+            _productsText = productResponse is null
+                ? "null"
+                : JsonSerializer.Serialize(productResponse, JsonSerializerOptions);
         }
 
         private async Task PurchaseStatusAsync()
         {
             var uuids = new HashSet<string>();
-            uuids.Add("test_uuid_1");
-            uuids.Add("test_uuid_2");
+            uuids.Add("3fa85f64-5717-4562-b3fc-2c963f66afa1");
+            uuids.Add("3fa85f64-5717-4562-b3fc-2c963f66afa2");
+            uuids.Add("3fa85f64-5717-4562-b3fc-2c963f66afa3");
             var receiptDetailSchemas = await _iapService.PurchaseStatusAsync(uuids);
             _purchaseStatusResultsText = receiptDetailSchemas is null
                 ? "null"
-                : string.Join("\n", receiptDetailSchemas.Select(e => e.ToString()));
+                : JsonSerializer.Serialize(receiptDetailSchemas, JsonSerializerOptions);
         }
     }
 }
