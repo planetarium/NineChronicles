@@ -162,7 +162,7 @@ namespace Nekoyume.IAPStore
                     popup.Show(
                         L10nManager.Localize("UI_COMPLETED"),
                         "IAP Service Purchasing completed.\n" +
-                        $"tx status: {result.Content.TxStatus}",
+                        $"tx status: {result.TxStatus}",
                         L10nManager.Localize("UI_OK"),
                         false,
                         IconAndButtonSystem.SystemType.Information);

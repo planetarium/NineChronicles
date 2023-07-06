@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -20,10 +21,17 @@ namespace Nekoyume.UI
         private readonly Dictionary<string, InAppProductTab> _productTabDictionary = new();
         private bool _productInitialized;
         private string _selectedProductId;
+        private readonly Dictionary<string, Sprite> _productImageDictionary = new();
 
         protected override void Awake()
         {
             base.Awake();
+            foreach (var sprite in Resources.LoadAll<Sprite>("UI/Textures/00_Shop"))
+            {
+                _productImageDictionary.Add(
+                    sprite.name.Remove(0, 4),
+                    sprite);
+            }
             view.PurchaseButton.onClick.AddListener(() =>
             {
                 Debug.LogError($"Purchase: {_selectedProductId}");
@@ -51,21 +59,27 @@ namespace Nekoyume.UI
                 foreach (var product in products.OrderBy(p => p.DisplayOrder))
                 {
                     var tab = Instantiate(originProductTab, tabToggleGroup.transform);
-                    tab.Set(Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
-                            p.definition.id == product.GoogleSku),
-                        product.DisplayOrder);
+                    var storeProduct = Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
+                        p.definition.id == product.GoogleSku);
+                    tab.Set(storeProduct, product.DisplayOrder);
                     var tabToggle = tab.Toggle;
                     tabToggle.isOn = false;
                     tabToggle.onObject.SetActive(false);
                     tabToggle.offObject.SetActive(true);
                     tabToggle.group = tabToggleGroup;
-                    tabToggle.onValueChanged.AddListener(isOn =>
+
+                    void OnValueChange(bool isOn)
                     {
                         if (isOn)
                         {
                             _selectedProductId = tab.ProductId;
+                            view.PriceText.text = storeProduct.metadata.localizedPriceString;
+                            view.ProductImage.sprite =
+                                _productImageDictionary[GetProductImageNameFromProductId(product.GoogleSku)];
                         }
-                    });
+                    }
+
+                    tabToggle.onValueChanged.AddListener(OnValueChange);
                     _productTabDictionary.Add(product.GoogleSku, tab);
                 }
 
@@ -102,6 +116,18 @@ namespace Nekoyume.UI
             {
                 firstTab.Toggle.isOn = true;
             }
+        }
+
+        private static string GetProductImageNameFromProductId(string productId)
+        {
+            return (productId.StartsWith("g_")
+                ? productId.Remove(0, 2)
+                : productId) + L10nManager.CurrentLanguage switch
+            {
+                LanguageType.PortugueseBrazil => "_PT",
+                LanguageType.ChineseSimplified => "_ZH-CN",
+                _ => "_EN"
+            };
         }
     }
 }

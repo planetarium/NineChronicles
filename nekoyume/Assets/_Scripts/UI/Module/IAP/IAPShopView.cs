@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -10,5 +11,8 @@ namespace Nekoyume.UI.Module
 
         [field:SerializeField]
         public Button PurchaseButton { get; private set; }
+
+        [field:SerializeField]
+        public TextMeshProUGUI PriceText { get; private set; }
     }
 }
