@@ -99,7 +99,7 @@ namespace Nekoyume.Battle
             return waveRewards;
         }
 
-        public Player Simulate()
+        public Player Simulate(bool log = false)
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
@@ -128,8 +128,7 @@ namespace Nekoyume.Battle
                         ActionBuffSheet
                     );
 
-                    var usedSkill = skill.Use(Player, 0, buffs);
-                    Log.Add(usedSkill);
+                    skill.Use(Player, 0, buffs);
                 }
 
                 while (true)
@@ -142,7 +141,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m), true);
+                                Player.GetExp((int)(Exp * 0.3m), log);
                             }
                         }
                         else
@@ -169,7 +168,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m), true);
+                                Player.GetExp((int)(Exp * 0.3m), log);
                             }
                         }
                         else
@@ -192,7 +191,7 @@ namespace Nekoyume.Battle
                             {
                                 if (Exp > 0)
                                 {
-                                    Player.GetExp(Exp, true);
+                                    Player.GetExp(Exp, log);
                                 }
 
                                 break;
@@ -200,10 +199,13 @@ namespace Nekoyume.Battle
                             case 2:
                             {
                                 ItemMap = Player.GetRewards(_waveRewards);
-                                var dropBox = new DropBox(null, _waveRewards);
-                                Log.Add(dropBox);
-                                var getReward = new GetReward(null, _waveRewards);
-                                Log.Add(getReward);
+                                if (log)
+                                {
+                                    var dropBox = new DropBox(null, _waveRewards);
+                                    Log.Add(dropBox);
+                                    var getReward = new GetReward(null, _waveRewards);
+                                    Log.Add(getReward);
+                                }
                                 break;
                             }
                             default:

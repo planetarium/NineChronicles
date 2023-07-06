@@ -225,7 +225,7 @@ namespace Nekoyume.Model
                 pair.Value.RemainedDuration--;
             }
         }
-        
+
         protected virtual void ReduceSkillCooldown()
         {
             Skills.ReduceCooldown();
@@ -259,7 +259,7 @@ namespace Nekoyume.Model
             }
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
-            Simulator.Log.Add(usedSkill);
+            // Simulator.Log.Add(usedSkill);
             return usedSkill;
         }
 
@@ -328,7 +328,7 @@ namespace Nekoyume.Model
                 return;
 
             Stats.SetBuffs(StatBuffs);
-            Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
+            // Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
 
         protected virtual void EndTurn()
@@ -465,8 +465,8 @@ namespace Nekoyume.Model
 
         protected virtual void OnDead()
         {
-            var dead = new Dead((CharacterBase) Clone());
-            Simulator.Log.Add(dead);
+            // var dead = new Dead((CharacterBase) Clone());
+            // Simulator.Log.Add(dead);
         }
 
         public void Heal(int heal)
@@ -554,7 +554,7 @@ namespace Nekoyume.Model
             foreach (var bleed in bleeds)
             {
                 var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
-                Simulator.Log.Add(effect);
+                // Simulator.Log.Add(effect);
             }
 
             // Apply thorn damage if target has thorn
@@ -569,7 +569,7 @@ namespace Nekoyume.Model
                 if (isAttackSkill && skillInfo.Target.Thorn > 0)
                 {
                     var effect = GiveThornDamage(skillInfo.Target.Thorn);
-                    Simulator.Log.Add(effect);
+                    // Simulator.Log.Add(effect);
                 }
             }
 
