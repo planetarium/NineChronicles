@@ -22,12 +22,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1991
-    /// Updated at https://github.com/planetarium/lib9c/pull/1991
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1158
+    /// Updated at https://github.com/planetarium/lib9c/pull/1158
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar9")]
-    public class CreateAvatar : GameAction, ICreateAvatarV2
+    [ActionType("create_avatar8")]
+    public class CreateAvatar8 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -267,7 +267,7 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(ctx, signer, 600_000 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, 50 * CrystalCalculator.CRYSTAL);
         }
     }
 }

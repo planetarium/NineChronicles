@@ -16,12 +16,12 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar8Test
     {
         private readonly Address _agentAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar8Test()
         {
             _agentAddress = default;
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = 0,
                 hair = 0,
@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(600_000 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            Assert.Equal(50 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
         }
 
         [Theory]
@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = default(Address);
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = 0,
                 hair = 0,
@@ -128,7 +128,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = 0,
                 hair = 0,
@@ -156,7 +156,7 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = index,
                 hair = 0,
@@ -192,7 +192,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[index] = avatarAddress;
             var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = index,
                 hair = 0,
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = index,
                 hair = 0,
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
         public void Serialize_With_DotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar8()
             {
                 index = 2,
                 hair = 1,
@@ -294,7 +294,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar8)formatter.Deserialize(ms);
 
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);
