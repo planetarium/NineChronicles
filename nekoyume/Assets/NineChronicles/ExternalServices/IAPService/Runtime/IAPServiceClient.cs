@@ -85,12 +85,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             PurchaseStatusAsync(HashSet<string> uuids)
         {
-            var reqJson = new JsonObject
+            var jsonArray = new JsonArray();
+            foreach (var uuid in uuids)
             {
-                { "uuid_list", JsonSerializer.Serialize(uuids) },
-            };
+                jsonArray.Add(uuid);
+            }
+
             var reqContent = new StringContent(
-                reqJson.ToJsonString(JsonSerializerOptions),
+                jsonArray.ToJsonString(),
                 System.Text.Encoding.UTF8,
                 "application/json");
             var reqMsg = new HttpRequestMessage(

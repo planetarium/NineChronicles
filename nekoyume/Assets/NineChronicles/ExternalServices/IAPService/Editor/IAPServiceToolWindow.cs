@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Nekoyume;
 using NineChronicles.ExternalServices.IAPService.Runtime;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
@@ -18,8 +18,10 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
 
         private IAPServiceManager _iapService;
 
-        private IReadOnlyList<ProductSchema> _products;
-        // private PurchaseResponse200 _purchaseResponse200;
+        private string _productsText;
+
+        // private string _purchaseRequestResultText;
+        private string _purchaseStatusResultsText;
 
         [MenuItem("Tools/9C/IAP Service Tool")]
         private static void Init()
@@ -27,7 +29,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
             GetWindow<IAPServiceToolWindow>("IAP Service Tool", true).Show();
         }
 
-        private async void Awake()
+        private async void OnEnable()
         {
             _iapService = new IAPServiceManager(_host, _store);
             await _iapService.InitializeAsync();
@@ -46,14 +48,14 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
                 Task.Run(GetProductsAsync);
             }
 
-            EditorGUILayout.TextArea(_products?.Count.ToString() ?? "null");
+            EditorGUILayout.TextArea(_productsText);
 
-            // if (GUILayout.Button("Purchase"))
-            // {
-            //     Task.Run(PurchaseAsync);
-            // }
-            //
-            // EditorGUILayout.TextArea(_purchaseResponse200?.ToString() ?? "null");
+            if (GUILayout.Button("PurchaseStatus"))
+            {
+                Task.Run(PurchaseStatusAsync);
+            }
+
+            EditorGUILayout.TextArea(_purchaseStatusResultsText);
         }
 
         private async Task GetProductsAsync()
@@ -61,14 +63,18 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
             var productResponse = await _iapService.GetProductsAsync(
                 Addresses.Admin,
                 force: true);
-            _products = productResponse;
+            _productsText = productResponse?.ToString() ?? "null";
         }
 
-        // private async Task PurchaseAsync()
-        // {
-        //     var iapService = IAPServiceManager.Instance;
-        //     var purchaseResponse = await iapService.PurchaseAsync();
-        //     _purchaseResponse200 = purchaseResponse;
-        // }
+        private async Task PurchaseStatusAsync()
+        {
+            var uuids = new HashSet<string>();
+            uuids.Add("test_uuid_1");
+            uuids.Add("test_uuid_2");
+            var receiptDetailSchemas = await _iapService.PurchaseStatusAsync(uuids);
+            _purchaseStatusResultsText = receiptDetailSchemas is null
+                ? "null"
+                : string.Join("\n", receiptDetailSchemas.Select(e => e.ToString()));
+        }
     }
 }
