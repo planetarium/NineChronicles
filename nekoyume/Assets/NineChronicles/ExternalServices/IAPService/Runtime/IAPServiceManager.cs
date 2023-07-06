@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Libplanet;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
-using NineChronicles.ExternalServices.IAPService.Runtime.Responses;
 using UnityEngine;
 
 namespace NineChronicles.ExternalServices.IAPService.Runtime
@@ -137,7 +136,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
-        public async Task<PurchaseRequestResponse200?> PurchaseRequestAsync(
+        public async Task<ReceiptDetailSchema?> PurchaseRequestAsync(
             string receipt,
             Address agentAddr,
             Address avatarAddr)
@@ -192,7 +191,71 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     _poller.Register(result.Uuid);
                 }
 
-                return new PurchaseRequestResponse200 { Content = result };
+                return result;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
+        public async Task<ReceiptDetailSchema[]?> PurchaseStatusAsync(HashSet<string> uuids)
+        {
+            if (!IsInitialized)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            // if (!force && _cache.Products is not null)
+            // {
+            //     return _cache.Products;
+            // }
+
+            var (code, error, mediaType, content) = await _client.PurchaseStatusAsync(uuids);
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"Purchase failed: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                var results = JsonSerializer.Deserialize<ReceiptDetailSchema[]>(
+                    content!,
+                    IAPServiceClient.JsonSerializerOptions)!;
+                foreach (var result in results)
+                {
+                    _cache.PurchaseProcessResults[result.Uuid] = result;
+                    if (result.Status == ReceiptStatus.Invalid ||
+                        result.Status == ReceiptStatus.Unknown)
+                    {
+                        UnregisterAndCache(result);
+                    }
+                    else
+                    {
+                        _poller.Register(result.Uuid);
+                    }
+                }
+
+                return results;
             }
             catch (Exception e)
             {
