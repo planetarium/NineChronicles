@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Quest
         public override QuestType QuestType => QuestType.Exchange;
         public readonly TradeType Type;
 
-        public TradeQuest(TradeQuestSheet.Row data, QuestReward reward) 
+        public TradeQuest(TradeQuestSheet.Row data, QuestReward reward)
             : base(data, reward)
         {
             Type = data.Type;
@@ -45,11 +45,7 @@ namespace Nekoyume.Model.Quest
 
         protected override string TypeId => "tradeQuest";
         public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"type"] = (Integer)(int)Type,
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
+            ((Dictionary) base.Serialize())
+            .Add("type", (int) Type);
     }
 }

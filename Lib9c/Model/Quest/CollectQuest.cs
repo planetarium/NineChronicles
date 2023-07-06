@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Quest
 
         public readonly int ItemId;
 
-        public CollectQuest(CollectQuestSheet.Row data, QuestReward reward) 
+        public CollectQuest(CollectQuestSheet.Row data, QuestReward reward)
             : base(data, reward)
         {
             ItemId = data.ItemId;
@@ -54,11 +54,7 @@ namespace Nekoyume.Model.Quest
         }
 
         public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"itemId"] = (Integer)ItemId,
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
+            ((Dictionary) base.Serialize())
+            .Add("itemId", ItemId);
     }
 }
