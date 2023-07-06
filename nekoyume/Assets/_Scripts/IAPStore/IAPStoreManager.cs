@@ -74,6 +74,7 @@ namespace Nekoyume.IAPStore
                     $"{product.definition.id}: {product.metadata.localizedTitle}, {product.metadata.localizedDescription}, {product.metadata.localizedPriceString}");
             }
 
+
             IsInitialized = true;
         }
 
@@ -99,46 +100,14 @@ namespace Nekoyume.IAPStore
         /// </summary>
         PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs e)
         {
-            var states = States.Instance;
-
-            var result = ParsePayloadJson(e.purchasedProduct.receipt);
-            if (!string.IsNullOrEmpty(result))
+            _controller.ConfirmPendingPurchase(e.purchasedProduct);
+            if (e.purchasedProduct.availableToPurchase)
             {
-                var popup = Widget.Find<IconAndButtonSystem>();
-
-                Game.Game.instance.IAPServiceManager
-                    .PurchaseRequestAsync(
-                        e.purchasedProduct.receipt,
-                        states.AgentState.address,
-                        states.CurrentAvatarState.address)
-                    .ContinueWith(
-                        task =>
-                        {
-                            if (task.Result is null)
-                            {
-                                popup.Show(
-                                    L10nManager.Localize("UI_ERROR"),
-                                    "IAP Service Purchasing failed. result is not HTTPSCODE:200\n" +
-                                    $"receipt: {e.purchasedProduct.receipt}",
-                                    L10nManager.Localize("UI_OK"),
-                                    false);
-                            }
-                            else
-                            {
-                                popup.Show(
-                                    L10nManager.Localize("UI_COMPLETED"),
-                                    "IAP Service Purchasing completed.\n" +
-                                    $"receipt: {e.purchasedProduct.receipt}",
-                                    L10nManager.Localize("UI_OK"),
-                                    false,
-                                    IconAndButtonSystem.SystemType.Information);
-                                _controller.ConfirmPendingPurchase(e.purchasedProduct);
-                            }
-                        });
+                OnPurchaseRequestAsync(e);
                 return PurchaseProcessingResult.Pending;
             }
 
-            Debug.Log("Invalid receipt, not unlocking content");
+            Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
         }
 
@@ -165,6 +134,44 @@ namespace Nekoyume.IAPStore
             if (p.reason == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
+            }
+        }
+
+        private async void OnPurchaseRequestAsync(PurchaseEventArgs e)
+        {
+            var popup = Widget.Find<IconAndButtonSystem>();
+            var states = States.Instance;
+            try
+            {
+                var result = await Game.Game.instance.IAPServiceManager
+                    .PurchaseRequestAsync(
+                        e.purchasedProduct.receipt,
+                        states.AgentState.address,
+                        states.CurrentAvatarState.address);
+                if (result is null)
+                {
+                    popup.Show(
+                        L10nManager.Localize("UI_ERROR"),
+                        "IAP Service Purchasing failed. result is not HTTPSCODE:200\n" +
+                        $"receipt: {e.purchasedProduct.receipt}",
+                        L10nManager.Localize("UI_OK"),
+                        false);
+                }
+                else
+                {
+                    popup.Show(
+                        L10nManager.Localize("UI_COMPLETED"),
+                        "IAP Service Purchasing completed.\n" +
+                        $"receipt: {e.purchasedProduct.receipt}",
+                        L10nManager.Localize("UI_OK"),
+                        false,
+                        IconAndButtonSystem.SystemType.Information);
+                    _controller.ConfirmPendingPurchase(e.purchasedProduct);
+                }
+            }
+            catch (Exception exc)
+            {
+                Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
         }
 
