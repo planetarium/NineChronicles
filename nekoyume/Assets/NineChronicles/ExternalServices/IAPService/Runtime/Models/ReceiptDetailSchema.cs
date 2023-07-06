@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Text.Json.Serialization;
 
 namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
@@ -17,9 +19,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         public ReceiptStatus Status { get; set; }
 
         [JsonPropertyName("tx_id")]
-        public string TxId { get; set; }
+        public string? TxId { get; set; }
 
         [JsonPropertyName("tx_status")]
-        public TxStatus TxStatus { get; set; }
+        public TxStatus? TxStatus { get; set; }
     }
 }
