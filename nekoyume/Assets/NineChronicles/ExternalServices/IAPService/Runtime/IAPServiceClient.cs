@@ -87,13 +87,19 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         {
             var reqJson = new JsonObject
             {
-                { "uuid_list", JsonSerializer.Serialize(uuids) }
+                { "uuid_list", JsonSerializer.Serialize(uuids) },
             };
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,
                 "application/json");
-            using var res = await _client.PostAsync(_endpoints.PurchaseStatus, reqContent);
+            var reqMsg = new HttpRequestMessage(
+                HttpMethod.Get,
+                _endpoints.PurchaseStatus)
+            {
+                Content = reqContent,
+            };
+            using var res = await _client.SendAsync(reqMsg);
             return await ProcessResponseAsync(res);
         }
 
