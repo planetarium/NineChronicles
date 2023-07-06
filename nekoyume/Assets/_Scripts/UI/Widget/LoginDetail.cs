@@ -225,6 +225,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Analyzer.Instance.Track("Unity/CustomizeAvatar/Show");
             base.Show(ignoreShowAnimation);
             if (_isCreateMode)
             {

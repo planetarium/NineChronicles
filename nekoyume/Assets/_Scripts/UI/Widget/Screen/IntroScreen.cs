@@ -52,6 +52,7 @@ namespace Nekoyume.UI
 
             signinButton.onClick.AddListener(() =>
             {
+                Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
                 startButtonContainer.SetActive(false);
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
@@ -76,6 +77,7 @@ namespace Nekoyume.UI
 
         public void Show(string keyStorePath, string privateKey)
         {
+            Analyzer.Instance.Track("Unity/Intro/Show");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
@@ -111,6 +113,7 @@ namespace Nekoyume.UI
 
                 videoImage.gameObject.SetActive(true);
                 videoPlayer.Play();
+                Analyzer.Instance.Track("Unity/Intro/Video/Start");
             }
 
             var keystore = Find<LoginSystem>().KeyStore;
@@ -120,12 +123,14 @@ namespace Nekoyume.UI
             }
             else
             {
+                Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
                 startButtonContainer.SetActive(true);
             }
         }
 
         private void OnVideoEnd()
         {
+            Analyzer.Instance.Track("Unity/Intro/Video/End");
             videoImage.gameObject.SetActive(false);
         }
 
@@ -139,6 +144,7 @@ namespace Nekoyume.UI
             }
             else
             {
+                Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{_guideIndex + 1}");
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }

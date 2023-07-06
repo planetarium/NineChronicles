@@ -30,6 +30,18 @@ namespace Nekoyume.UI
             Login_Mobile,
         }
 
+        private static class AnalyzeCache
+        {
+            public static bool IsTrackedRetypePassword = false;
+            public static bool IsTrackedInputPassword = false;
+
+            public static void Reset()
+            {
+                IsTrackedRetypePassword = false;
+                IsTrackedInputPassword = false;
+            }
+        }
+
         public GameObject bg;
         public GameObject header;
         public TextMeshProUGUI titleText;
@@ -209,6 +221,12 @@ namespace Nekoyume.UI
 
         public void CheckPassphrase(string text)
         {
+            if (!AnalyzeCache.IsTrackedInputPassword)
+            {
+                AnalyzeCache.IsTrackedInputPassword = true;
+                Analyzer.Instance.Track("Unity/Login/Password/Input");
+            }
+
             var strong = CheckPassWord(text);
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
@@ -224,6 +242,12 @@ namespace Nekoyume.UI
 
         public void CheckRetypePassphrase(string text)
         {
+            if (!AnalyzeCache.IsTrackedRetypePassword)
+            {
+                AnalyzeCache.IsTrackedRetypePassword = true;
+                Analyzer.Instance.Track("Unity/Login/Password/Retype");
+            }
+
             UpdateSubmitButton();
             var vaild = submitButton.IsSubmittable;
             correctText.gameObject.SetActive(vaild);
@@ -269,6 +293,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            Analyzer.Instance.Track("Unity/Login/GameStartButton/Click");
 
             submitButton.Interactable = false;
             switch (State.Value)
@@ -346,6 +372,8 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
+            AnalyzeCache.Reset();
+
             if (_capturedImage != null)
             {
                 _capturedImage.Show();
