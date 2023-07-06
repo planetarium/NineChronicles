@@ -1,8 +1,11 @@
+#nullable enable
+
 namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Numerics;
     using Bencodex.Types;
@@ -12,157 +15,316 @@ namespace Lib9c.Tests.Action
     using Libplanet.Consensus;
     using Libplanet.State;
 
+    /// <summary>
+    /// <para>
+    /// A rough replica of https://github.com/planetarium/libplanet/blob/main/Libplanet/State/AccountStateDelta.cs
+    /// except this has its constructors exposed as public for testing with many of
+    /// checks removed.
+    /// </para>
+    /// <para>
+    /// Notable differences from the original are:
+    /// <type list="bullet">
+    ///     <item><description>
+    ///         There is no authority check for <see cref="MintAsset"/> and <see cref="BurnAsset"/>,
+    ///         i.e. any <see cref="Address"/> can mint and burn.
+    ///     </description></item>
+    ///     <item><description>
+    ///         There is no amount check for <see cref="MintAsset"/>, <see cref="BurnAsset"/>,
+    ///         i.e. 0 or even a negative amount is allowed.
+    ///     </description></item>
+    ///     <item><description>
+    ///         The <see cref="TransferAsset"/> behaves as if any given <see cref="IActionContext"/>
+    ///         has <see cref="IActionContext.BlockProtocolVersion"/> value equal to 0.
+    ///     </description></item>
+    /// </list>
+    /// </para>
+    /// </summary>
+    [Pure]
     public class MockStateDelta : IAccountStateDelta
     {
-        private readonly IImmutableDictionary<Address, IValue> _states;
-        private readonly IImmutableDictionary<(Address, Currency), BigInteger> _fungibles;
-        private readonly IImmutableDictionary<Currency, BigInteger> _totalSupplies;
-        private readonly ValidatorSet _validatorSet;
-        private readonly IAccountDelta _delta;
-
         public MockStateDelta()
             : this(MockState.Empty)
         {
         }
 
-        public MockStateDelta(MockState mockState)
+        public MockStateDelta(IAccountState mockState)
             : this(
-                mockState.States,
-                mockState.Fungibles,
-                mockState.TotalSupplies,
-                mockState.ValidatorSet)
+                mockState.GetStates,
+                mockState.GetBalance,
+                mockState.GetTotalSupply,
+                mockState.GetValidatorSet)
         {
         }
 
-        // Pretends all given arguments are part of the delta, i.e., have been modified
-        // using appropriate methods such as Transfer/Mint/Burn to set the values.
-        // Also convert to internal data types.
-        public MockStateDelta(
-            IImmutableDictionary<Address, IValue> states = null,
-            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balances = null,
-            IImmutableDictionary<Currency, FungibleAssetValue> totalSupplies = null,
-            ValidatorSet validatorSet = null)
-        {
-            _states = states ?? ImmutableDictionary<Address, IValue>.Empty;
-            _fungibles = balances is { } b
-                ? b.ToImmutableDictionary(kv => kv.Key, kv => kv.Value.RawValue)
-                : ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
-            _totalSupplies = totalSupplies is { } t
-                ? t.ToImmutableDictionary(kv => kv.Key, kv => kv.Value.RawValue)
-                : ImmutableDictionary<Currency, BigInteger>.Empty;
-            _validatorSet =
-                validatorSet ?? new ValidatorSet();
-
-            _delta = new MockDelta(_states, _fungibles, _totalSupplies, _validatorSet);
-        }
-
-        // For Transfer/Mint/Burn
         private MockStateDelta(
-            IImmutableDictionary<Address, IValue> state,
-            IImmutableDictionary<(Address Address, Currency Currency), BigInteger> balance,
-            IImmutableDictionary<Currency, BigInteger> totalSupplies,
-            ValidatorSet validatorSet)
+            AccountStateGetter accountStateGetter,
+            AccountBalanceGetter accountBalanceGetter,
+            TotalSupplyGetter totalSupplyGetter,
+            ValidatorSetGetter validatorSetGetter)
         {
-            _states = state;
-            _fungibles = balance;
-            _totalSupplies = totalSupplies;
-            _validatorSet = validatorSet;
-
-            _delta = new MockDelta(_states, _fungibles, _totalSupplies, _validatorSet);
+            Delta = new MockDelta();
+            StateGetter = accountStateGetter;
+            BalanceGetter = accountBalanceGetter;
+            TotalSupplyGetter = totalSupplyGetter;
+            ValidatorSetGetter = validatorSetGetter;
+            TotalUpdatedFungibles = ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
         }
 
-        public IAccountDelta Delta => _delta;
+        /// <inheritdoc/>
+        public IAccountDelta Delta { get; private set; }
 
-        public IImmutableSet<Address> UpdatedAddresses => _delta.UpdatedAddresses;
+        /// <inheritdoc/>
+        public IImmutableSet<(Address, Currency)> TotalUpdatedFungibleAssets =>
+            TotalUpdatedFungibles.Keys.ToImmutableHashSet();
 
-        public IImmutableSet<Address> StateUpdatedAddresses => _delta.StateUpdatedAddresses;
+        public IImmutableDictionary<(Address, Currency), BigInteger> TotalUpdatedFungibles
+            { get; protected set; }
 
-        public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets => _delta.UpdatedFungibleAssets;
+        private AccountStateGetter StateGetter { get; set; }
 
-        public IImmutableSet<(Address, Currency)> TotalUpdatedFungibleAssets => _delta.UpdatedFungibleAssets;
+        private AccountBalanceGetter BalanceGetter { get; set; }
 
-        public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies => _delta.UpdatedTotalSupplyCurrencies;
+        private TotalSupplyGetter TotalSupplyGetter { get; set; }
 
-        public IValue GetState(Address address) => _delta.States.TryGetValue(address, out IValue value)
-            ? value
-            : null;
+        private ValidatorSetGetter ValidatorSetGetter { get; set; }
 
-        public IReadOnlyList<IValue> GetStates(IReadOnlyList<Address> addresses) =>
-            addresses.Select(GetState).ToArray();
+        /// <inheritdoc/>
+        [Pure]
+        public IValue? GetState(Address address)
+        {
+            IValue? state = GetStates(new[] { address })[0];
+            return state;
+        }
 
+        /// <inheritdoc cref="IAccountState.GetStates(IReadOnlyList{Address})"/>
+        [Pure]
+        public IReadOnlyList<IValue?> GetStates(IReadOnlyList<Address> addresses)
+        {
+            int length = addresses.Count;
+            IValue?[] values = new IValue?[length];
+            var notFoundIndices = new List<int>(length);
+            for (int i = 0; i < length; i++)
+            {
+                Address address = addresses[i];
+                if (Delta.States.TryGetValue(address, out IValue? updatedValue))
+                {
+                    values[i] = updatedValue;
+                }
+                else
+                {
+                    notFoundIndices.Add(i);
+                }
+            }
+
+            if (notFoundIndices.Count > 0)
+            {
+                IReadOnlyList<IValue?> restValues = StateGetter(
+                    notFoundIndices.Select(index => addresses[index]).ToArray());
+                foreach ((var v, var i) in notFoundIndices.Select((v, i) => (v, i)))
+                {
+                    values[v] = restValues[i];
+                }
+            }
+
+            return values;
+        }
+
+        /// <inheritdoc/>
+        [Pure]
         public IAccountStateDelta SetState(Address address, IValue state) =>
-            new MockStateDelta(
-                _states.SetItem(address, state),
-                _fungibles,
-                _totalSupplies,
-                _validatorSet);
+            UpdateStates(Delta.States.SetItem(address, state));
 
+        /// <inheritdoc/>
+        [Pure]
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
-            _delta.Fungibles.TryGetValue((address, currency), out BigInteger rawValue)
-                ? FungibleAssetValue.FromRawValue(currency, rawValue)
-                : FungibleAssetValue.FromRawValue(currency, 0);
+            GetBalance(address, currency, Delta.Fungibles);
 
+        /// <inheritdoc/>
+        [Pure]
         public FungibleAssetValue GetTotalSupply(Currency currency)
         {
             if (!currency.TotalSupplyTrackable)
             {
-                var msg =
-                    $"The total supply value of the currency {currency} is not trackable"
-                    + " because it is a legacy untracked currency which might have been"
-                    + " established before the introduction of total supply tracking support.";
-                throw new TotalSupplyNotTrackableException(msg, currency);
+                throw new TotalSupplyNotTrackableException(
+                    $"The total supply value of the currency {currency} is not trackable " +
+                    "because it is a legacy untracked currency which might have been " +
+                    "established before the introduction of total supply tracking support.",
+                    currency);
             }
 
             // Return dirty state if it exists.
-            return _delta.TotalSupplies.TryGetValue(currency, out var rawValue)
-                ? FungibleAssetValue.FromRawValue(currency, rawValue)
-                : FungibleAssetValue.FromRawValue(currency, 0);
+            if (Delta.TotalSupplies.TryGetValue(currency, out BigInteger totalSupplyValue))
+            {
+                return FungibleAssetValue.FromRawValue(currency, totalSupplyValue);
+            }
+
+            return TotalSupplyGetter(currency);
         }
 
-        public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
+        /// <inheritdoc/>
+        [Pure]
+        public ValidatorSet GetValidatorSet() =>
+            Delta.ValidatorSet ?? ValidatorSetGetter();
+
+        /// <inheritdoc/>
+        [Pure]
+        public IAccountStateDelta MintAsset(
+            IActionContext context, Address recipient, FungibleAssetValue value)
         {
-            var totalSupplies =
-                value.Currency.TotalSupplyTrackable
-                    ? _totalSupplies.SetItem(
-                        value.Currency,
-                        (GetTotalSupply(value.Currency) + value).RawValue)
-                    : _totalSupplies;
-            return new MockStateDelta(
-                _states,
-                _fungibles.SetItem(
-                    (recipient, value.Currency),
-                    (GetBalance(recipient, value.Currency) + value).RawValue),
-                totalSupplies,
-                _validatorSet
+            Currency currency = value.Currency;
+            FungibleAssetValue balance = GetBalance(recipient, currency);
+            (Address, Currency) assetKey = (recipient, currency);
+            BigInteger rawBalance = (balance + value).RawValue;
+
+            if (currency.TotalSupplyTrackable)
+            {
+                var currentTotalSupply = GetTotalSupply(currency);
+                if (currency.MaximumSupply < currentTotalSupply + value)
+                {
+                    var msg = $"The amount {value} attempted to be minted added to the current"
+                              + $" total supply of {currentTotalSupply} exceeds the"
+                              + $" maximum allowed supply of {currency.MaximumSupply}.";
+                    throw new SupplyOverflowException(msg, value);
+                }
+
+                return UpdateFungibleAssets(
+                    Delta.Fungibles.SetItem(assetKey, rawBalance),
+                    TotalUpdatedFungibles.SetItem(assetKey, rawBalance),
+                    Delta.TotalSupplies.SetItem(currency, (currentTotalSupply + value).RawValue)
+                );
+            }
+
+            return UpdateFungibleAssets(
+                Delta.Fungibles.SetItem(assetKey, rawBalance),
+                TotalUpdatedFungibles.SetItem(assetKey, rawBalance)
             );
         }
 
-        public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
-        {
-            var totalSupplies =
-                value.Currency.TotalSupplyTrackable
-                    ? _totalSupplies.SetItem(
-                        value.Currency,
-                        (GetTotalSupply(value.Currency) - value).RawValue)
-                    : _totalSupplies;
-            return new MockStateDelta(
-                _states,
-                _fungibles.SetItem(
-                    (owner, value.Currency),
-                    (GetBalance(owner, value.Currency) - value).RawValue),
-                totalSupplies,
-                _validatorSet);
-        }
-
+        /// <inheritdoc/>
+        [Pure]
         public IAccountStateDelta TransferAsset(
             IActionContext context,
             Address sender,
             Address recipient,
             FungibleAssetValue value,
-            bool allowNegativeBalance = false
-        )
+            bool allowNegativeBalance = false) =>
+                TransferAssetV0(sender, recipient, value, allowNegativeBalance);
+
+        /// <inheritdoc/>
+        [Pure]
+        public IAccountStateDelta BurnAsset(
+            IActionContext context, Address owner, FungibleAssetValue value)
         {
-            // Copy from Libplanet (AccountStateDeltaImpl.cs@66104588af35afbd18a41bb7857eacd9da190019)
+            Currency currency = value.Currency;
+            FungibleAssetValue balance = GetBalance(owner, currency);
+            (Address, Currency) assetKey = (owner, currency);
+            BigInteger rawBalance = (balance - value).RawValue;
+            if (currency.TotalSupplyTrackable)
+            {
+                return UpdateFungibleAssets(
+                    Delta.Fungibles.SetItem(assetKey, rawBalance),
+                    TotalUpdatedFungibles.SetItem(assetKey, rawBalance),
+                    Delta.TotalSupplies.SetItem(
+                        currency,
+                        (GetTotalSupply(currency) - value).RawValue)
+                );
+            }
+
+            return UpdateFungibleAssets(
+                Delta.Fungibles.SetItem(assetKey, rawBalance),
+                TotalUpdatedFungibles.SetItem(assetKey, rawBalance)
+            );
+        }
+
+        /// <inheritdoc/>
+        [Pure]
+        public IAccountStateDelta SetValidator(Validator validator)
+        {
+            return UpdateValidatorSet(GetValidatorSet().Update(validator));
+        }
+
+        [Pure]
+        private FungibleAssetValue GetBalance(
+            Address address,
+            Currency currency,
+            IImmutableDictionary<(Address, Currency), BigInteger> balances) =>
+            balances.TryGetValue((address, currency), out BigInteger balance)
+                ? FungibleAssetValue.FromRawValue(currency, balance)
+                : BalanceGetter(address, currency);
+
+        [Pure]
+        private IAccountStateDelta UpdateStates(
+            IImmutableDictionary<Address, IValue> updatedStates
+        ) =>
+            new MockStateDelta(
+                StateGetter,
+                BalanceGetter,
+                TotalSupplyGetter,
+                ValidatorSetGetter)
+            {
+                Delta = new MockDelta(
+                    updatedStates,
+                    Delta.Fungibles,
+                    Delta.TotalSupplies,
+                    Delta.ValidatorSet),
+                TotalUpdatedFungibles = TotalUpdatedFungibles,
+            };
+
+        [Pure]
+        private IAccountStateDelta UpdateFungibleAssets(
+            IImmutableDictionary<(Address, Currency), BigInteger> updatedFungibleAssets,
+            IImmutableDictionary<(Address, Currency), BigInteger> totalUpdatedFungibles
+        ) =>
+            UpdateFungibleAssets(
+                updatedFungibleAssets,
+                totalUpdatedFungibles,
+                Delta.TotalSupplies);
+
+        [Pure]
+        private IAccountStateDelta UpdateFungibleAssets(
+            IImmutableDictionary<(Address, Currency), BigInteger> updatedFungibleAssets,
+            IImmutableDictionary<(Address, Currency), BigInteger> totalUpdatedFungibles,
+            IImmutableDictionary<Currency, BigInteger> updatedTotalSupply
+        ) =>
+            new MockStateDelta(
+                StateGetter,
+                BalanceGetter,
+                TotalSupplyGetter,
+                ValidatorSetGetter)
+            {
+                Delta = new MockDelta(
+                    Delta.States,
+                    updatedFungibleAssets,
+                    updatedTotalSupply,
+                    Delta.ValidatorSet),
+                TotalUpdatedFungibles = totalUpdatedFungibles,
+            };
+
+        [Pure]
+        private IAccountStateDelta UpdateValidatorSet(
+            ValidatorSet updatedValidatorSet
+        ) =>
+            new MockStateDelta(
+                StateGetter,
+                BalanceGetter,
+                TotalSupplyGetter,
+                ValidatorSetGetter)
+            {
+                Delta = new MockDelta(
+                    Delta.States,
+                    Delta.Fungibles,
+                    Delta.TotalSupplies,
+                    updatedValidatorSet),
+                TotalUpdatedFungibles = TotalUpdatedFungibles,
+            };
+
+        [Pure]
+        private IAccountStateDelta TransferAssetV0(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue value,
+            bool allowNegativeBalance = false)
+        {
             if (value.Sign <= 0)
             {
                 throw new ArgumentOutOfRangeException(
@@ -182,17 +344,60 @@ namespace Lib9c.Tests.Action
                 throw new InsufficientBalanceException(msg, sender, senderBalance);
             }
 
-            IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _fungibles
-                .SetItem((sender, currency), (senderBalance - value).RawValue)
-                .SetItem((recipient, currency), (recipientBalance + value).RawValue);
-            return new MockStateDelta(_states, newBalance, _totalSupplies, _validatorSet);
+            return UpdateFungibleAssets(
+                Delta.Fungibles
+                    .SetItem((sender, currency), (senderBalance - value).RawValue)
+                    .SetItem((recipient, currency), (recipientBalance + value).RawValue),
+                TotalUpdatedFungibles
+                    .SetItem((sender, currency), (senderBalance - value).RawValue)
+                    .SetItem((recipient, currency), (recipientBalance + value).RawValue)
+            );
         }
 
-        public IAccountStateDelta SetValidator(Validator validator)
+        [Pure]
+        private IAccountStateDelta TransferAssetV1(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue value,
+            bool allowNegativeBalance = false)
         {
-            return new MockStateDelta(_states, _fungibles, _totalSupplies, GetValidatorSet().Update(validator));
-        }
+            if (value.Sign <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "The value to transfer has to be greater than zero."
+                );
+            }
 
-        public ValidatorSet GetValidatorSet() => _validatorSet;
+            Currency currency = value.Currency;
+            FungibleAssetValue senderBalance = GetBalance(sender, currency);
+
+            if (!allowNegativeBalance && senderBalance < value)
+            {
+                var msg = $"The account {sender}'s balance of {currency} is insufficient to " +
+                          $"transfer: {senderBalance} < {value}.";
+                throw new InsufficientBalanceException(msg, sender, senderBalance);
+            }
+
+            (Address, Currency) senderAssetKey = (sender, currency);
+            BigInteger senderRawBalance = (senderBalance - value).RawValue;
+
+            IImmutableDictionary<(Address, Currency), BigInteger> updatedFungibleAssets =
+                Delta.Fungibles.SetItem(senderAssetKey, senderRawBalance);
+            IImmutableDictionary<(Address, Currency), BigInteger> totalUpdatedFungibles =
+                TotalUpdatedFungibles.SetItem(senderAssetKey, senderRawBalance);
+
+            FungibleAssetValue recipientBalance = GetBalance(
+                recipient,
+                currency,
+                updatedFungibleAssets);
+            (Address, Currency) recipientAssetKey = (recipient, currency);
+            BigInteger recipientRawBalance = (recipientBalance + value).RawValue;
+
+            return UpdateFungibleAssets(
+                updatedFungibleAssets.SetItem(recipientAssetKey, recipientRawBalance),
+                totalUpdatedFungibles.SetItem(recipientAssetKey, recipientRawBalance)
+            );
+        }
     }
 }

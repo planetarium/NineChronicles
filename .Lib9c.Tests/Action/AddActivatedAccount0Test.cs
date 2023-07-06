@@ -62,7 +62,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(
                 new[]
                 {
-                    AdminState.Address,
                     ActivatedAccountsState.Address,
                 }.ToImmutableHashSet(),
                 nextState.Delta.UpdatedAddresses
