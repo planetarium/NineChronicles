@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using mixpanel;
-using PackageExtensions.Mixpanel;
+using Nekoyume.State;
 //using Sentry;
 /*
  * [ISSUE TRACKER]
@@ -24,11 +23,9 @@ namespace Nekoyume
 
         private readonly bool _isTrackable;
 
-        private readonly MixpanelValueFactory _mixpanelValueFactory;
-
         public Analyzer(
             string uniqueId = "none",
-            string rpcServerHost = null,
+            string rpcServerHost = "no-rpc-host",
             bool isTrackable = false)
         {
             _isTrackable = isTrackable;
@@ -42,44 +39,51 @@ namespace Nekoyume
             var clientHash = Resources.Load<TextAsset>("ClientHash")?.text ?? "no-hash";
             var targetNetwork = Resources.Load<TextAsset>("TargetNetwork")?.text ?? "no-target";
 
-            InitializeSentry(
-                clientHost,
-                clientHash,
-                targetNetwork,
-                rpcServerHost,
-                uniqueId,
-                _isTrackable);
-
-            _mixpanelValueFactory = new MixpanelValueFactory(
+            InitializeMixpanel(
                 clientHost,
                 clientHash,
                 targetNetwork,
                 rpcServerHost,
                 uniqueId);
+            InitializeSentry(
+                clientHost,
+                clientHash,
+                targetNetwork,
+                rpcServerHost,
+                uniqueId);
+            UpdateAvatarAddress();
 
+            Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
+
+            Debug.Log($"Analyzer initialized: {uniqueId}");
+        }
+
+        private void InitializeMixpanel(
+            string clientHost,
+            string clientHash,
+            string targetNetwork,
+            string rpcServerHost,
+            string uniqueId)
+        {
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
             Mixpanel.Identify(uniqueId);
+            Mixpanel.Register("client-host", clientHost);
+            Mixpanel.Register("client-hash", clientHash);
+            Mixpanel.Register("target-network", targetNetwork);
+            Mixpanel.Register("rpc-server-host", rpcServerHost);
             Mixpanel.Register("AgentAddress", uniqueId);
             Mixpanel.People.Set("AgentAddress", uniqueId);
             Mixpanel.People.Name = uniqueId;
             Mixpanel.Init();
-
-            Debug.Log($"Analyzer initialized: {uniqueId}");
         }
 
         private void InitializeSentry(
             string clientHost,
             string clientHash,
             string targetNetwork,
-            string rpcServerHost = "no-rpc-host",
-            string uniqueId = "none",
-            bool isTrackable = false)
+            string rpcServerHost,
+            string uniqueId)
         {
-            // if (!isTrackable)
-            // {
-            //     return;
-            // }
-            //
             // SentrySdk.ConfigureScope(scope =>
             // {
             //     scope.User = new User()
@@ -135,8 +139,13 @@ namespace Nekoyume
                 return;
             }
 
-            var value = _mixpanelValueFactory.GetValue(properties);
-            Mixpanel.Track(eventName, value);
+            var result = new Value();
+            foreach (var (key, value) in properties)
+            {
+                result[key] = value;
+            }
+
+            Mixpanel.Track(eventName, result);
         }
 
         public ITransaction Track(
@@ -156,7 +165,6 @@ namespace Nekoyume
             //         item => item.Value.ToString()));
 
             var value = new Value(valueDict);
-            value = _mixpanelValueFactory.UpdateValue(value);
             Mixpanel.Track(eventName, value);
 
             // if (returnTrace)
@@ -176,6 +184,18 @@ namespace Nekoyume
             }
 
             Mixpanel.Flush();
+        }
+
+        private static void UpdateAvatarAddress()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                Mixpanel.Unregister("AvatarAddress");
+                return;
+            }
+
+            Mixpanel.Register("AgentAddress", avatarState.address.ToHex());
         }
     }
 }
