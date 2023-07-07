@@ -19,6 +19,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.IAPStore;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
@@ -27,19 +28,20 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
+using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
+using Currency = Libplanet.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
-using RocksDbSharp;
 using UnityEngine.Android;
 #endif
 
 namespace Nekoyume.Game
 {
     using GraphQL;
-    using Lib9c.Formatters;
     using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
@@ -88,6 +90,10 @@ namespace Nekoyume.Game
         public IAgent Agent { get; private set; }
 
         public Analyzer Analyzer { get; private set; }
+
+        public IAPStoreManager IAPStoreManager { get; private set; }
+
+        public IAPServiceManager IAPServiceManager { get; private set; }
 
         public Stage Stage => stage;
         public Arena Arena => arena;
@@ -323,6 +329,11 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
+            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
+            Debug.Log("[Game] Start() IAPStoreManager initialized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.

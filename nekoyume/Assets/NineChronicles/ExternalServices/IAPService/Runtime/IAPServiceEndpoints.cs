@@ -18,7 +18,6 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             Product = new Uri(Url + "/api/product");
             PurchaseRequest = new Uri(Url + "/api/purchase/request");
             PurchaseStatus = new Uri(Url + "/api/purchase/status");
-
         }
     }
 }
