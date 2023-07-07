@@ -11,6 +11,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
+using Libplanet.Crypto;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
@@ -190,6 +191,15 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcClient
+                    ? _commandLineOptions.RpcServerHost
+                    : null);
+            Analyzer.Track("Unity/Started");
+
             URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
@@ -285,6 +295,7 @@ namespace Nekoyume.Game
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
+                        Analyzer.SetUniqueId(Agent.Address.ToString());
                     }
                 )
             );
@@ -329,8 +340,6 @@ namespace Nekoyume.Game
             }
 #endif
 
-            InitializeAnalyzer();
-            Analyzer.Track("Unity/Started");
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize RequestManager and LiveAssetManager
@@ -1191,13 +1200,11 @@ namespace Nekoyume.Game
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
-        private void InitializeAnalyzer()
+        private void InitializeAnalyzer(
+            Address? agentAddr = null,
+            string? rpcServerHost = null)
         {
-            var uniqueId = Agent.Address.ToString();
-            var rpcServerHost = _commandLineOptions.RpcClient
-                ? _commandLineOptions.RpcServerHost
-                : null;
-
+            var uniqueId = agentAddr?.ToString() ?? null;
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using mixpanel;
 using Nekoyume.State;
@@ -24,8 +26,8 @@ namespace Nekoyume
         private readonly bool _isTrackable;
 
         public Analyzer(
-            string uniqueId = "none",
-            string rpcServerHost = "no-rpc-host",
+            string? uniqueId = null,
+            string? rpcServerHost = null,
             bool isTrackable = false)
         {
             _isTrackable = isTrackable;
@@ -35,6 +37,9 @@ namespace Nekoyume
                 return;
             }
 
+            SetUniqueId(uniqueId);
+            rpcServerHost ??= "no-rpc-host";
+
             var clientHost = Resources.Load<TextAsset>("ClientHost")?.text ?? "no-host";
             var clientHash = Resources.Load<TextAsset>("ClientHash")?.text ?? "no-hash";
             var targetNetwork = Resources.Load<TextAsset>("TargetNetwork")?.text ?? "no-target";
@@ -43,14 +48,12 @@ namespace Nekoyume
                 clientHost,
                 clientHash,
                 targetNetwork,
-                rpcServerHost,
-                uniqueId);
+                rpcServerHost);
             InitializeSentry(
                 clientHost,
                 clientHash,
                 targetNetwork,
-                rpcServerHost,
-                uniqueId);
+                rpcServerHost);
             UpdateAvatarAddress();
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
@@ -58,38 +61,39 @@ namespace Nekoyume
             Debug.Log($"Analyzer initialized: {uniqueId}");
         }
 
-        private void InitializeMixpanel(
+        public static void SetUniqueId(string? uniqueId = null)
+        {
+            uniqueId ??= "none";
+
+            Mixpanel.Identify(uniqueId);
+            Mixpanel.Register("AgentAddress", uniqueId);
+            Mixpanel.People.Set("AgentAddress", uniqueId);
+            Mixpanel.People.Name = uniqueId;
+            // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
+        }
+
+        private static void InitializeMixpanel(
             string clientHost,
             string clientHash,
             string targetNetwork,
-            string rpcServerHost,
-            string uniqueId)
+            string rpcServerHost)
         {
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            Mixpanel.Identify(uniqueId);
             Mixpanel.Register("client-host", clientHost);
             Mixpanel.Register("client-hash", clientHash);
             Mixpanel.Register("target-network", targetNetwork);
             Mixpanel.Register("rpc-server-host", rpcServerHost);
-            Mixpanel.Register("AgentAddress", uniqueId);
-            Mixpanel.People.Set("AgentAddress", uniqueId);
-            Mixpanel.People.Name = uniqueId;
             Mixpanel.Init();
         }
 
-        private void InitializeSentry(
+        private static void InitializeSentry(
             string clientHost,
             string clientHash,
             string targetNetwork,
-            string rpcServerHost,
-            string uniqueId)
+            string rpcServerHost)
         {
             // SentrySdk.ConfigureScope(scope =>
             // {
-            //     scope.User = new User()
-            //     {
-            //         Id = uniqueId
-            //     };
             //     scope.SetTag("client-host", clientHost);
             //     scope.SetTag("client-hash", clientHash);
             //     scope.SetTag("target-network", targetNetwork);
