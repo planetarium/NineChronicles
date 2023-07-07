@@ -161,12 +161,6 @@ namespace Lib9c.Tests.Model.Garages
         private static void AssertSerialization(FungibleItemGarage garage)
         {
             var serialized = garage.Serialize();
-            if (garage.Count == 0)
-            {
-                Assert.Equal(Null.Value, serialized);
-                return;
-            }
-
             var deserialized = new FungibleItemGarage(serialized);
             Assert.Equal(garage.Item, deserialized.Item);
             Assert.Equal(garage.Count, deserialized.Count);

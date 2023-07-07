@@ -166,7 +166,7 @@ namespace Lib9c.Tests.Action.Garages
                     var garageAddr = Addresses.GetGarageAddress(
                         AgentAddr,
                         fungibleId);
-                    Assert.True(nextStates.GetState(garageAddr) is Null);
+                    Assert.Equal(0, new FungibleItemGarage(nextStates.GetState(garageAddr)).Count);
                     Assert.True(inventory.HasFungibleItem(
                         fungibleId,
                         blockIndex: 0,
@@ -311,28 +311,15 @@ namespace Lib9c.Tests.Action.Garages
                 garage.Unload(1);
                 var previousStatesWithNotEnoughCountOfGarageState =
                     _previousStates.SetState(garageAddr, garage.Serialize());
-                if (garage.Count == 0)
-                {
-                    Assert.Throws<StateNullException>(() => Execute(
-                        AgentAddr,
-                        0,
-                        previousStatesWithNotEnoughCountOfGarageState,
-                        new TestRandom(),
-                        _recipientAvatarAddr,
-                        null,
-                        _fungibleIdAndCounts));
-                }
-                else
-                {
-                    Assert.Throws<ArgumentOutOfRangeException>(() => Execute(
-                        AgentAddr,
-                        0,
-                        previousStatesWithNotEnoughCountOfGarageState,
-                        new TestRandom(),
-                        _recipientAvatarAddr,
-                        null,
-                        _fungibleIdAndCounts));
-                }
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => Execute(
+                    AgentAddr,
+                    0,
+                    previousStatesWithNotEnoughCountOfGarageState,
+                    new TestRandom(),
+                    _recipientAvatarAddr,
+                    null,
+                    _fungibleIdAndCounts));
             }
         }
 
