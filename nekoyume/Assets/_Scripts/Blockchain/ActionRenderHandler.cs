@@ -118,6 +118,10 @@ namespace Nekoyume.Blockchain
             TransferAsset();
             Stake();
 
+            // MeadPledge
+            RequestPledge();
+            ApprovePledge();
+
             // Battle
             HackAndSlash();
             MimisbrunnrBattle();
@@ -485,6 +489,25 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
+                .AddTo(_disposables);
+        }
+
+        private void RequestPledge()
+        {
+            _actionRenderer.EveryRender<RequestPledge>()
+                .Where(eval =>
+                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRequestPledge)
+                .AddTo(_disposables);
+        }
+
+        private void ApprovePledge()
+        {
+            _actionRenderer.EveryRender<ApprovePledge>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseApprovePledge)
                 .AddTo(_disposables);
         }
 
@@ -2611,6 +2634,52 @@ namespace Nekoyume.Blockchain
                 petId,
                 new PetState((List)rawPetState)
             );
+        }
+
+        private void ResponseRequestPledge(ActionEvaluation<RequestPledge> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            var agentAddress = States.Instance.AgentState.address;
+            var pledgeAddress = agentAddress.GetPledgeAddress();
+
+            Address? address = null;
+            bool? approved = null;
+            var mead = 0;
+            if (eval.OutputStates.GetState(pledgeAddress) is List l)
+            {
+                address = l[0].ToAddress();
+                approved = l[1].ToBoolean();
+                mead = l[2].ToInteger();
+            }
+
+            States.Instance.SetPledgeApproved(approved);
+        }
+
+        private void ResponseApprovePledge(ActionEvaluation<ApprovePledge> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            var agentAddress = States.Instance.AgentState.address;
+            var pledgeAddress = agentAddress.GetPledgeAddress();
+
+            Address? address = null;
+            bool? approved = null;
+            var mead = 0;
+            if (eval.OutputStates.GetState(pledgeAddress) is List l)
+            {
+                address = l[0].ToAddress();
+                approved = l[1].ToBoolean();
+                mead = l[2].ToInteger();
+            }
+
+            States.Instance.SetPledgeApproved(approved);
         }
     }
 }

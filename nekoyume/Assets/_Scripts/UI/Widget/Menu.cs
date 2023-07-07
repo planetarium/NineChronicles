@@ -526,6 +526,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Analyzer.Instance.Track("Unity/Lobby/Show");
             SubscribeAtShow();
 
             if (!(_coLazyClose is null))

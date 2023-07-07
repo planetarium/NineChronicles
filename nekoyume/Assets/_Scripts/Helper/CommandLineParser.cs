@@ -66,6 +66,8 @@ namespace Nekoyume.Helper
 
         private string marketServiceHost;
 
+        private string _meadPledgePortalUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -369,6 +371,17 @@ namespace Nekoyume.Helper
             set
             {
                 marketServiceHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("mead-pledge-portal-url", Required = false, HelpText = "mead pledge portal url")]
+        public string MeadPledgePortalUrl
+        {
+            get => _meadPledgePortalUrl;
+            set
+            {
+                _meadPledgePortalUrl = value;
                 Empty = false;
             }
         }

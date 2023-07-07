@@ -11,6 +11,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
+using Libplanet.Crypto;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
@@ -133,6 +134,8 @@ namespace Nekoyume.Game
         private Thread headlessThread;
         private Thread marketThread;
 
+        private DeepLinkHandler _deepLinkHandler;
+
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
         private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
@@ -188,6 +191,15 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcClient
+                    ? _commandLineOptions.RpcServerHost
+                    : null);
+            Analyzer.Track("Unity/Started");
+
             URL = Url.Load(UrlJsonPath);
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
@@ -219,6 +231,7 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
         }
 
         private IEnumerator Start()
@@ -282,11 +295,41 @@ namespace Nekoyume.Game
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
+                        Analyzer.SetUniqueId(Agent.Address.ToString());
                     }
                 )
             );
 
             yield return new WaitUntil(() => agentInitialized);
+
+            // NOTE: Create ActionManager after Agent initialized.
+            ActionManager = new ActionManager(Agent);
+
+#if UNITY_ANDROID
+            // Check MeadPledge
+            if (!States.PledgeApproved.HasValue || !States.PledgeApproved.Value)
+            {
+                if (!States.PledgeApproved.HasValue)
+                {
+                    _deepLinkHandler.OpenPortal(States.AgentState.address);
+
+                    Widget.Find<GrayLoadingScreen>().Show("The pledge is in progress.", false);
+                    yield return new WaitUntil(() => States.PledgeApproved.HasValue);
+                }
+
+                if (States.PledgeApproved.HasValue && !States.PledgeApproved.Value)
+                {
+                    var patronAddress = new Address("c64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
+                    ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                    Widget.Find<GrayLoadingScreen>().Show("Checking the pledge.", false);
+                    yield return new WaitUntil(() => States.PledgeApproved.Value);
+                }
+
+                yield return new WaitUntil(() => States.PledgeApproved.HasValue && States.PledgeApproved.Value);
+                Widget.Find<GrayLoadingScreen>().Show("Creating world.", false);
+            }
+#endif
 
 #if UNITY_EDITOR
             // wait for headless connect.
@@ -297,10 +340,6 @@ namespace Nekoyume.Game
             }
 #endif
 
-            InitializeAnalyzer();
-            Analyzer.Track("Unity/Started");
-            // NOTE: Create ActionManager after Agent initialized.
-            ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize RequestManager and LiveAssetManager
@@ -620,8 +659,8 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 IsInitialized = true;
-                var intro = Widget.Find<IntroScreen>();
-                intro.Close();
+                Widget.Find<IntroScreen>().Close();
+                Widget.Find<GrayLoadingScreen>().Close();
                 Widget.Find<PreloadingScreen>().Show();
                 StartCoroutine(ClosePreloadingScene(4));
             }
@@ -1161,13 +1200,11 @@ namespace Nekoyume.Game
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
-        private void InitializeAnalyzer()
+        private void InitializeAnalyzer(
+            Address? agentAddr = null,
+            string? rpcServerHost = null)
         {
-            var uniqueId = Agent.Address.ToString();
-            var rpcServerHost = _commandLineOptions.RpcClient
-                ? _commandLineOptions.RpcServerHost
-                : null;
-
+            var uniqueId = agentAddr?.ToString() ?? null;
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);

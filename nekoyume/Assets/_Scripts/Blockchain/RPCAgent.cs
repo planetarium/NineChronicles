@@ -445,6 +445,12 @@ namespace Nekoyume.Blockchain
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
+                var agentAddress = States.Instance.AgentState.address;
+                var pledgeAddress = agentAddress.GetPledgeAddress();
+                bool? approved = await GetStateAsync(pledgeAddress) is List list
+                    ? list[1].ToBoolean()
+                    : null;
+                States.Instance.SetPledgeApproved(approved);
             });
 
             yield return new WaitUntil(() => currencyTask.IsCompleted);
@@ -513,18 +519,19 @@ namespace Nekoyume.Blockchain
             string actionsName = default;
             foreach (var action in actions)
             {
-                actionsName += "\n#";
-                actionsName += action.ToString();
-                actionsName += ", id=" + ((GameAction)action)?.Id;
+                actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
             }
-            Debug.Log($"[Transaction]\nnonce={nonce}\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
+            Debug.Log("[Transaction]" +
+                      $"\nnonce={nonce}" +
+                      $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                      $"\nHash={_genesis?.Hash}" +
+                      $"\nactionsName={actionsName}");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
             foreach (var action in actions)
             {
-                Debug.Log($"[Transaction] action = {action.ToString()}");
+                Debug.Log($"[Transaction] action = {action}");
 
                 if (action is GameAction gameAction)
                 {
