@@ -316,6 +316,7 @@ namespace Nekoyume.UI
                     break;
                 case States.CreatePassword_Mobile:
                     CreateProtectedPrivateKey(_privateKey);
+                    Find<GrayLoadingScreen>().Show("Creating Account.", false);
                     Login = _privateKey is not null;
                     Close();
                     break;
@@ -323,6 +324,7 @@ namespace Nekoyume.UI
                     // Login 하고 Login_Mobile의 동작이 지금까지는 동일한데 이후에도 크게 다른게 없을 경우 아예 없애도 될 듯
                     CheckLogin(() =>
                     {
+                        Find<GrayLoadingScreen>().Show("Loading the world.", false);
                         Login = true;
                         Close();
                     });

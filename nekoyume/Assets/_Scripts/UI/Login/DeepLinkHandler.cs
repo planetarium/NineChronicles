@@ -1,20 +1,18 @@
 ﻿using Libplanet;
-using Nekoyume.Pattern;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class DeepLinkManager : MonoSingleton<DeepLinkManager>
+    public class DeepLinkHandler
     {
         private System.Action _onPortalEnd;
         private string _deeplinkURL;
 
-        private const string PortalUrlFormat =
-            "https://nine-chronicles.com/start?step=2&address={0}";
+        private string _portalUrl;
 
-        protected override void Awake()
+        public DeepLinkHandler(string url)
         {
-            base.Awake();
+            _portalUrl = url;
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
@@ -39,7 +37,7 @@ namespace Nekoyume.UI
         {
             _onPortalEnd = onPortalEnd;
 
-            var url = string.Format(PortalUrlFormat, avatarAddress);
+            var url = $"{_portalUrl}?step=2&address={avatarAddress}";
             Application.OpenURL(url);
         }
     }

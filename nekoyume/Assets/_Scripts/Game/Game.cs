@@ -133,6 +133,8 @@ namespace Nekoyume.Game
         private Thread headlessThread;
         private Thread marketThread;
 
+        private DeepLinkHandler _deepLinkHandler;
+
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
         private const string WorldbossSeasonPushIdentifierKey = "WORLDBOSS_SEASON_PUSH_IDENTIFIER";
@@ -219,6 +221,7 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
         }
 
         private IEnumerator Start()
@@ -291,30 +294,30 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-#if UNITY_ANDROID || UNITY_EDITOR
+#if UNITY_ANDROID
             // Check MeadPledge
-            Debug.LogError(States.Instance.PledgeApproved);
-            Widget.Find<GrayLoadingScreen>().Show("Check Mead Pledge", false);
-
-            if (!States.Instance.PledgeApproved.HasValue)
+            if (!States.PledgeApproved.HasValue || !States.PledgeApproved.Value)
             {
-                DeepLinkManager.instance.OpenPortal(States.AgentState.address);
+                if (!States.PledgeApproved.HasValue)
+                {
+                    _deepLinkHandler.OpenPortal(States.AgentState.address);
 
-                yield return new WaitUntil(() => States.Instance.PledgeApproved.HasValue);
+                    Widget.Find<GrayLoadingScreen>().Show("The pledge is in progress.", false);
+                    yield return new WaitUntil(() => States.PledgeApproved.HasValue);
+                }
+
+                if (States.PledgeApproved.HasValue && !States.PledgeApproved.Value)
+                {
+                    var patronAddress = new Address("c64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
+                    ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                    Widget.Find<GrayLoadingScreen>().Show("Checking the pledge.", false);
+                    yield return new WaitUntil(() => States.PledgeApproved.Value);
+                }
+
+                yield return new WaitUntil(() => States.PledgeApproved.HasValue && States.PledgeApproved.Value);
+                Widget.Find<GrayLoadingScreen>().Show("Creating world.", false);
             }
-
-            if (States.Instance.PledgeApproved.HasValue && !States.Instance.PledgeApproved.Value)
-            {
-                var patronAddress = new Address("c64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
-                ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
-
-                yield return new WaitUntil(() => States.Instance.PledgeApproved.Value);
-            }
-
-            yield return new WaitUntil(() =>
-                States.Instance.PledgeApproved.HasValue && States.Instance.PledgeApproved.Value);
-            Debug.LogError(States.Instance.PledgeApproved);
-            Widget.Find<GrayLoadingScreen>().Close();
 #endif
 
 #if UNITY_EDITOR
