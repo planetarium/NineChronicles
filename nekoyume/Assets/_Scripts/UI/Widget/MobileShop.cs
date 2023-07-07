@@ -76,6 +76,9 @@ namespace Nekoyume.UI
                             view.PriceText.text = storeProduct.metadata.localizedPriceString;
                             view.ProductImage.sprite =
                                 _productImageDictionary[GetProductImageNameFromProductId(product.GoogleSku)];
+                            var limit = product.DailyLimit ?? product.WeeklyLimit;
+                            view.LimitCountObject.SetActive(limit.HasValue);
+                            view.BuyLimitCountText.text = $"{limit}/3";
                         }
                     }
 

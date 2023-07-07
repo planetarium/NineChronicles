@@ -14,5 +14,11 @@ namespace Nekoyume.UI.Module
 
         [field:SerializeField]
         public TextMeshProUGUI PriceText { get; private set; }
+
+        [field:SerializeField]
+        public TextMeshProUGUI BuyLimitCountText { get; private set; }
+
+        [field:SerializeField]
+        public GameObject LimitCountObject { get; private set; }
     }
 }
