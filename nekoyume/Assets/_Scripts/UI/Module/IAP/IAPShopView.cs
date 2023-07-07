@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,9 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI BuyLimitCountText { get; private set; }
 
         [field:SerializeField]
-        public GameObject LimitCountObject { get; private set; }
+        public List<GameObject> LimitCountObjects { get; private set; }
+
+        [field:SerializeField]
+        public List<IAPRewardView> RewardViews { get; private set; }
     }
 }

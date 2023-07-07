@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -77,8 +78,20 @@ namespace Nekoyume.UI
                             view.ProductImage.sprite =
                                 _productImageDictionary[GetProductImageNameFromProductId(product.GoogleSku)];
                             var limit = product.DailyLimit ?? product.WeeklyLimit;
-                            view.LimitCountObject.SetActive(limit.HasValue);
+                            view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
                             view.BuyLimitCountText.text = $"{limit}/3";
+                            view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
+                            foreach (var fungibleItemSchema in product.FungibleItemList)
+                            {
+                                var rewardView =
+                                    view.RewardViews.First(v => !v.gameObject.activeSelf);
+                                rewardView.RewardName.text =
+                                    L10nManager.LocalizeItemName(fungibleItemSchema.SheetItemId);
+                                rewardView.RewardImage.sprite =
+                                    SpriteHelper.GetItemIcon(fungibleItemSchema.SheetItemId);
+                                rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
+                                rewardView.gameObject.SetActive(true);
+                            }
                         }
                     }
 
