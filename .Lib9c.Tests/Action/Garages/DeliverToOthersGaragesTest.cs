@@ -162,8 +162,9 @@ namespace Lib9c.Tests.Action.Garages
                     SenderAgentAddr,
                     fungibleId);
                 Assert.Equal(
-                    Null.Value,
-                    nextStates.GetState(senderGarageAddr));
+                    0,
+                    new FungibleItemGarage(nextStates.GetState(senderGarageAddr)).Count
+                );
                 var recipientGarageAddr = Addresses.GetGarageAddress(
                     _recipientAgentAddr,
                     fungibleId);
@@ -284,28 +285,15 @@ namespace Lib9c.Tests.Action.Garages
                 garage.Unload(1);
                 var previousStatesWithNotEnoughCountOfGarageState =
                     _previousStates.SetState(garageAddr, garage.Serialize());
-                if (garage.Count == 0)
-                {
-                    Assert.Throws<StateNullException>(() => Execute(
-                        SenderAgentAddr,
-                        0,
-                        previousStatesWithNotEnoughCountOfGarageState,
-                        new TestRandom(),
-                        _recipientAgentAddr,
-                        null,
-                        _fungibleIdAndCounts));
-                }
-                else
-                {
-                    Assert.Throws<ArgumentOutOfRangeException>(() => Execute(
-                        SenderAgentAddr,
-                        0,
-                        previousStatesWithNotEnoughCountOfGarageState,
-                        new TestRandom(),
-                        _recipientAgentAddr,
-                        null,
-                        _fungibleIdAndCounts));
-                }
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => Execute(
+                    SenderAgentAddr,
+                    0,
+                    previousStatesWithNotEnoughCountOfGarageState,
+                    new TestRandom(),
+                    _recipientAgentAddr,
+                    null,
+                    _fungibleIdAndCounts));
             }
 
             // Recipient's fungible item Garages can be overflowed.

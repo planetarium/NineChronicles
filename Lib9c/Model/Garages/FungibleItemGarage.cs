@@ -40,9 +40,7 @@ namespace Nekoyume.Model.Garages
             Count = (Integer)list[1];
         }
 
-        public IValue Serialize() => Count == 0
-            ? (IValue)Null.Value
-            : new List(
+        public IValue Serialize() => new List(
                 Item?.Serialize() ?? Null.Value,
                 (Integer)Count);
 
