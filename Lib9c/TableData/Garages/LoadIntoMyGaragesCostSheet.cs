@@ -20,11 +20,6 @@ namespace Nekoyume.TableData.Garages
 
             public int Id { get; private set; }
 
-            /// <summary>
-            /// CURRENCY | ITEM
-            /// </summary>
-            public string CostKind { get; private set; }
-
             public string CurrencyTicker { get; private set; }
 
             public HashDigest<SHA256>? FungibleId { get; private set; }
@@ -34,22 +29,11 @@ namespace Nekoyume.TableData.Garages
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
-                CostKind = string.IsNullOrEmpty(fields[1])
-                    ? null
-                    : fields[1].ToUpperInvariant();
-                if (CostKind != "CURRENCY" &&
-                    CostKind != "ITEM")
-                {
-                    throw new ArgumentException(
-                        $"CostKind must be CURRENCY or ITEM but {CostKind}.",
-                        nameof(fields));
-                }
-
-                CurrencyTicker = fields[2];
-                FungibleId = string.IsNullOrEmpty(fields[3])
+                CurrencyTicker = fields[1];
+                FungibleId = string.IsNullOrEmpty(fields[2])
                     ? (HashDigest<SHA256>?)null
-                    : HashDigest<SHA256>.FromString(fields[3]);
-                GarageCostPerUnit = ParseDecimal(fields[4]);
+                    : HashDigest<SHA256>.FromString(fields[2]);
+                GarageCostPerUnit = ParseDecimal(fields[3]);
             }
         }
 
@@ -59,17 +43,13 @@ namespace Nekoyume.TableData.Garages
 
         public decimal GetGarageCostPerUnit(string currencyTicker)
         {
-            var row = OrderedList!.First(r =>
-                r.CostKind == "CURRENCY" &&
-                r.CurrencyTicker == currencyTicker);
+            var row = OrderedList!.First(r => r.CurrencyTicker == currencyTicker);
             return row.GarageCostPerUnit;
         }
 
         public decimal GetGarageCostPerUnit(HashDigest<SHA256> fungibleId)
         {
-            var row = OrderedList!.First(r =>
-                r.CostKind == "ITEM" &&
-                r.FungibleId.Equals(fungibleId));
+            var row = OrderedList!.First(r => r.FungibleId?.Equals(fungibleId) ?? false);
             return row.GarageCostPerUnit;
         }
 
@@ -131,16 +111,12 @@ namespace Nekoyume.TableData.Garages
 
         public bool HasCost(string currencyTicker)
         {
-            return OrderedList!.Any(r =>
-                r.CostKind == "CURRENCY" &&
-                r.CurrencyTicker == currencyTicker);
+            return OrderedList!.Any(r => r.CurrencyTicker == currencyTicker);
         }
 
         public bool HasCost(HashDigest<SHA256> fungibleId)
         {
-            return OrderedList!.Any(r =>
-                r.CostKind == "ITEM" &&
-                r.FungibleId.Equals(fungibleId));
+            return OrderedList!.Any(r => r.FungibleId?.Equals(fungibleId) ?? false);
         }
     }
 }

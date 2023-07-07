@@ -17,16 +17,16 @@ namespace Lib9c.Tests.TableData.Garages
         public LoadIntoMyGaragesCostSheetTest()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("id,cost_kind,currency_ticker,fungible_id,garage_cost_per_unit");
+            sb.AppendLine("id,currency_ticker,fungible_id,garage_cost_per_unit");
             sb.AppendLine(
-                "1,ITEM,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,0.16");
+                "1,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,0.16");
             sb.AppendLine(
-                "2,ITEM,,3991e04dd808dc0bc24b21f5adb7bf1997312f8700daf1334bf34936e8a0813a,0.0016");
+                "2,,3991e04dd808dc0bc24b21f5adb7bf1997312f8700daf1334bf34936e8a0813a,0.0016");
             sb.AppendLine(
-                "3,ITEM,,1a755098a2bc0659a063107df62e2ff9b3cdaba34d96b79519f504b996f53820,1");
+                "3,,1a755098a2bc0659a063107df62e2ff9b3cdaba34d96b79519f504b996f53820,1");
             sb.AppendLine(
-                "4,ITEM,,f8faf92c9c0d0e8e06694361ea87bfc8b29a8ae8de93044b98470a57636ed0e0,10");
-            sb.AppendLine("5,CURRENCY,RUNE_GOLDENLEAF,,10");
+                "4,,f8faf92c9c0d0e8e06694361ea87bfc8b29a8ae8de93044b98470a57636ed0e0,10");
+            sb.AppendLine("5,RUNE_GOLDENLEAF,,10");
             _sheet = new LoadIntoMyGaragesCostSheet();
             _sheet.Set(sb.ToString());
         }
@@ -38,7 +38,6 @@ namespace Lib9c.Tests.TableData.Garages
             Assert.Equal(5, _sheet.Count);
             var row = _sheet.OrderedList[0];
             Assert.Equal(1, row.Id);
-            Assert.Equal("ITEM", row.CostKind);
             Assert.True(string.IsNullOrEmpty(row.CurrencyTicker));
             Assert.Equal(
                 "00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe",
@@ -46,7 +45,6 @@ namespace Lib9c.Tests.TableData.Garages
             Assert.Equal(0.16m, row.GarageCostPerUnit);
             row = _sheet.OrderedList[1];
             Assert.Equal(2, row.Id);
-            Assert.Equal("ITEM", row.CostKind);
             Assert.True(string.IsNullOrEmpty(row.CurrencyTicker));
             Assert.Equal(
                 "3991e04dd808dc0bc24b21f5adb7bf1997312f8700daf1334bf34936e8a0813a",
@@ -54,7 +52,6 @@ namespace Lib9c.Tests.TableData.Garages
             Assert.Equal(0.0016m, row.GarageCostPerUnit);
             row = _sheet.OrderedList[2];
             Assert.Equal(3, row.Id);
-            Assert.Equal("ITEM", row.CostKind);
             Assert.True(string.IsNullOrEmpty(row.CurrencyTicker));
             Assert.Equal(
                 "1a755098a2bc0659a063107df62e2ff9b3cdaba34d96b79519f504b996f53820",
@@ -62,7 +59,6 @@ namespace Lib9c.Tests.TableData.Garages
             Assert.Equal(1m, row.GarageCostPerUnit);
             row = _sheet.OrderedList[3];
             Assert.Equal(4, row.Id);
-            Assert.Equal("ITEM", row.CostKind);
             Assert.True(string.IsNullOrEmpty(row.CurrencyTicker));
             Assert.Equal(
                 "f8faf92c9c0d0e8e06694361ea87bfc8b29a8ae8de93044b98470a57636ed0e0",
@@ -70,31 +66,18 @@ namespace Lib9c.Tests.TableData.Garages
             Assert.Equal(10m, row.GarageCostPerUnit);
             row = _sheet.OrderedList[4];
             Assert.Equal(5, row.Id);
-            Assert.Equal("CURRENCY", row.CostKind);
             Assert.Equal("RUNE_GOLDENLEAF", row.CurrencyTicker);
             Assert.Null(row.FungibleId);
             Assert.Equal(10m, row.GarageCostPerUnit);
         }
 
         [Fact]
-        public void Set_InvalidCostKind()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("id,cost_kind,currency_ticker,fungible_id,garage_cost_per_unit");
-            sb.AppendLine(
-                "1,INVALID,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,0.16");
-
-            var sheet = new LoadIntoMyGaragesCostSheet();
-            Assert.Throws<ArgumentException>(() => sheet.Set(sb.ToString()));
-        }
-
-        [Fact]
         public void Set_InvalidFungibleId()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("id,cost_kind,currency_ticker,fungible_id,garage_cost_per_unit");
+            sb.AppendLine("id,currency_ticker,fungible_id,garage_cost_per_unit");
             sb.AppendLine(
-                "1,ITEM,,INVALID,0.16");
+                "1,,INVALID,0.16");
 
             var sheet = new LoadIntoMyGaragesCostSheet();
             Assert.Throws<ArgumentOutOfRangeException>(() => sheet.Set(sb.ToString()));
@@ -104,9 +87,9 @@ namespace Lib9c.Tests.TableData.Garages
         public void Set_InvalidGarageCostPerUnit()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("id,cost_kind,currency_ticker,fungible_id,garage_cost_per_unit");
+            sb.AppendLine("id,currency_ticker,fungible_id,garage_cost_per_unit");
             sb.AppendLine(
-                "1,ITEM,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,INVALID");
+                "1,,00dfffe23964af9b284d121dae476571b7836b8d9e2e5f510d92a840fecc64fe,INVALID");
 
             var sheet = new LoadIntoMyGaragesCostSheet();
             Assert.Throws<ArgumentException>(() => sheet.Set(sb.ToString()));
