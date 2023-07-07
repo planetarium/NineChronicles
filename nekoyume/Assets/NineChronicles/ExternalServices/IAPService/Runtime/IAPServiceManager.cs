@@ -27,8 +27,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public IAPServiceManager(string url, Store store)
         {
             _client = new IAPServiceClient(url);
-            _poller = new IAPServicePoller(_client);
-            _poller.OnPoll += OnPoll;
+            // _poller = new IAPServicePoller(_client);
+            // _poller.OnPoll += OnPoll;
             _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
             _store = store;
         }
@@ -67,8 +67,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
 
             _client.Dispose();
-            _poller.OnPoll -= OnPoll;
-            _poller.Clear();
+            // _poller.OnPoll -= OnPoll;
+            // _poller.Clear();
             IsDisposed = true;
         }
 
@@ -188,7 +188,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 }
                 else
                 {
-                    _poller.Register(result.Uuid);
+                    // _poller.Register(result.Uuid);
                 }
 
                 return result;
@@ -247,7 +247,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         private void UnregisterAndCache(ReceiptDetailSchema result)
         {
-            _poller.Unregister(result.Uuid);
+            // _poller.Unregister(result.Uuid);
             _cache.PurchaseProcessResults[result.Uuid] = result;
         }
 
