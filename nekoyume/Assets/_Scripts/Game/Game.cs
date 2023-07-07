@@ -196,7 +196,8 @@ namespace Nekoyume.Game
             };
 #endif
             Application.targetFrameRate = 60;
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
 #if UNITY_IOS

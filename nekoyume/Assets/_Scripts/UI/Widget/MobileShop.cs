@@ -80,6 +80,8 @@ namespace Nekoyume.UI
                             var limit = product.DailyLimit ?? product.WeeklyLimit;
                             view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
                             view.BuyLimitCountText.text = $"{limit}/3";
+                            view.PurchaseButton.interactable =
+                                limit is null or > 0;
                             view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
                             foreach (var fungibleItemSchema in product.FungibleItemList)
                             {
