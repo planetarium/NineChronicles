@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -84,7 +83,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+#if UNITY_ANDROID || UNITY_IOS
+            Find<MobileShop>().Show();
+#else
             ShowAsync(ignoreShowAnimation);
+#endif
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)

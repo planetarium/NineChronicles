@@ -116,9 +116,9 @@ namespace MessagePack.Formatters.Nekoyume.Action
             this.__ActionCustomFormatter__.Serialize(ref writer, value.Action, options);
             this.__SignerCustomFormatter__.Serialize(ref writer, value.Signer, options);
             writer.Write(value.BlockIndex);
-            this.__OutputStatesCustomFormatter__.Serialize(ref writer, value.OutputStates, options);
+            this.__OutputStatesCustomFormatter__.Serialize(ref writer, value.OutputState, options);
             this.__ExceptionCustomFormatter__.Serialize(ref writer, value.Exception, options);
-            this.__PreviousStatesCustomFormatter__.Serialize(ref writer, value.PreviousStates, options);
+            this.__PreviousStatesCustomFormatter__.Serialize(ref writer, value.PreviousState, options);
             writer.Write(value.RandomSeed);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.Dictionary<string, global::Bencodex.Types.IValue>>(formatterResolver).Serialize(ref writer, value.Extra, options);
         }

@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 0.2
+  bundleVersion: 0.0.1
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -157,7 +157,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.nine.chro
+    Android: com.Planetariumlabs.NineChronicles
     Standalone: com.Planetarium.NineChronicles
     iPhone: com.Planetarium.9c
   buildNumber:
@@ -795,7 +795,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     : UNITY_POST_PROCESSING_STACK_V2
-    Android: CROSS_PLATFORM_INPUT;MOBILE_INPUT;UNITY_POST_PROCESSING_STACK_V2;ENABLE_IL2CPP
+    Android: CROSS_PLATFORM_INPUT;MOBILE_INPUT;UNITY_POST_PROCESSING_STACK_V2;ENABLE_IL2CPP;ENABLE_UNITY_SERVICES_CORE_VERBOSE_LOGGING
     CloudRendering: UNITY_POST_PROCESSING_STACK_V2
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
@@ -894,8 +894,12 @@ PlayerSettings:
     Build: 0
     Collab: 0
     ErrorHub: 0
+    Game Performance: 0
     Hub: 0
+    Purchasing: 1
+    UDP: 0
     UNet: 0
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -909,11 +913,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 3
   activeInputHandler: 0
-  cloudProjectId: 8a57bbeb-d031-4558-8c13-4d87cce90bed
+  cloudProjectId: d2b4d88f-6efa-4a51-8b19-c2465fa088d9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: NineChronicles
-  organizationId: planetarium-hq
+  organizationId: planetarium-yujeong
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 1
   playerDataPath: 

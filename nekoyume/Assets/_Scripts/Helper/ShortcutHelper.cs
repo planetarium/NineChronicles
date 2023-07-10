@@ -304,6 +304,11 @@ namespace Nekoyume.Helper
                     return false;
                 case PlaceType.Shop:
                 {
+                    if (Platform.IsMobilePlatform())
+                    {
+                        return true;
+                    }
+
                     if (States.Instance.CurrentAvatarState.worldInformation
                         .TryGetLastClearedStageId(out var lastClearedStage))
                     {

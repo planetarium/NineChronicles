@@ -97,7 +97,7 @@ namespace Nekoyume.Helper
                 PetHelper.GetSoulstoneCurrency(TableSheets.Instance.PetSheet[id].SoulStoneTicker) *
                 nextCost.SoulStoneQuantity;
             return States.Instance.GoldBalanceState.Gold >= ncgCost &&
-                   States.Instance.AvatarBalance.TryGetValue(
+                   States.Instance.CurrentAvatarBalances.TryGetValue(
                        soulStoneCost.Currency.Ticker,
                        out var soulStone) &&
                    soulStone >= soulStoneCost;

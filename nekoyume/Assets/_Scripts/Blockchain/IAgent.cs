@@ -8,7 +8,6 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Blocks;
 using Libplanet.Assets;
 using Libplanet.Crypto;

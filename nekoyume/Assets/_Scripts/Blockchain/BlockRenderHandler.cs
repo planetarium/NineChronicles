@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Lib9c;
 using Lib9c.Renderers;
-using Libplanet.Action;
 using Libplanet.Assets;
-using Libplanet.Blocks;
-using Nekoyume.Action;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -16,20 +14,19 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {
-    using Nekoyume.Helper;
-    using Nekoyume.UI.Scroller;
+    using UI.Scroller;
     using UniRx;
 
     public class BlockRenderHandler
     {
         private static class Singleton
         {
-            internal static readonly BlockRenderHandler Value = new BlockRenderHandler();
+            internal static readonly BlockRenderHandler Value = new();
         }
 
         public static BlockRenderHandler Instance => Singleton.Value;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private BlockRenderer _blockRenderer;
         private static bool _balanceUpdateRequired = true;
@@ -41,25 +38,14 @@ namespace Nekoyume.Blockchain
 
         public void Start(BlockRenderer blockRenderer)
         {
-            _blockRenderer = blockRenderer ?? throw new ArgumentNullException(nameof(blockRenderer));
+            _blockRenderer =
+                blockRenderer ?? throw new ArgumentNullException(nameof(blockRenderer));
 
             Stop();
             _blockRenderer.BlockSubject
                 .ObserveOnMainThread()
                 .Subscribe(_ => UpdateWhenEveryBlockRenderBeginningAsync().Forget())
                 .AddTo(_disposables);
-            _blockRenderer.ReorgSubject
-                .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg, NotificationCell.NotificationType.Alert);
-                })
-                .AddTo(_disposables);
-            _blockRenderer.ReorgEndSubject.ObserveOnMainThread().Subscribe(_ =>
-            {
-                Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg end");
-            }).AddTo(_disposables);
             if (Game.Game.instance.Agent is RPCAgent rpcAgent)
             {
                 rpcAgent.OnRetryEnded.Subscribe(_ =>
@@ -86,30 +72,35 @@ namespace Nekoyume.Blockchain
             var agentState = States.Instance.AgentState;
             if (agentState != null && _balanceUpdateRequired)
             {
-                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
-                {
-                    FungibleAssetValue gold;
-                    FungibleAssetValue crystal;
-                    try
+                var (hasException, exception) =
+                    await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                     {
-                        gold = await agent.GetBalanceAsync(
-                            agentState.address,
-                            States.Instance.GoldBalanceState.Gold.Currency);
-                        crystal = await agent.GetBalanceAsync(
-                            agentState.address,
-                            CrystalCalculator.CRYSTAL);
-                    }
-                    catch (Exception e)
-                    {
-                        return (true, e);
-                    }
+                        FungibleAssetValue gold;
+                        FungibleAssetValue crystal;
+                        FungibleAssetValue garage;
+                        try
+                        {
+                            var ncg = States.Instance.GoldBalanceState.Gold.Currency;
+                            var favArr = await Task.WhenAll(
+                                agent.GetBalanceAsync(agentState.address, ncg),
+                                agent.GetBalanceAsync(agentState.address, Currencies.Crystal),
+                                agent.GetBalanceAsync(agentState.address, Currencies.Garage));
+                            gold = favArr[0];
+                            crystal = favArr[1];
+                            garage = favArr[2];
+                        }
+                        catch (Exception e)
+                        {
+                            return (true, e);
+                        }
 
-                    AgentStateSubject.OnNextGold(gold);
-                    AgentStateSubject.OnNextCrystal(crystal);
-                    _balanceUpdateRequired = false;
-                    return (false, null);
-                });
-                if (hasException && !(exception is OperationCanceledException))
+                        AgentStateSubject.OnNextGold(gold);
+                        AgentStateSubject.OnNextCrystal(crystal);
+                        AgentStateSubject.OnNextGarage(garage);
+                        _balanceUpdateRequired = false;
+                        return (false, null);
+                    });
+                if (hasException && exception is not OperationCanceledException)
                 {
                     Debug.LogException(exception);
                 }
@@ -118,40 +109,41 @@ namespace Nekoyume.Blockchain
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (currentAvatarState != null && _avatarUpdateRequired)
             {
-                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
-                {
-                    IValue value;
-                    try
+                var (hasException, exception) =
+                    await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                     {
-                        value = await agent.GetStateAsync(currentAvatarState.address);
-                    }
-                    catch (Exception e)
-                    {
-                        return (true, e);
-                    }
+                        IValue value;
+                        try
+                        {
+                            value = await agent.GetStateAsync(currentAvatarState.address);
+                        }
+                        catch (Exception e)
+                        {
+                            return (true, e);
+                        }
 
-                    if (!(value is Bencodex.Types.Dictionary dict))
-                    {
-                        return (true, new InvalidCastException(
-                            $"value cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}"));
-                    }
+                        if (value is not Dictionary dict)
+                        {
+                            return (true, new InvalidCastException(
+                                $"value cannot cast to {typeof(Dictionary).FullName}"));
+                        }
 
-                    var ap = dict.ContainsKey(ActionPointKey)
-                        ? (int)(Bencodex.Types.Integer)dict[ActionPointKey]
-                        : dict.ContainsKey(LegacyActionPointKey)
-                            ? (int)(Bencodex.Types.Integer)dict[LegacyActionPointKey]
-                            : 0;
-                    ReactiveAvatarState.UpdateActionPoint(ap);
+                        var ap = dict.ContainsKey(ActionPointKey)
+                            ? (int)(Integer)dict[ActionPointKey]
+                            : dict.ContainsKey(LegacyActionPointKey)
+                                ? (Integer)dict[LegacyActionPointKey]
+                                : 0;
+                        ReactiveAvatarState.UpdateActionPoint(ap);
 
-                    var bi = dict.ContainsKey(DailyRewardReceivedIndexKey)
-                        ? (int)(Bencodex.Types.Integer)dict[DailyRewardReceivedIndexKey]
-                        : dict.ContainsKey(LegacyDailyRewardReceivedIndexKey)
-                            ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
-                            : 0;
-                    ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
-                    _avatarUpdateRequired = false;
-                    return (false, null);
-                });
+                        var bi = dict.ContainsKey(DailyRewardReceivedIndexKey)
+                            ? (int)(Integer)dict[DailyRewardReceivedIndexKey]
+                            : dict.ContainsKey(LegacyDailyRewardReceivedIndexKey)
+                                ? (Integer)dict[LegacyDailyRewardReceivedIndexKey]
+                                : 0;
+                        ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                        _avatarUpdateRequired = false;
+                        return (false, null);
+                    });
                 if (hasException && !(exception is OperationCanceledException))
                 {
                     Debug.LogException(exception);

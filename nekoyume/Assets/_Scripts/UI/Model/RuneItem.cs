@@ -38,12 +38,12 @@ namespace Nekoyume.UI.Model
             IsMaxLevel = level == optionRow.LevelOptionMap.Count;
 
             var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
-            if (!States.Instance.AvatarBalance.ContainsKey(runeRow.Ticker))
+            if (!States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
             {
                 return;
             }
 
-            RuneStone = States.Instance.AvatarBalance[runeRow.Ticker];
+            RuneStone = States.Instance.CurrentAvatarBalances[runeRow.Ticker];
 
             var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (!costSheet.TryGetValue(row.Id, out var costRow))

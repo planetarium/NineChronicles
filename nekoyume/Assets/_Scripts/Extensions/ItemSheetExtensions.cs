@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Security.Cryptography;
+using Libplanet;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 
@@ -34,7 +37,29 @@ namespace Nekoyume
 
         public static string GetLocalizedDescription(this ItemSheet.Row value)
         {
-            return L10nManager.Localize($"ITEM_DESCRIPTION_{value.Id}");;
+            return L10nManager.Localize($"ITEM_DESCRIPTION_{value.Id}");
+        }
+
+        public static bool TryGetLocalizedName(
+            this MaterialItemSheet sheet,
+            HashDigest<SHA256> fungibleId,
+            out string name)
+        {
+            if (sheet is null)
+            {
+                name = null;
+                return false;
+            }
+
+            var row = sheet.OrderedList!.FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+            if (row is null)
+            {
+                name = null;
+                return false;
+            }
+
+            name = row.GetLocalizedName();
+            return true;
         }
     }
 }
