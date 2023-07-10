@@ -12,7 +12,7 @@ namespace Nekoyume.UI
 
         public DeepLinkHandler(string url)
         {
-            _portalUrl = url;
+            _portalUrl = url ?? throw new System.ArgumentNullException(nameof(url));
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
@@ -37,7 +37,11 @@ namespace Nekoyume.UI
         {
             _onPortalEnd = onPortalEnd;
 
-            var url = $"{_portalUrl}?step=2&address={avatarAddress}";
+            string os = null;
+#if UNITY_ANDROID
+            os = "android";
+#endif
+            var url = $"{_portalUrl}?step=2&address={avatarAddress}?os={os}";
             Application.OpenURL(url);
         }
     }
