@@ -318,7 +318,7 @@ namespace Lib9c.Tests.Action.Garages
         private static (DeliverToOthersGarages action, IAccountStateDelta nextStates) Execute(
             Address signer,
             long blockIndex,
-            IAccountStateDelta previousStates,
+            IAccountStateDelta previousState,
             IRandom random,
             Address recipientAgentAddr,
             IEnumerable<FungibleAssetValue>? fungibleAssetValues,
@@ -337,7 +337,7 @@ namespace Lib9c.Tests.Action.Garages
                     Signer = signer,
                     BlockIndex = blockIndex,
                     Rehearsal = false,
-                    PreviousStates = previousStates,
+                    PreviousState = previousState,
                     Random = random,
                 }));
         }

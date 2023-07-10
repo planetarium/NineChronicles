@@ -163,16 +163,16 @@ namespace Nekoyume.Action.Garages
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
-                return states;
+                return state;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(addressesHex);
-            states = SendBalances(context, states);
-            return SendFungibleItems(context.Signer, states);
+            state = SendBalances(context, state);
+            return SendFungibleItems(context.Signer, state);
         }
 
         private void ValidateFields(string addressesHex)

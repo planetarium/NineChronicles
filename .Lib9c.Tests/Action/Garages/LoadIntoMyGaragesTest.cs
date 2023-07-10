@@ -398,7 +398,7 @@ namespace Lib9c.Tests.Action.Garages
         private static (LoadIntoMyGarages action, IAccountStateDelta nextStates) Execute(
             Address signer,
             long blockIndex,
-            IAccountStateDelta previousStates,
+            IAccountStateDelta previousState,
             IRandom random,
             IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
             Address? inventoryAddr,
@@ -415,7 +415,7 @@ namespace Lib9c.Tests.Action.Garages
                 Signer = signer,
                 BlockIndex = blockIndex,
                 Rehearsal = false,
-                PreviousStates = previousStates,
+                PreviousState = previousState,
                 Random = random,
             };
             return (action, action.Execute(context));

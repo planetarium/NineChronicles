@@ -125,27 +125,27 @@ namespace Nekoyume.Action.Garages
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
-                return states;
+                return state;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(context.Signer, addressesHex);
 
-            var sheet = states.GetSheet<LoadIntoMyGaragesCostSheet>();
+            var sheet = state.GetSheet<LoadIntoMyGaragesCostSheet>();
             var garageCost = sheet.GetGarageCost(
                 FungibleAssetValues?.Select(tuple => tuple.value),
                 FungibleIdAndCounts);
-            states = states.TransferAsset(
+            state = state.TransferAsset(
                 context,
                 context.Signer,
                 Addresses.GarageWallet,
                 garageCost);
 
-            states = TransferFungibleAssetValues(context, states);
-            return TransferFungibleItems(context.Signer, context.BlockIndex, states);
+            state = TransferFungibleAssetValues(context, state);
+            return TransferFungibleItems(context.Signer, context.BlockIndex, state);
         }
 
         private void ValidateFields(

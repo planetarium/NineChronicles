@@ -120,17 +120,17 @@ namespace Nekoyume.Action.Garages
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
-                return states;
+                return state;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(addressesHex);
-            states = TransferFungibleAssetValues(context, states);
-            states = TransferFungibleItems(context.Signer, states);
-            return SendMail(context.BlockIndex, context.Random, states);
+            state = TransferFungibleAssetValues(context, state);
+            state = TransferFungibleItems(context.Signer, state);
+            return SendMail(context.BlockIndex, context.Random, state);
         }
 
         private void ValidateFields(string addressesHex)

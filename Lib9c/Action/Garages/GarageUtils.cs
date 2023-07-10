@@ -106,7 +106,7 @@ namespace Nekoyume.Action.Garages
             Address garageAddr,
             IValue? garageState)> WithGarageStateTuples(
             Address agentAddr,
-            IAccountStateView states,
+            IAccountState states,
             IEnumerable<(HashDigest<SHA256> fungibleId, int count)> fungibleIdAndCounts)
         {
             var withGarageAddr = fungibleIdAndCounts
@@ -137,7 +137,7 @@ namespace Nekoyume.Action.Garages
             IValue? recipientGarageState)> WithGarageStateTuples(
             Address senderAgentAddr,
             Address recipientAgentAddr,
-            IAccountStateView states,
+            IAccountState states,
             IEnumerable<(HashDigest<SHA256> fungibleId, int count)> fungibleIdAndCounts)
         {
             var withGarageAddr = fungibleIdAndCounts
@@ -192,7 +192,7 @@ namespace Nekoyume.Action.Garages
             Address garageAddr,
             FungibleItemGarage garage)> WithGarageTuples(
             Address agentAddr,
-            IAccountStateView states,
+            IAccountState states,
             IEnumerable<(HashDigest<SHA256> fungibleId, int count)> fungibleIdAndCounts)
         {
             return WithGarageStateTuples(agentAddr, states, fungibleIdAndCounts)

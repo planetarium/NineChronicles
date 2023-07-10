@@ -1338,7 +1338,7 @@ namespace Nekoyume.Action
         }
 
         public static IValue GetInventoryState(
-            this IAccountStateView accountStateView,
+            this IAccountState accountStateView,
             Address inventoryAddr)
         {
             var inventoryState = accountStateView.GetState(inventoryAddr);
@@ -1351,7 +1351,7 @@ namespace Nekoyume.Action
         }
 
         public static Inventory GetInventory(
-            this IAccountStateView accountStateView,
+            this IAccountState accountStateView,
             Address inventoryAddr)
         {
             var inventoryState = GetInventoryState(accountStateView, inventoryAddr);
