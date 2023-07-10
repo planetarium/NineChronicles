@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in _sheets)
@@ -210,7 +210,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -233,7 +233,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialStates,
+                    PreviousState = _initialStates,
                     Signer = _agent4Address,
                     Random = new TestRandom(),
                     BlockIndex = 1,
@@ -281,7 +281,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -304,7 +304,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ThisArenaIsClosedException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 4480001,
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaParticipantsNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -390,7 +390,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<AddressNotFoundInArenaParticipantsException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousStates,
+                    PreviousState = previousStates,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     BlockIndex = 1,
@@ -461,7 +461,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ValidateScoreDifferenceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -530,7 +530,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -596,7 +596,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedPlayCountException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -676,7 +676,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedTicketPurchaseLimitException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -761,7 +761,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedTicketPurchaseLimitDuringIntervalException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -841,7 +841,7 @@ namespace Lib9c.Tests.Action
             var nextStates = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             });
@@ -849,7 +849,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<CoolDownBlockException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex + 1,
-                PreviousStates = nextStates,
+                PreviousState = nextStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -918,7 +918,7 @@ namespace Lib9c.Tests.Action
             previousStates = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             });
@@ -971,7 +971,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws(exception, () => action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = random,
                 Rehearsal = false,
@@ -1058,7 +1058,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<TicketPurchaseLimitExceedException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -1203,7 +1203,7 @@ namespace Lib9c.Tests.Action
                 : roundData.StartBlockIndex + arenaInterval;
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = myAgentAddress,
                 Random = random,
                 Rehearsal = false,
@@ -1308,7 +1308,7 @@ namespace Lib9c.Tests.Action
 
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,

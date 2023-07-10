@@ -36,7 +36,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -159,7 +159,7 @@
             var nextState = sellAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -205,7 +205,7 @@
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -224,7 +224,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _agentAddress,
             }));
         }
@@ -254,7 +254,7 @@
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -273,7 +273,7 @@
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -302,7 +302,7 @@
             Assert.Throws<InvalidItemTypeException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -331,7 +331,7 @@
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));

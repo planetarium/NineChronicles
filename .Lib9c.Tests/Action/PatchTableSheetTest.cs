@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             var nextState = patchTableSheetAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
             });
 
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             nextState = patchTableSheetAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
             });
 
@@ -86,10 +86,10 @@ namespace Lib9c.Tests.Action
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             const string tableName = "TestTable";
-            var initStates = ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize())
+                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = tableName,
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 101,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = adminAddress,
                     }
                 );
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 5,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
@@ -129,10 +129,10 @@ namespace Lib9c.Tests.Action
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             const string tableName = "TestTable";
-            var initStates = ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
-            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize())
+                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
                 TableName = nameof(CostumeStatSheet),
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(
                 new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = adminAddress,
                 }
             );

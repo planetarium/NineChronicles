@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action.Coupons
         [Fact]
         public void Execute()
         {
-            IAccountStateDelta state = new Lib9c.Tests.Action.State();
+            IAccountStateDelta state = new Lib9c.Tests.Action.MockStateDelta();
             IRandom random = new TestRandom();
 
             var coupon1 = new Coupon(CouponsFixture.Guid1, CouponsFixture.RewardSet1);
@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     }));
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress2,
                         Rehearsal = false,
                     }));
@@ -68,7 +68,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     }));
@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     });
@@ -95,7 +95,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     });
@@ -110,7 +110,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     });
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     }));
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = true,
                     });
@@ -187,7 +187,7 @@ namespace Lib9c.Tests.Action.Coupons
                 .Execute(
                     new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = CouponsFixture.AgentAddress1,
                         Rehearsal = false,
                     });

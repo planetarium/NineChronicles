@@ -39,7 +39,7 @@ namespace Nekoyume.Action
 
         public static IAccountStateDelta Claim(IActionContext context, Address avatarAddress, string addressesHex)
         {
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);

@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleV5Test()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
@@ -368,7 +368,7 @@ namespace Lib9c.Tests.Action
             _initialStates = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -472,7 +472,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

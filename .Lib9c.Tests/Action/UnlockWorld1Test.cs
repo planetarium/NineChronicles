@@ -50,7 +50,7 @@
 
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GetSheetAddress<WorldUnlockSheet>(), _tableSheets.WorldUnlockSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
@@ -156,7 +156,7 @@
             {
                 IAccountStateDelta nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -174,7 +174,7 @@
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,

@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
             var patron = new PrivateKey().ToAddress();
             var agent = new PrivateKey().ToAddress();
             var context = new ActionContext();
-            IAccountStateDelta states = new State()
+            IAccountStateDelta states = new MockStateDelta()
                 .SetState(agent.GetPledgeAddress(), List.Empty.Add(patron.Serialize()).Add(true.Serialize()));
             var mead = Currencies.Mead;
             if (balance > 0)
@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 Signer = patron,
-                PreviousStates = states,
+                PreviousState = states,
             });
             Assert.Equal(Null.Value, nextState.GetState(agent.GetPledgeAddress()));
             Assert.Equal(mead * 0, nextState.GetBalance(agent, mead));
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             Address patron = new PrivateKey().ToAddress();
             Address agent = new PrivateKey().ToAddress();
             List contract = List.Empty.Add(patron.Serialize()).Add(true.Serialize());
-            IAccountStateDelta states = new State().SetState(agent.GetPledgeAddress(), contract);
+            IAccountStateDelta states = new MockStateDelta().SetState(agent.GetPledgeAddress(), contract);
 
             var action = new EndPledge
             {
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => action.Execute(new ActionContext
             {
                 Signer = invalidSigner ? new PrivateKey().ToAddress() : patron,
-                PreviousStates = states,
+                PreviousState = states,
             }));
         }
     }

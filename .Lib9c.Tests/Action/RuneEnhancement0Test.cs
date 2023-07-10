@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = rand,
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -203,7 +203,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -268,7 +268,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostDataNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -292,7 +292,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -361,7 +361,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -385,7 +385,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -405,7 +405,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -439,7 +439,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<TryCountIsZeroException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,

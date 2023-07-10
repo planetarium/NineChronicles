@@ -27,10 +27,10 @@ namespace Lib9c.DevExtensions.Action.Craft
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             int targetStage;
 
             if (ActionType.TypeIdentifier is Text text)

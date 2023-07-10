@@ -77,7 +77,7 @@
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
@@ -292,7 +292,7 @@
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,
@@ -363,7 +363,7 @@
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,
@@ -462,7 +462,7 @@
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -490,7 +490,7 @@
                 {
                     action.Execute(new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
                         Random = _random,

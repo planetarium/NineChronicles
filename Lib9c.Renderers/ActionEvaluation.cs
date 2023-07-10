@@ -20,11 +20,11 @@ namespace Lib9c.Renderers
 
         public TxId? TxId { get; set; }
 
-        public IAccountStateDelta OutputStates { get; set; }
+        public IAccountStateDelta OutputState { get; set; }
 
         public Exception? Exception { get; set; }
 
-        public IAccountStateDelta PreviousStates { get; set; }
+        public IAccountStateDelta PreviousState { get; set; }
 
         public int RandomSeed { get; set; }
 

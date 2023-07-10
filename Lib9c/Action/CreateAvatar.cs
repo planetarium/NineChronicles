@@ -22,11 +22,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1158
-    /// Updated at https://github.com/planetarium/lib9c/pull/1158
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1991
+    /// Updated at https://github.com/planetarium/lib9c/pull/1991
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar8")]
+    [ActionType("create_avatar9")]
     public class CreateAvatar : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var signer = ctx.Signer;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var avatarAddress = signer.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = ctx.PreviousState.GetSheet<MaterialItemSheet>();
 
             avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, default);
 
@@ -267,7 +267,7 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(ctx, signer, 50 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, 600_000 * CrystalCalculator.CRYSTAL);
         }
     }
 }

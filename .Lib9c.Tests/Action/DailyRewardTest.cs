@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -70,13 +70,13 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Random = new TestRandom(),
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
 
-            var updatedAddress = Assert.Single(nextState.UpdatedAddresses);
+            var updatedAddress = Assert.Single(nextState.Delta.UpdatedAddresses);
             Assert.Equal(_avatarAddress, updatedAddress);
         }
 
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
 
         [Fact]
         public void Execute_Throw_FailedLoadStateException() =>
-            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new State()));
+            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new MockStateDelta()));
 
         [Theory]
         [InlineData(0, 0, true)]
@@ -183,7 +183,7 @@ rune_skill_slot_unlock_cost,500";
             return dailyRewardAction.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

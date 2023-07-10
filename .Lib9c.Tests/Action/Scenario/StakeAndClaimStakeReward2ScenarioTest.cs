@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Xunit;
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
-    using State = Lib9c.Tests.Action.State;
+    using State = Lib9c.Tests.Action.MockStateDelta;
 
     public class StakeAndClaimStakeReward2ScenarioTest
     {
@@ -637,7 +637,7 @@ namespace Lib9c.Tests.Action.Scenario
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -648,7 +648,7 @@ namespace Lib9c.Tests.Action.Scenario
             action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = receiveBlockIndex,
             });
@@ -688,7 +688,7 @@ namespace Lib9c.Tests.Action.Scenario
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -705,7 +705,7 @@ namespace Lib9c.Tests.Action.Scenario
             action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = newStakeBlockIndex,
             });
@@ -715,7 +715,7 @@ namespace Lib9c.Tests.Action.Scenario
             // 락업기간 이전에 deposit을 추가해서 save 할 수 있는지
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = newStakeBlockIndex,
             });
@@ -762,7 +762,7 @@ namespace Lib9c.Tests.Action.Scenario
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -779,7 +779,7 @@ namespace Lib9c.Tests.Action.Scenario
             action = new ClaimStakeReward2(_avatarAddress);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval - 1,
             });
@@ -788,7 +788,7 @@ namespace Lib9c.Tests.Action.Scenario
             // 락업기간 이전에 deposit을 감소해서 save할때 락업되어 거부되는가
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval - 1,
             }));
@@ -820,7 +820,7 @@ namespace Lib9c.Tests.Action.Scenario
             IAction action = new Stake(stakeAmount);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -832,7 +832,7 @@ namespace Lib9c.Tests.Action.Scenario
                 action = new ClaimStakeReward2(_avatarAddress);
                 states = action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _signerAddress,
                     BlockIndex = claimBlockIndex,
                 });
@@ -854,7 +854,7 @@ namespace Lib9c.Tests.Action.Scenario
             action = new Stake(newStakeAmount);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });
@@ -884,7 +884,7 @@ namespace Lib9c.Tests.Action.Scenario
                     action = new ClaimStakeReward2(_avatarAddress);
                     states = action.Execute(new ActionContext
                     {
-                        PreviousStates = states,
+                        PreviousState = states,
                         Signer = _signerAddress,
                         BlockIndex = StakeState.LockupInterval + 1,
                     });
@@ -912,7 +912,7 @@ namespace Lib9c.Tests.Action.Scenario
             IAction action = new Stake(500);
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -920,7 +920,7 @@ namespace Lib9c.Tests.Action.Scenario
             action = new ClaimStakeReward2(_avatarAddress);
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.RewardInterval - 1,
             }));

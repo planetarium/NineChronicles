@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action.Scenario
             Currency mead = Currencies.Mead;
             var patron = new PrivateKey().ToAddress();
             IActionContext context = new ActionContext();
-            IAccountStateDelta states = new State().MintAsset(context, patron, 10 * mead);
+            IAccountStateDelta states = new MockStateDelta().MintAsset(context, patron, 10 * mead);
 
             var agentAddress = new PrivateKey().ToAddress();
             var requestPledge = new RequestPledge
@@ -64,23 +64,16 @@ namespace Lib9c.Tests.Action.Scenario
         public void UseGas()
         {
             Type baseType = typeof(Nekoyume.Action.ActionBase);
-            Type attrType = typeof(ActionTypeAttribute);
-            Type obsoleteType = typeof(ActionObsoleteAttribute);
 
             bool IsTarget(Type type)
             {
                 return baseType.IsAssignableFrom(type) &&
-                       type.IsDefined(attrType) &&
-                       type != typeof(InitializeStates) &&
-                       ActionTypeAttribute.ValueOf(type) is { } &&
-                       (
-                           !type.IsDefined(obsoleteType) ||
-                           type
-                               .GetCustomAttributes()
-                               .OfType<ActionObsoleteAttribute>()
-                               .Select(attr => attr.ObsoleteIndex)
-                               .FirstOrDefault() > ActionObsoleteConfig.V200030ObsoleteIndex
-                       );
+                    type != typeof(InitializeStates) &&
+                    type.GetCustomAttribute<ActionTypeAttribute>() is { } &&
+                    (
+                        !(type.GetCustomAttribute<ActionObsoleteAttribute>()?.ObsoleteIndex is { } obsoleteIndex) ||
+                        obsoleteIndex > ActionObsoleteConfig.V200030ObsoleteIndex
+                    );
             }
 
             var assembly = baseType.Assembly;
@@ -93,7 +86,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var action = (IAction)Activator.CreateInstance(typeId)!;
                 var actionContext = new ActionContext
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                 };
                 try
                 {
@@ -119,7 +112,7 @@ namespace Lib9c.Tests.Action.Scenario
             var executedState = action.Execute(new ActionContext
             {
                 Signer = signer,
-                PreviousStates = nextState,
+                PreviousState = nextState,
             });
             return RewardGold.TransferMead(context, executedState);
         }

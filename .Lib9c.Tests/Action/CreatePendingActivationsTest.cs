@@ -28,13 +28,13 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivations(activations);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-            );
+            var state = new MockStateDelta(
+                MockState.Empty
+                    .SetState(AdminState.Address, adminState.Serialize()));
             var actionContext = new ActionContext()
             {
                 BlockIndex = 1,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = adminAddress,
             };
 
@@ -79,15 +79,15 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivations();
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, adminState.Serialize())
-            );
+            var state = new MockStateDelta(
+                MockState.Empty
+                    .SetState(AdminState.Address, adminState.Serialize()));
 
             Assert.Throws<PolicyExpiredException>(
                 () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 101,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = adminAddress,
                 })
             );
@@ -96,7 +96,7 @@ namespace Lib9c.Tests.Action
                 () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = default,
                 })
             );

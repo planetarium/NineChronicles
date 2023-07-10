@@ -117,7 +117,7 @@ namespace Lib9c.Tests.Action
             var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
 
             var context = new ActionContext();
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -224,7 +224,7 @@ namespace Lib9c.Tests.Action
                 var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(randomSeed),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -367,7 +367,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -394,7 +394,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -481,7 +481,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = worldBossRow.StartedBlockIndex + Raid4.RequiredInterval,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,

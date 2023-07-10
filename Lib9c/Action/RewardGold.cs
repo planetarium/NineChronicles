@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             states = TransferMead(context, states);
             states = GenesisGoldDistribution(context, states);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
@@ -308,8 +308,8 @@ namespace Nekoyume.Action
             var targetAddresses = states
                 .TotalUpdatedFungibleAssets
 #pragma warning restore LAA1002
-                .Where(d => d.Value.Contains(Currencies.Mead))
-                .Select(kv => kv.Key)
+                .Where(pair => pair.Item2.Equals(Currencies.Mead))
+                .Select(pair => pair.Item1)
                 .Distinct();
             foreach (var address in targetAddresses)
             {

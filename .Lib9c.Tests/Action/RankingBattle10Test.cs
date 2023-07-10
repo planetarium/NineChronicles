@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle10Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var keys = new List<string>
             {
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -267,7 +267,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -311,7 +311,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = signer,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -345,7 +345,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -409,7 +409,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -449,7 +449,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -478,17 +478,17 @@ namespace Lib9c.Tests.Action
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Theory]
@@ -538,7 +538,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,

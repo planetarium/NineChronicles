@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         {
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new State();
+            _state = new MockStateDelta();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _signer,
                 BlockIndex = rewardLevel * MonsterCollectionState0.RewardInterval,
                 Random = new TestRandom(),
@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = new PrivateKey().ToAddress(),
                     BlockIndex = 0,
                 })
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<MonsterCollectionExpiredException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -266,7 +266,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = blockIndex,
                 })
@@ -289,7 +289,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = MonsterCollectionState0.ExpirationIndex,
                     Random = new TestRandom(),

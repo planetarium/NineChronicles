@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -259,7 +259,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 1,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -366,7 +366,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -402,7 +402,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -428,7 +428,7 @@ namespace Lib9c.Tests.Action
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -481,7 +481,7 @@ namespace Lib9c.Tests.Action
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -533,7 +533,7 @@ namespace Lib9c.Tests.Action
             action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -583,7 +583,7 @@ namespace Lib9c.Tests.Action
             action.Execute(new ActionContext()
             {
                 BlockIndex = 11,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });

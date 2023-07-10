@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
             var currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
             foreach ((string key, string value) in sheets)
             {
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(excType, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _signer,
                     BlockIndex = blockIndex,
                 }));
@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
             {
                 IAccountStateDelta nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _signer,
                     BlockIndex = blockIndex,
                 });
@@ -134,7 +134,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signer,
                 BlockIndex = 1,
             }));
@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Action
             };
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _signer,
                 Rehearsal = true,
             });
@@ -199,7 +199,7 @@ namespace Lib9c.Tests.Action
                 MonsterCollectionState.DeriveAddress(_signer, 3),
             };
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

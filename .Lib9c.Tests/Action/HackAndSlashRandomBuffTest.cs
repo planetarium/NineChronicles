@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _agentAddress,
                     Random = _random,
                 });
@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action
                 {
                     action.Execute(new ActionContext
                     {
-                        PreviousStates = states,
+                        PreviousState = states,
                         Signer = _agentAddress,
                         Random = _random,
                     });
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action
                 };
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _agentAddress,
                     Random = _random,
                 });

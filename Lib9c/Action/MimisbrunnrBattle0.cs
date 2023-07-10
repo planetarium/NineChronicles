@@ -72,7 +72,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             if (ctx.Rehearsal)
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);

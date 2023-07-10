@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             _validator = new Validator(new PrivateKey().PublicKey, BigInteger.One);
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -44,17 +44,14 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var initStates =
-                ImmutableDictionary<Address, IValue>.Empty
-                    .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(
-                initStates,
-                validatorSet: new ValidatorSet());
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize());
+            var state = new MockStateDelta(initStates);
             var action = ValidatorSetOperate.Append(_validator);
             var nextState = action.Execute(
                 new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = adminAddress,
                 });
             Assert.Single(nextState.GetValidatorSet().Validators);
@@ -68,12 +65,9 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var initStates =
-                ImmutableDictionary<Address, IValue>.Empty
-                    .Add(AdminState.Address, adminState.Serialize());
-            var state = new State(
-                initStates,
-                validatorSet: new ValidatorSet());
+            var initStates = MockState.Empty
+                .SetState(AdminState.Address, adminState.Serialize());
+            var state = new MockStateDelta(initStates);
             var action = ValidatorSetOperate.Append(_validator);
 
             PermissionDeniedException exc1 = Assert.Throws<PermissionDeniedException>(() =>
@@ -82,7 +76,7 @@ namespace Lib9c.Tests.Action
                     new ActionContext()
                     {
                         BlockIndex = 5,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
@@ -97,7 +91,7 @@ namespace Lib9c.Tests.Action
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                 }));
             Assert.Equal(
                 "Cannot append validator when its already exist.",
@@ -107,12 +101,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Update_Throws_WhenDoNotExistValidator()
         {
-            var state = new State();
+            var state = new MockStateDelta();
             var action = ValidatorSetOperate.Update(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             Assert.Equal(
                 "Cannot update validator when its do not exist.",
@@ -122,12 +116,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Remove_Throws_WhenDoNotExistValidator()
         {
-            var state = new State();
+            var state = new MockStateDelta();
             var action = ValidatorSetOperate.Remove(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             Assert.Equal(
                 "Cannot remove validator when its do not exist.",
@@ -142,7 +136,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Append(validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();
@@ -157,7 +151,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Update(validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();
@@ -171,7 +165,7 @@ namespace Lib9c.Tests.Action
             var action = ValidatorSetOperate.Remove(_validator);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             });
 
             var validatorSet = states.GetValidatorSet();

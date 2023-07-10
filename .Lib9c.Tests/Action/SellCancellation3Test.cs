@@ -28,7 +28,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -131,7 +131,7 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = previousStates,
+                        PreviousState = previousStates,
                         Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
@@ -161,7 +161,7 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = previousStates,
+                        PreviousState = previousStates,
                         Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,

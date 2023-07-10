@@ -49,10 +49,10 @@ namespace Lib9c.DevExtensions.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            return Execute(context, context.PreviousStates, StateList, BalanceList);
+            return Execute(context, context.PreviousState, StateList, BalanceList);
         }
 
         public static IAccountStateDelta Execute(

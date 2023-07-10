@@ -51,7 +51,7 @@
 
             var sheets = TableSheetsImporter.ImportSheets();
             var context = new ActionContext();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(
                     Addresses.GoldDistribution,
@@ -71,7 +71,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
             });
@@ -117,11 +117,11 @@
                 name = nickName,
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     BlockIndex = 0,
                 })
@@ -158,11 +158,11 @@
                 name = "test",
             };
 
-            var state = new State().SetState(avatarAddress, avatarState.Serialize());
+            var state = new MockStateDelta().SetState(avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -175,7 +175,7 @@
         public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
             var action = new CreateAvatar3()
             {
                 index = index,
@@ -188,7 +188,7 @@
 
             Assert.Throws<AvatarIndexOutOfRangeException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -210,7 +210,7 @@
                 )
             );
             agentState.avatarAddresses[index] = avatarAddress;
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
 
             var action = new CreateAvatar3()
             {
@@ -224,7 +224,7 @@
 
             Assert.Throws<AvatarIndexAlreadyUsedException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -282,13 +282,13 @@
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(Addresses.Ranking, new RankingState0().Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
@@ -296,7 +296,7 @@
 
             Assert.Equal(
                 updatedAddresses.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

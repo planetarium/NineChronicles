@@ -66,7 +66,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var slotAddress = AvatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,

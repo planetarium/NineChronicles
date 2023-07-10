@@ -82,7 +82,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(4);
-            var state = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));

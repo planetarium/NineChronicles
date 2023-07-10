@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             }
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(Addresses.Admin, adminState.Serialize());
 
             var action = new PrepareRewardAssets(poolAddress, assets);
@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = admin ? adminAddress : poolAddress,
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                 });
                 foreach (var asset in assets)
                 {
@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Action
                 {
                     Signer = admin ? adminAddress : poolAddress,
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                 }));
             }
         }

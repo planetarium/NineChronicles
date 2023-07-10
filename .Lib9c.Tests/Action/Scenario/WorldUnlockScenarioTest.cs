@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new Lib9c.Tests.Action.State()
+            _initialState = new Lib9c.Tests.Action.MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action.Scenario
             };
             nextState = hackAndSlash.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -136,7 +136,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             };
             nextState = patchTableSheet.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = AdminState.Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -147,7 +147,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
 
             nextState = hackAndSlash.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -226,7 +226,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             {
                 nextState = mimisbrunnrBattle.Execute(new ActionContext
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -246,7 +246,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
 
             nextState = patchTableSheet.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = AdminState.Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -257,7 +257,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
 
             nextState = mimisbrunnrBattle.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

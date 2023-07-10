@@ -23,31 +23,23 @@ namespace Lib9c.Tools.SubCommand
         )
         {
             Type baseType = typeof(Nekoyume.Action.ActionBase);
-            Type attrType = typeof(ActionTypeAttribute);
-            Type obsoleteType = typeof(ActionObsoleteAttribute);
 
             bool IsTarget(Type type)
             {
                 return baseType.IsAssignableFrom(type) &&
-                    type.IsDefined(attrType) &&
-                    ActionTypeAttribute.ValueOf(type) is { } &&
+                    type.GetCustomAttribute<ActionTypeAttribute>() is { } &&
                     (
                         !excludeObsolete ||
-                        !type.IsDefined(obsoleteType) ||
-                        type
-                            .GetCustomAttributes()
-                            .OfType<ActionObsoleteAttribute>()
-                            .Select(attr => attr.ObsoleteIndex)
-                            .FirstOrDefault() > blockIndex
+                        !(type.GetCustomAttribute<ActionObsoleteAttribute>() is { } aoAttr) ||
+                        aoAttr.ObsoleteIndex > blockIndex
                     );
             }
 
             var assembly = baseType.Assembly;
             var typeIds = assembly.GetTypes()
                 .Where(IsTarget)
-                .Select(type => ActionTypeAttribute.ValueOf(type))
-                .Where(type => type is Text)
-                .Cast<Text>()
+                .Select(type => type.GetCustomAttribute<ActionTypeAttribute>()?.TypeIdentifier)
+                .OfType<Text>()
                 .OrderBy(type => type);
 
             foreach (Text typeId in typeIds) {

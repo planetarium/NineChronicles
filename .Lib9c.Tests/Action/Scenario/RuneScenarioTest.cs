@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action.Scenario
             );
 
             var context = new ActionContext();
-            IAccountStateDelta initialState = new Tests.Action.State()
+            IAccountStateDelta initialState = new Tests.Action.MockStateDelta()
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action.Scenario
             var state = craftAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Random = new TestRandom(),
                 Signer = agentAddress,
             });
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = has.Execute(new ActionContext
             {
                 BlockIndex = 2,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(),
                 Signer = agentAddress,
             });

@@ -57,7 +57,7 @@
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -167,7 +167,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -258,7 +258,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -285,7 +285,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                 });
             });
@@ -312,7 +312,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -339,7 +339,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -366,7 +366,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -409,7 +409,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -496,7 +496,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
             });
         }
@@ -538,7 +538,7 @@
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = _agentAddress,
                 });
             });
@@ -584,7 +584,7 @@
 
             action.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
                 Random = new TestRandom(),

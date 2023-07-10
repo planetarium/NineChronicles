@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward1(_avatarAddress);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });

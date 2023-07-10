@@ -14,11 +14,10 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(
-                ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, new AdminState(admin, 100).Serialize())
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-            );
+            var state = new MockStateDelta(
+                MockState.Empty
+                    .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
+                    .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var action = new AddActivatedAccount0(newComer);
 
@@ -26,7 +25,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = admin,
             });
 
@@ -44,11 +43,10 @@ namespace Lib9c.Tests.Action
         public void Rehearsal()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(
-                ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, new AdminState(admin, 100).Serialize())
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-            );
+            var state = new MockStateDelta(
+                MockState.Empty
+                    .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
+                    .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var action = new AddActivatedAccount0(newComer);
 
@@ -56,7 +54,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = admin,
                 Rehearsal = true,
             });
@@ -64,10 +62,9 @@ namespace Lib9c.Tests.Action
             Assert.Equal(
                 new[]
                 {
-                    AdminState.Address,
                     ActivatedAccountsState.Address,
                 }.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 
@@ -75,7 +72,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteWithNonExistsAccounts()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty);
+            var state = new MockStateDelta();
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var action = new AddActivatedAccount0(newComer);
 
@@ -85,7 +82,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 1,
                     Miner = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = admin,
                 });
             });
@@ -95,11 +92,10 @@ namespace Lib9c.Tests.Action
         public void CheckPermission()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new State(
-                ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, new AdminState(admin, 100).Serialize())
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-            );
+            var state = new MockStateDelta(
+                MockState.Empty
+                    .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
+                    .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var action = new AddActivatedAccount0(newComer);
 
@@ -109,7 +105,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 1,
                     Miner = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = newComer,
                 });
             });
@@ -120,7 +116,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 101,
                     Miner = default,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = admin,
                 });
             });

@@ -47,13 +47,13 @@ namespace Nekoyume.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates.SetState(PendingActivation.address, MarkChanged);
+                return context.PreviousState.SetState(PendingActivation.address, MarkChanged);
             }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 
-            return context.PreviousStates.SetState(
+            return context.PreviousState.SetState(
                 PendingActivation.address,
                 PendingActivation.Serialize()
             );

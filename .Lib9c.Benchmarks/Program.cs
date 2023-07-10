@@ -163,11 +163,10 @@ namespace Lib9c.Benchmarks
         )
         {
             IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
-                .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
+                .SelectMany(a => a.OutputState.Delta.StateUpdatedAddresses)
                 .ToImmutableHashSet();
             IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
-                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .SelectMany(a => a.OutputState.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
 
             if (!stateStore.ContainsStateRoot(block.StateRootHash))
@@ -185,15 +184,14 @@ namespace Lib9c.Benchmarks
             Func<(Address, Currency), string> toFungibleAssetKey)
         {
             IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
-                .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
+                .SelectMany(a => a.OutputState.Delta.StateUpdatedAddresses)
                 .ToImmutableHashSet();
             IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
-                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .SelectMany(a => a.OutputState.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
 
             IAccountStateDelta lastStates = actionEvaluations.Count > 0
-                ? actionEvaluations[actionEvaluations.Count - 1].OutputStates
+                ? actionEvaluations[actionEvaluations.Count - 1].OutputState
                 : null;
             ImmutableDictionary<string, IValue> totalDelta =
                 stateUpdatedAddresses.ToImmutableDictionary(

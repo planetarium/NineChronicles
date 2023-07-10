@@ -23,12 +23,12 @@ using Nekoyume.Model.Item;
 
 namespace Nekoyume.Action
 {
-    public static class AccountStateViewExtensions
+    public static class AccountStateExtensions
     {
         private const int SheetsCacheSize = 100;
         private static readonly LruCache<string, ISheet> SheetsCache = new LruCache<string, ISheet>(SheetsCacheSize);
 
-        public static bool TryGetState<T>(this IAccountStateView states, Address address, out T result)
+        public static bool TryGetState<T>(this IAccountState states, Address address, out T result)
             where T : IValue
         {
             IValue raw = states.GetState(address);
@@ -49,7 +49,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static Dictionary<Address, IValue> GetStatesAsDict(this IAccountStateView states, params Address[] addresses)
+        public static Dictionary<Address, IValue> GetStatesAsDict(this IAccountState states, params Address[] addresses)
         {
             var result = new Dictionary<Address, IValue>();
             var values = states.GetStates(addresses);
@@ -63,7 +63,7 @@ namespace Nekoyume.Action
             return result;
         }
 
-        public static AgentState GetAgentState(this IAccountStateView states, Address address)
+        public static AgentState GetAgentState(this IAccountState states, Address address)
         {
             var serializedAgent = states.GetState(address);
             if (serializedAgent is null)
@@ -90,7 +90,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetGoldBalance(
-            this IAccountStateView states,
+            this IAccountState states,
             Address address,
             Currency currency,
             out FungibleAssetValue balance)
@@ -108,12 +108,12 @@ namespace Nekoyume.Action
         }
 
         public static GoldBalanceState GetGoldBalanceState(
-            this IAccountStateView states,
+            this IAccountState states,
             Address address,
             Currency currency
         ) => new GoldBalanceState(address, states.GetBalance(address, currency));
 
-        public static Currency GetGoldCurrency(this IAccountStateView states)
+        public static Currency GetGoldCurrency(this IAccountState states)
         {
             if (states.TryGetState(GoldCurrencyState.Address, out Dictionary asDict))
             {
@@ -126,7 +126,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static AvatarState GetAvatarState(this IAccountStateView states, Address address)
+        public static AvatarState GetAvatarState(this IAccountState states, Address address)
         {
             var serializedAvatar = states.GetState(address);
             if (serializedAvatar is null)
@@ -152,7 +152,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static AvatarState GetAvatarStateV2(this IAccountStateView states, Address address)
+        public static AvatarState GetAvatarStateV2(this IAccountState states, Address address)
         {
             var addresses = new List<Address>
             {
@@ -202,7 +202,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetAvatarState(
-            this IAccountStateView states,
+            this IAccountState states,
             Address agentAddress,
             Address avatarAddress,
             out AvatarState avatarState
@@ -237,7 +237,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetAvatarStateV2(
-            this IAccountStateView states,
+            this IAccountState states,
             Address agentAddress,
             Address avatarAddress,
             out AvatarState avatarState,
@@ -275,7 +275,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetAgentAvatarStates(
-            this IAccountStateView states,
+            this IAccountState states,
             Address agentAddress,
             Address avatarAddress,
             out AgentState agentState,
@@ -300,7 +300,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetAgentAvatarStatesV2(
-            this IAccountStateView states,
+            this IAccountState states,
             Address agentAddress,
             Address avatarAddress,
             out AgentState agentState,
@@ -336,7 +336,7 @@ namespace Nekoyume.Action
             return !(avatarState is null);
         }
 
-        public static WeeklyArenaState GetWeeklyArenaState(this IAccountStateView states, Address address)
+        public static WeeklyArenaState GetWeeklyArenaState(this IAccountState states, Address address)
         {
             var iValue = states.GetState(address);
             if (iValue is null)
@@ -362,14 +362,14 @@ namespace Nekoyume.Action
             }
         }
 
-        public static WeeklyArenaState GetWeeklyArenaState(this IAccountStateView states, int index)
+        public static WeeklyArenaState GetWeeklyArenaState(this IAccountState states, int index)
         {
             var address = WeeklyArenaState.DeriveAddress(index);
             return GetWeeklyArenaState(states, address);
         }
 
         public static CombinationSlotState GetCombinationSlotState(
-            this IAccountStateView states,
+            this IAccountState states,
             Address avatarAddress,
             int index)
         {
@@ -398,7 +398,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static GameConfigState GetGameConfigState(this IAccountStateView states)
+        public static GameConfigState GetGameConfigState(this IAccountState states)
         {
             var value = states.GetState(GameConfigState.Address);
             if (value is null)
@@ -418,7 +418,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static RedeemCodeState GetRedeemCodeState(this IAccountStateView states)
+        public static RedeemCodeState GetRedeemCodeState(this IAccountState states)
         {
             var value = states.GetState(RedeemCodeState.Address);
             if (value is null)
@@ -439,7 +439,7 @@ namespace Nekoyume.Action
         }
 
 #nullable enable
-        public static IImmutableDictionary<Guid, Coupon> GetCouponWallet(this IAccountStateView states, Address agentAddress)
+        public static IImmutableDictionary<Guid, Coupon> GetCouponWallet(this IAccountState states, Address agentAddress)
         {
             Address walletAddress = agentAddress.Derive(CouponWalletKey);
             IValue? serialized = states.GetState(walletAddress);
@@ -456,7 +456,7 @@ namespace Nekoyume.Action
 #nullable disable
 
         public static IEnumerable<GoldDistribution> GetGoldDistribution(
-            this IAccountStateView states)
+            this IAccountState states)
         {
             var value = states.GetState(Addresses.GoldDistribution);
             if (value is null)
@@ -477,7 +477,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static T GetSheet<T>(this IAccountStateView states) where T : ISheet, new()
+        public static T GetSheet<T>(this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
 
@@ -508,7 +508,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static bool TryGetSheet<T>(this IAccountStateView states, out T sheet) where T : ISheet, new()
+        public static bool TryGetSheet<T>(this IAccountState states, out T sheet) where T : ISheet, new()
         {
             try
             {
@@ -523,7 +523,7 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
-            this IAccountStateView states,
+            this IAccountState states,
             bool containAvatarSheets = false,
             bool containItemSheet = false,
             bool containQuestSheet = false,
@@ -663,7 +663,7 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
-            this IAccountStateView states,
+            this IAccountState states,
             params Type[] sheetTypes)
         {
             Dictionary<Type, (Address address, ISheet sheet)> result = sheetTypes.ToDictionary(
@@ -713,7 +713,7 @@ namespace Nekoyume.Action
             return result;
         }
 
-        public static string GetSheetCsv<T>(this IAccountStateView states) where T : ISheet, new()
+        public static string GetSheetCsv<T>(this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
             var value = states.GetState(address);
@@ -734,7 +734,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public static ItemSheet GetItemSheet(this IAccountStateView states)
+        public static ItemSheet GetItemSheet(this IAccountState states)
         {
             var sheet = new ItemSheet();
             sheet.Set(GetSheet<ConsumableItemSheet>(states), false);
@@ -744,7 +744,7 @@ namespace Nekoyume.Action
             return sheet;
         }
 
-        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV1(this IAccountStateView states)
+        public static StageSimulatorSheetsV1 GetStageSimulatorSheetsV1(this IAccountState states)
         {
             return new StageSimulatorSheetsV1(
                 GetSheet<MaterialItemSheet>(states),
@@ -762,7 +762,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateView states)
+        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountState states)
         {
             return new StageSimulatorSheets(
                 GetSheet<MaterialItemSheet>(states),
@@ -781,7 +781,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1(this IAccountStateView states)
+        public static RankingSimulatorSheetsV1 GetRankingSimulatorSheetsV1(this IAccountState states)
         {
             return new RankingSimulatorSheetsV1(
                 GetSheet<MaterialItemSheet>(states),
@@ -797,7 +797,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountStateView states)
+        public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountState states)
         {
             return new RankingSimulatorSheets(
                 GetSheet<MaterialItemSheet>(states),
@@ -814,7 +814,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static QuestSheet GetQuestSheet(this IAccountStateView states)
+        public static QuestSheet GetQuestSheet(this IAccountState states)
         {
             var questSheet = new QuestSheet();
             questSheet.Set(GetSheet<WorldQuestSheet>(states), false);
@@ -831,7 +831,7 @@ namespace Nekoyume.Action
             return questSheet;
         }
 
-        public static AvatarSheets GetAvatarSheets(this IAccountStateView states)
+        public static AvatarSheets GetAvatarSheets(this IAccountState states)
         {
             return new AvatarSheets(
                 GetSheet<WorldSheet>(states),
@@ -843,7 +843,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static RankingState GetRankingState(this IAccountStateView states)
+        public static RankingState GetRankingState(this IAccountState states)
         {
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
@@ -854,7 +854,7 @@ namespace Nekoyume.Action
             return new RankingState((Dictionary)value);
         }
 
-        public static RankingState1 GetRankingState1(this IAccountStateView states)
+        public static RankingState1 GetRankingState1(this IAccountState states)
         {
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
@@ -865,7 +865,7 @@ namespace Nekoyume.Action
             return new RankingState1((Dictionary)value);
         }
 
-        public static RankingState0 GetRankingState0(this IAccountStateView states)
+        public static RankingState0 GetRankingState0(this IAccountState states)
         {
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
@@ -876,7 +876,7 @@ namespace Nekoyume.Action
             return new RankingState0((Dictionary)value);
         }
 
-        public static ShopState GetShopState(this IAccountStateView states)
+        public static ShopState GetShopState(this IAccountState states)
         {
             var value = states.GetState(Addresses.Shop);
             if (value is null)
@@ -888,7 +888,7 @@ namespace Nekoyume.Action
         }
 
         public static (Address arenaInfoAddress, ArenaInfo arenaInfo, bool isNewArenaInfo) GetArenaInfo(
-            this IAccountStateView states,
+            this IAccountState states,
             Address weeklyArenaAddress,
             AvatarState avatarState,
             CharacterSheet characterSheet,
@@ -911,7 +911,7 @@ namespace Nekoyume.Action
         }
 
         public static bool TryGetStakeState(
-            this IAccountStateView states,
+            this IAccountState states,
             Address agentAddress,
             out StakeState stakeState)
         {
@@ -925,7 +925,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static ArenaParticipants GetArenaParticipants(this IAccountStateView states,
+        public static ArenaParticipants GetArenaParticipants(this IAccountState states,
             Address arenaParticipantsAddress, int id, int round)
         {
             return states.TryGetState(arenaParticipantsAddress, out List list)
@@ -933,7 +933,7 @@ namespace Nekoyume.Action
                 : new ArenaParticipants(id, round);
         }
 
-        public static ArenaAvatarState GetArenaAvatarState(this IAccountStateView states,
+        public static ArenaAvatarState GetArenaAvatarState(this IAccountState states,
             Address arenaAvatarStateAddress, AvatarState avatarState)
         {
             return states.TryGetState(arenaAvatarStateAddress, out List list)
@@ -941,7 +941,7 @@ namespace Nekoyume.Action
                 : new ArenaAvatarState(avatarState);
         }
 
-        public static bool TryGetArenaParticipants(this IAccountStateView states,
+        public static bool TryGetArenaParticipants(this IAccountState states,
             Address arenaParticipantsAddress, out ArenaParticipants arenaParticipants)
         {
             if (states.TryGetState(arenaParticipantsAddress, out List list))
@@ -954,7 +954,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static bool TryGetArenaAvatarState(this IAccountStateView states,
+        public static bool TryGetArenaAvatarState(this IAccountState states,
             Address arenaAvatarStateAddress, out ArenaAvatarState arenaAvatarState)
         {
             if (states.TryGetState(arenaAvatarStateAddress, out List list))
@@ -967,7 +967,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static bool TryGetArenaScore(this IAccountStateView states,
+        public static bool TryGetArenaScore(this IAccountState states,
             Address arenaScoreAddress, out ArenaScore arenaScore)
         {
             if (states.TryGetState(arenaScoreAddress, out List list))
@@ -980,7 +980,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static bool TryGetArenaInformation(this IAccountStateView states,
+        public static bool TryGetArenaInformation(this IAccountState states,
             Address arenaInformationAddress, out ArenaInformation arenaInformation)
         {
             if (states.TryGetState(arenaInformationAddress, out List list))
@@ -993,7 +993,7 @@ namespace Nekoyume.Action
             return false;
         }
 
-        public static AvatarState GetEnemyAvatarState(this IAccountStateView states, Address avatarAddress)
+        public static AvatarState GetEnemyAvatarState(this IAccountState states, Address avatarAddress)
         {
             AvatarState enemyAvatarState;
             try
@@ -1015,7 +1015,7 @@ namespace Nekoyume.Action
             return enemyAvatarState;
         }
 
-        public static CrystalCostState GetCrystalCostState(this IAccountStateView states,
+        public static CrystalCostState GetCrystalCostState(this IAccountState states,
             Address address)
         {
             return states.TryGetState(address, out List rawState)
@@ -1028,7 +1028,7 @@ namespace Nekoyume.Action
             CrystalCostState WeeklyCostState,
             CrystalCostState PrevWeeklyCostState,
             CrystalCostState BeforePrevWeeklyCostState
-            ) GetCrystalCostStates(this IAccountStateView states, long blockIndex, long interval)
+            ) GetCrystalCostStates(this IAccountState states, long blockIndex, long interval)
         {
             int dailyCostIndex = (int) (blockIndex / CrystalCostState.DailyIntervalIndex);
             int weeklyCostIndex = (int) (blockIndex / interval);
@@ -1052,7 +1052,7 @@ namespace Nekoyume.Action
                 beforePrevWeeklyCostState);
         }
 
-        public static void ValidateWorldId(this IAccountStateView states, Address avatarAddress, int worldId)
+        public static void ValidateWorldId(this IAccountState states, Address avatarAddress, int worldId)
         {
             if (worldId > 1)
             {
@@ -1077,13 +1077,13 @@ namespace Nekoyume.Action
             }
         }
 
-        public static RaiderState GetRaiderState(this IAccountStateView states,
+        public static RaiderState GetRaiderState(this IAccountState states,
             Address avatarAddress, int raidId)
         {
             return GetRaiderState(states, Addresses.GetRaiderAddress(avatarAddress, raidId));
         }
 
-        public static RaiderState GetRaiderState(this IAccountStateView states,
+        public static RaiderState GetRaiderState(this IAccountState states,
             Address raiderAddress)
         {
             if (states.TryGetState(raiderAddress, out List rawRaider))
@@ -1095,7 +1095,7 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheetsV100291(
-            this IAccountStateView states,
+            this IAccountState states,
             bool containAvatarSheets = false,
             bool containItemSheet = false,
             bool containQuestSheet = false,
@@ -1203,7 +1203,7 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheetsV1(
-            this IAccountStateView states,
+            this IAccountState states,
             bool containAvatarSheets = false,
             bool containItemSheet = false,
             bool containQuestSheet = false,

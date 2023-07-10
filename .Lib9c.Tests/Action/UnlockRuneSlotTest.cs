@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InsufficientBalanceException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -158,7 +158,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<SlotNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -187,7 +187,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -196,7 +196,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<MismatchRuneSlotTypeException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -220,7 +220,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -231,7 +231,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<SlotIsAlreadyUnlockedException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,

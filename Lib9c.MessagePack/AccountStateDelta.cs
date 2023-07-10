@@ -23,18 +23,13 @@ namespace Lib9c.Formatters
 
         public IImmutableSet<Address> StateUpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
-#pragma warning disable LAA1002
-        public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets =>
-            _balances.GroupBy(kv => kv.Key.Item1).ToImmutableDictionary(
-                g => g.Key,
-                g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
-            );
+        public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets =>
+            _balances.Keys.ToImmutableHashSet();
 
-        public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets =>
-            new Dictionary<Address, IImmutableSet<Currency>>().ToImmutableDictionary();
-#pragma warning restore LAA1002
+        public IImmutableSet<(Address, Currency)> TotalUpdatedFungibleAssets =>
+            ImmutableHashSet<(Address, Currency)>.Empty;
 
-        public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies =>
+        public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies =>
             _totalSupplies.Keys.ToImmutableHashSet();
 
         public AccountStateDelta(
@@ -81,6 +76,8 @@ namespace Lib9c.Formatters
             : this((Dictionary)new Codec().Decode(bytes))
         {
         }
+
+        public IAccountDelta Delta => new MockAccountDelta();
 
         public IValue? GetState(Address address) =>
             _states.ContainsKey(address)
@@ -244,6 +241,23 @@ namespace Lib9c.Formatters
         public ValidatorSet GetValidatorSet()
         {
             return new ValidatorSet();
+        }
+
+        private class MockAccountDelta : IAccountDelta
+        {
+            public MockAccountDelta()
+            {
+            }
+
+            public IImmutableSet<Address> UpdatedAddresses => ImmutableHashSet<Address>.Empty;
+            public IImmutableSet<Address> StateUpdatedAddresses => ImmutableHashSet<Address>.Empty;
+            public IImmutableDictionary<Address, IValue> States => ImmutableDictionary<Address, IValue>.Empty;
+            public IImmutableSet<Address> FungibleUpdatedAddresses => ImmutableHashSet<Address>.Empty;
+            public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets => ImmutableHashSet<(Address, Currency)>.Empty;
+            public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
+            public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies => ImmutableHashSet<Currency>.Empty;
+            public IImmutableDictionary<Currency, BigInteger> TotalSupplies => ImmutableDictionary<Currency, BigInteger>.Empty;
+            public ValidatorSet? ValidatorSet => null;
         }
     }
 }

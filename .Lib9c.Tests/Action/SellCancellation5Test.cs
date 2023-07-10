@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -158,7 +158,7 @@ namespace Lib9c.Tests.Action
             var nextState = sellCancellationAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = default,
                 })
@@ -219,7 +219,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = _agentAddress,
             }));
         }
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Random = new TestRandom(),
                     Signer = _agentAddress,
                 })
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Random = new TestRandom(),
                     Signer = _agentAddress,
                 })
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = prevState,
+                    PreviousState = prevState,
                     Random = new TestRandom(),
                     Signer = _agentAddress,
                 })

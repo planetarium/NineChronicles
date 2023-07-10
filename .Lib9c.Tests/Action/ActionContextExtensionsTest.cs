@@ -142,10 +142,10 @@ namespace Lib9c.Tests.Action
         [MemberData(nameof(IsMainNetTestcases))]
         public void IsMainNet(GoldCurrencyState goldCurrencyState, bool expected)
         {
-            var state = new State().SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
+            var state = new MockStateDelta().SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
             IActionContext context = new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
             };
 
             Assert.Equal(expected, context.IsMainNet());

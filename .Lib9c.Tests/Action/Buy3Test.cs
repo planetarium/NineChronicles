@@ -36,7 +36,7 @@
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -164,7 +164,7 @@
                 var nextState = buyAction.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = previousStates,
+                    PreviousState = previousStates,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _buyerAgentAddress,
@@ -208,7 +208,7 @@
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -229,7 +229,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -260,7 +260,7 @@
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -281,7 +281,7 @@
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -312,7 +312,7 @@
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })

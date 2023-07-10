@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
 
         public bool Rehearsal { get; set; }
 
-        public IAccountStateDelta PreviousStates { get; set; }
+        public IAccountStateDelta PreviousState { get; set; }
 
         public IRandom Random { get; set; }
 
@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = BlockIndex,
                 BlockProtocolVersion = BlockProtocolVersion,
                 Rehearsal = Rehearsal,
-                PreviousStates = PreviousStates,
+                PreviousState = PreviousState,
                 Random = Random,
                 PreviousStateRootHash = PreviousStateRootHash,
             };

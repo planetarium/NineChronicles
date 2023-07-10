@@ -99,7 +99,7 @@
             var sheets = TableSheetsImporter.ImportSheets();
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(0);
             var context = new ActionContext();
-            var initialState = new Tests.Action.State()
+            var initialState = new Tests.Action.MockStateDelta()
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(
                     Addresses.GoldDistribution,
@@ -157,7 +157,7 @@
             var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
             });

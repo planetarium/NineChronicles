@@ -40,7 +40,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -235,7 +235,7 @@
             var expectedState = action.Execute(new ActionContext
             {
                 BlockIndex = 101,
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -282,7 +282,7 @@
             var actualState = reRegister.Execute(new ActionContext
             {
                 BlockIndex = 101,
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

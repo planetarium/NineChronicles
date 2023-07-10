@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
             var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
 
             var context = new ActionContext();
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action
                 var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(randomSeed),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -400,7 +400,7 @@ namespace Lib9c.Tests.Action
                     state = unlockRuneSlot.Execute(new ActionContext
                     {
                         BlockIndex = 1,
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     });
@@ -409,7 +409,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -437,7 +437,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -526,7 +526,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = worldBossRow.StartedBlockIndex + gameConfigState.WorldBossRequiredInterval,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -591,7 +591,7 @@ namespace Lib9c.Tests.Action
                 "1,900002,0,100,0,1,1,40";
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -627,7 +627,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,
