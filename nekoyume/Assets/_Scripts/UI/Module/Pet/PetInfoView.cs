@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Module.Pet
                 else
                 {
                     var ticker = TableSheets.Instance.PetSheet[id].SoulStoneTicker;
-                    var ownSoulStone = (float)States.Instance.AvatarBalance[ticker].MajorUnit;
+                    var ownSoulStone = (float)States.Instance.CurrentAvatarBalances[ticker].MajorUnit;
                     var need = nextCost.SoulStoneQuantity;
                     soulStoneText.text = $"{ownSoulStone}/{need}";
                     sliderFillRectImage.color = PetFrontHelper.GetUIColor(isOwn

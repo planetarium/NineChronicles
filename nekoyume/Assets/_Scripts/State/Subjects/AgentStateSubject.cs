@@ -1,4 +1,5 @@
 using System;
+using Lib9c;
 using Libplanet.Assets;
 using Nekoyume.Helper;
 using UniRx;
@@ -11,19 +12,21 @@ namespace Nekoyume.State.Subjects
     public static class AgentStateSubject
     {
         private static readonly Subject<FungibleAssetValue> _gold;
-            
-        public static readonly IObservable<FungibleAssetValue> Gold;
-
         private static readonly Subject<FungibleAssetValue> _crystal;
+        private static readonly Subject<FungibleAssetValue> _garage;
 
+        public static readonly IObservable<FungibleAssetValue> Gold;
         public static readonly IObservable<FungibleAssetValue> Crystal;
+        public static readonly IObservable<FungibleAssetValue> Garage;
 
         static AgentStateSubject()
         {
             _gold = new Subject<FungibleAssetValue>();
-            Gold = _gold.ObserveOnMainThread();
             _crystal = new Subject<FungibleAssetValue>();
+            _garage = new Subject<FungibleAssetValue>();
+            Gold = _gold.ObserveOnMainThread();
             Crystal = _crystal.ObserveOnMainThread();
+            Garage = _garage.ObserveOnMainThread();
         }
 
         public static void OnNextGold(FungibleAssetValue gold)
@@ -36,9 +39,17 @@ namespace Nekoyume.State.Subjects
 
         public static void OnNextCrystal(FungibleAssetValue crystal)
         {
-            if (crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            if (crystal.Currency.Equals(Currencies.Crystal))
             {
                 _crystal.OnNext(crystal);
+            }
+        }
+
+        public static void OnNextGarage(FungibleAssetValue garage)
+        {
+            if (garage.Currency.Equals(Currencies.Garage))
+            {
+                _garage.OnNext(garage);
             }
         }
     }

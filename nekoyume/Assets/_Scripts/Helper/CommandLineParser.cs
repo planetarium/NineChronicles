@@ -68,6 +68,8 @@ namespace Nekoyume.Helper
 
         private string _meadPledgePortalUrl;
 
+        private string iapServiceHost;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -386,6 +388,16 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("iap-service-host", Required = false, HelpText = "iap server host")]
+        public string IAPServiceHost
+        {
+            get => iapServiceHost;
+            set
+            {
+                iapServiceHost = value;
+                Empty = false;
+            }
+        }
 
         public static CommandLineOptions Load(string localPath)
         {

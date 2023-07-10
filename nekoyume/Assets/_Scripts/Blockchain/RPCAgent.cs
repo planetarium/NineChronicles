@@ -230,7 +230,7 @@ namespace Nekoyume.Blockchain
             }
 
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
-            byte[] raw = await _service.GetBalance(
+            var raw = await _service.GetBalance(
                 addr.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency)),
                 BlockTipHash.ToByteArray()
@@ -359,7 +359,6 @@ namespace Nekoyume.Blockchain
 
             BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
-            ActionUnrenderHandler.Instance.Stop();
 
             StopAllCoroutines();
             if (!(_hub is null))
@@ -464,7 +463,6 @@ namespace Nekoyume.Blockchain
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
             BlockRenderHandler.Instance.Start(BlockRenderer);
             ActionRenderHandler.Instance.Start(ActionRenderer);
-            ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
             UpdateSubscribeAddresses();
             callback?.Invoke(true);
@@ -562,17 +560,7 @@ namespace Nekoyume.Blockchain
 
         public void OnUnrender(byte[] evaluation)
         {
-            using (var cp = new MemoryStream(evaluation))
-            using (var decompressed = new MemoryStream())
-            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
-            {
-                df.CopyTo(decompressed);
-                decompressed.Seek(0, SeekOrigin.Begin);
-                var dec = decompressed.ToArray();
-                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                    .ToActionEvaluation();
-                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
-            }
+            // deprecated.
         }
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)

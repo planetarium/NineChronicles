@@ -4,6 +4,7 @@ using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Nekoyume.TableData.Event;
+using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.GrandFinale;
 using Nekoyume.TableData.Pet;
 
@@ -15,9 +16,10 @@ namespace Nekoyume.Game
 
         public TableSheets(IDictionary<string, string> sheets)
         {
+            var type = typeof(TableSheets);
             foreach (var pair in sheets)
             {
-                var sheetPropertyInfo = GetType().GetProperty(pair.Key);
+                var sheetPropertyInfo = type.GetProperty(pair.Key);
                 if (sheetPropertyInfo is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -215,6 +217,8 @@ namespace Nekoyume.Game
         public PetSheet PetSheet { get; private set; }
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
+
+        public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
