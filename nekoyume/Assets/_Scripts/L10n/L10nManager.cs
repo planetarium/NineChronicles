@@ -144,6 +144,11 @@ namespace Nekoyume.L10n
 
         private static void InitializeInternal(LanguageType languageType)
         {
+            if (languageType == LanguageType.Russian)
+            {
+                languageType = LanguageType.English;
+            }
+
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
@@ -183,6 +188,11 @@ namespace Nekoyume.L10n
 
         private static void SetLanguageInternal(LanguageType languageType)
         {
+            if (languageType == LanguageType.Russian)
+            {
+                languageType = LanguageType.English;
+            }
+
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             CurrentState = State.Initialized;
