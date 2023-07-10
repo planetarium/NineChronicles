@@ -167,7 +167,7 @@ namespace Nekoyume.Action
 
             // Add Runes when executing on editor mode.
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
-            states = CreateAvatar0.AddRunesForTest(avatarAddress, states);
+            states = CreateAvatar0.AddRunesForTest(context, avatarAddress, states);
 
             // Add pets for test
             if (states.TryGetSheet(out PetSheet petSheet))
