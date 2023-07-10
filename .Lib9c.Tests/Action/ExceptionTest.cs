@@ -70,6 +70,9 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(InvalidProductTypeException))]
         [InlineData(typeof(ProductNotFoundException))]
         [InlineData(typeof(AlreadyContractedException))]
+        [InlineData(typeof(ItemNotFoundException))]
+        [InlineData(typeof(NotEnoughItemException))]
+        [InlineData(typeof(StateNullException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)

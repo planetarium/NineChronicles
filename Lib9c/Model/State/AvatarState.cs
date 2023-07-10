@@ -313,7 +313,7 @@ namespace Nekoyume.Model.State
         public void Update3(Mail.Mail mail)
         {
             mailBox.Add(mail);
-            mailBox.CleanUp2();
+            mailBox.CleanUpV1();
         }
 
         [Obsolete("No longer in use.")]

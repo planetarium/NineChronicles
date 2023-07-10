@@ -265,7 +265,7 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUp2();
+            avatarState.mailBox.CleanUpV1();
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
