@@ -251,7 +251,9 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+#if UNITY_ANDROID
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+#endif
         }
 
         private IEnumerator Start()
@@ -370,11 +372,13 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
+#if UNITY_ANDROID
             IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
             yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
             Debug.Log("[Game] Start() IAPStoreManager initialized");
+#endif
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
