@@ -165,6 +165,18 @@ namespace Lib9c.Tests.Action
             "GARAGE",
             100_000L
         )]
+        // test tx(c46cf83c46bc106372015a5020d6b9f15dc733819a6dc3fde37d9b5625fc3d93)
+        [InlineData(
+            7_009_561L,
+            10_000_000L,
+            7_110_390L,
+            7_160_778L,
+            0,
+            0,
+            0,
+            null,
+            null,
+            0)]
         public void Execute_Success(
             long startedBlockIndex,
             long stakeAmount,
@@ -242,17 +254,42 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
             });
 
-            AvatarState avatarState = states.GetAvatarStateV2(avatarAddr);
-            Assert.Equal(
-                expectedHourglass,
-                avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // It must be never added into the inventory if the amount is 0.
-            Assert.Equal(
-                expectedApStone,
-                avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
-            Assert.Equal(
-                expectedRune * RuneHelper.StakeRune,
-                states.GetBalance(avatarAddr, RuneHelper.StakeRune));
+            var avatarState = states.GetAvatarStateV2(avatarAddr);
+            if (expectedHourglass > 0)
+            {
+                Assert.Equal(
+                    expectedHourglass,
+                    avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            }
+            else
+            {
+                Assert.DoesNotContain(avatarState.inventory.Items, x => x.item.Id == 400000);
+            }
+
+            if (expectedApStone > 0)
+            {
+                Assert.Equal(
+                    expectedApStone,
+                    avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            }
+            else
+            {
+                Assert.DoesNotContain(avatarState.inventory.Items, x => x.item.Id == 500000);
+            }
+
+            if (expectedRune > 0)
+            {
+                Assert.Equal(
+                    expectedRune * RuneHelper.StakeRune,
+                    states.GetBalance(avatarAddr, RuneHelper.StakeRune));
+            }
+            else
+            {
+                Assert.Equal(
+                    0 * RuneHelper.StakeRune,
+                    states.GetBalance(avatarAddr, RuneHelper.StakeRune));
+            }
+
             if (!string.IsNullOrEmpty(expectedCurrencyAddrHex))
             {
                 var addr = new Address(expectedCurrencyAddrHex);
