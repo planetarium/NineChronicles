@@ -38,6 +38,8 @@ namespace Nekoyume.Helper
 
         private string rpcServerHost;
 
+        private string[] rpcServerHosts = { };
+
         private int rpcServerPort;
 
         private bool autoPlay;
@@ -198,6 +200,20 @@ namespace Nekoyume.Helper
             {
                 rpcServerHost = value;
                 Empty = false;
+            }
+        }
+
+        [Option("rpc-server-hosts", Required = false, HelpText = "The host names for client mode.")]
+        public IEnumerable<string> RpcServerHosts
+        {
+            get => rpcServerHosts;
+            set
+            {
+                rpcServerHosts = value.ToArray();
+                if (value.Any())
+                {
+                    Empty = false;
+                }
             }
         }
 

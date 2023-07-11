@@ -211,13 +211,15 @@ namespace Nekoyume.Game
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
 #endif
 
+            _commandLineOptions.RpcServerHost = _commandLineOptions.RpcClient
+                ? _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First()
+                : null;
+
             InitializeAnalyzer(
                 agentAddr: _commandLineOptions.PrivateKey is null
                     ? null
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcClient
-                    ? _commandLineOptions.RpcServerHost
-                    : null);
+                rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
 
             URL = Url.Load(UrlJsonPath);
