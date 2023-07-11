@@ -17,5 +17,8 @@ namespace Nekoyume.Game.ScriptableObject
 
         [field: SerializeField]
         public string GameConfigJsonUrl { get; private set; }
+
+        [field: SerializeField]
+        public string CommandLineOptionsJsonUrl { get; private set; }
     }
 }

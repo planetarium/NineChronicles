@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Nekoyume.L10n;
 using UnityEngine;
 using System.Runtime.InteropServices;
 
@@ -38,6 +37,8 @@ namespace Nekoyume.Helper
 
         private string rpcServerHost;
 
+        private string[] rpcServerHosts = { };
+
         private int rpcServerPort;
 
         private bool autoPlay;
@@ -66,7 +67,7 @@ namespace Nekoyume.Helper
 
         private string marketServiceHost;
 
-        private string _meadPledgePortalUrl;
+        private string meadPledgePortalUrl;
 
         private string iapServiceHost;
 
@@ -198,6 +199,20 @@ namespace Nekoyume.Helper
             {
                 rpcServerHost = value;
                 Empty = false;
+            }
+        }
+
+        [Option("rpc-server-hosts", Required = false, HelpText = "The host names for client mode.")]
+        public IEnumerable<string> RpcServerHosts
+        {
+            get => rpcServerHosts;
+            set
+            {
+                rpcServerHosts = value.ToArray();
+                if (value.Any())
+                {
+                    Empty = false;
+                }
             }
         }
 
@@ -380,10 +395,10 @@ namespace Nekoyume.Helper
         [Option("mead-pledge-portal-url", Required = false, HelpText = "mead pledge portal url")]
         public string MeadPledgePortalUrl
         {
-            get => _meadPledgePortalUrl;
+            get => meadPledgePortalUrl;
             set
             {
-                _meadPledgePortalUrl = value;
+                meadPledgePortalUrl = value;
                 Empty = false;
             }
         }

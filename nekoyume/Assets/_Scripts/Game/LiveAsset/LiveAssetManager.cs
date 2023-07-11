@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
 using Nekoyume.Pattern;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
@@ -41,6 +42,7 @@ namespace Nekoyume.Game.LiveAsset
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
+        public CommandLineOptions CommandLineOptions { get; private set; }
         public bool IsInitialized { get; private set; }
 
         public void InitializeData()
@@ -49,6 +51,7 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.NoticeJsonUrl, SetNotices));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
+            StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
         }
 
         public void AddToCheckedList(string key)
@@ -82,6 +85,31 @@ namespace Nekoyume.Game.LiveAsset
         private void SetLiveAssetData(string response)
         {
             GameConfig = JsonSerializer.Deserialize<GameConfig>(response);
+        }
+
+        private void SetCommandLineOptions(string response)
+        {
+            var options = CommandLineParser.GetCommandLineOptions<CommandLineOptions>();
+            if (options is { Empty: false })
+            {
+                Debug.Log($"Get options from commandline.");
+                CommandLineOptions = options;
+            }
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                Converters =
+                {
+                    new CommandLineOptions.StringEnumerableConverter(),
+                },
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+            };
+
+            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(response, jsonOptions);
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)

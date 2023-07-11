@@ -204,28 +204,18 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_IOS
-            _commandLineOptions =
- CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+#if UNITY_ANDROID
+            // Load CommandLineOptions at Start() after init
+#elif UNITY_IOS
+            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            OnLoadCommandlineOptions();
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
+            OnLoadCommandlineOptions();
 #endif
-
-            InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcClient
-                    ? _commandLineOptions.RpcServerHost
-                    : null);
-            Analyzer.Track("Unity/Started");
-
             URL = Url.Load(UrlJsonPath);
 
-            Debug.Log("[Game] Awake() CommandLineOptions loaded");
-            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
-
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_ANDROID
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -251,9 +241,6 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
-#if UNITY_ANDROID
-            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
-#endif
         }
 
         private IEnumerator Start()
@@ -262,6 +249,20 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
+
+            // Initialize RequestManager and LiveAssetManager
+            gameObject.AddComponent<RequestManager>();
+            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+            liveAssetManager.InitializeData();
+            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
+
+            _commandLineOptions = liveAssetManager.CommandLineOptions;
+
+#if UNITY_ANDROID
+            OnLoadCommandlineOptions();
+            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+#endif
 
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
@@ -365,12 +366,6 @@ namespace Nekoyume.Game
 
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
-            // Initialize RequestManager and LiveAssetManager
-            gameObject.AddComponent<RequestManager>();
-            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData();
-            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
 #if UNITY_ANDROID
             IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
@@ -435,6 +430,23 @@ namespace Nekoyume.Game
 
             ActionManager?.Dispose();
             base.OnDestroy();
+        }
+
+        private void OnLoadCommandlineOptions()
+        {
+            _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
+                ? _commandLineOptions.RpcServerHost
+                : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcServerHost);
+            Analyzer.Track("Unity/Started");
+
+            Debug.Log("[Game] CommandLineOptions loaded");
+            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
         }
 
         private void SubscribeRPCAgent()
