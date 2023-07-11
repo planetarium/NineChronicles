@@ -80,7 +80,6 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Intro/Show");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
 
             if (Platform.IsMobilePlatform())
             {
@@ -96,6 +95,7 @@ namespace Nekoyume.UI
             {
                 mobileContainer.SetActive(false);
 
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
                 indicator.Show("Verifying transaction..");
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             }
@@ -115,6 +115,10 @@ namespace Nekoyume.UI
                 videoPlayer.Play();
                 Analyzer.Instance.Track("Unity/Intro/Video/Start");
             }
+            else
+            {
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+            }
 
             var keystore = Find<LoginSystem>().KeyStore;
             if (keystore.ListIds().Any())
@@ -132,6 +136,7 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Intro/Video/End");
             videoImage.gameObject.SetActive(false);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
 
         private void ShowQrCodeGuide()
