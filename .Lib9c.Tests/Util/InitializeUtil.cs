@@ -11,8 +11,6 @@ namespace Lib9c.Tests.Util
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-    using State = Lib9c.Tests.Action.MockStateDelta;
-    using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
     public static class InitializeUtil
     {
@@ -31,7 +29,7 @@ namespace Lib9c.Tests.Util
         {
             adminAddr ??= new PrivateKey().ToAddress();
             var context = new ActionContext();
-            var states = new State().SetState(
+            var states = new MockStateDelta().SetState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
             var sheets = TableSheetsImporter.ImportSheets(

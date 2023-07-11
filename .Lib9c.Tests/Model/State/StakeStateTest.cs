@@ -114,6 +114,52 @@ namespace Lib9c.Tests.Model.State
         // reward start block index is less than reward range.
         [InlineData(1L, 0L, RewardInterval * 9 + 1L, 0L, 9)]
         [InlineData(RewardInterval, RewardInterval * 2, RewardInterval * 9, 0L, 7)]
+        public void GetRewardStepV1(
+            long startedBlockIndex,
+            long receivedBlockIndex,
+            long currentBlockIndex,
+            long? rewardStartBlockIndex,
+            int expectedStep)
+        {
+            var stakeState = new StakeState(
+                new PrivateKey().ToAddress(),
+                startedBlockIndex);
+            stakeState.Claim(receivedBlockIndex);
+            var actualStep = stakeState.GetRewardStepV1(currentBlockIndex, rewardStartBlockIndex);
+            Assert.Equal(expectedStep, actualStep);
+        }
+
+        [Theory]
+        // default.
+        [InlineData(0L, 0L, 0L, null, 0)]
+        // control current block index.
+        [InlineData(0L, 0L, RewardInterval, null, 1)]
+        [InlineData(0L, 0L, RewardInterval * 99, null, 99)]
+        // control started block index.
+        [InlineData(1L, 0L, RewardInterval * 9, null, 8)]
+        [InlineData(RewardInterval, 0L, RewardInterval * 9, null, 8)]
+        [InlineData(RewardInterval + 1L, 0L, RewardInterval * 9, null, 7)]
+        // control received block index.
+        [InlineData(0L, 1L, RewardInterval * 9, null, 9)]
+        [InlineData(0L, RewardInterval, RewardInterval * 9, null, 8)]
+        [InlineData(0L, RewardInterval + 1L, RewardInterval * 9, null, 8)]
+        // control reward start block index.
+        [InlineData(0L, 0L, RewardInterval * 9, 0L, 9)]
+        [InlineData(0L, 0L, RewardInterval * 9, 1L, 8)]
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval, 8)]
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval + 1L, 7)]
+        // control complex. reward start block index is inside of reward range.
+        [InlineData(1L, 0L, RewardInterval * 9, 1L, 8)]
+        [InlineData(1L, 0L, RewardInterval * 9, RewardInterval + 1L, 7)]
+        [InlineData(RewardInterval, 0L, RewardInterval * 9, RewardInterval, 8)]
+        [InlineData(RewardInterval, 0L, RewardInterval * 9, RewardInterval + 1L, 7)]
+        [InlineData(RewardInterval, RewardInterval * 2, RewardInterval * 9, RewardInterval, 7)]
+        [InlineData(RewardInterval, RewardInterval * 2 + 1L, RewardInterval * 9, RewardInterval, 7)]
+        // reward start block index is greater than reward range.
+        [InlineData(0L, 0L, RewardInterval * 9, RewardInterval * 9 + 1L, 0)]
+        // reward start block index is less than reward range.
+        [InlineData(1L, 0L, RewardInterval * 9 + 1L, 0L, 9)]
+        [InlineData(RewardInterval, RewardInterval * 2, RewardInterval * 9, 0L, 7)]
         public void GetRewardStep(
             long startedBlockIndex,
             long receivedBlockIndex,
