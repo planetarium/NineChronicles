@@ -214,11 +214,15 @@ namespace Nekoyume.L10n.Editor
             {
                 case LanguageType.English:
                 case LanguageType.Korean:
-                case LanguageType.PortugueseBrazil:
-                case LanguageType.Polish:
+                case LanguageType.Portuguese:
                 case LanguageType.Japanese:
                 case LanguageType.ChineseSimplified:
                 case LanguageType.Thai:
+                case LanguageType.Spanish:
+                case LanguageType.Indonesian:
+                case LanguageType.Russian:
+                case LanguageType.ChineseTraditional:
+                case LanguageType.Tagalog:
                     return 2500;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(languageType), languageType, null);

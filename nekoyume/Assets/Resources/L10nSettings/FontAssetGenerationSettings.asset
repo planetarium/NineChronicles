@@ -56,20 +56,6 @@ MonoBehaviour:
     renderMode: 4165
     includeFontFeatures: 1
   - language: 3
-    sourceFontFile: {fileID: 12800000, guid: 31cb0079383aa414fb9fe57b553fa479, type: 3}
-    pointSizeSamplingMode: 1
-    pointSize: 40
-    padding: 5
-    packingMode: 0
-    atlasWidth: 512
-    atlasHeight: 512
-    characterSetSelectionMode: 6
-    referencedFontAsset: {fileID: 11400000, guid: 3f68e0bceeae246cd9d0c19d10d925b7,
-      type: 2}
-    characterSequence: 
-    renderMode: 4165
-    includeFontFeatures: 1
-  - language: 4
     sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
     pointSizeSamplingMode: 1
     pointSize: 40
@@ -83,7 +69,7 @@ MonoBehaviour:
     characterSequence: 
     renderMode: 4165
     includeFontFeatures: 1
-  - language: 5
+  - language: 4
     sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
     pointSizeSamplingMode: 1
     pointSize: 40
@@ -97,7 +83,7 @@ MonoBehaviour:
     characterSequence: 
     renderMode: 4165
     includeFontFeatures: 1
-  - language: 6
+  - language: 5
     sourceFontFile: {fileID: 12800000, guid: fc964adaab960425eb0170fc476dcc36, type: 3}
     pointSizeSamplingMode: 1
     pointSize: 40
@@ -107,6 +93,76 @@ MonoBehaviour:
     atlasHeight: 512
     characterSetSelectionMode: 6
     referencedFontAsset: {fileID: 11400000, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 6
+    sourceFontFile: {fileID: 12800000, guid: 31cb0079383aa414fb9fe57b553fa479, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 512
+    atlasHeight: 512
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: f0ce806ea90ab524099a0f03b2b1b973,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 7
+    sourceFontFile: {fileID: 12800000, guid: 31cb0079383aa414fb9fe57b553fa479, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 512
+    atlasHeight: 512
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 2600dd6093c25b446a1398938b55c34c,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 8
+    sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 512
+    atlasHeight: 512
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: f30ecc61fa74e264cb6ee9f07148c78c,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 9
+    sourceFontFile: {fileID: 12800000, guid: 7b3399343ece680439fcca528e0e4d40, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 2048
+    atlasHeight: 2048
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: bd622c7c9f5fd9544b42e9a657908ce2,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 10
+    sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 512
+    atlasHeight: 512
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 16c98bdcb306c8545978053c543f963c,
       type: 2}
     characterSequence: 
     renderMode: 4165

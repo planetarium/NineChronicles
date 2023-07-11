@@ -41,7 +41,7 @@ namespace Nekoyume.L10n
 
         /// <summary>
         /// font file: Assets/Font/TTF/NotoSans-Regular.ttf
-        /// font asset file: Assets/Resources/Font/SDF/PortugueseBrazil SDF.asset
+        /// font asset file: Assets/Resources/Font/SDF/Portuguese SDF.asset
         ///     - Sampling Font Size: 40
         ///     - Padding: 5
         ///     - Packing Method: Fast
@@ -51,12 +51,7 @@ namespace Nekoyume.L10n
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
         /// </summary>
-        PortugueseBrazil,
-
-        /// <summary>
-        /// This is same with PortugueseBrazil.
-        /// </summary>
-        Polish,
+        Portuguese,
 
         /// <summary>
         /// font file: Assets/Font/TTF/NotoSansCJKjp-Regular.otf
@@ -99,6 +94,16 @@ namespace Nekoyume.L10n
         ///     - Get Kerning Pairs: true
         /// </summary>
         Thai,
+
+        Spanish,
+
+        Indonesian,
+
+        Russian,
+
+        ChineseTraditional,
+
+        Tagalog,
     }
 
     public class LanguageTypeComparer : IEqualityComparer<LanguageType>
@@ -119,14 +124,14 @@ namespace Nekoyume.L10n
     public class LanguageTypeMapper
     {
         /** FIXME
-         * 현재 Unity Player에서는 iso396 표준이 아닌, 일종의 방언을 사용하고 있습니다.
-         * 따라서 인자로 받는 iso396-1 코드를 방언으로 변환시켜주는 해당 매퍼가 필요한데,
+         * 현재 Unity Player에서는 iso639 표준이 아닌, 일종의 방언을 사용하고 있습니다.
+         * 따라서 인자로 받는 iso639-1 코드를 방언으로 변환시켜주는 해당 매퍼가 필요한데,
          * LanguageType enum을 CultureInfo(https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=netstandard-2.0)
          * 로 리팩토링한다면 훨씬 깔끔해 질 것 같습니다.
          * https://github.com/planetarium/nekoyume-unity/pull/2835#discussion_r493197244
          */
 
-        public static LanguageType ISO396(string iso396)
+        public static LanguageType ISO639(string iso396)
         {
             iso396 = iso396.Replace("_", "-");
             switch (iso396)
@@ -136,15 +141,23 @@ namespace Nekoyume.L10n
                 case "en":
                     return LanguageType.English;
                 case "pt-BR":
-                    return LanguageType.PortugueseBrazil;
-                case "pl":
-                    return LanguageType.Polish;
+                    return LanguageType.Portuguese;
                 case "ja":
                     return LanguageType.Japanese;
                 case "zh-Hans":
                     return LanguageType.ChineseSimplified;
                 case "th":
                     return LanguageType.Thai;
+                case "es":
+                    return LanguageType.Spanish;
+                case "id":
+                    return LanguageType.Indonesian;
+                case "ru":
+                    return LanguageType.Russian;
+                case "zh-Hant":
+                    return LanguageType.ChineseTraditional;
+                case "tl":
+                    return LanguageType.Tagalog;
                 default:
                     Debug.LogWarning($"Does not support LanguageType for {iso396}");
                     return LanguageType.English;

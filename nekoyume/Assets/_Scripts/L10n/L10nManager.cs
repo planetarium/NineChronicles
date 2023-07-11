@@ -48,7 +48,7 @@ namespace Nekoyume.L10n
                     case UnityEngine.SystemLanguage.ChineseTraditional:
                         return LanguageType.ChineseSimplified;
                     case UnityEngine.SystemLanguage.Portuguese:
-                        return LanguageType.PortugueseBrazil;
+                        return LanguageType.Portuguese;
                 }
 
                 var systemLang = Application.systemLanguage.ToString();
@@ -66,12 +66,27 @@ namespace Nekoyume.L10n
 
         private static LanguageTypeSettings? _currentLanguageTypeSettingsCache;
 
-        public static LanguageTypeSettings CurrentLanguageTypeSettings =>
-            _currentLanguageTypeSettingsCache.HasValue &&
-            _currentLanguageTypeSettingsCache.Value.languageType == CurrentLanguage
-                ? _currentLanguageTypeSettingsCache.Value
-                : (_currentLanguageTypeSettingsCache = _settings.FontAssets
-                    .First(asset => asset.languageType.Equals(CurrentLanguage))).Value;
+        public static LanguageTypeSettings CurrentLanguageTypeSettings
+        {
+            get
+            {
+                if (!_currentLanguageTypeSettingsCache.HasValue ||
+                    _currentLanguageTypeSettingsCache.Value.languageType != CurrentLanguage)
+                {
+                    if (_settings.FontAssets.Count(asset => asset.languageType.Equals(CurrentLanguage)) > 0)
+                    {
+                        _currentLanguageTypeSettingsCache = _settings.FontAssets.First(asset =>
+                            asset.languageType.Equals(CurrentLanguage));
+                    }
+                    else
+                    {
+                        _currentLanguageTypeSettingsCache = _settings.FontAssets.First();
+                    }
+                }
+
+                return _currentLanguageTypeSettingsCache.Value;
+            }
+        }
 
         #endregion
 
@@ -129,6 +144,11 @@ namespace Nekoyume.L10n
 
         private static void InitializeInternal(LanguageType languageType)
         {
+            if (languageType == LanguageType.Russian)
+            {
+                languageType = LanguageType.English;
+            }
+
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
@@ -168,6 +188,11 @@ namespace Nekoyume.L10n
 
         private static void SetLanguageInternal(LanguageType languageType)
         {
+            if (languageType == LanguageType.Russian)
+            {
+                languageType = LanguageType.English;
+            }
+
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             CurrentState = State.Initialized;
@@ -193,22 +218,15 @@ namespace Nekoyume.L10n
                     Key = csvReader.GetField<string>("Key"),
                     English = csvReader.GetField<string>("English"),
                     Korean = csvReader.GetField<string>("Korean"),
-                    PortugueseBrazil = csvReader.GetField<string>("PortugueseBrazil"),
                     Portuguese = csvReader.GetField<string>("Portuguese"),
                     Japanese = csvReader.GetField<string>("Japanese"),
-                    German = csvReader.GetField<string>("German"),
                     Spanish = csvReader.GetField<string>("Spanish"),
                     Thai = csvReader.GetField<string>("Thai"),
-                    Polish = csvReader.GetField<string>("Polish"),
-                    Lithuanian = csvReader.GetField<string>("Lithuanian"),
-                    Dutch = csvReader.GetField<string>("Dutch"),
                     Indonesian = csvReader.GetField<string>("Indonesian"),
-                    French = csvReader.GetField<string>("French"),
                     Russian = csvReader.GetField<string>("Russian"),
-                    Cambodian = csvReader.GetField<string>("Cambodian"),
-                    Urdu = csvReader.GetField<string>("Urdu"),
                     ChineseSimplified = csvReader.GetField<string>("ChineseSimplified"),
-                    Hungarian = csvReader.GetField<string>("Hungarian")
+                    ChineseTraditional = csvReader.GetField<string>("ChineseTraditional"),
+                    Tagalog = csvReader.GetField<string>("Tagalog"),
                 };
                 records.Add(record);
             }
