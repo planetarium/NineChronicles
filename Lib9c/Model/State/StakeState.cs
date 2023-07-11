@@ -134,7 +134,17 @@ namespace Nekoyume.Model.State
             return ReceivedBlockIndex + RewardInterval <= blockIndex;
         }
 
-        public long GetClaimableBlockIndex()
+        public long GetClaimableBlockIndex(long blockIndex)
+        {
+            if (blockIndex >= ActionObsoleteConfig.V100290ObsoleteIndex)
+            {
+                return GetClaimableBlockIndexWithoutBlockIndex();
+            }
+
+            return Math.Max(StartedBlockIndex, ReceivedBlockIndex) + RewardInterval;
+        }
+
+        private long GetClaimableBlockIndexWithoutBlockIndex()
         {
             if (ReceivedBlockIndex > 0)
             {
@@ -261,7 +271,7 @@ namespace Nekoyume.Model.State
         /// <returns>The accumulated rewards step.</returns>
         public int GetRewardStep(long currentBlockIndex, long? rewardStartBlockIndex)
         {
-            var claimableBlockIndex = GetClaimableBlockIndex();
+            var claimableBlockIndex = GetClaimableBlockIndexWithoutBlockIndex();
             if (rewardStartBlockIndex > StartedBlockIndex)
             {
                 var step = Math.DivRem(
