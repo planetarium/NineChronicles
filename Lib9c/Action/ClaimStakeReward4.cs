@@ -21,9 +21,11 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1458
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class ClaimStakeReward4 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward4";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200031ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -102,12 +104,12 @@ namespace Nekoyume.Action
 
         Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
-        public ClaimStakeReward(Address avatarAddress) : this()
+        public ClaimStakeReward4(Address avatarAddress) : this()
         {
             AvatarAddress = avatarAddress;
         }
 
-        public ClaimStakeReward()
+        public ClaimStakeReward4()
         {
         }
 
@@ -123,6 +125,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
             if (context.Rehearsal)
             {
@@ -176,15 +179,15 @@ namespace Nekoyume.Action
             var level =
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var itemSheet = sheets.GetItemSheet();
-            stakeState.CalculateAccumulatedItemRewards(
+            stakeState.CalculateAccumulatedItemRewardsV2(
                 context.BlockIndex,
                 out var itemV1Step,
                 out var itemV2Step);
-            stakeState.CalculateAccumulatedRuneRewards(
+            stakeState.CalculateAccumulatedRuneRewardsV2(
                 context.BlockIndex,
                 out var runeV1Step,
                 out var runeV2Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
+            stakeState.CalculateAccumulatedCurrencyRewardsV1(
                 context.BlockIndex,
                 out var currencyV1Step,
                 out var currencyV2Step);
