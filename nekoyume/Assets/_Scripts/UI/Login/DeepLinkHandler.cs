@@ -41,7 +41,7 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID
             os = "android";
 #endif
-            var url = $"{_portalUrl}?step=2&address={avatarAddress}?os={os}";
+            var url = $"{_portalUrl}/start?step=2&address={avatarAddress}&os={os}";
             Application.OpenURL(url);
         }
     }
