@@ -142,7 +142,7 @@ namespace Nekoyume.UI
                 ? productId.Remove(0, 2)
                 : productId) + L10nManager.CurrentLanguage switch
             {
-                LanguageType.PortugueseBrazil => "_PT",
+                LanguageType.Portuguese => "_PT",
                 LanguageType.ChineseSimplified => "_ZH-CN",
                 _ => "_EN"
             };
