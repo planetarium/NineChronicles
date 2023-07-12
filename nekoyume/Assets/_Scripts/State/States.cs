@@ -86,7 +86,9 @@ namespace Nekoyume.State
         /// </summary>
         public IReadOnlyDictionary<int, HammerPointState> HammerPointStates => _hammerPointStates;
 
-        public bool? PledgeApproved { get; private set; }
+        public Address? PatronAddress { get; private set; }
+        public bool PledgeRequested => PatronAddress is not null;
+        public bool PledgeApproved { get; private set; }
 
         public States()
         {
@@ -874,8 +876,9 @@ namespace Nekoyume.State
             }
         }
 
-        public void SetPledgeApproved(bool? isApproved)
+        public void SetPledgeStates(Address? patronAddress, bool isApproved)
         {
+            PatronAddress = patronAddress;
             PledgeApproved = isApproved;
         }
     }
