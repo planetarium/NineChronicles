@@ -18,19 +18,10 @@ namespace Lib9c.Formatters
         private IImmutableDictionary<Address, IValue> _states;
         private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
         private IImmutableDictionary<Currency, BigInteger> _totalSupplies;
-
-        public IImmutableSet<Address> UpdatedAddresses => _states.Keys.ToImmutableHashSet();
-
-        public IImmutableSet<Address> StateUpdatedAddresses => _states.Keys.ToImmutableHashSet();
-
-        public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets =>
-            _balances.Keys.ToImmutableHashSet();
+        private MockAccountDelta _delta;
 
         public IImmutableSet<(Address, Currency)> TotalUpdatedFungibleAssets =>
             ImmutableHashSet<(Address, Currency)>.Empty;
-
-        public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies =>
-            _totalSupplies.Keys.ToImmutableHashSet();
 
         public AccountStateDelta(
             IImmutableDictionary<Address, IValue> states,
@@ -38,29 +29,24 @@ namespace Lib9c.Formatters
             IImmutableDictionary<Currency, BigInteger> totalSupplies
         )
         {
+            _delta = new MockAccountDelta(states, balances, totalSupplies);
             _states = states;
             _balances = balances;
             _totalSupplies = totalSupplies;
         }
 
         public AccountStateDelta(Dictionary states, List balances, Dictionary totalSupplies)
+            : this(
+                states.ToImmutableDictionary(
+                    kv => new Address(kv.Key),
+                    kv => kv.Value),
+                balances.Cast<Dictionary>().ToImmutableDictionary(
+                    record => (new Address(((Binary)record["address"]).ByteArray), new Currency((Dictionary)record["currency"])),
+                    record => (BigInteger)(Integer)record["amount"]),
+                totalSupplies.ToImmutableDictionary(
+                    kv => new Currency(new Codec().Decode((Binary)kv.Key)),
+                    kv => (BigInteger)(Integer)kv.Value))
         {
-            // This assumes `states` consists of only Binary keys:
-            _states = states.ToImmutableDictionary(
-                kv => new Address(kv.Key),
-                kv => kv.Value
-            );
-
-            _balances = balances.Cast<Dictionary>().ToImmutableDictionary(
-                record => (new Address(((Binary)record["address"]).ByteArray), new Currency((Dictionary)record["currency"])),
-                record => (BigInteger)(Integer)record["amount"]
-            );
-
-            // This assumes `totalSupplies` consists of only Binary keys:
-            _totalSupplies = totalSupplies.ToImmutableDictionary(
-                kv => new Currency(new Codec().Decode((Binary)kv.Key)),
-                kv => (BigInteger)(Integer)kv.Value
-            );
         }
 
         public AccountStateDelta(IValue serialized)
@@ -77,7 +63,7 @@ namespace Lib9c.Formatters
         {
         }
 
-        public IAccountDelta Delta => new MockAccountDelta();
+        public IAccountDelta Delta => _delta;
 
         public IValue? GetState(Address address) =>
             _states.ContainsKey(address)
@@ -245,18 +231,28 @@ namespace Lib9c.Formatters
 
         private class MockAccountDelta : IAccountDelta
         {
-            public MockAccountDelta()
+            private IImmutableDictionary<Address, IValue> _states;
+            private IImmutableDictionary<(Address, Currency), BigInteger> _fungibles;
+            private IImmutableDictionary<Currency, BigInteger> _totalSupplies;
+
+            public MockAccountDelta(
+                IImmutableDictionary<Address, IValue> states,
+                IImmutableDictionary<(Address, Currency), BigInteger> balances,
+                IImmutableDictionary<Currency, BigInteger> totalSupplies)
             {
+                _states = states;
+                _fungibles = balances;
+                _totalSupplies = totalSupplies;
             }
 
-            public IImmutableSet<Address> UpdatedAddresses => ImmutableHashSet<Address>.Empty;
-            public IImmutableSet<Address> StateUpdatedAddresses => ImmutableHashSet<Address>.Empty;
-            public IImmutableDictionary<Address, IValue> States => ImmutableDictionary<Address, IValue>.Empty;
-            public IImmutableSet<Address> FungibleUpdatedAddresses => ImmutableHashSet<Address>.Empty;
-            public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets => ImmutableHashSet<(Address, Currency)>.Empty;
-            public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
-            public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies => ImmutableHashSet<Currency>.Empty;
-            public IImmutableDictionary<Currency, BigInteger> TotalSupplies => ImmutableDictionary<Currency, BigInteger>.Empty;
+            public IImmutableSet<Address> UpdatedAddresses => StateUpdatedAddresses.Union(FungibleUpdatedAddresses);
+            public IImmutableSet<Address> StateUpdatedAddresses => _states.Keys.ToImmutableHashSet();
+            public IImmutableDictionary<Address, IValue> States => _states;
+            public IImmutableSet<Address> FungibleUpdatedAddresses => _fungibles.Keys.Select(pair => pair.Item1).ToImmutableHashSet();
+            public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets => _fungibles.Keys.ToImmutableHashSet();
+            public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => _fungibles;
+            public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies => _totalSupplies.Keys.ToImmutableHashSet();
+            public IImmutableDictionary<Currency, BigInteger> TotalSupplies => _totalSupplies;
             public ValidatorSet? ValidatorSet => null;
         }
     }
