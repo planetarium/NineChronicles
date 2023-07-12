@@ -191,7 +191,7 @@
                                 _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
                             }
 
-                            if (ncgBalanceExist)
+                            if (ncgBalanceExist && subRow.RequiredGold > 0)
                             {
                                 state = state.MintAsset(
                                     context,
@@ -412,10 +412,13 @@
                 _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
             }
 
-            state = state.MintAsset(
-                context,
-                _agentAddress,
-                subRow.RequiredGold * state.GetGoldCurrency());
+            if (subRow.RequiredGold > 0)
+            {
+                state = state.MintAsset(
+                    context,
+                    _agentAddress,
+                    subRow.RequiredGold * state.GetGoldCurrency());
+            }
 
             var inventoryAddress = _avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress =
