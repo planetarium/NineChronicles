@@ -88,8 +88,7 @@ namespace Lib9c.DevExtensions
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,
-                actionLoader,
-                null);
+                actionLoader);
 
             BlockChain chain;
             if (store.GetCanonicalChainId() is null)

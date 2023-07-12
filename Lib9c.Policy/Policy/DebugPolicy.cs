@@ -20,8 +20,6 @@ namespace Nekoyume.Blockchain.Policy
 
         public IAction BlockAction { get; } = new RewardGold();
 
-        public IFeeCalculator? FeeCalculator { get; }
-
         public TxPolicyViolationException ValidateNextBlockTx(
             BlockChain blockChain, Transaction transaction)
         {

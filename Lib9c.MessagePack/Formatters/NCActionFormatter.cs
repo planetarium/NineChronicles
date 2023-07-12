@@ -18,15 +18,6 @@ namespace Lib9c.Formatters
     {
         private readonly IActionLoader _actionLoader;
 
-        private static readonly IDictionary<IValue, Type> Types = typeof(ActionBase)
-            .Assembly
-            .GetTypes()
-            .Where(t => t.IsDefined(typeof(ActionTypeAttribute)))
-            .ToDictionary(
-                t => ActionTypeAttribute.ValueOf(t)
-                    ?? throw new InvalidOperationException("Unreachable code."),
-                t => t);
-
         public NCActionFormatter()
         {
             _actionLoader = new NCActionLoader();

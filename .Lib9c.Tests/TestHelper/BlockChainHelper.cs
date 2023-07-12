@@ -48,8 +48,7 @@
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: blockRenderers);
         }

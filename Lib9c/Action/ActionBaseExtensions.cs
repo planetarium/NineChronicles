@@ -71,11 +71,6 @@ namespace Nekoyume.Action
             public long GasUsed() => 0;
 
             public long GasLimit() => 0;
-
-            public void PutLog(string log)
-            {
-                // Method intentionally left empty.
-            }
         }
 
         private class AddressTraceStateDelta : IAccountStateDelta

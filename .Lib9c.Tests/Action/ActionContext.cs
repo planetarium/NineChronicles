@@ -64,9 +64,5 @@ namespace Lib9c.Tests.Action
         public long GasUsed() => _gasUsed;
 
         public long GasLimit() => 0;
-
-        public void PutLog(string log)
-        {
-        }
     }
 }

@@ -530,8 +530,7 @@ namespace Lib9c.Tests.Action
                     blockChainStates: new BlockChainStates(
                         new MemoryStore(),
                         new TrieStateStore(new MemoryKeyValueStore())),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null);
+                    actionTypeLoader: new NCActionLoader());
                 genesis = BlockChain.ProposeGenesisBlock(
                     tempActionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
@@ -554,8 +553,7 @@ namespace Lib9c.Tests.Action
                 actionEvaluator: new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: blockPolicySource.GetRenderers()
             );

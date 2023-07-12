@@ -66,8 +66,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -177,8 +176,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -266,8 +264,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -321,8 +318,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: actionLoader,
-                    feeCalculator: null
+                    actionTypeLoader: actionLoader
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -375,8 +371,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -425,8 +420,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 )
             );
 
@@ -527,8 +521,7 @@ namespace Lib9c.Tests
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
                     blockChainStates: new BlockChainStates(store, stateStore),
-                    actionTypeLoader: new NCActionLoader(),
-                    feeCalculator: null
+                    actionTypeLoader: new NCActionLoader()
                 )
             );
 

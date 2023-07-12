@@ -102,8 +102,7 @@ namespace Nekoyume
             var actionEvaluator = new ActionEvaluator(
                 _ => blockAction,
                 new BlockChainStates(new MemoryStore(), new TrieStateStore(new MemoryKeyValueStore())),
-                actionLoader,
-                null);
+                actionLoader);
             return
                 BlockChain.ProposeGenesisBlock(
                     actionEvaluator,

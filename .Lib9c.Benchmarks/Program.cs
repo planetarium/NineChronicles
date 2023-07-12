@@ -89,8 +89,7 @@ namespace Lib9c.Benchmarks
             var actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 new BlockChainStates(store, stateStore),
-                new NCActionLoader(),
-                null);
+                new NCActionLoader());
             var chain = new BlockChain(
                 policy,
                 stagePolicy,
