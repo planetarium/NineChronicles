@@ -128,7 +128,7 @@ namespace Nekoyume.Battle
                         ActionBuffSheet
                     );
 
-                    skill.Use(Player, 0, buffs);
+                    skill.Use(Player, 0, buffs, log);
                 }
 
                 while (true)

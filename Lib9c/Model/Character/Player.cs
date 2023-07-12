@@ -522,7 +522,8 @@ namespace Nekoyume.Model
                     Simulator.StatBuffSheet,
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
-                )
+                ),
+                false
             );
 
             var cooldown = RuneSkillCooldownMap[selectedSkill.SkillRow.Id];

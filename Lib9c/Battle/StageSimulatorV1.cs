@@ -301,7 +301,7 @@ namespace Nekoyume.Battle
         {
             Player.SetCostumeStat(costumeStatSheet);
         }
-        
+
         public Player Simulate(int playCount)
         {
             Log.worldId = WorldId;
@@ -331,7 +331,7 @@ namespace Nekoyume.Battle
                         ActionBuffSheet
                     );
 
-                    var usedSkill = skill.Use(Player, 0, buffs);
+                    var usedSkill = skill.Use(Player, 0, buffs, false);
                     Log.Add(usedSkill);
                 }
 

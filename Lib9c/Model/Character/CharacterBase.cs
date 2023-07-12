@@ -250,7 +250,8 @@ namespace Nekoyume.Model
                     Simulator.StatBuffSheet,
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
-                )
+                ),
+                false
             );
 
             if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
@@ -278,7 +279,8 @@ namespace Nekoyume.Model
                     Simulator.StatBuffSheet,
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
-                )
+                ),
+                false
             );
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
@@ -301,7 +303,8 @@ namespace Nekoyume.Model
                     Simulator.StatBuffSheet,
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
-                )
+                ),
+                false
             );
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
@@ -566,9 +569,9 @@ namespace Nekoyume.Model
                     skillInfo.SkillCategory == SkillCategory.DoubleAttack ||
                     skillInfo.SkillCategory == SkillCategory.AreaAttack ||
                     skillInfo.SkillCategory == SkillCategory.BuffRemovalAttack;
-                if (isAttackSkill && skillInfo.Target.Thorn > 0)
+                if (isAttackSkill && skillInfo.Thorn > 0)
                 {
-                    var effect = GiveThornDamage(skillInfo.Target.Thorn);
+                    GiveThornDamage(skillInfo.Thorn);
                     // Simulator.Log.Add(effect);
                 }
             }
@@ -582,31 +585,23 @@ namespace Nekoyume.Model
             FinishTargetIfKilled(usedSkill);
         }
 
-        private BattleStatus.Skill GiveThornDamage(int targetThorn)
+        private void GiveThornDamage(int targetThorn)
         {
-            var clone = (CharacterBase)Clone();
+            // var clone = (CharacterBase)Clone();
             // minimum 1 damage
             var thornDamage = Math.Max(1, targetThorn - DEF);
             CurrentHP -= thornDamage;
-            var damageInfos = new List<BattleStatus.Skill.SkillInfo>()
-            {
-                new BattleStatus.Skill.SkillInfo(
-                    (CharacterBase)Clone(),
-                    thornDamage,
-                    false,
-                    SkillCategory.TickDamage,
-                    Simulator.WaveTurn,
-                    ElementalType.Normal,
-                    SkillTargetType.Enemy)
-            };
-
-            var tickDamage = new TickDamage(
-                default,
-                clone,
-                damageInfos,
-                null);
-
-            return tickDamage;
+            // var damageInfos = new List<BattleStatus.Skill.SkillInfo>()
+            // {
+            //     new BattleStatus.Skill.SkillInfo(
+            //         (CharacterBase)Clone(),
+            //         thornDamage,
+            //         false,
+            //         SkillCategory.TickDamage,
+            //         Simulator.WaveTurn,
+            //         ElementalType.Normal,
+            //         SkillTargetType.Enemy)
+            // };
         }
 
         private void FinishTargetIfKilledForBeforeV100310(BattleStatus.Skill usedSkill)
@@ -614,7 +609,7 @@ namespace Nekoyume.Model
             var isFirst = true;
             foreach (var info in usedSkill.SkillInfos)
             {
-                if (!info.Target.IsDead)
+                if (!info.IsDead)
                 {
                     continue;
                 }
@@ -626,7 +621,7 @@ namespace Nekoyume.Model
                 }
 
                 var target = Targets.FirstOrDefault(i =>
-                    i.Id == info.Target.Id);
+                    i.Id == info.Id);
                 switch (target)
                 {
                     case Player player:
@@ -655,12 +650,12 @@ namespace Nekoyume.Model
             var killedTargets = new List<CharacterBase>();
             foreach (var info in usedSkill.SkillInfos)
             {
-                if (!info.Target.IsDead)
+                if (!info.IsDead)
                 {
                     continue;
                 }
 
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                var target = Targets.FirstOrDefault(i => i.Id == info.Id);
                 if (!killedTargets.Contains(target))
                 {
                     killedTargets.Add(target);

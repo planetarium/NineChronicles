@@ -12,22 +12,26 @@ namespace Nekoyume.Model.BattleStatus
         [Serializable]
         public class SkillInfo
         {
-            public readonly CharacterBase Target;
             public readonly int Effect;
             public readonly bool Critical;
             public readonly SkillCategory SkillCategory;
             public readonly ElementalType ElementalType;
             public readonly SkillTargetType SkillTargetType;
             public readonly int WaveTurn;
+            public readonly int Thorn;
+            public readonly bool IsDead;
+            public readonly Guid Id;
 
-            
+
             public readonly Model.Buff.Buff? Buff;
 
-            public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
+            public SkillInfo(Guid id, bool isDead, int thorn, int effect, bool critical, SkillCategory skillCategory,
                 int waveTurn, ElementalType elementalType = ElementalType.Normal,
                 SkillTargetType targetType = SkillTargetType.Enemy, Model.Buff.Buff? buff = null)
             {
-                Target = character;
+                Id = id;
+                IsDead = isDead;
+                Thorn = thorn;
                 Effect = effect;
                 Critical = critical;
                 SkillCategory = skillCategory;
@@ -42,7 +46,7 @@ namespace Nekoyume.Model.BattleStatus
 
         public readonly IEnumerable<SkillInfo> SkillInfos;
 
-        
+
         public readonly IEnumerable<SkillInfo>? BuffInfos;
 
         protected Skill(int skillId, CharacterBase character, IEnumerable<SkillInfo> skillInfos,
