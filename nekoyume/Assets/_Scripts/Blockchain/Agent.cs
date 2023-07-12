@@ -451,10 +451,14 @@ namespace Nekoyume.Blockchain
 
                 var agentAddress = States.Instance.AgentState.address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
-                bool? approved = await GetStateAsync(pledgeAddress) is List list
-                    ? list[1].ToBoolean()
-                    : null;
-                States.Instance.SetPledgeApproved(approved);
+                Address? patronAddress = null;
+                var approved = false;
+                if (await GetStateAsync(pledgeAddress) is List list)
+                {
+                    patronAddress = list[0].ToAddress();
+                    approved = list[1].ToBoolean();
+                }
+                States.Instance.SetPledgeStates(patronAddress, approved);
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
