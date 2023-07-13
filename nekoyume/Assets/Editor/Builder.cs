@@ -317,7 +317,6 @@ namespace Editor
                 // Due to executable size issue, we can't use script debugging for Android at least 2021.3.5f1.
                 buildPlayerOptions.options &= ~BuildOptions.AllowDebugging;
                 buildPlayerOptions.options |= BuildOptions.CompressWithLz4HC;
-                PlayerSettings.productName = "Nine Chronicles";
             }
 
             UpdateDefines(useDevExtension);
