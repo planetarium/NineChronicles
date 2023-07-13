@@ -32,6 +32,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             rawImage.texture = CaptureCurrentScreen();
+            rawImage.uvRect = ActionCamera.instance.Cam.rect;
             rawImage.enabled = true;
         }
 

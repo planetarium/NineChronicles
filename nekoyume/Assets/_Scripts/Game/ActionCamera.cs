@@ -70,6 +70,7 @@ namespace Nekoyume.Game
         private Camera _cam;
 
         private float _defaultAspect;
+        private float _targetAspect;
         private float _defaultOrthographicSizeTimesAspect;
         private float _defaultOrthographicSize;
         private Resolution _resolution;
@@ -382,17 +383,47 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
+            _targetAspect = Cam.aspect;
             _defaultAspect = (float) referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
+
+#if UNITY_ANDROID
+            UpdateLetterBox();
+#endif
+
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
+
             UpdateScreenResolution();
         }
+
+        private void UpdateLetterBox()
+        {
+            float fixedAspectRatio = _defaultAspect;
+            float currentAspectRatio = (float)Screen.width / (float)Screen.height;
+
+            Rect rect = Cam.rect;
+            float scaleheight = currentAspectRatio / fixedAspectRatio;
+            float scalewidth = 1f / scaleheight;
+            if (scaleheight < 1)
+            {
+                rect.height = scaleheight;
+                rect.y = (1f - scaleheight) / 2f;
+            }
+            else
+            {
+                rect.width = scalewidth;
+                rect.x = (1f - scalewidth) / 2f;
+            }
+            Cam.rect = rect;
+        }
+
+        void OnPreCull() => GL.Clear(true, true, Color.black);
 
         private float GetCameraAspect()
         {
             return maintainWidth
-                ? Math.Min(Cam.aspect, _defaultAspect)
-                : Math.Max(Cam.aspect, _defaultAspect);
+                ? Math.Min(_targetAspect, _defaultAspect)
+                : Math.Max(_targetAspect, _defaultAspect);
         }
 
         private void UpdateScreenResolution()
