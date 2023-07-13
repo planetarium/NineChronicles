@@ -451,9 +451,12 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
-                ? _commandLineOptions.RpcServerHost
-                : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+            if(_commandLineOptions.RpcClient)
+            {
+                _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
+                    ? _commandLineOptions.RpcServerHost
+                    : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+            }
 
             Debug.Log("[Game] CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
