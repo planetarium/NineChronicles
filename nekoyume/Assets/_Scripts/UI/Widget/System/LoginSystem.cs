@@ -95,6 +95,8 @@ namespace Nekoyume.UI
         private States _prevState;
         private CapturedImage _capturedImage;
 
+        public override bool CanHandleInputEvent => false;
+
         protected override void Awake()
         {
             // Default KeyStore in android is invalid, we should redefine it.
