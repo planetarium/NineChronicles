@@ -122,5 +122,5 @@ jobs:
         committer: >
           Submodule Updater <engineering+submodule-updater@planetariumhq.com>
         targets: |
-          ${{ github.repository_owner }}/NineChronicles:refs/heads/release/*
+          planetarium/NineChronicles:refs/heads/release/*
           ${{ github.repository_owner }}/NineChronicles.Headless:refs/heads/release/*
