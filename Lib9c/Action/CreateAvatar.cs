@@ -261,13 +261,16 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            // TODO delete check blockIndex hard-fork this action
+            // Fix invalid mint crystal balance in internal network. main-net always mint 200_000
+            var mintingValue = context.BlockIndex > 7_210_000L ? 200_000 : 600_000;
             return states
                 .SetState(signer, agentState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(ctx, signer, 600_000 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, mintingValue * CrystalCalculator.CRYSTAL);
         }
     }
 }
