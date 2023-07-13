@@ -63,11 +63,9 @@ jobs:
           androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
           androidAppBundle: true
-          androidExportType: 'androidAppBundle'
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
-          androidSymbolType: 'debugging'
 
       - name: Set up Python
         uses: actions/setup-python@v4

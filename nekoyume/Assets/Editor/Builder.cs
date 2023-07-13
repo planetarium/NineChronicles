@@ -321,6 +321,7 @@ namespace Editor
 
             UpdateDefines(useDevExtension);
 
+            PlayerSettings.productName = "Nine Chronicles";
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             var summary = report.summary;
 
