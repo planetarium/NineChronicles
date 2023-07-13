@@ -64,101 +64,52 @@ namespace Nekoyume.Battle
 
         public static int GetHitStep1(int attackerLevel, int defenderLevel)
         {
-            var correction = 0;
             var diff = attackerLevel - defenderLevel;
 
             if (diff <= GetHitStep1LevelDiffMin)
             {
-                correction = GetHitStep1CorrectionMin;
-            }
-            else if (diff >= GetHitStep1LevelDiffMax)
-            {
-                correction = GetHitStep1CorrectionMax;
-            }
-            else
-            {
-                switch (diff)
-                {
-                    case -13:
-                        correction = -4;
-                        break;
-                    case -12:
-                        correction = -3;
-                        break;
-                    case -11:
-                        correction = -2;
-                        break;
-                    case -10:
-                        correction = -1;
-                        break;
-                    case -9:
-                        correction = 0;
-                        break;
-                    case -8:
-                        correction = 1;
-                        break;
-                    case -7:
-                        correction = 2;
-                        break;
-                    case -6:
-                        correction = 4;
-                        break;
-                    case -5:
-                        correction = 6;
-                        break;
-                    case -4:
-                        correction = 8;
-                        break;
-                    case -3:
-                        correction = 13;
-                        break;
-                    case -2:
-                        correction = 20;
-                        break;
-                    case -1:
-                        correction = 28;
-                        break;
-                    case 0:
-                        correction = 40;
-                        break;
-                    case 1:
-                        correction = 41;
-                        break;
-                    case 2:
-                        correction = 42;
-                        break;
-                    case 3:
-                        correction = 43;
-                        break;
-                    case 4:
-                        correction = 44;
-                        break;
-                    case 5:
-                        correction = 45;
-                        break;
-                    case 6:
-                        correction = 46;
-                        break;
-                    case 7:
-                        correction = 47;
-                        break;
-                    case 8:
-                        correction = 48;
-                        break;
-                    case 9:
-                        correction = 49;
-                        break;
-                }
+                return GetHitStep1CorrectionMin;
             }
 
-            return correction;
+            if (diff >= GetHitStep1LevelDiffMax)
+            {
+                return GetHitStep1CorrectionMax;
+            }
+
+            return diff switch
+            {
+                -13 => -4,
+                -12 => -3,
+                -11 => -2,
+                -10 => -1,
+                -9 => 0,
+                -8 => 1,
+                -7 => 2,
+                -6 => 4,
+                -5 => 6,
+                -4 => 8,
+                -3 => 13,
+                -2 => 20,
+                -1 => 28,
+                0 => 40,
+                1 => 41,
+                2 => 42,
+                3 => 43,
+                4 => 44,
+                5 => 45,
+                6 => 46,
+                7 => 47,
+                8 => 48,
+                9 => 49,
+                _ => 0
+            };
         }
 
         public static int GetHitStep2(int attackerHit, int defenderHit)
         {
             attackerHit = Math.Max(1, attackerHit);
             defenderHit = Math.Max(1, defenderHit);
-            var additionalCorrection = (int) ((attackerHit - defenderHit / 3m) / defenderHit * 100);
+            var additionalCorrection = (attackerHit * 100 - defenderHit * 100 / 3) / defenderHit;
             return Math.Min(Math.Max(additionalCorrection, GetHitStep2AdditionalCorrectionMin),
                 GetHitStep2AdditionalCorrectionMax);
         }
