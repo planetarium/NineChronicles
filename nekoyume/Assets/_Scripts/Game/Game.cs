@@ -241,6 +241,16 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+
+#if !UNITY_ANDROID
+            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcServerHost);
+            Analyzer.Track("Unity/Started");
+#endif
         }
 
         private IEnumerator Start()
@@ -262,6 +272,14 @@ namespace Nekoyume.Game
 #if UNITY_ANDROID
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+
+            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcServerHost);
+            Analyzer.Track("Unity/Started");
 #endif
 
 #if ENABLE_IL2CPP
@@ -434,16 +452,12 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
-                ? _commandLineOptions.RpcServerHost
-                : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
-
-            InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcServerHost);
-            Analyzer.Track("Unity/Started");
+            if(_commandLineOptions.RpcClient)
+            {
+                _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
+                    ? _commandLineOptions.RpcServerHost
+                    : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+            }
 
             Debug.Log("[Game] CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
