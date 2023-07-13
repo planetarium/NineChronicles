@@ -74,7 +74,6 @@ namespace Nekoyume.IAPStore
                     $"{product.definition.id}: {product.metadata.localizedTitle}, {product.metadata.localizedDescription}, {product.metadata.localizedPriceString}");
             }
 
-
             IsInitialized = true;
         }
 
@@ -141,6 +140,7 @@ namespace Nekoyume.IAPStore
         {
             var popup = Widget.Find<IconAndButtonSystem>();
             var states = States.Instance;
+
             try
             {
                 var result = await Game.Game.instance.IAPServiceManager
@@ -152,8 +152,7 @@ namespace Nekoyume.IAPStore
                 {
                     popup.Show(
                         L10nManager.Localize("UI_ERROR"),
-                        "IAP Service Purchasing failed. result is not HTTPSCODE:200\n" +
-                        $"receipt: {e.purchasedProduct.receipt}",
+                        "IAP Service Processing failed.",
                         L10nManager.Localize("UI_OK"),
                         false);
                 }
@@ -161,8 +160,7 @@ namespace Nekoyume.IAPStore
                 {
                     popup.Show(
                         L10nManager.Localize("UI_COMPLETED"),
-                        "IAP Service Purchasing completed.\n" +
-                        $"tx status: {result.TxStatus}",
+                        "IAP Service Processing completed.",
                         L10nManager.Localize("UI_OK"),
                         false,
                         IconAndButtonSystem.SystemType.Information);
@@ -173,36 +171,6 @@ namespace Nekoyume.IAPStore
             {
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
-        }
-
-        private static string ParsePayloadJson(string unityIAPReceipt)
-        {
-            try
-            {
-                var wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(unityIAPReceipt);
-                if (wrapper == null)
-                {
-                    Debug.LogError($"receipt is invalid.: {unityIAPReceipt}");
-                    return string.Empty;
-                }
-
-                var store = (string)wrapper["Store"];
-                var payload = (string)wrapper["Payload"];
-
-                if (store == "GooglePlay")
-                {
-                    var details = (Dictionary<string, object>) MiniJson.JsonDecode(payload);
-                    var json = (string)details["json"];
-                    return json;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Cannot validate due to unhandled exception. (" + ex + ")");
-                return string.Empty;
-            }
-
-            return string.Empty;
         }
     }
 }
