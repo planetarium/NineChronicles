@@ -140,7 +140,6 @@ namespace Nekoyume.IAPStore
         {
             var popup = Widget.Find<IconAndButtonSystem>();
             var states = States.Instance;
-            Debug.unityLogger.Log($"IAP Receipt: {e.purchasedProduct.receipt}");
 
             try
             {
