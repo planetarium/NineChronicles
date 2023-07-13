@@ -147,6 +147,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 447bded3fd28f4e1392b0942ced42311, type: 3}
   - {fileID: 21300000, guid: a20adae3d7ea9f74c8a04fbf4c23498a, type: 3}
   - {fileID: 21300000, guid: 383c63f3d86993d428e0071bceb6a74b, type: 3}
+  - {fileID: 21300000, guid: 26c92ef39dc72c24e90e4a07129288a7, type: 3}
   - {fileID: 21300000, guid: 93733c147ae424e038adfc771bdf885f, type: 3}
   - {fileID: 21300000, guid: 3ffd8c14e9e6d4aab877248cbf0d5987, type: 3}
   - {fileID: 21300000, guid: b032f12462df64e2dbaf188fb8300b0e, type: 3}
@@ -353,6 +354,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ab608a9ca4dd14350ad3eaa750cb5cd1, type: 3}
   - {fileID: 21300000, guid: 0db5ca9cb69d44ea5a32026c9c00c472, type: 3}
   - {fileID: 21300000, guid: 1a1a06ace2d6f904b83ef5cb4e006d5b, type: 3}
+  - {fileID: 21300000, guid: eca666ac045834641aaebeff59750feb, type: 3}
   - {fileID: 21300000, guid: 468ffdacf521c4de89f23c873d787325, type: 3}
   - {fileID: 21300000, guid: 85e011bc4905b47798ea91e720b5cb09, type: 3}
   - {fileID: 21300000, guid: 9eadcdbcedf9a6b4dab8e421dfd3acc9, type: 3}
@@ -361,6 +363,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 688073cc0f54a4244ae008f59e424306, type: 3}
   - {fileID: 21300000, guid: 8751b0ec97df7407ca906e894e91f91f, type: 3}
   - {fileID: 21300000, guid: 09be91fcdc77f41b6a5e443a7924e507, type: 3}
+  - {fileID: 21300000, guid: 07671b0d630fc9b469b0f6f262a00623, type: 3}
   - {fileID: 21300000, guid: c7cf4d0d66aefce4b8a5e15f8be71fe0, type: 3}
   - {fileID: 21300000, guid: 7566ee1d783bf4651a88b48b946dc2e0, type: 3}
   - {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90, type: 3}
@@ -520,6 +523,7 @@ SpriteAtlas:
   - UI_Combination_bg_05
   - WB_Grade_Bg_2
   - Icon_Detail
+  - Button_Tab_bg_Press_06
   - UI_icon_exit
   - UI_bg_assist
   - Common_pattan
@@ -726,6 +730,7 @@ SpriteAtlas:
   - Bg_particle_00
   - icon_FungibleAsset_01_black
   - UI_icon_select_02
+  - UI_icon_item_bg_18
   - UI_bg_CP_02
   - UI_page_Select
   - characterselect_warrior_01
@@ -734,6 +739,7 @@ SpriteAtlas:
   - UI_bg_lock
   - UI_icon_Mainmenu_03
   - UI_Popup_bg_10
+  - Button_Tab_bg_Normal_06
   - UI_Tooltip_Desc_02
   - UI_icon_item_bg_17
   - UI_mail_popup_02

@@ -148,6 +148,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 051d9de31e9f742c3bfe4e82d5243a4a, type: 3}
   - {fileID: 21300000, guid: 383c63f3d86993d428e0071bceb6a74b, type: 3}
   - {fileID: 21300000, guid: 8c901cf363788444fb2b1f760688c1e2, type: 3}
+  - {fileID: 21300000, guid: 26c92ef39dc72c24e90e4a07129288a7, type: 3}
   - {fileID: 21300000, guid: 93733c147ae424e038adfc771bdf885f, type: 3}
   - {fileID: 21300000, guid: 3ffd8c14e9e6d4aab877248cbf0d5987, type: 3}
   - {fileID: 21300000, guid: b032f12462df64e2dbaf188fb8300b0e, type: 3}
@@ -356,6 +357,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8751b0ec97df7407ca906e894e91f91f, type: 3}
   - {fileID: 21300000, guid: 09be91fcdc77f41b6a5e443a7924e507, type: 3}
   - {fileID: 21300000, guid: 51f4250dcba559a4da22d48588dd37af, type: 3}
+  - {fileID: 21300000, guid: 07671b0d630fc9b469b0f6f262a00623, type: 3}
   - {fileID: 21300000, guid: c7cf4d0d66aefce4b8a5e15f8be71fe0, type: 3}
   - {fileID: 21300000, guid: 7566ee1d783bf4651a88b48b946dc2e0, type: 3}
   - {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90, type: 3}
@@ -512,6 +514,7 @@ SpriteAtlas:
   - Rank_bg_05
   - Icon_Detail
   - UI_stage_icon_star_03_bg
+  - Button_Tab_bg_Press_06
   - UI_icon_exit
   - UI_bg_assist
   - Common_pattan
@@ -720,6 +723,7 @@ SpriteAtlas:
   - UI_icon_Mainmenu_03
   - UI_Popup_bg_10
   - UI_stage_icon_star_01_bg
+  - Button_Tab_bg_Normal_06
   - UI_Tooltip_Desc_02
   - UI_icon_item_bg_17
   - UI_mail_popup_02

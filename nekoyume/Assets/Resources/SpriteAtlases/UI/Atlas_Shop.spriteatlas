@@ -117,6 +117,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ef5c36c332c2a9549975f5b1544f4061, type: 3}
   - {fileID: 21300000, guid: 447bded3fd28f4e1392b0942ced42311, type: 3}
   - {fileID: 21300000, guid: 383c63f3d86993d428e0071bceb6a74b, type: 3}
+  - {fileID: 21300000, guid: 26c92ef39dc72c24e90e4a07129288a7, type: 3}
   - {fileID: 21300000, guid: 3c862104712b7424f9c34bb219e7ac60, type: 3}
   - {fileID: 21300000, guid: 93733c147ae424e038adfc771bdf885f, type: 3}
   - {fileID: 21300000, guid: 617e91245acdc47dbb4ec8b5ed043adb, type: 3}
@@ -276,6 +277,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: df0e66dc89720402983e87564578ed97, type: 3}
   - {fileID: 21300000, guid: 558359dc5133443d28fbec9eec6d4fe6, type: 3}
   - {fileID: 21300000, guid: e3927fdcdfc06491ebe687b68a464356, type: 3}
+  - {fileID: 21300000, guid: 07671b0d630fc9b469b0f6f262a00623, type: 3}
   - {fileID: 21300000, guid: e7a3012d234aa4b159592f2ae26cc9c8, type: 3}
   - {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90, type: 3}
   - {fileID: 21300000, guid: 2769844dcf7354b1998eb37e80f48768, type: 3}
@@ -397,6 +399,7 @@ SpriteAtlas:
   - icon_combination_04_black
   - UI_Combination_bg_05
   - Icon_Detail
+  - Button_Tab_bg_Press_06
   - Shop_bg_17
   - UI_icon_exit
   - button_tab_bg_Press
@@ -556,6 +559,7 @@ SpriteAtlas:
   - Shop_bg_19
   - Main_rock_02
   - Icon_menu_sell
+  - Button_Tab_bg_Normal_06
   - Common_Btn2_Normal
   - UI_mail_popup_02
   - Shop_ArrowBtn_Normal
