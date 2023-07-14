@@ -130,6 +130,10 @@ namespace Nekoyume.IAPStore
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
             Debug.LogError($"PurchaseFail. reason: {p}, Product: {i}");
+            Analyzer.Instance.Track(
+                "Unity/Shop/IAP/PurchaseResult",
+                ("product-id", p.productId),
+                ("result", p.reason.ToString()));
             if (p.reason == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
@@ -158,6 +162,11 @@ namespace Nekoyume.IAPStore
                 }
                 else
                 {
+                    Analyzer.Instance.Track(
+                        "Unity/Shop/IAP/PurchaseResult",
+                        ("product-id", e.purchasedProduct.definition.id),
+                        ("result", "Complete"),
+                        ("transaction-id", e.purchasedProduct.transactionID));
                     popup.Show(
                         L10nManager.Localize("UI_COMPLETED"),
                         "IAP Service Processing completed.",

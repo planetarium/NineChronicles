@@ -677,6 +677,8 @@ namespace Nekoyume.UI
 
         public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
         {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
 
             Find<OneButtonSystem>().Show(
