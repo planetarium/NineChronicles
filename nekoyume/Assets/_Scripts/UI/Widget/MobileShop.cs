@@ -90,9 +90,7 @@ namespace Nekoyume.UI
                             if (limit.HasValue)
                             {
                                 var remain = limit - product.PurchaseCount;
-                                view.BuyLimitCountText.text = limit is null
-                                    ? string.Empty
-                                    : $"{remain}/{limit}";
+                                view.BuyLimitCountText.text = $"{remain}/{limit}";
                             }
 
                             view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
@@ -107,6 +105,7 @@ namespace Nekoyume.UI
                                 rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
                                 rewardView.gameObject.SetActive(true);
                             }
+
                             var messageKey = product.DailyLimit.HasValue
                                 ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
                                 : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
