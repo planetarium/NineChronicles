@@ -109,7 +109,7 @@ namespace Nekoyume.Battle
         {
             attackerHit = Math.Max(1, attackerHit);
             defenderHit = Math.Max(1, defenderHit);
-            var additionalCorrection = (attackerHit * 100 - defenderHit * 100 / 3) / defenderHit;
+            var additionalCorrection = (attackerHit * 10000 - defenderHit * 10000 / 3) / defenderHit / 100;
             return Math.Min(Math.Max(additionalCorrection, GetHitStep2AdditionalCorrectionMin),
                 GetHitStep2AdditionalCorrectionMax);
         }
