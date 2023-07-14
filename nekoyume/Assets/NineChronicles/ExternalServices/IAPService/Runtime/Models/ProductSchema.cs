@@ -16,6 +16,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("weekly_limit")]
         public int? WeeklyLimit { get; set; }
 
+        [JsonPropertyName("purchase_count")]
+        public int PurchaseCount { get; set; }
+
         [JsonPropertyName("display_order")]
         public int DisplayOrder { get; set; }
 
