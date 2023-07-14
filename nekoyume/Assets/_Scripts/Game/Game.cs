@@ -328,6 +328,9 @@ namespace Nekoyume.Game
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
+
+            GL.Clear(true, true, Color.black);
+
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
