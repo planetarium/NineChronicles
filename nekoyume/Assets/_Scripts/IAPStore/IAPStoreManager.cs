@@ -155,10 +155,10 @@ namespace Nekoyume.IAPStore
                 if (result is null)
                 {
                     popup.Show(
-                        L10nManager.Localize("UI_ERROR"),
-                        "IAP Service Processing failed.",
-                        L10nManager.Localize("UI_OK"),
-                        false);
+                        "UI_ERROR",
+                        "UI_IAP_PURCHASE_FAILED",
+                        "UI_OK",
+                        true);
                 }
                 else
                 {
@@ -168,10 +168,10 @@ namespace Nekoyume.IAPStore
                         ("result", "Complete"),
                         ("transaction-id", e.purchasedProduct.transactionID));
                     popup.Show(
-                        L10nManager.Localize("UI_COMPLETED"),
-                        "IAP Service Processing completed.",
-                        L10nManager.Localize("UI_OK"),
-                        false,
+                        "UI_COMPLETED",
+                        "UI_IAP_PURCHASE_COMPLETED",
+                        "UI_OK",
+                        true,
                         IconAndButtonSystem.SystemType.Information);
                     _controller.ConfirmPendingPurchase(e.purchasedProduct);
                 }
