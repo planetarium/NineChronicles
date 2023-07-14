@@ -465,7 +465,8 @@ namespace Nekoyume.Action
                     simulatorSheets,
                     enemySkillSheet,
                     costumeStatSheet,
-                    rewards);
+                    rewards,
+                    false);
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 

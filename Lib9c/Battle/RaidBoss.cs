@@ -105,7 +105,7 @@ namespace Nekoyume.Model
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
                 ),
-                false
+                Simulator.LogEvent
             );
 
             Simulator.Log.Add(usedSkill);
@@ -147,7 +147,7 @@ namespace Nekoyume.Model
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
                 ),
-                false
+                Simulator.LogEvent
             );
 
             Simulator.Log.Add(usedSkill);
@@ -156,7 +156,7 @@ namespace Nekoyume.Model
                 if (!info.IsDead)
                     continue;
 
-                var target = Targets.FirstOrDefault(i => i.Id == info.Id);
+                var target = Targets.FirstOrDefault(i => i.Id == info.CharacterId);
                 target?.Die();
             }
         }

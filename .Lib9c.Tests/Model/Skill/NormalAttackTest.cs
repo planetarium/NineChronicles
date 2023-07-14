@@ -79,13 +79,14 @@ namespace Lib9c.Tests.Model.Skill
             var battleStatusSkill = normalAttack.Use(
                 player,
                 0,
-                new List<StatBuff>());
+                new List<StatBuff>(),
+                true);
             Assert.NotNull(battleStatusSkill);
             Assert.Single(battleStatusSkill.SkillInfos);
 
             var skillInfo = battleStatusSkill.SkillInfos.FirstOrDefault();
             Assert.NotNull(skillInfo);
-            Assert.Equal(enemy.Id, skillInfo.Target.Id);
+            Assert.Equal(enemy.Id, skillInfo.CharacterId);
         }
     }
 }

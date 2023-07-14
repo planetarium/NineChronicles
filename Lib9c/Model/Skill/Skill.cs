@@ -38,7 +38,7 @@ namespace Nekoyume.Model.Skill
 
         public abstract BattleStatus.Skill Use(CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs, bool b);
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter);
 
         protected bool Equals(Skill other)
         {
@@ -83,7 +83,7 @@ namespace Nekoyume.Model.Skill
                     target.AddBuff(buff);
                     infos.Add(new Model.BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, 0, false,
                         SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
-                        buff));
+                        buff, target));
                 }
             }
 

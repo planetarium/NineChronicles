@@ -18,9 +18,9 @@ namespace Nekoyume.Model.Skill
         }
 
         public override BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs, bool b)
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
-            var clone = b ? (CharacterBase) caster.Clone() : null;
+            var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
 
             return new BattleStatus.Buff(SkillRow.Id, clone, buff);

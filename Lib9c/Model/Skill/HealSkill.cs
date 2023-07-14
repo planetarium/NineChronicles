@@ -19,9 +19,9 @@ namespace Nekoyume.Model.Skill
 
         public override BattleStatus.Skill Use(CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs, bool b)
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
-            var clone = b ? (CharacterBase) caster.Clone() : null;
+            var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
             var heal = ProcessHeal(caster, simulatorWaveTurn);
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
 
@@ -42,7 +42,7 @@ namespace Nekoyume.Model.Skill
             {
                 target.Heal(healPoint);
                 infos.Add(new BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, healPoint, caster.IsCritical(false),
-                    SkillRow.SkillCategory, simulatorWaveTurn));
+                    SkillRow.SkillCategory, simulatorWaveTurn, target: target));
             }
 
             return infos;
