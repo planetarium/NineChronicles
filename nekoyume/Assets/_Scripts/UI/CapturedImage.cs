@@ -50,7 +50,7 @@ namespace Nekoyume.UI
 
             // create render texture
             var cam = ActionCamera.instance.Cam;
-            var renderTexture = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 24);
+            var renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
             cam.targetTexture = renderTexture;
             cam.Render();
 
