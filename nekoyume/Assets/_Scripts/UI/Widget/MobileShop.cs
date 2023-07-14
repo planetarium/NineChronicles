@@ -36,6 +36,9 @@ namespace Nekoyume.UI
             view.PurchaseButton.onClick.AddListener(() =>
             {
                 Debug.LogError($"Purchase: {_selectedProductId}");
+                Analyzer.Instance.Track(
+                    "Unity/Shop/IAP/PurchaseButton/Click",
+                    ("product-id", _selectedProductId));
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
             });
         }
@@ -73,6 +76,10 @@ namespace Nekoyume.UI
                     {
                         if (isOn)
                         {
+                            Analyzer.Instance.Track(
+                                "Unity/Shop/IAP/Tab/Click",
+                                ("product-id", tab.ProductId));
+
                             _selectedProductId = tab.ProductId;
                             view.PriceText.text = storeProduct.metadata.localizedPriceString;
                             view.ProductImage.sprite =
