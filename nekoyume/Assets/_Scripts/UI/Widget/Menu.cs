@@ -345,6 +345,8 @@ namespace Nekoyume.UI
                 return;
             }
 
+            Analyzer.Instance.Track("Unity/Lobby/ShopButton/Click");
+
             if (shopExclamationMark.gameObject.activeSelf)
             {
                 var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
