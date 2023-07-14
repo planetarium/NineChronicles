@@ -11,6 +11,9 @@ namespace Nekoyume.UI.Module
         public Image ProductImage { get; private set; }
 
         [field:SerializeField]
+        public TextMeshProUGUI BuyLimitMessageText { get; private set; }
+
+        [field:SerializeField]
         public Button PurchaseButton { get; private set; }
 
         [field:SerializeField]

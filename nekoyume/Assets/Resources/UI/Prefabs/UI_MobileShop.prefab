@@ -6150,7 +6150,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_MS_WITHDRAWN_MESSAGE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -7718,6 +7718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ProductImage>k__BackingField: {fileID: 2441699298297779855}
+  <BuyLimitMessageText>k__BackingField: {fileID: 2285676750530884925}
   <PurchaseButton>k__BackingField: {fileID: 6808450648978192070}
   <PriceText>k__BackingField: {fileID: 8618622782397698341}
   <BuyLimitCountText>k__BackingField: {fileID: 514429900284183870}

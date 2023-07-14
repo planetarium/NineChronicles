@@ -43353,6 +43353,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4847190004644591556, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: m_text
+      value: Locked Text
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847190004644591556, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 4879357763268784036, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_IsActive
