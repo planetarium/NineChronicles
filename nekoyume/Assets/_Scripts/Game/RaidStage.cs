@@ -186,6 +186,7 @@ namespace Nekoyume.Game
             _currentBossId = bossId;
             _nextWaveCoroutine = null;
             Widget.Find<HeaderMenuStatic>().Close(true);
+            Widget.Find<EventBanner>().Close(true);
             ActionCamera.instance.Cam.gameObject.SetActive(false);
             _actionQueue.Clear();
 

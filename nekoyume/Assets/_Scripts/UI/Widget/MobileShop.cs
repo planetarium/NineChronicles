@@ -107,6 +107,10 @@ namespace Nekoyume.UI
                                 rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
                                 rewardView.gameObject.SetActive(true);
                             }
+                            var messageKey = product.DailyLimit.HasValue
+                                ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
+                                : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
+                            view.BuyLimitMessageText.text = L10nManager.Localize(messageKey);
                         }
                     }
 

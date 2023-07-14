@@ -463,7 +463,7 @@ UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR,<color={0}>{1}</color> option is randomly
 UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL,<color={0}>{1}</color> options are randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.,<color={0}>Opções {1}</color> são selecionadas aleatoriamente.,<color={0}>{1}</color> オプションがランダムに選ばれます。,Las opciones <color={0}>{1}</color> han sido seleccionadas de manera aleatoria.,<color={0}>{1}</color> ตัวเลือกถูกสุ่มเลือก,Opsi <color={0}>{1}</color> dipilih secara acak.,,<color={0}>{1}</color>选项是随机选择的。,<color = {0}> {1} </color>選項是隨機選擇的。,<color={0}>{1}</color> Pipili sa mga opsyon ng walang katiyakan.
 UI_UNLOCK_CONDITION_STAGE,Clear Stage {0},{0} 스테이지 클리어,Fase Completada {0},{0} ステージクリア,Supera el escenario {0},เคลียร์ด่าน {0},Selesaikan Stage {0},,清除阶段{0},通關{0},Tapusin ang Stage {0}
 UI_RAPID_COMBINATION,Open Now,바로 받기,Abrir agora,今すぐ入手する,Abrir,เปิดตอนนี้,Selesaikan sekarang,,立即打开,現在打開,Buksan Ngayon
-UI_COMBINATION_SLOT_CRAFT,Crafting {0},{0} 제작 중,Fabricando {0},{0} 製作中,Fabricando {0},สร้าง {0),Membuat {0},,制作{0},製作{0},Lumikha {0}
+UI_COMBINATION_SLOT_CRAFT,Crafting {0},{0} 제작 중,Fabricando {0},{0} 製作中,Fabricando {0},สร้าง {0},Membuat {0},,制作{0},製作{0},Lumikha {0}
 UI_COMBINATION_SLOT_AVAILABLE,Create or upgrade items by clicking slots!,슬롯을 클릭하여 아이템을 만들거나 강화하세요!,Crie ou atualize itens clicando slots!,スロットをクリックしてアイテムを作成またはアップグレードします。,¡Crea o mejora objetos haciendo clic en los espacios disponibles!,สร้างหรืออัพเกรดรายการโดยคลิกที่ช่อง!,Buat atau tingkatkan item dengan mengklik slot!,"Создавайте или обновите элементы, нажав слоты!",单击插槽创建或升级项目！,單擊插槽創建或升級項目！,Lumikha o palakasin ang sandata sa pamamagitin ng pagpindot sa lagayan!
 UI_COMBINATION_WAITING,Preparing for crafting...,제작 대기 중...,Prepairing para fabricação ...,製作待機中…,Preparándose para fabricar...,กำลังเตรียมการสร้าง,Mempersiapkan untuk membuat ...,,准备制作...,準備製作...,Naghahanda sa paglikha...
 UI_WEAPON,Weapon,무기,Arma,武器,Arma,อาวุธ,Senjata,,武器,武器,Sandata
@@ -1098,3 +1098,7 @@ UI_SEASON,Season,시즌,Temporada,季節,Temporada,ซีซั่น,Musim,Вр
 UI_CHAMPIONSHIP,Championship,챔피언십,Campeonato,チャンピオンシップ,Campeonato,การแข่งขันชิงแชมป์,Kejuaraan,Чемпионат,锦标赛,錦標賽,Kampeonado
 UI_PUSH_ALERT,Push Alert,푸시 알림,Empurre o alerta,アラートを押します,Alerta,แจ้งเตือน,Dorong Peringatan,Проталкивать оповещение,推动警报,推送警報,Agarang abiso
 UI_NIGHTTIME_PUSH,Nighttime(21:00-08:00),야간(21:00-08:00),Nighttime (21: 00-08: 00),夜間（21：00-08：00）,Noche (21:00-08:00),ช่วงกลางคืน (21:00-08:00 น.),Malam hari (21: 00-08: 00),Ночь (21: 00-08: 00),夜间（21：00-08：00）,夜間（21：00-08：00）,Oras ng gabi
+UI_MS_BUT_LIMIT_MESSAGE_DAY,Can be purchased 3 times per day,,,,,,,,,,
+UI_MS_BUT_LIMIT_MESSAGE_WEEK,Can be purchased 3 times per week,,,,,,,,,,
+UI_MS_WITHDRAWN_MESSAGE,"The product is considered used immediately after purchase and cannot be withdrawn.
+(Cancellation is possible when payment is made in the name of a minor without the consent of a legal representative)",,,,,,,,,,
