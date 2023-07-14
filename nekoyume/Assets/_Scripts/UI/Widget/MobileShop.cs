@@ -78,10 +78,13 @@ namespace Nekoyume.UI
                             view.ProductImage.sprite =
                                 _productImageDictionary[GetProductImageNameFromProductId(product.GoogleSku)];
                             var limit = product.DailyLimit ?? product.WeeklyLimit;
+                            var remain = limit - product.PurchaseCount;
                             view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
-                            view.BuyLimitCountText.text = $"{limit}/3";
-                            view.PurchaseButton.interactable =
-                                limit is null or > 0;
+                            view.BuyLimitCountText.text = limit is null
+                                ? string.Empty
+                                : $"{remain}/{limit}";
+                            view.PurchaseButton.interactable = limit is null ||
+                                                               (limit is not null && remain == 0);
                             view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
                             foreach (var fungibleItemSchema in product.FungibleItemList)
                             {
