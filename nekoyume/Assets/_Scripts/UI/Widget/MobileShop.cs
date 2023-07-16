@@ -55,6 +55,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        public void UpdateView()
+        {
+            OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
+        }
+
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             var products = await Game.Game.instance.IAPServiceManager
@@ -127,7 +132,7 @@ namespace Nekoyume.UI
         private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
         {
             var products = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
+                .GetProductsAsync(States.Instance.AgentState.address, true);
             if (isOn)
             {
                 Analyzer.Instance.Track(

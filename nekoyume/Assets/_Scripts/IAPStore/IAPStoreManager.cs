@@ -173,6 +173,7 @@ namespace Nekoyume.IAPStore
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
+                    Widget.Find<MobileShop>().UpdateView();
                     _controller.ConfirmPendingPurchase(e.purchasedProduct);
                 }
             }
