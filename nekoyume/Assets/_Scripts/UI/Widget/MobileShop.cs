@@ -55,6 +55,11 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        public void UpdateView()
+        {
+            OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
+        }
+
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             var products = await Game.Game.instance.IAPServiceManager
