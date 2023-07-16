@@ -68,7 +68,6 @@ namespace Nekoyume.Game
         private Camera _cam;
 
         private float _defaultAspect;
-        private float _targetAspect;
         private float _defaultOrthographicSizeTimesAspect;
         private float _defaultOrthographicSize;
         private Resolution _resolution;
