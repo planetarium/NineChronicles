@@ -163,7 +163,6 @@ namespace Nekoyume.UI
                     bg.SetActive(false);
                     break;
                 case States.CreatePassword:
-                case States.CreatePassword_Mobile:
                     titleText.gameObject.SetActive(false);
                     accountAddressText.gameObject.SetActive(true);
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
@@ -171,6 +170,14 @@ namespace Nekoyume.UI
                     retypeGroup.SetActive(true);
                     accountGroup.SetActive(true);
                     passPhraseField.Select();
+                    break;
+                case States.CreatePassword_Mobile:
+                    titleText.gameObject.SetActive(false);
+                    accountAddressText.gameObject.SetActive(true);
+                    submitButton.Text = L10nManager.Localize("UI_GAME_START");
+                    passPhraseGroup.SetActive(true);
+                    retypeGroup.SetActive(true);
+                    accountGroup.SetActive(true);
                     break;
                 case States.CreateAccount:
                     titleText.gameObject.SetActive(false);
@@ -187,7 +194,6 @@ namespace Nekoyume.UI
                     passPhraseField.Select();
                     break;
                 case States.Login:
-                case States.Login_Mobile:
                     header.SetActive(false);
                     titleText.gameObject.SetActive(false);
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
@@ -195,6 +201,16 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
+                    accountAddressText.gameObject.SetActive(true);
+                    bg.SetActive(true);
+                    break;
+                case States.Login_Mobile:
+                    header.SetActive(false);
+                    titleText.gameObject.SetActive(false);
+                    submitButton.Text = L10nManager.Localize("UI_GAME_START");
+                    loginGroup.SetActive(true);
+                    accountGroup.SetActive(true);
+                    findPassphraseButton.gameObject.SetActive(true);
                     accountAddressText.gameObject.SetActive(true);
                     bg.SetActive(true);
                     break;
@@ -344,7 +360,7 @@ namespace Nekoyume.UI
                     break;
                 case States.CreatePassword_Mobile:
                     CreateProtectedPrivateKey(_privateKey);
-                    Find<GrayLoadingScreen>().Show("Creating Account.", false);
+                    Find<GrayLoadingScreen>().Show("UI_CREATE_KEYSTORE", true);
                     Login = _privateKey is not null;
                     Close();
                     break;
@@ -352,7 +368,7 @@ namespace Nekoyume.UI
                     // Login 하고 Login_Mobile의 동작이 지금까지는 동일한데 이후에도 크게 다른게 없을 경우 아예 없애도 될 듯
                     CheckLogin(() =>
                     {
-                        Find<GrayLoadingScreen>().Show("Loading the world.", false);
+                        Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
                         Login = true;
                         Close();
                     });
@@ -417,27 +433,6 @@ namespace Nekoyume.UI
                     SetState(States.CreatePassword_Mobile);
                     _privateKey = new PrivateKey();
                     SetImage(_privateKey.PublicKey.ToAddress());
-                }
-
-                switch (State.Value)
-                {
-                    case States.CreatePassword_Mobile:
-                    {
-                        {
-                            if (passPhraseField.isFocused)
-                            {
-                                retypeField.Select();
-                            }
-                            else
-                            {
-                                passPhraseField.Select();
-                            }
-                        }
-                        break;
-                    }
-                    case States.Login_Mobile:
-                        loginField.Select();
-                        break;
                 }
 
                 base.Show();
@@ -588,7 +583,6 @@ namespace Nekoyume.UI
                 {
                     case States.ResetPassphrase:
                     case States.CreatePassword:
-                    case States.CreatePassword_Mobile:
                     {
                         {
                             if (passPhraseField.isFocused)
@@ -603,7 +597,6 @@ namespace Nekoyume.UI
                         break;
                     }
                     case States.Login:
-                    case States.Login_Mobile:
                         loginField.Select();
                         break;
                     case States.FindPassphrase:
@@ -612,6 +605,8 @@ namespace Nekoyume.UI
                     case States.CreateAccount:
                     case States.Show:
                     case States.Failed:
+                    case States.CreatePassword_Mobile:
+                    case States.Login_Mobile:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

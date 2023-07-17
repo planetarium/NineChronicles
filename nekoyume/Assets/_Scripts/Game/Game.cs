@@ -356,7 +356,7 @@ namespace Nekoyume.Game
                 {
                     _deepLinkHandler.OpenPortal(States.AgentState.address);
 
-                    Widget.Find<GrayLoadingScreen>().Show("The pledge is in progress.", false);
+                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
                     yield return new WaitUntil(() => States.PledgeRequested);
                 }
 
@@ -365,12 +365,12 @@ namespace Nekoyume.Game
                     var patronAddress = States.PatronAddress!.Value;
                     ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
-                    Widget.Find<GrayLoadingScreen>().Show("Checking the pledge.", false);
+                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
                     yield return new WaitUntil(() => States.PledgeApproved);
                 }
 
                 yield return new WaitUntil(() => States.PledgeRequested && States.PledgeApproved);
-                Widget.Find<GrayLoadingScreen>().Show("Creating world.", false);
+                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
             }
 #endif
 
