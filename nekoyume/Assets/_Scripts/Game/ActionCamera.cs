@@ -70,7 +70,6 @@ namespace Nekoyume.Game
         private Camera _cam;
 
         private float _defaultAspect;
-        private float _targetAspect;
         private float _defaultOrthographicSizeTimesAspect;
         private float _defaultOrthographicSize;
         private Resolution _resolution;
@@ -383,7 +382,6 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-            _targetAspect = Cam.aspect;
             _defaultAspect = (float) referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
 
@@ -399,7 +397,8 @@ namespace Nekoyume.Game
         private void UpdateLetterBox()
         {
             float fixedAspectRatio = _defaultAspect;
-            float currentAspectRatio = (float)Screen.width / (float)Screen.height;
+            Cam.aspect = _defaultAspect;
+            float currentAspectRatio = Screen.safeArea.width / Screen.safeArea.height;
 
             Rect rect = Cam.rect;
             float scaleheight = currentAspectRatio / fixedAspectRatio;
@@ -422,8 +421,8 @@ namespace Nekoyume.Game
         private float GetCameraAspect()
         {
             return maintainWidth
-                ? Math.Min(_targetAspect, _defaultAspect)
-                : Math.Max(_targetAspect, _defaultAspect);
+                ? Math.Min(Cam.aspect, _defaultAspect)
+                : Math.Max(Cam.aspect, _defaultAspect);
         }
 
         private void UpdateScreenResolution()
