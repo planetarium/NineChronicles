@@ -132,7 +132,7 @@ namespace Nekoyume.UI
         private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
         {
             var products = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address, true);
+                .GetProductsAsync(States.Instance.AgentState.address);
             if (isOn)
             {
                 Analyzer.Instance.Track(
