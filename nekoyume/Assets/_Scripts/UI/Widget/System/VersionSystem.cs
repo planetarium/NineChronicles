@@ -17,6 +17,9 @@ namespace Nekoyume.UI
             base.Awake();
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(SubscribeBlockIndex).AddTo(gameObject);
             Game.Game.instance.Agent.BlockTipHashSubject.Subscribe(SubscribeBlockHash).AddTo(gameObject);
+#if UNITY_ANDROID || UNITY_IOS
+            UpdateText();
+#endif
         }
 
         public void SetVersion(int version)
@@ -39,14 +42,13 @@ namespace Nekoyume.UI
 
         private void UpdateText()
         {
-            const string format = "APV: {0} / #{1} / Hash: {2}";
             var hash = _hash.ToString();
-            var text = string.Format(
-                format,
-                _version,
-                _blockIndex,
-                hash.Length >= 4 ? hash.Substring(0, 4) : "...");
-            informationText.text = text;
+            hash = hash.Length >= 4 ? hash.Substring(0, 4) : "...";
+#if UNITY_ANDROID || UNITY_IOS
+            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {UnityEngine.Application.version}";
+#else
+            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash}";
+#endif
         }
     }
 }
