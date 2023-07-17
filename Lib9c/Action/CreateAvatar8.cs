@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("create_avatar8")]
+    [ActionObsolete(ActionObsoleteConfig.V200040ObsoleteIndex)]
     public class CreateAvatar8 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -68,6 +69,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
+            CheckObsolete(ActionObsoleteConfig.V200040ObsoleteIndex, context);
             IActionContext ctx = context;
             var signer = ctx.Signer;
             var states = ctx.PreviousState;
