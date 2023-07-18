@@ -236,7 +236,7 @@ namespace Nekoyume.L10n
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             {
                 WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
                 while (!directory.isDone)

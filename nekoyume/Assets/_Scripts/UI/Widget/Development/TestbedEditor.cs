@@ -33,14 +33,14 @@ namespace Nekoyume
 
         public void OnClickCreateTestbed()
         {
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
             Game.Game.instance.ActionManager.CreateTestbed().Subscribe();
 #endif
         }
 
         public void OnClickCreateArenaDummy()
         {
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+#if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
             var inventory = States.Instance.CurrentAvatarState.inventory;
 
             Game.Game.instance.ActionManager.CreateArenaDummy(

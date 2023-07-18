@@ -166,7 +166,7 @@ namespace Nekoyume.Game
         {
             Debug.Log("[Game] Awake() invoked");
             Application.runInBackground = true;
-#if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_IOS && !UNITY_IOS_SIMULATOR
             string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
             //Load dynamic library of rocksdb
             string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
@@ -175,13 +175,13 @@ namespace Nekoyume.Game
             //Set the path of secp256k1's dynamic library
             string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
             Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
-#elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+#elif !UNITY_EDITOR && UNITY_IOS_SIMULATOR
             string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
             Native.LoadLibrary(rocksdbLibPath);
 
             string secp256LibPath = Platform.GetStreamingAssetsPath("libsecp256k1.dylib");
             Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256LibPath);
-#elif UNITY_ANDROID
+#elif !UNITY_EDITOR && UNITY_ANDROID
             // string loadPath = Application.dataPath.Split("/base.apk")[0];
             // loadPath = Path.Combine(loadPath, "lib");
             // loadPath = Path.Combine(loadPath, Environment.Is64BitOperatingSystem ? "arm64" : "arm");
@@ -204,9 +204,9 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Load CommandLineOptions at Start() after init
-#elif UNITY_IOS
+#elif !UNITY_EDITOR && UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
@@ -215,11 +215,11 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
-                _headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
+                _headlessThread = new Thread(HeadlessHelper.RunLocalHeadless);
                 _headlessThread.Start();
             }
 
@@ -241,16 +241,6 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
-
-#if !UNITY_ANDROID
-            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
-            InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcServerHost);
-            Analyzer.Track("Unity/Started");
-#endif
         }
 
         private IEnumerator Start()
@@ -267,10 +257,11 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => liveAssetManager.IsInitialized);
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+#endif
 
             // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
             InitializeAnalyzer(
@@ -279,7 +270,6 @@ namespace Nekoyume.Game
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
-#endif
 
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
@@ -348,7 +338,7 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Check MeadPledge
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
@@ -387,7 +377,7 @@ namespace Nekoyume.Game
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
-#if UNITY_ANDROID
+#if UNITY_ANDROID // Check here.
             IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
             yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
@@ -1306,7 +1296,7 @@ namespace Nekoyume.Game
                 isTrackable);
         }
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         void Update()
         {
             if (Platform.IsMobilePlatform())

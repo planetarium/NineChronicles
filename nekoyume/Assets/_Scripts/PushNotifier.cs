@@ -3,12 +3,12 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Nekoyume.L10n;
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
 using UnityEngine.Android;
 using Unity.Notifications.Android;
 #endif
 
-#if UNITY_IOS
+#if !UNITY_EDITOR && UNITY_IOS
 using Unity.Notifications.iOS;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 using NotificationType = UnityEngine.iOS.NotificationType;
@@ -33,20 +33,24 @@ namespace Nekoyume
         public static readonly TimeSpan NightStartTime = new TimeSpan(21, 0, 0);
         public static readonly TimeSpan NightEndTime = new TimeSpan(8, 0, 0);
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         private static int androidApiLevel;
 #endif
 
         static PushNotifier()
         {
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+            // Do nothing.
+#elif UNITY_ANDROID
             InitializeAndroid();
 #elif UNITY_IOS
-            
+            // InitializeIOS();
+#else
+            // Do nothing.
 #endif
         }
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
         private static void InitializeAndroid()
         {
             var androidInfo = SystemInfo.operatingSystem;
@@ -127,8 +131,9 @@ namespace Nekoyume
             Debug.Log($"FireTime : {fireTime}");
             var title = L10nManager.Localize("TITLE");
             var iconName = pushType.ToString().ToLower();
-
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+            return default;
+#elif UNITY_ANDROID
             var notification = new AndroidNotification()
             {
                 Title = title,
@@ -148,7 +153,7 @@ namespace Nekoyume
                 TimeInterval = timespan,
                 Repeats = false
             };
-            
+
             var identifier = Random.Range(int.MinValue, int.MaxValue).ToString();
             var notification = new iOSNotification()
             {
@@ -157,7 +162,8 @@ namespace Nekoyume
                 Body = text,
                 Subtitle = title,
                 ShowInForeground = true,
-                ForegroundPresentationOption = (PresentationOption.Alert | PresentationOption.Sound | PresentationOption.Badge),
+                ForegroundPresentationOption =
+ (PresentationOption.Alert | PresentationOption.Sound | PresentationOption.Badge),
                 CategoryIdentifier = "9c_local_push",
                 Trigger = timeTrigger,
             };
@@ -171,7 +177,9 @@ namespace Nekoyume
 
         public static void CancelReservation(string identifier)
         {
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+            // Do nothing.
+#elif UNITY_ANDROID
             if (int.TryParse(identifier, out var outIdentifier))
             {
                 AndroidNotificationCenter.CancelNotification(outIdentifier);
@@ -179,7 +187,7 @@ namespace Nekoyume
 #elif UNITY_IOS
             iOSNotificationCenter.RemoveScheduledNotification(identifier);
 #else
-
+            // Do nothing.
 #endif
         }
     }

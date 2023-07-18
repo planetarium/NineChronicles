@@ -294,24 +294,16 @@ namespace Nekoyume.UI
         private IEnumerable<Mail> GetAvailableMailList(long blockIndex,
             MailTabState state)
         {
-            bool predicate(Mail mail)
+            bool Predicate(Mail mail) => state switch
             {
-                if (state == MailTabState.All)
-                {
-                    return true;
-                }
-
-                if (state == MailTabState.Workshop)
-                {
-                    return mail.MailType is MailType.Grinding or MailType.Workshop;
-                }
-
-                return mail.MailType == (MailType)state;
-            }
+                MailTabState.All => true,
+                MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                _ => mail.MailType == (MailType)state
+            };
 
             return MailBox?.Where(mail =>
                     mail.requiredBlockIndex <= blockIndex)
-                .Where(predicate)
+                .Where(Predicate)
                 .OrderByDescending(mail => mail.New);
         }
 
@@ -679,8 +671,13 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track(
                 "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
-            var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-
+            var game = Game.Game.instance;
+            unloadFromMyGaragesRecipientMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                unloadFromMyGaragesRecipientMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+            var sheet = game.TableSheets.MaterialItemSheet;
             Find<OneButtonSystem>().Show(
                 unloadFromMyGaragesRecipientMail.GetPopupContent(sheet),
                 L10nManager.Localize("UI_OK"),

@@ -435,7 +435,7 @@ namespace Nekoyume.Helper
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // error: current no clo.json
             UnityEngine.WWW www = new UnityEngine.WWW(Platform.GetStreamingAssetsPath("clo.json"));
             while (!www.isDone)
@@ -447,7 +447,9 @@ namespace Nekoyume.Helper
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
-                return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), jsonOptions);
+                return JsonSerializer.Deserialize<CommandLineOptions>(
+                    File.ReadAllText(localPath),
+                    jsonOptions);
             }
 #endif
 

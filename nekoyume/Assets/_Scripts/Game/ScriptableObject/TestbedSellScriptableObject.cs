@@ -1,4 +1,4 @@
-﻿#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+﻿#if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
 using Lib9c.DevExtensions.Model;
 using Nekoyume.Game.ScriptableObject;
 using UnityEngine;

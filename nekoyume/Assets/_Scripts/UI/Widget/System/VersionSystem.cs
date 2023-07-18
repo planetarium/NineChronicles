@@ -22,9 +22,9 @@ namespace Nekoyume.UI
 
             _clientCommitHash = Resources.Load<TextAsset>("ClientHash")?.text[..8] ?? string.Empty;
 
-#if UNITY_ANDROID || UNITY_IOS
+// #if UNITY_ANDROID || UNITY_IOS
             UpdateText();
-#endif
+// #endif
         }
 
         public void SetVersion(int version)
