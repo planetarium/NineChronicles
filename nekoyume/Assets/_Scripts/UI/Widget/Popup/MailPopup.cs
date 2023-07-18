@@ -294,24 +294,14 @@ namespace Nekoyume.UI
         private IEnumerable<Mail> GetAvailableMailList(long blockIndex,
             MailTabState state)
         {
-            bool predicate(Mail mail)
+            bool Predicate(Mail mail) => state switch
             {
-                if (state == MailTabState.All)
-                {
-                    return true;
-                }
-
-                if (state == MailTabState.Workshop)
-                {
-                    return mail.MailType is MailType.Grinding or MailType.Workshop;
-                }
-
-                return mail.MailType == (MailType)state;
-            }
-
-            return MailBox?.Where(mail =>
-                    mail.requiredBlockIndex <= blockIndex)
-                .Where(predicate)
+                MailTabState.All => true,
+                MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                _ => mail.MailType == (MailType)state
+            };
+            return MailBox?.Where(mail => mail.requiredBlockIndex <= blockIndex)
+                .Where(Predicate)
                 .OrderByDescending(mail => mail.New);
         }
 
