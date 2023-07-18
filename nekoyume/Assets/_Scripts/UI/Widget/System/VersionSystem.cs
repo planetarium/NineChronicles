@@ -53,7 +53,7 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID || UNITY_IOS
             informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {UnityEngine.Application.version}({_clientCommitHash})";
 #else
-            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {clientCommitHash}";
+            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {_clientCommitHash}";
 #endif
         }
     }
