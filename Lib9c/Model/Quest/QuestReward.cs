@@ -10,29 +10,28 @@ namespace Nekoyume.Model.Quest
     [Serializable]
     public class QuestReward : IState
     {
-        public readonly Dictionary<int, int> ItemMap;
+        public readonly IEnumerable<Tuple<int, int>> ItemMap;
 
         public QuestReward(Dictionary<int, int> map)
         {
-            ItemMap = map
-                .ToDictionary(kv => kv.Key, kv => kv.Value
-            );
+#pragma warning disable LAA1002
+            ItemMap = map.Select(kv => new Tuple<int, int>(kv.Key, kv.Value));
         }
 
         public QuestReward(Dictionary serialized)
         {
-            ItemMap = serialized.ToDictionary(
-                kv => kv.Key.ToInteger(),
-                kv => kv.Value.ToInteger()
+            ItemMap = serialized.Select(
+                kv => new Tuple<int, int>(kv.Key.ToInteger(), kv.Value.ToInteger())
             );
+#pragma warning restore LAA1002
         }
 
         public IValue Serialize() => new Dictionary(
 #pragma warning disable LAA1002
             ItemMap.Select(kv =>
                 new KeyValuePair<IKey, IValue>(
-                    (Text)kv.Key.ToString(CultureInfo.InvariantCulture),
-                    (Text)kv.Value.ToString(CultureInfo.InvariantCulture)
+                    (Text)kv.Item1.ToString(CultureInfo.InvariantCulture),
+                    (Text)kv.Item2.ToString(CultureInfo.InvariantCulture)
                 )
             )
 #pragma warning restore LAA1002
