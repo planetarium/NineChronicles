@@ -113,7 +113,7 @@ namespace Nekoyume.Model.Mail
         {
             get
             {
-                if (_deserialized is null)
+                if (_serialized is { })
                 {
                     _deserialized = _serialized.Select(
                         d => Mail.Deserialize((Dictionary)d)
@@ -131,6 +131,7 @@ namespace Nekoyume.Model.Mail
 
         public MailBox()
         {
+            _deserialized = new List<Mail>();
         }
 
         public MailBox(List serialized) : this()
