@@ -106,7 +106,24 @@ namespace Nekoyume.Model.Mail
     [Serializable]
     public class MailBox : IEnumerable<Mail>, IState
     {
-        private List<Mail> _mails = new List<Mail>();
+        private List _serialized;
+        private List<Mail> _deserialized;
+
+        private List<Mail> _mails
+        {
+            get
+            {
+                if (_deserialized is null)
+                {
+                    _deserialized = _serialized.Select(
+                        d => Mail.Deserialize((Dictionary)d)
+                    ).ToList();
+                    _serialized = null;
+                }
+
+                return _deserialized;
+            }
+        }
 
         public int Count => _mails.Count;
 
@@ -118,9 +135,7 @@ namespace Nekoyume.Model.Mail
 
         public MailBox(List serialized) : this()
         {
-            _mails = serialized.Select(
-                d => Mail.Deserialize((Dictionary)d)
-            ).ToList();
+            _serialized = serialized;
         }
 
         public IEnumerator<Mail> GetEnumerator()
@@ -140,9 +155,9 @@ namespace Nekoyume.Model.Mail
 
         public void CleanUp()
         {
-            if (_mails.Count > 30)
+            if (_serialized is null || _serialized.Count > 30)
             {
-                _mails = _mails
+                _deserialized = _mails
                     .OrderByDescending(m => m.blockIndex)
                     .ThenBy(m => m.id)
                     .Take(30)
@@ -155,17 +170,14 @@ namespace Nekoyume.Model.Mail
         {
             if (_mails.Count > 30)
             {
-                _mails = _mails
-                    .OrderByDescending(m => m.blockIndex)
-                    .Take(30)
-                    .ToList();
+                _deserialized = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
             }
         }
 
         [Obsolete("No longer in use.")]
         public void CleanUpTemp(long blockIndex)
         {
-            _mails = _mails
+            _deserialized = _mails
                 .Where(m => m.requiredBlockIndex >= blockIndex)
                 .ToList();
         }
@@ -175,8 +187,16 @@ namespace Nekoyume.Model.Mail
             _mails.Remove(mail);
         }
 
-        public IValue Serialize() => new List(_mails
-            .OrderBy(i => i.id)
-            .Select(m => m.Serialize()));
+        public IValue Serialize()
+        {
+            if (_serialized is null)
+            {
+                return new List(_mails
+                    .OrderBy(i => i.id)
+                    .Select(m => m.Serialize()));
+            }
+
+            return _serialized;
+        }
     }
 }
