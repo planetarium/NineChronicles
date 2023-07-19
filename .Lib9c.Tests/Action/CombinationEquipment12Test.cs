@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
@@ -151,6 +151,7 @@ namespace Lib9c.Tests.Action
             bool previousCostStateExist
         )
         {
+            var context = new ActionContext();
             IAccountStateDelta state = _initialState;
             if (unlockIdsExist)
             {
@@ -198,6 +199,7 @@ namespace Lib9c.Tests.Action
                             if (ncgBalanceExist)
                             {
                                 state = state.MintAsset(
+                                    context,
                                     _agentAddress,
                                     subRow.RequiredGold * state.GetGoldCurrency());
                             }
@@ -269,7 +271,7 @@ namespace Lib9c.Tests.Action
                 }
 
                 expectedCrystal = crystalBalance;
-                state = state.MintAsset(_agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
+                state = state.MintAsset(context, _agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
             }
 
             var dailyCostAddress =
@@ -294,7 +296,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,
@@ -365,7 +367,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
                     Random = _random,

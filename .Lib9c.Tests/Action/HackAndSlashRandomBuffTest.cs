@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -103,7 +103,8 @@ namespace Lib9c.Tests.Action
         [InlineData(20, false, 1, 10_000, typeof(NotEnoughFungibleAssetValueException))]
         public void Execute(int stageId, bool advancedGacha, int balance, int gatheredStar, Type excType)
         {
-            var states = _initialState.MintAsset(_agentAddress, balance * _currency);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -146,7 +147,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _agentAddress,
                     Random = _random,
                 });
@@ -161,7 +162,7 @@ namespace Lib9c.Tests.Action
                 {
                     action.Execute(new ActionContext
                     {
-                        PreviousStates = states,
+                        PreviousState = states,
                         Signer = _agentAddress,
                         Random = _random,
                     });
@@ -174,7 +175,8 @@ namespace Lib9c.Tests.Action
         [InlineData(true, CrystalRandomBuffSheet.Row.BuffRank.S)]
         public void ContainMinimumBuffRank(bool advancedGacha, CrystalRandomBuffSheet.Row.BuffRank minimumRank)
         {
-            var states = _initialState.MintAsset(_agentAddress, 100_000_000 * _currency);
+            var context = new ActionContext();
+            var states = _initialState.MintAsset(context, _agentAddress, 100_000_000 * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -215,7 +217,7 @@ namespace Lib9c.Tests.Action
                 };
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _agentAddress,
                     Random = _random,
                 });

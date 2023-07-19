@@ -31,7 +31,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
@@ -44,7 +44,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(unlockedRecipeIdsAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
@@ -103,7 +103,7 @@ namespace Nekoyume.Action
                         (current, address) => current.Add(address.Serialize())));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}UnlockEquipmentRecipe Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return states.TransferAsset(context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
+            return states.TransferAsset(context, context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
         }
 
         public static List<int> UnlockedIds(

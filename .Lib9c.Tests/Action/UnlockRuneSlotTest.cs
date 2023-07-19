@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -61,13 +61,14 @@ namespace Lib9c.Tests.Action
         [InlineData(4)]
         public void Execute(int slotIndex)
         {
+            var context = new ActionContext();
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var gameConfig = state.GetGameConfigState();
             var cost = slotIndex == 1
                 ? gameConfig.RuneStatSlotUnlockCost
                 : gameConfig.RuneSkillSlotUnlockCost;
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(agentAddress, cost * ncgCurrency);
+            state = state.MintAsset(context, agentAddress, cost * ncgCurrency);
             var action = new UnlockRuneSlot()
             {
                 AvatarAddress = avatarAddress,
@@ -77,7 +78,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -128,7 +129,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -137,7 +138,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InsufficientBalanceException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -157,7 +158,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -166,7 +167,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<SlotNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -186,7 +187,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -195,7 +196,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<MismatchRuneSlotTypeException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -205,10 +206,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_SlotIsAlreadyUnlockedException()
         {
+            var context = new ActionContext();
             var state = Init(out var agentAddress, out var avatarAddress, out var blockIndex);
             var gameConfig = state.GetGameConfigState();
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(agentAddress, gameConfig.RuneStatSlotUnlockCost * ncgCurrency);
+            state = state.MintAsset(context, agentAddress, gameConfig.RuneStatSlotUnlockCost * ncgCurrency);
             var action = new UnlockRuneSlot()
             {
                 AvatarAddress = avatarAddress,
@@ -218,7 +220,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -229,7 +231,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<SlotIsAlreadyUnlockedException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,

@@ -54,7 +54,8 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var context = new ActionContext();
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -104,9 +105,9 @@ namespace Lib9c.Tests.Action
                 throw new RuneNotFoundException($"[{nameof(Execute)}] ");
             }
 
-            state = state.MintAsset(agentAddress, ncgBal);
-            state = state.MintAsset(agentAddress, crystalBal);
-            state = state.MintAsset(avatarState.address, runeBal);
+            state = state.MintAsset(context, agentAddress, ncgBal);
+            state = state.MintAsset(context, agentAddress, crystalBal);
+            state = state.MintAsset(context, avatarState.address, runeBal);
 
             var action = new RuneEnhancement()
             {
@@ -117,7 +118,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = rand,
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -153,9 +154,9 @@ namespace Lib9c.Tests.Action
             var costCrystal = tryCount * cost.CrystalQuantity * crystalCurrency;
             var costRune = tryCount * cost.RuneStoneQuantity * runeCurrency;
 
-            nextState = nextState.MintAsset(agentAddress, costNcg);
-            nextState = nextState.MintAsset(agentAddress, costCrystal);
-            nextState = nextState.MintAsset(avatarState.address, costRune);
+            nextState = nextState.MintAsset(context, agentAddress, costNcg);
+            nextState = nextState.MintAsset(context, agentAddress, costCrystal);
+            nextState = nextState.MintAsset(context, avatarState.address, costRune);
 
             var finalNcgBal = nextState.GetBalance(agentAddress, ncgCurrency);
             var finalCrystalBal = nextState.GetBalance(agentAddress, crystalCurrency);
@@ -193,7 +194,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -221,7 +222,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -255,7 +256,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -295,7 +296,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RuneCostDataNotFoundException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -332,7 +333,8 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var context = new ActionContext();
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -374,17 +376,17 @@ namespace Lib9c.Tests.Action
 
             if (ncg)
             {
-                state = state.MintAsset(agentAddress, cost.NcgQuantity * ncgCurrency);
+                state = state.MintAsset(context, agentAddress, cost.NcgQuantity * ncgCurrency);
             }
 
             if (crystal)
             {
-                state = state.MintAsset(agentAddress, cost.CrystalQuantity * crystalCurrency);
+                state = state.MintAsset(context, agentAddress, cost.CrystalQuantity * crystalCurrency);
             }
 
             if (rune)
             {
-                state = state.MintAsset(avatarState.address, cost.RuneStoneQuantity * runeCurrency);
+                state = state.MintAsset(context, avatarState.address, cost.RuneStoneQuantity * runeCurrency);
             }
 
             var action = new RuneEnhancement()
@@ -396,7 +398,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(0),
                 Rehearsal = false,
                 Signer = agentAddress,
@@ -420,7 +422,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -454,7 +456,7 @@ namespace Lib9c.Tests.Action
                 rankingMapAddress
             );
             agentState.avatarAddresses.Add(0, avatarAddress);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, agentState.SerializeV2())
                 .SetState(avatarAddress, avatarState.SerializeV2())
@@ -483,7 +485,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<TryCountIsZeroException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,
@@ -503,7 +505,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -535,7 +537,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() =>
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     Random = new TestRandom(),
                     BlockIndex = blockIndex,

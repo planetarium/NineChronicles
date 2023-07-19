@@ -56,13 +56,14 @@ namespace Lib9c.Tests.Action
             _slotAddress =
                 _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
-            _initialState = new State()
+            var context = new ActionContext();
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
-                .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000)
+                .TransferAsset(context, Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
 
             Assert.Equal(gold.Currency * 99999999000, _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency));
             Assert.Equal(gold.Currency * 1000, _initialState.GetBalance(_agentAddress, gold.Currency));
@@ -105,7 +106,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -135,7 +136,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -155,7 +156,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -182,7 +183,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -209,7 +210,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidCastException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -238,7 +239,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -270,7 +271,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<EquipmentLevelExceededException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -300,7 +301,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -384,7 +385,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -469,18 +470,18 @@ namespace Lib9c.Tests.Action
                 Addresses.Blacksmith,
             };
 
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleV2Test()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
@@ -130,6 +130,7 @@ namespace Lib9c.Tests.Action
             int dungeonTicketAdditionalPrice,
             int numberOfTicketPurchases)
         {
+            var context = new ActionContext();
             var previousStates = _initialStates;
             var scheduleSheet = _tableSheets.EventScheduleSheet;
             Assert.True(scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow));
@@ -165,7 +166,7 @@ namespace Lib9c.Tests.Action
             var ncgHas = newScheduleRow.GetDungeonTicketCost(
                 numberOfTicketPurchases,
                 _ncgCurrency);
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas);
+            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
 
             var nextStates = Execute(
                 previousStates,
@@ -301,6 +302,7 @@ namespace Lib9c.Tests.Action
             int eventDungeonStageId,
             int numberOfTicketPurchases)
         {
+            var context = new ActionContext();
             var previousStates = _initialStates;
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
@@ -315,7 +317,7 @@ namespace Lib9c.Tests.Action
             var ncgHas = scheduleRow.GetDungeonTicketCost(
                 numberOfTicketPurchases,
                 _ncgCurrency) - 1 * _ncgCurrency;
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas);
+            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
 
             Assert.Throws<InsufficientBalanceException>(() =>
                 Execute(
@@ -421,7 +423,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

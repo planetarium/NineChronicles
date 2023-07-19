@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(
@@ -141,17 +141,17 @@ namespace Lib9c.Tests.Action
                 Addresses.Blacksmith,
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Fact]
@@ -221,6 +221,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var context = new ActionContext();
             var previousState = _initialState
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(
@@ -229,7 +230,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-            previousState = previousState.MintAsset(_agentAddress, 10_000 * currency);
+            previousState = previousState.MintAsset(context, _agentAddress, 10_000 * currency);
 
             var action = new CombinationEquipment10
             {
@@ -241,7 +242,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -304,6 +305,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var context = new ActionContext();
             IAccountStateDelta previousState;
             if (backward)
             {
@@ -320,7 +322,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            previousState = previousState.MintAsset(_agentAddress, mintNCG * currency);
+            previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
             var goldCurrencyState = previousState.GetGoldCurrency();
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);
@@ -335,7 +337,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,

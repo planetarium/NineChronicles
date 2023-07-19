@@ -41,9 +41,10 @@ namespace Nekoyume.Model.Buff
 
             var damageInfos = new List<BattleStatus.Skill.SkillInfo>
             {
-                new BattleStatus.Skill.SkillInfo((CharacterBase)affectedCharacter.Clone(), damage, false,
+                // Copy new Character with damaged.
+                new BattleStatus.Skill.SkillInfo(affectedCharacter.Id, affectedCharacter.IsDead, affectedCharacter.Thorn, damage, false,
                     SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
-                    RowData.TargetType)
+                    RowData.TargetType, target: (CharacterBase)affectedCharacter.Clone())
             };
 
             return new Model.BattleStatus.TickDamage(

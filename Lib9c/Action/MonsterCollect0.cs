@@ -27,14 +27,14 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             Address monsterCollectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
             if (context.Rehearsal)
             {
                 return states
                     .SetState(monsterCollectionAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, monsterCollectionAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -102,7 +102,7 @@ namespace Nekoyume.Action
                     context.Signer,
                     requiredGold);
             }
-            states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
+            states = states.TransferAsset(context, context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             return states;
         }

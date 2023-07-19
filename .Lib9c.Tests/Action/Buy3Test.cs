@@ -35,7 +35,8 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            var context = new ActionContext();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -131,7 +132,7 @@
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, shopState.Products
+                .MintAsset(context, _buyerAgentAddress, shopState.Products
                     .Select(pair => pair.Value.Price)
                     .Aggregate((totalPrice, next) => totalPrice + next));
         }
@@ -163,7 +164,7 @@
                 var nextState = buyAction.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = previousStates,
+                    PreviousState = previousStates,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _buyerAgentAddress,
@@ -207,7 +208,7 @@
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -228,7 +229,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -259,7 +260,7 @@
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -280,7 +281,7 @@
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -296,8 +297,9 @@
             var (productId, shopItem) = shopState.Products.FirstOrDefault();
             Assert.NotNull(shopItem);
 
+            var context = new ActionContext();
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+            _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance);
 
             var action = new Buy3
             {
@@ -310,7 +312,7 @@
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })

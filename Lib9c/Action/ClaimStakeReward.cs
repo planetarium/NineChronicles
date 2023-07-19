@@ -126,10 +126,10 @@ namespace Nekoyume.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             if (!states.TryGetStakeState(context.Signer, out var stakeState))
             {
@@ -288,7 +288,7 @@ namespace Nekoyume.Action
                             continue;
                         }
 
-                        states = states.MintAsset(AvatarAddress, runeReward);
+                        states = states.MintAsset(context, AvatarAddress, runeReward);
                         break;
                     case StakeRegularRewardSheet.StakeRewardType.Currency:
                         if (string.IsNullOrEmpty(reward.CurrencyTicker))
@@ -306,6 +306,7 @@ namespace Nekoyume.Action
                         }
 
                         states = states.MintAsset(
+                            context,
                             context.Signer,
                             rewardCurrencyQuantity * currencyRewardStep * rewardCurrency);
                         break;

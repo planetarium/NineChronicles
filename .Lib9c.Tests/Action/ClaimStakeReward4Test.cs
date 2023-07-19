@@ -244,12 +244,12 @@ namespace Lib9c.Tests.Action
 
             prevState = prevState
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
-                .MintAsset(stakeStateAddr, _ncg * stakeAmount);
+                .MintAsset(new ActionContext(), stakeStateAddr, _ncg * stakeAmount);
 
             var action = new ClaimStakeReward4(avatarAddr);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 Signer = agentAddr,
                 BlockIndex = blockIndex,
             });

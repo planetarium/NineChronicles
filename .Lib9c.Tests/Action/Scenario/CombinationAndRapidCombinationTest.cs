@@ -80,7 +80,7 @@
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
 
-            _initialState = new Tests.Action.State()
+            _initialState = new Tests.Action.MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
@@ -188,7 +188,7 @@
             var random = new TestRandom(randomSeed);
             nextState = combinationEquipmentAction.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 BlockIndex = 0,
                 Random = random,
                 Signer = _agentAddress,
@@ -284,7 +284,7 @@
 
             nextState = rapidCombinationAction.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 BlockIndex = GameConfig.RequiredAppraiseBlock,
                 Random = random,
                 Signer = _agentAddress,

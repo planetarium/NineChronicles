@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(_ncgCurrency);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(
                     Addresses.GetSheetAddress<CrystalMonsterCollectionMultiplierSheet>(),
                     _tableSheets.CrystalMonsterCollectionMultiplierSheet.Serialize())
@@ -122,6 +122,7 @@ namespace Lib9c.Tests.Action
             Type exc
         )
         {
+            var context = new ActionContext();
             var state = _initialState;
             if (agentExist)
             {
@@ -175,7 +176,7 @@ namespace Lib9c.Tests.Action
                 {
                     state = state
                         .SetState(stakeStateAddress, stakeState.SerializeV2())
-                        .MintAsset(stakeStateAddress, requiredGold * _ncgCurrency);
+                        .MintAsset(context, stakeStateAddress, requiredGold * _ncgCurrency);
                 }
 
                 if (monsterCollect)
@@ -187,7 +188,7 @@ namespace Lib9c.Tests.Action
                             new MonsterCollectionState(mcAddress, monsterCollectLevel, 1)
                                 .Serialize()
                         )
-                        .MintAsset(mcAddress, requiredGold * _ncgCurrency);
+                        .MintAsset(context, mcAddress, requiredGold * _ncgCurrency);
                 }
             }
 
@@ -210,7 +211,7 @@ namespace Lib9c.Tests.Action
             {
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -236,7 +237,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,

@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -46,9 +46,10 @@ namespace Lib9c.Tests.Action
             _goldCurrencyState = new GoldCurrencyState(_currency);
 
             _signerAddress = new PrivateKey().ToAddress();
+            var context = new ActionContext();
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .MintAsset(_signerAddress, _currency * 100);
+                .MintAsset(context, _signerAddress, _currency * 100);
         }
 
         [Fact]
@@ -58,7 +59,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                 }));
@@ -82,7 +83,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<MonsterCollectionExistingException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                 }));
@@ -92,14 +93,15 @@ namespace Lib9c.Tests.Action
         public void Execute_Throws_WhenClaimableExisting()
         {
             Address stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
+            var context = new ActionContext();
             var states = _initialState
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(stakeStateAddress, _currency * 50);
+                .MintAsset(context, stakeStateAddress, _currency * 50);
             var action = new Stake(100);
             Assert.Throws<StakeExistingClaimableException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = _signerAddress,
                     BlockIndex = StakeState.RewardInterval,
                 }));
@@ -111,7 +113,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake(51);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -120,7 +122,7 @@ namespace Lib9c.Tests.Action
             var updateAction = new Stake(0);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
@@ -129,7 +131,7 @@ namespace Lib9c.Tests.Action
             updateAction = new Stake(50);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
@@ -145,7 +147,7 @@ namespace Lib9c.Tests.Action
             updateAction = new Stake(51);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 4611070,
             }));
@@ -153,7 +155,7 @@ namespace Lib9c.Tests.Action
             // At 4611070 - 99, it should be updated.
             Assert.True(updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 4611070 - 99,
             }).TryGetStakeState(_signerAddress, out stakeState));
@@ -166,7 +168,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake(100);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -199,7 +201,7 @@ namespace Lib9c.Tests.Action
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });
@@ -215,7 +217,7 @@ namespace Lib9c.Tests.Action
             var action = new Stake(50);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
@@ -230,7 +232,7 @@ namespace Lib9c.Tests.Action
             var updateAction = new Stake(100);
             states = updateAction.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             });

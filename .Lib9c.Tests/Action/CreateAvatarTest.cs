@@ -27,8 +27,11 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(0L, 600_000)]
+        [InlineData(7_210_000L, 600_000)]
+        [InlineData(7_210_001L, 200_000)]
+        public void Execute(long blockIndex, int expected)
         {
             var action = new CreateAvatar()
             {
@@ -41,7 +44,7 @@ namespace Lib9c.Tests.Action
             };
 
             var sheets = TableSheetsImporter.ImportSheets();
-            var state = new State()
+            var state = new MockStateDelta()
                 .SetState(
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
@@ -56,9 +59,9 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
-                BlockIndex = 0,
+                BlockIndex = blockIndex,
             });
 
             var avatarAddress = _agentAddress.Derive(
@@ -77,7 +80,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(50 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
         }
 
         [Theory]
@@ -97,11 +100,11 @@ namespace Lib9c.Tests.Action
                 name = nickName,
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = agentAddress,
                     BlockIndex = 0,
                 })
@@ -138,11 +141,11 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var state = new State().SetState(avatarAddress, avatarState.Serialize());
+            var state = new MockStateDelta().SetState(avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -155,7 +158,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
             var action = new CreateAvatar()
             {
                 index = index,
@@ -168,7 +171,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AvatarIndexOutOfRangeException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -190,7 +193,7 @@ namespace Lib9c.Tests.Action
                 )
             );
             agentState.avatarAddresses[index] = avatarAddress;
-            var state = new State().SetState(_agentAddress, agentState.Serialize());
+            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
 
             var action = new CreateAvatar()
             {
@@ -204,7 +207,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AvatarIndexAlreadyUsedException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -260,11 +263,11 @@ namespace Lib9c.Tests.Action
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
@@ -272,7 +275,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(
                 updatedAddresses.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.Delta.UpdatedAddresses
             );
         }
 

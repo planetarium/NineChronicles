@@ -44,7 +44,8 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            var context = new ActionContext();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -105,7 +106,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+                .MintAsset(context, _buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
         public static IEnumerable<object[]> GetExecuteMemberData()
@@ -330,7 +331,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -456,7 +457,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws(exc, () => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
@@ -467,6 +468,7 @@ namespace Lib9c.Tests.Action
         [MemberData(nameof(ErrorCodeMemberData))]
         public void Execute_ErrorCode(ErrorCodeMember errorCodeMember)
         {
+            var context = new ActionContext();
             var agentAddress = errorCodeMember.BuyerExist ? _buyerAgentAddress : default;
             var orderPrice = new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0);
             var sellerAvatarAddress = errorCodeMember.EqualSellerAvatar ? _sellerAvatarAddress : default;
@@ -552,7 +554,7 @@ namespace Lib9c.Tests.Action
             if (errorCodeMember.NotEnoughBalance)
             {
                 var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-                _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+                _initialState = _initialState.BurnAsset(context, _buyerAgentAddress, balance);
             }
 
             PurchaseInfo purchaseInfo = new PurchaseInfo(
@@ -573,7 +575,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _buyerAgentAddress,
             });
@@ -698,7 +700,7 @@ namespace Lib9c.Tests.Action
             var nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
@@ -803,17 +805,17 @@ namespace Lib9c.Tests.Action
                 OrderReceipt.DeriveAddress(_orderId),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _buyerAgentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Fact]
@@ -855,7 +857,7 @@ namespace Lib9c.Tests.Action
             nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = result.GetAgentState().address,

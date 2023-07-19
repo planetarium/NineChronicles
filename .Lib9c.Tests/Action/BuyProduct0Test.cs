@@ -45,7 +45,8 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            var context = new ActionContext();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -118,7 +119,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_sellerAvatarAddress2, sellerAvatarState2.Serialize())
                 .SetState(BuyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(BuyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(BuyerAgentAddress, _goldCurrencyState.Currency * 1);
+                .MintAsset(context, BuyerAgentAddress, _goldCurrencyState.Currency * 1);
         }
 
         public static IEnumerable<object[]> Execute_MemberData()
@@ -303,7 +304,7 @@ namespace Lib9c.Tests.Action
                     };
                     Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
-                        PreviousStates = previousState,
+                        PreviousState = previousState,
                         Random = new TestRandom(),
                         Signer = BuyerAgentAddress,
                     }));

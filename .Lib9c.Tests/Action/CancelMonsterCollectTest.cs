@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
         public CancelMonsterCollectTest()
         {
             _signer = default;
-            _state = new State();
+            _state = new MockStateDelta();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var agentState = new AgentState(_signer);
@@ -50,6 +50,7 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 3, MonsterCollectionState0.RewardInterval * 4)]
         public void Execute(int prevLevel, int collectionLevel, long blockIndex)
         {
+            var context = new ActionContext();
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
             List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = _tableSheets.MonsterCollectionRewardSheet[prevLevel].Rewards;
             MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
@@ -67,7 +68,7 @@ namespace Lib9c.Tests.Action
 
             _state = _state
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .MintAsset(collectionAddress, balance);
+                .MintAsset(context, collectionAddress, balance);
 
             CancelMonsterCollect action = new CancelMonsterCollect
             {
@@ -77,7 +78,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _signer,
                 BlockIndex = blockIndex,
             });
@@ -106,7 +107,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = new PrivateKey().ToAddress(),
                     BlockIndex = 0,
                 })
@@ -124,7 +125,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -150,7 +151,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidLevelException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -180,7 +181,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<MonsterCollectionExpiredException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -203,7 +204,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })

@@ -23,7 +23,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -65,7 +65,7 @@
             var nextState = dailyRewardAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -85,7 +85,7 @@
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })

@@ -72,7 +72,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ctx.Signer, MarkChanged);
@@ -91,7 +91,7 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(Addresses.Ranking, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -139,9 +139,9 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = ctx.PreviousState.GetSheet<MaterialItemSheet>();
 
-            var rankingState = ctx.PreviousStates.GetRankingState0();
+            var rankingState = ctx.PreviousState.GetRankingState0();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
@@ -179,7 +179,7 @@ namespace Nekoyume.Action
             MaterialItemSheet materialItemSheet,
             Address rankingMapAddress)
         {
-            var state = ctx.PreviousStates;
+            var state = ctx.PreviousState;
             var gameConfigState = state.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
@@ -193,9 +193,9 @@ namespace Nekoyume.Action
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
-            var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
-            var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
-            var consumableItemSheet = ctx.PreviousStates.GetSheet<ConsumableItemSheet>();
+            var costumeItemSheet = ctx.PreviousState.GetSheet<CostumeItemSheet>();
+            var equipmentItemSheet = ctx.PreviousState.GetSheet<EquipmentItemSheet>();
+            var consumableItemSheet = ctx.PreviousState.GetSheet<ConsumableItemSheet>();
             AddItemsForTest(
                 avatarState: avatarState,
                 random: ctx.Random,
@@ -207,8 +207,8 @@ namespace Nekoyume.Action
                 data.TradableMaterialCount,
                 data.FoodCount);
 
-            var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
-            var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
+            var skillSheet = ctx.PreviousState.GetSheet<SkillSheet>();
+            var optionSheet = ctx.PreviousState.GetSheet<EquipmentItemOptionSheet>();
 
             var items = data.CustomEquipmentItems;
             foreach (var item in items)
@@ -341,6 +341,7 @@ namespace Nekoyume.Action
         }
 
         public static IAccountStateDelta AddRunesForTest(
+            IActionContext context,
             Address avatarAddress,
             IAccountStateDelta states)
         {
@@ -348,7 +349,7 @@ namespace Nekoyume.Action
             foreach (var row in runeSheet.Values)
             {
                 var rune = RuneHelper.ToFungibleAssetValue(row, int.MaxValue);
-                states = states.MintAsset(avatarAddress, rune);
+                states = states.MintAsset(context, avatarAddress, rune);
             }
             return states;
         }

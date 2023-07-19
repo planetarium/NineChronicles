@@ -22,11 +22,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1158
-    /// Updated at https://github.com/planetarium/lib9c/pull/1158
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1991
+    /// Updated at https://github.com/planetarium/lib9c/pull/1991
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar8")]
+    [ActionType("create_avatar9")]
     public class CreateAvatar : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var signer = ctx.Signer;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var avatarAddress = signer.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -101,7 +101,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, signer);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = ctx.PreviousState.GetSheet<MaterialItemSheet>();
 
             avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, default);
 
@@ -167,7 +167,7 @@ namespace Nekoyume.Action
 
             // Add Runes when executing on editor mode.
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
-            states = CreateAvatar0.AddRunesForTest(avatarAddress, states);
+            states = CreateAvatar0.AddRunesForTest(ctx, avatarAddress, states);
 
             // Add pets for test
             if (states.TryGetSheet(out PetSheet petSheet))
@@ -261,13 +261,16 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            // TODO delete check blockIndex hard-fork this action
+            // Fix invalid mint crystal balance in internal network. main-net always mint 200_000
+            var mintingValue = context.BlockIndex > 7_210_000L ? 200_000 : 600_000;
             return states
                 .SetState(signer, agentState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(signer, 50 * CrystalCalculator.CRYSTAL);
+                .MintAsset(ctx, signer, mintingValue * CrystalCalculator.CRYSTAL);
         }
     }
 }

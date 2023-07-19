@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses[0] = AvatarAddress;
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize())
                 .SetState(Addresses.GetSheetAddress<MaterialItemSheet>(), _tableSheets.MaterialItemSheet.Serialize())
                 .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
@@ -206,9 +206,10 @@ namespace Lib9c.Tests.Action
             _avatarState.inventory.AddItem(equipment);
             Assert.Equal(2, _avatarState.inventory.Items.Count);
             var asset = 3 * RuneHelper.DailyRewardRune;
+            var context = new ActionContext();
             _initialState = _initialState
                 .SetState(AvatarAddress, _avatarState.Serialize())
-                .MintAsset(AvatarAddress, asset);
+                .MintAsset(context, AvatarAddress, asset);
             var action = new RegisterProduct
             {
                 AvatarAddress = AvatarAddress,
@@ -242,7 +243,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _agentAddress,
             });
@@ -295,7 +296,7 @@ namespace Lib9c.Tests.Action
                     };
                     Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
-                        PreviousStates = _initialState,
+                        PreviousState = _initialState,
                         Random = new TestRandom(),
                         Signer = _agentAddress,
                     }));
@@ -369,7 +370,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = blockIndex,
                 Random = new TestRandom(),
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
             }));
         }
 

@@ -46,7 +46,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
-            var state = context.PreviousStates;
+            var state = context.PreviousState;
             foreach ((byte[] address, byte[] nonce, byte[] publicKey) in PendingActivations)
             {
                 state = state.SetState(

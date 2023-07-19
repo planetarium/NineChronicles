@@ -50,7 +50,7 @@
 
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GetSheetAddress<WorldUnlockSheet>(), _tableSheets.WorldUnlockSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
@@ -86,7 +86,8 @@
             Type exc
         )
         {
-            var state = _initialState.MintAsset(_agentAddress, balance * _currency);
+            var context = new ActionContext();
+            var state = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             var worldIds = ids.ToList();
 
             if (stateExist)
@@ -155,7 +156,7 @@
             {
                 IAccountStateDelta nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,
@@ -173,7 +174,7 @@
             {
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
                     Random = _random,

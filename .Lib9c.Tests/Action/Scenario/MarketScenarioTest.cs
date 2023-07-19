@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action.Scenario
             agentState3.avatarAddresses[0] = _buyerAvatarAddress;
 
             _currency = Currency.Legacy("NCG", 2, minters: null);
-            _initialState = new Tests.Action.State()
+            _initialState = new Tests.Action.MockStateDelta()
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(_currency).Serialize())
                 .SetState(Addresses.GameConfig, _gameConfigState.Serialize())
                 .SetState(Addresses.GetSheetAddress<MaterialItemSheet>(), _tableSheets.MaterialItemSheet.Serialize())
@@ -119,6 +119,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void Register_And_Buy()
         {
+            var context = new ActionContext();
             var materialRow = _tableSheets.MaterialItemSheet.Values.First();
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
@@ -129,9 +130,9 @@ namespace Lib9c.Tests.Action.Scenario
             _initialState = _initialState
                 .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize())
                 .SetState(_sellerAvatarAddress2, _sellerAvatarState2.Serialize())
-                .MintAsset(_buyerAgentAddress, 4 * _currency)
-                .MintAsset(_sellerAvatarAddress, 1 * RuneHelper.StakeRune)
-                .MintAsset(_sellerAvatarAddress2, 1 * RuneHelper.DailyRewardRune);
+                .MintAsset(context, _buyerAgentAddress, 4 * _currency)
+                .MintAsset(context, _sellerAvatarAddress, 1 * RuneHelper.StakeRune)
+                .MintAsset(context, _sellerAvatarAddress2, 1 * RuneHelper.DailyRewardRune);
 
             var random = new TestRandom();
             var productInfoList = new List<IProductInfo>();
@@ -160,7 +161,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = random,
                 Signer = _sellerAgentAddress,
             });
@@ -234,7 +235,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState2 = action2.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = random,
                 Signer = _sellerAgentAddress2,
             });
@@ -292,7 +293,7 @@ namespace Lib9c.Tests.Action.Scenario
             var latestState = action3.Execute(new ActionContext
             {
                 BlockIndex = 3L,
-                PreviousStates = nextState2,
+                PreviousState = nextState2,
                 Random = random,
                 Signer = _buyerAgentAddress,
             });
@@ -346,6 +347,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void Register_And_Cancel()
         {
+            var context = new ActionContext();
             var materialRow = _tableSheets.MaterialItemSheet.Values.First();
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
@@ -356,7 +358,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(2, _sellerAvatarState.inventory.Items.Count);
             _initialState = _initialState
                     .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize())
-                    .MintAsset(_sellerAvatarAddress, 1 * RuneHelper.StakeRune);
+                    .MintAsset(context, _sellerAvatarAddress, 1 * RuneHelper.StakeRune);
             var action = new RegisterProduct
             {
                 AvatarAddress = _sellerAvatarAddress,
@@ -390,7 +392,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _sellerAgentAddress,
             });
@@ -478,7 +480,7 @@ namespace Lib9c.Tests.Action.Scenario
             var latestState = action2.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = new TestRandom(),
                 Signer = _sellerAgentAddress,
             });
@@ -517,6 +519,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void Register_And_ReRegister()
         {
+            var context = new ActionContext();
             var materialRow = _tableSheets.MaterialItemSheet.Values.First();
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
@@ -526,7 +529,7 @@ namespace Lib9c.Tests.Action.Scenario
             _sellerAvatarState.inventory.AddItem(equipment);
             Assert.Equal(2, _sellerAvatarState.inventory.Items.Count);
             _initialState = _initialState
-                .MintAsset(_sellerAvatarAddress, 2 * RuneHelper.StakeRune)
+                .MintAsset(context, _sellerAvatarAddress, 2 * RuneHelper.StakeRune)
                 .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize());
             var action = new RegisterProduct
             {
@@ -561,7 +564,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _sellerAgentAddress,
             });
@@ -685,7 +688,7 @@ namespace Lib9c.Tests.Action.Scenario
             var latestState = action2.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = random,
                 Signer = _sellerAgentAddress,
             });
@@ -806,7 +809,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _sellerAgentAddress,
             });
@@ -842,6 +845,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void HardFork()
         {
+            var context = new ActionContext();
             var materialRow = _tableSheets.MaterialItemSheet.Values.First();
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
@@ -852,8 +856,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(2, _sellerAvatarState.inventory.Items.Count);
             _initialState = _initialState
                 .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, 3 * _currency)
-                .MintAsset(_sellerAvatarAddress, 1 * RuneHelper.StakeRune);
+                .MintAsset(context, _buyerAgentAddress, 3 * _currency)
+                .MintAsset(context, _sellerAvatarAddress, 1 * RuneHelper.StakeRune);
             var action = new RegisterProduct0
             {
                 AvatarAddress = _sellerAvatarAddress,
@@ -888,7 +892,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = random,
                 Signer = _sellerAgentAddress,
             });
@@ -965,7 +969,7 @@ namespace Lib9c.Tests.Action.Scenario
             var canceledState = cancelAction.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = random,
                 Signer = _sellerAgentAddress,
             });
@@ -1048,7 +1052,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Throws<ItemDoesNotExistException>(() => reRegisterAction.Execute(new ActionContext
             {
                 BlockIndex = 2L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = random,
                 Signer = _sellerAgentAddress,
             }));
@@ -1063,7 +1067,7 @@ namespace Lib9c.Tests.Action.Scenario
             var tradedState = buyAction.Execute(new ActionContext
             {
                 BlockIndex = 3L,
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Random = random,
                 Signer = _buyerAgentAddress,
             });

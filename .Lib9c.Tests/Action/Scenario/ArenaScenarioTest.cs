@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new Tests.Action.State();
+            _state = new Tests.Action.MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(_sheets);
@@ -94,13 +94,14 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         public IAccountStateDelta JoinArena(
+            IActionContext context,
             IRandom random,
             Address signer,
             Address avatarAddress,
             ArenaSheet.RoundData roundData)
         {
             var preCurrency = roundData.EntranceFee * _crystal;
-            _state = _state.MintAsset(signer, preCurrency);
+            _state = _state.MintAsset(context, signer, preCurrency);
 
             var action = new JoinArena()
             {
@@ -113,7 +114,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,
@@ -144,7 +145,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,

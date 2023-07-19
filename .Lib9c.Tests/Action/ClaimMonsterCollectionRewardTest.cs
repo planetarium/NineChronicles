@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
 
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new State();
+            _state = new MockStateDelta();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
             {
                 Assert.Throws(exc, () => _action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = claimBlockIndex,
                     Random = new TestRandom(),
@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
             {
                 IAccountStateDelta nextState = _action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = claimBlockIndex,
                     Random = new TestRandom(),
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
         {
             Assert.Throws<FailedLoadStateException>(() => _action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = new PrivateKey().ToAddress(),
                     BlockIndex = 0,
                 })
@@ -160,7 +160,7 @@ namespace Lib9c.Tests.Action
         {
             Assert.Throws<FailedLoadStateException>(() => _action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -176,7 +176,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RequiredBlockIndexException>(() => _action.Execute(new ActionContext
                 {
-                    PreviousStates = _state,
+                    PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = 0,
                 })
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
         {
             IAccountStateDelta nextState = _action.Execute(new ActionContext
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _signer,
                     BlockIndex = 0,
                     Rehearsal = true,
@@ -206,7 +206,7 @@ namespace Lib9c.Tests.Action
                 MonsterCollectionState.DeriveAddress(_signer, 2),
                 MonsterCollectionState.DeriveAddress(_signer, 3),
             };
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         private class ExecuteFixture : IEnumerable<object[]>

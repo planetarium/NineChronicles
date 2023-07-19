@@ -31,7 +31,7 @@ namespace Nekoyume.Action.Coupons
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var signerWallet = states.GetCouponWallet(context.Signer);
             var orderedRecipients = CouponsPerRecipient.OrderBy(pair => pair.Key);
             foreach ((Address recipient, IImmutableSet<Guid> couponIds) in orderedRecipients)

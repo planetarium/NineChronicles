@@ -31,7 +31,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
@@ -42,7 +42,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
@@ -77,6 +77,7 @@ namespace Nekoyume.Action
             if (gameConfigState.DailyRuneRewardAmount > 0)
             {
                 states = states.MintAsset(
+                    context,
                     avatarAddress,
                     RuneHelper.DailyRewardRune * gameConfigState.DailyRuneRewardAmount);
             }

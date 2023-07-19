@@ -35,13 +35,13 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectRound);
             if (context.Rehearsal)
             {
                 return states
                     .SetState(collectionAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, collectionAddress, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, collectionAddress, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}CancelMonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(collectionAddress, monsterCollectionState.Serialize())
-                .TransferAsset(collectionAddress, context.Signer, balance);
+                .TransferAsset(context, collectionAddress, context.Signer, balance);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

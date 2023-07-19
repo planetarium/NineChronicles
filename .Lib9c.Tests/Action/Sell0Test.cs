@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action
             var nextState = sellAction.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -155,7 +155,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Signer = _agentAddress,
             }));
         }
@@ -184,7 +184,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -202,7 +202,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
             }));
         }

@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Util
 {
     using System.Collections.Immutable;
     using System.IO;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Assets;
     using Libplanet.Crypto;
@@ -10,8 +11,6 @@ namespace Lib9c.Tests.Util
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
-    using State = Lib9c.Tests.Action.State;
-    using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
     public static class InitializeUtil
     {
@@ -29,7 +28,8 @@ namespace Lib9c.Tests.Util
             )
         {
             adminAddr ??= new PrivateKey().ToAddress();
-            var states = new State().SetState(
+            var context = new ActionContext();
+            var states = new MockStateDelta().SetState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
             var sheets = TableSheetsImporter.ImportSheets(
@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Util
             var goldCurrencyState = new GoldCurrencyState(goldCurrency);
             states = states
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
-                .MintAsset(goldCurrencyState.address, goldCurrency * 1_000_000_000);
+                .MintAsset(context, goldCurrencyState.address, goldCurrency * 1_000_000_000);
 
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());

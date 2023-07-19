@@ -24,9 +24,11 @@ namespace Lib9c.Tests.Action
 
         public long BlockIndex { get; set; }
 
+        public int BlockProtocolVersion { get; set; }
+
         public bool Rehearsal { get; set; }
 
-        public IAccountStateDelta PreviousStates { get; set; }
+        public IAccountStateDelta PreviousState { get; set; }
 
         public IRandom Random { get; set; }
 
@@ -51,8 +53,9 @@ namespace Lib9c.Tests.Action
                 Miner = Miner,
                 BlockHash = BlockHash,
                 BlockIndex = BlockIndex,
+                BlockProtocolVersion = BlockProtocolVersion,
                 Rehearsal = Rehearsal,
-                PreviousStates = PreviousStates,
+                PreviousState = PreviousState,
                 Random = Random,
                 PreviousStateRootHash = PreviousStateRootHash,
             };

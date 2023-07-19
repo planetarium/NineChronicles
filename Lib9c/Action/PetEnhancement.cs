@@ -43,7 +43,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
 
             var addresses = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             // NOTE: The `AvatarAddress` must contained in `Signer`'s `AgentState.avatarAddresses`.
-            if (!Addresses.IsContainedInAgent(context.Signer, AvatarAddress))
+            if (!Addresses.CheckAvatarAddrIsContainedInAgent(context.Signer, AvatarAddress))
             {
                 throw new InvalidActionFieldException(
                     ActionTypeIdentifier,
@@ -147,7 +147,7 @@ namespace Nekoyume.Action
                         currentNcg);
                 }
 
-                states = states.TransferAsset(context.Signer, feeStoreAddress, ncgCost);
+                states = states.TransferAsset(context, context.Signer, feeStoreAddress, ncgCost);
             }
 
             if (soulStoneQuantity > 0)
@@ -166,6 +166,7 @@ namespace Nekoyume.Action
                 }
 
                 states = states.TransferAsset(
+                    context,
                     AvatarAddress,
                     feeStoreAddress,
                     soulStoneCost);

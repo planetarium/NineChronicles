@@ -111,7 +111,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -277,6 +277,7 @@ namespace Nekoyume.Action
                 if (cost > 0L)
                 {
                     states = states.TransferAsset(
+                        context,
                         context.Signer,
                         Addresses.EventDungeon,
                         cost * currency);

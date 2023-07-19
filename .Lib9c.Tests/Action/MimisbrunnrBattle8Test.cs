@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
@@ -180,7 +180,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -255,7 +255,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -281,7 +281,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Signer = _agentAddress,
                 });
             });
@@ -305,7 +305,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -329,7 +329,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agentAddress,
                 });
             });
@@ -370,7 +370,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -454,7 +454,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
             });
         }
@@ -492,7 +492,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = nextState,
+                    PreviousState = nextState,
                     Signer = _agentAddress,
                 });
             });
@@ -535,7 +535,7 @@ namespace Lib9c.Tests.Action
 
             action.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
                 Random = new TestRandom(),
@@ -655,7 +655,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -704,17 +704,17 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
     }
 }

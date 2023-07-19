@@ -82,10 +82,10 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(4);
-            var state = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
-                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(t.amount.Currency, new[] {Sender, t.recipient}));
+                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
             }
 
             if (Recipients.Count > RecipientsCapacity)
@@ -96,7 +96,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}{ActionName} exec started", addressesHex, TypeIdentifier);
 
-            state = Recipients.Aggregate(state, (current, t) => Transfer(current, context.Signer, t.recipient, t.amount, context.BlockIndex));
+            state = Recipients.Aggregate(state, (current, t) => Transfer(context, current, context.Signer, t.recipient, t.amount, context.BlockIndex));
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}{ActionName} Total Executed Time: {Elapsed}", addressesHex, TypeIdentifier, ended - started);
 
@@ -135,7 +135,8 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, long blockIndex)
+        private IAccountStateDelta Transfer(
+            IActionContext context, IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, long blockIndex)
         {
             if (Sender != signer)
             {
@@ -159,7 +160,7 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
-            return state.TransferAsset(Sender, recipient, amount);
+            return state.TransferAsset(context, Sender, recipient, amount);
         }
     }
 }

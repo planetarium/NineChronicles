@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle0Test()
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -133,7 +133,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -212,7 +212,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = signer,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -247,7 +247,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -279,7 +279,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -325,7 +325,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -366,7 +366,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -381,6 +381,7 @@ namespace Lib9c.Tests.Action
             var arenaInfo = previousWeeklyArenaState.GetArenaInfo(_avatar1Address);
             previousWeeklyArenaState.Update(new ArenaInfo(arenaInfo));
 
+            var context = new ActionContext();
             var previousState = _initialState.SetState(
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
@@ -396,6 +397,7 @@ namespace Lib9c.Tests.Action
             if (previousAgentGoldState.Sign > 0)
             {
                 previousState = _initialState.TransferAsset(
+                    context,
                     _agent1Address,
                     Addresses.GoldCurrency,
                     previousAgentGoldState);
@@ -415,7 +417,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,

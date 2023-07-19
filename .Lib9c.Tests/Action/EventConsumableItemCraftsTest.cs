@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
 
         public EventConsumableItemCraftsTest()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -154,7 +154,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

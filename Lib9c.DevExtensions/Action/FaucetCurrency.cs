@@ -24,14 +24,14 @@ namespace Lib9c.DevExtensions.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (FaucetNcg > 0)
             {
                 var ncg = states.GetGoldCurrency();
-                states = states.TransferAsset(GoldCurrencyState.Address, AgentAddress, ncg * FaucetNcg);
+                states = states.TransferAsset(context, GoldCurrencyState.Address, AgentAddress, ncg * FaucetNcg);
             }
 
             if (FaucetCrystal > 0)
@@ -39,7 +39,7 @@ namespace Lib9c.DevExtensions.Action
 #pragma warning disable CS0618
                 var crystal = Currency.Legacy("CRYSTAL", 18, null);
 #pragma warning restore CS0618
-                states = states.MintAsset(AgentAddress, crystal * FaucetCrystal);
+                states = states.MintAsset(context, AgentAddress, crystal * FaucetCrystal);
             }
 
             return states;

@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var contractAddress = AgentAddress.GetPledgeAddress();
             if (states.TryGetState(contractAddress, out List _))
             {
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             }
 
             return states
-                .TransferAsset(context.Signer, AgentAddress, 1 * Currencies.Mead)
+                .TransferAsset(context, context.Signer, AgentAddress, 1 * Currencies.Mead)
                 .SetState(
                     contractAddress,
                     List.Empty

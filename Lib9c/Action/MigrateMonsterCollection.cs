@@ -44,7 +44,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}MigrateMonsterCollection exec started", addressesHex);
@@ -88,6 +88,7 @@ namespace Nekoyume.Action
             return states.SetState(monsterCollectionState.address, Null.Value)
                 .SetState(migratedStakeStateAddress, migratedStakeState.SerializeV2())
                 .TransferAsset(
+                    context,
                     monsterCollectionState.address,
                     migratedStakeStateAddress,
                     states.GetBalance(monsterCollectionState.address, currency));

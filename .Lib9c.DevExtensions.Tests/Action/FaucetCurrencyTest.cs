@@ -32,10 +32,9 @@ namespace Lib9c.DevExtensions.Tests.Action
             _crystal = Currency.Legacy("CRYSTAL", 18, null);
 #pragma warning restore CS0618
 
-            var balance =
-                ImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue>.Empty
-                    .Add((GoldCurrencyState.Address, _ncg), _ncg * int.MaxValue);
-            _initialState = new Lib9c.Tests.Action.State(balance: balance);
+            _initialState = new MockStateDelta(
+                MockState.Empty
+                    .AddBalance(GoldCurrencyState.Address, _ncg * int.MaxValue));
 
             var goldCurrencyState = new GoldCurrencyState(_ncg);
             _agentAddress = new PrivateKey().ToAddress();
@@ -67,7 +66,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 FaucetNcg = faucetNcg,
                 FaucetCrystal = faucetCrystal,
             };
-            var state = action.Execute(new ActionContext { PreviousStates = _initialState });
+            var state = action.Execute(new ActionContext { PreviousState = _initialState });
             AgentState agentState = state.GetAgentState(_agentAddress);
             FungibleAssetValue expectedNcgAsset =
                 new FungibleAssetValue(_ncg, expectedNcg, 0);

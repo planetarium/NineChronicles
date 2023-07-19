@@ -46,7 +46,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
 
             // Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&
@@ -61,6 +61,7 @@ namespace Nekoyume.Action
             {
                 return states.SetState(StakeState.DeriveAddress(context.Signer), MarkChanged)
                     .MarkBalanceChanged(
+                        context,
                         GoldCurrencyMock,
                         context.Signer,
                         StakeState.DeriveAddress(context.Signer));
@@ -103,7 +104,7 @@ namespace Nekoyume.Action
                     .SetState(
                         stakeStateAddress,
                         stakeState.SerializeV2())
-                    .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
+                    .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance);
             }
 
             if (stakeState.IsClaimable(context.BlockIndex))
@@ -124,14 +125,16 @@ namespace Nekoyume.Action
             {
                 if (stakeState.IsCancellable(context.BlockIndex))
                 {
-                    return states.SetState(stakeState.address, Null.Value)
-                        .TransferAsset(stakeState.address, context.Signer, stakedBalance);
+                    return states
+                        .SetState(stakeState.address, Null.Value)
+                        .TransferAsset(context, stakeState.address, context.Signer, stakedBalance);
                 }
             }
 
             // Stake with more or less amount.
-            return states.TransferAsset(stakeState.address, context.Signer, stakedBalance)
-                .TransferAsset(context.Signer, stakeState.address, targetStakeBalance)
+            return states
+                .TransferAsset(context, stakeState.address, context.Signer, stakedBalance)
+                .TransferAsset(context, context.Signer, stakeState.address, targetStakeBalance)
                 .SetState(
                     stakeState.address,
                     new StakeState(stakeState.address, context.BlockIndex).SerializeV2());

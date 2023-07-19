@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
             _weeklyArenaState = new WeeklyArenaState(0);
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
 
                 state = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = _random,
                 });
@@ -263,7 +263,7 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
             };
 
-            var state = backward ? new State() : _initialState;
+            var state = backward ? new MockStateDelta() : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -301,7 +301,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -373,7 +373,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -439,7 +439,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -494,7 +494,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -573,7 +573,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 }));
@@ -649,7 +649,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<NotEnoughActionPointException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -725,7 +725,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<PlayCountIsZeroException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -800,7 +800,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<NotEnoughCombatPointException>(() =>
                     action.Execute(new ActionContext()
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = _agentAddress,
                         Random = new TestRandom(),
                     }));
@@ -840,10 +840,11 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(stakeStateAddress, stakeState.Serialize())
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
             var stageSheet = _initialState.GetSheet<StageSheet>();
             if (stageSheet.TryGetValue(stageId, out var stageRow))
             {
@@ -872,7 +873,7 @@ namespace Lib9c.Tests.Action
 
                 var nextState = action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -917,10 +918,11 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == stakingLevel)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(stakeStateAddress, stakeState.Serialize())
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
             var stageSheet = _initialState.GetSheet<StageSheet>();
             if (stageSheet.TryGetValue(stageId, out var stageRow))
             {
@@ -936,7 +938,7 @@ namespace Lib9c.Tests.Action
                     playCount);
 
                 var ncgCurrency = state.GetGoldCurrency();
-                state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+                state = state.MintAsset(context, _agentAddress, 99999 * ncgCurrency);
 
                 var unlockRuneSlot = new UnlockRuneSlot()
                 {
@@ -947,7 +949,7 @@ namespace Lib9c.Tests.Action
                 state = unlockRuneSlot.Execute(new ActionContext
                 {
                     BlockIndex = 1,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 });
@@ -970,7 +972,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.Throws(exception, () => action.Execute(new ActionContext
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                 }));

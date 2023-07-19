@@ -77,10 +77,10 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(4);
-            var state = context.PreviousStates;
+            var state = context.PreviousState;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
+                return state.MarkBalanceChanged(context, Amount.Currency, new[] { Sender, Recipient });
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -108,7 +108,7 @@ namespace Nekoyume.Action
                );
             }
 
-            return state.TransferAsset(Sender, Recipient, Amount);
+            return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)

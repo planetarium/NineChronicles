@@ -30,7 +30,8 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            var context = new ActionContext();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -78,7 +79,7 @@ namespace Lib9c.Tests.Action
                     avatarState.questList.Serialize())
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(stakeStateAddress, _currency * 100);
+                .MintAsset(context, stakeStateAddress, _currency * 100);
         }
 
         [Fact]
@@ -87,7 +88,7 @@ namespace Lib9c.Tests.Action
             var action = new ClaimStakeReward1(_avatarAddress);
             var states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = StakeState.LockupInterval,
             });

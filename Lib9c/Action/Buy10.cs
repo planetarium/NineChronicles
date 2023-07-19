@@ -63,7 +63,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
             var buyerWorldInformationAddress = buyerAvatarAddress.Derive(LegacyWorldInformationKey);
             var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
@@ -88,6 +88,7 @@ namespace Nekoyume.Action
                         .SetState(orderReceiptAddress, MarkChanged)
                         .SetState(digestListAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             purchaseInfo.SellerAgentAddress,
@@ -286,12 +287,14 @@ namespace Nekoyume.Action
 
                 // Transfer tax.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     GoldCurrencyState.Address,
                     tax);
 
                 // Transfer seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     sellerAgentAddress,
                     taxedPrice

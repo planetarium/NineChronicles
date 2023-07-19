@@ -45,12 +45,12 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 foreach (var asset in Assets)
                 {
-                    return states.MarkBalanceChanged(asset.Currency, RewardPoolAddress);
+                    return states.MarkBalanceChanged(context, asset.Currency, RewardPoolAddress);
                 }
             }
 
@@ -63,7 +63,7 @@ namespace Nekoyume.Action
                 {
                     throw new CurrencyPermissionException(null, context.Signer, asset.Currency);
                 }
-                states = states.MintAsset(RewardPoolAddress, asset);
+                states = states.MintAsset(context, RewardPoolAddress, asset);
             }
 
             return states;

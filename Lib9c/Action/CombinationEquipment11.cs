@@ -63,7 +63,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -83,7 +83,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement10.GetFeeStoreAddress());
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, ItemEnhancement10.GetFeeStoreAddress());
             }
 
             CheckObsolete(ActionObsoleteConfig.V100270ObsoleteIndex, context);
@@ -282,6 +282,7 @@ namespace Nekoyume.Action
             if (costNCG > 0L)
             {
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     ItemEnhancement10.GetFeeStoreAddress(),
                     states.GetGoldCurrency() * costNCG

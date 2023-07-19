@@ -40,14 +40,14 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
                 states = states.SetState(AvatarAddress, MarkChanged);
                 states = states.SetState(context.Signer, MarkChanged);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                states = states.MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address);
+                states = states.MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
                 return states;
             }
 
@@ -103,6 +103,7 @@ namespace Nekoyume.Action
                         break;
                     case RewardType.Gold:
                         states = states.TransferAsset(
+                            context,
                             GoldCurrencyState.Address,
                             context.Signer,
                             states.GetGoldCurrency() * info.Quantity

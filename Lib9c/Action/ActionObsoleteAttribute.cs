@@ -14,6 +14,7 @@ namespace Nekoyume.Action
     /// starting from <see cref="ActionObsoleteAttribute.ObsoleteIndex"/> + 2.
     /// </para>
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ActionObsoleteAttribute : Attribute
     {
         public ActionObsoleteAttribute(long obsoleteIndex)

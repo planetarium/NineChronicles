@@ -113,7 +113,8 @@ namespace Lib9c.Tests.Action
 
             var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
 
-            IAccountStateDelta state = new State()
+            var context = new ActionContext();
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -150,7 +151,7 @@ namespace Lib9c.Tests.Action
                 if (crystalExist)
                 {
                     var price = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
-                    state = state.MintAsset(_agentAddress, price * crystal);
+                    state = state.MintAsset(context, _agentAddress, price * crystal);
                 }
 
                 if (raiderStateExist)
@@ -184,7 +185,7 @@ namespace Lib9c.Tests.Action
                 if (ncgExist)
                 {
                     var row = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
-                    state = state.MintAsset(_agentAddress, (row.TicketPrice + row.AdditionalTicketPrice * purchaseCount) * _goldCurrency);
+                    state = state.MintAsset(context, _agentAddress, (row.TicketPrice + row.AdditionalTicketPrice * purchaseCount) * _goldCurrency);
                 }
 
                 state = state
@@ -211,7 +212,7 @@ namespace Lib9c.Tests.Action
                 var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(randomSeed),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -348,7 +349,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex + executeOffset,
-                    PreviousStates = state,
+                    PreviousState = state,
                     Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _agentAddress,
@@ -375,7 +376,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -461,7 +462,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = worldBossRow.StartedBlockIndex + Raid4.RequiredInterval,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(randomSeed),
                 Rehearsal = false,
                 Signer = _agentAddress,
@@ -527,7 +528,7 @@ namespace Lib9c.Tests.Action
             Address bossAddress = Addresses.GetWorldBossAddress(raidId);
             Address worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(_avatarAddress, raidId);
 
-            IAccountStateDelta state = new State()
+            IAccountStateDelta state = new MockStateDelta()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -559,7 +560,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,

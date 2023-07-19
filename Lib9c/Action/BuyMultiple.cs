@@ -220,7 +220,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
 
             if (ctx.Rehearsal)
             {
@@ -235,6 +235,7 @@ namespace Nekoyume.Action
 
                     states = states.SetState(sellerAvatarAddress, MarkChanged)
                         .MarkBalanceChanged(
+                            ctx,
                             GoldCurrencyMock,
                             ctx.Signer,
                             sellerAgentAddress,
@@ -370,12 +371,14 @@ namespace Nekoyume.Action
 
                 // Transfer tax
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     GoldCurrencyState.Address,
                     tax);
 
                 // Transfer paid money (taxed) to the seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     productInfo.sellerAgentAddress,
                     taxedPrice

@@ -69,7 +69,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
             var buyerWorldInformationAddress = buyerAvatarAddress.Derive(LegacyWorldInformationKey);
             var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
@@ -263,12 +263,14 @@ namespace Nekoyume.Action
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
                 var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     feeStoreAddress,
                     tax);
 
                 // Transfer seller.
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     sellerAgentAddress,
                     taxedPrice

@@ -67,12 +67,13 @@ namespace Lib9c.Tests.Action
             var goldState = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
 
-            var initialState = new State()
+            var context = new ActionContext();
+            var initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
-                .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
+                .MintAsset(context, GoldCurrencyState.Address, goldState.Currency * 100000000);
 
             foreach (var (key, value) in _sheets)
             {
@@ -91,7 +92,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -124,13 +125,13 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousStates = new State(),
+                PreviousState = new MockStateDelta(),
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
 
             Assert.Equal(
-                nextState.UpdatedAddresses,
+                nextState.Delta.UpdatedAddresses,
                 new[] { _avatarAddress, _agentAddress, RedeemCodeState.Address, GoldCurrencyState.Address }.ToImmutableHashSet()
             );
         }

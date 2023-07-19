@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = _agentAddress,
                 BlockIndex = 1L,
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Random = new TestRandom(),
             };
             Assert.Throws<InvalidAddressException>(() => action.Execute(actionContext));
@@ -128,7 +128,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_ProductNotFoundException()
         {
-            var prevState = _initialState.MintAsset(_avatarAddress, 1 * RuneHelper.StakeRune);
+            var context = new ActionContext();
+            var prevState = _initialState.MintAsset(context, _avatarAddress, 1 * RuneHelper.StakeRune);
             var registerProduct = new RegisterProduct
             {
                 AvatarAddress = _avatarAddress,
@@ -145,7 +146,7 @@ namespace Lib9c.Tests.Action
             };
             var nexState = registerProduct.Execute(new ActionContext
             {
-                PreviousStates = prevState,
+                PreviousState = prevState,
                 BlockIndex = 1L,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
@@ -185,7 +186,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ProductNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = nexState,
+                PreviousState = nexState,
                 BlockIndex = 2L,
                 Signer = _agentAddress,
                 Random = new TestRandom(),

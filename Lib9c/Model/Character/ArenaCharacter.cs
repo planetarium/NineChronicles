@@ -819,7 +819,7 @@ namespace Nekoyume.Model
                 return CRI >= chance;
 
             var additionalCriticalChance =
-                (int) AttackCountHelper.GetAdditionalCriticalChance(_attackCount, _attackCountMax);
+                AttackCountHelper.GetAdditionalCriticalChance(_attackCount, _attackCountMax);
             return CRI + additionalCriticalChance >= chance;
         }
 
@@ -850,7 +850,7 @@ namespace Nekoyume.Model
                 _attackCount = 1;
             }
 
-            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(_attackCount, _attackCountMax);
+            var damageMultiplier = AttackCountHelper.GetDamageMultiplier(_attackCount, _attackCountMax);
             damage *= damageMultiplier;
             return damage;
         }

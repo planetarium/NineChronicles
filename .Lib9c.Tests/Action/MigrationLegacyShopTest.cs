@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var states = new State().SetState(Addresses.Admin, adminState.Serialize());
+            var states = new MockStateDelta().SetState(Addresses.Admin, adminState.Serialize());
             var signer = isAdmin ? adminAddress : default;
             var blockIndex = expire ? 200 : 100;
 
@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex,
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = signer,
                 });
 
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(exc, () => action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex,
-                    PreviousStates = states,
+                    PreviousState = states,
                     Signer = signer,
                 }));
             }

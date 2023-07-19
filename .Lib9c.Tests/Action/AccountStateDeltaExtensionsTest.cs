@@ -45,7 +45,8 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 2, 200, null)]
         public void SetWorldBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
         {
-            IAccountStateDelta states = new State();
+            var context = new ActionContext();
+            IAccountStateDelta states = new MockStateDelta();
             var rewardInfoAddress = new PrivateKey().ToAddress();
             var rewardRecord = new WorldBossKillRewardRecord();
             for (int i = 0; i < level; i++)
@@ -76,7 +77,7 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                var nextState = states.SetWorldBossKillReward(rewardInfoAddress, rewardRecord, 0, bossState, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress, _agentAddress);
+                var nextState = states.SetWorldBossKillReward(context, rewardInfoAddress, rewardRecord, 0, bossState, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress, _agentAddress);
                 Assert.Equal(expectedRune * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(rewardInfoAddress));
@@ -87,6 +88,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws(
                     exc,
                     () => states.SetWorldBossKillReward(
+                        context,
                         rewardInfoAddress,
                         rewardRecord,
                         0,
@@ -104,7 +106,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void SetCouponWallet()
         {
-            IAccountStateDelta states = new State();
+            IAccountStateDelta states = new MockStateDelta();
             var guid1 = new Guid("6856AE42-A820-4041-92B0-5D7BAA52F2AA");
             var guid2 = new Guid("701BA698-CCB9-4FC7-B88F-7CB8C707D135");
             var guid3 = new Guid("910296E7-34E4-45D7-9B4E-778ED61F278B");
@@ -166,18 +168,19 @@ namespace Lib9c.Tests.Action
             var agentContractAddress = _agentAddress.GetPledgeAddress();
             var mead = Currencies.Mead;
             var price = RequestPledge.DefaultRefillMead * mead;
-            IAccountStateDelta states = new State()
+            ActionContext context = new ActionContext();
+            IAccountStateDelta states = new MockStateDelta()
                 .SetState(
                     agentContractAddress,
                     List.Empty.Add(patron.Serialize()).Add(true.Serialize()))
-                .MintAsset(patron, price);
+                .MintAsset(context, patron, price);
 
             if (agentBalance > 0)
             {
-                states = states.MintAsset(_agentAddress, agentBalance * mead);
+                states = states.MintAsset(context, _agentAddress, agentBalance * mead);
             }
 
-            states = states.Mead(_agentAddress, 4);
+            states = states.Mead(context, _agentAddress, 4);
             Assert.Equal(agentBalance * mead, states.GetBalance(patron, mead));
             Assert.Equal(price, states.GetBalance(_agentAddress, mead));
         }

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
+using Libplanet.Consensus;
 using Libplanet.State;
 using Libplanet.Tx;
 
@@ -25,7 +26,7 @@ namespace Nekoyume.Action
                 try
                 {
                     IAccountStateDelta nextStates = action.Execute(rehearsalContext);
-                    addresses = addresses.Union(nextStates.UpdatedAddresses);
+                    addresses = addresses.Union(nextStates.Delta.UpdatedAddresses);
                 }
                 catch (NotSupportedException)
                 {
@@ -48,9 +49,11 @@ namespace Nekoyume.Action
 
             public long BlockIndex => default;
 
+            public int BlockProtocolVersion => default;
+
             public bool Rehearsal => true;
 
-            public IAccountStateDelta PreviousStates => new AddressTraceStateDelta();
+            public IAccountStateDelta PreviousState => new AddressTraceStateDelta();
 
             public IRandom Random => default;
 
@@ -77,36 +80,37 @@ namespace Nekoyume.Action
 
         private class AddressTraceStateDelta : IAccountStateDelta
         {
-            private ImmutableHashSet<Address> _updatedAddresses;
+            private AddressTraceDelta _delta;
 
             public AddressTraceStateDelta()
-                : this(ImmutableHashSet<Address>.Empty)
+                : this(new AddressTraceDelta())
             {
             }
 
-            public AddressTraceStateDelta(ImmutableHashSet<Address> updatedAddresses)
+            public AddressTraceStateDelta(AddressTraceDelta delta)
             {
-                _updatedAddresses = updatedAddresses;
+                _delta = delta;
             }
 
-            public IImmutableSet<Address> UpdatedAddresses => _updatedAddresses;
+            public IAccountDelta Delta => _delta;
 
-            public IImmutableSet<Address> StateUpdatedAddresses => _updatedAddresses;
+            public IImmutableSet<Address> UpdatedAddresses => _delta.UpdatedAddresses;
 
-            public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets
-                => ImmutableDictionary<Address, IImmutableSet<Currency>>.Empty;
+            public IImmutableSet<Address> StateUpdatedAddresses => _delta.StateUpdatedAddresses;
 
-            public IImmutableDictionary<Address, IImmutableSet<Currency>> TotalUpdatedFungibleAssets
+            public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets =>
+                Delta.UpdatedFungibleAssets;
+
+            public IImmutableSet<(Address, Currency)> TotalUpdatedFungibleAssets =>
+                throw new NotSupportedException();
+
+            public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies
+                => Delta.UpdatedTotalSupplyCurrencies;
+
+            public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
             {
-                get;
-            }
-
-            public IImmutableSet<Currency> TotalSupplyUpdatedCurrencies
-                => ImmutableHashSet<Currency>.Empty;
-
-            public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
-            {
-                return new AddressTraceStateDelta(_updatedAddresses.Union(new [] { owner }));
+                return new AddressTraceStateDelta(
+                    new AddressTraceDelta(Delta.UpdatedAddresses.Union(new [] { owner })));
             }
 
             public FungibleAssetValue GetBalance(Address address, Currency currency)
@@ -129,17 +133,20 @@ namespace Nekoyume.Action
                 throw new NotSupportedException();
             }
 
-            public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
+            public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
             {
-                return new AddressTraceStateDelta(_updatedAddresses.Union(new[] { recipient }));
+                return new AddressTraceStateDelta(
+                    new AddressTraceDelta(Delta.UpdatedAddresses.Union(new[] { recipient })));
             }
 
             public IAccountStateDelta SetState(Address address, IValue state)
             {
-                return new AddressTraceStateDelta(_updatedAddresses.Union(new[] { address }));
+                return new AddressTraceStateDelta(
+                    new AddressTraceDelta(Delta.UpdatedAddresses.Union(new[] { address })));
             }
 
             public IAccountStateDelta TransferAsset(
+                IActionContext context,
                 Address sender,
                 Address recipient,
                 FungibleAssetValue value,
@@ -147,8 +154,39 @@ namespace Nekoyume.Action
             )
             {
                 return new AddressTraceStateDelta(
-                    _updatedAddresses.Union(new[] { sender, recipient })
-                );
+                    new AddressTraceDelta(Delta.UpdatedAddresses.Union(new[] { sender, recipient })));
+            }
+
+            public ValidatorSet GetValidatorSet() => throw new NotSupportedException();
+
+            public IAccountStateDelta SetValidator(Validator validator)
+            {
+                throw new NotSupportedException();
+            }
+
+            public class AddressTraceDelta : IAccountDelta
+            {
+                private IImmutableSet<Address> _updatedAddresses;
+
+                public AddressTraceDelta()
+                    : this(ImmutableHashSet<Address>.Empty)
+                {
+                }
+
+                public AddressTraceDelta(IImmutableSet<Address> updatedAddresses)
+                {
+                    _updatedAddresses = updatedAddresses;
+                }
+
+                public IImmutableSet<Address> UpdatedAddresses => _updatedAddresses;
+                public IImmutableSet<Address> StateUpdatedAddresses => _updatedAddresses;
+                public IImmutableDictionary<Address, IValue> States => throw new NotSupportedException();
+                public IImmutableSet<Address> FungibleUpdatedAddresses => _updatedAddresses;
+                public IImmutableSet<(Address, Currency)> UpdatedFungibleAssets => throw new NotSupportedException();
+                public IImmutableDictionary<(Address, Currency), BigInteger> Fungibles => throw new NotSupportedException();
+                public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies => throw new NotSupportedException();
+                public IImmutableDictionary<Currency, BigInteger> TotalSupplies => throw new NotSupportedException();
+                public ValidatorSet ValidatorSet => throw new NotSupportedException();
             }
         }
     }

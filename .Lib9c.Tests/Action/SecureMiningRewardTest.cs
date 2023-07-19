@@ -34,16 +34,14 @@ namespace Lib9c.Tests.Action
             new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
         }.ToImmutableList();
 
-        private static readonly State _previousState = new State(
-            state: ImmutableDictionary<Address, IValue>.Empty
-                .Add(AdminState.Address, new AdminState(_admin, 100).Serialize())
-                .Add(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize()),
-            balance: ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
-                .Add((_authMiners[0], NCG), NCG * 1000)
-                .Add((_authMiners[1], NCG), NCG * 2000)
-                .Add((_authMiners[2], NCG), NCG * 3000)
-                .Add((_authMiners[3], NCG), NCG * 4000)
-        );
+        private static readonly MockStateDelta _previousState = new MockStateDelta(
+            MockState.Empty
+                .SetState(AdminState.Address, new AdminState(_admin, 100).Serialize())
+                .SetState(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize())
+                .SetBalance(_authMiners[0], NCG * 1000)
+                .SetBalance(_authMiners[1], NCG * 2000)
+                .SetBalance(_authMiners[2], NCG * 3000)
+                .SetBalance(_authMiners[3], NCG * 4000));
 
         [Fact]
         public void Execute()
@@ -52,7 +50,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(
                 new ActionContext
                 {
-                    PreviousStates = _previousState,
+                    PreviousState = _previousState,
                     Signer = _admin,
                     Rehearsal = false,
                     BlockIndex = 1,
@@ -82,7 +80,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<PermissionDeniedException>(() => action.Execute(
                 new ActionContext
                 {
-                    PreviousStates = _previousState,
+                    PreviousState = _previousState,
                     Signer = invalidSigner,
                     Rehearsal = false,
                     BlockIndex = 1,

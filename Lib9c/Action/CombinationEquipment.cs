@@ -86,7 +86,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -392,6 +392,7 @@ namespace Nekoyume.Action
                 var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
 
                 states = states.TransferAsset(
+                    context,
                     context.Signer,
                     feeStoreAddress,
                     states.GetGoldCurrency() * costNcg
@@ -533,6 +534,7 @@ namespace Nekoyume.Action
 
             hammerPointState.ResetHammerPoint();
             return states.TransferAsset(
+                context,
                 context.Signer,
                 Addresses.SuperCraft,
                 hammerPointCost);
@@ -632,7 +634,7 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(dailyCostState.Address, dailyCostState.Serialize())
                     .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
-                    .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+                    .TransferAsset(context, context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
             int hammerPoint;

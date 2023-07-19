@@ -34,9 +34,10 @@ namespace Lib9c.Tests.Action
             var mead = Currencies.Mead;
             var agentAddress = new PrivateKey().ToAddress();
             var pledgeAddress = agentAddress.GetPledgeAddress();
-            IAccountStateDelta states = new State()
+            var context = new ActionContext();
+            IAccountStateDelta states = new MockStateDelta()
                 .SetState(Addresses.Admin, adminState.Serialize())
-                .MintAsset(patronAddress, 4 * 500 * mead);
+                .MintAsset(context, patronAddress, 4 * 500 * mead);
 
             var agentAddresses = new List<(Address, Address)>
             {
@@ -59,7 +60,7 @@ namespace Lib9c.Tests.Action
             var actionContext = new ActionContext
             {
                 Signer = singer,
-                PreviousStates = states,
+                PreviousState = states,
             };
 
             if (exc is null)

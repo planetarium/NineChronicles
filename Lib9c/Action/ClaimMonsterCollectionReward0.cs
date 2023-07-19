@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
 
             if (context.Rehearsal)
@@ -106,7 +106,7 @@ namespace Nekoyume.Action
                 states = states.SetState(context.Signer, agentState.Serialize());
                 if (gold > currency * 0)
                 {
-                    states = states.TransferAsset(collectionAddress, context.Signer, gold);
+                    states = states.TransferAsset(context, collectionAddress, context.Signer, gold);
                 }
             }
 

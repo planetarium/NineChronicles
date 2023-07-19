@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
             var currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
@@ -204,7 +204,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -285,7 +285,7 @@ namespace Lib9c.Tests.Action
             // Second Execute
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -348,7 +348,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -410,7 +410,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -435,7 +435,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta state = backward ? new State() : _initialState;
+            IAccountStateDelta state = backward ? new MockStateDelta() : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -447,7 +447,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -473,7 +473,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -500,7 +500,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -535,7 +535,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<FailedAddWorldException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -573,7 +573,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -614,7 +614,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -641,7 +641,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousState = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -682,7 +682,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -726,7 +726,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -762,7 +762,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<NotEnoughActionPointException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -826,7 +826,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -896,7 +896,7 @@ namespace Lib9c.Tests.Action
 
                     var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
                     {
-                        PreviousStates = state,
+                        PreviousState = state,
                         Signer = avatarState.agentAddress,
                         Random = random,
                     }));
@@ -931,7 +931,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidItemCountException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
@@ -968,7 +968,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
@@ -995,7 +995,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
@@ -1022,7 +1022,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
@@ -1128,7 +1128,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1299,7 +1299,7 @@ namespace Lib9c.Tests.Action
 
             var ctx = new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1385,6 +1385,7 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(
@@ -1400,7 +1401,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive("world_ids"),
                     List.Empty.Add(worldId.Serialize()))
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
 
             var expectedAp = previousAvatarState.actionPoint -
                              _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
@@ -1420,7 +1421,7 @@ namespace Lib9c.Tests.Action
 
             var ctx = new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1463,6 +1464,7 @@ namespace Lib9c.Tests.Action
             var stakeState = new StakeState(stakeStateAddress, 1);
             var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
                 .FirstOrDefault(r => r.Level == level)?.RequiredGold ?? 0;
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(
@@ -1478,7 +1480,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive("world_ids"),
                     List.Empty.Add(worldId.Serialize()))
-                .MintAsset(stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
+                .MintAsset(context, stakeStateAddress, requiredGold * _initialState.GetGoldCurrency());
 
             var itemCount = previousAvatarState.inventory.Items
                 .FirstOrDefault(i => i.item.Id == itemId)?.count ?? 0;
@@ -1499,7 +1501,7 @@ namespace Lib9c.Tests.Action
 
             var ctx = new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1551,7 +1553,7 @@ namespace Lib9c.Tests.Action
 
             var exec = Assert.Throws<InvalidRepeatPlayException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = avatarState.agentAddress,
                 Random = new TestRandom(),
             }));
@@ -1646,7 +1648,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1670,7 +1672,7 @@ namespace Lib9c.Tests.Action
 
             action2.Execute(new ActionContext
             {
-                PreviousStates = nextState,
+                PreviousState = nextState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -1739,6 +1741,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
+            var context = new ActionContext();
             var state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
@@ -1751,7 +1754,7 @@ namespace Lib9c.Tests.Action
             );
 
             var ncgCurrency = state.GetGoldCurrency();
-            state = state.MintAsset(_agentAddress, 99999 * ncgCurrency);
+            state = state.MintAsset(context, _agentAddress, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {
@@ -1762,7 +1765,7 @@ namespace Lib9c.Tests.Action
             state = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
@@ -1784,7 +1787,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws(exception, () => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));

@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Action
             };
             agent.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State()
+            _initialState = new MockStateDelta()
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(_agentAddress, agent.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = new State(),
+                    PreviousState = new MockStateDelta(),
                     Random = new TestRandom(),
                     Signer = default,
                 })
@@ -144,7 +144,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousStates = state,
+                    PreviousState = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,

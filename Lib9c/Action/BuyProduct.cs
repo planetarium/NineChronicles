@@ -33,7 +33,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -142,7 +142,7 @@ namespace Nekoyume.Action
             switch (product)
             {
                 case FavProduct favProduct:
-                    states = states.TransferAsset(productAddress, AvatarAddress, favProduct.Asset);
+                    states = states.TransferAsset(context, productAddress, AvatarAddress, favProduct.Asset);
                     break;
                 case ItemProduct itemProduct:
                 {
@@ -205,8 +205,8 @@ namespace Nekoyume.Action
                 .SetState(sellerAvatarAddress, sellerAvatarState.SerializeV2())
                 .SetState(sellerAvatarAddress.Derive(LegacyQuestListKey), sellerAvatarState.questList.Serialize())
                 .SetState(ProductReceipt.DeriveAddress(productId), receipt.Serialize())
-                .TransferAsset(context.Signer, feeStoreAddress, tax)
-                .TransferAsset(context.Signer, sellerAgentAddress, taxedPrice);
+                .TransferAsset(context, context.Signer, feeStoreAddress, tax)
+                .TransferAsset(context, context.Signer, sellerAgentAddress, taxedPrice);
 
             if (sellerMigrationRequired)
             {
@@ -337,12 +337,14 @@ namespace Nekoyume.Action
             var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
             var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             states = states.TransferAsset(
+                context,
                 context.Signer,
                 feeStoreAddress,
                 tax);
 
             // Transfer seller.
             states = states.TransferAsset(
+                context,
                 context.Signer,
                 sellerAgentAddress,
                 taxedPrice

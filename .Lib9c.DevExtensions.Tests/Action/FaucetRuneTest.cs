@@ -33,7 +33,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new Lib9c.Tests.Action.State();
+            _initialState = new Lib9c.Tests.Action.MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -86,7 +86,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 AvatarAddress = _avatarAddress,
                 FaucetRuneInfos = faucetRuneInfos,
             };
-            var states = action.Execute(new ActionContext { PreviousStates = _initialState });
+            var states = action.Execute(new ActionContext { PreviousState = _initialState });
             foreach (var rune in faucetRuneInfos)
             {
                 var expectedRune = RuneHelper.ToCurrency(

@@ -30,7 +30,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states
@@ -39,10 +39,10 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
@@ -96,7 +96,7 @@ namespace Nekoyume.Action
 
                 // Refund holding NCG to user
                 FungibleAssetValue gold = states.GetBalance(monsterCollectionAddress, currency);
-                states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
+                states = states.TransferAsset(context, monsterCollectionAddress, context.Signer, gold);
             }
 
             if (level == 0)
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
                     requiredGold
                     );
             }
-            states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
+            states = states.TransferAsset(context, context.Signer, monsterCollectionAddress, requiredGold);
             states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}MonsterCollect Total Executed Time: {Elapsed}", addressesHex, ended - started);

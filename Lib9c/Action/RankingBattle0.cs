@@ -44,14 +44,14 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             if (ctx.Rehearsal)
             {
                 return states.SetState(ctx.Signer, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(WeeklyArenaAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -133,6 +133,7 @@ namespace Nekoyume.Action
                 if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
                 {
                     states = states.TransferAsset(
+                        ctx,
                         ctx.Signer,
                         WeeklyArenaAddress,
                         new FungibleAssetValue(

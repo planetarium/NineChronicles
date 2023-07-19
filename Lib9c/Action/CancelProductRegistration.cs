@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -162,7 +162,7 @@ namespace Nekoyume.Action
             switch (product)
             {
                 case FavProduct favProduct:
-                    states = states.TransferAsset(productAddress, avatarState.address,
+                    states = states.TransferAsset(context, productAddress, avatarState.address,
                         favProduct.Asset);
                     break;
                 case ItemProduct itemProduct:

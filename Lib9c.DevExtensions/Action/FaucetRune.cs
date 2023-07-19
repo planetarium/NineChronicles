@@ -26,10 +26,10 @@ namespace Lib9c.DevExtensions.Action
             context.UseGas(1);
             if (context.Rehearsal)
             {
-                return context.PreviousStates;
+                return context.PreviousState;
             }
 
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (!(FaucetRuneInfos is null))
             {
                 RuneSheet runeSheet = states.GetSheet<RuneSheet>();
@@ -37,7 +37,7 @@ namespace Lib9c.DevExtensions.Action
                 {
                     foreach (var rune in FaucetRuneInfos)
                     {
-                        states = states.MintAsset(AvatarAddress, RuneHelper.ToFungibleAssetValue(
+                        states = states.MintAsset(context, AvatarAddress, RuneHelper.ToFungibleAssetValue(
                             runeSheet.OrderedList.First(r => r.Id == rune.RuneId),
                             rune.Amount
                         ));

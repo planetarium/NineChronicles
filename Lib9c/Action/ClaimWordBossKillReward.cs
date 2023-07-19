@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -60,6 +60,7 @@ namespace Nekoyume.Action
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             var worldBossState = new WorldBossState((List) states.GetState(worldBossAddress));
             return states.SetWorldBossKillReward(
+                context,
                 worldBossKillRewardRecordAddress,
                 rewardRecord,
                 rank,

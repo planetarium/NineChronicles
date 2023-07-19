@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleV1Test()
         {
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
@@ -129,6 +129,7 @@ namespace Lib9c.Tests.Action
             int dungeonTicketAdditionalPrice,
             int numberOfTicketPurchases)
         {
+            var context = new ActionContext();
             var previousStates = _initialStates;
             var scheduleSheet = _tableSheets.EventScheduleSheet;
             Assert.True(scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow));
@@ -162,7 +163,7 @@ namespace Lib9c.Tests.Action
             Assert.True(previousStates.GetSheet<EventScheduleSheet>()
                 .TryGetValue(eventScheduleId, out var newScheduleRow));
             var ncgHas = newScheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases);
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
+            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas * _ncgCurrency);
 
             var nextStates = Execute(
                 previousStates,
@@ -290,6 +291,7 @@ namespace Lib9c.Tests.Action
             int eventDungeonStageId,
             int numberOfTicketPurchases)
         {
+            var context = new ActionContext();
             var previousStates = _initialStates;
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
@@ -302,7 +304,7 @@ namespace Lib9c.Tests.Action
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
             var ncgHas = scheduleRow.GetDungeonTicketCostV1(numberOfTicketPurchases) - 1;
-            previousStates = previousStates.MintAsset(_agentAddress, ncgHas * _ncgCurrency);
+            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas * _ncgCurrency);
 
             Assert.Throws<InsufficientBalanceException>(() =>
                 Execute(
@@ -408,7 +410,7 @@ namespace Lib9c.Tests.Action
 
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,

@@ -16,7 +16,7 @@ namespace Nekoyume.Model.Quest
         public int Count => _count;
         public override float Progress => (float) _current / _count;
 
-        public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data, QuestReward reward) 
+        public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data, QuestReward reward)
             : base(data, reward)
         {
             _count = data.Count;
@@ -63,13 +63,8 @@ namespace Nekoyume.Model.Quest
         protected override string TypeId => "itemEnhancementQuest";
 
         public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"grade"] = (Integer)Grade,
-                [(Text)"count"] = (Integer)_count,
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
-
+            ((Dictionary) base.Serialize())
+            .Add("grade", Grade)
+            .Add("count", _count);
     }
 }

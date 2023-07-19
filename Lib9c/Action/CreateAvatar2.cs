@@ -63,7 +63,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var avatarAddress = ctx.Signer.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -89,7 +89,7 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(Addresses.Ranking, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -135,9 +135,9 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = ctx.PreviousState.GetSheet<MaterialItemSheet>();
 
-            var rankingState = ctx.PreviousStates.GetRankingState0();
+            var rankingState = ctx.PreviousState.GetRankingState0();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 

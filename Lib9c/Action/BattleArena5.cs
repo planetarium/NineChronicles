@@ -87,7 +87,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -294,6 +294,7 @@ namespace Nekoyume.Action
                     var ticketBalance =
                         ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
                     states = states.TransferAsset(
+                        context,
                         context.Signer,
                         arenaAdr,
                         ticketBalance);

@@ -28,7 +28,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 
         public CreateOrReplaceAvatarTest()
         {
-            _initialStates = new Lib9c.Tests.Action.State();
+            _initialStates = new Lib9c.Tests.Action.MockStateDelta();
 
 #pragma warning disable CS0618
             var ncgCurrency = Currency.Legacy("NCG", 2, null);
@@ -443,7 +443,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 crystalRandomBuff);
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = agentAddr,
                 Random = new TestRandom(),
                 Rehearsal = false,

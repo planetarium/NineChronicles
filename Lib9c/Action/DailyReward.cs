@@ -30,12 +30,12 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, avatarAddress);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -93,6 +93,7 @@ namespace Nekoyume.Action
             if (gameConfigState.DailyRuneRewardAmount > 0)
             {
                 states = states.MintAsset(
+                    context,
                     avatarAddress,
                     RuneHelper.DailyRewardRune * gameConfigState.DailyRuneRewardAmount);
             }

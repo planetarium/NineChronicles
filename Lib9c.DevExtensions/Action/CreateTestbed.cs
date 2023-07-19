@@ -80,7 +80,7 @@ namespace Lib9c.DevExtensions.Action
                 .ToList();
 
             var agentAddress = _privateKey.PublicKey.ToAddress();
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
 
             var avatarAddress = agentAddress.Derive(
                 string.Format(
@@ -121,8 +121,8 @@ namespace Lib9c.DevExtensions.Action
 
                     states = states.SetState(avatarAddress, MarkChanged)
                         .SetState(inventoryAddress, MarkChanged)
-                        .MarkBalanceChanged(GoldCurrencyMock, agentAddress,
-                            GoldCurrencyState.Address)
+                        .MarkBalanceChanged(
+                            context, GoldCurrencyMock, agentAddress, GoldCurrencyState.Address)
                         .SetState(orderReceiptAddress, MarkChanged)
                         .SetState(itemAddress, MarkChanged)
                         .SetState(orderAddress, MarkChanged)
@@ -149,24 +149,24 @@ namespace Lib9c.DevExtensions.Action
 
             agentState.avatarAddresses.Add(_slotIndex, avatarAddress);
 
-            var rankingState = context.PreviousStates.GetRankingState();
+            var rankingState = context.PreviousState.GetRankingState();
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
             avatarState = TestbedHelper.CreateAvatarState(sellData.Avatar.Name,
                 agentAddress,
                 avatarAddress,
                 context.BlockIndex,
-                context.PreviousStates.GetAvatarSheets(),
-                context.PreviousStates.GetSheet<WorldSheet>(),
-                context.PreviousStates.GetGameConfigState(),
+                context.PreviousState.GetAvatarSheets(),
+                context.PreviousState.GetSheet<WorldSheet>(),
+                context.PreviousState.GetGameConfigState(),
                 rankingMapAddress);
 
             // Add item
-            var costumeItemSheet =  context.PreviousStates.GetSheet<CostumeItemSheet>();
-            var equipmentItemSheet = context.PreviousStates.GetSheet<EquipmentItemSheet>();
-            var optionSheet = context.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
-            var skillSheet = context.PreviousStates.GetSheet<SkillSheet>();
-            var materialItemSheet = context.PreviousStates.GetSheet<MaterialItemSheet>();
-            var consumableItemSheet = context.PreviousStates.GetSheet<ConsumableItemSheet>();
+            var costumeItemSheet =  context.PreviousState.GetSheet<CostumeItemSheet>();
+            var equipmentItemSheet = context.PreviousState.GetSheet<EquipmentItemSheet>();
+            var optionSheet = context.PreviousState.GetSheet<EquipmentItemOptionSheet>();
+            var skillSheet = context.PreviousState.GetSheet<SkillSheet>();
+            var materialItemSheet = context.PreviousState.GetSheet<MaterialItemSheet>();
+            var consumableItemSheet = context.PreviousState.GetSheet<ConsumableItemSheet>();
             for (var i = 0; i < sellData.Items.Length; i++)
             {
                 TestbedHelper.AddItem(costumeItemSheet,
@@ -209,7 +209,7 @@ namespace Lib9c.DevExtensions.Action
                     addedItemInfos[i].OrderId);
 
                 var balance =
-                    context.PreviousStates.GetBalance(agentAddress, states.GetGoldCurrency());
+                    context.PreviousState.GetBalance(agentAddress, states.GetGoldCurrency());
                 var price = new FungibleAssetValue(balance.Currency, sellData.Items[i].Price, 0);
                 var order = OrderFactory.Create(agentAddress, avatarAddress,
                     addedItemInfos[i].OrderId,

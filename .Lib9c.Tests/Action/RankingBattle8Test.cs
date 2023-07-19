@@ -34,7 +34,7 @@
 
         public RankingBattle8Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new State();
+            _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -208,7 +208,7 @@
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = previousState,
+                PreviousState = previousState,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
@@ -263,7 +263,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -308,7 +308,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = _initialState,
+                    PreviousState = _initialState,
                     Signer = signer,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -343,7 +343,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -375,7 +375,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -409,7 +409,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -450,7 +450,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousStates = previousState,
+                    PreviousState = previousState,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     Rehearsal = false,
@@ -480,17 +480,17 @@
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new State();
+            var state = new MockStateDelta();
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 BlockIndex = 0,
                 Rehearsal = true,
             });
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
         }
 
         [Theory]
@@ -543,7 +543,7 @@
 
             Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,

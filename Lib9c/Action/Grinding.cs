@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            IAccountStateDelta states = ctx.PreviousStates;
+            IAccountStateDelta states = ctx.PreviousState;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
@@ -177,7 +177,7 @@ namespace Nekoyume.Action
             return states
                 .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .MintAsset(context.Signer, crystal);
+                .MintAsset(context, context.Signer, crystal);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

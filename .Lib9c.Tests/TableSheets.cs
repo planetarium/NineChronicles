@@ -6,6 +6,7 @@ namespace Lib9c.Tests
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
     using Nekoyume.TableData.Event;
+    using Nekoyume.TableData.Garages;
     using Nekoyume.TableData.GrandFinale;
     using Nekoyume.TableData.Pet;
 
@@ -148,7 +149,11 @@ namespace Lib9c.Tests
 
         public CrystalEquipmentGrindingSheet CrystalEquipmentGrindingSheet { get; private set; }
 
-        public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
+        public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet
+        {
+            get;
+            private set;
+        }
 
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
@@ -174,7 +179,11 @@ namespace Lib9c.Tests
 
         public EventMaterialItemRecipeSheet EventMaterialItemRecipeSheet { get; private set; }
 
-        public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet { get; private set; }
+        public StakeActionPointCoefficientSheet StakeActionPointCoefficientSheet
+        {
+            get;
+            private set;
+        }
 
         public WorldBossListSheet WorldBossListSheet { get; private set; }
 
@@ -217,6 +226,8 @@ namespace Lib9c.Tests
         public PetOptionSheet PetOptionSheet { get; private set; }
 
         public PetCostSheet PetCostSheet { get; private set; }
+
+        public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

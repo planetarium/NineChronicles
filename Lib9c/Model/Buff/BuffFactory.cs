@@ -65,7 +65,8 @@ namespace Nekoyume.Model.Buff
                         continue;
 
                     var customField = skill.CustomField;
-                    if (!customField.HasValue &&
+                    if (buffRow.IsEnhanceable &&
+                        !customField.HasValue &&
                         extraValueBuff)
                     {
                         var additionalValue = skill.Power;

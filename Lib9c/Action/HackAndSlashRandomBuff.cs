@@ -47,7 +47,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var gachaStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(AvatarAddress);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -116,7 +116,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}HackAndSlashRandomBuff Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(gachaStateAddress, gachaState.Serialize())
-                .TransferAsset(context.Signer, Addresses.StageRandomBuff, cost);
+                .TransferAsset(context, context.Signer, Addresses.StageRandomBuff, cost);
         }
 
         private static bool IsPitySystemNeeded(IEnumerable<int> buffIds, int gachaCount, CrystalRandomBuffSheet sheet)

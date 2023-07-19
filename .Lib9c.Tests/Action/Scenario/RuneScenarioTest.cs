@@ -39,7 +39,8 @@ namespace Lib9c.Tests.Action.Scenario
                 rankingMapAddress
             );
 
-            IAccountStateDelta initialState = new Tests.Action.State()
+            var context = new ActionContext();
+            IAccountStateDelta initialState = new Tests.Action.MockStateDelta()
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(
@@ -64,7 +65,7 @@ namespace Lib9c.Tests.Action.Scenario
             var runeId = 30001;
             var runeRow = tableSheets.RuneSheet[runeId];
             var rune = RuneHelper.ToCurrency(runeRow);
-            initialState = initialState.MintAsset(avatarAddress, rune * 1);
+            initialState = initialState.MintAsset(context, avatarAddress, rune * 1);
 
             var runeAddress = RuneState.DeriveAddress(avatarAddress, runeId);
             Assert.Null(initialState.GetState(runeAddress));
@@ -78,7 +79,7 @@ namespace Lib9c.Tests.Action.Scenario
             var state = craftAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = initialState,
+                PreviousState = initialState,
                 Random = new TestRandom(),
                 Signer = agentAddress,
             });
@@ -108,7 +109,7 @@ namespace Lib9c.Tests.Action.Scenario
             var nextState = has.Execute(new ActionContext
             {
                 BlockIndex = 2,
-                PreviousStates = state,
+                PreviousState = state,
                 Random = new TestRandom(),
                 Signer = agentAddress,
             });

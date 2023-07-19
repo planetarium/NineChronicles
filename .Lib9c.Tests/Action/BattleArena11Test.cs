@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialStates = new State();
+            _initialStates = new MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in _sheets)
@@ -210,7 +210,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -233,7 +233,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<NotEnoughClearedStageLevelException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _initialStates,
+                    PreviousState = _initialStates,
                     Signer = _agent4Address,
                     Random = new TestRandom(),
                     BlockIndex = 1,
@@ -281,7 +281,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -304,7 +304,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ThisArenaIsClosedException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 4480001,
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaParticipantsNotFoundException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialStates,
+                PreviousState = _initialStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -342,6 +342,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 1;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -356,6 +357,7 @@ namespace Lib9c.Tests.Action
             var random = new TestRandom();
             previousStates = excludeMe
                 ? JoinArena(
+                    context,
                     previousStates,
                     _agent2Address,
                     _avatar2Address,
@@ -364,6 +366,7 @@ namespace Lib9c.Tests.Action
                     round,
                     random)
                 : JoinArena(
+                    context,
                     previousStates,
                     _agent1Address,
                     _avatar1Address,
@@ -387,7 +390,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<AddressNotFoundInArenaParticipantsException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = previousStates,
+                    PreviousState = previousStates,
                     Signer = _agent1Address,
                     Random = new TestRandom(),
                     BlockIndex = 1,
@@ -401,6 +404,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -414,6 +418,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -422,6 +427,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -455,7 +461,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ValidateScoreDifferenceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -466,6 +472,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -479,6 +486,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -487,6 +495,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -521,7 +530,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -532,6 +541,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -545,6 +555,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -553,6 +564,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -584,7 +596,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedPlayCountException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -595,6 +607,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -608,6 +621,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -616,6 +630,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -643,7 +658,7 @@ namespace Lib9c.Tests.Action
                 roundData,
                 beforeInfo,
                 previousStates.GetGoldCurrency());
-            previousStates = previousStates.MintAsset(_agent1Address, price);
+            previousStates = previousStates.MintAsset(context, _agent1Address, price);
 
             var action = new BattleArena11
             {
@@ -661,7 +676,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedTicketPurchaseLimitException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -672,6 +687,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -685,6 +701,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -693,6 +710,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -725,7 +743,7 @@ namespace Lib9c.Tests.Action
                 roundData,
                 beforeInfo,
                 previousStates.GetGoldCurrency());
-            previousStates = previousStates.MintAsset(_agent1Address, price);
+            previousStates = previousStates.MintAsset(context, _agent1Address, price);
 
             var action = new BattleArena11
             {
@@ -743,7 +761,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedTicketPurchaseLimitDuringIntervalException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -754,6 +772,7 @@ namespace Lib9c.Tests.Action
         {
             const int championshipId = 1;
             const int round = 2;
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(previousStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -767,6 +786,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -775,6 +795,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -799,7 +820,7 @@ namespace Lib9c.Tests.Action
                     roundData,
                     beforeInfo,
                     previousStates.GetGoldCurrency());
-                previousStates = previousStates.MintAsset(_agent1Address, price);
+                previousStates = previousStates.MintAsset(context, _agent1Address, price);
                 beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
             }
 
@@ -820,7 +841,7 @@ namespace Lib9c.Tests.Action
             var nextStates = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             });
@@ -828,7 +849,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<CoolDownBlockException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex + 1,
-                PreviousStates = nextStates,
+                PreviousState = nextStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -846,6 +867,7 @@ namespace Lib9c.Tests.Action
             int arenaInterval = 5;
             int randomSeed = 3;
 
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(_initialStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -859,6 +881,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom(randomSeed);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -867,6 +890,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -883,7 +907,7 @@ namespace Lib9c.Tests.Action
             }
 
             var ncgCurrency = previousStates.GetGoldCurrency();
-            previousStates = previousStates.MintAsset(_agent1Address, 99999 * ncgCurrency);
+            previousStates = previousStates.MintAsset(context, _agent1Address, 99999 * ncgCurrency);
 
             var unlockRuneSlot = new UnlockRuneSlot()
             {
@@ -894,7 +918,7 @@ namespace Lib9c.Tests.Action
             previousStates = unlockRuneSlot.Execute(new ActionContext
             {
                 BlockIndex = 1,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             });
@@ -947,7 +971,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws(exception, () => action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = random,
                 Rehearsal = false,
@@ -958,6 +982,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ValidateDuplicateTicketPurchaseException()
         {
+            var context = new ActionContext();
             const int championshipId = 1;
             const int round = 1;
             var previousStates = _initialStates;
@@ -978,6 +1003,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent1Address,
                 _avatar1Address,
@@ -986,6 +1012,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 _agent2Address,
                 _avatar2Address,
@@ -1013,7 +1040,7 @@ namespace Lib9c.Tests.Action
                 roundData,
                 beforeInfo,
                 previousStates.GetGoldCurrency());
-            previousStates = previousStates.MintAsset(_agent1Address, price);
+            previousStates = previousStates.MintAsset(context, _agent1Address, price);
 
             var action = new BattleArena11
             {
@@ -1031,7 +1058,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<TicketPurchaseLimitExceedException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -1077,6 +1104,7 @@ namespace Lib9c.Tests.Action
             Address enemyAgentAddress,
             Address enemyAvatarAddress)
         {
+            var context = new ActionContext();
             var previousStates = _initialStates;
             Assert.True(_initialStates.GetSheet<ArenaSheet>().TryGetValue(
                 championshipId,
@@ -1090,6 +1118,7 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom(randomSeed);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 myAgentAddress,
                 myAvatarAddress,
@@ -1098,6 +1127,7 @@ namespace Lib9c.Tests.Action
                 round,
                 random);
             previousStates = JoinArena(
+                context,
                 previousStates,
                 enemyAgentAddress,
                 enemyAvatarAddress,
@@ -1123,7 +1153,7 @@ namespace Lib9c.Tests.Action
                         roundData,
                         beforeInfo,
                         previousStates.GetGoldCurrency());
-                    previousStates = previousStates.MintAsset(myAgentAddress, price);
+                    previousStates = previousStates.MintAsset(context, myAgentAddress, price);
                     beforeInfo.BuyTicket(roundData.MaxPurchaseCount);
                 }
             }
@@ -1173,7 +1203,7 @@ namespace Lib9c.Tests.Action
                 : roundData.StartBlockIndex + arenaInterval;
             var nextStates = action.Execute(new ActionContext
             {
-                PreviousStates = previousStates,
+                PreviousState = previousStates,
                 Signer = myAgentAddress,
                 Random = random,
                 Rehearsal = false,
@@ -1255,6 +1285,7 @@ namespace Lib9c.Tests.Action
         }
 
         private IAccountStateDelta JoinArena(
+            IActionContext context,
             IAccountStateDelta states,
             Address signer,
             Address avatarAddress,
@@ -1264,7 +1295,7 @@ namespace Lib9c.Tests.Action
             IRandom random)
         {
             var preCurrency = 1000 * _crystal;
-            states = states.MintAsset(signer, preCurrency);
+            states = states.MintAsset(context, signer, preCurrency);
 
             var action = new JoinArena1
             {
@@ -1277,7 +1308,7 @@ namespace Lib9c.Tests.Action
 
             states = action.Execute(new ActionContext
             {
-                PreviousStates = states,
+                PreviousState = states,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,

@@ -49,7 +49,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             CheckPermission(context);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var mead = Mead * Currencies.Mead;
             var contractList = List.Empty
                 .Add(PatronAddress.Serialize())
@@ -58,7 +58,7 @@ namespace Nekoyume.Action
             foreach (var (agentAddress, pledgeAddress) in AgentAddresses)
             {
                 states = states
-                    .TransferAsset(PatronAddress, agentAddress, mead)
+                    .TransferAsset(context, PatronAddress, agentAddress, mead)
                     .SetState(pledgeAddress, contractList);
             }
             return states;

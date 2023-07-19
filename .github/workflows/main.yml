@@ -96,15 +96,6 @@ jobs:
         fi
       env:
         WEB_FLOW_KEY_URL: https://github.com/web-flow.gpg
-    - name: Update other repos referring lib9c as submodules
-      uses: planetarium/submodule-updater@main
-      with:
-        token: ${{ secrets.SUBMODULE_UPDATER_GH_TOKEN }}
-        committer: >
-          Submodule Updater <engineering+submodule-updater@planetariumhq.com>
-        targets: |
-          ${{ github.repository_owner }}/NineChronicles:rc-${{ github.ref_name }}?
-          ${{ github.repository_owner }}/NineChronicles.Headless:rc-${{ github.ref_name }}?
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
@@ -121,7 +112,7 @@ jobs:
         destination_dir: ${{ github.ref_name }}
 
   update-submodule:
-    if: github.ref_type == 'branch' && startsWith(github.ref_name, 'rc-v')
+    if: github.ref_type == 'branch' && startsWith(github.ref_name, 'release/')
     runs-on: ubuntu-latest
     steps:
     - name: Update other repos referring lib9c as submodules
@@ -131,5 +122,5 @@ jobs:
         committer: >
           Submodule Updater <engineering+submodule-updater@planetariumhq.com>
         targets: |
-          ${{ github.repository_owner }}/NineChronicles:${{ github.ref_name }}?
-          ${{ github.repository_owner }}/NineChronicles.Headless:${{ github.ref_name }}?
+          ${{ github.repository_owner }}/NineChronicles:refs/heads/release/*
+          ${{ github.repository_owner }}/NineChronicles.Headless:refs/heads/release/*

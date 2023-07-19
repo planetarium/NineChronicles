@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             Address signer = context.Signer;
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             var contractAddress = AgentAddress.GetPledgeAddress();
             if (states.TryGetState(contractAddress, out List contract))
             {
@@ -41,7 +41,7 @@ namespace Nekoyume.Action
                 var balance = states.GetBalance(AgentAddress, Currencies.Mead);
                 if (balance > 0 * Currencies.Mead)
                 {
-                    states = states.TransferAsset(AgentAddress, signer, balance);
+                    states = states.TransferAsset(context, AgentAddress, signer, balance);
                 }
                 return states.SetState(contractAddress, Null.Value);
             }

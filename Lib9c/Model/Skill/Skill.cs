@@ -36,11 +36,9 @@ namespace Nekoyume.Model.Skill
             ReferencedStatType = referencedStatType;
         }
 
-        public abstract BattleStatus.Skill Use(
-            CharacterBase caster,
+        public abstract BattleStatus.Skill Use(CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs
-        );
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter);
 
         protected bool Equals(Skill other)
         {
@@ -83,9 +81,9 @@ namespace Nekoyume.Model.Skill
                 foreach (var target in targets.Where(target => target.GetChance(buff.BuffInfo.Chance)))
                 {
                     target.AddBuff(buff);
-                    infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
+                    infos.Add(new Model.BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, 0, false,
                         SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
-                        buff));
+                        buff, target));
                 }
             }
 

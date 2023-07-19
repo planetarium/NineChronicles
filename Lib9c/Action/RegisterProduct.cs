@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -212,7 +212,7 @@ namespace Nekoyume.Action
                         SellerAvatarAddress = assetInfo.AvatarAddress,
                     };
                     states = states
-                        .TransferAsset(avatarState.address, productAddress, asset)
+                        .TransferAsset(context, avatarState.address, productAddress, asset)
                         .SetState(productAddress, product.Serialize());
                     productsState.ProductIds.Add(productId);
                     break;

@@ -122,7 +122,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var slotAddress = avatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -136,7 +136,7 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
@@ -290,7 +290,7 @@ namespace Nekoyume.Action
             var requiredNcg = row.Cost;
             if (requiredNcg > 0)
             {
-                states = states.TransferAsset(ctx.Signer, GetFeeStoreAddress(), states.GetGoldCurrency() * requiredNcg);
+                states = states.TransferAsset(ctx, ctx.Signer, GetFeeStoreAddress(), states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items

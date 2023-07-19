@@ -41,7 +41,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
                         IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            var states = ctx.PreviousState;
             var slotAddress = AvatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -61,7 +61,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
@@ -217,6 +217,7 @@ namespace Nekoyume.Action
             if (requiredGold > 0)
             {
                 states = states.TransferAsset(
+                    ctx,
                     ctx.Signer,
                     BlacksmithAddress,
                     states.GetGoldCurrency() * requiredGold

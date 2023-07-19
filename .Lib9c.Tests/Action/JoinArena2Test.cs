@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new State();
+            _state = new MockStateDelta();
 
             _signer = new PrivateKey().ToAddress();
             _avatarAddress = _signer.Derive("avatar");
@@ -203,7 +203,8 @@ namespace Lib9c.Tests.Action
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             avatarState = AddMedal(avatarState, row, 80);
 
-            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
+            var context = new ActionContext();
+            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena2()
             {
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action
 
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = _random,
                 Rehearsal = false,
@@ -295,7 +296,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
             }));
@@ -321,7 +322,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<RoundNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -335,7 +336,8 @@ namespace Lib9c.Tests.Action
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             GetAvatarState(avatarState, out var equipments, out var costumes);
             var preCurrency = 99800100000 * _currency;
-            var state = _state.MintAsset(_signer, preCurrency);
+            var context = new ActionContext();
+            var state = _state.MintAsset(context, _signer, preCurrency);
 
             var action = new JoinArena2()
             {
@@ -349,7 +351,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughMedalException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 100,
@@ -377,7 +379,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughFungibleAssetValueException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = blockIndex,
@@ -403,7 +405,7 @@ namespace Lib9c.Tests.Action
 
             state = action.Execute(new ActionContext
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = _random,
                 Rehearsal = false,
@@ -412,7 +414,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaScoreAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 2,
@@ -445,7 +447,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaScoreAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -478,7 +480,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaInformationAlreadyContainsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousState = state,
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -500,7 +502,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _signer2,
                 Random = new TestRandom(),
             }));

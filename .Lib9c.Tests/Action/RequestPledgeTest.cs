@@ -20,7 +20,8 @@ namespace Lib9c.Tests.Action
         {
             Currency mead = Currencies.Mead;
             Address patron = new PrivateKey().ToAddress();
-            IAccountStateDelta states = new State().MintAsset(patron, 2 * mead);
+            var context = new ActionContext();
+            IAccountStateDelta states = new MockStateDelta().MintAsset(context, patron, 2 * mead);
             var address = new PrivateKey().ToAddress();
             var action = new RequestPledge
             {
@@ -34,7 +35,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 Signer = patron,
-                PreviousStates = states,
+                PreviousState = states,
             });
             var contract = Assert.IsType<List>(nextState.GetState(address.GetPledgeAddress()));
 
@@ -51,7 +52,7 @@ namespace Lib9c.Tests.Action
             Address patron = new PrivateKey().ToAddress();
             var address = new PrivateKey().ToAddress();
             Address contractAddress = address.GetPledgeAddress();
-            IAccountStateDelta states = new State().SetState(contractAddress, List.Empty);
+            IAccountStateDelta states = new MockStateDelta().SetState(contractAddress, List.Empty);
             var action = new RequestPledge
             {
                 AgentAddress = address,
@@ -61,7 +62,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<AlreadyContractedException>(() => action.Execute(new ActionContext
             {
                 Signer = patron,
-                PreviousStates = states,
+                PreviousState = states,
             }));
         }
     }

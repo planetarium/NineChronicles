@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly AvatarState _avatarState;
         private readonly AvatarState _avatarState2;
-        private readonly State _baseState;
+        private readonly MockStateDelta _baseState;
         private readonly TableSheets _tableSheets;
 
         public RewardGoldTest()
@@ -76,10 +76,11 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
-            _baseState = (State)new State()
+            IActionContext context = new ActionContext();
+            _baseState = (MockStateDelta)new MockStateDelta()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000);
         }
 
         [Theory]
@@ -126,7 +127,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -141,12 +142,12 @@ namespace Lib9c.Tests.Action
                 var currentWeeklyState = nextState.GetWeeklyArenaState(0);
                 var nextWeeklyState = nextState.GetWeeklyArenaState(1);
 
-                Assert.Contains(WeeklyArenaState.DeriveAddress(0), nextState.UpdatedAddresses);
-                Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(0), nextState.Delta.UpdatedAddresses);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.Delta.UpdatedAddresses);
 
                 if (updateNext)
                 {
-                    Assert.Contains(WeeklyArenaState.DeriveAddress(2), nextState.UpdatedAddresses);
+                    Assert.Contains(WeeklyArenaState.DeriveAddress(2), nextState.Delta.UpdatedAddresses);
                     Assert.Equal(blockIndex, nextWeeklyState.ResetIndex);
                 }
 
@@ -232,7 +233,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -312,7 +313,7 @@ namespace Lib9c.Tests.Action
             var migrationCtx = new ActionContext
             {
                 BlockIndex = RankingBattle11.UpdateTargetBlockIndex,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = default,
             };
 
@@ -341,7 +342,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = state,
+                PreviousState = state,
                 Miner = default,
             };
 
@@ -375,7 +376,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
             };
 
             IAccountStateDelta delta;
@@ -441,7 +442,7 @@ namespace Lib9c.Tests.Action
             var ctx = new ActionContext()
             {
                 BlockIndex = 0,
-                PreviousStates = _baseState,
+                PreviousState = _baseState,
                 Miner = miner,
             };
 
@@ -571,15 +572,16 @@ namespace Lib9c.Tests.Action
             var agentAddress = new PrivateKey().ToAddress();
             var patronAddress = new PrivateKey().ToAddress();
             var contractAddress = agentAddress.GetPledgeAddress();
-            IAccountStateDelta states = new State()
-                .MintAsset(patronAddress, patronMead * Currencies.Mead)
-                .TransferAsset(patronAddress, agentAddress, 1 * Currencies.Mead)
+            IActionContext context = new ActionContext();
+            IAccountStateDelta states = new MockStateDelta()
+                .MintAsset(context, patronAddress, patronMead * Currencies.Mead)
+                .TransferAsset(context, patronAddress, agentAddress, 1 * Currencies.Mead)
                 .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))
-                .BurnAsset(agentAddress, 1 * Currencies.Mead);
+                .BurnAsset(context, agentAddress, 1 * Currencies.Mead);
             Assert.Equal(balance * Currencies.Mead, states.GetBalance(patronAddress, Currencies.Mead));
             Assert.Equal(0 * Currencies.Mead, states.GetBalance(agentAddress, Currencies.Mead));
 
-            var nextState = RewardGold.TransferMead(states);
+            var nextState = RewardGold.TransferMead(context, states);
             // transfer mead from patron to agent
             Assert.Equal(0 * Currencies.Mead, nextState.GetBalance(patronAddress, Currencies.Mead));
             Assert.Equal(balance * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));

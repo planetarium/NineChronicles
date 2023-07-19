@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new State();
+            _state = new MockStateDelta();
 
             _sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(_sheets);
@@ -195,10 +195,10 @@ namespace Lib9c.Tests.Action
             return (equipments, costumes);
         }
 
-        public IAccountStateDelta JoinArena(Address signer, Address avatarAddress, long blockIndex, int championshipId, int round, IRandom random)
+        public IAccountStateDelta JoinArena(IActionContext context, Address signer, Address avatarAddress, long blockIndex, int championshipId, int round, IRandom random)
         {
             var preCurrency = 1000 * _crystal;
-            _state = _state.MintAsset(signer, preCurrency);
+            _state = _state.MintAsset(context, signer, preCurrency);
 
             var action = new JoinArena1()
             {
@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Action
 
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = signer,
                 Random = random,
                 Rehearsal = false,
@@ -237,6 +237,7 @@ namespace Lib9c.Tests.Action
             int arenaInterval,
             int randomSeed)
         {
+            var context = new ActionContext();
             var arenaSheet = _state.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var row))
             {
@@ -251,8 +252,8 @@ namespace Lib9c.Tests.Action
             }
 
             var random = new TestRandom(randomSeed);
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
             if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
@@ -267,7 +268,7 @@ namespace Lib9c.Tests.Action
                 for (var i = 0; i < ticket; i++)
                 {
                     var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
-                    _state = _state.MintAsset(_agent1Address, price);
+                    _state = _state.MintAsset(context, _agent1Address, price);
                     beforeInfo.BuyTicket(ArenaHelper.GetMaxPurchasedTicketCount(roundData));
                 }
             }
@@ -305,7 +306,7 @@ namespace Lib9c.Tests.Action
             var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
             _state = action.Execute(new ActionContext
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = random,
                 Rehearsal = false,
@@ -413,7 +414,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -435,7 +436,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -457,7 +458,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent4Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -480,7 +481,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -502,7 +503,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ThisArenaIsClosedException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 4480001,
@@ -525,7 +526,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<ArenaParticipantsNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -537,6 +538,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_AddressNotFoundInArenaParticipantsException(bool excludeMe)
         {
+            var context = new ActionContext();
             var championshipId = 1;
             var round = 1;
             var arenaSheet = _state.GetSheet<ArenaSheet>();
@@ -554,8 +556,8 @@ namespace Lib9c.Tests.Action
 
             var random = new TestRandom();
             _state = excludeMe
-                ? JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random)
-                : JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+                ? JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random)
+                : JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var action = new BattleArena3()
             {
@@ -570,7 +572,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<AddressNotFoundInArenaParticipantsException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 BlockIndex = 1,
@@ -582,6 +584,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_ValidateScoreDifferenceException(bool isSigner)
         {
+            var context = new ActionContext();
             var championshipId = 1;
             var round = 2;
             var arenaSheet = _state.GetSheet<ArenaSheet>();
@@ -598,8 +601,8 @@ namespace Lib9c.Tests.Action
             }
 
             var random = new TestRandom();
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var arenaScoreAdr = ArenaScore.DeriveAddress(isSigner ? _avatar1Address : _avatar2Address, roundData.ChampionshipId, roundData.Round);
             _state.TryGetArenaScore(arenaScoreAdr, out var arenaScore);
@@ -621,7 +624,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ValidateScoreDifferenceException>(() => action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -630,6 +633,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InsufficientBalanceException()
         {
+            var context = new ActionContext();
             var championshipId = 1;
             var round = 2;
             var arenaSheet = _state.GetSheet<ArenaSheet>();
@@ -646,8 +650,8 @@ namespace Lib9c.Tests.Action
             }
 
             var random = new TestRandom();
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
             if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
@@ -673,7 +677,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -682,6 +686,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ExceedPlayCountException()
         {
+            var context = new ActionContext();
             var championshipId = 1;
             var round = 2;
             var arenaSheet = _state.GetSheet<ArenaSheet>();
@@ -698,8 +703,8 @@ namespace Lib9c.Tests.Action
             }
 
             var random = new TestRandom();
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
             if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
@@ -722,7 +727,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedPlayCountException>(() => action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));
@@ -731,6 +736,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ExceedTicketPurchaseLimitException()
         {
+            var context = new ActionContext();
             var championshipId = 1;
             var round = 2;
             var arenaSheet = _state.GetSheet<ArenaSheet>();
@@ -747,8 +753,8 @@ namespace Lib9c.Tests.Action
             }
 
             var random = new TestRandom();
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(context, _agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
             var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
             if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
@@ -765,7 +771,7 @@ namespace Lib9c.Tests.Action
 
             _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
             var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
-            _state = _state.MintAsset(_agent1Address, price);
+            _state = _state.MintAsset(context, _agent1Address, price);
 
             var action = new BattleArena3()
             {
@@ -782,7 +788,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<ExceedTicketPurchaseLimitException>(() => action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _state,
+                PreviousState = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
             }));

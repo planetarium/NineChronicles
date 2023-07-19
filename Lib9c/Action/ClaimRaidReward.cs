@@ -36,7 +36,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousStates;
+            IAccountStateDelta states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -85,11 +85,11 @@ namespace Nekoyume.Action
                     {
                         if (reward.Currency.Equals(CrystalCalculator.CRYSTAL))
                         {
-                            states = states.MintAsset(context.Signer, reward);
+                            states = states.MintAsset(context, context.Signer, reward);
                         }
                         else
                         {
-                            states = states.MintAsset(AvatarAddress, reward);
+                            states = states.MintAsset(context, AvatarAddress, reward);
                         }
                     }
                 }

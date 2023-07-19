@@ -375,7 +375,7 @@ namespace Lib9c.Tests.Model.State
                 mailBox.Add(mail);
             }
 
-            mailBox.CleanUp2();
+            mailBox.CleanUpV1();
 
             Assert.Equal(30, mailBox.Count);
             Assert.DoesNotContain(mailBox, m => m.blockIndex < 30);

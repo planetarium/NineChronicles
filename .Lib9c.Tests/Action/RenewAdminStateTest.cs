@@ -23,10 +23,9 @@ namespace Lib9c.Tests.Action
             _adminPrivateKey = new PrivateKey();
             _validUntil = 1_500_000L;
             _adminState = new AdminState(_adminPrivateKey.ToAddress(), _validUntil);
-            _stateDelta =
-                new State(ImmutableDictionary<Address, IValue>.Empty.Add(
-                    Addresses.Admin,
-                    _adminState.Serialize()));
+            _stateDelta = new MockStateDelta(
+                MockState.Empty
+                    .SetState(Addresses.Admin, _adminState.Serialize()));
         }
 
         [Fact]
@@ -36,7 +35,7 @@ namespace Lib9c.Tests.Action
             var action = new RenewAdminState(newValidUntil);
             var stateDelta = action.Execute(new ActionContext
             {
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -55,7 +54,7 @@ namespace Lib9c.Tests.Action
                 var userPrivateKey = new PrivateKey();
                 action.Execute(new ActionContext
                 {
-                    PreviousStates = _stateDelta,
+                    PreviousState = _stateDelta,
                     Signer = userPrivateKey.ToAddress(),
                 });
             });
@@ -69,7 +68,7 @@ namespace Lib9c.Tests.Action
             var stateDelta = action.Execute(new ActionContext
             {
                 BlockIndex = _validUntil + 1,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -105,7 +104,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<PolicyExpiredException>(() => createPendingActivations.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             }));
 
@@ -114,7 +113,7 @@ namespace Lib9c.Tests.Action
             var stateDelta = action.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = _stateDelta,
+                PreviousState = _stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 
@@ -125,7 +124,7 @@ namespace Lib9c.Tests.Action
             stateDelta = createPendingActivations.Execute(new ActionContext
             {
                 BlockIndex = blockIndex,
-                PreviousStates = stateDelta,
+                PreviousState = stateDelta,
                 Signer = _adminPrivateKey.ToAddress(),
             });
 

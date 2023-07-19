@@ -42,7 +42,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            var states = context.PreviousStates;
+            var states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -99,7 +99,7 @@ namespace Nekoyume.Action
             raidSlotState.Unlock(SlotIndex);
 
             return states
-                .TransferAsset(context.Signer, feeStoreAddress, cost * ncgCurrency)
+                .TransferAsset(context, context.Signer, feeStoreAddress, cost * ncgCurrency)
                 .SetState(adventureSlotStateAddress, adventureSlotState.Serialize())
                 .SetState(arenaSlotStateAddress, arenaSlotState.Serialize())
                 .SetState(raidSlotStateAddress, raidSlotState.Serialize());
