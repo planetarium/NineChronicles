@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DG.Tweening;
+using Lib9c;
+using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -11,7 +13,6 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
-using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -39,7 +40,9 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
-        private const string FirstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
+
+        private const string FirstOpenMimisbrunnrKeyFormat =
+            "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest;
@@ -121,14 +124,8 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
 
-            playerButton.onClick.AddListener(() =>
-            {
-                Game.Game.instance.Lobby.Character.Touch();
-            });
-            petButton.onClick.AddListener(() =>
-            {
-                Game.Game.instance.Lobby.Character.TouchPet();
-            });
+            playerButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.Touch());
+            petButton.onClick.AddListener(() => Game.Game.instance.Lobby.Character.TouchPet());
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))
                 .AddTo(gameObject);
@@ -153,7 +150,8 @@ namespace Nekoyume.UI
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
                 };
-                buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
+                buttonList.ForEach(button =>
+                    button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
             StakingLevelSubject.Level
@@ -171,7 +169,7 @@ namespace Nekoyume.UI
                 CloseWithOtherWidgets();
                 ShortcutHelper.ShortcutActionForStage(worldRow.Id, stageId, true);
             }
-            else if(ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
+            else if (ShortcutHelper.CheckUIStateForUsingShortcut(ShortcutHelper.PlaceType.Stage))
             {
                 Find<Menu>().QuestClick();
             }
@@ -238,11 +236,12 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
-            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment", new Dictionary<string, Value>()
-            {
-                ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-            });
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment",
+                new Dictionary<string, Value>()
+                {
+                    ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
+                    ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                });
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
@@ -345,6 +344,8 @@ namespace Nekoyume.UI
                 btnShop.JingleTheCat();
                 return;
             }
+
+            Analyzer.Instance.Track("Unity/Lobby/ShopButton/Click");
 
             if (shopExclamationMark.gameObject.activeSelf)
             {
@@ -526,6 +527,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Analyzer.Instance.Track("Unity/Lobby/Show");
             SubscribeAtShow();
 
             if (!(_coLazyClose is null))
@@ -668,17 +670,49 @@ namespace Nekoyume.UI
         {
             base.Update();
 
-            if (!Find<CombinationResultPopup>().gameObject.activeSelf &&
-                !Find<EnhancementResultPopup>().gameObject.activeSelf &&
-                Input.GetKey(KeyCode.LeftControl))
+            if (Input.GetKey(KeyCode.LeftControl))
             {
-                if (Input.GetKeyDown(KeyCode.C))
+                if (Input.GetKeyDown(KeyCode.C) &&
+                    !Find<CombinationResultPopup>().gameObject.activeSelf)
                 {
                     Find<CombinationResultPopup>().ShowWithEditorProperty();
                 }
-                else if (Input.GetKeyDown(KeyCode.E))
+                else if (Input.GetKeyDown(KeyCode.E) &&
+                         !Find<EnhancementResultPopup>().gameObject.activeSelf)
                 {
                     Find<EnhancementResultPopup>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.U) &&
+                         !Find<OneButtonSystem>().gameObject.activeSelf)
+                {
+                    var game = Game.Game.instance;
+                    var states = game.States;
+                    var sheet = game.TableSheets.MaterialItemSheet;
+                    var mail = new UnloadFromMyGaragesRecipientMail(
+                        default,
+                        default,
+                        default,
+                        fungibleAssetValue: new[]
+                        {
+                            (
+                                states.AgentState.address,
+                                new FungibleAssetValue(
+                                    states.GoldBalanceState.Gold.Currency,
+                                    9,
+                                    99)
+                            ),
+                            (states.CurrentAvatarState.address, 99 * Currencies.Crystal),
+                        },
+                        fungibleIdAndCount: sheet.OrderedList!.Take(3)
+                            .Select((row, index) => (
+                                row.ItemId,
+                                index + 1)),
+                        "memo");
+                    mail.New = true;
+                    var mailBox = states.CurrentAvatarState.mailBox;
+                    mailBox.Add(mail);
+                    mailBox.CleanUp();
+                    ReactiveAvatarState.UpdateMailBox(mailBox);
                 }
             }
         }

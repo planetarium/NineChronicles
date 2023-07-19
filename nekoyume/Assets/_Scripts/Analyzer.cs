@@ -1,7 +1,8 @@
+#nullable enable
+
 using System.Collections.Generic;
-using System.Linq;
 using mixpanel;
-using PackageExtensions.Mixpanel;
+using Nekoyume.State;
 //using Sentry;
 /*
  * [ISSUE TRACKER]
@@ -24,11 +25,9 @@ namespace Nekoyume
 
         private readonly bool _isTrackable;
 
-        private readonly MixpanelValueFactory _mixpanelValueFactory;
-
         public Analyzer(
-            string uniqueId = "none",
-            string rpcServerHost = null,
+            string? uniqueId = null,
+            string? rpcServerHost = null,
             bool isTrackable = false)
         {
             _isTrackable = isTrackable;
@@ -38,54 +37,63 @@ namespace Nekoyume
                 return;
             }
 
+            SetUniqueId(uniqueId);
+            rpcServerHost ??= "no-rpc-host";
+
             var clientHost = Resources.Load<TextAsset>("ClientHost")?.text ?? "no-host";
             var clientHash = Resources.Load<TextAsset>("ClientHash")?.text ?? "no-hash";
             var targetNetwork = Resources.Load<TextAsset>("TargetNetwork")?.text ?? "no-target";
 
+            InitializeMixpanel(
+                clientHost,
+                clientHash,
+                targetNetwork,
+                rpcServerHost);
             InitializeSentry(
                 clientHost,
                 clientHash,
                 targetNetwork,
-                rpcServerHost,
-                uniqueId,
-                _isTrackable);
+                rpcServerHost);
+            UpdateAvatarAddress();
 
-            _mixpanelValueFactory = new MixpanelValueFactory(
-                clientHost,
-                clientHash,
-                targetNetwork,
-                rpcServerHost,
-                uniqueId);
-
-            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            Mixpanel.Identify(uniqueId);
-            Mixpanel.Register("AgentAddress", uniqueId);
-            Mixpanel.People.Set("AgentAddress", uniqueId);
-            Mixpanel.People.Name = uniqueId;
-            Mixpanel.Init();
+            Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
 
             Debug.Log($"Analyzer initialized: {uniqueId}");
         }
 
-        private void InitializeSentry(
+        public static void SetUniqueId(string? uniqueId = null)
+        {
+            uniqueId ??= "none";
+
+            Mixpanel.Identify(uniqueId);
+            Mixpanel.Register("AgentAddress", uniqueId);
+            Mixpanel.People.Set("AgentAddress", uniqueId);
+            Mixpanel.People.Name = uniqueId;
+            // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
+        }
+
+        private static void InitializeMixpanel(
             string clientHost,
             string clientHash,
             string targetNetwork,
-            string rpcServerHost = "no-rpc-host",
-            string uniqueId = "none",
-            bool isTrackable = false)
+            string rpcServerHost)
         {
-            // if (!isTrackable)
-            // {
-            //     return;
-            // }
-            //
+            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
+            Mixpanel.Register("client-host", clientHost);
+            Mixpanel.Register("client-hash", clientHash);
+            Mixpanel.Register("target-network", targetNetwork);
+            Mixpanel.Register("rpc-server-host", rpcServerHost);
+            Mixpanel.Init();
+        }
+
+        private static void InitializeSentry(
+            string clientHost,
+            string clientHash,
+            string targetNetwork,
+            string rpcServerHost)
+        {
             // SentrySdk.ConfigureScope(scope =>
             // {
-            //     scope.User = new User()
-            //     {
-            //         Id = uniqueId
-            //     };
             //     scope.SetTag("client-host", clientHost);
             //     scope.SetTag("client-hash", clientHash);
             //     scope.SetTag("target-network", targetNetwork);
@@ -135,8 +143,13 @@ namespace Nekoyume
                 return;
             }
 
-            var value = _mixpanelValueFactory.GetValue(properties);
-            Mixpanel.Track(eventName, value);
+            var result = new Value();
+            foreach (var (key, value) in properties)
+            {
+                result[key] = value;
+            }
+
+            Mixpanel.Track(eventName, result);
         }
 
         public ITransaction Track(
@@ -156,7 +169,6 @@ namespace Nekoyume
             //         item => item.Value.ToString()));
 
             var value = new Value(valueDict);
-            value = _mixpanelValueFactory.UpdateValue(value);
             Mixpanel.Track(eventName, value);
 
             // if (returnTrace)
@@ -176,6 +188,18 @@ namespace Nekoyume
             }
 
             Mixpanel.Flush();
+        }
+
+        private static void UpdateAvatarAddress()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                Mixpanel.Unregister("AvatarAddress");
+                return;
+            }
+
+            Mixpanel.Register("AgentAddress", avatarState.address.ToHex());
         }
     }
 }

@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,8 +8,10 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Lib9c.Formatters;
 using Libplanet;
 using Libplanet.Assets;
+using Libplanet.Crypto;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
@@ -20,6 +21,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.IAPStore;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
@@ -28,17 +30,20 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
+using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
+using Currency = Libplanet.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-using RocksDbSharp;  // Don't remove this line. It's for another platform.
-using UnityEngine.Android;  // Don't remove this line. It's for another platform.
+#if UNITY_ANDROID
+using UnityEngine.Android;
+#endif
 
 namespace Nekoyume.Game
 {
     using GraphQL;
-    using Lib9c.Formatters;
     using Nekoyume.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
@@ -47,26 +52,36 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField] private Stage stage = null;
+        [SerializeField]
+        private Stage stage;
 
-        [SerializeField] private Arena arena = null;
+        [SerializeField]
+        private Arena arena;
 
-        [SerializeField] private RaidStage raidStage = null;
+        [SerializeField]
+        private RaidStage raidStage;
 
-        [SerializeField] private Lobby lobby;
+        [SerializeField]
+        private Lobby lobby;
 
-        [SerializeField] private bool useSystemLanguage = true;
+        [SerializeField]
+        private bool useSystemLanguage = true;
 
-        [SerializeField] private bool useLocalHeadless = false;
+        [SerializeField]
+        private bool useLocalHeadless;
 
-        [SerializeField] private bool useLocalMarketService = false;
+        [SerializeField]
+        private bool useLocalMarketService;
 
-        [SerializeField] private string marketDbConnectionString =
+        [SerializeField]
+        private string marketDbConnectionString =
             "Host=localhost;Username=postgres;Database=market";
 
-        [SerializeField] private LanguageTypeReactiveProperty languageType = default;
+        [SerializeField]
+        private LanguageTypeReactiveProperty languageType;
 
-        [SerializeField] private Prologue prologue = null;
+        [SerializeField]
+        private Prologue prologue;
 
         public States States { get; private set; }
 
@@ -77,6 +92,10 @@ namespace Nekoyume.Game
         public IAgent Agent { get; private set; }
 
         public Analyzer Analyzer { get; private set; }
+
+        public IAPStoreManager IAPStoreManager { get; private set; }
+
+        public IAPServiceManager IAPServiceManager { get; private set; }
 
         public Stage Stage => stage;
         public Arena Arena => arena;
@@ -124,14 +143,16 @@ namespace Nekoyume.Game
 
         private string _msg;
 
-        public static string CommandLineOptionsJsonPath =
+        public static readonly string CommandLineOptionsJsonPath =
             Platform.GetStreamingAssetsPath("clo.json");
 
         private static readonly string UrlJsonPath =
             Platform.GetStreamingAssetsPath("url.json");
 
-        private Thread headlessThread;
-        private Thread marketThread;
+        private Thread _headlessThread;
+        private Thread _marketThread;
+
+        private DeepLinkHandler _deepLinkHandler;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -179,26 +200,27 @@ namespace Nekoyume.Game
             };
 #endif
             Application.targetFrameRate = 60;
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_IOS
+#if UNITY_ANDROID
+            // Load CommandLineOptions at Start() after init
+#elif UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            OnLoadCommandlineOptions();
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
+            OnLoadCommandlineOptions();
 #endif
-
             URL = Url.Load(UrlJsonPath);
 
-            Debug.Log("[Game] Awake() CommandLineOptions loaded");
-            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
-
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_ANDROID
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
-                headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
-                headlessThread.Start();
+                _headlessThread = new Thread(() => HeadlessHelper.RunLocalHeadless());
+                _headlessThread.Start();
             }
 
             if (useLocalHeadless || _commandLineOptions.RpcClient)
@@ -219,6 +241,16 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+
+#if !UNITY_ANDROID
+            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcServerHost);
+            Analyzer.Track("Unity/Started");
+#endif
         }
 
         private IEnumerator Start()
@@ -227,6 +259,27 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
+
+            // Initialize RequestManager and LiveAssetManager
+            gameObject.AddComponent<RequestManager>();
+            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
+            liveAssetManager.InitializeData();
+            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
+            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
+
+#if UNITY_ANDROID
+            _commandLineOptions = liveAssetManager.CommandLineOptions;
+            OnLoadCommandlineOptions();
+            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+
+            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+            InitializeAnalyzer(
+                agentAddr: _commandLineOptions.PrivateKey is null
+                    ? null
+                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                rpcServerHost: _commandLineOptions.RpcServerHost);
+            Analyzer.Track("Unity/Started");
+#endif
 
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
@@ -238,7 +291,7 @@ namespace Nekoyume.Game
                 );
             var resolver = StaticCompositeResolver.Instance;
 #else
-            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+            var resolver = CompositeResolver.Create(
                 NineChroniclesResolver.Instance,
                 StandardResolver.Instance
             );
@@ -258,7 +311,7 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_commandLineOptions.Language)).ToYieldInstruction();
+            yield return L10nManager.Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language)).ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
 
@@ -275,6 +328,9 @@ namespace Nekoyume.Game
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
+
+            GL.Clear(true, true, Color.black);
+
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
@@ -282,41 +338,71 @@ namespace Nekoyume.Game
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
+                        Analyzer.SetUniqueId(Agent.Address.ToString());
                     }
                 )
             );
 
             yield return new WaitUntil(() => agentInitialized);
 
+            // NOTE: Create ActionManager after Agent initialized.
+            ActionManager = new ActionManager(Agent);
+
+#if UNITY_ANDROID
+            // Check MeadPledge
+            if (!States.PledgeRequested || !States.PledgeApproved)
+            {
+                if (!States.PledgeRequested)
+                {
+                    _deepLinkHandler.OpenPortal(States.AgentState.address);
+
+                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+                    yield return new WaitUntil(() => States.PledgeRequested);
+                }
+
+                if (States.PledgeRequested && !States.PledgeApproved)
+                {
+                    var patronAddress = States.PatronAddress!.Value;
+                    ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+                    yield return new WaitUntil(() => States.PledgeApproved);
+                }
+
+                yield return new WaitUntil(() => States.PledgeRequested && States.PledgeApproved);
+                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
+            }
+#endif
+
 #if UNITY_EDITOR
             // wait for headless connect.
             if (useLocalMarketService && MarketHelper.CheckPath())
             {
-                marketThread = new Thread(() => MarketHelper.RunLocalMarketService(marketDbConnectionString));
-                marketThread.Start();
+                _marketThread = new Thread(() =>
+                    MarketHelper.RunLocalMarketService(marketDbConnectionString));
+                _marketThread.Start();
             }
 #endif
 
-            InitializeAnalyzer();
-            Analyzer.Track("Unity/Started");
-            // NOTE: Create ActionManager after Agent initialized.
-            ActionManager = new ActionManager(Agent);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
-            // Initialize RequestManager and LiveAssetManager
-            gameObject.AddComponent<RequestManager>();
-            var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
-            liveAssetManager.InitializeData();
-            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
             RxProps.Start(Agent, States, TableSheets);
+#if UNITY_ANDROID
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
+            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
+            Debug.Log("[Game] Start() IAPStoreManager initialized");
+#endif
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
             if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
-                _rpcClient = new NineChroniclesAPIClient($"http://{_commandLineOptions.RpcServerHost}/graphql");
+                _rpcClient =
+                    new NineChroniclesAPIClient(
+                        $"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
@@ -352,18 +438,31 @@ namespace Nekoyume.Game
 
         protected override void OnDestroy()
         {
-            if (headlessThread is not null && headlessThread.IsAlive)
+            if (_headlessThread is not null && _headlessThread.IsAlive)
             {
-                headlessThread.Interrupt();
+                _headlessThread.Interrupt();
             }
 
-            if (marketThread is not null && marketThread.IsAlive)
+            if (_marketThread is not null && _marketThread.IsAlive)
             {
-                marketThread.Interrupt();
+                _marketThread.Interrupt();
             }
 
             ActionManager?.Dispose();
             base.OnDestroy();
+        }
+
+        private void OnLoadCommandlineOptions()
+        {
+            if(_commandLineOptions.RpcClient)
+            {
+                _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
+                    ? _commandLineOptions.RpcServerHost
+                    : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+            }
+
+            Debug.Log("[Game] CommandLineOptions loaded");
+            Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
         }
 
         private void SubscribeRPCAgent()
@@ -620,8 +719,8 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 IsInitialized = true;
-                var intro = Widget.Find<IntroScreen>();
-                intro.Close();
+                Widget.Find<IntroScreen>().Close();
+                Widget.Find<GrayLoadingScreen>().Close();
                 Widget.Find<PreloadingScreen>().Show();
                 StartCoroutine(ClosePreloadingScene(4));
             }
@@ -637,7 +736,7 @@ namespace Nekoyume.Game
             Widget.Find<PreloadingScreen>().Close();
         }
 
-#endregion
+        #endregion
 
         protected override void OnApplicationQuit()
         {
@@ -671,7 +770,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public static async UniTaskVoid BackToMainAsync(Exception exc, bool showLoadingScreen = false)
+        public static async UniTaskVoid BackToMainAsync(Exception exc,
+            bool showLoadingScreen = false)
         {
             Debug.LogException(exc);
 
@@ -698,7 +798,8 @@ namespace Nekoyume.Game
 
             if (IsInWorld)
             {
-                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
+                NotificationSystem.Push(
+                    Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
                     NotificationCell.NotificationType.Information);
                 yield break;
@@ -707,8 +808,9 @@ namespace Nekoyume.Game
             Event.OnNestEnter.Invoke();
 
             var deletableWidgets = Widget.FindWidgets().Where(widget =>
-                !(widget is SystemWidget) &&
-                !(widget is MessageCatTooltip) && widget.IsActive());
+                widget is not SystemWidget &&
+                widget is not MessageCatTooltip &&
+                widget.IsActive());
             foreach (var widget in deletableWidgets)
             {
                 widget.Close(true);
@@ -733,8 +835,11 @@ namespace Nekoyume.Game
                     code)
                 : errorMsg;
             var popup = Widget.Find<IconAndButtonSystem>();
-            popup.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                L10nManager.Localize("UI_OK"), false);
+            popup.Show(
+                L10nManager.Localize("UI_ERROR"),
+                errorMsg,
+                L10nManager.Localize("UI_OK"),
+                false);
             popup.SetCancelCallbackToExit();
         }
 
@@ -802,7 +907,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            var settings = Widget.Find<UI.SettingPopup>();
+            var settings = Widget.Find<SettingPopup>();
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
@@ -829,7 +934,8 @@ namespace Nekoyume.Game
         public void ResetStore()
         {
             var confirm = Widget.Find<ConfirmPopup>();
-            var storagePath = _commandLineOptions.StoragePath ?? Blockchain.Agent.DefaultStoragePath;
+            var storagePath =
+                _commandLineOptions.StoragePath ?? Blockchain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
@@ -877,7 +983,8 @@ namespace Nekoyume.Game
         private async void UploadLog(string logString, string stackTrace, LogType type)
         {
             // Avoid NRE
-            if (Agent.PrivateKey == default)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (Agent.PrivateKey is null)
             {
                 _msg += logString + "\n";
                 if (!string.IsNullOrEmpty(stackTrace))
@@ -925,13 +1032,17 @@ namespace Nekoyume.Game
                     LogStreamNamePrefix = streamName
                 };
                 var resp = await _logsClient.DescribeLogStreamsAsync(req);
-                var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
+                var token = resp.LogStreams.FirstOrDefault(s =>
+                    s.LogStreamName == streamName)?.UploadSequenceToken;
                 var ie = new InputLogEvent
                 {
                     Message = msg,
                     Timestamp = DateTime.UtcNow
                 };
-                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> { ie });
+                var request = new PutLogEventsRequest(
+                    groupName,
+                    streamName,
+                    new List<InputLogEvent> { ie });
                 if (!string.IsNullOrEmpty(token))
                 {
                     request.SequenceToken = token;
@@ -970,7 +1081,7 @@ namespace Nekoyume.Game
                 URL.DccAvatars,
                 URL.DccEthChainHeaderName,
                 URL.DccEthChainHeaderValue,
-                (json) =>
+                json =>
                 {
                     var responseData = DccAvatars.FromJson(json);
                     Dcc.instance.Init(responseData.Avatars);
@@ -983,13 +1094,8 @@ namespace Nekoyume.Game
                 $"{URL.DccMileageAPI}{Agent.Address}",
                 URL.DccEthChainHeaderName,
                 URL.DccEthChainHeaderValue,
-                _ =>
-                {
-                    Dcc.instance.IsConnected = true;
-                }, _ =>
-                {
-                    Dcc.instance.IsConnected = false;
-                });
+                _ => { Dcc.instance.IsConnected = true; },
+                _ => { Dcc.instance.IsConnected = false; });
         }
 
         public void PauseTimeline(PlayableDirector whichOne)
@@ -1006,16 +1112,14 @@ namespace Nekoyume.Game
         private void ReservePushNotifications()
         {
             var currentBlockIndex = Agent.BlockIndex;
-
-            var roundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
-            var row = TableSheets.Instance.ArenaSheet
-                .GetRowByBlockIndex(currentBlockIndex);
-            var medalTotalCount = States.Instance.CurrentAvatarState != null ?
-                ArenaHelper.GetMedalTotalCount(
-                row,
-                States.Instance.CurrentAvatarState) :
-                default;
-
+            var tableSheets = TableSheets.Instance;
+            var roundData = tableSheets.ArenaSheet.GetRoundByBlockIndex(currentBlockIndex);
+            var row = tableSheets.ArenaSheet.GetRowByBlockIndex(currentBlockIndex);
+            var medalTotalCount = States.Instance.CurrentAvatarState != null
+                ? ArenaHelper.GetMedalTotalCount(
+                    row,
+                    States.Instance.CurrentAvatarState)
+                : default;
             if (medalTotalCount >= roundData.RequiredMedalCount)
             {
                 ReserveArenaSeasonPush(row, roundData, currentBlockIndex);
@@ -1026,7 +1130,7 @@ namespace Nekoyume.Game
             ReserveWorldbossTicketPush(currentBlockIndex);
         }
 
-        private void ReserveArenaSeasonPush(
+        private static void ReserveArenaSeasonPush(
             ArenaSheet.Row row,
             ArenaSheet.RoundData roundData,
             long currentBlockIndex)
@@ -1035,24 +1139,26 @@ namespace Nekoyume.Game
             if (roundData.ArenaType == ArenaType.OffSeason &&
                 arenaSheet.TryGetNextRound(currentBlockIndex, out var nextRoundData))
             {
-                var prevPushIdentifier = PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
+                var prevPushIdentifier =
+                    PlayerPrefs.GetString(ArenaSeasonPushIdentifierKey, string.Empty);
                 if (!string.IsNullOrEmpty(prevPushIdentifier))
                 {
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var targetBlockIndex = nextRoundData.StartBlockIndex
-                    + Mathf.RoundToInt(States.Instance.GameConfigState.DailyArenaInterval * 0.15f);
+                var gameConfigState = States.Instance.GameConfigState;
+                var targetBlockIndex = nextRoundData.StartBlockIndex +
+                                       Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
                 var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
-                var arenaTypeText = roundData.ArenaType == ArenaType.Season ?
-                    L10nManager.Localize("UI_SEASON") :
-                    L10nManager.Localize("UI_CHAMPIONSHIP");
+                var arenaTypeText = roundData.ArenaType == ArenaType.Season
+                    ? L10nManager.Localize("UI_SEASON")
+                    : L10nManager.Localize("UI_CHAMPIONSHIP");
 
-                var arenaSeason = roundData.ArenaType == ArenaType.Championship ?
-                    roundData.ChampionshipId :
-                    row.GetSeasonNumber(roundData.Round);
+                var arenaSeason = roundData.ArenaType == ArenaType.Championship
+                    ? roundData.ChampionshipId
+                    : row.GetSeasonNumber(roundData.Round);
 
                 var content = L10nManager.Localize(
                     "PUSH_ARENA_SEASON_START_CONTENT",
@@ -1063,9 +1169,12 @@ namespace Nekoyume.Game
             }
         }
 
-        private void ReserveArenaTicketPush(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        private static void ReserveArenaTicketPush(
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
         {
-            var prevPushIdentifier = PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(ArenaTicketPushIdentifierKey, string.Empty);
             if (RxProps.ArenaTicketsProgress.HasValue &&
                 RxProps.ArenaTicketsProgress.Value.currentTickets <= 0)
             {
@@ -1074,11 +1183,13 @@ namespace Nekoyume.Game
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
                 }
+
                 return;
             }
 
             var interval = States.Instance.GameConfigState.DailyArenaInterval;
-            var remainingBlockCount = interval - ((currentBlockIndex - roundData.StartBlockIndex) % interval);
+            var remainingBlockCount = interval -
+                                      (currentBlockIndex - roundData.StartBlockIndex) % interval;
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1104,15 +1215,17 @@ namespace Nekoyume.Game
                 return;
             }
 
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(WorldbossSeasonPushIdentifierKey, string.Empty);
             if (!string.IsNullOrEmpty(prevPushIdentifier))
             {
                 PushNotifier.CancelReservation(prevPushIdentifier);
                 PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
-            var targetBlockIndex = row.StartedBlockIndex
-                + Mathf.RoundToInt(States.Instance.GameConfigState.DailyWorldBossInterval * 0.15f);
+            var gameConfigState = States.Instance.GameConfigState;
+            var targetBlockIndex = row.StartedBlockIndex +
+                                   Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
             var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
@@ -1122,14 +1235,15 @@ namespace Nekoyume.Game
 
         private void ReserveWorldbossTicketPush(long currentBlockIndex)
         {
-            var prevPushIdentifier = PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
+            var prevPushIdentifier =
+                PlayerPrefs.GetString(WorldbossTicketPushIdentifierKey, string.Empty);
             var interval = States.Instance.GameConfigState.DailyWorldBossInterval;
-            var raiderState = States.Instance.CurrentAvatarState != null ?
-                WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address) :
-                null;
-            var remainingTicket = raiderState != null ?
-                WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval) :
-                default;
+            var raiderState = States.Instance.CurrentAvatarState != null
+                ? WorldBossStates.GetRaiderState(States.Instance.CurrentAvatarState.address)
+                : null;
+            var remainingTicket = raiderState != null
+                ? WorldBossFrontHelper.GetRemainTicket(raiderState, currentBlockIndex, interval)
+                : default;
 
             if (remainingTicket <= 0 ||
                 !WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -1139,10 +1253,12 @@ namespace Nekoyume.Game
                     PushNotifier.CancelReservation(prevPushIdentifier);
                     PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
                 }
+
                 return;
             }
 
-            var remainingBlockCount = interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
+            var remainingBlockCount =
+                interval - ((currentBlockIndex - row.StartedBlockIndex) % interval);
             if (remainingBlockCount < TicketPushBlockCountThreshold)
             {
                 return;
@@ -1161,13 +1277,11 @@ namespace Nekoyume.Game
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
         }
 
-        private void InitializeAnalyzer()
+        private void InitializeAnalyzer(
+            Address? agentAddr = null,
+            string? rpcServerHost = null)
         {
-            var uniqueId = Agent.Address.ToString();
-            var rpcServerHost = _commandLineOptions.RpcClient
-                ? _commandLineOptions.RpcServerHost
-                : null;
-
+            var uniqueId = agentAddr?.ToString() ?? null;
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);

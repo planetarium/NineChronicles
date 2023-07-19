@@ -658,7 +658,7 @@ namespace Nekoyume.UI
 
                 Game.Game.instance.ActionManager
                     .RegisterProduct(avatarAddress, info, data.ChargeAp.Value).Subscribe();
-                States.Instance.SetBalance(fungibleAsset);
+                States.Instance.SetCurrentAvatarBalance(fungibleAsset);
                 inventory.UpdateFungibleAssets();
                 PostRegisterProduct(fungibleAsset.GetLocalizedName());
             }

@@ -89,7 +89,7 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Choose Nickname");
-            Find<GrayLoadingScreen>().Show();
+            Find<GrayLoadingScreen>().Show("UI_IN_MINING_A_BLOCK", true);
 
             var (hairIndex, eyeIndex, earIndex, tailIndex) = loginDetailCostume.GetCostumeId();
             Game.Game.instance.ActionManager
@@ -133,7 +133,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             btnLogin.SetActive(false);
             var loadingScreen = Find<GrayLoadingScreen>();
-            loadingScreen.Show();
+            loadingScreen.Show("UI_IN_MINING_A_BLOCK", true);
             await RxProps.SelectAvatarAsync(_selectedIndex);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
@@ -225,6 +225,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Analyzer.Instance.Track("Unity/CustomizeAvatar/Show");
             base.Show(ignoreShowAnimation);
             if (_isCreateMode)
             {

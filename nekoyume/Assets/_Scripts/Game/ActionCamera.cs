@@ -384,9 +384,39 @@ namespace Nekoyume.Game
         {
             _defaultAspect = (float) referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
+
+#if UNITY_ANDROID
+            UpdateLetterBox();
+#endif
+
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
+
             UpdateScreenResolution();
         }
+
+        private void UpdateLetterBox()
+        {
+            float fixedAspectRatio = _defaultAspect;
+            Cam.aspect = _defaultAspect;
+            float currentAspectRatio = Screen.safeArea.width / Screen.safeArea.height;
+
+            Rect rect = Cam.rect;
+            float scaleheight = currentAspectRatio / fixedAspectRatio;
+            float scalewidth = 1f / scaleheight;
+            if (scaleheight < 1)
+            {
+                rect.height = scaleheight;
+                rect.y = (1f - scaleheight) / 2f;
+            }
+            else
+            {
+                rect.width = scalewidth;
+                rect.x = (1f - scalewidth) / 2f;
+            }
+            Cam.rect = rect;
+        }
+
+        void OnPreCull() => GL.Clear(true, true, Color.black);
 
         private float GetCameraAspect()
         {

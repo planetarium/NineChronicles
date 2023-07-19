@@ -59,7 +59,9 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+#if UNITY_ANDROID
             inputField.Select();
+#endif
 
             Observable.NextFrame().Subscribe(_ =>
             {

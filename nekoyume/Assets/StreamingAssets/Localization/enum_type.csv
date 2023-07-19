@@ -1,39 +1,39 @@
-Key,English,Korean,PortugueseBrazil,Portuguese,Japanese,German,Spanish,Thai,Polish,Lithuanian,Dutch,Indonesian,French,Russian,Cambodian,Urdu,ChineseSimplified,Hungarian
-STAT_TYPE_HP,HP,체력,HP,,HP,HP,,พลังชีวิต,HP,,,HP,PV,ХП,ឈាម,,生命,
-STAT_TYPE_ATK,Attack,공격,Ataque,,Attack,Angriff,,พลังโจมตี,Atak,,,Serangan,Attaque,Атака,ការវាយប្រហារ,,攻击,
-STAT_TYPE_DEF,Defense,방어,Defesa,,Defence,Verteidigung,,พลังป้องกัน,Obrona,,,Pertahanan,Défense,Защита,ការការហរ,,防御,
-STAT_TYPE_CRI,Critical,치명,Crítico,,Critical,Kritisch,,คริติคอล,Krytyczny,,,Critical,Critique,Крит.,Critical,,暴击,
-STAT_TYPE_HIT,Hit,명중,Hit,,Hit,Treffer,,ความแม่นยำ,Trafienie,,,akurasi,Précision,Удар,Hit,,命中,
-STAT_TYPE_SPD,Speed,속도,Velocidade,,Speed,Schnelligkeit,,ความเร็ว,Prędkość,,,kecepatan,Vitesse,Скорость,ល្បឿន,,速度,
-ITEM_TYPE_Consumable,Food,음식,Comida,,食料,Essen,,อาหาร,jedzenie,,,makanan,Nourriture,Еда,អាហារ,,食品,
-ITEM_TYPE_Equipment,Equipment,장비,Equipamento,,装備,Ausrüstung,,อุปกรณ์,Ekwipunek,,,perlengkapan,Équipement,Снаряжение,ឧបករណ៍,,装备,
-ITEM_TYPE_Material,Material,재료,Material,,素材,Material,,วัสดุ,Materiał,,,materi,Matériau,Материалы,សម្ភារៈ,,材料,
-ITEM_SUB_TYPE_Food,Food,음식,Comida,,食料,Essen,,อาหาร,jedzenie,,,makanan,Nourriture,Еда,អាហារ,,食品,
-ITEM_SUB_TYPE_FullCostume,Full Costume,전신 코스튬,TrajeCompleto,,全身コスチューム,KomplettesKöstum,,เครื่องแต่งกายเต็ม,PełnyKostium,,,kostum seluruh tubuh,Costume - Complet,Внеший облик,សំលៀកបំពាក់ពេញ,,全套服装,
-ITEM_SUB_TYPE_HairCostume,Hair Costume,머리카락 코스튬,TrajeCabelo,,髪型,HaarKöstum,,เครื่องแต่งกายผม,WłosyKostium,,,kostum rambut,Costume - Cheveux,Волосы,សំលៀកបំពាក់សក់,,发饰,
-ITEM_SUB_TYPE_EarCostume,Ear Costume,귀 코스튬,TrajeOrelha,,耳の型,OhrKöstum,,เครื่องแต่งกายหู,UszyKostium,,,kostum kuping,Costume - Oreilles,Уши,សំលៀកបំពាក់ត្រចៀក,,耳饰,
-ITEM_SUB_TYPE_EyeCostume,Eye Costume,눈 코스튬,TrajeOlho,,目の型,AugenKöstum,,เครื่องแต่งกายตา,OczyKostium,,,kostum mata,Costume - Yeux,Глаза,សំលៀកបំពាក់ភ្នែក,,眼饰,
-ITEM_SUB_TYPE_TailCostume,Tail Costume,꼬리 코스튬,TrajeCauda,,尻尾の型,SchwanzKöstum,,เครื่องแต่งกายหาง,OgonKostium,,,kostum buntut,Costume - Queue,Хвост,សំលៀកបំពាក់កន្ទុយ,,尾饰,
-ITEM_SUB_TYPE_Title,Title,호칭,Título,,タイトル,Titel,,ยศ,Tytuł,,,Gelar,Titre,Оглавление,ចំណងជើង,,标题,
-ITEM_SUB_TYPE_Weapon,Weapon,무기,Arma,,武器,Waffe,,อาวุธ,Broń,,,Senjata,Arme,Оружие,អាវុធ,,武器,
-ITEM_SUB_TYPE_RangedWeapon,Ranged Weapon,원거리 무기,Arma de alcance,,遠距離武器,Fernwaffe,,อาวุุธระยะไกล,BrońZasięgowa,,,Senjata jarak jauh,Arme à Distance,Оружие дальнего боя,អាវុធជួរ,,远程武器,
-ITEM_SUB_TYPE_Armor,Armor,방어구,Armadura,,アーマー,Rüstung,,ชุดเกราะ,Zbroja,,,baju zirah,Armure,Броня,គ្រឿងសឹក,,装甲,
-ITEM_SUB_TYPE_Belt,Belt,허리띠,Cinto,,ベルト,Gürtel,,เข็มขัด,Pas,,,sabuk,Ceinture,Пояс,ខ្សែក្រវ៉ាត់,,皮带,
-ITEM_SUB_TYPE_Necklace,Necklace,목걸이,Colar,,ネックレス,Kette,,สร้อย,Naszyjnik,,,kalung,Collier,Ожерелье,ខ្សែក,,项链,
-ITEM_SUB_TYPE_Ring,Ring,반지,Anel,,リング,Ring,,แหวน,Pierścień,,,cincin,Bague,Кольцо,ចិញ្ចៀន,,戒指,
-ITEM_SUB_TYPE_Helm,Helmet,투구,Capacete,,ヘルム,Helm,,หมวก,Hełm,,,helm,Casque,Шлем,មួក,,头盔,
-ITEM_SUB_TYPE_GRADE_1,Normal,노멀,Normal,Normal,正常,Normal,Normal,ปกติ,Normalna,Normalus,normaal,Normal,Normal,Обычный,ធម្មតា,عمومی,普通的,Normál
-ITEM_SUB_TYPE_GRADE_2,Rare,레어,Cru,Cru,レア,Selten,Raro,หายาก,Rzadko spotykany,retas,Bijzonder,Langka,Peu fréquent,Редкий,កម្រ,نایاب,稀有的,Ritka
-ITEM_SUB_TYPE_GRADE_3,Epic,에픽,Épico,Épico,大作,Epos,Épico,มหากาพย์,Epicki,Epinis,episch,Epik,Épique,эпический,វីរភាព,مہاکاوی,史诗,Epikus
-ITEM_SUB_TYPE_GRADE_4,Unique,유니크,Único,Único,ユニーク,Einzigartig,Único,เป็นเอกลักษณ์,Wyjątkowy,Unikalus,Uniek,Unik,Unique,Уникальный,មានតែមួយគត់,منفرد,独特,Egyedi
-ITEM_SUB_TYPE_GRADE_5,Legend,레전드,Lenda,Lenda,伝説,Legende,Leyenda,ตำนาน,Legenda,legenda,Legende,Legenda,Légende,легенда,រឿងព្រេង,علامات,传奇,Legenda
-ITEM_SUB_TYPE_Set,Set Item,셋트 아이템,Colocar itens,,セットアイテム,Gruppenelement,,เซ็ตไอเทม,Ustaw element,,,item set,Article d'Ensemble,Комплект брони,របស់របរកំណត់,,套装,
-ITEM_SUB_TYPE_Shoes,Shoes,신발,Sapatos,,シューズ,Schuhe,,รองเท้า,Buty,,,sepatu,Chaussures,Обувь,ស្បែកជើង,,鞋子,
-ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료,Material para equipamento,,装備素材,Ausrüstungsmaterial,,วัสดุอุปกรณ์,Materiał wyposażenia,,,bahan perlengkapan,Matériau d'Équipement,Материалы экипировки,ឧបករណ៍សម្ភារៈ,,装备材料,
-ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료,Material para comida,,調理素材,Essensmaterial,,วัสดุอาหาร,Materiał spożywczy,,,bahan makanan,Ingrédient,Ингридиенты еды,សម្ភារៈម្ហូបអាហារ,,食品材料,
-ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠,Pedaço de monstro,,モンスターのパーツ,Monsterteil,,ชิ้นส่วนมอนสเตอร์,Część potwora,,,bagian monster,Partie de Monstre,Части монстров,ផ្នែកបិសាច,,怪物肢体,
-ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료,Material normal,,ノーマル素材,Normales Material,,วัสดุทั่วไป,Normalny materiał,,,materi umum,Matériau de Monstre,Обычные материалы,សម្ភារៈធម្មតា,,普通材料,
-TRADE_TYPE_Buy,Buy,구매,Compra,,購入,Kaufe,,ซื้อ,Kup,,,beli,Acheter,Купить,ទិញ,,购买,
-TRADE_TYPE_Sell,Sell,판매,Venda,,売却,Verkaufe,,ขาย,Sprzedaj,,,jual,Vendre,Продать,លក់,,出售,
-ITEM_SUB_TYPE_Hourglass,Hourglass,모래시계,Ampulheta,,砂時計,Sanduhr,,นาฬิกาทราย,Klepsydra,,,Jam Pasir,Sablier,,ម៉ោងកញ្ចក់,,沙漏,
-ITEM_SUB_TYPE_ApStone,AP Potion,AP 포션,Poção AP,,APポーション,AP-Trank,,ยา AP,Mikstura AP,,,Ramuan AP,Potion de PA,,AP Potion,,AP药水,
+﻿Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog
+STAT_TYPE_HP,HP,체력,HP,HP,Vida,พลังชีวิต,HP,ХП,生命,生命值,Buhay
+STAT_TYPE_ATK,Attack,공격,Ataque,Attack,Ataque,พลังโจมตี,Serangan,Атака,攻击,攻擊,Atake
+STAT_TYPE_DEF,Defense,방어,Defesa,Defence,Defensa,พลังป้องกัน,Pertahanan,Защита,防御,防禦,Depensa
+STAT_TYPE_CRI,Critical,치명,Crítico,Critical,Crítico,คริติคอล,Critical,Крит.,暴击,暴擊,Kritikal
+STAT_TYPE_HIT,Hit,명중,Hit,Hit,Probabilidad de ataque,ความแม่นยำ,akurasi,Удар,命中,命中,Pagtama
+STAT_TYPE_SPD,Speed,속도,Velocidade,Speed,Velocidad,ความเร็ว,kecepatan,Скорость,速度,速度,Bilis
+ITEM_TYPE_Consumable,Food,음식,Comida,食料,Alimento,อาหาร,makanan,Еда,食品,食物,Pagkain
+ITEM_TYPE_Equipment,Equipment,장비,Equipamento,装備,Equipamento,อุปกรณ์,perlengkapan,Снаряжение,装备,裝備,Kagamitan
+ITEM_TYPE_Material,Material,재료,Material,素材,Material,วัตถุดิบ,materi,Материалы,材料,材料,Materyal
+ITEM_SUB_TYPE_Food,Food,음식,Comida,食料,Alimento,อาหาร,makanan,Еда,食品,食物,Pagkain
+ITEM_SUB_TYPE_FullCostume,Full Costume,전신 코스튬,TrajeCompleto,全身コスチューム,Atuendo completo,เครื่องแต่งกายครบเซ็ต,kostum seluruh tubuh,Внеший облик,全套服装,完整的服裝,Buong Kasuotan
+ITEM_SUB_TYPE_HairCostume,Hair Costume,머리카락 코스튬,TrajeCabelo,髪型,Cabello cosmético,เครื่องแต่งกายผม,kostum rambut,Волосы,发饰,頭髮服裝,Kasuotang Pambuhok
+ITEM_SUB_TYPE_EarCostume,Ear Costume,귀 코스튬,TrajeOrelha,耳の型,Orejas cosméticas,เครื่องแต่งกายหู,kostum kuping,Уши,耳饰,耳服,Kasuotang Pangtainga
+ITEM_SUB_TYPE_EyeCostume,Eye Costume,눈 코스튬,TrajeOlho,目の型,Ojos cosméticos,เครื่องแต่งกายตา,kostum mata,Глаза,眼饰,眼睛服裝,Kasuotang Pangmata
+ITEM_SUB_TYPE_TailCostume,Tail Costume,꼬리 코스튬,TrajeCauda,尻尾の型,Cola cosmética,เครื่องแต่งกายหาง,kostum buntut,Хвост,尾饰,尾衣,Kasuotang Pangbuntot
+ITEM_SUB_TYPE_Title,Title,호칭,Título,タイトル,Título,ยศ,Gelar,Оглавление,标题,標題,Titulo
+ITEM_SUB_TYPE_Weapon,Weapon,무기,Arma,武器,Arma,อาวุธ,Senjata,Оружие,武器,武器,Sandata
+ITEM_SUB_TYPE_RangedWeapon,Ranged Weapon,원거리 무기,Arma de alcance,遠距離武器,Arma de rango,อาวุธระยะไกล,Senjata jarak jauh,Оружие дальнего боя,远程武器,遠程武器,May Saklaw na Sandata
+ITEM_SUB_TYPE_Armor,Armor,방어구,Armadura,アーマー,Armadura,ชุดเกราะ,baju zirah,Броня,装甲,盔甲,Baluti
+ITEM_SUB_TYPE_Belt,Belt,허리띠,Cinto,ベルト,Cinturon,เข็มขัด,sabuk,Пояс,皮带,腰帶,Sinturon
+ITEM_SUB_TYPE_Necklace,Necklace,목걸이,Colar,ネックレス,Collar,สร้อย,kalung,Ожерелье,项链,項鍊,Kuwintas
+ITEM_SUB_TYPE_Ring,Ring,반지,Anel,リング,Anillo,แหวน,cincin,Кольцо,戒指,戒指,Singsing
+ITEM_SUB_TYPE_Helm,Helmet,투구,Capacete,ヘルム,Casco,หมวก,helm,Шлем,头盔,頭盔,Helmet
+ITEM_SUB_TYPE_GRADE_1,Normal,노멀,Normal,正常,Normal,ปกติ,Normal,Обычный,普通的,普通的,Normal
+ITEM_SUB_TYPE_GRADE_2,Rare,레어,Cru,レア,Raro,หายาก,Langka,Редкий,稀有的,稀有的,Bihira
+ITEM_SUB_TYPE_GRADE_3,Epic,에픽,Épico,大作,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko
+ITEM_SUB_TYPE_GRADE_4,Unique,유니크,Único,ユニーク,Único,เป็นเอกลักษณ์,Unik,Уникальный,独特,獨特的,Natatangi
+ITEM_SUB_TYPE_GRADE_5,Legend,레전드,Lenda,伝説,Legendario,ตำนาน,Legenda,легенда,传奇,傳奇,Maalamat
+ITEM_SUB_TYPE_Set,Set Item,셋트 아이템,Colocar itens,セットアイテム,Conjunto,เซ็ตไอเท็ม,item set,Комплект брони,套装,設置項目,Set na Gamit
+ITEM_SUB_TYPE_Shoes,Shoes,신발,Sapatos,シューズ,Zapatos,รองเท้า,sepatu,Обувь,鞋子,鞋,Sapatos
+ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료,Material para equipamento,装備素材,Material de equipamento,วัตถุุดิบของใช้,bahan perlengkapan,Материалы экипировки,装备材料,裝備材料,Materyal ng Kagamitan
+ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료,Material para comida,調理素材,Material de alimento,วัตถุดิบอาหาร,bahan makanan,Ингридиенты еды,食品材料,食物材料,Materyal ng Pagkain
+ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠,Pedaço de monstro,モンスターのパーツ,Parte de monstruo,ชิ้นส่วนมอนสเตอร์,bagian monster,Части монстров,怪物肢体,怪物部分,Piraso ng Halimaw
+ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료,Material normal,ノーマル素材,Material normal,วัตถุดิบทั่วไป,materi umum,Обычные материалы,普通材料,正常材料,Normal na Materyal
+TRADE_TYPE_Buy,Buy,구매,Compra,購入,Comprar,ซื้อ,beli,Купить,购买,買,Bilihin
+TRADE_TYPE_Sell,Sell,판매,Venda,売却,Comprar,ขาย,jual,Продать,出售,賣,Ibenta
+ITEM_SUB_TYPE_Hourglass,Hourglass,모래시계,Ampulheta,砂時計,Reloj de arena,นาฬิกาทราย,Jam Pasir,,沙漏,沙漏,Orasan
+ITEM_SUB_TYPE_ApStone,AP Potion,AP 포션,Poção AP,APポーション,Poción AP,ยา AP,Ramuan AP,,AP药水,AP藥水,AP Potion

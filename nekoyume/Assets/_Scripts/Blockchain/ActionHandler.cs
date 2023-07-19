@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet;
 using Libplanet.Assets;
@@ -35,15 +36,16 @@ namespace Nekoyume.Blockchain
                 return false;
             }
 
-            return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.AgentState.address);
+            return evaluation.OutputState.Delta.UpdatedFungibleAssets.Any(tuple =>
+                tuple.Item1.Equals(States.Instance.AgentState.address));
         }
 
         protected static bool HasUpdatedAssetsForCurrentAvatar<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             return States.Instance.CurrentAvatarState is not null &&
-                   evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(
-                       States.Instance.CurrentAvatarState.address);
+                   evaluation.OutputState.Delta.UpdatedFungibleAssets.Any(tuple =>
+                       tuple.Item1.Equals(States.Instance.CurrentAvatarState.address));
         }
 
         protected static bool ValidateEvaluationForCurrentAvatarState<T>(ActionEvaluation<T> evaluation)
@@ -63,7 +65,8 @@ namespace Nekoyume.Blockchain
                     LegacyQuestListKey,
                 };
                 addresses.AddRange(keys.Select(key => avatarAddress.Derive(key)));
-                return addresses.Any(a => evaluation.OutputStates.UpdatedAddresses.Contains(a));
+                return addresses.Any(a =>
+                    evaluation.OutputState.Delta.UpdatedAddresses.Contains(a));
             }
 
             return false;
@@ -79,23 +82,27 @@ namespace Nekoyume.Blockchain
         protected static AgentState GetAgentState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            return evaluation.OutputStates.GetAgentState(agentAddress);
+            return evaluation.OutputState.GetAgentState(agentAddress);
         }
 
         protected GoldBalanceState GetGoldBalanceState<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            if (!evaluation.Signer.Equals(agentAddress) ||
-                !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(
-                    evaluation.Signer,
-                    out var currencies) ||
-                !currencies.Contains(GoldCurrency))
+            if (!evaluation.Signer.Equals(agentAddress))
             {
                 return null;
             }
 
-            return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
+            var updatedFungibleAssets =
+                    evaluation.OutputState.Delta.UpdatedFungibleAssets.Where(tuple =>
+                    tuple.Item1.Equals(evaluation.Signer));
+            if (!updatedFungibleAssets.Any(tuple => tuple.Item2.Equals(GoldCurrency)))
+            {
+                return null;
+            }
+
+            return evaluation.OutputState.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
         protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
@@ -106,7 +113,7 @@ namespace Nekoyume.Blockchain
                 agentAddress,
                 States.Instance.AgentState.MonsterCollectionRound
             );
-            if (!(evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict))
+            if (!(evaluation.OutputState.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict))
             {
                 return (null, 0, new FungibleAssetValue());
             }
@@ -114,7 +121,7 @@ namespace Nekoyume.Blockchain
             try
             {
                 var balance =
-                    evaluation.OutputStates.GetBalance(monsterCollectionAddress, GoldCurrency);
+                    evaluation.OutputState.GetBalance(monsterCollectionAddress, GoldCurrency);
                 var level =
                     TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                         agentAddress, balance);
@@ -132,7 +139,7 @@ namespace Nekoyume.Blockchain
         {
             var agentAddress = States.Instance.AgentState.address;
             var stakeAddress = StakeState.DeriveAddress(agentAddress);
-            if (!(evaluation.OutputStates.GetState(stakeAddress) is Bencodex.Types.Dictionary serialized))
+            if (!(evaluation.OutputState.GetState(stakeAddress) is Bencodex.Types.Dictionary serialized))
             {
                 return (null, 0, new FungibleAssetValue());
             }
@@ -140,7 +147,7 @@ namespace Nekoyume.Blockchain
             try
             {
                 var state = new StakeState(serialized);
-                var balance = evaluation.OutputStates.GetBalance(
+                var balance = evaluation.OutputState.GetBalance(
                     state.address,
                     GoldCurrency);
                 var level = TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
@@ -159,7 +166,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
-            if (evaluation.OutputStates.GetState(buffStateAddress) is
+            if (evaluation.OutputState.GetState(buffStateAddress) is
                 Bencodex.Types.List serialized)
             {
                 var state = new CrystalRandomSkillState(buffStateAddress, serialized);
@@ -176,7 +183,7 @@ namespace Nekoyume.Blockchain
             Debug.LogFormat(
                 "Called UpdateAgentState<{0}>. Updated Addresses : `{1}`",
                 evaluation.Action,
-                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
+                string.Join(",", evaluation.OutputState.Delta.UpdatedAddresses));
             await UpdateAgentStateAsync(GetAgentState(evaluation));
             try
             {
@@ -198,7 +205,7 @@ namespace Nekoyume.Blockchain
             Debug.LogFormat(
                 "Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`",
                 evaluation.Action,
-                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
+                string.Join(",", evaluation.OutputState.Delta.UpdatedAddresses));
             if (!States.Instance.AgentState.avatarAddresses.ContainsKey(index))
             {
                 States.Instance.RemoveAvatarState(index);
@@ -207,7 +214,7 @@ namespace Nekoyume.Blockchain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            if (evaluation.OutputStates.TryGetAvatarStateV2(
+            if (evaluation.OutputState.TryGetAvatarStateV2(
                     agentAddress,
                     avatarAddress,
                     out var avatarState,
@@ -227,7 +234,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateCurrentAvatarStateAsync(
                     States.Instance.CurrentAvatarState
-                        .UpdateAvatarStateV2(avatarAddress, evaluation.OutputStates));
+                        .UpdateAvatarStateV2(avatarAddress, evaluation.OutputState));
             }
             catch (Exception e)
             {
@@ -253,7 +260,7 @@ namespace Nekoyume.Blockchain
 
         protected static void UpdateGameConfigState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var state = evaluation.OutputStates.GetGameConfigState();
+            var state = evaluation.OutputState.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
         }
 
@@ -307,18 +314,22 @@ namespace Nekoyume.Blockchain
 
         protected static void UpdateCrystalBalance<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            if (!evaluation.Signer.Equals(States.Instance.AgentState.address) ||
-                !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(
-                    evaluation.Signer,
-                    out var currencies) ||
-                !currencies.Contains(CrystalCalculator.CRYSTAL))
+            if (!evaluation.Signer.Equals(States.Instance.AgentState.address))
+            {
+                return;
+            }
+
+            var updatedFungibleAssets =
+                evaluation.OutputState.Delta.UpdatedFungibleAssets.Where(tuple =>
+                    tuple.Item1.Equals(evaluation.Signer));
+            if (!updatedFungibleAssets.Any(tuple => tuple.Item2.Equals(Currencies.Crystal)))
             {
                 return;
             }
 
             try
             {
-                var crystal = evaluation.OutputStates.GetBalance(
+                var crystal = evaluation.OutputState.GetBalance(
                     evaluation.Signer,
                     CrystalCalculator.CRYSTAL);
                 States.Instance.SetCrystalBalance(crystal);

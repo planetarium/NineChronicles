@@ -675,6 +675,18 @@ namespace Nekoyume.UI
             raidRewardMail.New = false;
         }
 
+        public void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
+            var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+
+            Find<OneButtonSystem>().Show(
+                unloadFromMyGaragesRecipientMail.GetPopupContent(sheet),
+                L10nManager.Localize("UI_OK"),
+                () => unloadFromMyGaragesRecipientMail.New = false);
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)

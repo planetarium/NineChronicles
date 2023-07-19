@@ -76,7 +76,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "abb3d938e2acde6135acdd1c6345813098350f4f"
+      "hash": "5ded691b6c09bdc4275523d9afb6d524b6d68d75"
     },
     "com.neuecc.unirx": {
       "version": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
@@ -154,7 +154,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.21",
+      "version": "3.0.24",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -219,6 +219,20 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.purchasing": {
+      "version": "4.9.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.modules.unityanalytics": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.services.core": "1.8.1"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.render-pipelines.core": {
       "version": "12.1.7",
       "depth": 1,
@@ -255,7 +269,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.4.0",
+      "version": "1.8.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {

@@ -236,6 +236,12 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
+
+#if UNITY_ANDROID
+            secondWidgets.Add(Widget.Create<MobileShop>());
+            yield return null;
+#endif
+
             secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopBuy>());

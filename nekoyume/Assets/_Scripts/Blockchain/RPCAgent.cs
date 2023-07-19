@@ -230,7 +230,7 @@ namespace Nekoyume.Blockchain
             }
 
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
-            byte[] raw = await _service.GetBalance(
+            var raw = await _service.GetBalance(
                 addr.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency)),
                 BlockTipHash.ToByteArray()
@@ -359,7 +359,6 @@ namespace Nekoyume.Blockchain
 
             BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
-            ActionUnrenderHandler.Instance.Stop();
 
             StopAllCoroutines();
             if (!(_hub is null))
@@ -445,6 +444,16 @@ namespace Nekoyume.Blockchain
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
+                var agentAddress = States.Instance.AgentState.address;
+                var pledgeAddress = agentAddress.GetPledgeAddress();
+                Address? patronAddress = null;
+                var approved = false;
+                if (await GetStateAsync(pledgeAddress) is List list)
+                {
+                    patronAddress = list[0].ToAddress();
+                    approved = list[1].ToBoolean();
+                }
+                States.Instance.SetPledgeStates(patronAddress, approved);
             });
 
             yield return new WaitUntil(() => currencyTask.IsCompleted);
@@ -458,7 +467,6 @@ namespace Nekoyume.Blockchain
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
             BlockRenderHandler.Instance.Start(BlockRenderer);
             ActionRenderHandler.Instance.Start(ActionRenderer);
-            ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
             UpdateSubscribeAddresses();
             callback?.Invoke(true);
@@ -513,18 +521,19 @@ namespace Nekoyume.Blockchain
             string actionsName = default;
             foreach (var action in actions)
             {
-                actionsName += "\n#";
-                actionsName += action.ToString();
-                actionsName += ", id=" + ((GameAction)action)?.Id;
+                actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
             }
-            Debug.Log($"[Transaction]\nnonce={nonce}\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                $"\nHash={_genesis?.Hash}\nactionsName={actionsName}");
+            Debug.Log("[Transaction]" +
+                      $"\nnonce={nonce}" +
+                      $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                      $"\nHash={_genesis?.Hash}" +
+                      $"\nactionsName={actionsName}");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
             foreach (var action in actions)
             {
-                Debug.Log($"[Transaction] action = {action.ToString()}");
+                Debug.Log($"[Transaction] action = {action}");
 
                 if (action is GameAction gameAction)
                 {
@@ -555,17 +564,7 @@ namespace Nekoyume.Blockchain
 
         public void OnUnrender(byte[] evaluation)
         {
-            using (var cp = new MemoryStream(evaluation))
-            using (var decompressed = new MemoryStream())
-            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
-            {
-                df.CopyTo(decompressed);
-                decompressed.Seek(0, SeekOrigin.Begin);
-                var dec = decompressed.ToArray();
-                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
-                    .ToActionEvaluation();
-                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
-            }
+            // deprecated.
         }
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)

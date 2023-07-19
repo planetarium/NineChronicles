@@ -60,7 +60,9 @@ namespace Nekoyume.UI.Module.Lobby
                     _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard;
                     break;
                 case MenuType.Shop:
-                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuShop;
+                    _requireStage = Platform.IsMobilePlatform()
+                        ? 1
+                        : GameConfig.RequireClearedStageLevel.UIMainMenuShop;
                     break;
                 case MenuType.Quest:
                     _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuStage;
