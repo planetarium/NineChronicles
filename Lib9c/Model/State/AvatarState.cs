@@ -508,7 +508,7 @@ namespace Nekoyume.Model.State
             var items = new List<Material>();
             foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Item1))
             {
-                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Item2);
+                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Item1);
                 var item = ItemFactory.CreateMaterial(row);
                 var map = inventory.AddItem2(item, count: pair.Item2);
                 itemMap.Add(map);
