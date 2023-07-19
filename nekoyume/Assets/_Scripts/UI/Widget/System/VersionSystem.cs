@@ -50,11 +50,23 @@ namespace Nekoyume.UI
             var hash = _hash.ToString();
             hash = hash.Length >= 4 ? hash.Substring(0, 4) : "...";
 
+            string versionText = string.Empty;
+            string commitHashText = string.Empty;
+            if (!string.IsNullOrEmpty(_clientCommitHash))
+            {
+                commitHashText = $"({_clientCommitHash})";
+            }
+
 #if UNITY_ANDROID || UNITY_IOS
-            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {UnityEngine.Application.version}({_clientCommitHash})";
+            versionText = $"/ Ver: {UnityEngine.Application.version}{commitHashText}";
 #else
-            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} / ver: {_clientCommitHash}";
+            if (!string.IsNullOrEmpty(_clientCommitHash))
+            {
+                versionText = $"/ Ver: {commitHashText}";
+            }
 #endif
+
+            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} {versionText}";
         }
     }
 }
