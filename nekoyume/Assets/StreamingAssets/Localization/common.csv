@@ -61,7 +61,7 @@ UI_AFTER_N_SECONDS,"After {0:0} seconds,",{0:0}초 후,Após {0: 0} segundos,{0:
 UI_BATTLE_RESULT_NEXT_STAGE_FORMAT,{0} You will proceed to the next stage.,{0} 다음 스테이지로 이동합니다.,{0} você irá para a próxima fase.,{0} 次のステージへ進みます。,{0} avanzarás al siguiente escenario.,{0} คุณจะเข้าสู่ด่านต่อไป,{0} kamu akan melanjutkan ke stage berikutnya.,,{0}，您将进入下一阶段。,{0} 您將進入下一關卡。,{0} Ikaw ay tutungo na sa susunod na paglalakbay.
 UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT,{0} You will repeat the current stage.,{0} 이번 스테이지를 다시 시작합니다.,{0} você repetirá a fase atual.,{0} 現在のステージをくり返します。,{0} repetiras el mismo escenario,{0} คุณจะเข้าสู่ด่านเดิมอีกครั้ง,{0} kamu akan mengulang stage ini kembali.,,{0}，您将重复当前阶段。,{0} 您將重複當前關卡。,{0} Uulitin mo ang kasalukiyang paglalakbay na ito.
 UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT,You do not have enough action points. {0} you will be returned to the lobby.,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.,Você não tem ponto de ação suficiente. {0} você retornará ao principal,アクションポイントが足りません。 {0} メイン画面へ戻ります。,No tienes suficientes puntos de acción. {0} serás devuelto al menú principal,คุณมีแต้ม action point ไม่เพียงพอ {0} คุณจะกลับไปที่หน้าหลัก,Action point-mu tidak cukup. {0} kamu akan kembali ke lobi.,,您没有足够的动作点。 {0}您将返回大厅,您沒有足夠的行動點。 {0} 您將返回大廳,"Hindi sapat ang iyong ""action points"". {0} Babalik ka sa panimulang ""lobby""."
-UI_BATTLE_AGAIN,Again.,다시 전투,De novo,もう一度,Repetir,อีกครั้ง,Lagi,,再次,再次,Ulit
+UI_BATTLE_AGAIN,Again,다시 전투,De novo,もう一度,Repetir,อีกครั้ง,Lagi,,再次,再次,Ulit
 UI_BATTLE_AGAIN_FORMAT,{0} Battle starts again.,{0} 다시 전투를 시작합니다.,{0} batalha começa novamente,{0} もう一度バトルを始めます。,{0} la batalla empieza nuevamente,{0} การต่อสู้เริ่มขึ้นอีกครั้ง,{0} pertarungan kembali dimulai,,{0}战斗再次开始,{0}戰鬥再次開始,{0} Ulitin ang laban
 UI_BATTLE_EXIT_FORMAT,{0} You will be returned to the lobby.,{0} 메인으로 이동합니다.,{0} você retornará ao principal,{0} ロビーへ戻ります。,{0} serás devuelto al menú principal,{0} คุณจะกลับไปที่หน้าหลัก,{0} kamu akan kembali ke lobby,,{0}您将返回大厅,{0}您將返回大廳,"{0} Babalik ka sa panimulang ""lobby"""
 UI_BATTLE_WIN,Stage Won!,전투 승리!,Fase vencida!,ステージクリア！,¡Escenario completado!,ผ่านด่าน!,Stage Dimenangkan!,,阶段赢了！,過關了！,Panalo!
@@ -869,8 +869,16 @@ NPC_31_NAME,Troll Engineer,트롤 기술자,Engenheiro de Troll,トロールエ�
 NPC_32_NAME,Troll Aristocrat,트롤 귀족,aristocrata troll,トロール貴族,Troll Aristócrata,โทรลล์ชั้นสูง,Troll Aristocrat,Тролль Аристократ,巨魔贵族,巨魔貴族,troll na aristokrata
 NPC_33_NAME,Laufey,라우페이,Laufey,ラウフェイ,Laufey,Laufey,Laufey,Лауфи,劳菲,勞菲,Laufey
 UI_SUPER_CRAFT_GUARANTEE,Get Skill-Equipment with crystals!,크리스탈로 스킬을 확정 획득하세요!,,,¡Obtén un Equipo con encantamiento usando cristales!,เก็บอุปกรณ์สกิวด้วยคริสตัล,,,,獲得水晶的技能裝備！,Makakuha ng kagamitang may kakayahan sa pamamagitan ng mga kristal!
-UI_SUPER_CRAFT_PROMOTION1,100% Skill Guaranteed,,,,¡Garantía de encantamiento del 100%!,100% การันตี,,,,100％的技能保證,100% Garantisado ang Kakayahan
-UI_SUPER_CRAFT_PROMOTION2,Only pay Crystal and be ready in 20 Blocks,,,,"Paga con cristales, solo usa 20 bloques para la fabricación del equipo",ชำระด้วยคริสตัลเพียง 20 บล็อค,,,,僅支付水晶僅使用20個塊,Magbayad lamang ng Krystal at matatapos sa loob ng 20 Blocks
+UI_SUPER_CRAFT_PROMOTION1,"100%
+Skill Guaranteed",,,,"¡Garantía de encantamiento del
+100%!","100%
+การันตี",,,,"100％
+的技能保證","100%
+Garantisado ang Kakayahan"
+UI_SUPER_CRAFT_PROMOTION2,"Only pay Crystal and
+be ready in 20 Blocks",,,,"Paga con cristales, solo usa 20 bloques
+para la fabricación del equipo",ชำระด้วยคริสตัลเพียง 20 บล็อค,,,,僅支付水晶僅使用20個塊,"Magbayad lamang ng Krystal
+at matatapos sa loob ng 20 Blocks"
 UI_STAKING_NCG,Staking NCG,보관 중인 총 금액,,,Staking NCG,ฝากเหรียญ NCG,,,,Staging NCG,Staking NCG
 UI_REMAINING_NCG_TO_NEXT_LEVEL,{0} remain to the next level,다음 레벨까지 {0}남음,,,Quedan {0} para alcanzar el siguiente nivel de staking.,คงเหลืออีก {0} สู่ระดับต่อไป,,,,{0}保持到一個新的水平,{0} naiwang magagamit para sa susunod
 UI_CURRENT_BENEFITS,Current Benefits,현재 혜택,,,Beneficios actuales.,สิทธิประโยชน์ปัจจุบัน,,,,當前的好處,Kasalukuyang Benepisyo
