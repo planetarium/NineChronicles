@@ -1,7 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System.IO;
-    using Libplanet;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Xunit;
 

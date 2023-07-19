@@ -5,11 +5,11 @@ using System.Linq;
 using System.Numerics;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.State;
-using Libplanet.Assets;
-using Libplanet.Consensus;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Consensus;
 
 namespace Lib9c.Formatters
 {

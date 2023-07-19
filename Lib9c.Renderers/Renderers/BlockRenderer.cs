@@ -1,5 +1,5 @@
 using Libplanet.Blockchain.Renderers;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else

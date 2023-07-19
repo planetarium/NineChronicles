@@ -8,8 +8,9 @@ namespace Lib9c.Tests.Model.Mail
     using System.Security.Cryptography;
     using Bencodex.Types;
     using Lib9c.Tests.Action.Garages;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Common;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.Mail;
     using Xunit;
 

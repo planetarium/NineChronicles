@@ -8,18 +8,16 @@ namespace Lib9c.Tests.Action
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
-    using Libplanet.Blocks;
     using Libplanet.Crypto;
-    using Libplanet.State;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
-    using Libplanet.Tx;
+    using Libplanet.Types.Assets;
+    using Libplanet.Types.Blocks;
+    using Libplanet.Types.Tx;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Action.Loader;
@@ -538,7 +536,7 @@ namespace Lib9c.Tests.Action
                             0,
                             new PrivateKey(),
                             null,
-                            new ActionBase[] { initializeStates }))
+                            new ActionBase[] { initializeStates }.ToPlainValues()))
                 );
             }
 

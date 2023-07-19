@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using Lib9c;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Common;
+using Libplanet.Types.Assets;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData.Garages

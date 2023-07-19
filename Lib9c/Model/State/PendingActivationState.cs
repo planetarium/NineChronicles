@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 

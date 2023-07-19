@@ -2,7 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Common;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;

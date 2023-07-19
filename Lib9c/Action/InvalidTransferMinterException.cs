@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Libplanet;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {

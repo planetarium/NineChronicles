@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model.Faucet;
 
 namespace Lib9c.DevExtensions.Action.Interface

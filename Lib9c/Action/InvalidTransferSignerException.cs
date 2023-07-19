@@ -1,5 +1,4 @@
-using Libplanet;
-using Libplanet.Tx;
+using Libplanet.Crypto;
 using System;
 using System.Runtime.Serialization;
 

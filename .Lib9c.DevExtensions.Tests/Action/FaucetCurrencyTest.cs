@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 using Lib9c.DevExtensions.Action;
 using Lib9c.Tests.Action;
-using Libplanet;
-using Libplanet.Assets;
 using Libplanet.Crypto;
-using Libplanet.State;
+using Libplanet.Types.Assets;
+using Libplanet.Crypto;
+using Libplanet.Action.State;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Serilog;

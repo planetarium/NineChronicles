@@ -1,12 +1,13 @@
 namespace Lib9c.Tests.Action
 {
     using System.Security.Cryptography;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
-    using Libplanet.Blocks;
-    using Libplanet.State;
-    using Libplanet.Tx;
+    using Libplanet.Action.State;
+    using Libplanet.Common;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
+    using Libplanet.Types.Blocks;
+    using Libplanet.Types.Tx;
 
     public class ActionContext : IActionContext
     {

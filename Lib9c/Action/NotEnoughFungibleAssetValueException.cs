@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.Serialization;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 
 namespace Nekoyume.Action
 {

@@ -1,7 +1,7 @@
 using System;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;

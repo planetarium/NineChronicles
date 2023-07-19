@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.Model.Arena
 {
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Model.Arena;
     using Xunit;

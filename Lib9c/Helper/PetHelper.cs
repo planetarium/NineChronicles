@@ -1,6 +1,6 @@
 using System;
 using Lib9c;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Model.Pet;
 using Nekoyume.Model.State;

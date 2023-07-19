@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.TestHelper
+namespace Lib9c.Tests.TestHelper
 {
     using System;
     using System.Collections.Generic;
@@ -7,15 +7,14 @@
     using Lib9c.DevExtensions.Action;
     using Lib9c.Renderers;
     using Lib9c.Tests.Action;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
-    using Libplanet.Blocks;
     using Libplanet.Crypto;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
+    using Libplanet.Types.Assets;
+    using Libplanet.Types.Blocks;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Action.Loader;

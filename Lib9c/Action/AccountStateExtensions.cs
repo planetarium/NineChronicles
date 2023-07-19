@@ -5,10 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
-using Libplanet.Assets;
-using Libplanet.State;
 using LruCacheNet;
 using Nekoyume.Model.Arena;
 using Nekoyume.Helper;
@@ -17,6 +13,10 @@ using Nekoyume.TableData;
 using Serilog;
 using static Lib9c.SerializeKeys;
 using System.Collections.Immutable;
+using Libplanet.Action.State;
+using Libplanet.Common;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Coupons;
 using Nekoyume.Model.Item;
@@ -448,8 +448,8 @@ namespace Nekoyume.Action
                 return ImmutableDictionary<Guid, Coupon>.Empty;
             }
 
-             var serializedWallet = (Bencodex.Types.List)serializedValue;
-             return serializedWallet
+            var serializedWallet = (Bencodex.Types.List)serializedValue;
+            return serializedWallet
                 .Select(serializedCoupon => new Coupon(serializedCoupon))
                 .ToImmutableDictionary(v => v.Id, v => v);
         }

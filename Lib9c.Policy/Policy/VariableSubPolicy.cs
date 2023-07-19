@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 
 namespace Nekoyume.Blockchain.Policy
 {

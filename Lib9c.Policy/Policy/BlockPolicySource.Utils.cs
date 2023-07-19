@@ -5,11 +5,10 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
-using Libplanet.Blocks;
-using Libplanet.Tx;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
-using static Libplanet.Blocks.BlockMarshaler;
 
 namespace Nekoyume.Blockchain.Policy
 {

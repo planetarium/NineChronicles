@@ -4,17 +4,16 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Sys;
-using Libplanet.Assets;
 using Libplanet.Blockchain;
-using Libplanet.Blocks;
-using Libplanet.Consensus;
 using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Consensus;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
@@ -108,10 +107,10 @@ namespace Nekoyume
                     actionEvaluator,
                     transactions: ImmutableList<Transaction>.Empty
                         .Add(Transaction.Create(
-                            0, privateKey, null, actions))
+                            0, privateKey, null, actions.ToPlainValues()))
                         .AddRange(systemActions.Select((sa, index) =>
                             Transaction.Create(
-                                index + 1, privateKey, null, new [] { sa }))),
+                                index + 1, privateKey, null, new [] { sa.PlainValue }))),
                     privateKey: privateKey,
                     timestamp: timestamp);
         }

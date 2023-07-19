@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lib9c;
 using Libplanet.Action;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.TableData;

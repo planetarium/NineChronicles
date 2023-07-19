@@ -1,7 +1,8 @@
 using System.Linq;
 using System.Security.Cryptography;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Common;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 
 namespace Lib9c.Abstractions
 {

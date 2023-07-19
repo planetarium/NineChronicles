@@ -9,7 +9,7 @@ namespace Lib9c.Tests.Model.State
     using Bencodex;
     using Bencodex.Types;
     using Lib9c.Tests.Model.Item;
-    using Libplanet;
+    using Libplanet.Common;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;

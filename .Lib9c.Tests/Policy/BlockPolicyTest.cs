@@ -5,18 +5,17 @@ namespace Lib9c.Tests
     using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
-    using Libplanet;
+    using Bencodex.Types;
     using Libplanet.Action;
-    using Libplanet.Action.Loader;
-    using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
-    using Libplanet.Blocks;
-    using Libplanet.Consensus;
     using Libplanet.Crypto;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
-    using Libplanet.Tx;
+    using Libplanet.Types.Assets;
+    using Libplanet.Types.Blocks;
+    using Libplanet.Types.Consensus;
+    using Libplanet.Types.Tx;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Action.Loader;
@@ -75,7 +74,7 @@ namespace Lib9c.Tests
                     0,
                     new PrivateKey(),
                     genesis.Hash,
-                    new ActionBase[] { }
+                    Array.Empty<IValue>()
                 );
 
             // New private key which is not in activated addresses list is blocked.
@@ -97,7 +96,7 @@ namespace Lib9c.Tests
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
-                    new ActionBase[] { }
+                    Array.Empty<IValue>()
                 );
 
             // Test success because the key is activated.
@@ -117,14 +116,14 @@ namespace Lib9c.Tests
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
-                    singleAction
+                    singleAction.ToPlainValues()
                 );
             Transaction txWithManyActions =
                 Transaction.Create(
                     0,
                     newActivatedPrivateKey,
                     genesis.Hash,
-                    manyActions
+                    manyActions.ToPlainValues()
                 );
 
             // Transaction with more than two actions is rejected.
@@ -192,7 +191,7 @@ namespace Lib9c.Tests
                     0,
                     adminPrivateKey,
                     genesis.Hash,
-                    new ActionBase[] { }
+                    Array.Empty<IValue>()
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txEmpty));
 
@@ -201,7 +200,7 @@ namespace Lib9c.Tests
                     0,
                     adminPrivateKey,
                     genesis.Hash,
-                    new ActionBase[] { action, action }
+                    new ActionBase[] { action, action }.ToPlainValues()
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin));
 
@@ -210,7 +209,7 @@ namespace Lib9c.Tests
                     0,
                     new PrivateKey(),
                     genesis.Hash,
-                    new ActionBase[] { action }
+                    new ActionBase[] { action }.ToPlainValues()
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByStranger));
 
@@ -221,7 +220,7 @@ namespace Lib9c.Tests
                     genesis.Hash,
                     gasLimit: 1,
                     maxGasPrice: new FungibleAssetValue(Currencies.Mead, 10, 10),
-                    actions: new ActionBase[] { action }
+                    actions: new ActionBase[] { action }.ToPlainValues()
                 );
             Assert.IsType<TxPolicyViolationException>(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin2));
 
@@ -232,7 +231,7 @@ namespace Lib9c.Tests
                     genesis.Hash,
                     gasLimit: 1,
                     maxGasPrice: new FungibleAssetValue(Currencies.Mead, 0, 0),
-                    actions: new ActionBase[] { action }
+                    actions: new ActionBase[] { action }.ToPlainValues()
                 );
             Assert.Null(BlockPolicySource.ValidateNextBlockTxRaw(blockChain, actionTypeLoader, txByAdmin3));
         }
@@ -434,7 +433,7 @@ namespace Lib9c.Tests
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
-                        new ActionBase[] { }
+                        Array.Empty<IValue>()
                     ));
                 }
 
@@ -535,7 +534,7 @@ namespace Lib9c.Tests
                         nonce++,
                         adminPrivateKey,
                         genesis.Hash,
-                        new ActionBase[] { }
+                        Array.Empty<IValue>()
                     ));
                 }
 

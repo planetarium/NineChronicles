@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Battle;

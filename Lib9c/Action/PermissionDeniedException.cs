@@ -1,8 +1,8 @@
-using Libplanet;
 using Nekoyume.Model.State;
 using System;
 using System.Runtime.Serialization;
-using Libplanet.Serialization;
+using Libplanet.Common.Serialization;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {

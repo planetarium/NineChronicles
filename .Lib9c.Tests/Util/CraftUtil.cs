@@ -3,9 +3,9 @@ namespace Lib9c.Tests.Util
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
