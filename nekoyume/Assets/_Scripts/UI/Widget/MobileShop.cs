@@ -148,7 +148,7 @@ namespace Nekoyume.UI
                     p.definition.id == tab.ProductId);
 
                 _selectedProductId = tab.ProductId;
-                view.PriceText.text = storeProduct.metadata.localizedPriceString;
+                view.PriceTexts.ForEach(text => text.text = storeProduct.metadata.localizedPriceString);
                 view.ProductImage.sprite =
                     _productImageDictionary[GetProductImageNameFromProductId(tab.ProductId)];
                 view.PurchaseButton.interactable = product.Buyable;
@@ -157,7 +157,7 @@ namespace Nekoyume.UI
                 if (limit.HasValue)
                 {
                     var remain = limit - product.PurchaseCount;
-                    view.BuyLimitCountText.text = $"{remain}/{limit}";
+                    view.BuyLimitCountText.ForEach(text => text.text = $"{remain}/{limit}");
                 }
 
                 view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
