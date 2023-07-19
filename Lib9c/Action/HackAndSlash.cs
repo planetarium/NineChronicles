@@ -439,8 +439,14 @@ namespace Nekoyume.Action
                 }
             }
 
+            var stageWaveRow =  sheets.GetSheet<StageWaveSheet>()[StageId];
+            var enemySkillSheet = sheets.GetSheet<EnemySkillSheet>();
+            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
+            var stageCleared = !isNotClearedStage;
+            var starCount = 0;
             for (var i = 0; i < TotalPlayCount; i++)
             {
+                var rewards = StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet);
                 sw.Restart();
                 // First simulating will use Foods and Random Skills.
                 // Remainder simulating will not use Foods.
@@ -453,13 +459,14 @@ namespace Nekoyume.Action
                     WorldId,
                     StageId,
                     stageRow,
-                    sheets.GetSheet<StageWaveSheet>()[StageId],
-                    avatarState.worldInformation.IsStageCleared(StageId),
+                    stageWaveRow,
+                    stageCleared,
                     StageRewardExpHelper.GetExp(avatarState.level, StageId),
                     simulatorSheets,
-                    sheets.GetSheet<EnemySkillSheet>(),
-                    sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet));
+                    enemySkillSheet,
+                    costumeStatSheet,
+                    rewards,
+                    false);
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -471,13 +478,17 @@ namespace Nekoyume.Action
                 sw.Restart();
                 if (simulator.Log.IsClear)
                 {
-                    simulator.Player.worldInformation.ClearStage(
-                        WorldId,
-                        StageId,
-                        blockIndex,
-                        worldSheet,
-                        worldUnlockSheet
-                    );
+                    if (!stageCleared)
+                    {
+                        avatarState.worldInformation.ClearStage(
+                            WorldId,
+                            StageId,
+                            blockIndex,
+                            worldSheet,
+                            worldUnlockSheet
+                        );
+                        stageCleared = true;
+                    }
                     sw.Stop();
                     Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
                 }
@@ -504,9 +515,8 @@ namespace Nekoyume.Action
                     player.eventMapForBeforeV100310.Clear();
                 }
 
+                starCount += simulator.Log.clearedWaveNumber;
                 avatarState.Update(simulator);
-                // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
-                skillState?.Update(simulator.Log.clearedWaveNumber, crystalStageBuffSheet);
 
                 sw.Stop();
                 Log.Verbose(
@@ -526,6 +536,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
                 addressesHex, sw.Elapsed, TotalPlayCount);
 
+            // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
+            skillState?.Update(starCount, crystalStageBuffSheet);
             sw.Restart();
             avatarState.UpdateQuestRewards(materialItemSheet);
             avatarState.updatedAt = blockIndex;

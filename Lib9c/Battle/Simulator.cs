@@ -33,14 +33,14 @@ namespace Nekoyume.Battle
         public int WaveNumber { get; protected set; }
         public int WaveTurn { get; set; }
         public abstract IEnumerable<ItemBase> Reward { get; }
+        public bool LogEvent { get; protected set; }
 
-        protected Simulator(
-            IRandom random,
+        protected Simulator(IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            SimulatorSheetsV1 simulatorSheets
-        ) : this(random, new Player(avatarState, simulatorSheets), foods, simulatorSheets)
+            SimulatorSheetsV1 simulatorSheets, bool logEvent = true) : this(random, new Player(avatarState, simulatorSheets), foods, simulatorSheets)
         {
+            LogEvent = logEvent;
         }
 
         protected Simulator(
