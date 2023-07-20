@@ -539,7 +539,7 @@ namespace Nekoyume.Game.Character
             CharacterBase target,
             Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && target.IsAlive)
+            if (target && !info.Target!.IsDead)
             {
                 target.CurrentHP = Math.Min(target.CurrentHP + info.Effect, target.HP);
 
@@ -553,7 +553,7 @@ namespace Nekoyume.Game.Character
 
         private void ProcessBuff(CharacterBase target, Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && target.IsAlive)
+            if (target && !info.Target!.IsDead)
             {
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
