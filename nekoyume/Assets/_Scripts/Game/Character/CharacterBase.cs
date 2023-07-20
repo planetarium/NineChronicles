@@ -539,7 +539,7 @@ namespace Nekoyume.Game.Character
             CharacterBase target,
             Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && target.IsAlive)
+            if (target && !info.Target!.IsDead)
             {
                 target.CurrentHP = Math.Min(target.CurrentHP + info.Effect, target.HP);
 
@@ -553,7 +553,7 @@ namespace Nekoyume.Game.Character
 
         private void ProcessBuff(CharacterBase target, Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && target.IsAlive)
+            if (target && !info.Target!.IsDead)
             {
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
@@ -663,10 +663,9 @@ namespace Nekoyume.Game.Character
             IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> infos)
         {
             var info = infos.First();
-            var target = info.Target;
-            var copy = new Model.BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, info.Effect,
+            var copy = new Model.BattleStatus.Skill.SkillInfo(info.Target, info.Effect,
                 info.Critical, info.SkillCategory,
-                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff, target);
+                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff);
             yield return StartCoroutine(CoAnimationCast(copy));
 
             var pos = transform.position;
