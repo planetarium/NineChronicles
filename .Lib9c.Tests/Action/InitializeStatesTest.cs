@@ -60,6 +60,7 @@ namespace Lib9c.Tests.Action
             var genesisState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
+                Signer = minterKey.ToAddress(),
                 Miner = default,
                 PreviousState = new MockStateDelta(),
             });
@@ -127,6 +128,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -175,6 +177,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -226,6 +229,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -271,6 +275,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 

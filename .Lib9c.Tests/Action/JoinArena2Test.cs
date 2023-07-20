@@ -204,7 +204,9 @@ namespace Lib9c.Tests.Action
             avatarState = AddMedal(avatarState, row, 80);
 
             var context = new ActionContext();
-            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
+            var state = (balance == "0")
+                ? _state
+                : _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena2()
             {

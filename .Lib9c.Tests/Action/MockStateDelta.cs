@@ -171,7 +171,24 @@ namespace Lib9c.Tests.Action
         public IAccountStateDelta MintAsset(
             IActionContext context, Address recipient, FungibleAssetValue value)
         {
+            if (value.Sign <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "The value to mint has to be greater than zero."
+                );
+            }
+
             Currency currency = value.Currency;
+            if (!currency.AllowsToMint(context.Signer))
+            {
+                throw new CurrencyPermissionException(
+                    $"The account {context.Signer} has no permission to mint currency {currency}.",
+                    context.Signer,
+                    currency
+                );
+            }
+
             FungibleAssetValue balance = GetBalance(recipient, currency);
             (Address, Currency) assetKey = (recipient, currency);
             BigInteger rawBalance = (balance + value).RawValue;
@@ -207,16 +224,42 @@ namespace Lib9c.Tests.Action
             Address sender,
             Address recipient,
             FungibleAssetValue value,
-            bool allowNegativeBalance = false) =>
-                TransferAssetV0(sender, recipient, value, allowNegativeBalance);
+            bool allowNegativeBalance = false) => context.BlockProtocolVersion > 0
+                ? TransferAssetV1(sender, recipient, value, allowNegativeBalance)
+                : TransferAssetV0(sender, recipient, value, allowNegativeBalance);
 
         /// <inheritdoc/>
         [Pure]
         public IAccountStateDelta BurnAsset(
             IActionContext context, Address owner, FungibleAssetValue value)
         {
+            string msg;
+
+            if (value.Sign <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "The value to burn has to be greater than zero."
+                );
+            }
+
             Currency currency = value.Currency;
+            if (!currency.AllowsToMint(context.Signer))
+            {
+                msg = $"The account {context.Signer} has no permission to burn assets of " +
+                      $"the currency {currency}.";
+                throw new CurrencyPermissionException(msg, context.Signer, currency);
+            }
+
             FungibleAssetValue balance = GetBalance(owner, currency);
+
+            if (balance < value)
+            {
+                msg = $"The account {owner}'s balance of {currency} is insufficient to burn: " +
+                      $"{balance} < {value}.";
+                throw new InsufficientBalanceException(msg, owner, balance);
+            }
+
             (Address, Currency) assetKey = (owner, currency);
             BigInteger rawBalance = (balance - value).RawValue;
             if (currency.TotalSupplyTrackable)

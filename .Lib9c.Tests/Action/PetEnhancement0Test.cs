@@ -315,9 +315,15 @@ namespace Lib9c.Tests.Action
                     currentPetLevel,
                     targetPetLevel);
 
-                prevStates = prevStates
-                    .MintAsset(context, agentAddr, ncgCost * ncgCurrency)
-                    .MintAsset(context, avatarAddr, soulStoneCost * soulStoneCurrency);
+                if (ncgCost > 0)
+                {
+                    prevStates = prevStates.MintAsset(context, agentAddr, ncgCost * ncgCurrency);
+                }
+
+                if (soulStoneCost > 0)
+                {
+                    prevStates = prevStates.MintAsset(context, avatarAddr, soulStoneCost * soulStoneCurrency);
+                }
             }
 
             if (removePetRow)

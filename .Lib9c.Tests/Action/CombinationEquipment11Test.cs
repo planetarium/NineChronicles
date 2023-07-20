@@ -329,7 +329,11 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
+            if (mintNCG > 0)
+            {
+                previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
+            }
+
             var goldCurrencyState = previousState.GetGoldCurrency();
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);
