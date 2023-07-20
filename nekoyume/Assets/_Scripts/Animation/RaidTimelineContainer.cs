@@ -58,6 +58,9 @@ namespace Nekoyume
         [SerializeField]
         private TimelineAsset playerDefeatCutscene = null;
 
+        [SerializeField]
+        private Canvas raidCanvas;
+
         public RaidPlayer Player => player;
         public RaidBoss Boss => boss;
         public RaidCamera Camera => camera;
@@ -162,6 +165,18 @@ namespace Nekoyume
                 -transform.localScale.x,
                 transform.localScale.y,
                 transform.localScale.z);
+
+            if (raidCanvas != null)
+            {
+                for (int i = 0; i < raidCanvas.transform.childCount; i++)
+                {
+                    var canvasChildTansform = raidCanvas.transform.GetChild(i);
+                    canvasChildTansform.transform.localScale = new Vector3(
+                        -canvasChildTansform.transform.localScale.x,
+                        canvasChildTansform.transform.localScale.y,
+                        canvasChildTansform.transform.localScale.z);
+                }
+            }
 
             foreach (var vfx in vfxList)
             {

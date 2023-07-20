@@ -53,7 +53,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             var uriBuilder = new UriBuilder(_endpoints.Product);
             uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
                 ? $"agent_addr={agentAddr.ToString()}"
-                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToHex()}";
+                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToString()}";
             using var res = await _client.GetAsync(uriBuilder.Uri);
             return await ProcessResponseAsync(res);
         }

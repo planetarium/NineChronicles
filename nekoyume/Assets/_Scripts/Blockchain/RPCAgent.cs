@@ -446,10 +446,14 @@ namespace Nekoyume.Blockchain
 
                 var agentAddress = States.Instance.AgentState.address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
-                bool? approved = await GetStateAsync(pledgeAddress) is List list
-                    ? list[1].ToBoolean()
-                    : null;
-                States.Instance.SetPledgeApproved(approved);
+                Address? patronAddress = null;
+                var approved = false;
+                if (await GetStateAsync(pledgeAddress) is List list)
+                {
+                    patronAddress = list[0].ToAddress();
+                    approved = list[1].ToBoolean();
+                }
+                States.Instance.SetPledgeStates(patronAddress, approved);
             });
 
             yield return new WaitUntil(() => currencyTask.IsCompleted);

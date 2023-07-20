@@ -328,6 +328,9 @@ namespace Nekoyume.Game
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
+
+            GL.Clear(true, true, Color.black);
+
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
@@ -347,27 +350,27 @@ namespace Nekoyume.Game
 
 #if UNITY_ANDROID
             // Check MeadPledge
-            if (!States.PledgeApproved.HasValue || !States.PledgeApproved.Value)
+            if (!States.PledgeRequested || !States.PledgeApproved)
             {
-                if (!States.PledgeApproved.HasValue)
+                if (!States.PledgeRequested)
                 {
                     _deepLinkHandler.OpenPortal(States.AgentState.address);
 
-                    Widget.Find<GrayLoadingScreen>().Show("The pledge is in progress.", false);
-                    yield return new WaitUntil(() => States.PledgeApproved.HasValue);
+                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+                    yield return new WaitUntil(() => States.PledgeRequested);
                 }
 
-                if (States.PledgeApproved.HasValue && !States.PledgeApproved.Value)
+                if (States.PledgeRequested && !States.PledgeApproved)
                 {
-                    var patronAddress = new Address("c64c7cBf29BF062acC26024D5b9D1648E8f8D2e1");
+                    var patronAddress = States.PatronAddress!.Value;
                     ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
-                    Widget.Find<GrayLoadingScreen>().Show("Checking the pledge.", false);
-                    yield return new WaitUntil(() => States.PledgeApproved.Value);
+                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+                    yield return new WaitUntil(() => States.PledgeApproved);
                 }
 
-                yield return new WaitUntil(() => States.PledgeApproved.HasValue && States.PledgeApproved.Value);
-                Widget.Find<GrayLoadingScreen>().Show("Creating world.", false);
+                yield return new WaitUntil(() => States.PledgeRequested && States.PledgeApproved);
+                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
             }
 #endif
 

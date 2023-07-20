@@ -663,9 +663,10 @@ namespace Nekoyume.Game.Character
             IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> infos)
         {
             var info = infos.First();
-            var copy = new Model.BattleStatus.Skill.SkillInfo(info.Target, info.Effect,
+            var target = info.Target;
+            var copy = new Model.BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, info.Effect,
                 info.Critical, info.SkillCategory,
-                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff);
+                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff, target);
             yield return StartCoroutine(CoAnimationCast(copy));
 
             var pos = transform.position;

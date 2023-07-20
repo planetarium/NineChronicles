@@ -2793,7 +2793,7 @@ namespace Nekoyume.Blockchain
             var pledgeAddress = agentAddress.GetPledgeAddress();
 
             Address? address = null;
-            bool? approved = null;
+            var approved = false;
             var mead = 0;
             if (eval.OutputState.GetState(pledgeAddress) is List l)
             {
@@ -2802,7 +2802,7 @@ namespace Nekoyume.Blockchain
                 mead = l[2].ToInteger();
             }
 
-            States.Instance.SetPledgeApproved(approved);
+            States.Instance.SetPledgeStates(address, approved);
         }
 
         private void ResponseApprovePledge(ActionEvaluation<ApprovePledge> eval)
@@ -2816,7 +2816,7 @@ namespace Nekoyume.Blockchain
             var pledgeAddress = agentAddress.GetPledgeAddress();
 
             Address? address = null;
-            bool? approved = null;
+            var approved = false;
             var mead = 0;
             if (eval.OutputState.GetState(pledgeAddress) is List l)
             {
@@ -2825,7 +2825,7 @@ namespace Nekoyume.Blockchain
                 mead = l[2].ToInteger();
             }
 
-            States.Instance.SetPledgeApproved(approved);
+            States.Instance.SetPledgeStates(address, approved);
         }
     }
 }

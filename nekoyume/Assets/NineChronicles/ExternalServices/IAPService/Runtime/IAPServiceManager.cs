@@ -17,8 +17,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             TimeSpan.FromMinutes(10);
 
         private readonly IAPServiceClient _client;
-        private readonly IAPServicePoller _poller;
-        private readonly IAPServiceCache _cache;
+
+        // NOTE: Enable this code if you want to use poller.
+        // private readonly IAPServicePoller _poller;
+        // NOTE: Enable this code if you want to use cache.
+        // private readonly IAPServiceCache _cache;
         private readonly Store _store;
 
         public bool IsInitialized { get; private set; }
@@ -27,13 +30,15 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public IAPServiceManager(string url, Store store)
         {
             _client = new IAPServiceClient(url);
+            // NOTE: Enable this code if you want to use poller.
             // _poller = new IAPServicePoller(_client);
             // _poller.OnPoll += OnPoll;
-            _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
+            // NOTE: Enable this code if you want to use cache.
+            // _cache = new IAPServiceCache(DefaultProductsCacheLifetime);
             _store = store;
         }
 
-        public async Task InitializeAsync(TimeSpan? productsCacheLifetime = null)
+        public async Task InitializeAsync()
         {
             if (IsInitialized)
             {
@@ -50,10 +55,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 return;
             }
 
-            if (productsCacheLifetime is not null)
-            {
-                _cache.SetOptions(productsCacheLifetime);
-            }
+            // NOTE: Enable this code if you want to use cache.
+            // if (productsCacheLifetime is not null)
+            // {
+            //     _cache.SetOptions(productsCacheLifetime);
+            // }
 
             IsInitialized = true;
         }
@@ -84,9 +90,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         //     //request to purchase to IAPService if there are missing receipts.
         // }
 
-        public async Task<IReadOnlyList<ProductSchema>?> GetProductsAsync(
-            Address agentAddr,
-            bool force = false)
+        public async Task<IReadOnlyList<ProductSchema>?> GetProductsAsync(Address agentAddr)
         {
             if (!IsInitialized)
             {
@@ -94,10 +98,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 return null;
             }
 
-            if (!force && _cache.Products is not null)
-            {
-                return _cache.Products;
-            }
+            // NOTE: Enable this code if you want to use cache.
+            // if (!force && _cache.Products is not null)
+            // {
+            //     return _cache.Products;
+            // }
 
             var (code, error, mediaType, content) = await _client.ProductAsync(agentAddr);
             if (code != HttpStatusCode.OK ||
@@ -124,10 +129,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
             try
             {
-                _cache.Products = JsonSerializer.Deserialize<ProductSchema[]>(
+                return JsonSerializer.Deserialize<ProductSchema[]>(
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
-                return _cache.Products;
+                // NOTE: Enable this code if you want to use cache.
+                // _cache.Products = JsonSerializer.Deserialize<ProductSchema[]>(
+                //     content!,
+                //     IAPServiceClient.JsonSerializerOptions)!;
+                // return _cache.Products;
             }
             catch (Exception e)
             {
@@ -180,16 +189,18 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 var result = JsonSerializer.Deserialize<ReceiptDetailSchema>(
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
-                _cache.PurchaseProcessResults[result.Uuid] = result;
+                // NOTE: Enable this code if you want to use cache.
+                // _cache.PurchaseProcessResults[result.Uuid] = result;
                 if (result.Status == ReceiptStatus.Invalid ||
                     result.Status == ReceiptStatus.Unknown)
                 {
                     UnregisterAndCache(result);
                 }
-                else
-                {
-                    // _poller.Register(result.Uuid);
-                }
+                // NOTE: Enable this code if you want to use poller.
+                // else
+                // {
+                //     _poller.Register(result.Uuid);
+                // }
 
                 return result;
             }
@@ -247,8 +258,10 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         private void UnregisterAndCache(ReceiptDetailSchema result)
         {
+            // NOTE: Enable this code if you want to use poller.
             // _poller.Unregister(result.Uuid);
-            _cache.PurchaseProcessResults[result.Uuid] = result;
+            // NOTE: Enable this code if you want to use cache.
+            // _cache.PurchaseProcessResults[result.Uuid] = result;
         }
 
         private void OnPoll(Dictionary<string, ReceiptDetailSchema?> result)

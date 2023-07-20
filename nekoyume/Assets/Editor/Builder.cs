@@ -283,7 +283,9 @@ namespace Editor
                 if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
                     !string.IsNullOrEmpty(outPath))
                 {
-                    EditorUserBuildSettings.buildAppBundle = outPath.EndsWith(".aab");
+                    var aab = outPath.EndsWith(".aab");
+                    EditorUserBuildSettings.buildAppBundle = aab;
+                    PlayerSettings.Android.useAPKExpansionFiles = aab;
                 }
             }
 

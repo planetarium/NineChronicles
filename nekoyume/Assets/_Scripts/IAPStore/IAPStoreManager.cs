@@ -74,7 +74,6 @@ namespace Nekoyume.IAPStore
                     $"{product.definition.id}: {product.metadata.localizedTitle}, {product.metadata.localizedDescription}, {product.metadata.localizedPriceString}");
             }
 
-
             IsInitialized = true;
         }
 
@@ -131,6 +130,10 @@ namespace Nekoyume.IAPStore
         void IDetailedStoreListener.OnPurchaseFailed(Product i, PurchaseFailureDescription p)
         {
             Debug.LogError($"PurchaseFail. reason: {p}, Product: {i}");
+            Analyzer.Instance.Track(
+                "Unity/Shop/IAP/PurchaseResult",
+                ("product-id", p.productId),
+                ("result", p.reason.ToString()));
             if (p.reason == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
@@ -141,6 +144,7 @@ namespace Nekoyume.IAPStore
         {
             var popup = Widget.Find<IconAndButtonSystem>();
             var states = States.Instance;
+
             try
             {
                 var result = await Game.Game.instance.IAPServiceManager
@@ -151,21 +155,25 @@ namespace Nekoyume.IAPStore
                 if (result is null)
                 {
                     popup.Show(
-                        L10nManager.Localize("UI_ERROR"),
-                        "IAP Service Purchasing failed. result is not HTTPSCODE:200\n" +
-                        $"receipt: {e.purchasedProduct.receipt}",
-                        L10nManager.Localize("UI_OK"),
-                        false);
+                        "UI_ERROR",
+                        "UI_IAP_PURCHASE_FAILED",
+                        "UI_OK",
+                        true);
                 }
                 else
                 {
+                    Analyzer.Instance.Track(
+                        "Unity/Shop/IAP/PurchaseResult",
+                        ("product-id", e.purchasedProduct.definition.id),
+                        ("result", "Complete"),
+                        ("transaction-id", e.purchasedProduct.transactionID));
                     popup.Show(
-                        L10nManager.Localize("UI_COMPLETED"),
-                        "IAP Service Purchasing completed.\n" +
-                        $"tx status: {result.TxStatus}",
-                        L10nManager.Localize("UI_OK"),
-                        false,
+                        "UI_COMPLETED",
+                        "UI_IAP_PURCHASE_COMPLETE",
+                        "UI_OK",
+                        true,
                         IconAndButtonSystem.SystemType.Information);
+                    Widget.Find<MobileShop>().UpdateView();
                     _controller.ConfirmPendingPurchase(e.purchasedProduct);
                 }
             }
@@ -173,36 +181,6 @@ namespace Nekoyume.IAPStore
             {
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
-        }
-
-        private static string ParsePayloadJson(string unityIAPReceipt)
-        {
-            try
-            {
-                var wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(unityIAPReceipt);
-                if (wrapper == null)
-                {
-                    Debug.LogError($"receipt is invalid.: {unityIAPReceipt}");
-                    return string.Empty;
-                }
-
-                var store = (string)wrapper["Store"];
-                var payload = (string)wrapper["Payload"];
-
-                if (store == "GooglePlay")
-                {
-                    var details = (Dictionary<string, object>) MiniJson.JsonDecode(payload);
-                    var json = (string)details["json"];
-                    return json;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("Cannot validate due to unhandled exception. (" + ex + ")");
-                return string.Empty;
-            }
-
-            return string.Empty;
         }
     }
 }

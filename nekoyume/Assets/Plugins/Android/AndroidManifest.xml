@@ -4,8 +4,10 @@
     package="com.unity3d.player"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     <application
       android:usesCleartextTraffic="true"
+      android:requestLegacyExternalStorage="true"
       >
         <activity android:name="com.unity3d.player.UnityPlayerActivity"
                   android:theme="@style/UnityThemeSelector">

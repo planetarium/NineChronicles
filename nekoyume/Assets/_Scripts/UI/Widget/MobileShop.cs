@@ -33,9 +33,13 @@ namespace Nekoyume.UI
                     sprite.name.Remove(0, 4),
                     sprite);
             }
+
             view.PurchaseButton.onClick.AddListener(() =>
             {
                 Debug.LogError($"Purchase: {_selectedProductId}");
+                Analyzer.Instance.Track(
+                    "Unity/Shop/IAP/PurchaseButton/Click",
+                    ("product-id", _selectedProductId));
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
             });
         }
@@ -49,6 +53,11 @@ namespace Nekoyume.UI
         {
             Game.Event.OnRoomEnter.Invoke(true);
             base.Close(ignoreCloseAnimation);
+        }
+
+        public void UpdateView()
+        {
+            OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
@@ -69,35 +78,7 @@ namespace Nekoyume.UI
                     tabToggle.offObject.SetActive(true);
                     tabToggle.group = tabToggleGroup;
 
-                    void OnValueChange(bool isOn)
-                    {
-                        if (isOn)
-                        {
-                            _selectedProductId = tab.ProductId;
-                            view.PriceText.text = storeProduct.metadata.localizedPriceString;
-                            view.ProductImage.sprite =
-                                _productImageDictionary[GetProductImageNameFromProductId(product.GoogleSku)];
-                            var limit = product.DailyLimit ?? product.WeeklyLimit;
-                            view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
-                            view.BuyLimitCountText.text = $"{limit}/3";
-                            view.PurchaseButton.interactable =
-                                limit is null or > 0;
-                            view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
-                            foreach (var fungibleItemSchema in product.FungibleItemList)
-                            {
-                                var rewardView =
-                                    view.RewardViews.First(v => !v.gameObject.activeSelf);
-                                rewardView.RewardName.text =
-                                    L10nManager.LocalizeItemName(fungibleItemSchema.SheetItemId);
-                                rewardView.RewardImage.sprite =
-                                    SpriteHelper.GetItemIcon(fungibleItemSchema.SheetItemId);
-                                rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
-                                rewardView.gameObject.SetActive(true);
-                            }
-                        }
-                    }
-
-                    tabToggle.onValueChanged.AddListener(OnValueChange);
+                    tabToggle.onValueChanged.AddListener(isOn => OnToggleValueChanged(isOn, tab));
                     _productTabDictionary.Add(product.GoogleSku, tab);
                 }
 
@@ -146,6 +127,57 @@ namespace Nekoyume.UI
                 LanguageType.ChineseSimplified => "_ZH-CN",
                 _ => "_EN"
             };
+        }
+
+        private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
+        {
+            var products = await Game.Game.instance.IAPServiceManager
+                .GetProductsAsync(States.Instance.AgentState.address);
+            if (isOn)
+            {
+                Analyzer.Instance.Track(
+                    "Unity/Shop/IAP/Tab/Click",
+                    ("product-id", tab.ProductId));
+                var product = products?.FirstOrDefault(p => p.GoogleSku == tab.ProductId);
+                if (product is null)
+                {
+                    return;
+                }
+
+                var storeProduct = Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
+                    p.definition.id == tab.ProductId);
+
+                _selectedProductId = tab.ProductId;
+                view.PriceTexts.ForEach(text => text.text = storeProduct.metadata.localizedPriceString);
+                view.ProductImage.sprite =
+                    _productImageDictionary[GetProductImageNameFromProductId(tab.ProductId)];
+                view.PurchaseButton.interactable = product.Buyable;
+                var limit = product.DailyLimit ?? product.WeeklyLimit;
+                view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
+                if (limit.HasValue)
+                {
+                    var remain = limit - product.PurchaseCount;
+                    view.BuyLimitCountText.ForEach(text => text.text = $"{remain}/{limit}");
+                }
+
+                view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
+                foreach (var fungibleItemSchema in product.FungibleItemList)
+                {
+                    var rewardView =
+                        view.RewardViews.First(v => !v.gameObject.activeSelf);
+                    rewardView.RewardName.text =
+                        L10nManager.LocalizeItemName(fungibleItemSchema.SheetItemId);
+                    rewardView.RewardImage.sprite =
+                        SpriteHelper.GetItemIcon(fungibleItemSchema.SheetItemId);
+                    rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
+                    rewardView.gameObject.SetActive(true);
+                }
+
+                var messageKey = product.DailyLimit.HasValue
+                    ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
+                    : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
+                view.BuyLimitMessageText.text = L10nManager.Localize(messageKey);
+            }
         }
     }
 }
