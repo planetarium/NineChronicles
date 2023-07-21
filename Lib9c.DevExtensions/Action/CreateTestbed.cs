@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -14,7 +14,6 @@ using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
-using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
