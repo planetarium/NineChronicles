@@ -38,6 +38,7 @@ using Currency = Libplanet.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
+using System.Threading.Tasks;
 using UnityEngine.Android;
 #endif
 
@@ -348,31 +349,7 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-#if UNITY_ANDROID
-            // Check MeadPledge
-            if (!States.PledgeRequested || !States.PledgeApproved)
-            {
-                if (!States.PledgeRequested)
-                {
-                    _deepLinkHandler.OpenPortal(States.AgentState.address);
-
-                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
-                    yield return new WaitUntil(() => States.PledgeRequested);
-                }
-
-                if (States.PledgeRequested && !States.PledgeApproved)
-                {
-                    var patronAddress = States.PatronAddress!.Value;
-                    ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
-
-                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
-                    yield return new WaitUntil(() => States.PledgeApproved);
-                }
-
-                yield return new WaitUntil(() => States.PledgeRequested && States.PledgeApproved);
-                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
-            }
-#endif
+            yield return StartCoroutine(CoCheckPledge());
 
 #if UNITY_EDITOR
             // wait for headless connect.
@@ -646,6 +623,78 @@ namespace Nekoyume.Game
             popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
             popup.SetCancelCallbackToExit();
+        }
+
+        private IEnumerator CoCheckPledge()
+        {
+            IEnumerator SetTimeOut(Func<bool> condition)
+            {
+                const int timeLimit = 180;
+
+                // Wait 180 minutes
+                for (int second = 0; second < timeLimit; second++)
+                {
+                    yield return new WaitForSeconds(1f);
+                    if (condition.Invoke())
+                    {
+                        break;
+                    }
+                }
+
+                if (!condition.Invoke())
+                {
+                    // Update Pledge States
+                    var task = Task.Run(async () =>
+                    {
+                        var pledgeAddress = Agent.Address.GetPledgeAddress();
+                        Address? patronAddress = null;
+                        var approved = false;
+
+                        if (await Agent.GetStateAsync(pledgeAddress) is List list)
+                        {
+                            patronAddress = list[0].ToAddress();
+                            approved = list[1].ToBoolean();
+                        }
+
+                        States.Instance.SetPledgeStates(patronAddress, approved);
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
+            }
+
+#if UNITY_ANDROID
+            // Check MeadPledge
+            if (!States.PledgeRequested || !States.PledgeApproved)
+            {
+                if (!States.PledgeRequested)
+                {
+                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+
+                    while (!States.PledgeRequested)
+                    {
+                        _deepLinkHandler.OpenPortal(States.AgentState.address);
+
+                        yield return SetTimeOut(() => States.PledgeRequested);
+                    }
+                }
+
+                if (States.PledgeRequested && !States.PledgeApproved)
+                {
+                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+
+                    while (!States.PledgeApproved)
+                    {
+                        var patronAddress = States.PatronAddress!.Value;
+                        ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                        yield return SetTimeOut(() => States.PledgeApproved);
+                    }
+                }
+
+                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
+            }
+#endif
+            yield break;
         }
 
         // FIXME: Leave one between this or CoSyncTableSheets()
