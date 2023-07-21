@@ -62,7 +62,14 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             characterView.OnClickCharacterIcon
-                .Subscribe(_ => Find<ProfileSelectPopup>().Show())
+                .Subscribe(_ =>
+                {
+                    // Obsolete for mobile.
+                    // Find<ProfileSelectPopup>().Show();
+
+                    Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                        "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                })
                 .AddTo(gameObject);
 
             CloseWidget = null;
