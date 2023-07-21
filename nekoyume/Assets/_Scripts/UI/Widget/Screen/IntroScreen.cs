@@ -1,10 +1,14 @@
+using System;
 using System.Collections;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -20,6 +24,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button startButton;
         [SerializeField] private Button signinButton;
+        [SerializeField] private Button guestButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -36,6 +41,8 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
 
+        private const string GuestPrivateKeyUrl =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
         protected override void Awake()
         {
             base.Awake();
@@ -49,7 +56,6 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
-
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -73,6 +79,7 @@ namespace Nekoyume.UI
             startButton.interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
+            GetGuestPrivateKey();
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -153,6 +160,32 @@ namespace Nekoyume.UI
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
+        }
+
+        private async void GetGuestPrivateKey()
+        {
+            string pk;
+            try
+            {
+                var request = UnityWebRequest.Get(GuestPrivateKeyUrl);
+                await request.SendWebRequest();
+                pk = request.downloadHandler.text.Trim();
+                ByteUtil.ParseHex(pk);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return;
+            }
+
+            guestButton.gameObject.SetActive(true);
+            guestButton.onClick.AddListener(() =>
+            {
+                startButtonContainer.SetActive(false);
+                Find<LoginSystem>().Show(_keyStorePath, pk);
+                Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+            });
+            guestButton.interactable = true;
         }
     }
 }
