@@ -27,8 +27,11 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(0L, 600_000)]
+        [InlineData(7_210_000L, 600_000)]
+        [InlineData(7_210_001L, 200_000)]
+        public void Execute(long blockIndex, int expected)
         {
             var action = new CreateAvatar()
             {
@@ -58,7 +61,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                BlockIndex = 0,
+                BlockIndex = blockIndex,
             });
 
             var avatarAddress = _agentAddress.Derive(
@@ -77,7 +80,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(600_000 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
         }
 
         [Theory]

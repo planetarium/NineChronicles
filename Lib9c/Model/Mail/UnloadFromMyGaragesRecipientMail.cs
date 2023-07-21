@@ -15,7 +15,7 @@ namespace Nekoyume.Model.Mail
     public class UnloadFromMyGaragesRecipientMail : Mail
     {
         protected override string TypeId => nameof(UnloadFromMyGaragesRecipientMail);
-        public override MailType MailType => MailType.System;
+        public override MailType MailType => MailType.Auction;
 
         public readonly IOrderedEnumerable<(Address balanceAddr, FungibleAssetValue value)>?
             FungibleAssetValues;

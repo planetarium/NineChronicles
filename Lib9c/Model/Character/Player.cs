@@ -449,8 +449,11 @@ namespace Nekoyume.Model
         public virtual void Spawn()
         {
             InitAI();
-            var spawn = new SpawnPlayer((CharacterBase)Clone());
-            Simulator.Log.Add(spawn);
+            if (Simulator.LogEvent)
+            {
+                var spawn = new SpawnPlayer((CharacterBase)Clone());
+                Simulator.Log.Add(spawn);
+            }
         }
 
         [Obsolete("Use Spawn")]
@@ -512,6 +515,8 @@ namespace Nekoyume.Model
                 return base.UseSkill();
             }
 
+            bool log = Simulator.LogEvent;
+
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -522,12 +527,16 @@ namespace Nekoyume.Model
                     Simulator.StatBuffSheet,
                     Simulator.SkillActionBuffSheet,
                     Simulator.ActionBuffSheet
-                )
+                ),
+                log
             );
 
             var cooldown = RuneSkillCooldownMap[selectedSkill.SkillRow.Id];
             RuneSkills.SetCooldown(selectedSkill.SkillRow.Id, cooldown);
-            Simulator.Log.Add(usedSkill);
+            if (log)
+            {
+                Simulator.Log.Add(usedSkill);
+            }
             return usedSkill;
         }
 
@@ -672,7 +681,10 @@ namespace Nekoyume.Model
 
             Simulator.TurnNumber++;
             Simulator.WaveTurn++;
-            Simulator.Log.Add(new WaveTurnEnd(this, Simulator.TurnNumber, Simulator.WaveTurn));
+            if (Simulator.LogEvent)
+            {
+                Simulator.Log.Add(new WaveTurnEnd(this, Simulator.TurnNumber, Simulator.WaveTurn));
+            }
         }
     }
 }

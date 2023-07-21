@@ -74,12 +74,8 @@ namespace Nekoyume.Model.Quest
         }
 
         public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"event"] = (Integer)(int)Event,
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
+            ((Dictionary) base.Serialize())
+            .Add("event", (int) Event);
 
     }
 }

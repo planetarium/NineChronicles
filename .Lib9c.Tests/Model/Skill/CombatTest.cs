@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Model.Skill
             var normalAttack = new NormalAttack(skillRow, 0, 100, default, StatType.NONE);
 
             var prevHP = _player.CurrentHP;
-            normalAttack.Use(_enemy, 1, new List<StatBuff>());
+            normalAttack.Use(_enemy, 1, new List<StatBuff>(), false);
             var currentHP = _player.CurrentHP;
             var damage = prevHP - currentHP;
 
@@ -100,11 +100,41 @@ namespace Lib9c.Tests.Model.Skill
             var normalAttack = new NormalAttack(skillRow, 0, 100, default, StatType.NONE);
 
             var prevHP = _player.CurrentHP;
-            normalAttack.Use(_enemy, 1, new List<StatBuff>());
+            normalAttack.Use(_enemy, 1, new List<StatBuff>(), false);
             var currentHP = _player.CurrentHP;
             var damage = prevHP - currentHP;
 
             Assert.Equal(expectedDamage, damage);
+        }
+
+        [Fact]
+        public void Thorn()
+        {
+            var prevHP = _enemy.CurrentHP;
+            var skill = _enemy.GiveThornDamage(1);
+            var currentHP = _enemy.CurrentHP;
+            // get 1dmg from thorn
+            Assert.Equal(prevHP - 1, currentHP);
+            Assert.Equal(prevHP, skill.Character.CurrentHP);
+            var skillInfo = Assert.Single(skill.SkillInfos);
+            Assert.Equal(currentHP, skillInfo.Target!.CurrentHP);
+        }
+
+        [Fact]
+        public void Bleed()
+        {
+            var actionBuffSheet = _tableSheets.ActionBuffSheet;
+            var row = actionBuffSheet.Values.First();
+            var bleed = Assert.IsType<Bleed>(BuffFactory.GetActionBuff(_enemy.Stats, row));
+            var dmg = bleed.Power;
+            var prevHP = _player.CurrentHP;
+            var skill = bleed.GiveEffect(_player, 1);
+            var currentHP = _player.CurrentHP;
+            // get dmg from bleed
+            Assert.Equal(prevHP - dmg, currentHP);
+            Assert.Equal(prevHP, skill.Character.CurrentHP);
+            var skillInfo = Assert.Single(skill.SkillInfos);
+            Assert.Equal(currentHP, skillInfo.Target!.CurrentHP);
         }
     }
 }

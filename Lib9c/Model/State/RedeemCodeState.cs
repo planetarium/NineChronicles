@@ -79,14 +79,12 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+            ((Dictionary) base.Serialize())
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "map"] = new Dictionary(_map.Select(kv => new KeyValuePair<IKey, IValue>(
-                    kv.Key,
-                    kv.Value.Serialize()
-                )))
-            }.Union((Dictionary) base.Serialize()));
+            .Add("map", new Dictionary(_map.Select(kv => new KeyValuePair<IKey, IValue>(
+                kv.Key,
+                kv.Value.Serialize()
+            ))));
 #pragma warning restore LAA1002
 
         public int Redeem(string code, Address userAddress)

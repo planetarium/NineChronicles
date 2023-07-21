@@ -17,15 +17,14 @@ namespace Nekoyume.Model.Skill
         {
         }
 
-        public override BattleStatus.Skill Use(
-            CharacterBase caster, 
+        public override BattleStatus.Skill Use(CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs)
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
-            var clone = (CharacterBase) caster.Clone();
+            var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
             var heal = ProcessHeal(caster, simulatorWaveTurn);
             var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
-            
+
             return new BattleStatus.HealSkill(SkillRow.Id, clone, heal, buff);
         }
 
@@ -42,8 +41,8 @@ namespace Nekoyume.Model.Skill
             foreach (var target in SkillRow.SkillTargetType.GetTarget(caster))
             {
                 target.Heal(healPoint);
-                infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), healPoint, caster.IsCritical(false),
-                    SkillRow.SkillCategory, simulatorWaveTurn));
+                infos.Add(new BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, healPoint, caster.IsCritical(false),
+                    SkillRow.SkillCategory, simulatorWaveTurn, target: target));
             }
 
             return infos;
