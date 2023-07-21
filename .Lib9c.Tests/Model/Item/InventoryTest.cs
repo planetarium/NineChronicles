@@ -2,9 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
     using Lib9c.Tests.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.TableData;
@@ -32,24 +30,6 @@
             inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
             var serialized = (BxList)inventory.Serialize();
             var deserialized = new Inventory(serialized);
-            Assert.Equal(inventory, deserialized);
-        }
-
-        [Fact]
-        public void Serialize_With_DotNet_Api()
-        {
-            var inventory = new Inventory();
-            var row = TableSheets.EquipmentItemSheet.First;
-            var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
-            inventory.AddItem(itemUsable);
-            var row2 = TableSheets.MaterialItemSheet.First;
-            var material = ItemFactory.CreateMaterial(row2);
-            inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
-            var formatter = new BinaryFormatter();
-            using var ms = new MemoryStream();
-            formatter.Serialize(ms, inventory);
-            ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (Inventory)formatter.Deserialize(ms);
             Assert.Equal(inventory, deserialized);
         }
 
