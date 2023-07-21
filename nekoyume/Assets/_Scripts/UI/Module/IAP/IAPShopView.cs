@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +15,12 @@ namespace Nekoyume.UI.Module
 
         [field:SerializeField]
         public Button PurchaseButton { get; private set; }
+
+        [field: SerializeField]
+        public GameObject PurchaseButtonDissableGroupObj { get; private set; }
+
+        [field: SerializeField]
+        public LoadingIndicator PurchaseButtonLoadingObj { get; private set; }
 
         [field:SerializeField]
         public List<TextMeshProUGUI> PriceTexts { get; private set; }
