@@ -418,69 +418,63 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Platform.IsMobilePlatform())
+#if UNITY_ANDROID
+            Login = false;
+
+            // QR코드를 찍을 경우, LoginSystem을 켰을 때에 Keystore에 키가 저장되어 있는 것 까지를 기대하고 있음
+            if (KeyStore.ListIds().Any())
             {
-                Login = false;
-
-                // QR코드를 찍을 경우, LoginSystem을 켰을 때에 Keystore에 키가 저장되어 있는 것 까지를 기대하고 있음
-                if (KeyStore.ListIds().Any())
-                {
-                    SetState(States.Login_Mobile);
-                    SetImage(KeyStore.List().First().Item2.Address);
-                }
-                else
-                {
-                    SetState(States.CreatePassword_Mobile);
-                    _privateKey = new PrivateKey();
-                    SetImage(_privateKey.PublicKey.ToAddress());
-                }
-
-                base.Show();
+                SetState(States.Login_Mobile);
+                SetImage(KeyStore.List().First().Item2.Address);
             }
             else
             {
-                var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
-                SetState(state);
-                Login = false;
-
-                if (state == States.Login)
-                {
-                    // 키 고르는 게 따로 없으니 갖고 있는 키 중에서 아무거나 보여줘야 함...
-                    // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
-                    SetImage(KeyStore.List().First().Item2.Address);
-                }
-
-                switch (State.Value)
-                {
-                    case States.CreateAccount:
-                    case States.ResetPassphrase:
-                    case States.CreatePassword:
-                    {
-                        {
-                            if (passPhraseField.isFocused)
-                            {
-                                retypeField.Select();
-                            }
-                            else
-                            {
-                                passPhraseField.Select();
-                            }
-                        }
-                        break;
-                    }
-                    case States.Login:
-                        loginField.Select();
-                        break;
-                    case States.FindPassphrase:
-                        findPassphraseField.Select();
-                        break;
-                    case States.Show:
-                    case States.Failed:
-                        break;
-                }
-
-                base.Show();
+                SetState(States.CreatePassword_Mobile);
+                _privateKey = new PrivateKey();
+                // SetImage(_privateKey.PublicKey.ToAddress());
             }
+#else
+            var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
+            SetState(state);
+            Login = false;
+
+            if (state == States.Login)
+            {
+                // 키 고르는 게 따로 없으니 갖고 있는 키 중에서 아무거나 보여줘야 함...
+                // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
+                SetImage(KeyStore.List().First().Item2.Address);
+            }
+
+            switch (State.Value)
+            {
+                case States.CreateAccount:
+                case States.ResetPassphrase:
+                case States.CreatePassword:
+                {
+                    {
+                        if (passPhraseField.isFocused)
+                        {
+                            retypeField.Select();
+                        }
+                        else
+                        {
+                            passPhraseField.Select();
+                        }
+                    }
+                    break;
+                }
+                case States.Login:
+                    loginField.Select();
+                    break;
+                case States.FindPassphrase:
+                    findPassphraseField.Select();
+                    break;
+                case States.Show:
+                case States.Failed:
+                    break;
+            }
+#endif
+            base.Show();
         }
 
         private void CreatePrivateKey()
