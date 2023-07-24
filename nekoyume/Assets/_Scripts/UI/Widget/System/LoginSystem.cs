@@ -121,8 +121,8 @@ namespace Nekoyume.UI
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
             submitButton.OnSubmitSubject.Subscribe(_ => Submit()).AddTo(gameObject);
 
-            passPhraseField.onValueChanged.AddListener(CheckPassphrase);
-            retypeField.onValueChanged.AddListener(CheckRetypePassphrase);
+            passPhraseField.onEndEdit.AddListener(CheckPassphrase);
+            retypeField.onEndEdit.AddListener(CheckRetypePassphrase);
 
             base.Awake();
             SubmitWidget = Submit;
@@ -163,21 +163,17 @@ namespace Nekoyume.UI
                     bg.SetActive(false);
                     break;
                 case States.CreatePassword:
-                    titleText.gameObject.SetActive(false);
-                    accountAddressText.gameObject.SetActive(true);
+                    titleText.text = L10nManager.Localize("UI_GAME_CREATE_PASSWORD");
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
-                    accountGroup.SetActive(true);
                     passPhraseField.Select();
                     break;
                 case States.CreatePassword_Mobile:
-                    titleText.gameObject.SetActive(false);
-                    accountAddressText.gameObject.SetActive(true);
+                    titleText.text = L10nManager.Localize("UI_GAME_CREATE_PASSWORD");
                     submitButton.Text = L10nManager.Localize("UI_GAME_START");
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
-                    accountGroup.SetActive(true);
                     break;
                 case States.CreateAccount:
                     titleText.gameObject.SetActive(false);
@@ -250,6 +246,11 @@ namespace Nekoyume.UI
             weakText.gameObject.SetActive(!strong);
             passPhraseText.gameObject.SetActive(!strong);
             retypeField.interactable = strong;
+
+            if (!strong)
+            {
+                Find<TitleOneButtonSystem>().Show("UI_CONFIRM", "UI_INVALID_CREATED_PASSWORD");
+            }
         }
 
         private static bool CheckPassWord(string text)
@@ -271,6 +272,10 @@ namespace Nekoyume.UI
             correctText.gameObject.SetActive(vaild);
             incorrectText.gameObject.SetActive(!vaild);
             retypeText.gameObject.SetActive(!vaild);
+            if (!vaild)
+            {
+                Find<TitleOneButtonSystem>().Show("UI_CONFIRM", "UI_INVALID_RETYPE_PASSWORD");
+            }
         }
 
         private bool CheckPasswordVaildInCreate()
@@ -577,6 +582,7 @@ namespace Nekoyume.UI
                 {
                     case States.ResetPassphrase:
                     case States.CreatePassword:
+                    case States.CreatePassword_Mobile:
                     {
                         {
                             if (passPhraseField.isFocused)
@@ -591,6 +597,7 @@ namespace Nekoyume.UI
                         break;
                     }
                     case States.Login:
+                    case States.Login_Mobile:
                         loginField.Select();
                         break;
                     case States.FindPassphrase:
@@ -599,8 +606,6 @@ namespace Nekoyume.UI
                     case States.CreateAccount:
                     case States.Show:
                     case States.Failed:
-                    case States.CreatePassword_Mobile:
-                    case States.Login_Mobile:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
