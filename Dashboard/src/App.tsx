@@ -37,7 +37,48 @@ function App() {
   if (isLoading) return <></>;
   if (isError) return <></>;
 
-  return <></>;
+  const isObsoleted = (data: Action) => currentBlock > data.obsoleteAt;
+
+  return (
+    <div className="container mx-auto pt-16 pb-16">
+      <div className="header pb-8">
+        <h1 className="text-5xl font-bold mb-2">Dashboard</h1>
+        <p>
+          You can check NineChronicles actions that will be obsoleted soon here.
+        </p>
+      </div>
+
+      <p className="text-xl mb-4">
+        The latest block is <span className="font-extrabold">#{currentBlock}</span>
+      </p>
+
+      <div className="grid grid-cols-[120px_1fr_2fr] gap-2 text-lg">
+        <>
+          <p className="text-sm text-slate-500 font-bold">#Block Index</p>
+          <p className="text-sm text-slate-500 font-bold">Action ID</p>
+          <p className="text-sm text-slate-500 font-bold">Remain blocks</p>
+        </>
+
+        {actions.map((action) => (
+          <>
+            <p className={`font-bold ${isObsoleted(action) ? 'text-slate-400 line-through' : ''}`}>
+              #{action.obsoleteAt}
+            </p>
+            <p className={isObsoleted(action) ? 'text-slate-400' : ''}>
+              {action.id}
+            </p>
+            <p className={isObsoleted(action) ? 'text-slate-400' : ''}>
+              {isObsoleted(action)
+                ? <span className="text-sm">Obsoleted</span>
+                : <span>{action.obsoleteAt - currentBlock} blocks remain</span>
+              }
+            </p>
+          </>
+        ))
+        }
+      </div>
+    </div>
+  );
 }
 
 export default App;
