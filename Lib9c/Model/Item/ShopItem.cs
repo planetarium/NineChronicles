@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 using static Lib9c.SerializeKeys;
 

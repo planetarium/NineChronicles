@@ -1,6 +1,5 @@
 using System;
-using System.Linq;
-using Libplanet.Consensus;
+using Libplanet.Types.Consensus;
 
 namespace Nekoyume.Action
 {

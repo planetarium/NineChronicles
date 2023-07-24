@@ -1,8 +1,7 @@
-﻿namespace Lib9c.Tests.Model.State
+namespace Lib9c.Tests.Model.State
 {
     using System.Collections.Generic;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Model.State;
     using Xunit;

@@ -1,5 +1,5 @@
 using Libplanet.Action;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;

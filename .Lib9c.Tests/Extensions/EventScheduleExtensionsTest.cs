@@ -1,7 +1,7 @@
 namespace Lib9c.Tests.Extensions
 {
     using System;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.Extensions;
     using Nekoyume.TableData.Event;
     using Xunit;

@@ -2,7 +2,7 @@ using System;
 using System.Buffers;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using MessagePack;
 using MessagePack.Formatters;
 using Nekoyume.Model.State;

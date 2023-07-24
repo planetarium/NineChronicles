@@ -5,7 +5,6 @@ namespace Lib9c.Tests.Model.State
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;

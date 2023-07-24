@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Action.Coupons
     using System.Collections.Immutable;
     using System.Linq;
     using Libplanet.Action;
-    using Libplanet.State;
+    using Libplanet.Action.State;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Action.Coupons;

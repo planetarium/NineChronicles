@@ -9,15 +9,14 @@ using System.Threading.Tasks;
 using Bencodex;
 using Cocona;
 using Lib9c.DevExtensions.Action.Loader;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Libplanet.Types.Blocks;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -88,8 +87,7 @@ namespace Lib9c.DevExtensions
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 blockChainStates,
-                actionLoader,
-                null);
+                actionLoader);
 
             BlockChain chain;
             if (store.GetCanonicalChainId() is null)

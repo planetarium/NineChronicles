@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Model.Order
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Model.Order;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;

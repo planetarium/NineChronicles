@@ -7,7 +7,7 @@ using System.Numerics;
 using Bencodex.Types;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action

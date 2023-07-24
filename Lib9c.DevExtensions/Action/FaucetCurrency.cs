@@ -4,8 +4,9 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
-using Libplanet.Assets;
-using Libplanet.State;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 
@@ -15,7 +16,7 @@ namespace Lib9c.DevExtensions.Action
     [ActionType("faucet_currency")]
     public class FaucetCurrency : GameAction, IFaucetCurrency
     {
-        public Libplanet.Address AgentAddress { get; set; }
+        public Address AgentAddress { get; set; }
         public int FaucetNcg { get; set; }
         public int FaucetCrystal { get; set; }
 

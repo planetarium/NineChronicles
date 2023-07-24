@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using Libplanet;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {

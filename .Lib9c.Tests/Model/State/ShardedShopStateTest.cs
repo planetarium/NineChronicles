@@ -3,8 +3,8 @@ namespace Lib9c.Tests.Model.State
     using System;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;

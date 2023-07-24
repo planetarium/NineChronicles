@@ -6,7 +6,7 @@ namespace Lib9c.Tests.Model.Order
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Lib9c.Model.Order;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.Action;
     using Xunit;
 

@@ -2,9 +2,8 @@ namespace Lib9c.Tests.Model.State
 {
     using System;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;

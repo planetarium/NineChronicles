@@ -1,5 +1,5 @@
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 
 namespace Nekoyume.Model.State

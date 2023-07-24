@@ -3,8 +3,8 @@ namespace Lib9c.Tests.Model.State
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.State;
     using Xunit;
 

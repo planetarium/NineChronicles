@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Model.Item
+namespace Lib9c.Tests.Model.Item
 {
     using System;
     using System.Collections.Generic;
@@ -6,9 +6,8 @@
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.Item;
     using Xunit;
     using BxDictionary = Bencodex.Types.Dictionary;

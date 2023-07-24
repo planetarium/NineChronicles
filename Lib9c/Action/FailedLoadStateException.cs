@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.Serialization;
-using Libplanet;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {

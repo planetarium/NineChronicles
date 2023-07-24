@@ -1,5 +1,5 @@
 using System;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model.State;

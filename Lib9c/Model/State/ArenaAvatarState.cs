@@ -1,9 +1,9 @@
 using System;
 using Bencodex.Types;
-using Libplanet;
 using Nekoyume.Action;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Model.State
 {

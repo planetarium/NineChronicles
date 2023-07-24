@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
-using Libplanet.State;
+using Libplanet.Action.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action

@@ -5,10 +5,10 @@ namespace Nekoyume.Blockchain
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Libplanet;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
-    using Libplanet.Tx;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Tx;
 
     public class NCStagePolicy : IStagePolicy
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet.State;
+using Libplanet.Action.State;
 using MessagePack;
 using MessagePack.Formatters;
 

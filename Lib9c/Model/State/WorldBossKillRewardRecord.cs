@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 
 namespace Nekoyume.Model.State
 {

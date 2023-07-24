@@ -1,7 +1,6 @@
-﻿namespace Lib9c.Tests.Model.GrandFinale
+namespace Lib9c.Tests.Model.GrandFinale
 {
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Model.GrandFinale;
     using Xunit;

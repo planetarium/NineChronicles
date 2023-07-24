@@ -1,8 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System.Collections.Immutable;
-    using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Xunit;
 

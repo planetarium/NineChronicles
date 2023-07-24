@@ -1,7 +1,7 @@
 #nullable enable
 using System;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 
 namespace Lib9c.Abstractions
 {

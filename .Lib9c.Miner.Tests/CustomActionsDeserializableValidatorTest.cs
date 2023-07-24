@@ -1,13 +1,12 @@
 using System.Collections.Immutable;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
-using Libplanet.Assets;
-using Libplanet.Blocks;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
-using Libplanet.State;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using Nekoyume.Blockchain;
 
 namespace Lib9c.Proposer.Tests;
@@ -64,7 +63,7 @@ public class CustomActionsDeserializableValidatorTest
         public PublicKey PublicKey { get; init; }
         public BlockHash? GenesisHash { get; init; }
         public TxActionList Actions =>
-            new(SystemAction is { } sa ? new List(sa) : new List(CustomActions!));
+            new(SystemAction is { } sa ? new IValue[]{ sa } : CustomActions!);
 
         public FungibleAssetValue? MaxGasPrice => null;
 
