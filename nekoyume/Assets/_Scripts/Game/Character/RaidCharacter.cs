@@ -436,10 +436,9 @@ namespace Nekoyume.Game.Character
         private IEnumerator CoAnimationCastBlow(IReadOnlyList<Skill.SkillInfo> infos)
         {
             var info = infos.First();
-            var target = info.Target;
-            var copy = new Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, info.Effect,
+            var copy = new Skill.SkillInfo(info.Target, info.Effect,
                 info.Critical, info.SkillCategory,
-                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff, target);
+                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff);
             yield return StartCoroutine(CoAnimationCast(copy));
 
             var pos = transform.position;
