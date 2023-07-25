@@ -123,7 +123,7 @@ namespace Nekoyume.Action
 
             var addressesHex = $"[{signer.ToHex()}, {AvatarAddress.ToHex()}]";
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}HAS exec started", addressesHex);
+            Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
             if (ApStoneCount > UsableApStoneCount)
             {
@@ -534,8 +534,8 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
-                addressesHex, sw.Elapsed, TotalPlayCount);
+            Log.Verbose("{AddressesHex} {Source} loop Simulate: {Elapsed}, Count: {PlayCount}",
+                addressesHex, "HackAndSlash", sw.Elapsed, TotalPlayCount);
 
             // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
             skillState?.Update(starCount, crystalStageBuffSheet);
@@ -569,7 +569,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set States: {Elapsed}", addressesHex, sw.Elapsed);
 
             var totalElapsed = DateTimeOffset.UtcNow - started;
-            Log.Debug("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
+            Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
             return states;
         }
 
