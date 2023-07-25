@@ -6,7 +6,7 @@ namespace Lib9c.Tests.Model.Mail
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
+    using Libplanet.Crypto;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;

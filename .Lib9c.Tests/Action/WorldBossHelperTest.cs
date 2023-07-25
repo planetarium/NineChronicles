@@ -1,6 +1,6 @@
 namespace Lib9c.Tests.Action
 {
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;

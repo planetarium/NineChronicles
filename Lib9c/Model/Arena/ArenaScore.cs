@@ -1,7 +1,7 @@
 using System;
 using Bencodex.Types;
 using Nekoyume.Model.State;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 
 namespace Nekoyume.Model.Arena

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
 

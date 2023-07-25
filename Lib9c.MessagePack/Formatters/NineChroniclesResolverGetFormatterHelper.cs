@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
-using Libplanet.State;
+using Libplanet.Types.Assets;
 using MessagePack.Formatters;
 using Nekoyume.Action;
 

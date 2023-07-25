@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action.Loader;
-using Libplanet.Tx;
+using Libplanet.Types.Tx;
 
 namespace Nekoyume.Blockchain
 {

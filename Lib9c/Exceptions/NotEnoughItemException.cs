@@ -3,7 +3,8 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using Libplanet;
+using Libplanet.Common;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Exceptions
 {

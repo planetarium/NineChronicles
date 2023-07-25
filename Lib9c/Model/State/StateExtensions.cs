@@ -4,15 +4,13 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Common;
 using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 

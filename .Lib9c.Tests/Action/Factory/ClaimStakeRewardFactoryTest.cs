@@ -8,7 +8,6 @@ namespace Lib9c.Tests.Action.Factory
     using System.Reflection;
     using Bencodex.Types;
     using Lib9c.Abstractions;
-    using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume.Action;
@@ -22,17 +21,14 @@ namespace Lib9c.Tests.Action.Factory
             var arr = Assembly.GetAssembly(typeof(ClaimRaidReward))?.GetTypes()
                 .Where(type =>
                     type.IsClass &&
-                    type.GetInterfaces().Contains(typeof(IClaimStakeRewardV1)))
-                .Select(ActionTypeAttribute.ValueOf)
-                .ToArray() ?? Array.Empty<IValue?>();
+                    typeof(IClaimStakeRewardV1).IsAssignableFrom(type))
+                .Select(type =>
+                    type.GetCustomAttribute<ActionTypeAttribute>()?.TypeIdentifier)
+                .OfType<IValue>()
+                .ToArray() ?? Array.Empty<IValue>();
 
             foreach (var value in arr)
             {
-                if (value is null)
-                {
-                    continue;
-                }
-
                 var str = (string)(Text)value;
                 var verStr = str.Replace("claim_stake_reward", string.Empty);
                 var ver = string.IsNullOrEmpty(verStr)

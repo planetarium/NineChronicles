@@ -3,7 +3,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.TableData;
 
 namespace Lib9c

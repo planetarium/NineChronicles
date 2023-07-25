@@ -2,11 +2,12 @@ using Bencodex;
 using Bencodex.Types;
 using Cocona;
 using CsvHelper;
-using Libplanet;
-using Libplanet.Assets;
-using Libplanet.Blocks;
+using Libplanet.Action;
+using Libplanet.Common;
 using Libplanet.Crypto;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -16,7 +17,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using Libplanet.Action;
 using Nekoyume.TableData;
 
 namespace Lib9c.Tools.SubCommand
@@ -110,7 +110,7 @@ namespace Lib9c.Tools.SubCommand
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
                 genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
                 timestamp: (timestamp is null) ? default : DateTimeOffset.Parse(timestamp),
-                actions: parsedActions
+                actions: parsedActions.ToPlainValues()
             );
             byte[] raw = tx.Serialize();
 

@@ -3,7 +3,6 @@ namespace Lib9c.Tests.Extensions
     using System;
     using System.Linq;
     using Lib9c.Tests.Action;
-    using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume.Action;

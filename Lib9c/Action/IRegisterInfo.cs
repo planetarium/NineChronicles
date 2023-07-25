@@ -1,6 +1,6 @@
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.Market;
 
 namespace Nekoyume.Action

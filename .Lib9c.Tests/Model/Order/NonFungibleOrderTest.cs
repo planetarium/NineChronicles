@@ -8,8 +8,8 @@ namespace Lib9c.Tests.Model.Order
     using Bencodex.Types;
     using Lib9c.Model.Order;
     using Lib9c.Tests.Action;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;

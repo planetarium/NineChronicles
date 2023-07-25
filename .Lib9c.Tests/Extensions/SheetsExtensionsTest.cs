@@ -1,12 +1,12 @@
-﻿namespace Lib9c.Tests.Extensions
+namespace Lib9c.Tests.Extensions
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;

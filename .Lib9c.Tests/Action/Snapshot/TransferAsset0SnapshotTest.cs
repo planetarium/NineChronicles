@@ -4,10 +4,10 @@ namespace Lib9c.Tests.Action.Snapshot
     using System.Numerics;
     using System.Threading.Tasks;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
+    using Libplanet.Common;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using VerifyTests;

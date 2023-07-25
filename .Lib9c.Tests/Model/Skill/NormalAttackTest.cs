@@ -4,7 +4,6 @@ namespace Lib9c.Tests.Model.Skill
     using System.Collections.Generic;
     using System.Linq;
     using Lib9c.Tests.Action;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Battle;
     using Nekoyume.Model;

@@ -5,16 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
+using Libplanet.Action.State;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Blocks;
+using Libplanet.Common;
+using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
-using Libplanet.State;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
 using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain;
 using Nekoyume.Blockchain.Policy;
@@ -89,8 +90,7 @@ namespace Lib9c.Benchmarks
             var actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
                 new BlockChainStates(store, stateStore),
-                new NCActionLoader(),
-                null);
+                new NCActionLoader());
             var chain = new BlockChain(
                 policy,
                 stagePolicy,

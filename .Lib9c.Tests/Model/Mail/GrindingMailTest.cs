@@ -2,7 +2,7 @@ namespace Lib9c.Tests.Model.Mail
 {
     using System;
     using Bencodex.Types;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.Mail;
     using Xunit;
 
