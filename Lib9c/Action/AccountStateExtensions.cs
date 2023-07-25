@@ -38,13 +38,6 @@ namespace Nekoyume.Action
                 return true;
             }
 
-            Log.Error(
-                "Expected a {0}, but got invalid state ({1}): ({2}) {3}",
-                typeof(T).Name,
-                address.ToHex(),
-                raw?.GetType().Name,
-                raw
-            );
             result = default;
             return false;
         }
