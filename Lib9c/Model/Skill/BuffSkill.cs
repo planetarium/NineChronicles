@@ -21,7 +21,7 @@ namespace Nekoyume.Model.Skill
             IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
             var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
-            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
+            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs, copyCharacter);
 
             return new BattleStatus.Buff(SkillRow.Id, clone, buff);
         }
