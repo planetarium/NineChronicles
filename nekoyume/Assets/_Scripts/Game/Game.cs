@@ -459,7 +459,14 @@ namespace Nekoyume.Game
         {
             if (debugConsole != null && _commandLineOptions.IngameDebugConsole)
             {
+                Debug.unityLogger.logEnabled = true;
                 Instantiate(debugConsole);
+            }
+            else
+            {
+#if !UNITY_EDITOR
+                Debug.unityLogger.logEnabled = false;
+#endif
             }
 
             if (_commandLineOptions.RpcClient)
