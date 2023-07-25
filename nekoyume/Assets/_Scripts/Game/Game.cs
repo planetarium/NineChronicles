@@ -23,6 +23,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -675,6 +676,13 @@ namespace Nekoyume.Game
                         _deepLinkHandler.OpenPortal(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
+                        if (!States.PledgeRequested)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
+                                NotificationCell.NotificationType.Notification);
+                        }
                     }
                 }
 
@@ -688,6 +696,13 @@ namespace Nekoyume.Game
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
                         yield return SetTimeOut(() => States.PledgeApproved);
+                        if (!States.PledgeApproved)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
+                                NotificationCell.NotificationType.Notification);
+                        }
                     }
                 }
 
