@@ -83,6 +83,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private Prologue prologue;
 
+        [SerializeField]
+        private GameObject debugConsole;
+
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
@@ -454,7 +457,12 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            if(_commandLineOptions.RpcClient)
+            if (debugConsole != null && _commandLineOptions.IngameDebugConsole)
+            {
+                Instantiate(debugConsole);
+            }
+
+            if (_commandLineOptions.RpcClient)
             {
                 _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
                     ? _commandLineOptions.RpcServerHost
@@ -1287,8 +1295,10 @@ namespace Nekoyume.Game
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
             return;
 #endif
+
             var isTrackable = true;
-            if (Debug.isDebugBuild)
+
+            if (UnityEngine.Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
                 isTrackable = false;
