@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Debug = UnityEngine.Debug;
 

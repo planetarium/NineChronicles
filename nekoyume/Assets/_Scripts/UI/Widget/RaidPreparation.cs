@@ -17,7 +17,7 @@ using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
 using Nekoyume.Model;
 using Libplanet.Action;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Model.EnumType;

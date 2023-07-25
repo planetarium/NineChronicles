@@ -1,4 +1,4 @@
-﻿using Libplanet.Assets;
+﻿using Libplanet.Types.Assets;
 
 namespace Nekoyume
 {

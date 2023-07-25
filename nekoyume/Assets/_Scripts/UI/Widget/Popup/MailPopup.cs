@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;

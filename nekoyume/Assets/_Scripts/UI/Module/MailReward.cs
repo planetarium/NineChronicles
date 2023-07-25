@@ -1,4 +1,4 @@
-﻿using Libplanet.Assets;
+﻿using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Module

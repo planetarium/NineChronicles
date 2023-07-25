@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.State;

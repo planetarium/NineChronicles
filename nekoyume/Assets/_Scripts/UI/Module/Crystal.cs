@@ -1,6 +1,5 @@
 using System;
-using System.Globalization;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -89,7 +89,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Toggle arenaPushToggle;
-        
+
         [SerializeField]
         private Toggle worldbossPushToggle;
 

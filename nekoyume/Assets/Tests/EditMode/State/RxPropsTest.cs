@@ -1,4 +1,4 @@
-﻿using Libplanet;
+﻿using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.State;
 using NUnit.Framework;

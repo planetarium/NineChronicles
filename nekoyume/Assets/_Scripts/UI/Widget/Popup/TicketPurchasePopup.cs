@@ -1,5 +1,5 @@
 ﻿using Nekoyume.L10n;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;

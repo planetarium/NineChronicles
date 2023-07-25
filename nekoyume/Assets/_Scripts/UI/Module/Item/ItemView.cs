@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

@@ -7,7 +7,7 @@ using System.IO;
 using Bencodex.Types;
 using CsvHelper;
 using Lib9cCommonTool.Runtime;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;

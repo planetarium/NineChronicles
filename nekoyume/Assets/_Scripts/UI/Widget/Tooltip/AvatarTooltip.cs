@@ -1,5 +1,5 @@
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;

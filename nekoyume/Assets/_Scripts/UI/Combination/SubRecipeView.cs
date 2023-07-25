@@ -11,6 +11,7 @@ using System;
 using Nekoyume.State;
 using System.Numerics;
 using Coffee.UIEffects;
+using Libplanet.Types.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Mail;
@@ -25,7 +26,6 @@ using ToggleGroup = UnityEngine.UI.ToggleGroup;
 
 namespace Nekoyume.UI
 {
-    using Libplanet.Assets;
     using Nekoyume.EnumType;
     using Nekoyume.UI.Module.Common;
     using UniRx;

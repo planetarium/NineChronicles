@@ -1,9 +1,9 @@
-using Libplanet.Assets;
 using Nekoyume.Helper;
 using Nekoyume.UI.Module.WorldBoss;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;

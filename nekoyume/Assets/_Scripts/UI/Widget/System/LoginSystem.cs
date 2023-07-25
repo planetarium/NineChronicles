@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Jdenticon;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Nekoyume.L10n;

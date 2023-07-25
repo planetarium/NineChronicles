@@ -7,10 +7,9 @@ using System.Numerics;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using System.Collections.Immutable;
 using System;
 using Nekoyume.Model.State;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game;
 
 namespace Nekoyume.UI
