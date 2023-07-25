@@ -534,7 +534,7 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Verbose("{AddressesHex} {Source} loop Simulate: {Elapsed}, Count: {PlayCount}",
+            Log.Debug("{AddressesHex} {Source} loop Simulate: {Elapsed}, Count: {PlayCount}",
                 addressesHex, "HackAndSlash", sw.Elapsed, TotalPlayCount);
 
             // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
