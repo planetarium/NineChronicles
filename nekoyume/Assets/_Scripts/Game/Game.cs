@@ -271,6 +271,8 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
 
 #if UNITY_ANDROID
+            yield return liveAssetManager.InitializeApplicationCLO();
+
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
