@@ -127,16 +127,8 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             }
 
-            var keystore = Find<LoginSystem>().KeyStore;
-            if (keystore.ListIds().Any())
-            {
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            }
-            else
-            {
-                Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-                startButtonContainer.SetActive(true);
-            }
+            Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
+            startButtonContainer.SetActive(true);
         }
 
         private void OnVideoEnd()
