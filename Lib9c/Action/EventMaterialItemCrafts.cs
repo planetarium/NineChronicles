@@ -187,7 +187,7 @@ namespace Nekoyume.Action
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             if (!materialItemSheet.TryGetValue(
                     recipeRow.ResultMaterialItemId,
-                    out var resulMaterialRow))
+                    out var resultMaterialRow))
             {
                 throw new SheetRowNotFoundException(
                     addressesHex,
@@ -228,7 +228,7 @@ namespace Nekoyume.Action
             // ~Remove Required Materials
 
             // Create Material
-            var materialResult = ItemFactory.CreateMaterial(resulMaterialRow);
+            var materialResult = ItemFactory.CreateMaterial(resultMaterialRow);
             avatarState.inventory.AddItem(materialResult, recipeRow.ResultMaterialItemCount);
             // ~Create Material
 
