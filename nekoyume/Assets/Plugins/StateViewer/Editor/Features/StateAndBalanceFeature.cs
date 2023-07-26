@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c;
 using Libplanet;
 using Libplanet.Assets;
+using Libplanet.Blocks;
 using Nekoyume.Blockchain;
 using StateViewer.Runtime;
 using UnityEditor;
@@ -71,6 +72,9 @@ namespace StateViewer.Editor.Features
         private string searchingAddrStr;
 
         [SerializeField]
+        private string blockHashOrIndex;
+
+        [SerializeField]
         private bool useTestValues;
 
         [SerializeField]
@@ -93,6 +97,7 @@ namespace StateViewer.Editor.Features
             sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
             encodedBencodexValue = string.Empty;
             searchingAddrStr = string.Empty;
+            blockHashOrIndex = string.Empty;
             stateTreeViewScrollPosition = Vector2.zero;
             ncgValue = string.Empty;
             crystalValue = string.Empty;
@@ -110,6 +115,7 @@ namespace StateViewer.Editor.Features
         {
             encodedBencodexValue = string.Empty;
             searchingAddrStr = string.Empty;
+            blockHashOrIndex = string.Empty;
             stateTreeView.ClearData();
             stateTreeViewScrollPosition = Vector2.zero;
             ncgValue = string.Empty;
@@ -216,9 +222,10 @@ namespace StateViewer.Editor.Features
             if (Application.isPlaying)
             {
                 stateProxy = _editorWindow.GetStateProxy(drawHelpBox: true);
-                if (stateProxy is { })
+                if (stateProxy is not null)
                 {
                     DrawAddrSearchField();
+                    DrawBlockHashOrIndexField();
                 }
             }
             else
@@ -238,7 +245,7 @@ namespace StateViewer.Editor.Features
                 _loadingSomething ||
                 !StateViewerWindow.IsSavable);
             if (GUILayout.Button("Get State Async") &&
-                stateProxy is { })
+                stateProxy is not null)
             {
                 GetStateAndUpdateStateTreeViewAsync(
                     stateProxy,
@@ -257,6 +264,15 @@ namespace StateViewer.Editor.Features
                 height: EditorGUIUtility.singleLineHeight);
             rect = EditorGUI.PrefixLabel(rect, new GUIContent("Address"));
             searchingAddrStr = _addrSearchField.OnGUI(rect, searchingAddrStr);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawBlockHashOrIndexField()
+        {
+            EditorGUILayout.BeginHorizontal();
+            blockHashOrIndex = EditorGUILayout.TextField(
+                "Block Hash or Index",
+                blockHashOrIndex);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -382,14 +398,28 @@ namespace StateViewer.Editor.Features
             _loadingSomething = true;
             try
             {
-                var (addr, value) = await stateProxy.GetStateAsync(addrStr);
-                stateTreeView.SetData(addr, value);
+                Address? addr;
+                IValue? value;
+                if (string.IsNullOrEmpty(blockHashOrIndex))
+                {
+                    (addr, value) = await stateProxy.GetStateAsync(addrStr);
+                }
+                else if (long.TryParse(blockHashOrIndex, out var blockIndex))
+                {
+                    (addr, value) = await stateProxy.GetStateAsync(addrStr, blockIndex);
+                }
+                else
+                {
+                    var blockHash = BlockHash.FromString(blockHashOrIndex);
+                    (addr, value) = await stateProxy.GetStateAsync(addrStr, blockHash);
+                }
 
+                stateTreeView.SetData(addr, value);
                 await UniTask.Run(() =>
                 {
-                    var (_, ncgFav) = stateProxy.GetBalance(addr, ncg.Value);
+                    var (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
                     ncgValue = $"{ncgFav.MajorUnit}.{ncgFav.MinorUnit}";
-                    var (_, crystalFav) = stateProxy.GetBalance(addr, Currencies.Crystal);
+                    var (_, crystalFav) = stateProxy.GetBalance(addr!.Value, Currencies.Crystal);
                     crystalValue = $"{crystalFav.MajorUnit}.{crystalFav.MinorUnit}";
                 });
             }
