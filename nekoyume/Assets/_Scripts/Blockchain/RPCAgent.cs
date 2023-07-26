@@ -188,8 +188,14 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            byte[] raw = await _service.GetState(address.ToByteArray(), blockHash.Value.ToByteArray());
-            IValue result = _codec.Decode(raw);
+            return await GetStateAsync(address, blockHash.Value);
+        }
+
+        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
+        {
+            var bytes = await _service.GetState(address.ToByteArray(), blockHash.ToByteArray());
+            var decoded = _codec.Decode(bytes);
+            var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(address))
             {
                 game.CachedStateAddresses[address] = true;
@@ -197,10 +203,10 @@ namespace Nekoyume.Blockchain
 
             if (game.CachedStates.ContainsKey(address))
             {
-                game.CachedStates.AddOrUpdate(address, result);
+                game.CachedStates.AddOrUpdate(address, decoded);
             }
 
-            return result;
+            return decoded;
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)

@@ -261,6 +261,11 @@ namespace Nekoyume.Blockchain
             return await Task.Run(() => blocks.GetState(address));
         }
 
+        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
+        {
+            return await Task.Run(() => blocks.GetState(address, blockHash));
+        }
+
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
             IEnumerable<Address> addressList,
             long? blockIndex = null)
