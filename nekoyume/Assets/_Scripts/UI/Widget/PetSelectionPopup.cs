@@ -1,11 +1,13 @@
 using Nekoyume.UI.Module;
 using System;
+using System.Linq;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     using System.Collections;
-    using UniRx; 
+    using UniRx;
 
     public class PetSelectionPopup : PopupWidget
     {
@@ -33,6 +35,15 @@ namespace Nekoyume.UI
             Action<int?> onSelected,
             bool ignoreShowAnimation = false)
         {
+            // Obsolete for mobile
+            var petCount = States.Instance.PetStates.GetPetStatesAll()
+                .Where(petState => petState != null);
+            if (!petCount.Any())
+            {
+                onSelected.Invoke(null);
+                return;
+            }
+
             base.Show(ignoreShowAnimation);
             petInventory.Show(craftInfo);
 
