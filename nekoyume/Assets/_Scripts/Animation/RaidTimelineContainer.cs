@@ -176,6 +176,10 @@ namespace Nekoyume
                         canvasChildTansform.transform.localScale.y,
                         canvasChildTansform.transform.localScale.z);
                 }
+                if (skipButton.TryGetComponent<RectTransform>(out var skipBtnRect))
+                {
+                    FlipRectTransformWithAnchor(skipBtnRect);
+                }
             }
 
             foreach (var vfx in vfxList)
@@ -185,6 +189,21 @@ namespace Nekoyume
                     vfx.localScale.y,
                     vfx.localScale.z);
             }
+        }
+
+        private static void FlipRectTransformWithAnchor(RectTransform rectTrans)
+        {
+            Vector2 anchoredPosition = rectTrans.anchoredPosition;
+            anchoredPosition.x = -anchoredPosition.x;
+            rectTrans.anchoredPosition = anchoredPosition;
+
+            Vector2 anchorMin = rectTrans.anchorMin;
+            Vector2 anchorMax = rectTrans.anchorMax;
+            float temp = anchorMin.x;
+            anchorMin.x = 1 - anchorMax.x;
+            anchorMax.x = 1 - temp;
+            rectTrans.anchorMin = anchorMin;
+            rectTrans.anchorMax = anchorMax;
         }
 
         public void AttackPoint()
