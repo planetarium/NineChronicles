@@ -20,7 +20,7 @@ namespace Nekoyume.Game.LiveAsset
     {
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
-        private const string CLOEndpointPrefix = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/add_clo_folder_for_application_version/Assets/Json/CloForAppVersion/clo-app-ver-";
+        private const string CLOEndpointPrefix = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/CloForAppVersion/clo-app-ver-";
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
