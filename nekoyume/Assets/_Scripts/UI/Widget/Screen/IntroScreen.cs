@@ -61,7 +61,6 @@ namespace Nekoyume.UI
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-                startButtonContainer.SetActive(false);
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
@@ -145,6 +144,7 @@ namespace Nekoyume.UI
         {
             if (_guideIndex >= GuideCount)
             {
+                _guideIndex = 0;
                 qrCodeGuideContainer.SetActive(false);
 
                 codeReaderView.Show(res =>
