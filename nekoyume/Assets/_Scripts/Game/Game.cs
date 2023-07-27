@@ -84,7 +84,7 @@ namespace Nekoyume.Game
         private Prologue prologue;
 
         [SerializeField]
-        private GameObject debugConsole;
+        private GameObject debugConsolePrefab;
 
         public States States { get; private set; }
 
@@ -459,10 +459,10 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            if (debugConsole != null && _commandLineOptions.IngameDebugConsole)
+            if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
                 Debug.unityLogger.logEnabled = true;
-                Instantiate(debugConsole);
+                Instantiate(debugConsolePrefab);
             }
             else
             {
