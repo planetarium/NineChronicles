@@ -28,10 +28,10 @@ namespace Nekoyume
             DateTime now) =>
             BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
 
-        public static string BlockRangeToTimeSpanString(this long blockRange)
+        public static string BlockRangeToTimeSpanString(this long blockRange, bool limitUnit = false)
         {
             var timeSpan = BlockToTimeSpan(blockRange);
-            return timeSpan.TimespanToString();
+            return timeSpan.TimespanToString(limitUnit);
         }
 
         public static TimeSpan BlockToTimeSpan(this long block)
@@ -45,7 +45,7 @@ namespace Nekoyume
             return TimeSpan.FromSeconds(block * secondsPerBlock);
         }
 
-        public static string TimespanToString(this TimeSpan timeSpan)
+        public static string TimespanToString(this TimeSpan timeSpan, bool limitUnit = false)
         {
             var sb = new StringBuilder();
             if (timeSpan.Days > 0)
@@ -63,7 +63,7 @@ namespace Nekoyume
                 sb.Append($"{timeSpan.Hours}h");
             }
 
-            if (timeSpan.Minutes > 0)
+            if (timeSpan.Minutes > 0 && !(limitUnit && timeSpan.Days > 0))
             {
                 if (timeSpan.Hours > 0)
                 {

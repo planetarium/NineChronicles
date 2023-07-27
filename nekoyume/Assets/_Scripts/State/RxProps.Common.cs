@@ -59,8 +59,9 @@ namespace Nekoyume.State
                 this.maxTickets = maxTicketCount;
                 this.progressedBlockRange = progressedBlockRange;
                 this.totalBlockRange = totalBlockRange;
-                remainTimespanToReset
-                    = ((long)totalBlockRange - progressedBlockRange).BlockRangeToTimeSpanString();
+                var remainBlock = (long)totalBlockRange - progressedBlockRange;
+                remainTimespanToReset =
+                    $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
             }
         }
 

@@ -115,7 +115,7 @@ namespace Nekoyume.UI.Module
             var sliderNormalizedValue = (float) progress / range;
             sliderImage.fillAmount = sliderNormalizedValue;
             sliderImage.enabled = true;
-            text.text = (range - progress).BlockRangeToTimeSpanString();
+            text.text = (end - current).BlockRangeToTimeSpanString();
             text.enabled = true;
         }
     }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading;
 using Nekoyume.Game;
-using Nekoyume.Model.Arena;
+using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -23,7 +22,7 @@ namespace Nekoyume.UI.Module.Lobby
         private TextMeshProUGUI _ticketCount;
 
         [SerializeField]
-        private TextMeshProUGUI _ticketResetTime;
+        private TimeBlock _ticketResetTime;
 
         [SerializeField]
         private TextMeshProUGUI _seasonText;
@@ -60,9 +59,10 @@ namespace Nekoyume.UI.Module.Lobby
         private void UpdateTicket(RxProps.TicketProgress ticketProgress)
         {
             _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
-            _ticketCount.text = ticketProgress.currentTickets
-                .ToString(CultureInfo.InvariantCulture);
-            _ticketResetTime.text = ticketProgress.remainTimespanToReset;
+            _ticketCount.text = ticketProgress.currentTickets.ToString(CultureInfo.InvariantCulture);
+
+            long remainingBlock = ticketProgress.totalBlockRange - ticketProgress.progressedBlockRange;
+            _ticketResetTime.SetTimeBlock($"{remainingBlock:#,0}", remainingBlock.BlockRangeToTimeSpanString());
         }
 
         private void UpdateArenaSeasonTitle(long blockIndex)
