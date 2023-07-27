@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 using System.Text;
+using Nekoyume.Game.LiveAsset;
+using Nekoyume.State;
 
 namespace Nekoyume
 {
@@ -26,38 +28,57 @@ namespace Nekoyume
             DateTime now) =>
             BlockIndexToDateTimeString(targetBlockIndex, currentBlockIndex, secondsPerBlock, now, "yyyy/MM/dd");
 
-        public static string BlockRangeToTimeSpanString(this long blockRange, int secondsPerBlock)
+        public static string BlockRangeToTimeSpanString(this long blockRange)
         {
-            var timeSpan = TimeSpan.FromSeconds(blockRange * secondsPerBlock);
+            var timeSpan = BlockToTimeSpan(blockRange);
+            return timeSpan.TimespanToString();
+        }
+
+        public static TimeSpan BlockToTimeSpan(this long block)
+        {
+            if (block < 0)
+            {
+                return TimeSpan.Zero;
+            }
+
+            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
+            return TimeSpan.FromSeconds(block * secondsPerBlock);
+        }
+
+        public static string TimespanToString(this TimeSpan timeSpan)
+        {
             var sb = new StringBuilder();
             if (timeSpan.Days > 0)
             {
-                sb.Append(@"d\d");
+                sb.Append($"{timeSpan.Days}d");
             }
 
             if (timeSpan.Hours > 0)
             {
-                if (sb.Length > 0)
+                if (timeSpan.Days > 0)
                 {
-                    sb.Append(@"\ ");
+                    sb.Append(" ");
                 }
 
-                sb.Append(@"h\h");
+                sb.Append($"{timeSpan.Hours}h");
             }
 
             if (timeSpan.Minutes > 0)
             {
-                if (sb.Length > 0)
+                if (timeSpan.Hours > 0)
                 {
-                    sb.Append(@"\ ");
+                    sb.Append(" ");
                 }
 
-                sb.Append(@"m\m");
+                sb.Append($"{timeSpan.Minutes}m");
             }
 
-            return sb.Length > 0
-                ? timeSpan.ToString(sb.ToString(), CultureInfo.InvariantCulture)
-                : "1m";
+            if (sb.Length == 0)
+            {
+                sb.Append("0m");
+            }
+
+            return sb.ToString();
         }
     }
 }

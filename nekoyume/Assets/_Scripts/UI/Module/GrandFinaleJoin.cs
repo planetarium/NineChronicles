@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Module
             if (current < beginning)
             {
                 arenaProgressFillImage.enabled = false;
-                text.text = Util.GetBlockToTimeString(beginning - current);
+                text.text = (beginning - current).BlockRangeToTimeSpanString();
                 text.enabled = true;
 
                 return;
@@ -115,7 +115,7 @@ namespace Nekoyume.UI.Module
             var sliderNormalizedValue = (float) progress / range;
             sliderImage.fillAmount = sliderNormalizedValue;
             sliderImage.enabled = true;
-            text.text = Util.GetBlockToTimeString(range - progress);
+            text.text = (range - progress).BlockRangeToTimeSpanString();
             text.enabled = true;
         }
     }

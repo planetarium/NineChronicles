@@ -251,11 +251,10 @@ namespace Nekoyume.UI
             else
             {
                 var remainingBlock = RewardBlockInterval - waitedBlockRange;
-                var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
                 remainingBlockText.text = string.Format(
                     RemainingBlockFormat,
                     remainingBlock.ToString("N0"),
-                    remainingBlock.BlockRangeToTimeSpanString(secondsPerBlock));
+                    remainingBlock.BlockRangeToTimeSpanString());
 
                 archiveButtonArea.SetActive(false);
                 remainingBlockArea.SetActive(true);

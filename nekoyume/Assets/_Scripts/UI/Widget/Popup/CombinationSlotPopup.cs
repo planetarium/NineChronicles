@@ -404,7 +404,7 @@ namespace Nekoyume.UI
             var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}.";
-            timeText.text = string.Format(L10nManager.Localize("UI_REMAINING_TIME"), Util.GetBlockToTimeString((int)diff));
+            timeText.text = string.Format(L10nManager.Localize("UI_REMAINING_TIME"), diff.BlockRangeToTimeSpanString());
         }
 
         private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)
