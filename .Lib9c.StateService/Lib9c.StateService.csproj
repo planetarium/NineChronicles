@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\.Libplanet.Extensions.RemoteBlockChainStates\Libplanet.Extensions.RemoteBlockChainStates.csproj" />
+    <ProjectReference Include="..\.Libplanet.Extensions.ActionEvaluatorCommonComponents\Libplanet.Extensions.ActionEvaluatorCommonComponents.csproj" />
+    <ProjectReference Include="..\.Lib9c.StateService.Shared\Lib9c.StateService.Shared.csproj" />
+    <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+  </ItemGroup>
+
+</Project>
