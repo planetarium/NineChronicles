@@ -32,6 +32,14 @@ namespace Nekoyume.UI
 
         public void Show(Action<Result> onSuccess)
         {
+#if UNITY_ANDROID
+            if (!UnityEngine.Android.Permission
+                    .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera))
+            {
+                UnityEngine.Android.Permission
+                    .RequestUserPermission(UnityEngine.Android.Permission.Camera);
+            }
+#endif
             gameObject.SetActive(true);
             _camTexture.Play();
             _disposable = Observable.EveryUpdate().Subscribe(_ =>
