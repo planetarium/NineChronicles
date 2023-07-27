@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using ZXing;
@@ -13,6 +14,7 @@ namespace Nekoyume.UI
 
         private WebCamTexture _camTexture;
         private IDisposable _disposable;
+        private Coroutine _coroutine;
 
         private void Awake()
         {
@@ -28,9 +30,15 @@ namespace Nekoyume.UI
         private void OnDisable()
         {
             _disposable?.Dispose();
+            _disposable = null;
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+                _coroutine = null;
+            }
         }
 
-        public void Show(Action<Result> onSuccess)
+        private IEnumerator CoRequestPermission(Action<Result> onSuccess = null)
         {
 #if UNITY_ANDROID
             if (!UnityEngine.Android.Permission
@@ -39,35 +47,40 @@ namespace Nekoyume.UI
                 UnityEngine.Android.Permission
                     .RequestUserPermission(UnityEngine.Android.Permission.Camera);
             }
+
+            yield return UnityEngine.Android.Permission
+                .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera);
 #endif
-            gameObject.SetActive(true);
             _camTexture.Play();
-            _disposable = Observable.EveryUpdate().Subscribe(_ =>
+            _disposable = Observable.EveryUpdate().Where(_ => _camTexture.isPlaying).Subscribe(_ =>
             {
-                if (_camTexture.isPlaying)
+                try
                 {
-                    try
+                    IBarcodeReader barcodeReader = new BarcodeReader();
+                    barcodeReader.Options.PureBarcode = false;
+                    var result = barcodeReader.Decode(_camTexture.GetPixels32(), _camTexture.width,
+                        _camTexture.height);
+                    if (result != null)
                     {
-                        IBarcodeReader barcodeReader = new BarcodeReader();
-                        barcodeReader.Options.PureBarcode = false;
-                        var result = barcodeReader.Decode(_camTexture.GetPixels32(), _camTexture.width, _camTexture.height);
-                        if (result != null)
-                        {
-                            onSuccess?.Invoke(result);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError(ex.Message);
+                        onSuccess?.Invoke(result);
                     }
                 }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex.Message);
+                }
             });
+        }
+
+        public void Show(Action<Result> onSuccess = null)
+        {
+            gameObject.SetActive(true);
+            _coroutine = StartCoroutine(CoRequestPermission(onSuccess));
         }
 
         public void Close()
         {
             _camTexture.Stop();
-            _disposable?.Dispose();
             gameObject.SetActive(false);
         }
     }
