@@ -338,6 +338,9 @@ namespace Nekoyume.Game
 
         private static IEnumerator CoGuidedQuest(int stageIdToClear)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoGuidedQuest)}() enter. stageIdToClear: {stageIdToClear}");
+#endif
             var done = false;
             var battle = Widget.Find<UI.Battle>();
             battle.ClearStage(stageIdToClear, cleared => done = true);
@@ -346,6 +349,9 @@ namespace Nekoyume.Game
 
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoUnlockRecipe)}() enter. stageIdToFirstClear: {stageIdToFirstClear}");
+#endif
             var questResult = Widget.Find<CelebratesPopup>();
             var rows = TableSheets.Instance.EquipmentItemRecipeSheet.OrderedList
                 .Where(row => row.UnlockStage == stageIdToFirstClear)
@@ -752,6 +758,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoNormalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -767,6 +776,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoBlowAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -782,6 +794,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoBuffRemovalAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -797,6 +812,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoDoubleAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -813,6 +831,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoAreaAttack)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -829,6 +850,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoHeal)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -842,6 +866,9 @@ namespace Nekoyume.Game
             int skillId,
             IEnumerable<Skill.SkillInfo> skillInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoTickDamage)}() enter. affectedCharacter: {affectedCharacter.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(affectedCharacter);
 
             foreach (var info in skillInfos)
@@ -859,6 +886,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoBuff)}() enter. caster: {caster.Id}, skillId: {skillId}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -879,6 +909,9 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> buffInfos,
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoSkill)}() enter. character: {character.Id}");
+#endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
@@ -903,6 +936,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoDropBox)}() enter.");
+#endif
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
@@ -920,6 +956,9 @@ namespace Nekoyume.Game
 
         private IEnumerator CoBeforeSkill(Character.CharacterBase character)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoBeforeSkill)}() enter. character: {character.Id}");
+#endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
@@ -939,6 +978,9 @@ namespace Nekoyume.Game
             Character.CharacterBase character,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoAfterSkill)}() enter. character: {character.Id}");
+#endif
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
@@ -965,6 +1007,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoRemoveBuffs)}() enter. caster: {caster.Id}");
+#endif
             var character = GetCharacter(caster);
             if (character)
             {
@@ -980,6 +1025,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoGetReward)}() enter.");
+#endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             foreach (var item in rewards)
@@ -1068,6 +1116,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetExp(long exp)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoGetExp)}() enter. exp: {exp}");
+#endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             _battleResultModel.Exp += exp;
@@ -1077,6 +1128,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDead(CharacterBase model)
         {
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoDead)}() enter. model: {model.Id}");
+#endif
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
