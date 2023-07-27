@@ -461,13 +461,13 @@ namespace Nekoyume.Game
         {
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
-                Debug.unityLogger.logEnabled = true;
+                UnityEngine.Debug.unityLogger.logEnabled = true;
                 Instantiate(debugConsolePrefab);
             }
             else
             {
 #if !UNITY_EDITOR
-                Debug.unityLogger.logEnabled = false;
+                UnityEngine.Debug.unityLogger.logEnabled = false;
 #endif
             }
 
