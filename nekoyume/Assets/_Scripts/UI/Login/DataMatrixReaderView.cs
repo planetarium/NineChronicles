@@ -51,6 +51,7 @@ namespace Nekoyume.UI
             yield return UnityEngine.Android.Permission
                 .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera);
 #endif
+            yield return null;
             _camTexture.Play();
             _disposable = Observable.EveryUpdate().Where(_ => _camTexture.isPlaying).Subscribe(_ =>
             {
