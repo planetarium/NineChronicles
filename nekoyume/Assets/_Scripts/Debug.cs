@@ -1,5 +1,4 @@
 #if !UNITY_EDITOR
-
 using System;
 
 namespace Nekoyume
@@ -23,8 +22,6 @@ namespace Nekoyume
     ///
     public static class Debug
     {
-        public static bool isDebugBuild => UnityEngine.Debug.isDebugBuild;
-
         public static string InsertTimestamp(string message)
         {
             return $"[{DateTime.UtcNow:yyyy-M-d HH:mm:ss}] {message}";

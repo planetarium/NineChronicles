@@ -71,6 +71,8 @@ namespace Nekoyume.Helper
 
         private string iapServiceHost;
 
+        private bool ingameDebugConsole;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -410,6 +412,17 @@ namespace Nekoyume.Helper
             set
             {
                 iapServiceHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("ingame-debug-console", Required = false, HelpText = "Turn on ingame debug console")]
+        public bool IngameDebugConsole
+        {
+            get => ingameDebugConsole;
+            set
+            {
+                ingameDebugConsole = value;
                 Empty = false;
             }
         }
