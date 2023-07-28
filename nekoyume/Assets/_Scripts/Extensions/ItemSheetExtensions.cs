@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Security.Cryptography;
-using Libplanet;
+using Libplanet.Common;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 

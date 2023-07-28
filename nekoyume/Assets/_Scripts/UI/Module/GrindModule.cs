@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -18,8 +19,6 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    using Libplanet.Assets;
-    using mixpanel;
     using System.Collections;
     using UniRx;
     using Vector3 = UnityEngine.Vector3;

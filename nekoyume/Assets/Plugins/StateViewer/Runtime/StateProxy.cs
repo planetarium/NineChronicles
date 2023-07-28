@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Libplanet;
-using Libplanet.Assets;
-using Libplanet.Blocks;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
 using Nekoyume.Blockchain;
 
 namespace StateViewer.Runtime

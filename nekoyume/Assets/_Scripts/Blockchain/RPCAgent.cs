@@ -12,11 +12,10 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.Assets;
-using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
@@ -36,7 +35,7 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
-using NCTx = Libplanet.Tx.Transaction;
+using NCTx = Libplanet.Types.Tx.Transaction;
 
 namespace Nekoyume.Blockchain
 {
@@ -518,7 +517,7 @@ namespace Nekoyume.Blockchain
                 nonce: nonce,
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
-                actions: actions,
+                actions: actions.Select(action => action.PlainValue),
                 updatedAddresses: actions.CalculateUpdateAddresses(),
                 maxGasPrice: Currencies.Mead * 1,
                 gasLimit: gasLimit

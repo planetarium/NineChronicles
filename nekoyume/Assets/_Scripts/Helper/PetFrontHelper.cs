@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Libplanet.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;

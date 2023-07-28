@@ -1,5 +1,4 @@
 ﻿using System;
-using Libplanet.Assets;
 using UniRx;
 
 namespace Nekoyume.State.Subjects

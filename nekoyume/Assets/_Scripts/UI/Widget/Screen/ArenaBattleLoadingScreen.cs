@@ -1,4 +1,4 @@
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;

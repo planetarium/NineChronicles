@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;

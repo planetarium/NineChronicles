@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Libplanet.Tx;
+using Libplanet.Types.Tx;
 
 namespace Nekoyume.Blockchain
 {

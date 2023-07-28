@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 
 namespace Nekoyume.Blockchain
 {

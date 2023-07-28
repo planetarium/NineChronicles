@@ -9,9 +9,8 @@ using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Formatters;
-using Libplanet;
-using Libplanet.Assets;
 using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
@@ -31,13 +30,13 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
 using NineChronicles.ExternalServices.IAPService.Runtime;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 using UnityEngine.Playables;
-using Currency = Libplanet.Assets.Currency;
+using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
 #endif
 

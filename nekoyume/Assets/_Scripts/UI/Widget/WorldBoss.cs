@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Helper;

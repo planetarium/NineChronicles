@@ -1,5 +1,5 @@
 using System;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.State;
 using UniRx;
 

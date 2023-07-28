@@ -1,6 +1,6 @@
 #nullable enable
 
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 

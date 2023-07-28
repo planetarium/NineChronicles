@@ -1,19 +1,13 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Avatar;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
-using Nekoyume.UI.Model;
-using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character

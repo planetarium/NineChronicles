@@ -1,9 +1,7 @@
-﻿using Lib9c.Model.Order;
-using Libplanet.Assets;
+﻿using Libplanet.Types.Assets;
 using MarketService.Response;
 using Nekoyume.Model.Item;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

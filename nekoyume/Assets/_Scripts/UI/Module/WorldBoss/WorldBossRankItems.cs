@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Module.WorldBoss

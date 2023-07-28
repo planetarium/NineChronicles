@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
