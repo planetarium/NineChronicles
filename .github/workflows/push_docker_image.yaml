@@ -1,0 +1,100 @@
+name: push docker image
+
+on:
+  push:
+    branches:
+      - main
+      - rc-*
+      - development
+      - previewnet
+      - release/*
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      imageTag:
+        description: 'Custom docker image tag if needed'
+        default: ''
+
+jobs:
+  build_and_push:
+    name: build_and_push (${{ matrix.docker.repo }})
+    strategy:
+      matrix:
+        docker:
+          - repo: planetariumhq/lib9c-stateservice
+            dockerfile: Dockerfile
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: login
+        run: |
+          docker login \
+            --username '${{ secrets.DOCKER_USERNAME }}' \
+            --password '${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}'
+      - name: setup-qemu
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static \
+            --reset \
+            -p yes
+      - name: build-and-push-amd64
+        run: |
+          docker build . \
+            -f ${{ matrix.docker.dockerfile }}.amd64 \
+            -t ${{ matrix.docker.repo }}:git-${{ github.sha }}-amd64 \
+            --build-arg COMMIT=git-${{ github.sha }}
+          docker push ${{ matrix.docker.repo }}:git-${{ github.sha }}-amd64
+      - name: build-and-push-arm64v8
+        run: |
+          docker build . \
+            -f ${{ matrix.docker.dockerfile }}.arm64v8 \
+            -t ${{ matrix.docker.repo }}:git-${{ github.sha }}-arm64v8 \
+            --build-arg COMMIT=git-${{ github.sha }}
+          docker push ${{ matrix.docker.repo }}:git-${{ github.sha }}-arm64v8
+      - name: merge-manifest-and-push
+        run: |
+          docker manifest create ${{ matrix.docker.repo }}:git-${{ github.sha }} \
+            --amend ${{ matrix.docker.repo }}:git-${{ github.sha }}-amd64 \
+            --amend ${{ matrix.docker.repo }}:git-${{ github.sha }}-arm64v8
+          docker manifest push ${{ matrix.docker.repo }}:git-${{ github.sha }}
+
+  tag:
+    name: tag (${{ matrix.docker.repo }})
+    strategy:
+      matrix:
+        docker:
+          - repo: planetariumhq/lib9c-stateservice
+    if: github.ref_type == 'tag' || github.event.inputs.imageTag != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: login
+        run: |
+          docker login \
+            --username '${{ secrets.DOCKER_USERNAME }}' \
+            --password '${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}'
+      - name: push git tagged version
+        run: |
+          docker pull ${{ matrix.docker.repo }}:git-${{ github.sha }}-amd64
+          if [[ -z "${{ github.event.inputs.imageTag }}" ]]; then
+            export IMAGE_TAG=${{ github.ref_name }}
+          else
+            export IMAGE_TAG=${{ github.event.inputs.imageTag }}
+          fi
+
+          docker tag \
+            ${{ matrix.docker.repo }}:git-${{ github.sha }}-amd64 \
+            ${{ matrix.docker.repo }}:$IMAGE_TAG-amd64
+          docker push ${{ matrix.docker.repo }}:$IMAGE_TAG-amd64
+          docker pull ${{ matrix.docker.repo }}:git-${{ github.sha }}-arm64v8
+          docker tag \
+            ${{ matrix.docker.repo }}:git-${{ github.sha }}-arm64v8 \
+            ${{ matrix.docker.repo }}:$IMAGE_TAG-arm64v8
+          docker push ${{ matrix.docker.repo }}:$IMAGE_TAG-arm64v8
+          docker manifest create ${{ matrix.docker.repo }}:$IMAGE_TAG \
+            --amend ${{ matrix.docker.repo }}:$IMAGE_TAG-amd64 \
+            --amend ${{ matrix.docker.repo }}:$IMAGE_TAG-arm64v8
+          docker manifest push ${{ matrix.docker.repo }}:$IMAGE_TAG
