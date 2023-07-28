@@ -53,6 +53,7 @@ namespace Nekoyume.Blockchain
 
         IValue GetState(Address address);
         Task<IValue> GetStateAsync(Address address, long? blockIndex = null);
+        Task<IValue> GetStateAsync(Address address, BlockHash blockHash);
 
         void SendException(Exception exc);
 
