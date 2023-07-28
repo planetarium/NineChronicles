@@ -12,17 +12,32 @@ namespace Nekoyume.Model.Quest
     public class TradeQuest : Quest
     {
         public override QuestType QuestType => QuestType.Exchange;
-        public readonly TradeType Type;
+
+        public TradeType Type
+        {
+            get
+            {
+                if (_serializedType is { })
+                {
+                    _type = (TradeType) (int) _serializedType;
+                    _serializedType = null;
+                }
+
+                return _type;
+            }
+        }
+        private TradeType _type;
+        private Integer? _serializedType;
 
         public TradeQuest(TradeQuestSheet.Row data, QuestReward reward)
             : base(data, reward)
         {
-            Type = data.Type;
+            _type = data.Type;
         }
 
         public TradeQuest(Dictionary serialized) : base(serialized)
         {
-            Type = (TradeType)(int)((Integer)serialized["type"]).Value;
+            _serializedType = (Integer) serialized["type"];
         }
 
         public override void Check()
@@ -46,6 +61,6 @@ namespace Nekoyume.Model.Quest
         protected override string TypeId => "tradeQuest";
         public override IValue Serialize() =>
             ((Dictionary) base.Serialize())
-            .Add("type", (int) Type);
+            .Add("type", _serializedType ?? (int) Type);
     }
 }
