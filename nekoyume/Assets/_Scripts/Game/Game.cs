@@ -36,6 +36,7 @@ using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
 #endif
 

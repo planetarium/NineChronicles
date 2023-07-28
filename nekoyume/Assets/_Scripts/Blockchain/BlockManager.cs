@@ -10,6 +10,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Blocks;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
+using UnityEngine;
 
 namespace Nekoyume.Blockchain
 {
