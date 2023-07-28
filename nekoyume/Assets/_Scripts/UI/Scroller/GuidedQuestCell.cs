@@ -222,7 +222,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         private void SetRewards(
-            IReadOnlyDictionary<int, int> rewardMap,
+            IEnumerable<Tuple<int, int>> rewardMap,
             bool ignoreAnimation = false)
         {
             _disposables.DisposeAllAndClear();
@@ -231,10 +231,11 @@ namespace Nekoyume.UI.Scroller
             for (var i = 0; i < rewards.Count; i++)
             {
                 var reward = rewards[i];
-                if (i < rewardMap.Count)
+                List<Tuple<int, int>> rewardList = rewardMap.ToList();
+                if (i < rewardList.Count)
                 {
-                    var pair = rewardMap.ElementAt(i);
-                    var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Key);
+                    var pair = rewardList.ElementAt(i);
+                    var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Item1);
                     Assert.NotNull(row);
                     reward.SetData(row, () => ShowTooltip(reward));
 
