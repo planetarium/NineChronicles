@@ -527,6 +527,7 @@ namespace Nekoyume.Blockchain
                 {
                     if (eval.Exception is not null)
                     {
+                        Debug.Log(eval.Exception.Message);
                         return;
                     }
 
@@ -587,8 +588,20 @@ namespace Nekoyume.Blockchain
                     }
 
                     var mailBox = new MailBox(mailBoxList);
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
-                    ReactiveAvatarState.UpdateMailBox(mailBox);
+                    var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                        .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+                    if (mail is not null)
+                    {
+                        mail.New = true;
+                        gameStates.CurrentAvatarState.mailBox = mailBox;
+                        LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                                         $"the render context of UnloadFromMyGarages action.\n" +
+                                         $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+                    }
                 })
                 .AddTo(_disposables);
         }
