@@ -200,7 +200,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30.01}
+  m_SizeDelta: {x: -100, y: 30.01}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5279637658881533492
 CanvasRenderer:
@@ -299,8 +299,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -398,7 +398,7 @@ RectTransform:
   m_GameObject: {fileID: 2145314081774784976}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8214241751743631485}
@@ -407,7 +407,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50}
+  m_AnchoredPosition: {x: 0, y: 29}
   m_SizeDelta: {x: 134, y: 47}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3691475163854756988
@@ -455,7 +455,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -230}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1375161859949260239
@@ -539,7 +539,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 391.95502, y: 0}
+  m_AnchoredPosition: {x: 391.9541, y: 0}
   m_SizeDelta: {x: 43, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7135880647691343920
@@ -631,6 +631,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 47
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206425615335586340, guid: 79ca869aa9be842b09fd026333ae8bf7,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1206425615335586340, guid: 79ca869aa9be842b09fd026333ae8bf7,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1206425615335586340, guid: 79ca869aa9be842b09fd026333ae8bf7,
         type: 3}
