@@ -131,10 +131,12 @@ namespace Nekoyume.UI
 
             dccSlotButton.onClick.AddListener(() =>
             {
-                // Obsolete for mobile
-                // Find<DccSettingPopup>().Show();
+#if UNITY_ANDROID
                 Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                     "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
+                Find<DccSettingPopup>().Show();
+#endif
             });
 
             activeDccButton.onClick.AddListener(() =>

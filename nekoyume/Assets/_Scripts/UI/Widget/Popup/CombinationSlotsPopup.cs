@@ -93,10 +93,12 @@ namespace Nekoyume.UI
 
         public void TogglePetPopup(int slotIndex)
         {
-            // Obsolete for mobile.
-            // petInventory.Toggle(slotIndex);
+#if UNITY_ANDROID
             Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
+            petInventory.Toggle(slotIndex);
+#endif
         }
 
         private void UpdateSlots(long blockIndex)

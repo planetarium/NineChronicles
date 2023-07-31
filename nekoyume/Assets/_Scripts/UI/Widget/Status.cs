@@ -64,11 +64,12 @@ namespace Nekoyume.UI
             characterView.OnClickCharacterIcon
                 .Subscribe(_ =>
                 {
-                    // Obsolete for mobile.
-                    // Find<ProfileSelectPopup>().Show();
-
+#if UNITY_ANDROID
                     Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                         "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
+                    Find<ProfileSelectPopup>().Show();
+#endif
                 })
                 .AddTo(gameObject);
 
