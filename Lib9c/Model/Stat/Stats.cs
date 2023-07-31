@@ -46,12 +46,20 @@ namespace Nekoyume.Model.Stat
             {
                 if (!LegacyDecimalStatTypes.Contains(stat.StatType))
                 {
-                    var sum = statsArray.Sum(s => s.GetStatAsInt(stat.StatType));
+                    int sum = 0;
+                    foreach (var s in statsArray)
+                    {
+                        sum += s.GetStatAsInt(stat.StatType);
+                    }
                     stat.SetBaseValue(sum);
                 }
                 else
                 {
-                    var sum = statsArray.Sum(s => s.GetStat(stat.StatType));
+                    decimal sum = 0;
+                    foreach (var s in statsArray)
+                    {
+                        sum += s.GetStat(stat.StatType);
+                    }
                     stat.SetBaseValue(sum);
                 }
             }
@@ -96,16 +104,24 @@ namespace Nekoyume.Model.Stat
                 var statType = statModifier.StatType;
                 if (!LegacyDecimalStatTypes.Contains(statType))
                 {
-                    var originalStatValue =
-                        baseStats.Sum(stats => stats.GetStatAsInt(statType));
-                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    int originalStatValue = 0;
+                    foreach (var stats in baseStats)
+                    {
+                        originalStatValue += stats.GetStatAsInt(statType);
+                    }
+
+                    int result = statModifier.GetModifiedValue(originalStatValue);
                     _statMap[statModifier.StatType].AddBaseValue(result);
                 }
                 else
                 {
-                    var originalStatValue =
-                        baseStats.Sum(stats => stats.GetStat(statType));
-                    var result = statModifier.GetModifiedValue(originalStatValue);
+                    decimal originalStatValue = 0;
+                    foreach (var stats in baseStats)
+                    {
+                        originalStatValue += stats.GetStat(statType);
+                    }
+
+                    decimal result = statModifier.GetModifiedValue(originalStatValue);
                     _statMap[statModifier.StatType].AddBaseValue(result);
                 }
             }
