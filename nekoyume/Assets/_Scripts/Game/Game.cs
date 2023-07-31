@@ -193,16 +193,6 @@ namespace Nekoyume.Game
             // loadPath = Path.Combine(loadPath, "librocksdb.so");
             // Debug.LogWarning($"native load path = {loadPath}");
             // RocksDbSharp.Native.LoadLibrary(loadPath);
-
-            bool HasStoragePermission() =>
-                Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
-                && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
-
-            String[] permission = new String[]
-            {
-                Permission.ExternalStorageRead,
-                Permission.ExternalStorageWrite
-            };
 #endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);

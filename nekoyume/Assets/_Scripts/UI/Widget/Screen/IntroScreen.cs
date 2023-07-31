@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
@@ -31,6 +32,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
+        [SerializeField] private DataMatrixReaderView codeReaderView;
 
         [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;
@@ -59,7 +61,6 @@ namespace Nekoyume.UI
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-                startButtonContainer.SetActive(false);
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
@@ -124,6 +125,7 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
+            signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
         }
 
         private void OnVideoEnd()
@@ -137,9 +139,17 @@ namespace Nekoyume.UI
         {
             if (_guideIndex >= GuideCount)
             {
+                _guideIndex = 0;
                 qrCodeGuideContainer.SetActive(false);
 
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+                codeReaderView.Show(res =>
+                {
+                    var loginSystem = Find<LoginSystem>();
+                    loginSystem.KeyStore.Add(ProtectedPrivateKey.FromJson(res.Text));
+                    codeReaderView.Close();
+                    startButtonContainer.SetActive(false);
+                    loginSystem.Show(_keyStorePath, _privateKey);
+                });
             }
             else
             {
