@@ -349,8 +349,7 @@ namespace Nekoyume.UI.Scroller
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(value => UpdateEventScheduleRemainingTime(
                     RxProps.EventScheduleRowForRecipe.Value,
-                    value,
-                    LiveAssetManager.instance.GameConfig.SecondsPerBlock))
+                    value))
                 .AddTo(_disposablesAtShow);
             RxProps.EventScheduleRowForRecipe
                 .Subscribe(UpdateEventScheduleEntireTime)
@@ -413,8 +412,7 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateEventScheduleRemainingTime(
             EventScheduleSheet.Row row,
-            long currentBlockIndex,
-            int secondsPerBlock)
+            long currentBlockIndex)
         {
             if (row is null)
             {
@@ -423,7 +421,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             var value = row.RecipeEndBlockIndex - currentBlockIndex;
-            var time = value.BlockRangeToTimeSpanString(secondsPerBlock);
+            var time = value.BlockRangeToTimeSpanString();
             eventScheduleTabRemainingTimeText.text = $"{value}({time})";
         }
 

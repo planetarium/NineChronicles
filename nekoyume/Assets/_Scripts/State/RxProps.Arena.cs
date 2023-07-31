@@ -189,7 +189,6 @@ namespace Nekoyume.State
         {
             const int maxTicketCount = ArenaInformation.MaxTicketCount;
             var ticketResetInterval = States.Instance.GameConfigState.DailyArenaInterval;
-            var secondsPerBlock = LiveAssetManager.instance.GameConfig.SecondsPerBlock;
             var currentArenaInfo = _arenaInfoTuple.HasValue
                 ? _arenaInfoTuple.Value.current
                 : null;
@@ -218,8 +217,7 @@ namespace Nekoyume.State
                 maxTicketCount,
                 (int)progressedBlockRange,
                 ticketResetInterval,
-                purchasedCountDuringInterval,
-                secondsPerBlock);
+                purchasedCountDuringInterval);
             _arenaTicketsProgress.SetValueAndForceNotify(
                 _arenaTicketsProgress.Value);
         }

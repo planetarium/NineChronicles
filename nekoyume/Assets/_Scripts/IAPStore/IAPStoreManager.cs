@@ -106,6 +106,7 @@ namespace Nekoyume.IAPStore
                 return PurchaseProcessingResult.Pending;
             }
 
+            Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
         }
@@ -152,6 +153,9 @@ namespace Nekoyume.IAPStore
                         e.purchasedProduct.receipt,
                         states.AgentState.address,
                         states.CurrentAvatarState.address);
+
+                Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
+
                 if (result is null)
                 {
                     popup.Show(
@@ -179,6 +183,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception exc)
             {
+                Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
         }

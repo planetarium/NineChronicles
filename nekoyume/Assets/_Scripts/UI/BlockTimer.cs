@@ -49,7 +49,7 @@ namespace Nekoyume.UI
 
         private void OnSliderChange(float value)
         {
-            var time = Util.GetBlockToTimeString((long) value);
+            var time = ((long) value).BlockRangeToTimeSpanString();
             remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
         }
 

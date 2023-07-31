@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -40,6 +40,7 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/PurchaseButton/Click",
                     ("product-id", _selectedProductId));
+                PurchaseButtonLoadingStart();
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
             });
         }
@@ -58,6 +59,20 @@ namespace Nekoyume.UI
         public void UpdateView()
         {
             OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
+        }
+
+        public void PurchaseButtonLoadingStart()
+        {
+            view.PurchaseButton.interactable = false;
+            view.PurchaseButtonDissableGroupObj.SetActive(false);
+            view.PurchaseButtonLoadingObj.Show("");
+        }
+
+        public void PurchaseButtonLoadingEnd()
+        {
+            view.PurchaseButton.interactable = true;
+            view.PurchaseButtonDissableGroupObj.SetActive(true);
+            view.PurchaseButtonLoadingObj.Close();
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
@@ -131,6 +146,7 @@ namespace Nekoyume.UI
 
         private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
         {
+            PurchaseButtonLoadingEnd();
             var products = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
             if (isOn)

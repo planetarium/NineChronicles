@@ -64,6 +64,9 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI requiredBlockIndexText;
 
         [SerializeField]
+        private TextMeshProUGUI requiredTimeText;
+
+        [SerializeField]
         private TextMeshProUGUI itemNameText;
 
         [SerializeField]
@@ -308,7 +311,8 @@ namespace Nekoyume.UI.Module
             progressBar.maxValue = Math.Max(unlockBlockIndex - startBlockIndex, 1);
             var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
-            requiredBlockIndexText.text = $"{diff}.";
+            requiredBlockIndexText.text = $"{diff} ";
+            requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
         }
 
         private void UpdateNotification(

@@ -1474,7 +1474,7 @@ namespace Nekoyume.Blockchain
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ApprovePledge>()
                 .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.PatronAddress.Equals(action.PatronAddress))
+                .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e =>

@@ -516,8 +516,13 @@ namespace Nekoyume.UI
         public void DccClick()
         {
             AudioController.PlayClick();
+#if UNITY_ANDROID
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             Close(true);
             Find<DccMain>().Show();
+#endif
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

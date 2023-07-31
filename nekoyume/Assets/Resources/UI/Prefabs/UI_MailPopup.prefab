@@ -428,8 +428,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -42.5}
-  m_SizeDelta: {x: -60, y: -185}
+  m_AnchoredPosition: {x: 0, y: -46.5}
+  m_SizeDelta: {x: -60, y: -177}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6207194063697094471
 MonoBehaviour:
@@ -2012,8 +2012,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: 0}
-  m_SizeDelta: {x: 560, y: 0}
+  m_AnchoredPosition: {x: 25, y: 20}
+  m_SizeDelta: {x: 560, y: -40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3106727626842032719
 CanvasRenderer:
@@ -4747,7 +4747,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: -13}
   m_SizeDelta: {x: -44, y: 68}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &3005119780381597544
@@ -6030,8 +6030,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 67.625, y: -23}
-  m_SizeDelta: {x: 16.52, y: 42}
+  m_AnchoredPosition: {x: 74, y: -27}
+  m_SizeDelta: {x: 18.27, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3649433262513375652
 CanvasRenderer:
@@ -7277,8 +7277,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 46.364998, y: -23}
-  m_SizeDelta: {x: 20, y: 42}
+  m_AnchoredPosition: {x: 51.864998, y: -27}
+  m_SizeDelta: {x: 20, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5968976851917165147
 MonoBehaviour:
@@ -7725,7 +7725,7 @@ PrefabInstance:
     - target: {fileID: 7434739862903142643, guid: f09a8d5c683794b80a4bbb012183ffaa,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7563241495383055357, guid: f09a8d5c683794b80a4bbb012183ffaa,
         type: 3}

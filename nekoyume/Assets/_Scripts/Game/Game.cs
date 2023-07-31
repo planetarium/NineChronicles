@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -22,6 +23,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -81,6 +83,9 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private Prologue prologue;
+
+        [SerializeField]
+        private GameObject debugConsolePrefab;
 
         public States States { get; private set; }
 
@@ -187,16 +192,6 @@ namespace Nekoyume.Game
             // loadPath = Path.Combine(loadPath, "librocksdb.so");
             // Debug.LogWarning($"native load path = {loadPath}");
             // RocksDbSharp.Native.LoadLibrary(loadPath);
-
-            bool HasStoragePermission() =>
-                Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite)
-                && Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead);
-
-            String[] permission = new String[]
-            {
-                Permission.ExternalStorageRead,
-                Permission.ExternalStorageWrite
-            };
 #endif
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
@@ -267,6 +262,8 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
 
 #if UNITY_ANDROID
+            yield return liveAssetManager.InitializeApplicationCLO();
+
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
@@ -347,31 +344,7 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-#if UNITY_ANDROID
-            // Check MeadPledge
-            if (!States.PledgeRequested || !States.PledgeApproved)
-            {
-                if (!States.PledgeRequested)
-                {
-                    _deepLinkHandler.OpenPortal(States.AgentState.address);
-
-                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
-                    yield return new WaitUntil(() => States.PledgeRequested);
-                }
-
-                if (States.PledgeRequested && !States.PledgeApproved)
-                {
-                    var patronAddress = States.PatronAddress!.Value;
-                    ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
-
-                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
-                    yield return new WaitUntil(() => States.PledgeApproved);
-                }
-
-                yield return new WaitUntil(() => States.PledgeRequested && States.PledgeApproved);
-                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
-            }
-#endif
+            yield return StartCoroutine(CoCheckPledge());
 
 #if UNITY_EDITOR
             // wait for headless connect.
@@ -453,7 +426,19 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            if(_commandLineOptions.RpcClient)
+            if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
+            {
+                UnityEngine.Debug.unityLogger.logEnabled = true;
+                Instantiate(debugConsolePrefab);
+            }
+            else
+            {
+#if !UNITY_EDITOR
+                UnityEngine.Debug.unityLogger.logEnabled = false;
+#endif
+            }
+
+            if (_commandLineOptions.RpcClient)
             {
                 _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
                     ? _commandLineOptions.RpcServerHost
@@ -645,6 +630,92 @@ namespace Nekoyume.Game
             popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
             popup.SetCancelCallbackToExit();
+        }
+
+        private IEnumerator CoCheckPledge()
+        {
+            IEnumerator SetTimeOut(Func<bool> condition)
+            {
+                const int timeLimit = 180;
+
+                // Wait 180 minutes
+                for (int second = 0; second < timeLimit; second++)
+                {
+                    yield return new WaitForSeconds(1f);
+                    if (condition.Invoke())
+                    {
+                        break;
+                    }
+                }
+
+                if (!condition.Invoke())
+                {
+                    // Update Pledge States
+                    var task = Task.Run(async () =>
+                    {
+                        var pledgeAddress = Agent.Address.GetPledgeAddress();
+                        Address? patronAddress = null;
+                        var approved = false;
+
+                        if (await Agent.GetStateAsync(pledgeAddress) is List list)
+                        {
+                            patronAddress = list[0].ToAddress();
+                            approved = list[1].ToBoolean();
+                        }
+
+                        States.Instance.SetPledgeStates(patronAddress, approved);
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
+            }
+
+#if UNITY_ANDROID
+            // Check MeadPledge
+            if (!States.PledgeRequested || !States.PledgeApproved)
+            {
+                if (!States.PledgeRequested)
+                {
+                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+
+                    while (!States.PledgeRequested)
+                    {
+                        _deepLinkHandler.OpenPortal(States.AgentState.address);
+
+                        yield return SetTimeOut(() => States.PledgeRequested);
+                        if (!States.PledgeRequested)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
+                                NotificationCell.NotificationType.Notification);
+                        }
+                    }
+                }
+
+                if (States.PledgeRequested && !States.PledgeApproved)
+                {
+                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+
+                    while (!States.PledgeApproved)
+                    {
+                        var patronAddress = States.PatronAddress!.Value;
+                        ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                        yield return SetTimeOut(() => States.PledgeApproved);
+                        if (!States.PledgeApproved)
+                        {
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
+                                NotificationCell.NotificationType.Notification);
+                        }
+                    }
+                }
+
+                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
+            }
+#endif
+            yield break;
         }
 
         // FIXME: Leave one between this or CoSyncTableSheets()
@@ -1149,7 +1220,7 @@ namespace Nekoyume.Game
                 var gameConfigState = States.Instance.GameConfigState;
                 var targetBlockIndex = nextRoundData.StartBlockIndex +
                                        Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
-                var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+                var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
                 var arenaTypeText = roundData.ArenaType == ArenaType.Season
                     ? L10nManager.Localize("UI_SEASON")
@@ -1200,8 +1271,7 @@ namespace Nekoyume.Game
                 PlayerPrefs.DeleteKey(ArenaTicketPushIdentifierKey);
             }
 
-            var timeSpan = Helper.Util.GetBlockToTime(
-                remainingBlockCount - TicketPushBlockCountThreshold);
+            var timeSpan = (remainingBlockCount - TicketPushBlockCountThreshold).BlockToTimeSpan();
             var content = L10nManager.Localize("PUSH_ARENA_TICKET_CONTENT");
             var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Arena);
             PlayerPrefs.SetString(ArenaTicketPushIdentifierKey, identifier);
@@ -1225,7 +1295,7 @@ namespace Nekoyume.Game
             var gameConfigState = States.Instance.GameConfigState;
             var targetBlockIndex = row.StartedBlockIndex +
                                    Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
-            var timeSpan = Helper.Util.GetBlockToTime(targetBlockIndex - currentBlockIndex);
+            var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
             var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
@@ -1269,8 +1339,7 @@ namespace Nekoyume.Game
                 PlayerPrefs.DeleteKey(WorldbossTicketPushIdentifierKey);
             }
 
-            var timeSpan = Helper.Util.GetBlockToTime(
-                remainingBlockCount - TicketPushBlockCountThreshold);
+            var timeSpan = (remainingBlockCount - TicketPushBlockCountThreshold).BlockToTimeSpan();
             var content = L10nManager.Localize("PUSH_WORLDBOSS_TICKET_CONTENT");
             var identifier = PushNotifier.Push(content, timeSpan, PushNotifier.PushType.Worldboss);
             PlayerPrefs.SetString(WorldbossTicketPushIdentifierKey, identifier);
@@ -1286,8 +1355,10 @@ namespace Nekoyume.Game
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
             return;
 #endif
+
             var isTrackable = true;
-            if (Debug.isDebugBuild)
+
+            if (UnityEngine.Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
                 isTrackable = false;
