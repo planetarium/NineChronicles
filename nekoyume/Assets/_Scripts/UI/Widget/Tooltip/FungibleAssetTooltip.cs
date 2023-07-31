@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using Coffee.UIEffects;
-using Lib9c.Model.Order;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Helper;

@@ -135,7 +135,7 @@ namespace Nekoyume.Helper
         {
             return mail switch
             {
-                RaidRewardMail =>  Resources.Load<Sprite>(
+                RaidRewardMail => Resources.Load<Sprite>(
                     string.Format(MailIconPathFormat, "icon_mail_worldBoss")),
                 _ => null
             };

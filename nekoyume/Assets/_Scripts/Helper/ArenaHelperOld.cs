@@ -1,7 +1,6 @@
 using System;
-using System.Diagnostics.SymbolStore;
 using System.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using UnityEngine;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace Nekoyume
 {
     /// <summary>
-    /// This class will be removed after the beginning of the new arena system. 
+    /// This class will be removed after the beginning of the new arena system.
     /// </summary>
     public static class ArenaHelperOld
     {

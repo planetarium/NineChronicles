@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI;

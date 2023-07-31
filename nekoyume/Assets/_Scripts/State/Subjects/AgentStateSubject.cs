@@ -1,7 +1,6 @@
 using System;
 using Lib9c;
-using Libplanet.Assets;
-using Nekoyume.Helper;
+using Libplanet.Types.Assets;
 using UniRx;
 
 namespace Nekoyume.State.Subjects

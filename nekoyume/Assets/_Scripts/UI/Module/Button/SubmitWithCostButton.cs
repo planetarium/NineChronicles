@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Numerics;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using TMPro;

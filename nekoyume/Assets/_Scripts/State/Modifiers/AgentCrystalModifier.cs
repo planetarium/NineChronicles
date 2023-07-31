@@ -1,9 +1,6 @@
 using System;
-using System.Numerics;
-using Libplanet.Assets;
-using Nekoyume.Action;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
-using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

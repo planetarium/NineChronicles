@@ -3,8 +3,9 @@
 using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
 using Nekoyume.Blockchain;
 
 namespace StateViewer.Runtime
@@ -20,19 +21,60 @@ namespace StateViewer.Runtime
             Aliases = new Dictionary<string, Address>();
         }
 
-        public async UniTask<(Address addr, IValue? value)> GetStateAsync(string searchString)
+        public async UniTask<(Address? addr, IValue? value)> GetStateAsync(
+            string searchString,
+            long? blockIndex = null)
+        {
+            Address? addr = GetAddress(searchString);
+            if (addr is null)
+            {
+                return (null, null);
+            }
+
+            return await GetStateAsync(addr.Value, blockIndex);
+        }
+
+        private Address? GetAddress(string searchString)
         {
             try
             {
-                var addr = new Address(searchString);
-                return (addr, await Agent.GetStateAsync(addr));
+                return new Address(searchString);
             }
             catch
             {
-                return Aliases.ContainsKey(searchString)
-                    ? (Aliases[searchString], await Agent.GetStateAsync(Aliases[searchString]))
-                    : (default, default);
+                return Aliases.TryGetValue(searchString, out var alias)
+                    ? alias
+                    : null;
             }
+        }
+
+        public async UniTask<(Address addr, IValue? value)> GetStateAsync(
+            Address addr,
+            long? blockIndex = null)
+        {
+            var state = await Agent.GetStateAsync(addr, blockIndex);
+            return (addr, state);
+        }
+
+        public async UniTask<(Address? addr, IValue? value)> GetStateAsync(
+            string searchString,
+            BlockHash blockHash)
+        {
+            Address? addr = GetAddress(searchString);
+            if (addr is null)
+            {
+                return (null, null);
+            }
+
+            return await GetStateAsync(addr.Value, blockHash);
+        }
+
+        public async UniTask<(Address addr, IValue? value)> GetStateAsync(
+            Address addr,
+            BlockHash blockHash)
+        {
+            var state = await Agent.GetStateAsync(addr, blockHash);
+            return (addr, state);
         }
 
         // NOTE: Why not use <see cref="Nekoyume.Blockchain.IAgent.GetBalanceAsync()"/>?

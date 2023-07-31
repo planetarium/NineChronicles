@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.State;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
@@ -25,7 +22,9 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Lib9c;
 using Lib9c.Renderers;
-using Libplanet.Assets;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using mixpanel;
 using Nekoyume.Action.Garages;
 using Nekoyume.Arena;
@@ -528,6 +527,7 @@ namespace Nekoyume.Blockchain
                 {
                     if (eval.Exception is not null)
                     {
+                        Debug.Log(eval.Exception.Message);
                         return;
                     }
 
@@ -588,8 +588,20 @@ namespace Nekoyume.Blockchain
                     }
 
                     var mailBox = new MailBox(mailBoxList);
-                    gameStates.CurrentAvatarState.mailBox = mailBox;
-                    ReactiveAvatarState.UpdateMailBox(mailBox);
+                    var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                        .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+                    if (mail is not null)
+                    {
+                        mail.New = true;
+                        gameStates.CurrentAvatarState.mailBox = mailBox;
+                        LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                                         $"the render context of UnloadFromMyGarages action.\n" +
+                                         $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+                    }
                 })
                 .AddTo(_disposables);
         }
@@ -2253,12 +2265,12 @@ namespace Nekoyume.Blockchain
                 {
                     var materialRow = TableSheets.Instance
                         .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Key);
+                        .First(pair => pair.Key == reward.Item1);
 
                     LocalLayerModifier.RemoveItem(
                         avatarAddress,
                         materialRow.Value.ItemId,
-                        reward.Value);
+                        reward.Item2);
                 }
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);

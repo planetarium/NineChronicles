@@ -2,15 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using mixpanel;
 using Nekoyume.Game.Avatar;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
-using Spine.Unity;
 
 namespace Nekoyume.Game.Character
 {

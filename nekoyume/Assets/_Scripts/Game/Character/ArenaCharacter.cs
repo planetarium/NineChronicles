@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using DG.Tweening;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;

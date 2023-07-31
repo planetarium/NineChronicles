@@ -17,6 +17,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using System.Linq;
+using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.State.Subjects;
@@ -25,7 +26,6 @@ using NUnit.Framework;
 
 namespace Nekoyume.UI
 {
-    using Libplanet.Assets;
     using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;

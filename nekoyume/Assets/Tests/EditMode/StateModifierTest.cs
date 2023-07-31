@@ -1,7 +1,6 @@
 using System;
-using System.Numerics;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -9,7 +8,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
-using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;

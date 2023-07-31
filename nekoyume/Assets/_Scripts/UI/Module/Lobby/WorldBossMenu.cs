@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -294,24 +294,14 @@ namespace Nekoyume.UI
         private IEnumerable<Mail> GetAvailableMailList(long blockIndex,
             MailTabState state)
         {
-            bool predicate(Mail mail)
+            bool Predicate(Mail mail) => state switch
             {
-                if (state == MailTabState.All)
-                {
-                    return true;
-                }
-
-                if (state == MailTabState.Workshop)
-                {
-                    return mail.MailType is MailType.Grinding or MailType.Workshop;
-                }
-
-                return mail.MailType == (MailType)state;
-            }
-
-            return MailBox?.Where(mail =>
-                    mail.requiredBlockIndex <= blockIndex)
-                .Where(predicate)
+                MailTabState.All => true,
+                MailTabState.Workshop => mail.MailType is MailType.Grinding or MailType.Workshop,
+                _ => mail.MailType == (MailType)state
+            };
+            return MailBox?.Where(mail => mail.requiredBlockIndex <= blockIndex)
+                .Where(Predicate)
                 .OrderByDescending(mail => mail.New);
         }
 
@@ -679,12 +669,52 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track(
                 "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
-            var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            var game = Game.Game.instance;
+            unloadFromMyGaragesRecipientMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                unloadFromMyGaragesRecipientMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
 
-            Find<OneButtonSystem>().Show(
-                unloadFromMyGaragesRecipientMail.GetPopupContent(sheet),
-                L10nManager.Localize("UI_OK"),
-                () => unloadFromMyGaragesRecipientMail.New = false);
+            var showQueue = new Queue<System.Action>();
+            if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
+            {
+                foreach (var (balanceAddr, value) in
+                         unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                {
+                    // TODO: Enqueue functions.
+                }
+            }
+
+            if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemTooltip = ItemTooltip.Find(ItemType.Material);
+                foreach (var (fungibleId, count) in
+                         unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row is null)
+                    {
+                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        continue;
+                    }
+
+                    var material = ItemFactory.CreateMaterial(row);
+                    showQueue.Enqueue(() => itemTooltip.Show(
+                        material,
+                        L10nManager.Localize("UI_OK"),
+                        true,
+                        () => UniTask.WaitWhile(itemTooltip.IsActive)
+                            .ToObservable()
+                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
+                        itemCount: count)
+                    );
+                }
+            }
+
+            showQueue.Dequeue()?.Invoke();
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

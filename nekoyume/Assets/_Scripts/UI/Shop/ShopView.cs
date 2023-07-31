@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Lib9c.Model.Order;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using MarketService.Response;
 using Nekoyume.Game;
 using Nekoyume.Helper;

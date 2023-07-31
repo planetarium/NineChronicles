@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Libplanet.Assets;
-using UnityEngine;
+using Libplanet.Types.Assets;
 
 namespace Nekoyume.UI.Model
 {

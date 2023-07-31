@@ -1,9 +1,8 @@
 ﻿using System;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
