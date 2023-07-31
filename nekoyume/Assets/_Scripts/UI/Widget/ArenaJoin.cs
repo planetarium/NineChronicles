@@ -23,6 +23,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     using Nekoyume.Helper;
+    using NineChronicles.ExternalServices.ArenaService.Runtime.Models;
     using UniRx;
 
     public class ArenaJoin : Widget
@@ -80,7 +81,9 @@ namespace Nekoyume.UI
 
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
-        
+
+        private ArenaBoardDataSchema[] _arenaBoardDatas;
+
         protected override void Awake()
         {
             base.Awake();
@@ -108,6 +111,7 @@ namespace Nekoyume.UI
             loading.Show();
 
             var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(Game.Game.instance.Agent.Address);
+            _arenaBoardDatas = arenaDashboad.ToArray();
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync());
 
             loading.Close();
@@ -184,7 +188,7 @@ namespace Nekoyume.UI
                     Find<LoadingScreen>().Close();
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaParticipantsOrderedWithScore.Value);
+                        _arenaBoardDatas);
                     return;
                 case InnerState.Idle:
                     UpdateBottomButtons();
@@ -343,7 +347,7 @@ namespace Nekoyume.UI
                     Close();
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaParticipantsOrderedWithScore.Value);
+                        _arenaBoardDatas);
                     return;
                 }
 
