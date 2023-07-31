@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -39,7 +40,6 @@ using Currency = Libplanet.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
-using System.Threading.Tasks;
 using UnityEngine.Android;
 #endif
 
