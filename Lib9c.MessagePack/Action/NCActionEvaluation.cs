@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Lib9c.Formatters;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.State;
+using Libplanet.Crypto;
+using Libplanet.Action.State;
 using MessagePack;
 
 namespace Nekoyume.Action

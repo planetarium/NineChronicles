@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Skill
         {
             var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
             var damage = ProcessDamage(caster, simulatorWaveTurn, true, copyCharacter);
-            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
+            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs, copyCharacter);
 
             return new Model.BattleStatus.NormalAttack(SkillRow.Id, clone, damage, buff);
         }

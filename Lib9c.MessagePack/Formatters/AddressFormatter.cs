@@ -1,6 +1,6 @@
 using System;
 using System.Buffers;
-using Libplanet;
+using Libplanet.Crypto;
 using MessagePack;
 using MessagePack.Formatters;
 

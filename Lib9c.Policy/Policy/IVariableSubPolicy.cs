@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.Collections.Immutable;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 
 namespace Nekoyume.Blockchain.Policy
 {
@@ -81,7 +81,7 @@ namespace Nekoyume.Blockchain.Policy
         /// to check.</param>
         /// <returns><c>true</c> if <paramref name="index"/> is target for any
         /// <see cref="SpannedSubPolicy{T}"/> in <see cref="SpannedSubPolicies"/>.  Otherwise,
-        /// <c>fase</c>.</returns>
+        /// <c>false</c>.</returns>
         /// <remarks>
         /// Call to this method must only be used <em>sparingly</em> and should be <em>avoided</em>
         /// if possible.  Usage of this method indicates dependency coupling between two

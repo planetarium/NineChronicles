@@ -1,6 +1,6 @@
-using Libplanet;
 using System;
 using System.Runtime.Serialization;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {
@@ -19,13 +19,13 @@ namespace Nekoyume.Action
         ) : base(info, context)
         {
             PendingAddress = (Address)info.GetValue(
-                nameof(PendingAddress), 
+                nameof(PendingAddress),
                 typeof(Address)
             );
         }
 
         public override void GetObjectData(
-            SerializationInfo info, 
+            SerializationInfo info,
             StreamingContext context
         )
         {

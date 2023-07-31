@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Common;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.TableData

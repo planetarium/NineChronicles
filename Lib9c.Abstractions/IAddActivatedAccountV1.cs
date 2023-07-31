@@ -1,6 +1,6 @@
 #nullable enable
 
-using Libplanet;
+using Libplanet.Crypto;
 
 namespace Lib9c.Abstractions
 {

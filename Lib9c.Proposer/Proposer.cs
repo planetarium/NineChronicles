@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
-using Libplanet.Blocks;
-using Libplanet.Consensus;
 using Libplanet.Crypto;
-using Libplanet.Tx;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Consensus;
+using Libplanet.Types.Tx;
 using Serilog;
 
 namespace Nekoyume.Blockchain

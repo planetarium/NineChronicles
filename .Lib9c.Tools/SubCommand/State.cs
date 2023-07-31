@@ -11,16 +11,17 @@ using Bencodex;
 using Bencodex.Types;
 using Cocona;
 using Lib9c.DevExtensions;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
-using Libplanet.Assets;
+using Libplanet.Action.State;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Blocks;
-using Libplanet.State;
+using Libplanet.Common;
+using Libplanet.Crypto;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
 using Nekoyume.Action;
 using Serilog.Core;
 
@@ -120,8 +121,7 @@ namespace Lib9c.Tools.SubCommand
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
                     new BlockChainStates(store, stateStore),
-                    actionLoader,
-                    null);
+                    actionLoader);
                 HashDigest<SHA256> stateRootHash = block.Index < 1
                     ? BlockChain.DetermineGenesisStateRootHash(
                         actionEvaluator,

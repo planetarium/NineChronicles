@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.TableData.Crystal;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
 

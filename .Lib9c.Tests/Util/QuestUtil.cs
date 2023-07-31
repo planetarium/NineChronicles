@@ -1,7 +1,7 @@
 namespace Lib9c.Tests.Util
 {
-    using Libplanet;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Model.Quest;
     using Nekoyume.TableData;

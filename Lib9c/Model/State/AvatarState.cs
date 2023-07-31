@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -488,11 +487,11 @@ namespace Nekoyume.Model.State
         public void UpdateFromQuestReward(Quest.Quest quest, MaterialItemSheet materialItemSheet)
         {
             var items = new List<Material>();
-            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Key))
+            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Item1))
             {
-                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
+                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Item1);
                 var item = ItemFactory.CreateMaterial(row);
-                var map = inventory.AddItem(item, count: pair.Value);
+                var map = inventory.AddItem(item, count: pair.Item2);
                 itemMap.Add(map);
                 items.Add(item);
             }
@@ -507,11 +506,11 @@ namespace Nekoyume.Model.State
         public void UpdateFromQuestReward2(Quest.Quest quest, MaterialItemSheet materialItemSheet)
         {
             var items = new List<Material>();
-            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Key))
+            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Item1))
             {
-                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
+                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Item1);
                 var item = ItemFactory.CreateMaterial(row);
-                var map = inventory.AddItem2(item, count: pair.Value);
+                var map = inventory.AddItem2(item, count: pair.Item2);
                 itemMap.Add(map);
                 items.Add(item);
             }

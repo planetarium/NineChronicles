@@ -1,10 +1,9 @@
 namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;

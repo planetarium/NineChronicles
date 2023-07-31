@@ -5,7 +5,7 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.TableData;
     using Xunit;
 

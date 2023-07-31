@@ -3,12 +3,9 @@ namespace Lib9c.Tests.Model.State
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
-    using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;

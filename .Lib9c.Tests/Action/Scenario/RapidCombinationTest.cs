@@ -5,8 +5,8 @@ namespace Lib9c.Tests.Action.Scenario
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
-    using Libplanet;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;

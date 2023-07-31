@@ -1,6 +1,6 @@
 ﻿using System;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.Model.State

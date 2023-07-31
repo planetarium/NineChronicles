@@ -2,7 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Linq;
-    using Libplanet.Assets;
+    using Libplanet.Types.Assets;
     using Nekoyume.Helper;
     using Nekoyume.TableData;
     using Xunit;

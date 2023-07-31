@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
-using Libplanet.State;
-using Libplanet.Consensus;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Libplanet.Types.Consensus;
 
 namespace Nekoyume.Action
 {
@@ -152,7 +152,7 @@ namespace Nekoyume.Action
 
             Operator = op;
             // FIXME: This is a temporary code for backward compatibility.
-            Operand = BackwardCompability(operandDict);
+            Operand = BackwardCompatibility(operandDict);
             Error = null;
         }
 
@@ -172,7 +172,7 @@ namespace Nekoyume.Action
                 $"The serialized dictionary lacks the key \"{nameof(ValidatorSetOperateKey)}\".";
         }
 
-        private Validator BackwardCompability(Bencodex.Types.Dictionary dict)
+        private Validator BackwardCompatibility(Bencodex.Types.Dictionary dict)
         {
             try
             {

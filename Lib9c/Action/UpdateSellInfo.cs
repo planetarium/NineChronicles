@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {

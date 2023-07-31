@@ -22,13 +22,14 @@ namespace Nekoyume.Model.Skill
             IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
             var clone = copyCharacter ? (CharacterBase) caster.Clone() : null;
-            var heal = ProcessHeal(caster, simulatorWaveTurn);
-            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
+            var heal = ProcessHeal(caster, simulatorWaveTurn, copyCharacter);
+            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs, copyCharacter);
 
             return new BattleStatus.HealSkill(SkillRow.Id, clone, heal, buff);
         }
 
-        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster,
+            int simulatorWaveTurn, bool copyCharacter)
         {
             var infos = new List<BattleStatus.Skill.SkillInfo>();
 
@@ -42,7 +43,7 @@ namespace Nekoyume.Model.Skill
             {
                 target.Heal(healPoint);
                 infos.Add(new BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, healPoint, caster.IsCritical(false),
-                    SkillRow.SkillCategory, simulatorWaveTurn, target: target));
+                    SkillRow.SkillCategory, simulatorWaveTurn, target: copyCharacter ? (CharacterBase)target.Clone() : target));
             }
 
             return infos;

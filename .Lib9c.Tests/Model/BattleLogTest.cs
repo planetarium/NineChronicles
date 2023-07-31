@@ -3,8 +3,8 @@ namespace Lib9c.Tests.Model
     using System;
     using System.Collections.Generic;
     using Lib9c.Tests.Action;
-    using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Crypto;
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;

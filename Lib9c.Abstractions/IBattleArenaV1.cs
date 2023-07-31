@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 
 namespace Lib9c.Abstractions
 {

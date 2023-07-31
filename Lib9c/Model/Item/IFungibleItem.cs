@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using Libplanet;
+using Libplanet.Common;
 
 namespace Nekoyume.Model.Item
 {

@@ -10,20 +10,48 @@ namespace Nekoyume.Model.Quest
 {
     public class CombinationEquipmentQuest : Quest
     {
-        public readonly int RecipeId;
-        public readonly int StageId;
+        public int RecipeId
+        {
+            get
+            {
+                if (_serializedRecipeId is { })
+                {
+                    _recipeId = _serializedRecipeId.ToInteger();
+                    _serializedRecipeId = null;
+                }
+
+                return _recipeId;
+            }
+        }
+
+        public int StageId {
+            get
+            {
+                if (_serializedStageId is { })
+                {
+                    _stageId = _serializedStageId.ToInteger();
+                    _serializedStageId = null;
+                }
+
+                return _stageId;
+            }
+        }
+        private IValue _serializedRecipeId;
+        private int _recipeId;
+        private IValue _serializedStageId;
+        private int _stageId;
 
         public CombinationEquipmentQuest(QuestSheet.Row data, QuestReward reward, int stageId) : base(data, reward)
         {
             var row = (CombinationEquipmentQuestSheet.Row) data;
-            RecipeId = row.RecipeId;
-            StageId = stageId;
+            _recipeId = row.RecipeId;
+            _stageId = stageId;
         }
 
         public CombinationEquipmentQuest(Dictionary serialized) : base(serialized)
         {
-            RecipeId = serialized["recipe_id"].ToInteger();
-            StageId = serialized["stage_id"].ToInteger();
+            _serializedStageId = serialized["stage_id"];
+            _serializedRecipeId = serialized["recipe_id"];
         }
 
         //임시처리. 새 타입을 만들어서 위젯에 띄워줘야합니다.
@@ -59,8 +87,8 @@ namespace Nekoyume.Model.Quest
         public override IValue Serialize()
         {
             return ((Dictionary) base.Serialize())
-                .Add("recipe_id", RecipeId.Serialize())
-                .Add("stage_id", StageId.Serialize());
+                .Add("recipe_id", _serializedRecipeId ?? RecipeId.Serialize())
+                .Add("stage_id", _serializedStageId ?? StageId.Serialize());
         }
     }
 }

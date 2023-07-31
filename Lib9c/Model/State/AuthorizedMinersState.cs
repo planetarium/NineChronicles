@@ -1,5 +1,5 @@
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;

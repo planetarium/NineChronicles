@@ -5,9 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Abstractions;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.State;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -186,7 +187,7 @@ namespace Nekoyume.Action
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             if (!materialItemSheet.TryGetValue(
                     recipeRow.ResultMaterialItemId,
-                    out var resulMaterialRow))
+                    out var resultMaterialRow))
             {
                 throw new SheetRowNotFoundException(
                     addressesHex,
@@ -227,7 +228,7 @@ namespace Nekoyume.Action
             // ~Remove Required Materials
 
             // Create Material
-            var materialResult = ItemFactory.CreateMaterial(resulMaterialRow);
+            var materialResult = ItemFactory.CreateMaterial(resultMaterialRow);
             avatarState.inventory.AddItem(materialResult, recipeRow.ResultMaterialItemCount);
             // ~Create Material
 

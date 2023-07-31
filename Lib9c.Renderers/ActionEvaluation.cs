@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
-using Libplanet.State;
-using Libplanet.Tx;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 
 namespace Lib9c.Renderers

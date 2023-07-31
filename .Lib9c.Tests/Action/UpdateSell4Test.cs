@@ -5,10 +5,9 @@
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Model.Order;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;

@@ -1,14 +1,11 @@
-﻿namespace Lib9c.Tests.Model.Item
+namespace Lib9c.Tests.Model.Item
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.Item;
     using Xunit;
     using BxDictionary = Bencodex.Types.Dictionary;
@@ -34,22 +31,6 @@
             {
                 var serialized = shopItem.Serialize();
                 var deserialized = new ShopItem((BxDictionary)serialized);
-
-                Assert.Equal(shopItem, deserialized);
-            }
-        }
-
-        [Fact]
-        public void Serialize_With_DotNet_Api()
-        {
-            foreach (var shopItem in GetShopItems())
-            {
-                var formatter = new BinaryFormatter();
-                using var ms = new MemoryStream();
-                formatter.Serialize(ms, shopItem);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                var deserialized = (ShopItem)formatter.Deserialize(ms);
 
                 Assert.Equal(shopItem, deserialized);
             }

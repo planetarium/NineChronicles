@@ -3,7 +3,7 @@ namespace Lib9c.Tests.Model.State
     using System.Collections.Generic;
     using Bencodex.Types;
     using Lib9c.Tests.TestHelper;
-    using Libplanet;
+    using Libplanet.Crypto;
     using Nekoyume.Model.State;
     using Xunit;
     using LazySampleState = Nekoyume.Model.State.LazyState<

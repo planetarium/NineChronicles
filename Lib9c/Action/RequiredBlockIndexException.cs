@@ -1,7 +1,5 @@
 using System;
 using System.Runtime.Serialization;
-using Libplanet;
-using Libplanet.Blocks;
 
 namespace Nekoyume.Action
 {

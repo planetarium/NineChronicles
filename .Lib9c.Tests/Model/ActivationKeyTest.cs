@@ -1,6 +1,6 @@
 namespace Lib9c.Tests.Model
 {
-    using Libplanet;
+    using Libplanet.Common;
     using Libplanet.Crypto;
     using Nekoyume.Model;
     using Nekoyume.Model.State;

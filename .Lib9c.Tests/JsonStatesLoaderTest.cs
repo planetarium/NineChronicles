@@ -8,7 +8,7 @@ namespace Lib9c.Tests
     using System.Text;
     using Bencodex;
     using Bencodex.Types;
-    using Libplanet;
+    using Libplanet.Crypto;
     using Xunit;
 
     public class JsonStatesLoaderTest
