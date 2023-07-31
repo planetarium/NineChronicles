@@ -88,24 +88,19 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-            if (Platform.IsMobilePlatform())
-            {
-                mobileContainer.SetActive(true);
-                videoImage.gameObject.SetActive(false);
-                startButtonContainer.SetActive(false);
-                qrCodeGuideContainer.SetActive(false);
-                mobileIndicator.Close();
-
-                StartCoroutine(CoShowMobile());
-            }
-            else
-            {
-                mobileContainer.SetActive(false);
-
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-                indicator.Show("Verifying transaction..");
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            }
+#if UNITY_ANDROID
+            mobileContainer.SetActive(true);
+            videoImage.gameObject.SetActive(false);
+            startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+            mobileIndicator.Close();
+            StartCoroutine(CoShowMobile());
+#else
+            mobileContainer.SetActive(false);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+            indicator.Show("Verifying transaction..");
+            Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+#endif
         }
 
         private IEnumerator CoShowMobile()
