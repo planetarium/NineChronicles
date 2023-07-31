@@ -252,30 +252,30 @@ namespace Nekoyume.State
             ArenaInformation currentArenaInfo = null;
             ArenaInformation nextArenaInfo = null;
 
-            if (!ExternalServiceLoad)
+            if (ExternalServiceLoad)
             {
                 var currentDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, currentRoundData.ChampionshipId, currentRoundData.Round);
-                List arenainfoDataList = new List();
                 var curArenaInfoAddr = new Address(currentDummyArenaInfo.Addr);
-                arenainfoDataList.Add(curArenaInfoAddr.Serialize());
-                arenainfoDataList.Add((Integer)currentDummyArenaInfo.Win);
-                arenainfoDataList.Add((Integer)currentDummyArenaInfo.Lose);
-                arenainfoDataList.Add((Integer)currentDummyArenaInfo.Ticket);
-                arenainfoDataList.Add((Integer)currentDummyArenaInfo.TicketResetCount);
-                arenainfoDataList.Add((Integer)currentDummyArenaInfo.PurchasedTicketCount);
+                List arenainfoDataList = List.Empty
+                    .Add(curArenaInfoAddr.Serialize())
+                    .Add((Integer)currentDummyArenaInfo.Win)
+                    .Add((Integer)currentDummyArenaInfo.Lose)
+                    .Add((Integer)currentDummyArenaInfo.Ticket)
+                    .Add((Integer)currentDummyArenaInfo.TicketResetCount)
+                    .Add((Integer)currentDummyArenaInfo.PurchasedTicketCount);
                 currentArenaInfo = new ArenaInformation(arenainfoDataList);
 
                 if (sheet.TryGetNextRound(blockIndex, out var nextRoundData))
                 {
                     var nextDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, nextRoundData.ChampionshipId, nextRoundData.Round);
-                    arenainfoDataList = new List();
                     var nextArenaInfoAddr = new Address(nextDummyArenaInfo.Addr);
-                    arenainfoDataList.Add(nextArenaInfoAddr.Serialize());
-                    arenainfoDataList.Add((Integer)nextDummyArenaInfo.Win);
-                    arenainfoDataList.Add((Integer)nextDummyArenaInfo.Lose);
-                    arenainfoDataList.Add((Integer)nextDummyArenaInfo.Ticket);
-                    arenainfoDataList.Add((Integer)nextDummyArenaInfo.TicketResetCount);
-                    arenainfoDataList.Add((Integer)nextDummyArenaInfo.PurchasedTicketCount);
+                    arenainfoDataList = List.Empty
+                        .Add(nextArenaInfoAddr.Serialize())
+                        .Add((Integer)nextDummyArenaInfo.Win)
+                        .Add((Integer)nextDummyArenaInfo.Lose)
+                        .Add((Integer)nextDummyArenaInfo.Ticket)
+                        .Add((Integer)nextDummyArenaInfo.TicketResetCount)
+                        .Add((Integer)nextDummyArenaInfo.PurchasedTicketCount);
                     nextArenaInfo = new ArenaInformation(arenainfoDataList);
                 }
             }

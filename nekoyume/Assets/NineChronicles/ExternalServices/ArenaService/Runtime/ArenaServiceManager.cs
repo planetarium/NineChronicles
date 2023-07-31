@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using NineChronicles.ExternalServices.ArenaService.Runtime.Models;
 using UnityEngine;
 

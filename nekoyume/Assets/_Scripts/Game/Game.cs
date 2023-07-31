@@ -377,8 +377,6 @@ namespace Nekoyume.Game
             yield return ArenaServiceManager.InitializeAsync().AsCoroutine();
             Debug.Log("[Game] Start() ArenaServiceManager initialized");
 
-            yield return ArenaServiceManager.GetDummyArenaBoadDatasAsync(Agent.Address).AsCoroutine();
-
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
