@@ -169,15 +169,15 @@ namespace Nekoyume.UI.Scroller
             var itemMap = _quest.Reward.ItemMap;
             for (var i = 0; i < rewardViews.Length; i++)
             {
-                if (i < itemMap.Count)
+                if (i < itemMap.Count())
                 {
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
                     rewardView.ignoreOne = true;
                     var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(
-                        itemRow => itemRow.Id == pair.Key);
+                        itemRow => itemRow.Id == pair.Item1);
                     var item = ItemFactory.CreateMaterial(row);
-                    var countableItem = new CountableItem(item, pair.Value);
+                    var countableItem = new CountableItem(item, pair.Item2);
                     countableItem.Dimmed.Value = isReceived;
                     rewardView.SetData(countableItem);
                     rewardView.iconImage.rectTransform.sizeDelta *= 0.7f;

@@ -2268,12 +2268,12 @@ namespace Nekoyume.Blockchain
                 {
                     var materialRow = TableSheets.Instance
                         .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Key);
+                        .First(pair => pair.Key == reward.Item1);
 
                     LocalLayerModifier.RemoveItem(
                         avatarAddress,
                         materialRow.Value.ItemId,
-                        reward.Value);
+                        reward.Item2);
                 }
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);

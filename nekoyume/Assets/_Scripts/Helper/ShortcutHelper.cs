@@ -129,7 +129,7 @@ namespace Nekoyume.Helper
             {
                 // If can get this item from quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
-                        !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
+                        !quest.Complete && quest.Reward.ItemMap.Any(r => r.Item1 == itemBase.Id)))
                 {
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByPlaceType(
