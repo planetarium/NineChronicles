@@ -28,6 +28,9 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI text = null;
 
         [SerializeField]
+        private TextMeshProUGUI timeSpanText;
+
+        [SerializeField]
         private RectTransform tooltipArea = null;
 
         [SerializeField]
@@ -122,11 +125,13 @@ namespace Nekoyume.UI.Module
         private void UpdateSlider(bool useAnimation)
         {
             var gameConfigState = States.Instance.GameConfigState;
-            var endValue = Math.Min(
-                gameConfigState.DailyRewardInterval,
-                Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex));
+            var endValue = Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex);
+            var value = Math.Min(gameConfigState.DailyRewardInterval, endValue);
+            var remainBlock = gameConfigState.DailyRewardInterval - value;
 
-            sliderAnimator.SetValue(endValue, useAnimation);
+            sliderAnimator.SetValue(value, useAnimation);
+            timeSpanText.text =
+                remainBlock > 0 ? remainBlock.BlockRangeToTimeSpanString() : string.Empty;
         }
 
         private void OnSliderChange()

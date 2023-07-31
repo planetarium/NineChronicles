@@ -111,27 +111,30 @@ namespace Nekoyume.UI.Module.Arena.Join
                 return;
             }
 
+            long remainBlock;
             if (current < beginning)
             {
+                remainBlock = beginning - current;
                 _seasonProgressFillImage.enabled = false;
-                _seasonProgressSliderFillText.text = Util.GetBlockToTimeString(beginning - current);
-                _seasonProgressSliderFillText.enabled = true;
-
-                return;
             }
-
-            var range = end - beginning;
-            var progress = current - beginning;
-            var sliderNormalizedValue = (float)progress / range;
-            _seasonProgressSlider.NormalizedValue = sliderNormalizedValue;
-            _seasonProgressFillImage.enabled = true;
-            _seasonProgressSliderFillText.text = Util.GetBlockToTimeString(range - progress);
-            _seasonProgressSliderFillText.enabled = true;
-
-            if (current == beginning)
+            else
             {
-                _onSeasonBeginning.OnNext(Unit.Default);
+                var range = end - beginning;
+                var progress = current - beginning;
+                var sliderNormalizedValue = (float)progress / range;
+                remainBlock = range - progress;
+                _seasonProgressSlider.NormalizedValue = sliderNormalizedValue;
+                _seasonProgressFillImage.enabled = true;
+
+                if (current == beginning)
+                {
+                    _onSeasonBeginning.OnNext(Unit.Default);
+                }
             }
+
+            var remainTimeText = $"{remainBlock:#,0}({remainBlock.BlockRangeToTimeSpanString()})";
+            _seasonProgressSliderFillText.text = remainTimeText;
+            _seasonProgressSliderFillText.enabled = true;
         }
 
         private void SetRewards(RewardType rewardType)
