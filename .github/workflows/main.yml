@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration ${{ matrix.configuration }}
+      run: dotnet build --self-contained=false --no-restore --configuration ${{ matrix.configuration }}
     - name: Test
       run: dotnet test --no-restore --verbosity normal --configuration ${{ matrix.configuration }}
 
@@ -69,7 +69,7 @@ jobs:
           sed -i -E 's|\[MaybeNullWhen\(false\)] out TValue value|out TValue value|' Lib9c/TableData/Sheet.cs
           sed -i -E 's|public bool TryGetValue\(TKey key, out TValue value, bool throwException\)|public bool TryGetValue\(TKey key, out TValue? value, bool throwException\)|' Lib9c/TableData/Sheet.cs
       - name: build
-        run: dotnet build
+        run: dotnet build --self-contained=false
 
   release:
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
