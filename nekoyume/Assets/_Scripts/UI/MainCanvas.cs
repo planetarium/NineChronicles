@@ -188,6 +188,7 @@ namespace Nekoyume.UI
                 Widget.Create<BlockFailTitleOneButtonSystem>(),
                 Widget.Create<LoginSystem>(),
                 Widget.Create<TitleOneButtonSystem>(),
+                Widget.Create<Alert>(),
 
                 // 시스템 정보 영역.
                 Widget.Create<OneButtonSystem>(),
@@ -317,8 +318,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBoxPopup>());
             yield return null;

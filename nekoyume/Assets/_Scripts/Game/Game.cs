@@ -85,6 +85,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private Prologue prologue;
 
+        [SerializeField]
+        private GameObject debugConsolePrefab;
+
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
@@ -270,6 +273,8 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
 
 #if UNITY_ANDROID
+            yield return liveAssetManager.InitializeApplicationCLO();
+
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
@@ -432,7 +437,19 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
-            if(_commandLineOptions.RpcClient)
+            if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
+            {
+                UnityEngine.Debug.unityLogger.logEnabled = true;
+                Instantiate(debugConsolePrefab);
+            }
+            else
+            {
+#if !UNITY_EDITOR
+                UnityEngine.Debug.unityLogger.logEnabled = false;
+#endif
+            }
+
+            if (_commandLineOptions.RpcClient)
             {
                 _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
                     ? _commandLineOptions.RpcServerHost
@@ -1351,8 +1368,10 @@ namespace Nekoyume.Game
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
             return;
 #endif
+
             var isTrackable = true;
-            if (Debug.isDebugBuild)
+
+            if (UnityEngine.Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
                 isTrackable = false;

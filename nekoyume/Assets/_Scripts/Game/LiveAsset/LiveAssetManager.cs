@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -10,6 +10,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -19,6 +20,7 @@ namespace Nekoyume.Game.LiveAsset
     {
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
+        private const string CLOEndpointPrefix = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/CloForAppVersion/clo-app-ver-";
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
@@ -51,7 +53,16 @@ namespace Nekoyume.Game.LiveAsset
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.NoticeJsonUrl, SetNotices));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
-            StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
+        }
+
+        public IEnumerator InitializeApplicationCLO()
+        {
+            var cloEndpoint = CLOEndpointPrefix + Application.version.Replace(".", "-") + ".json";
+            Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
+            yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
+
+            if(CommandLineOptions == null)
+                yield return StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
         }
 
         public void AddToCheckedList(string key)
