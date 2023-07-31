@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
