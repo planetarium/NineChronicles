@@ -1,6 +1,5 @@
 using Bencodex.Types;
-using Libplanet;
-using Nekoyume;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using NUnit.Framework;

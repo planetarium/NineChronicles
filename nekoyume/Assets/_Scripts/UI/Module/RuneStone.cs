@@ -1,7 +1,4 @@
-﻿using System;
-using Libplanet.Assets;
-using Nekoyume.State;
-using Nekoyume.UI.Module.Common;
+﻿using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

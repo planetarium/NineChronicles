@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Game;

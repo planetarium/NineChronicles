@@ -18,7 +18,10 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Bencodex.dll",
-        "Libplanet.dll",
+        "Libplanet.Action.dll",
+        "Libplanet.Common.dll",
+        "Libplanet.Crypto.dll",
+        "Libplanet.Types.dll",
         "System.Collections.Immutable.dll",
         "System.Text.Json.dll",
         "System.Memory.dll"

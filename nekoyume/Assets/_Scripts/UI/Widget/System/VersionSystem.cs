@@ -1,5 +1,4 @@
-using Libplanet;
-using Libplanet.Blocks;
+using Libplanet.Types.Blocks;
 using TMPro;
 using UniRx;
 using UnityEngine;

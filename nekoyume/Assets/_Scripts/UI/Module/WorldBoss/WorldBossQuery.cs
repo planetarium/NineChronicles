@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.UI.Model;
 using UnityEngine.Networking;
 

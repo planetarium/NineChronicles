@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;

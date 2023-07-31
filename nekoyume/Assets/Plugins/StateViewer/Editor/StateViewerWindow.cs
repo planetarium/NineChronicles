@@ -1,6 +1,6 @@
 #nullable enable
 
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -17,12 +17,14 @@ namespace StateViewer.Editor
         {
             public readonly StateAndBalanceFeature StateAndBalanceFeature;
             public readonly SetInventoryFeature SetInventoryFeature;
+            public readonly TrackStateFeature TrackStateFeature;
             public int SelectedFeatureIndex;
 
             public ViewModel(StateViewerWindow window)
             {
                 StateAndBalanceFeature = new StateAndBalanceFeature(window);
                 SetInventoryFeature = new SetInventoryFeature(window);
+                TrackStateFeature = new TrackStateFeature(window);
                 SelectedFeatureIndex = 0;
             }
         }
@@ -31,6 +33,7 @@ namespace StateViewer.Editor
         {
             "State & Balance",
             "Set Inventory",
+            "Track State",
         };
 
         private ViewModel? _viewModel;
@@ -75,6 +78,9 @@ namespace StateViewer.Editor
                 case 1:
                     _viewModel.SetInventoryFeature.OnGUI();
                     break;
+                case 2:
+                    _viewModel.TrackStateFeature.OnGUI();
+                    break;
             }
         }
 
@@ -82,8 +88,9 @@ namespace StateViewer.Editor
         {
             if (Application.isPlaying)
             {
-                if (Game.instance.Agent is null ||
-                    Game.instance.States.AgentState is null)
+                var game = Game.instance;
+                if (game.Agent is null ||
+                    game.States.AgentState is null)
                 {
                     if (drawHelpBox)
                     {

@@ -1,4 +1,3 @@
-using Libplanet.Assets;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
@@ -12,7 +11,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using UnityEngine;
 
 namespace Nekoyume.Game

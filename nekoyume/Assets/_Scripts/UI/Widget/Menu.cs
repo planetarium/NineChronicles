@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Lib9c;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;

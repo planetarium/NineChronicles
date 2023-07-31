@@ -1,8 +1,5 @@
-using Libplanet;
-using Libplanet.Assets;
 using Libplanet.Crypto;
-using Nekoyume.Game;
-using Nekoyume.Helper;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using NUnit.Framework;

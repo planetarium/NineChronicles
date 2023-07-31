@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.Blocks;
-using Libplanet.Assets;
 using Libplanet.Crypto;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Helper;
@@ -53,6 +52,7 @@ namespace Nekoyume.Blockchain
 
         IValue GetState(Address address);
         Task<IValue> GetStateAsync(Address address, long? blockIndex = null);
+        Task<IValue> GetStateAsync(Address address, BlockHash blockHash);
 
         void SendException(Exception exc);
 

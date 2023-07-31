@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Common;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 using UnityEngine;
 

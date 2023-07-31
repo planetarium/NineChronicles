@@ -5,11 +5,9 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using System.Linq;
-using UniRx;
 using UnityEngine.UI;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
-using Libplanet.Blocks;
 
 namespace Nekoyume.UI.Module.Common
 {
@@ -32,7 +30,7 @@ namespace Nekoyume.UI.Module.Common
 
         [SerializeField]
         protected GameObject buffObject;
-        
+
         [SerializeField]
         protected GameObject debuffObject;
 

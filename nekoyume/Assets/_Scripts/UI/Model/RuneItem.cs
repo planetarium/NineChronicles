@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UniRx;

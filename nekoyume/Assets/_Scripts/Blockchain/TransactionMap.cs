@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Tx;
+using Libplanet.Types.Tx;
 
 namespace Nekoyume.Blockchain
 {

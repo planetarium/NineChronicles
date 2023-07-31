@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using Libplanet;
+using Libplanet.Common;
 using UnityEngine;
 
 namespace Nekoyume.JsonConvertibles
@@ -21,7 +22,7 @@ namespace Nekoyume.JsonConvertibles
             Value = hashDigest;
             json = null;
         }
-        
+
         public void OnBeforeSerialize()
         {
             json = Value.ToString();

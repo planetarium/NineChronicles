@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Common;
+using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -16,8 +16,6 @@ namespace Nekoyume
     public static class ItemExtensions
     {
         public static Sprite GetIconSprite(this ItemBase item) => SpriteHelper.GetItemIcon(item.Id);
-
-        public static Sprite GetIconSprite(this FungibleAssetValue fav) => SpriteHelper.GetFavIcon(fav.Currency.Ticker);
 
         public static Sprite GetBackgroundSprite(this ItemBase item) => SpriteHelper.GetItemBackground(item.Grade);
 
