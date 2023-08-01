@@ -234,7 +234,7 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset,
                         sellProductName);
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
-                    return unloadFromMyGaragesRecipientMail.GetCellContent();
+                    return await unloadFromMyGaragesRecipientMail.GetCellContent();
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
