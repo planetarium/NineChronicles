@@ -9,7 +9,7 @@ namespace Nekoyume
 {
     public static class MailExtensions
     {
-        public static async Task<string> GetCellContent(this UnloadFromMyGaragesRecipientMail mail)
+        public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
             var game = Game.Game.instance;
             var iapServiceManager = game.IAPServiceManager;
