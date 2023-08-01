@@ -1,101 +1,68 @@
 using System.Linq;
+using System.Text;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime;
-using UnityEngine;
+using Nekoyume.TableData;
 
 namespace Nekoyume
 {
     public static class MailExtensions
     {
-        public static string GetCellContent(this UnloadFromMyGaragesRecipientMail mail)
+        public static string GetPopupContent(
+            this UnloadFromMyGaragesRecipientMail mail,
+            MaterialItemSheet sheet)
         {
-            var game = Game.Game.instance;
-            var iapServiceManager = game.IAPServiceManager;
-            if (iapServiceManager is null)
+            var sb = new StringBuilder();
+            var title = L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_POPUP_TITLE");
+            sb.AppendLine($"<b>{title}</b>");
+            sb.AppendLine();
+            if (mail.FungibleAssetValues is not null)
             {
-                Debug.Log($"{nameof(IAPServiceManager)} is null.");
-                return mail.GetCellContentsForException();
-            }
-
-            var agentAddr = game.Agent.Address;
-            var products = iapServiceManager.GetProductsAsync(agentAddr).Result;
-            if (products is null)
-            {
-                Debug.Log("products is null.");
-                return mail.GetCellContentsForException();
-            }
-
-            var product = products.FirstOrDefault(p =>
-            {
-                if (p.FavList.Any())
+                var arr = mail.FungibleAssetValues.ToArray();
+                for (var i = 0; i < arr.Length; i++)
                 {
-                    if (mail.FungibleAssetValues is null)
+                    var (_, value) = arr[i];
+                    if (i == 0)
                     {
-                        return false;
+                        sb.Append($"{value}");
+                        continue;
                     }
 
-                    // NOTE: Here we compare `prodFav.Amount` to `mailFavTuple.value.MajorUnit`.
-                    //       Because the type of `prodFav.Amount` is `int`. When the type of
-                    //       `prodFav.Amount` to be `decimal` or, `prodFav` provides `MajorUnit`
-                    //       and `MinorUnit`, we should change this code.
-                    if (!mail.FungibleAssetValues.All(mFavTup =>
-                            p.FavList.Any(prodFav =>
-                                prodFav.Ticker.ToString() == mFavTup.value.Currency.Ticker &&
-                                prodFav.Amount == mFavTup.value.MajorUnit)))
-                    {
-                        return false;
-                    }
+                    sb.Append($", {value}");
                 }
+            }
 
-                if (p.FungibleItemList.Any())
+            if (mail.FungibleIdAndCounts is not null)
+            {
+                sb.Append("\n");
+                var arr = mail.FungibleIdAndCounts.ToArray();
+                for (var i = 0; i < arr.Length; i++)
                 {
-                    if (mail.FungibleIdAndCounts is null)
+                    if (i != 0)
                     {
-                        return false;
+                        sb.Append("\n");
                     }
 
-                    if (!mail.FungibleIdAndCounts.All(mFItemTup =>
-                            p.FungibleItemList.Any(prodFItem =>
-                                prodFItem.FungibleItemId == mFItemTup.fungibleId.ToString() &&
-                                prodFItem.Amount == mFItemTup.count)))
+                    var (id, count) = arr[i];
+                    if (!sheet.TryGetLocalizedName(id, out var name))
                     {
-                        return false;
+                        sb.Append($"??({id}) x{count}");
+                        continue;
                     }
+
+                    sb.Append($"{name} x{count}");
                 }
-
-                return true;
-            });
-            if (product is null)
-            {
-                return mail.GetCellContentsForException();
             }
 
-            var iapStoreManager = game.IAPStoreManager;
-            if (iapStoreManager is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
-            if (storeProduct is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
-            return string.Format(format, storeProduct.metadata.localizedTitle);
+            return sb.ToString();
         }
 
-        private static string GetCellContentsForException(
-            this UnloadFromMyGaragesRecipientMail mail)
+        public static string GetCellContent(this UnloadFromMyGaragesRecipientMail mail)
         {
-            var exceptionFormat = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_EXCEPTION_FORMAT");
+            var format = L10nManager.Localize(
+                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
             return string.Format(
-                exceptionFormat,
+                format,
                 mail.FungibleAssetValues?.Count() ?? 0,
                 mail.FungibleIdAndCounts?.Count() ?? 0);
         }
