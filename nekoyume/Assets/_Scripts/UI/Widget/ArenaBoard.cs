@@ -77,7 +77,7 @@ namespace Nekoyume.UI
             loading.Show();
             if (!_useGrandFinale)
             {
-                var dummyArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(Game.Game.instance.Agent.Address);
+                var dummyArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(0,0,Game.Game.instance.Agent.Address);
                 _arenaBoardDatas = dummyArenaBoardDatas.ToArray();
 
                 loading.Close();

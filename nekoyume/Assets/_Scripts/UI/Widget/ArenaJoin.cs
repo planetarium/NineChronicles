@@ -110,9 +110,10 @@ namespace Nekoyume.UI
             var loading = Find<DataLoadingScreen>();
             loading.Show();
 
-            var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(Game.Game.instance.Agent.Address);
+            var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(0,0,Game.Game.instance.Agent.Address);
             _arenaBoardDatas = arenaDashboad.ToArray();
-            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync());
+            await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
+                                RxProps.PlayersArenaParticipant.UpdateAsync());
 
             loading.Close();
             Show(ignoreShowAnimation);

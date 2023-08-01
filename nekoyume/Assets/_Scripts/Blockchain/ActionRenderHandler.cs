@@ -2316,7 +2316,7 @@ namespace Nekoyume.Blockchain
             {
                 await UniTask.WhenAll(
                     RxProps.ArenaInfoTuple.UpdateAsync(),
-                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+                    RxProps.PlayersArenaParticipant.UpdateAsync());
             }
             else
             {
@@ -2355,7 +2355,7 @@ namespace Nekoyume.Blockchain
                 States.Instance.UpdateRuneSlotStates(BattleType.Arena));
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd

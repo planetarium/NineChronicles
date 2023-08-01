@@ -15,6 +15,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
+    using NineChronicles.ExternalServices.ArenaService.Runtime.Models;
     using UniRx;
 
     public static partial class RxProps
@@ -131,10 +132,10 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<ArenaTicketProgress>
             ArenaTicketsProgress => _arenaTicketsProgress;
 
-        private static readonly ReactiveProperty<PlayerArenaParticipant>
-            _playersArenaParticipant = new(null);
+        private static readonly AsyncUpdatableRxProp<PlayerArenaParticipant>
+            _playersArenaParticipant = new(UpdatePlayerArenaParticipant);
 
-        public static IReadOnlyReactiveProperty<PlayerArenaParticipant>
+        public static IReadOnlyAsyncUpdatableRxProp<PlayerArenaParticipant>
             PlayersArenaParticipant => _playersArenaParticipant;
 
         private static readonly AsyncUpdatableRxProp<ArenaParticipant[]>
@@ -143,6 +144,7 @@ namespace Nekoyume.State
                 UpdateArenaParticipantsOrderedWithScoreAsync);
 
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
+        private static long _playerArenaParticipantUpdatedBlockIndex;
 
         public static IReadOnlyAsyncUpdatableRxProp<ArenaParticipant[]>
             ArenaParticipantsOrderedWithScore => _arenaParticipantsOrderedWithScore;
@@ -176,6 +178,7 @@ namespace Nekoyume.State
             // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
             _arenaInfoTupleUpdatedBlockIndex = 0;
             _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
+            _playerArenaParticipantUpdatedBlockIndex = 0;
 
             // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
             // if (_playersArenaParticipant.HasValue &&
@@ -309,6 +312,144 @@ namespace Nekoyume.State
             }
 
             return (currentArenaInfo, nextArenaInfo);
+        }
+
+        private static async Task<PlayerArenaParticipant>
+            UpdatePlayerArenaParticipant(
+        PlayerArenaParticipant previous)
+        {
+            var avatarAddress = _states.CurrentAvatarState?.address;
+            if (!avatarAddress.HasValue)
+            {
+                // TODO!!!!
+                // [`States.CurrentAvatarState`]가 바뀔 때, 목록에 추가 정보를 업데이트 한다.
+                return null;
+            }
+
+            if(_playerArenaParticipantUpdatedBlockIndex == _agent.BlockIndex)
+            {
+                return previous;
+            }
+
+            _playerArenaParticipantUpdatedBlockIndex = _agent.BlockIndex;
+
+            var blockIndex = _agent.BlockIndex;
+            var currentAvatar = _states.CurrentAvatarState;
+            var currentAvatarAddr = currentAvatar.address;
+            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            /*var participantsAddr = ArenaParticipants.DeriveAddress(
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
+            var participants
+                = await _agent.GetStateAsync(participantsAddr) is List participantsList
+                    ? new ArenaParticipants(participantsList)
+                    : null;*/
+            var participants = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
+            if (participants is null || participants.Count == 0)
+            {
+                return new PlayerArenaParticipant(
+                    currentAvatarAddr,
+                    ArenaScore.ArenaScoreDefault,
+                    0,
+                    currentAvatar,
+                    States.Instance.CurrentItemSlotStates[BattleType.Arena],
+                    States.Instance.CurrentRuneSlotStates[BattleType.Arena],
+                    States.Instance.GetEquippedRuneStates(BattleType.Arena),
+                    (0, 0),
+                    new ArenaInformation(
+                        currentAvatarAddr,
+                        currentRoundData.ChampionshipId,
+                        currentRoundData.Round),
+                    0,
+                    0);
+            }
+
+            ArenaBoardDataSchema playerData = participants.FirstOrDefault(particpant => particpant.Addr == currentAvatarAddr.ToString());
+
+            PlayerArenaParticipant playersArenaParticipant = null;
+            int playerScore;
+            if(playerData != null) {
+                playerScore = playerData.Score;
+            } else {
+                playersArenaParticipant = new PlayerArenaParticipant(
+                    currentAvatarAddr,
+                    ArenaScore.ArenaScoreDefault,
+                    0,
+                    currentAvatar,
+                    States.Instance.CurrentItemSlotStates[BattleType.Arena],
+                    States.Instance.CurrentRuneSlotStates[BattleType.Arena],
+                    States.Instance.GetEquippedRuneStates(BattleType.Arena),
+                    default,
+                    null,
+                    0,
+                    0);
+                playerScore = playersArenaParticipant.Score;
+            }
+
+            var currentDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, currentRoundData.ChampionshipId, currentRoundData.Round);
+            var curArenaInfoAddr = new Address(currentDummyArenaInfo.Addr);
+            List arenainfoDataList = List.Empty
+                .Add(curArenaInfoAddr.Serialize())
+                .Add((Integer)currentDummyArenaInfo.Win)
+                .Add((Integer)currentDummyArenaInfo.Lose)
+                .Add((Integer)currentDummyArenaInfo.Ticket)
+                .Add((Integer)currentDummyArenaInfo.TicketResetCount)
+                .Add((Integer)currentDummyArenaInfo.PurchasedTicketCount);
+            var playerArenaInfo = new ArenaInformation(arenainfoDataList);
+
+            var purchasedCountAddress =
+                curArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
+            var arenaAvatarAddress =
+                ArenaAvatarState.DeriveAddress(States.Instance.CurrentAvatarState.address);
+
+            var addrBulk = new List<Address>();
+            addrBulk.Add(purchasedCountAddress);
+            addrBulk.Add(arenaAvatarAddress);
+
+            var stateBulk = await _agent.GetStateBulk(addrBulk);
+
+            var purchasedCountDuringInterval = 0;
+            long lastBattleBlockIndex = 0;
+            try
+            {
+                purchasedCountDuringInterval = stateBulk[purchasedCountAddress] is Integer iValue
+                    ? iValue
+                    : 0;
+
+                var arenaAvatarState = stateBulk[arenaAvatarAddress] is List iValue2
+                    ? new ArenaAvatarState(iValue2)
+                    : null;
+                lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
+            // NOTE: There is players `ArenaParticipant` in chain.
+            if (playersArenaParticipant is null)
+            {
+                playersArenaParticipant = new PlayerArenaParticipant(
+                    currentAvatarAddr,
+                    playerScore,
+                    playerData.Rank,
+                    currentAvatar,
+                    States.Instance.CurrentItemSlotStates[BattleType.Arena],
+                    States.Instance.CurrentRuneSlotStates[BattleType.Arena],
+                    States.Instance.GetEquippedRuneStates(BattleType.Arena),
+                    default,
+                    playerArenaInfo,
+                    purchasedCountDuringInterval,
+                    lastBattleBlockIndex);
+                playerScore = playersArenaParticipant.Score;
+            }
+            else
+            {
+                playersArenaParticipant.CurrentArenaInfo = playerArenaInfo;
+                playersArenaParticipant.PurchasedCountDuringInterval = purchasedCountDuringInterval;
+            }
+
+            return playersArenaParticipant;
         }
 
         private static async Task<ArenaParticipant[]>

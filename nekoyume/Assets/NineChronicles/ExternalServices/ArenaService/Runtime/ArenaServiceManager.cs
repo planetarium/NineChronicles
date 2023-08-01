@@ -101,14 +101,14 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
             }
         }
 
-        public async Task<IReadOnlyList<ArenaBoardDataSchema>?> GetDummyArenaBoadDatasAsync(Address agentAddr)
+        public async Task<IReadOnlyList<ArenaBoardDataSchema>?> GetDummyArenaBoadDatasAsync(int championship, int arenaRound, Address agentAddr)
         {
             if (!IsInitialized)
             {
                 Debug.LogWarning("ArenaServiceManager is not initialized.");
                 return null;
             }
-            var (code, error, mediaType, content) = await _client.DummyArenaBoadDataAsync(0,0,agentAddr);
+            var (code, error, mediaType, content) = await _client.DummyArenaBoadDataAsync(championship, championship, agentAddr);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
