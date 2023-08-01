@@ -2,10 +2,13 @@ name: main
 
 on:
   push:
-    branches: []
-    tags: []
+    branches:
+      - "*"
+    tags:
+      - "*"
   pull_request:
-    branches: []
+    branches:
+      - "*"
 
 jobs:
   build-and-test:
@@ -84,13 +87,14 @@ jobs:
         set -evx
         curl -o /tmp/web-flow.gpg "$WEB_FLOW_KEY_URL"
         gpg --import /tmp/web-flow.gpg
+        # shellcheck disable=SC2126
         if ! git verify-commit "$GITHUB_REF_NAME" && \
            [[ "$( git cat-file -p "$GITHUB_REF_NAME" \
                 | grep -Ei '^parent\s+[0-9a-f]{40}$' | wc -l )" -lt 2 ]]; then
           echo "::error title=Invalid tag commit::Tags must refer to a merge" \
                "commit or a commit signed by GitHub web-flow" \
                "($WEB_FLOW_KEY_URL).  The tag $GITHUB_REF_NAME refers to " \
-               "a commit $(git rev-parse $GITHUB_REF_NAME) which is neither" \
+               "a commit $(git rev-parse "$GITHUB_REF_NAME") which is neither" \
                "a merge commit nor signed by GitHub web-flow."
           exit 1
         fi
