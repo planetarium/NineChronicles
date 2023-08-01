@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
-        [SerializeField] private DataMatrixReaderView codeReaderView;
+        [SerializeField] private CodeReaderView codeReaderView;
 
         [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;

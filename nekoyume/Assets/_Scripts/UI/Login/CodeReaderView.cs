@@ -7,10 +7,13 @@ using ZXing;
 namespace Nekoyume.UI
 {
     using UniRx;
-    public class DataMatrixReaderView : MonoBehaviour
+    public class CodeReaderView : MonoBehaviour
     {
         [SerializeField]
         private RawImage rawCamImage;
+
+        [SerializeField]
+        private CapturedImage capturedImage;
 
         private WebCamTexture _camTexture;
         private IDisposable _disposable;
@@ -75,6 +78,7 @@ namespace Nekoyume.UI
 
         public void Show(Action<Result> onSuccess = null)
         {
+            capturedImage.Show();
             gameObject.SetActive(true);
             _coroutine = StartCoroutine(CoRequestPermission(onSuccess));
         }
