@@ -23,8 +23,8 @@ jobs:
           project_suffix=dev.${{ github.sha }}
           dotnet_args="$dotnet_args --version-suffix $project_suffix"
         fi
-        dotnet build $dotnet_args
-        dotnet pack  $dotnet_args
+        dotnet build "$dotnet_args"
+        dotnet pack "$dotnet_args"
     - name: push
       if: github.event_name != 'pull_request'
       run: |
