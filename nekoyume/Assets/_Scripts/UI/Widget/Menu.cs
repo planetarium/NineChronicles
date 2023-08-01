@@ -694,9 +694,9 @@ namespace Nekoyume.UI
                     var states = game.States;
                     var sheet = game.TableSheets.MaterialItemSheet;
                     var mail = new UnloadFromMyGaragesRecipientMail(
-                        game.Agent.BlockIndex,
-                        Guid.NewGuid(),
-                        game.Agent.BlockIndex,
+                        default,
+                        default,
+                        default,
                         fungibleAssetValue: new[]
                         {
                             (
@@ -712,17 +712,12 @@ namespace Nekoyume.UI
                             .Select((row, index) => (
                                 row.ItemId,
                                 index + 1)),
-                        "memo")
-                    {
-                        New = true,
-                    };
+                        "memo");
+                    mail.New = true;
                     var mailBox = states.CurrentAvatarState.mailBox;
                     mailBox.Add(mail);
                     mailBox.CleanUp();
-                    states.CurrentAvatarState.mailBox = mailBox;
-                    LocalLayerModifier.AddNewMail(
-                        game.States.CurrentAvatarState.address,
-                        mail.id);
+                    ReactiveAvatarState.UpdateMailBox(mailBox);
                 }
             }
         }
