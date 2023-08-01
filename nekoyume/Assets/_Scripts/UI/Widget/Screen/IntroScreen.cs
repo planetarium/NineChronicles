@@ -171,7 +171,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Debug.LogWarning($"Failed to get guest private key: {e}");
                 return;
             }
 
