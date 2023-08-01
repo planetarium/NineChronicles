@@ -710,6 +710,8 @@ namespace Nekoyume.Game
                                 NotificationCell.NotificationType.Notification);
                         }
                     }
+
+                    Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
                 Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
