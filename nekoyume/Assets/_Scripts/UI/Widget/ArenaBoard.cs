@@ -22,6 +22,8 @@ using NineChronicles.ExternalServices.ArenaService.Runtime.Models;
 
 namespace Nekoyume.UI
 {
+    using Libplanet.Crypto;
+    using Nekoyume.Model.State;
     using UniRx;
 
     public class ArenaBoard : Widget
@@ -50,7 +52,6 @@ namespace Nekoyume.UI
         private GameObject grandFinaleLogoObject;
 
         private ArenaSheet.RoundData _roundData;
-        //private RxProps.ArenaParticipant[] _boundedData;
         private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
         private GrandFinaleStates.GrandFinaleParticipant[] _grandFinaleParticipants;
         private bool _useGrandFinale;
@@ -105,7 +106,6 @@ namespace Nekoyume.UI
         {
             _useGrandFinale = false;
             _roundData = roundData;
-            //_boundedData = arenaParticipants;
             _arenaBoardDatas = arenaBoardDatas;
             grandFinaleLogoObject.SetActive(false);
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
@@ -180,6 +180,79 @@ namespace Nekoyume.UI
                 player.Score);
         }
 
+        private async UniTaskVoid ShowAvaterStateInfoAsync(string address)
+        {
+            var loadingScreen = Widget.Find<GrayLoadingScreen>();
+            loadingScreen.Show("UI_LOADING_STATES", true);
+            var (exist, state) = await States.TryGetAvatarStateAsync(new Address(address));
+            if (!exist)
+            {
+                NotificationSystem.Push(
+                        MailType.System,
+                        "Cannot Find AvartarState",
+                        NotificationCell.NotificationType.Alert);
+                loadingScreen.Close();
+                return;
+            }
+
+            loadingScreen.Close();
+            var avatarState = exist ? state : null;
+            var popup = Widget.Find<FriendInfoPopup>();
+            popup.ShowAsync(avatarState, BattleType.Arena).Forget();
+        }
+
+        private async UniTaskVoid ShowArenaBattlePreperation(ArenaBoardDataSchema arenaBoardData)
+        {
+            var loadingScreen = Widget.Find<GrayLoadingScreen>();
+            loadingScreen.Show("UI_LOADING_STATES", true);
+            var (exist, avatarState) = await States.TryGetAvatarStateAsync(new Address(arenaBoardData.Addr));
+            if (!exist)
+            {
+                NotificationSystem.Push(
+                        MailType.System,
+                        "Cannot Find AvartarState",
+                        NotificationCell.NotificationType.Alert);
+                loadingScreen.Close();
+                return;
+            }
+
+            var (itemSlotStates, runeSlotStates) = await avatarState.GetSlotStatesAsync();
+            var runeStates = await avatarState.GetRuneStatesAsync();
+
+            loadingScreen.Close();
+
+            var itemSlotState = itemSlotStates.Find(itemSlotState => itemSlotState.BattleType == BattleType.Arena);
+            var runSlotState = runeSlotStates.Find(runeSlotState => runeSlotState.BattleType == BattleType.Arena);
+            var equipments = itemSlotState.Equipments
+                .Select(guid =>
+                    avatarState.inventory.Equipments.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+            var costumes = itemSlotState.Costumes
+                .Select(guid =>
+                    avatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
+                .Where(item => item != null).ToList();
+
+            var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
+            var runeOptions = Util.GetRuneOptions(runeStates, runeOptionSheet);
+            var lv = avatarState.level;
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            if (!characterSheet.TryGetValue(avatarState.characterId, out var row))
+            {
+                throw new SheetRowNotFoundException("CharacterSheet",
+                    $"{avatarState.characterId}");
+            }
+
+            Close();
+
+            Find<ArenaBattlePreparation>().Show(
+                _roundData,
+                avatarState,
+                equipments,
+                costumes,
+                CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
+        }
+
         private void InitializeScrolls()
         {
             _playerScroll.OnClickCharacterView.Subscribe(index =>
@@ -194,12 +267,8 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-
-                    //[NeedToFix]
-                    /*var avatarState = _useGrandFinale
-                        ? _grandFinaleParticipants[index].AvatarState
-                        : _boundedData[index].AvatarState;
-                    Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();*/
+                    var avatarAddress = _arenaBoardDatas[index].Addr;
+                    ShowAvaterStateInfoAsync(avatarAddress).Forget();
                 })
                 .AddTo(gameObject);
 
@@ -214,54 +283,8 @@ namespace Nekoyume.UI
                             NotificationCell.NotificationType.Alert);
                         return;
                     }
-#endif
-                    NotificationSystem.Push(
-                            MailType.System,
-                            "Cannot battle when use mock data in dummy player",
-                            NotificationCell.NotificationType.Alert);
-                    return;
-                    //[NeedToFix]
-                    /*var data = _boundedData[index];
-
-                    var equipments = data.ItemSlotState.Equipments
-                        .Select(guid =>
-                            data.AvatarState.inventory.Equipments.FirstOrDefault(x => x.ItemId == guid))
-                        .Where(item => item != null).ToList();
-                    var costumes = data.ItemSlotState.Costumes
-                        .Select(guid =>
-                            data.AvatarState.inventory.Costumes.FirstOrDefault(x => x.ItemId == guid))
-                        .Where(item => item != null).ToList();
-                    var runeOptionSheet = Game.Game.instance.TableSheets.RuneOptionSheet;
-                    var runeOptions = Util.GetRuneOptions(data.RuneStates, runeOptionSheet);
-                    var lv = data.AvatarState.level;
-                    var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                    if (!characterSheet.TryGetValue(data.AvatarState.characterId, out var row))
-                    {
-                        throw new SheetRowNotFoundException("CharacterSheet",
-                            $"{data.AvatarState.characterId}");
-                    }
-
-                    Close();
-
-                    if (_useGrandFinale)
-                    {
-                        Find<ArenaBattlePreparation>().Show(
-                            _grandFinaleScheduleRow?.Id ?? 0,
-                            _grandFinaleParticipants[index].AvatarState,
-                            equipments,
-                            costumes,
-                            CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
-                    }
-                    else
-                    {
-                        Find<ArenaBattlePreparation>().Show(
-                            _roundData,
-                            _boundedData[index].AvatarState,
-                            equipments,
-                            costumes,
-                            CPHelper.TotalCP(equipments, costumes, runeOptions, lv, row, costumeSheet));
-                    }*/
+#endif              
+                    ShowArenaBattlePreperation(_arenaBoardDatas[index]).Forget();
                 })
                 .AddTo(gameObject);
         }
