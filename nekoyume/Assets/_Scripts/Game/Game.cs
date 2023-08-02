@@ -360,7 +360,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
 #if UNITY_ANDROID
-            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
             yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
@@ -710,6 +710,8 @@ namespace Nekoyume.Game
                                 NotificationCell.NotificationType.Notification);
                         }
                     }
+
+                    Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
                 Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);

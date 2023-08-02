@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime;
@@ -8,7 +9,7 @@ namespace Nekoyume
 {
     public static class MailExtensions
     {
-        public static string GetCellContent(this UnloadFromMyGaragesRecipientMail mail)
+        public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
             var game = Game.Game.instance;
             var iapServiceManager = game.IAPServiceManager;
@@ -19,7 +20,7 @@ namespace Nekoyume
             }
 
             var agentAddr = game.Agent.Address;
-            var products = iapServiceManager.GetProductsAsync(agentAddr).Result;
+            var products = await iapServiceManager.GetProductsAsync(agentAddr);
             if (products is null)
             {
                 Debug.Log("products is null.");
