@@ -406,7 +406,7 @@ namespace Nekoyume.UI
             progressBar.maxValue = Math.Max(state.RequiredBlockIndex, 1);
             var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
-            requiredBlockIndexText.text = $"{diff} ";
+            requiredBlockIndexText.text = $"{diff}";
             requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
             timeText.text = L10nManager.Localize("UI_REMAINING_TIME", diff.BlockRangeToTimeSpanString(true));
         }
