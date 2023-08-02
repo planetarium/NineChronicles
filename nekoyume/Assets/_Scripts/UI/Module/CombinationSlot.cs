@@ -311,7 +311,7 @@ namespace Nekoyume.UI.Module
             progressBar.maxValue = Math.Max(unlockBlockIndex - startBlockIndex, 1);
             var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
-            requiredBlockIndexText.text = $"{diff} ";
+            requiredBlockIndexText.text = $"{diff}";
             requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
         }
 
