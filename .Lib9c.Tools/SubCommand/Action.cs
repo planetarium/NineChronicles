@@ -17,7 +17,7 @@ namespace Lib9c.Tools.SubCommand
         [Command(Description = "Lists all actions' type ids.")]
         public void List(
             [Option(
-                Description = "If true, show obsoleted actions only"
+                Description = "If true, show obsoleted or will be obsoleted actions only (Actions having ActionObsolete attribute only)"
             )] bool obsoleteOnly = false,
             [Option(
                 Description = "If true, make json file with results"
