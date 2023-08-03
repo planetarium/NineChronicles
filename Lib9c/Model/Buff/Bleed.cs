@@ -31,20 +31,19 @@ namespace Nekoyume.Model.Buff
             return new Bleed(this);
         }
 
-        public override BattleStatus.Skill GiveEffect(
-            CharacterBase affectedCharacter,
-            int simulatorWaveTurn)
+        public override BattleStatus.Skill GiveEffect(CharacterBase affectedCharacter,
+            int simulatorWaveTurn, bool copyCharacter)
         {
-            var clone = (CharacterBase)affectedCharacter.Clone();
+            var clone = copyCharacter ? (CharacterBase) affectedCharacter.Clone() : null;
             var damage = affectedCharacter.GetDamage(Power, false);
             affectedCharacter.CurrentHP -= damage;
-
+            // Copy new Character with damaged.
+            var target = copyCharacter ? (CharacterBase) affectedCharacter.Clone() : null;
             var damageInfos = new List<BattleStatus.Skill.SkillInfo>
             {
-                // Copy new Character with damaged.
                 new BattleStatus.Skill.SkillInfo(affectedCharacter.Id, affectedCharacter.IsDead, affectedCharacter.Thorn, damage, false,
                     SkillCategory.Debuff, simulatorWaveTurn, RowData.ElementalType,
-                    RowData.TargetType, target: (CharacterBase)affectedCharacter.Clone())
+                    RowData.TargetType, target: target)
             };
 
             return new Model.BattleStatus.TickDamage(
