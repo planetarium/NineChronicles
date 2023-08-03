@@ -4,11 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -87,7 +86,9 @@
         )
         {
             var context = new ActionContext();
-            var state = _initialState.MintAsset(context, _agentAddress, balance * _currency);
+            var state = (balance > 0)
+                ? _initialState.MintAsset(context, _agentAddress, balance * _currency)
+                : _initialState;
             var worldIds = ids.ToList();
 
             if (stateExist)

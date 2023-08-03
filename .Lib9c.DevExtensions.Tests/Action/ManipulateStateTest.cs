@@ -9,10 +9,9 @@ using Lib9c.DevExtensions.Action;
 using Lib9c.Tests;
 using Lib9c.Tests.Action;
 using Lib9c.Tests.Util;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Action.State;
 using Libplanet.Crypto;
-using Libplanet.State;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -28,10 +27,12 @@ namespace Lib9c.DevExtensions.Tests.Action
     {
         private static readonly Address AdminAddr = new PrivateKey().ToAddress();
 
+        // See also InitializeUtil.cs
         private static readonly Currency Ncg = Currency.Legacy(
             "NCG",
             2,
-            new[] { AdminAddr }.ToImmutableHashSet());
+            null
+        );
 
         private static readonly Currency Crystal = CrystalCalculator.CRYSTAL;
 

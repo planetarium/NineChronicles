@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using static Lib9c.SerializeKeys;

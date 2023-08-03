@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Xunit;
 
 namespace Lib9c.DevExtensions.Tests

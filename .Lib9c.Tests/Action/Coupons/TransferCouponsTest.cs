@@ -3,9 +3,9 @@ namespace Lib9c.Tests.Action.Coupons
     using System;
     using System.Collections.Immutable;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Action.Coupons;
     using Nekoyume.Model.Coupons;

@@ -1,8 +1,8 @@
 using Bencodex.Types;
 using Lib9c;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.State;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action

@@ -1,9 +1,7 @@
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
-using Nekoyume.Arena;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Arena
 {

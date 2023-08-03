@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;

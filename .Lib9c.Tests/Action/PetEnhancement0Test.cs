@@ -3,11 +3,10 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
@@ -315,9 +314,15 @@ namespace Lib9c.Tests.Action
                     currentPetLevel,
                     targetPetLevel);
 
-                prevStates = prevStates
-                    .MintAsset(context, agentAddr, ncgCost * ncgCurrency)
-                    .MintAsset(context, avatarAddr, soulStoneCost * soulStoneCurrency);
+                if (ncgCost > 0)
+                {
+                    prevStates = prevStates.MintAsset(context, agentAddr, ncgCost * ncgCurrency);
+                }
+
+                if (soulStoneCost > 0)
+                {
+                    prevStates = prevStates.MintAsset(context, avatarAddr, soulStoneCost * soulStoneCurrency);
+                }
             }
 
             if (removePetRow)

@@ -6,11 +6,10 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Arena;
@@ -196,7 +195,7 @@ namespace Lib9c.Tests.Action
                                 _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
                             }
 
-                            if (ncgBalanceExist)
+                            if (ncgBalanceExist && subRow.RequiredGold > 0)
                             {
                                 state = state.MintAsset(
                                     context,

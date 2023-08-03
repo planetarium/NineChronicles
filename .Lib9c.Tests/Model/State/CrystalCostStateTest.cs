@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.Model.State
 {
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Helper;
     using Nekoyume.Model.State;

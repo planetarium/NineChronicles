@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Model.Skill
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Lib9c.Tests.Action;
@@ -135,6 +136,47 @@ namespace Lib9c.Tests.Model.Skill
             Assert.Equal(prevHP, skill.Character.CurrentHP);
             var skillInfo = Assert.Single(skill.SkillInfos);
             Assert.Equal(currentHP, skillInfo.Target!.CurrentHP);
+        }
+
+        [Theory]
+        // Buff
+        [InlineData(SkillType.Buff, true)]
+        [InlineData(SkillType.Buff, false)]
+        // Heal
+        [InlineData(SkillType.Heal, true)]
+        [InlineData(SkillType.Heal, false)]
+        public void Issue_2027(SkillType skillType, bool copyCharacter)
+        {
+            var healSkillRow = _tableSheets.SkillSheet.Values.First(r => r.SkillType == skillType);
+            var healSkill = SkillFactory.Get(healSkillRow, 1, 100, 0, StatType.NONE);
+
+            // normal skill id.
+            var skillRow = _tableSheets.SkillSheet[100000];
+            var prevHP = _player.CurrentHP;
+            var normalAttack = new NormalAttack(skillRow, prevHP / 2, 100, default, StatType.NONE);
+            normalAttack.Use(_enemy, 1, new List<StatBuff>(), copyCharacter);
+            Assert.False(_player.IsDead);
+            var buffs = BuffFactory.GetBuffs(
+                _enemy.Stats,
+                healSkill,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.StatBuffSheet,
+                _tableSheets.SkillActionBuffSheet,
+                _tableSheets.ActionBuffSheet
+            );
+            var skill = healSkill.Use(_player, 1, buffs, copyCharacter);
+            while (!_player.IsDead)
+            {
+                normalAttack.Use(_enemy, 1, new List<StatBuff>(), copyCharacter);
+            }
+
+            Assert.True(_player.IsDead);
+            var skillInfo = Assert.Single(skill.SkillInfos);
+            Assert.Equal(skillType == SkillType.Heal, skillInfo.Buff is null);
+            // character alive when use skill
+            Assert.False(skillInfo.IsDead);
+            // without Clone, target dead because _player also dead
+            Assert.Equal(!copyCharacter, skillInfo.Target!.IsDead);
         }
     }
 }

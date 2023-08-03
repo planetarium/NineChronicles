@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Model.Coupons
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Libplanet;
+    using Libplanet.Common;
     using Nekoyume.Model.Coupons;
     using Xunit;
 

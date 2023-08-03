@@ -10,10 +10,9 @@ namespace Lib9c.Tests.Action
     using Lib9c.DevExtensions.Model;
     using Lib9c.Model.Order;
     using Lib9c.Tests.TestHelper;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;

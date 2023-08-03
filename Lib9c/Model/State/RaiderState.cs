@@ -1,6 +1,6 @@
 using System;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Helper;
 
 namespace Nekoyume.Model.State

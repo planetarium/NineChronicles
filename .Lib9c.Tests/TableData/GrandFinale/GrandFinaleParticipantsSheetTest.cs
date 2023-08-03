@@ -1,7 +1,7 @@
 ﻿namespace Lib9c.Tests.TableData.GrandFinale
 {
     using System;
-    using Libplanet;
+    using Libplanet.Crypto;
     using Nekoyume.TableData.GrandFinale;
     using Xunit;
 

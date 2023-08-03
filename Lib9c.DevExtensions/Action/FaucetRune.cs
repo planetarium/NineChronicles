@@ -5,7 +5,8 @@ using System.Linq;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action.Interface;
 using Libplanet.Action;
-using Libplanet.State;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.Faucet;
@@ -18,7 +19,7 @@ namespace Lib9c.DevExtensions.Action
     [ActionType("faucet_rune")]
     public class FaucetRune : GameAction, IFaucetRune
     {
-        public Libplanet.Address AvatarAddress { get; set; }
+        public Address AvatarAddress { get; set; }
         public List<FaucetRuneInfo> FaucetRuneInfos { get; set; }
 
         public override IAccountStateDelta Execute(IActionContext context)

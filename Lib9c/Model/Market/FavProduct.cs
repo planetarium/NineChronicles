@@ -1,5 +1,5 @@
 using Bencodex.Types;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Market

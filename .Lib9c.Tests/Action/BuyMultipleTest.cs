@@ -2,14 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Numerics;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
@@ -608,67 +605,6 @@
             var results = action.buyerResult.purchaseResults;
             var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.ERROR_CODE_SHOPITEM_EXPIRED);
             Assert.True(isAllFailed);
-        }
-
-        [Fact]
-        public void SerializeWithDotnetAPI()
-        {
-            var sellerAvatarAddress = new PrivateKey().ToAddress();
-            var sellerAgentAddress = new PrivateKey().ToAddress();
-            CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
-
-            IAccountStateDelta previousStates = _initialState;
-            var shopState = previousStates.GetShopState();
-
-            var productId = Guid.NewGuid();
-            var equipment = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                0);
-            shopState.Register(new ShopItem(
-                sellerAgentAddress,
-                sellerAvatarAddress,
-                productId,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                100,
-                equipment));
-            shopState.Register(new ShopItem(
-                sellerAgentAddress,
-                sellerAvatarAddress,
-                Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                100,
-                equipment));
-            var products = shopState.Products.Values
-                .Select(p => new BuyMultiple.PurchaseInfo(
-                    p.ProductId,
-                    p.SellerAgentAddress,
-                    p.SellerAvatarAddress))
-                .ToList();
-
-            previousStates = previousStates
-                .SetState(Addresses.Shop, shopState.Serialize());
-
-            var action = new BuyMultiple
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = products,
-            };
-            action.Execute(new ActionContext()
-            {
-                BlockIndex = 1,
-                PreviousState = previousStates,
-                Random = new TestRandom(),
-                Signer = _buyerAgentAddress,
-            });
-
-            var formatter = new BinaryFormatter();
-            using var ms = new MemoryStream();
-            formatter.Serialize(ms, action);
-            ms.Seek(0, SeekOrigin.Begin);
-
-            var deserialized = (BuyMultiple)formatter.Deserialize(ms);
-            Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
         private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(

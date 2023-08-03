@@ -4,10 +4,9 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
@@ -166,7 +165,11 @@ namespace Lib9c.Tests.Action
             var ncgHas = newScheduleRow.GetDungeonTicketCost(
                 numberOfTicketPurchases,
                 _ncgCurrency);
-            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
+
+            if (ncgHas.Sign > 0)
+            {
+                previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
+            }
 
             var nextStates = Execute(
                 previousStates,
@@ -317,7 +320,10 @@ namespace Lib9c.Tests.Action
             var ncgHas = scheduleRow.GetDungeonTicketCost(
                 numberOfTicketPurchases,
                 _ncgCurrency) - 1 * _ncgCurrency;
-            previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
+            if (ncgHas.Sign > 0)
+            {
+                previousStates = previousStates.MintAsset(context, _agentAddress, ncgHas);
+            }
 
             Assert.Throws<InsufficientBalanceException>(() =>
                 Execute(

@@ -1,12 +1,9 @@
 namespace Lib9c.Tests.Action
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
-    using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Action;
+    using Libplanet.Action.State;
+    using Libplanet.Common;
     using Libplanet.Crypto;
-    using Libplanet.State;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;

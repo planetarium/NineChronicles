@@ -4,9 +4,10 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Libplanet.State;
+using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -122,7 +123,9 @@ namespace Nekoyume.Action
 
             var addressesHex = $"[{signer.ToHex()}, {AvatarAddress.ToHex()}]";
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}HAS exec started", addressesHex);
+            const string source = "HackAndSlash";
+            Log.Verbose("{AddressesHex} {Source} from #{BlockIndex} exec started",
+                addressesHex, source, blockIndex);
 
             if (ApStoneCount > UsableApStoneCount)
             {
@@ -156,7 +159,8 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Get AvatarState", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var sheets = states.GetSheets(
@@ -185,7 +189,8 @@ namespace Nekoyume.Action
                         typeof(RuneListSheet),
                     });
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Get Sheets", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var stakingLevel = 0;
@@ -199,7 +204,8 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Check StakeState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Check StateState", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(WorldId, out var worldRow, false))
@@ -222,7 +228,8 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get StageSheet: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Get StageSheet", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var worldInformation = avatarState.worldInformation;
@@ -262,15 +269,17 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Validate World", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, blockIndex);
             var foodIds = avatarState.ValidateConsumable(Foods, blockIndex);
             var costumeIds = avatarState.ValidateCostume(Costumes);
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
-
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Validate Items", blockIndex, sw.Elapsed.TotalMilliseconds);
+            sw.Restart();
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             var apPlayCount = TotalPlayCount;
             var minimumCostAp = stageRow.CostAP;
@@ -312,11 +321,13 @@ namespace Nekoyume.Action
                 }
 
                 Log.Verbose(
-                    "{AddressesHex}TotalPlayCount: {TotalPlayCount}, " +
+                    "{AddressesHex} {Source} TotalPlayCount: {TotalPlayCount}, " +
                     "ApStoneCount: {ApStoneCount}, PlayCount by Ap stone: {ApStonePlayCount}, " +
                     "Ap cost per 1 play: {MinimumCostAp}, " +
+                    "BlockIndex: {BlockIndex}, " +
                     "PlayCount by action point: {ApPlayCount}, Used AP: {UsedAp}",
                     addressesHex,
+                    source,
                     TotalPlayCount,
                     ApStoneCount,
                     apStonePlayCount,
@@ -346,12 +357,14 @@ namespace Nekoyume.Action
             var items = Equipments.Concat(Costumes);
             avatarState.EquipItems(items);
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Unequip items", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var questSheet = sheets.GetQuestSheet();
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS GetQuestSheet: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Get QuestSheet", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             // Update QuestList only when QuestSheet.Count is greater than QuestList.Count
             var questList = avatarState.questList;
@@ -364,7 +377,8 @@ namespace Nekoyume.Action
                     sheets.GetSheet<QuestItemRewardSheet>(),
                     sheets.GetSheet<EquipmentItemRecipeSheet>());
                 sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Update QuestList: {Elapsed}", addressesHex, sw.Elapsed);
+                Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                    addressesHex, source, "Update QuestList", blockIndex, sw.Elapsed.TotalMilliseconds);
             }
 
             sw.Restart();
@@ -403,7 +417,8 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Get skillState", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
@@ -438,6 +453,9 @@ namespace Nekoyume.Action
                     runeStates.Add(new RuneState(rawRuneState));
                 }
             }
+            sw.Stop();
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Update slotState", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             var stageWaveRow =  sheets.GetSheet<StageWaveSheet>()[StageId];
             var enemySkillSheet = sheets.GetSheet<EnemySkillSheet>();
@@ -468,12 +486,14 @@ namespace Nekoyume.Action
                     rewards,
                     false);
                 sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
+                Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                    addressesHex, source, "Initialize Simulator", blockIndex, sw.Elapsed.TotalMilliseconds);
 
                 sw.Restart();
                 simulator.Simulate();
                 sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
+                Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                    addressesHex, source, "Simulator.Simulate()", blockIndex, sw.Elapsed.TotalMilliseconds);
 
                 sw.Restart();
                 if (simulator.Log.IsClear)
@@ -490,7 +510,8 @@ namespace Nekoyume.Action
                         stageCleared = true;
                     }
                     sw.Stop();
-                    Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
+                    Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                        addressesHex, source, "ClearStage", blockIndex, sw.Elapsed.TotalMilliseconds);
                 }
 
                 sw.Restart();
@@ -520,10 +541,13 @@ namespace Nekoyume.Action
 
                 sw.Stop();
                 Log.Verbose(
-                    "{AddressesHex}Update avatar by simulator({AvatarAddress}); " +
+                    "{AddressesHex} {Source} {Process} by simulator({AvatarAddress}); " +
+                    "blockIndex: {BlockIndex} " +
                     "worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
                     "clearWave: {ClearWave}, totalWave: {TotalWave}",
                     addressesHex,
+                    source,
+                    "Update avatar",
                     AvatarAddress,
                     WorldId,
                     StageId,
@@ -533,8 +557,8 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
-                addressesHex, sw.Elapsed, TotalPlayCount);
+            Log.Debug("{AddressesHex} {Source} {Process} from #{BlockIndex}: {Elapsed}, Count: {PlayCount}",
+                addressesHex, source, "loop Simulate", blockIndex, sw.Elapsed.TotalMilliseconds, TotalPlayCount);
 
             // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
             skillState?.Update(starCount, crystalStageBuffSheet);
@@ -543,7 +567,8 @@ namespace Nekoyume.Action
             avatarState.updatedAt = blockIndex;
             avatarState.mailBox.CleanUp();
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Update AvatarState", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
             if (isNotClearedStage)
@@ -565,10 +590,11 @@ namespace Nekoyume.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize());
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Set States: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
+                addressesHex, source, "Set States", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             var totalElapsed = DateTimeOffset.UtcNow - started;
-            Log.Debug("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
+            Log.Verbose("{AddressesHex} {Source} HAS {Process}: {Elapsed}, blockIndex: {BlockIndex}", addressesHex, source, "Total Executed Time", totalElapsed.TotalMilliseconds, blockIndex);
             return states;
         }
 

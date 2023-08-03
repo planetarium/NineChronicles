@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;

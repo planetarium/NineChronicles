@@ -1,11 +1,10 @@
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Serialization;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Model.State
 {

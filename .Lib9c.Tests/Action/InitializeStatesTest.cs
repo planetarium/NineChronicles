@@ -4,9 +4,8 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
@@ -60,6 +59,7 @@ namespace Lib9c.Tests.Action
             var genesisState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
+                Signer = minterKey.ToAddress(),
                 Miner = default,
                 PreviousState = new MockStateDelta(),
             });
@@ -127,6 +127,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -175,6 +176,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -226,6 +228,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 
@@ -271,6 +274,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 Miner = default,
+                Signer = minterKey.ToAddress(),
                 PreviousState = new MockStateDelta(),
             });
 

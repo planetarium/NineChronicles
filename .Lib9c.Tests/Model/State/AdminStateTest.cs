@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Model.State
 {
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
-    using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume.Model.State;
     using Xunit;

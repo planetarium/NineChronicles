@@ -4,11 +4,10 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Arena;
@@ -204,7 +203,9 @@ namespace Lib9c.Tests.Action
             avatarState = AddMedal(avatarState, row, 80);
 
             var context = new ActionContext();
-            var state = _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
+            var state = (balance == "0")
+                ? _state
+                : _state.MintAsset(context, _signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena1()
             {

@@ -1,0 +1,19 @@
+[default]
+extend-ignore-re = [
+    "\\\"([a-zA-Z0-9][a-zA-Z0-9])+\\\"",  # for hexadecimal string values.
+    "2nd"
+]
+
+[default.extend-identifiers]
+fo = "fo"  # FungibleOrder
+
+[default.extend-words]
+ba = "ba"  # byte array
+oce = "oce"  # OperationCanceledException
+ist = "ist"  # ItemSubType
+Equipments = "Equipments"  # FIXME: Equipment is noncount word but our team doesn't have the policy about it.
+
+[files]
+extend-exclude = [
+    ".Libplanet/*"
+]

@@ -3,10 +3,9 @@ namespace Lib9c.Tests.Util
     using System.Collections.Immutable;
     using System.IO;
     using Lib9c.Tests.Action;
-    using Libplanet;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -50,7 +49,8 @@ namespace Lib9c.Tests.Util
             var goldCurrency = Currency.Legacy(
                 "NCG",
                 2,
-                minters: new[] { adminAddr.Value }.ToImmutableHashSet());
+                minters: default
+            );
             var goldCurrencyState = new GoldCurrencyState(goldCurrency);
             states = states
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())

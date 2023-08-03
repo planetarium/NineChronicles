@@ -11,22 +11,50 @@ namespace Nekoyume.Model.Quest
     [Serializable]
     public class CombinationQuest : Quest
     {
-        public readonly ItemType ItemType;
-        public readonly ItemSubType ItemSubType;
+        public ItemType ItemType
+        {
+            get
+            {
+                if (_serializedItemType is { })
+                {
+                    _itemType = (ItemType) (int) _serializedItemType;
+                    _serializedItemType = null;
+                }
 
+                return _itemType;
+            }
+        }
+
+        public ItemSubType ItemSubType
+        {
+            get
+            {
+                if (_serializedItemSubType is { })
+                {
+                    _itemSubType = (ItemSubType) (int) _serializedItemSubType;
+                    _serializedItemSubType = null;
+                }
+
+                return _itemSubType;
+            }
+        }
+        private Integer? _serializedItemType;
+        private ItemType _itemType;
+        private Integer? _serializedItemSubType;
+        private ItemSubType _itemSubType;
         public override QuestType QuestType => QuestType.Craft;
 
         public CombinationQuest(CombinationQuestSheet.Row data, QuestReward reward)
             : base(data, reward)
         {
-            ItemType = data.ItemType;
-            ItemSubType = data.ItemSubType;
+            _itemType = data.ItemType;
+            _itemSubType = data.ItemSubType;
         }
 
         public CombinationQuest(Dictionary serialized) : base(serialized)
         {
-            ItemType = (ItemType)(int)((Integer)serialized["itemType"]).Value;
-            ItemSubType = (ItemSubType)(int)((Integer)serialized["itemSubType"]).Value;
+            _serializedItemType = (Integer)serialized["itemType"];
+            _serializedItemSubType = (Integer)serialized["itemSubType"];
         }
 
         public override void Check()
@@ -59,7 +87,7 @@ namespace Nekoyume.Model.Quest
 
         public override IValue Serialize() =>
             ((Dictionary) base.Serialize())
-            .Add("itemType", (int) ItemType)
-            .Add("itemSubType", (int) ItemSubType);
+            .Add("itemType", _serializedItemType ?? (int) ItemType)
+            .Add("itemSubType", _serializedItemSubType ?? (int) ItemSubType);
     }
 }

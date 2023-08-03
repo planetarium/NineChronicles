@@ -68,11 +68,9 @@ namespace Nekoyume.Model.Skill
             }
         }
 
-        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(
-            CharacterBase caster,
+        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessBuff(CharacterBase caster,
             int simulatorWaveTurn,
-            IEnumerable<Buff.Buff> buffs
-        )
+            IEnumerable<Buff.Buff> buffs, bool copyCharacter)
         {
             var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
             foreach (var buff in buffs)
@@ -83,7 +81,7 @@ namespace Nekoyume.Model.Skill
                     target.AddBuff(buff);
                     infos.Add(new Model.BattleStatus.Skill.SkillInfo(target.Id, target.IsDead, target.Thorn, 0, false,
                         SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
-                        buff, target));
+                        buff, copyCharacter ? (CharacterBase)target.Clone() : target));
                 }
             }
 

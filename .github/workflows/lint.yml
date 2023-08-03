@@ -1,0 +1,11 @@
+name: lint
+
+on: [push, pull_request]
+
+jobs:
+    typos:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Check typos
+              uses: crate-ci/typos@v1.15.5

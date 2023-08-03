@@ -1,9 +1,9 @@
-﻿namespace Lib9c.Tests.TestHelper
+namespace Lib9c.Tests.TestHelper
 {
     using Lib9c.DevExtensions.Action;
-    using Libplanet;
-    using Libplanet.Assets;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
+    using Libplanet.Types.Assets;
     using Nekoyume.Model.State;
 
     public class MakeInitialStateResult

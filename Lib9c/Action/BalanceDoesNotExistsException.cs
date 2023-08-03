@@ -1,7 +1,7 @@
-using Libplanet;
-using Libplanet.Assets;
 using System;
 using System.Runtime.Serialization;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 
 namespace Nekoyume.Action
 {

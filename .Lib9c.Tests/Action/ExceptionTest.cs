@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Action
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Lib9c.Formatters;
-    using Libplanet;
+    using Libplanet.Crypto;
     using MessagePack;
     using MessagePack.Resolvers;
     using Nekoyume.Action;

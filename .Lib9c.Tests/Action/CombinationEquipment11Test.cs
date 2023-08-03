@@ -6,11 +6,10 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.State;
+    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
@@ -329,7 +328,11 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
+            if (mintNCG > 0)
+            {
+                previousState = previousState.MintAsset(context, _agentAddress, mintNCG * currency);
+            }
+
             var goldCurrencyState = previousState.GetGoldCurrency();
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);

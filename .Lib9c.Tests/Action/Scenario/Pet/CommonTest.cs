@@ -5,8 +5,8 @@ namespace Lib9c.Tests.Action.Scenario.Pet
     using System.Linq;
     using Bencodex.Types;
     using Lib9c.Tests.Util;
-    using Libplanet;
-    using Libplanet.State;
+    using Libplanet.Action.State;
+    using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Model.Pet;
     using Nekoyume.Model.State;

@@ -14,12 +14,77 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
-        public Guid ItemId { get; }
+        public Guid ItemId
+        {
+            get
+            {
+                if (_serializedItemId is { })
+                {
+                    _itemId = _serializedItemId.ToGuid();
+                    _serializedItemId = null;
+                }
+
+                return _itemId;
+            }
+        }
+
         public Guid TradableId => ItemId;
         public Guid NonFungibleId => ItemId;
-        public StatsMap StatsMap { get; }
-        public List<Skill.Skill> Skills { get; }
-        public List<BuffSkill> BuffSkills { get; }
+
+        public StatsMap StatsMap
+        {
+            get
+            {
+                _statsMap ??= new StatsMap();
+                if (_serializedStatsMap is { })
+                {
+                    _statsMap.Deserialize(_serializedStatsMap);
+                    _serializedStatsMap = null;
+                }
+
+                return _statsMap;
+            }
+        }
+
+        public List<Skill.Skill> Skills
+        {
+            get
+            {
+                _skills ??= new List<Skill.Skill>();
+                if (_serializedSkills is { })
+                {
+                    foreach (var value in _serializedSkills)
+                    {
+                        var serializedSkill = (Dictionary) value;
+                        _skills.Add(SkillFactory.Deserialize(serializedSkill));
+                    }
+
+                    _serializedSkills = null;
+                }
+
+                return _skills;
+            }
+        }
+
+        public List<BuffSkill> BuffSkills
+        {
+            get
+            {
+                _buffSkills ??= new List<BuffSkill>();
+                if (_serializedBuffSkills is { })
+                {
+                    foreach (var value in _serializedBuffSkills)
+                    {
+                        var serializedSkill = (Dictionary) value;
+                        _buffSkills.Add((BuffSkill) SkillFactory.Deserialize(serializedSkill));
+                    }
+
+                    _serializedBuffSkills = null;
+                }
+
+                return _buffSkills;
+            }
+        }
 
         public long RequiredBlockIndex
         {
@@ -36,11 +101,19 @@ namespace Nekoyume.Model.Item
         }
 
         private long _requiredBlockIndex;
+        private Guid _itemId;
+        private StatsMap _statsMap;
+        private List<Skill.Skill> _skills;
+        private List<BuffSkill> _buffSkills;
+        private Binary? _serializedItemId;
+        private Dictionary _serializedStatsMap;
+        private List _serializedSkills;
+        private List _serializedBuffSkills;
 
         protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data)
         {
-            ItemId = id;
-            StatsMap = new StatsMap();
+            _itemId = id;
+            _statsMap = new StatsMap();
 
             switch (data)
             {
@@ -58,39 +131,28 @@ namespace Nekoyume.Model.Item
                     break;
             }
 
-            Skills = new List<Model.Skill.Skill>();
-            BuffSkills = new List<BuffSkill>();
+            _skills = new List<Model.Skill.Skill>();
+            _buffSkills = new List<BuffSkill>();
             RequiredBlockIndex = requiredBlockIndex;
         }
 
         protected ItemUsable(Dictionary serialized) : base(serialized)
         {
-            StatsMap = new StatsMap();
-            Skills = new List<Model.Skill.Skill>();
-            BuffSkills = new List<BuffSkill>();
             if (serialized.TryGetValue((Text) "itemId", out var itemId))
             {
-                ItemId = itemId.ToGuid();
+                _serializedItemId = (Binary) itemId;
             }
             if (serialized.TryGetValue((Text) "statsMap", out var statsMap))
             {
-                StatsMap.Deserialize((Dictionary) statsMap);
+                _serializedStatsMap = (Dictionary) statsMap;
             }
             if (serialized.TryGetValue((Text) "skills", out var skills))
             {
-                foreach (var value in (List) skills)
-                {
-                    var skill = (Dictionary) value;
-                    Skills.Add(SkillFactory.Deserialize(skill));
-                }
+                _serializedSkills = (List) skills;
             }
             if (serialized.TryGetValue((Text) "buffSkills", out var buffSkills))
             {
-                foreach (var value in (List) buffSkills)
-                {
-                    var buffSkill = (Dictionary) value;
-                    BuffSkills.Add((BuffSkill) SkillFactory.Deserialize(buffSkill));
-                }
+                _serializedBuffSkills = (List) buffSkills;
             }
             if (serialized.TryGetValue((Text) "requiredBlockIndex", out var requiredBlockIndex))
             {
@@ -137,13 +199,13 @@ namespace Nekoyume.Model.Item
         }
 
         public override IValue Serialize() => ((Dictionary)base.Serialize())
-            .Add("itemId", ItemId.Serialize())
-            .Add("statsMap", StatsMap.Serialize())
-            .Add("skills", new List(Skills
+            .Add("itemId", _serializedItemId ?? ItemId.Serialize())
+            .Add("statsMap", _serializedStatsMap ?? StatsMap.Serialize())
+            .Add("skills", _serializedSkills ?? new List(Skills
                 .OrderByDescending(i => i.Chance)
                 .ThenByDescending(i => i.Power)
                 .Select(s => s.Serialize())))
-            .Add("buffSkills", new List(BuffSkills
+            .Add("buffSkills", _serializedBuffSkills ?? new List(BuffSkills
                 .OrderByDescending(i => i.Chance)
                 .ThenByDescending(i => i.Power)
                 .Select(s => s.Serialize())))
