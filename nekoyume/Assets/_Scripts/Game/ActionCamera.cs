@@ -92,6 +92,7 @@ namespace Nekoyume.Game
             : _cam = GetComponent<Camera>();
 
         public bool InPrologue = false;
+        private bool _isStaticRatio;
 
         #region Mono
 
@@ -382,20 +383,42 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-            _defaultAspect = (float) referenceResolution.x / referenceResolution.y;
-            _defaultOrthographicSize = Cam.orthographicSize;
-
 #if UNITY_ANDROID
-            UpdateLetterBox();
+            UpdateStaticRatioWithLetterBox();
+#else
+            UpdateDynamicRatio();
 #endif
-
-            _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
-
-            UpdateScreenResolution();
         }
 
-        private void UpdateLetterBox()
+        public void ChangeRatioState()
         {
+            if (_isStaticRatio)
+            {
+                UpdateDynamicRatio();
+            }
+            else
+            {
+                UpdateStaticRatioWithLetterBox();
+            }
+        }
+
+        private void UpdateDynamicRatio()
+        {
+            _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
+            _defaultOrthographicSize = Cam.orthographicSize;
+            Cam.aspect = Screen.safeArea.width / Screen.safeArea.height;
+            Cam.rect = new Rect(0,0,1,1);
+            _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
+            UpdateScreenResolution();
+            _isStaticRatio = false;
+            GL.Clear(true, true, Color.black);
+        }
+
+        private void UpdateStaticRatioWithLetterBox()
+        {
+            _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
+            _defaultOrthographicSize = Cam.orthographicSize;
+
             float fixedAspectRatio = _defaultAspect;
             Cam.aspect = _defaultAspect;
             float currentAspectRatio = Screen.safeArea.width / Screen.safeArea.height;
@@ -414,6 +437,12 @@ namespace Nekoyume.Game
                 rect.x = (1f - scalewidth) / 2f;
             }
             Cam.rect = rect;
+
+            _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
+
+            UpdateScreenResolution();
+            _isStaticRatio = true;
+            GL.Clear(true, true, Color.black);
         }
 
         void OnPreCull() => GL.Clear(true, true, Color.black);
