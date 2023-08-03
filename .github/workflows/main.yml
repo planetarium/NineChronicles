@@ -115,6 +115,12 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./publish
         destination_dir: ${{ github.ref_name }}
+    - name: Publish available action type ids for latest
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./publish
+        destination_dir: latest
 
   update-submodule:
     if: github.ref_type == 'branch' && startsWith(github.ref_name, 'release/')
