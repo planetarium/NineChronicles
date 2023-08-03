@@ -3,8 +3,8 @@ name: main
 on:
   push:
     branches:
-      - "development"
-      - "add-obsolete-action-command"
+      - development
+      - main
   
 jobs:
   publish-gh-pages:
