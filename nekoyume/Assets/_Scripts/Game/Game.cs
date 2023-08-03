@@ -235,16 +235,6 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
-
-#if !UNITY_ANDROID
-            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
-            InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcServerHost);
-            Analyzer.Track("Unity/Started");
-#endif
         }
 
         private IEnumerator Start()
@@ -267,6 +257,7 @@ namespace Nekoyume.Game
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+#endif
 
             // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
             InitializeAnalyzer(
@@ -275,7 +266,6 @@ namespace Nekoyume.Game
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
-#endif
 
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
