@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using UnityEngine;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Nekoyume.Helper
 {
@@ -425,6 +426,39 @@ namespace Nekoyume.Helper
                 ingameDebugConsole = value;
                 Empty = false;
             }
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            IEnumerable<PropertyInfo> properties = GetType().GetProperties(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            foreach (PropertyInfo property in properties)
+            {
+                OptionAttribute optAttr = Attribute.GetCustomAttribute(property, typeof(OptionAttribute)) as OptionAttribute;
+                if (optAttr != null && property.GetValue(this) != null)
+                {
+                    
+                    if (property.PropertyType.ToString() == "System.Collections.Generic.IEnumerable`1[System.String]")
+                    {
+                        string[] value = property.GetValue(this) as string[];
+
+                        if (value.Length == 0)
+                            continue;
+
+                        result += $"[{optAttr.LongName}]\n";
+                        foreach (var item in value)
+                        {
+                            result += $"            {item}\n";
+                        }
+                    }
+                    else
+                    {
+                        result += $"[{optAttr.LongName}]    {property.GetValue(this)}\n";
+                    }
+                }
+            }
+            return result;
         }
 
         public static CommandLineOptions Load(string localPath)

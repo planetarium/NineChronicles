@@ -1377,6 +1377,11 @@ namespace Nekoyume.Game
                 isTrackable);
         }
 
+        public void ShowCLO()
+        {
+            Debug.Log(_commandLineOptions.ToString());
+        }
+
 #if UNITY_ANDROID
         void Update()
         {

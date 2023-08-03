@@ -31,6 +31,10 @@ namespace Nekoyume.Game.Util
                     }
                 }
             });
+
+            DebugLogConsole.AddCommand("clo","show current commandline option", ()=>{
+                Game.instance.ShowCLO();
+            });
         }
     }
 }
