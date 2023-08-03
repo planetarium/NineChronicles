@@ -109,17 +109,6 @@ jobs:
         mkdir publish
         dotnet run --property WarningLevel=0 --project .Lib9c.Tools/Lib9c.Tools.csproj -- action list > publish/all_action_type_ids.txt
         dotnet run --property WarningLevel=0 --project .Lib9c.Tools/Lib9c.Tools.csproj -- action list --obsolete-only --json-path=publish/obsolete_action_types.json
-    - name: Build Dashboard
-      run: |
-        cd Dashboard
-        yarn && yarn build --outDir ../publish
-        cd ..
-    - name: Publish available action type ids
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./publish
-        destination_dir: ${{ github.ref_name }}
 
   update-submodule:
     if: github.ref_type == 'branch' && startsWith(github.ref_name, 'release/')
