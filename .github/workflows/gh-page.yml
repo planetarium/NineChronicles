@@ -14,18 +14,17 @@ jobs:
       with:
         submodules: true
 
-    - name: Move Dashboard
-      run: cd Dashboard
-
     - name: Install Dependency
+      working-directory: ./Dashboard
       run: yarn
 
     - name: Build .env
       run: |
-        echo "VITE_OBSOLETE_DATA_PATH=$VITE_OBSOLETE_DATA_PATH" >> .env.production
-        echo "VITE_API_PATH=$VITE_API_PATH" >> .env.production
+        echo "VITE_OBSOLETE_DATA_PATH=$VITE_OBSOLETE_DATA_PATH" >> ./Dashboard/.env.production
+        echo "VITE_API_PATH=$VITE_API_PATH" >> ./Dashboard/.env.production
 
     - name: Build Dashboard
+      working-directory: ./Dashboard
       run: yarn build --outDir ../publish
 
     - name: Deploy
