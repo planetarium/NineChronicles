@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Lib9c;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -516,8 +516,13 @@ namespace Nekoyume.UI
         public void DccClick()
         {
             AudioController.PlayClick();
+#if UNITY_ANDROID
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             Close(true);
             Find<DccMain>().Show();
+#endif
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
@@ -689,9 +694,9 @@ namespace Nekoyume.UI
                     var states = game.States;
                     var sheet = game.TableSheets.MaterialItemSheet;
                     var mail = new UnloadFromMyGaragesRecipientMail(
-                        default,
-                        default,
-                        default,
+                        game.Agent.BlockIndex,
+                        Guid.NewGuid(),
+                        game.Agent.BlockIndex,
                         fungibleAssetValue: new[]
                         {
                             (
@@ -707,12 +712,17 @@ namespace Nekoyume.UI
                             .Select((row, index) => (
                                 row.ItemId,
                                 index + 1)),
-                        "memo");
-                    mail.New = true;
+                        "memo")
+                    {
+                        New = true,
+                    };
                     var mailBox = states.CurrentAvatarState.mailBox;
                     mailBox.Add(mail);
                     mailBox.CleanUp();
-                    ReactiveAvatarState.UpdateMailBox(mailBox);
+                    states.CurrentAvatarState.mailBox = mailBox;
+                    LocalLayerModifier.AddNewMail(
+                        game.States.CurrentAvatarState.address,
+                        mail.id);
                 }
             }
         }

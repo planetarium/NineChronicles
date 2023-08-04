@@ -1,8 +1,7 @@
 using System.Linq;
 using Coffee.UIEffects;
 using DG.Tweening;
-using Libplanet.Assets;
-using Nekoyume.Game;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;

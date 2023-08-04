@@ -180,9 +180,9 @@ namespace Nekoyume.UI
                 .Select(pair =>
                 {
                     var itemRow = Game.Game.instance.TableSheets.MaterialItemSheet.OrderedList
-                        .First(row => row.Id == pair.Key);
+                        .First(row => row.Id == pair.Item1);
                     var material = ItemFactory.CreateMaterial(itemRow);
-                    return new CountableItem(material, pair.Value);
+                    return new CountableItem(material, pair.Item2);
                 })
                 .ToList();
             Show(quest, rewardModels, ignoreShowAnimation);
@@ -323,7 +323,7 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
         }
 
-        private static void UpdateLocalState(int questId, Dictionary<int, int> rewards)
+        private static void UpdateLocalState(int questId, IEnumerable<Tuple<int, int>> rewards)
         {
             if (rewards is null)
             {
@@ -337,12 +337,12 @@ namespace Nekoyume.UI
             foreach (var reward in rewards)
             {
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
-                    .First(pair => pair.Key == reward.Key);
+                    .First(pair => pair.Key == reward.Item1);
 
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
-                    reward.Value);
+                    reward.Item2);
             }
 
             LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, true);

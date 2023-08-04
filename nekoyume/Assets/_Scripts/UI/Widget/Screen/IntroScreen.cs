@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Libplanet.Common;
+using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -20,12 +25,14 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private Button startButton;
         [SerializeField] private Button signinButton;
+        [SerializeField] private Button guestButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
         [SerializeField] private GameObject[] qrCodeGuideImages;
         [SerializeField] private TextMeshProUGUI qrCodeGuideText;
         [SerializeField] private Button qrCodeGuideNextButton;
+        [SerializeField] private CodeReaderView codeReaderView;
 
         [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;
@@ -36,6 +43,8 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
 
+        private const string GuestPrivateKeyUrl =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
         protected override void Awake()
         {
             base.Awake();
@@ -49,11 +58,9 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, _privateKey);
             });
-
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-                startButtonContainer.SetActive(false);
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
@@ -73,6 +80,7 @@ namespace Nekoyume.UI
             startButton.interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
+            GetGuestPrivateKey();
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -81,24 +89,19 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-            if (Platform.IsMobilePlatform())
-            {
-                mobileContainer.SetActive(true);
-                videoImage.gameObject.SetActive(false);
-                startButtonContainer.SetActive(false);
-                qrCodeGuideContainer.SetActive(false);
-                mobileIndicator.Close();
-
-                StartCoroutine(CoShowMobile());
-            }
-            else
-            {
-                mobileContainer.SetActive(false);
-
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-                indicator.Show("Verifying transaction..");
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            }
+#if UNITY_ANDROID
+            mobileContainer.SetActive(true);
+            videoImage.gameObject.SetActive(false);
+            startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+            mobileIndicator.Close();
+            StartCoroutine(CoShowMobile());
+#else
+            mobileContainer.SetActive(false);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+            indicator.Show("Verifying transaction..");
+            Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+#endif
         }
 
         private IEnumerator CoShowMobile()
@@ -120,16 +123,9 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             }
 
-            var keystore = Find<LoginSystem>().KeyStore;
-            if (keystore.ListIds().Any())
-            {
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            }
-            else
-            {
-                Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-                startButtonContainer.SetActive(true);
-            }
+            Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
+            startButtonContainer.SetActive(true);
+            signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
         }
 
         private void OnVideoEnd()
@@ -143,9 +139,17 @@ namespace Nekoyume.UI
         {
             if (_guideIndex >= GuideCount)
             {
+                _guideIndex = 0;
                 qrCodeGuideContainer.SetActive(false);
 
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+                codeReaderView.Show(res =>
+                {
+                    var loginSystem = Find<LoginSystem>();
+                    loginSystem.KeyStore.Add(ProtectedPrivateKey.FromJson(res.Text));
+                    codeReaderView.Close();
+                    startButtonContainer.SetActive(false);
+                    loginSystem.Show(_keyStorePath, _privateKey);
+                });
             }
             else
             {
@@ -153,6 +157,32 @@ namespace Nekoyume.UI
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
+        }
+
+        private async void GetGuestPrivateKey()
+        {
+            string pk;
+            try
+            {
+                var request = UnityWebRequest.Get(GuestPrivateKeyUrl);
+                await request.SendWebRequest();
+                pk = request.downloadHandler.text.Trim();
+                ByteUtil.ParseHex(pk);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to get guest private key: {e}");
+                return;
+            }
+
+            guestButton.gameObject.SetActive(true);
+            guestButton.onClick.AddListener(() =>
+            {
+                startButtonContainer.SetActive(false);
+                Find<LoginSystem>().Show(_keyStorePath, pk);
+                Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+            });
+            guestButton.interactable = true;
         }
     }
 }

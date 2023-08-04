@@ -1,9 +1,8 @@
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using NUnit.Framework;
 
 namespace Tests.EditMode

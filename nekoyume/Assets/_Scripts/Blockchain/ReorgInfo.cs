@@ -1,5 +1,5 @@
-using Libplanet;
 using System.Security.Cryptography;
+using Libplanet.Common;
 
 namespace Nekoyume.Blockchain
 {

@@ -7720,6 +7720,8 @@ MonoBehaviour:
   <ProductImage>k__BackingField: {fileID: 2441699298297779855}
   <BuyLimitMessageText>k__BackingField: {fileID: 2285676750530884925}
   <PurchaseButton>k__BackingField: {fileID: 6808450648978192070}
+  <PurchaseButtonDissableGroupObj>k__BackingField: {fileID: 1286403636914023563}
+  <PurchaseButtonLoadingObj>k__BackingField: {fileID: 4214360753862925873}
   <PriceTexts>k__BackingField:
   - {fileID: 8618622782397698341}
   - {fileID: 7884038794024794594}
@@ -9838,6 +9840,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a0b987d9e902134fa44625a2541ac08, type: 3}
+--- !u!114 &4214360753862925873 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7689968050281011826, guid: 1a0b987d9e902134fa44625a2541ac08,
+    type: 3}
+  m_PrefabInstance: {fileID: 5819824946418975811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6354594962433359911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93252f5c39664958b1279ec25159433b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6028168309378242200 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 246696151481537243, guid: 1a0b987d9e902134fa44625a2541ac08,

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Blockchain;
 using UnityEditor;

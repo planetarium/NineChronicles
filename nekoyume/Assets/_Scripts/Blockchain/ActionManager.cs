@@ -5,9 +5,9 @@ using System.Numerics;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.Assets;
-using Libplanet.Tx;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Tx;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
@@ -1474,7 +1474,7 @@ namespace Nekoyume.Blockchain
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<ApprovePledge>()
                 .Timeout(ActionTimeout)
-                .Where(eval => eval.Action.PatronAddress.Equals(action.PatronAddress))
+                .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e =>

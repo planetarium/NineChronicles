@@ -2,7 +2,7 @@ using Libplanet.Crypto;
 using System;
 using System.Globalization;
 using System.Linq;
-using Libplanet;
+using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume;
 using UnityEngine;

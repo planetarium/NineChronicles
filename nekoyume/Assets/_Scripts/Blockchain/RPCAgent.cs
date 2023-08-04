@@ -12,11 +12,10 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.Assets;
-using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
@@ -36,7 +35,7 @@ using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
-using NCTx = Libplanet.Tx.Transaction;
+using NCTx = Libplanet.Types.Tx.Transaction;
 
 namespace Nekoyume.Blockchain
 {
@@ -188,8 +187,14 @@ namespace Nekoyume.Blockchain
                 return null;
             }
 
-            byte[] raw = await _service.GetState(address.ToByteArray(), blockHash.Value.ToByteArray());
-            IValue result = _codec.Decode(raw);
+            return await GetStateAsync(address, blockHash.Value);
+        }
+
+        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
+        {
+            var bytes = await _service.GetState(address.ToByteArray(), blockHash.ToByteArray());
+            var decoded = _codec.Decode(bytes);
+            var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(address))
             {
                 game.CachedStateAddresses[address] = true;
@@ -197,10 +202,10 @@ namespace Nekoyume.Blockchain
 
             if (game.CachedStates.ContainsKey(address))
             {
-                game.CachedStates.AddOrUpdate(address, result);
+                game.CachedStates.AddOrUpdate(address, decoded);
             }
 
-            return result;
+            return decoded;
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
@@ -512,7 +517,7 @@ namespace Nekoyume.Blockchain
                 nonce: nonce,
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
-                actions: actions,
+                actions: actions.Select(action => action.PlainValue),
                 updatedAddresses: actions.CalculateUpdateAddresses(),
                 maxGasPrice: Currencies.Mead * 1,
                 gasLimit: gasLimit

@@ -55,6 +55,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI requiredBlockIndexText;
 
         [SerializeField]
+        private TextMeshProUGUI requiredTimeText;
+
+        [SerializeField]
         private TextMeshProUGUI timeText;
 
         [SerializeField]
@@ -403,8 +406,9 @@ namespace Nekoyume.UI
             progressBar.maxValue = Math.Max(state.RequiredBlockIndex, 1);
             var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
-            requiredBlockIndexText.text = $"{diff}.";
-            timeText.text = string.Format(L10nManager.Localize("UI_REMAINING_TIME"), Util.GetBlockToTimeString((int)diff));
+            requiredBlockIndexText.text = $"{diff}";
+            requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
+            timeText.text = L10nManager.Localize("UI_REMAINING_TIME", diff.BlockRangeToTimeSpanString(true));
         }
 
         private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)

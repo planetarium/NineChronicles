@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;

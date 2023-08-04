@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -62,6 +62,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI requiredBlockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI requiredTimeText;
 
         [SerializeField]
         private TextMeshProUGUI itemNameText;
@@ -308,7 +311,8 @@ namespace Nekoyume.UI.Module
             progressBar.maxValue = Math.Max(unlockBlockIndex - startBlockIndex, 1);
             var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
-            requiredBlockIndexText.text = $"{diff}.";
+            requiredBlockIndexText.text = $"{diff}";
+            requiredTimeText.text = $"({diff.BlockRangeToTimeSpanString(true)})";
         }
 
         private void UpdateNotification(

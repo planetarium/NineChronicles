@@ -27,68 +27,6 @@ namespace Nekoyume.Helper
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
 
-        public static TimeSpan GetBlockToTime(long block, int? secondsPerBlock = null)
-        {
-            if (block < 0)
-            {
-                return TimeSpan.Zero;
-            }
-
-            secondsPerBlock ??= LiveAssetManager.instance.GameConfig.SecondsPerBlock;
-
-            var remainSecond = block * secondsPerBlock;
-            var timeSpan = TimeSpan.FromSeconds(remainSecond.Value);
-            return timeSpan;
-        }
-
-        public static string GetBlockToTimeString(long block, int? secondsPerBlock = null)
-        {
-            if (block < 0)
-            {
-                return string.Empty;
-            }
-
-            var timeSpan = GetBlockToTime(block, secondsPerBlock);
-            return TimespanToString(timeSpan);
-        }
-
-        public static string TimespanToString(TimeSpan timeSpan)
-        {
-            var sb = new StringBuilder();
-
-            if (timeSpan.Days > 0)
-            {
-                sb.Append($"{timeSpan.Days}d");
-            }
-
-            if (timeSpan.Hours > 0)
-            {
-                if (timeSpan.Days > 0)
-                {
-                    sb.Append(" ");
-                }
-
-                sb.Append($"{timeSpan.Hours}h");
-            }
-
-            if (timeSpan.Minutes > 0)
-            {
-                if (timeSpan.Hours > 0)
-                {
-                    sb.Append(" ");
-                }
-
-                sb.Append($"{timeSpan.Minutes}m");
-            }
-
-            if (sb.Length == 0)
-            {
-                sb.Append("0m");
-            }
-
-            return sb.ToString();
-        }
-
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);

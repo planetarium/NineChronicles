@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Libplanet;
+using Libplanet.Common;
 using UnityEngine;
 using UnityEngine.UI;
 

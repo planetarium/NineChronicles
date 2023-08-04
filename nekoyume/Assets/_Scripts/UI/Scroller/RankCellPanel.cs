@@ -1,4 +1,4 @@
-using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;

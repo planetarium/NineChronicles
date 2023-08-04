@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Coffee.UIEffects;
 using Libplanet.Action;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;

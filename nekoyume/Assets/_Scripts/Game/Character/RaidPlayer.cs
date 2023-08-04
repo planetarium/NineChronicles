@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Libplanet;
+using Libplanet.Crypto;
 using UnityEngine;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;

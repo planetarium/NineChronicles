@@ -1,5 +1,5 @@
 ﻿using Nekoyume.L10n;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -78,11 +78,11 @@ namespace Nekoyume.UI
                 var ticketProgress = RxProps.ArenaTicketsProgress.Value; // Todo : remaining 표시
                 var progressed = ticketProgress.progressedBlockRange;
                 var total = ticketProgress.totalBlockRange;
+                long remaining = total - progressed;
 
                 remainingContainer.SetActive(true);
                 remainingSlider.thresholdRatio = (float)progressed / total;
-                remainingText.text =
-                    $"{total - progressed}({Util.GetBlockToTimeString(total - progressed)})";
+                remainingText.text = $"{remaining}({remaining.BlockRangeToTimeSpanString()})";
             }
 
             costContainer.SetActive(false);
@@ -120,8 +120,9 @@ namespace Nekoyume.UI
             purchaseMessage = $"{purchaseMessage} {purchasedCount}/{maxPurchaseCount}";
             if (showRemaining)
             {
-                var remaining = RxProps.ArenaTicketsProgress.Value.remainTimespanToReset;
-                purchaseMessage = $"{purchaseMessage}\n({remaining})";
+                var ticketProgress = RxProps.ArenaTicketsProgress.Value;
+                long remaining = ticketProgress.totalBlockRange - ticketProgress.progressedBlockRange;
+                purchaseMessage = $"{purchaseMessage}\n({remaining.BlockRangeToTimeSpanString()})";
             }
             purchaseText.text = purchaseMessage;
             purchaseText.color = Palette.GetColor(EnumType.ColorType.TextElement06);

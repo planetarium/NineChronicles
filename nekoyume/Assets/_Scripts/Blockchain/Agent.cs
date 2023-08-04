@@ -13,16 +13,16 @@ using AsyncIO;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
-using Libplanet;
-using Libplanet.Assets;
+using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Libplanet.Tx;
+using Libplanet.Types.Assets;
+using Libplanet.Types.Blocks;
+using Libplanet.Types.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
@@ -38,11 +38,10 @@ using NetMQ;
 using Serilog;
 using Serilog.Events;
 using UnityEngine;
-using NCTx = Libplanet.Tx.Transaction;
+using NCTx = Libplanet.Types.Tx.Transaction;
 
 namespace Nekoyume.Blockchain
 {
-    using Libplanet.Action;
     using System.Runtime.InteropServices;
     using UniRx;
 
@@ -165,8 +164,7 @@ namespace Nekoyume.Blockchain
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
                     blockChainStates,
-                    actionLoader,
-                    null);
+                    actionLoader);
 
                 if (store.GetCanonicalChainId() is null)
                 {
@@ -259,6 +257,11 @@ namespace Nekoyume.Blockchain
             }
 
             return await Task.Run(() => blocks.GetState(address));
+        }
+
+        public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
+        {
+            return await Task.Run(() => blocks.GetState(address, blockHash));
         }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(

@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
-using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
-using Nekoyume.TableData;
 using NUnit.Framework;
 
 namespace Tests.EditMode.State.Modifiers

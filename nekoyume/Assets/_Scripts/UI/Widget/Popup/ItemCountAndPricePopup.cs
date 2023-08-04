@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using TMPro;
 using UnityEngine;
 

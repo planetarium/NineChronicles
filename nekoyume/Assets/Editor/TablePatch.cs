@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Bencodex;
 using Bencodex.Types;
-using Libplanet;
+using Libplanet.Common;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.TableData;

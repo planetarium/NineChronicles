@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Coffee.UIEffects;
-using Libplanet.Assets;
+using Libplanet.Types.Assets;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using TMPro;

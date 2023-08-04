@@ -25,7 +25,8 @@ namespace Nekoyume.UI
 
         private void Set(long remainBlockIndex, int remainTicket, int maxTicket)
         {
-            timespanText.text = Util.GetBlockToTimeString(remainBlockIndex);
+            timespanText.text =
+                $"{remainBlockIndex:#,0}({remainBlockIndex.BlockRangeToTimeSpanString()})";
 
             fillText.text = $"{remainTicket}/{maxTicket}";
             slider.normalizedValue = remainTicket / (float)maxTicket;

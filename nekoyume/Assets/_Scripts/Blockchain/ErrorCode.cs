@@ -1,8 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
-using Libplanet.Action;
-using Libplanet.State;
-using Libplanet.Tx;
+using Libplanet.Action.State;
+using Libplanet.Types.Tx;
 using Nekoyume.Action;
 using Nekoyume.Exceptions;
 using Nekoyume.L10n;
