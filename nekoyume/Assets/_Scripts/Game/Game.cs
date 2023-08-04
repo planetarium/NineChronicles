@@ -1,3 +1,7 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +44,9 @@ using Random = UnityEngine.Random;
 #if UNITY_ANDROID
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
+#endif
+#if ENABLE_FIREBASE
+using NineChronicles.GoogleServices.Firebase.Runtime;
 #endif
 
 namespace Nekoyume.Game
@@ -259,7 +266,12 @@ namespace Nekoyume.Game
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
-            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+#if ENABLE_FIREBASE
+            // NOTE: Initialize Firebase.
+            yield return FirebaseManager.InitializeAsync().ToCoroutine();
+#endif
+            // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
+            //       initialize Firebase Manager.
             InitializeAnalyzer(
                 agentAddr: _commandLineOptions.PrivateKey is null
                     ? null
