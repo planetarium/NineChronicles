@@ -27,7 +27,6 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -42,6 +41,7 @@ using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
+using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
 #endif
@@ -1351,9 +1351,9 @@ namespace Nekoyume.Game
 
         private void InitializeAnalyzer(
             Address? agentAddr = null,
-            string? rpcServerHost = null)
+            string rpcServerHost = null)
         {
-            var uniqueId = agentAddr?.ToString() ?? null;
+            var uniqueId = agentAddr?.ToString();
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
