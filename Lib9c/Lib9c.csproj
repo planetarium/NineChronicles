@@ -9,6 +9,7 @@
     <IntermediateOutputPath>.obj</IntermediateOutputPath>
     <RootNamespace>Nekoyume</RootNamespace>
     <LangVersion>8</LangVersion>
+    <VersionPrefix>0.4.0</VersionPrefix>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
