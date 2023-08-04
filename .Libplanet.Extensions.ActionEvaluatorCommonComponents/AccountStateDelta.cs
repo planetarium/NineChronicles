@@ -18,6 +18,8 @@ public class AccountStateDelta : IAccountStateDelta
     private ValidatorSet? _validatorSet;
     private IAccountDelta _delta;
 
+    public IAccountState BaseState { get; set; }
+
     public IImmutableSet<Address> UpdatedAddresses => _delta.UpdatedAddresses;
 
     public IImmutableSet<Address> StateUpdatedAddresses => _delta.StateUpdatedAddresses;
@@ -121,7 +123,7 @@ public class AccountStateDelta : IAccountStateDelta
     public IValue? GetState(Address address) =>
         _states.ContainsKey(address)
             ? _states[address]
-            : throw new NotSupportedException();
+            : BaseState.GetState(address);
 
     public IReadOnlyList<IValue?> GetStates(IReadOnlyList<Address> addresses) =>
         addresses.Select(GetState).ToArray();
@@ -132,7 +134,7 @@ public class AccountStateDelta : IAccountStateDelta
     {
         if (!_fungibles.TryGetValue((address, currency), out BigInteger rawValue))
         {
-            throw new NotSupportedException();
+            return BaseState.GetBalance(address, currency);
         }
 
         return FungibleAssetValue.FromRawValue(currency, rawValue);
@@ -155,7 +157,7 @@ public class AccountStateDelta : IAccountStateDelta
             return FungibleAssetValue.FromRawValue(currency, totalSupplyValue);
         }
 
-        throw new NotSupportedException();
+        return BaseState.GetTotalSupply(currency);
     }
 
     public IAccountStateDelta MintAsset(
@@ -192,7 +194,10 @@ public class AccountStateDelta : IAccountStateDelta
                 ),
                 _totalSupplies.SetItem(currency, (currentTotalSupply + value).RawValue),
                 _validatorSet
-            );
+            )
+            {
+                BaseState = BaseState,
+            };
         }
 
         return new AccountStateDelta(
@@ -203,7 +208,10 @@ public class AccountStateDelta : IAccountStateDelta
             ),
             _totalSupplies,
             _validatorSet
-        );
+        )
+        {
+            BaseState = BaseState,
+        };
     }
 
     public IAccountStateDelta TransferAsset(
@@ -234,7 +242,10 @@ public class AccountStateDelta : IAccountStateDelta
         var balances = _fungibles
             .SetItem((sender, currency), senderRemains.RawValue)
             .SetItem((recipient, currency), recipientRemains.RawValue);
-        return new AccountStateDelta(_states, balances, _totalSupplies, _validatorSet);
+        return new AccountStateDelta(_states, balances, _totalSupplies, _validatorSet)
+        {
+            BaseState = BaseState,
+        };
     }
 
     public IAccountStateDelta BurnAsset(
@@ -273,12 +284,15 @@ public class AccountStateDelta : IAccountStateDelta
                     (GetTotalSupply(currency) - value).RawValue)
                 : _totalSupplies,
             _validatorSet
-        );
+        )
+        {
+            BaseState = BaseState,
+        };
     }
 
     public ValidatorSet GetValidatorSet()
     {
-        return _validatorSet ?? throw new NotSupportedException();
+        return _validatorSet ?? BaseState.GetValidatorSet();
     }
 
     public IAccountStateDelta SetValidator(Validator validator)
@@ -288,6 +302,9 @@ public class AccountStateDelta : IAccountStateDelta
             _fungibles,
             _totalSupplies,
             GetValidatorSet().Update(validator)
-        );
+        )
+        {
+            BaseState = BaseState,
+        };
     }
 }
