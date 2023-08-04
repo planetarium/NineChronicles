@@ -360,7 +360,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
 #if UNITY_ANDROID
-            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.GoogleTest);
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
             yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
@@ -710,6 +710,8 @@ namespace Nekoyume.Game
                                 NotificationCell.NotificationType.Notification);
                         }
                     }
+
+                    Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
                 Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
@@ -1222,13 +1224,13 @@ namespace Nekoyume.Game
                                        Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
-                var arenaTypeText = roundData.ArenaType == ArenaType.Season
+                var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
                     ? L10nManager.Localize("UI_SEASON")
                     : L10nManager.Localize("UI_CHAMPIONSHIP");
 
-                var arenaSeason = roundData.ArenaType == ArenaType.Championship
+                var arenaSeason = nextRoundData.ArenaType == ArenaType.Championship
                     ? roundData.ChampionshipId
-                    : row.GetSeasonNumber(roundData.Round);
+                    : row.GetSeasonNumber(nextRoundData.Round);
 
                 var content = L10nManager.Localize(
                     "PUSH_ARENA_SEASON_START_CONTENT",
