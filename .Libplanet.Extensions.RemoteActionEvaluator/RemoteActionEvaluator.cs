@@ -39,6 +39,23 @@ public class RemoteActionEvaluator : IActionEvaluator
         var actionEvaluations = evaluationResponse.Evaluations.Select(ActionEvaluationMarshaller.Deserialize)
             .ToImmutableList();
 
+        for (var i = 0; i < actionEvaluations.Count; ++i)
+        {
+            if (i > 0)
+            {
+                actionEvaluations[i].InputContext.PreviousState.BaseState =
+                    actionEvaluations[i - 1].OutputState;
+            }
+            else
+            {
+                actionEvaluations[i].InputContext.PreviousState.BaseState =
+                    _blockChainStates.GetBlockState(block.PreviousHash);
+            }
+
+            actionEvaluations[i].OutputState.BaseState =
+                actionEvaluations[i].InputContext.PreviousState;
+        }
+
         return actionEvaluations;
     }
 
