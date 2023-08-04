@@ -344,7 +344,7 @@ namespace Nekoyume.State
                 = await _agent.GetStateAsync(participantsAddr) is List participantsList
                     ? new ArenaParticipants(participantsList)
                     : null;*/
-            var participants = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
+            var participants = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
             if (participants is null || participants.Count == 0)
             {
                 return new PlayerArenaParticipant(
@@ -364,7 +364,7 @@ namespace Nekoyume.State
                     0);
             }
 
-            ArenaBoardDataSchema playerData = participants.FirstOrDefault(particpant => particpant.Addr == currentAvatarAddr.ToString());
+            ArenaParticipantSchema playerData = participants.FirstOrDefault(particpant => particpant.AvartarAddr == currentAvatarAddr.ToString());
 
             PlayerArenaParticipant playersArenaParticipant = null;
             int playerScore;

@@ -23,6 +23,7 @@ using NineChronicles.ExternalServices.ArenaService.Runtime.Models;
 namespace Nekoyume.UI
 {
     using Libplanet.Crypto;
+    using Nekoyume.Arena;
     using Nekoyume.Model.State;
     using UniRx;
 
@@ -55,7 +56,7 @@ namespace Nekoyume.UI
         private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
         private GrandFinaleStates.GrandFinaleParticipant[] _grandFinaleParticipants;
         private bool _useGrandFinale;
-        private ArenaBoardDataSchema[] _arenaBoardDatas;
+        private ArenaParticipantSchema[] _arenaBoardDatas;
 
         protected override void Awake()
         {
@@ -77,7 +78,8 @@ namespace Nekoyume.UI
             loading.Show();
             if (!_useGrandFinale)
             {
-                var dummyArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(0,0,Game.Game.instance.Agent.Address);
+                var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(Game.Game.instance.Agent.BlockIndex);
+                var dummyArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
                 _arenaBoardDatas = dummyArenaBoardDatas.ToArray();
 
                 loading.Close();
@@ -101,7 +103,7 @@ namespace Nekoyume.UI
 
         public void Show(
             ArenaSheet.RoundData roundData,
-            ArenaBoardDataSchema[] arenaBoardDatas,
+            ArenaParticipantSchema[] arenaBoardDatas,
             bool ignoreShowAnimation = false)
         {
             _useGrandFinale = false;
@@ -201,11 +203,11 @@ namespace Nekoyume.UI
             popup.ShowAsync(avatarState, BattleType.Arena).Forget();
         }
 
-        private async UniTaskVoid ShowArenaBattlePreperation(ArenaBoardDataSchema arenaBoardData)
+        private async UniTaskVoid ShowArenaBattlePreperation(ArenaParticipantSchema arenaBoardData)
         {
             var loadingScreen = Widget.Find<GrayLoadingScreen>();
             loadingScreen.Show("UI_LOADING_STATES", true);
-            var (exist, avatarState) = await States.TryGetAvatarStateAsync(new Address(arenaBoardData.Addr));
+            var (exist, avatarState) = await States.TryGetAvatarStateAsync(new Address(arenaBoardData.AvartarAddr));
             if (!exist)
             {
                 NotificationSystem.Push(
@@ -267,7 +269,7 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    var avatarAddress = _arenaBoardDatas[index].Addr;
+                    var avatarAddress = _arenaBoardDatas[index].AvartarAddr;
                     ShowAvaterStateInfoAsync(avatarAddress).Forget();
                 })
                 .AddTo(gameObject);
@@ -308,6 +310,7 @@ namespace Nekoyume.UI
             List<ArenaBoardPlayerItemData> scrollData = new List<ArenaBoardPlayerItemData>();
             foreach (var item in _arenaBoardDatas)
             {
+                var (win, lose, _) = ArenaHelper.GetScores(RxProps.PlayersArenaParticipant.Value.Score, item.Score);
                 scrollData.Add(new ArenaBoardPlayerItemData
                 {
                     name = item.Name,
@@ -317,10 +320,10 @@ namespace Nekoyume.UI
                     cp = 0,
                     score = item.Score,
                     rank = item.Rank,
-                    expectWinDeltaScore = item.ExpectWinScore,
-                    interactableChoiceButton = !item.Addr.Equals(States.Instance.CurrentAvatarState.address),
+                    expectWinDeltaScore = win,
+                    interactableChoiceButton = !item.AvartarAddr.Equals(States.Instance.CurrentAvatarState.address),
                     canFight = true,
-                    address = item.Addr,
+                    address = item.AvartarAddr,
                 });
 
             }

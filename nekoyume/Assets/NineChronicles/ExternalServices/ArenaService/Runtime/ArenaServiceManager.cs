@@ -58,6 +58,49 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
             IsDisposed = true;
         }
 
+        public async Task<IReadOnlyList<ArenaParticipantSchema>?> GetArenaParticipantListAsync(int championshipId, int round, Address agentAddr)
+        {
+            if (!IsInitialized)
+            {
+                Debug.LogWarning("ArenaServiceManager is not initialized.");
+                return null;
+            }
+            var (code, error, mediaType, content) = await _client.ArenaParticipantListAsync(championshipId, round, agentAddr);
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"FetchProducts failed: {code}, {error}, {mediaType}, {content}  sendData:{championshipId}, {round}, {agentAddr}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<ArenaParticipantSchema[]>(
+                    content!,
+                    ArenaServiceClient.JsonSerializerOptions)!;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         public async Task<ArenaInfoSchema?> GetDummyArenaInfoAsync(Address agentAddr, int championshipId, int round)
         {
             if (!IsInitialized)
@@ -101,14 +144,14 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
             }
         }
 
-        public async Task<IReadOnlyList<ArenaBoardDataSchema>?> GetDummyArenaBoadDatasAsync(int championship, int arenaRound, Address agentAddr)
+        public async Task<IReadOnlyList<ArenaParticipantSchema>?> GetDummyArenaBoadDatasAsync(int championship, int arenaRound, Address agentAddr)
         {
             if (!IsInitialized)
             {
                 Debug.LogWarning("ArenaServiceManager is not initialized.");
                 return null;
             }
-            var (code, error, mediaType, content) = await _client.DummyArenaBoadDataAsync(championship, championship, agentAddr);
+            var (code, error, mediaType, content) = await _client.DummyArenaBoadDataAsync(championship, arenaRound, agentAddr);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
@@ -133,7 +176,7 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
 
             try
             {
-                return JsonSerializer.Deserialize<ArenaBoardDataSchema[]>(
+                return JsonSerializer.Deserialize<ArenaParticipantSchema[]>(
                     content!,
                     ArenaServiceClient.JsonSerializerOptions)!;
             }

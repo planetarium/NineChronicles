@@ -2,16 +2,19 @@ using System.Text.Json.Serialization;
 
 namespace NineChronicles.ExternalServices.ArenaService.Runtime.Models
 {
-    public class ArenaBoardDataSchema
+    public class ArenaParticipantSchema
     {
-        [JsonPropertyName("addr")]
-        public string Addr { get; set; }
+        [JsonPropertyName("avatar_addr")]
+        public string AvartarAddr { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
         [JsonPropertyName("level")]
         public int Level { get; set; }
+
+        [JsonPropertyName("cp")]
+        public int CP { get; set; }
 
         [JsonPropertyName("costume_id")]
         public int CostumeId { get; set; }
@@ -24,8 +27,5 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime.Models
 
         [JsonPropertyName("rank")]
         public int Rank { get; set; }
-
-        [JsonPropertyName("expect_win_score")]
-        public int ExpectWinScore { get; set; }
     }
 }

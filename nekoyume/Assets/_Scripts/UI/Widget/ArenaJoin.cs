@@ -82,7 +82,7 @@ namespace Nekoyume.UI
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
 
-        private ArenaBoardDataSchema[] _arenaBoardDatas;
+        private ArenaParticipantSchema[] _arenaBoardDatas;
 
         protected override void Awake()
         {
@@ -110,7 +110,8 @@ namespace Nekoyume.UI
             var loading = Find<DataLoadingScreen>();
             loading.Show();
 
-            var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetDummyArenaBoadDatasAsync(0,0,Game.Game.instance.Agent.Address);
+            var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(Game.Game.instance.Agent.BlockIndex);
+            var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
             _arenaBoardDatas = arenaDashboad.ToArray();
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
                                 RxProps.PlayersArenaParticipant.UpdateAsync());

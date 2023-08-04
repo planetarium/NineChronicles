@@ -47,6 +47,26 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            ArenaInfoAsync(int blockIndex,int championship, int arenaRound)
+        {
+            var uriBuilder = new UriBuilder(_endpoints.ArenaInfo);
+            uriBuilder.Query = $"block_index={blockIndex}&championship={championship}&round={arenaRound}";
+            using var res = await _client.GetAsync(uriBuilder.Uri);
+            return await ProcessResponseAsync(res);
+        }
+
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            ArenaParticipantListAsync(int championship, int arenaRound, Address avatarAddr)
+        {
+            var uriBuilder = new UriBuilder(_endpoints.ArenaParticipantList);
+            uriBuilder.Query = $"championship={championship}&round={arenaRound}&avatar_addr={avatarAddr.ToString()}";
+            using var res = await _client.GetAsync(uriBuilder.Uri);
+            return await ProcessResponseAsync(res);
+        }
+
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             DummyArenaInfoAsync(int championship, int arenaRound, Address avatarAddr)
         {
             var uriBuilder = new UriBuilder(_endpoints.DummyArenaMy);
