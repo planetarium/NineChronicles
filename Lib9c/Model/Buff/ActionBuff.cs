@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Buff
 
         public abstract BattleStatus.Skill GiveEffect(
             CharacterBase affectedCharacter,
-            int simulatorWaveTurn, bool copyCharacter);
+            int simulatorWaveTurn, bool copyCharacter = true);
 
         public abstract BattleStatus.Arena.ArenaSkill GiveEffectForArena(
             ArenaCharacter affectedCharacter,

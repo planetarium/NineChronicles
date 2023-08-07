@@ -32,7 +32,7 @@ namespace Nekoyume.Model.Buff
         }
 
         public override BattleStatus.Skill GiveEffect(CharacterBase affectedCharacter,
-            int simulatorWaveTurn, bool copyCharacter)
+            int simulatorWaveTurn, bool copyCharacter = true)
         {
             var clone = copyCharacter ? (CharacterBase) affectedCharacter.Clone() : null;
             var damage = affectedCharacter.GetDamage(Power, false);
