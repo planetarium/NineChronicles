@@ -3,13 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\.Libplanet.Extensions.RemoteBlockChainStates\Libplanet.Extensions.RemoteBlockChainStates.csproj" />
     <ProjectReference Include="..\.Libplanet.Extensions.ActionEvaluatorCommonComponents\Libplanet.Extensions.ActionEvaluatorCommonComponents.csproj" />

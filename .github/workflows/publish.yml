@@ -2,7 +2,9 @@ name: publish
 
 on:
   push:
-    branches: main
+    branches:
+      - development
+      - main
 
 jobs:
   nuget:
@@ -21,8 +23,8 @@ jobs:
           project_suffix=dev.${{ github.sha }}
           dotnet_args="$dotnet_args --version-suffix $project_suffix"
         fi
-        dotnet build $dotnet_args
-        dotnet pack  $dotnet_args
+        dotnet build "$dotnet_args"
+        dotnet pack "$dotnet_args"
     - name: push
       if: github.event_name != 'pull_request'
       run: |
@@ -33,3 +35,27 @@ jobs:
         fi
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  s3-lib9c-stateservice:
+    strategy:
+      matrix:
+        runtime: ["osx-arm64", "linux-arm64", "linux-x64", "win-x64"]
+    name: Publish Lib9c.StateService (${{ matrix.runtime }})
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.400
+    - name: Publish Lib9c.StateService
+      run: dotnet publish ./.Lib9c.StateService/Lib9c.StateService.csproj -o out -r ${{ matrix.runtime }}
+    - name: Compress the build result
+      run: zip -r ../${{ matrix.runtime }}.zip .
+      working-directory: ./out
+    - name: Upload S3
+      run: aws s3 cp ${{ matrix.runtime }}.zip s3://9c-dx/lib9c-stateservices/${{ github.sha }}/
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: "us-east-2"

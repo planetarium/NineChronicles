@@ -2,10 +2,13 @@ name: main
 
 on:
   push:
-    branches: []
-    tags: []
+    branches:
+      - "*"
+    tags:
+      - "*"
   pull_request:
-    branches: []
+    branches:
+      - "*"
 
 jobs:
   build-and-test:
@@ -47,7 +50,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration ${{ matrix.configuration }}
+      run: dotnet build --self-contained=false --no-restore --configuration ${{ matrix.configuration }}
     - name: Test
       run: dotnet test --no-restore --verbosity normal --configuration ${{ matrix.configuration }}
 
@@ -69,7 +72,7 @@ jobs:
           sed -i -E 's|\[MaybeNullWhen\(false\)] out TValue value|out TValue value|' Lib9c/TableData/Sheet.cs
           sed -i -E 's|public bool TryGetValue\(TKey key, out TValue value, bool throwException\)|public bool TryGetValue\(TKey key, out TValue? value, bool throwException\)|' Lib9c/TableData/Sheet.cs
       - name: build
-        run: dotnet build
+        run: dotnet build --self-contained=false
 
   release:
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
@@ -84,13 +87,14 @@ jobs:
         set -evx
         curl -o /tmp/web-flow.gpg "$WEB_FLOW_KEY_URL"
         gpg --import /tmp/web-flow.gpg
+        # shellcheck disable=SC2126
         if ! git verify-commit "$GITHUB_REF_NAME" && \
            [[ "$( git cat-file -p "$GITHUB_REF_NAME" \
                 | grep -Ei '^parent\s+[0-9a-f]{40}$' | wc -l )" -lt 2 ]]; then
           echo "::error title=Invalid tag commit::Tags must refer to a merge" \
                "commit or a commit signed by GitHub web-flow" \
                "($WEB_FLOW_KEY_URL).  The tag $GITHUB_REF_NAME refers to " \
-               "a commit $(git rev-parse $GITHUB_REF_NAME) which is neither" \
+               "a commit $(git rev-parse "$GITHUB_REF_NAME") which is neither" \
                "a merge commit nor signed by GitHub web-flow."
           exit 1
         fi
@@ -104,12 +108,19 @@ jobs:
       run: |
         mkdir publish
         dotnet run --property WarningLevel=0 --project .Lib9c.Tools/Lib9c.Tools.csproj -- action list > publish/all_action_type_ids.txt
+        dotnet run --property WarningLevel=0 --project .Lib9c.Tools/Lib9c.Tools.csproj -- action list --obsolete-only --json-path=publish/obsolete_action_types.json
     - name: Publish available action type ids
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./publish
         destination_dir: ${{ github.ref_name }}
+    - name: Publish available action type ids for latest
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./publish
+        destination_dir: latest
 
   update-submodule:
     if: github.ref_type == 'branch' && startsWith(github.ref_name, 'release/')
