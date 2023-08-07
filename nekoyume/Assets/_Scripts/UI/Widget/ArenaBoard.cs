@@ -79,9 +79,8 @@ namespace Nekoyume.UI
             if (!_useGrandFinale)
             {
                 var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(Game.Game.instance.Agent.BlockIndex);
-                var dummyArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
-                _arenaBoardDatas = dummyArenaBoardDatas.ToArray();
-
+                var ArenaBoardDatas = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
+                _arenaBoardDatas = ArenaBoardDatas == null ? new ArenaParticipantSchema[] { } : ArenaBoardDatas.ToArray();
                 loading.Close();
                 Show(ignoreShowAnimation);
             }

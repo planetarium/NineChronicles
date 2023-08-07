@@ -84,6 +84,8 @@ namespace Nekoyume.UI
 
         private ArenaParticipantSchema[] _arenaBoardDatas;
 
+        private bool _isParticipant = false;
+
         protected override void Awake()
         {
             base.Awake();
@@ -112,7 +114,11 @@ namespace Nekoyume.UI
 
             var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(Game.Game.instance.Agent.BlockIndex);
             var arenaDashboad = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
-            _arenaBoardDatas = arenaDashboad.ToArray();
+            if(arenaDashboad != null)
+            {
+                _isParticipant = true;
+            }
+            _arenaBoardDatas = arenaDashboad == null ? new ArenaParticipantSchema[] { } : arenaDashboad.ToArray();
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
                                 RxProps.PlayersArenaParticipant.UpdateAsync());
 
@@ -155,7 +161,12 @@ namespace Nekoyume.UI
             if (eval.Exception is { })
             {
                 _innerState = InnerState.Idle;
+                var notiMessage = eval.Exception.InnerException.Message.Substring(eval.Exception.InnerException.Message.IndexOf(']') + 1).Trim();
                 Find<LoadingScreen>().Close();
+                NotificationSystem.Push(
+                            MailType.System,
+                            notiMessage,
+                            NotificationCell.NotificationType.Information);
                 return;
             }
 
@@ -344,7 +355,8 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 if (RxProps.ArenaInfoTuple.HasValue &&
-                    RxProps.ArenaInfoTuple.Value.current is { })
+                    RxProps.ArenaInfoTuple.Value.current is { } &&
+                    _isParticipant)
                 {
                     Close();
                     Find<ArenaBoard>().Show(

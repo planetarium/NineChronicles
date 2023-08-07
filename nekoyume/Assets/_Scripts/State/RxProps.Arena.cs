@@ -113,8 +113,6 @@ namespace Nekoyume.State
             }
         }
 
-        private const bool ExternalServiceLoad = true;
-
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
@@ -255,60 +253,29 @@ namespace Nekoyume.State
             ArenaInformation currentArenaInfo = null;
             ArenaInformation nextArenaInfo = null;
 
-            if (ExternalServiceLoad)
-            {
-                var currentDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, currentRoundData.ChampionshipId, currentRoundData.Round);
-                var curArenaInfoAddr = new Address(currentDummyArenaInfo.Addr);
-                List arenainfoDataList = List.Empty
-                    .Add(curArenaInfoAddr.Serialize())
-                    .Add((Integer)currentDummyArenaInfo.Win)
-                    .Add((Integer)currentDummyArenaInfo.Lose)
-                    .Add((Integer)currentDummyArenaInfo.Ticket)
-                    .Add((Integer)currentDummyArenaInfo.TicketResetCount)
-                    .Add((Integer)currentDummyArenaInfo.PurchasedTicketCount);
-                currentArenaInfo = new ArenaInformation(arenainfoDataList);
+            var currentDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, currentRoundData.ChampionshipId, currentRoundData.Round);
+            var curArenaInfoAddr = new Address(currentDummyArenaInfo.Addr);
+            List arenainfoDataList = List.Empty
+                .Add(curArenaInfoAddr.Serialize())
+                .Add((Integer)currentDummyArenaInfo.Win)
+                .Add((Integer)currentDummyArenaInfo.Lose)
+                .Add((Integer)currentDummyArenaInfo.Ticket)
+                .Add((Integer)currentDummyArenaInfo.TicketResetCount)
+                .Add((Integer)currentDummyArenaInfo.PurchasedTicketCount);
+            currentArenaInfo = new ArenaInformation(arenainfoDataList);
 
-                if (sheet.TryGetNextRound(blockIndex, out var nextRoundData))
-                {
-                    var nextDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, nextRoundData.ChampionshipId, nextRoundData.Round);
-                    var nextArenaInfoAddr = new Address(nextDummyArenaInfo.Addr);
-                    arenainfoDataList = List.Empty
-                        .Add(nextArenaInfoAddr.Serialize())
-                        .Add((Integer)nextDummyArenaInfo.Win)
-                        .Add((Integer)nextDummyArenaInfo.Lose)
-                        .Add((Integer)nextDummyArenaInfo.Ticket)
-                        .Add((Integer)nextDummyArenaInfo.TicketResetCount)
-                        .Add((Integer)nextDummyArenaInfo.PurchasedTicketCount);
-                    nextArenaInfo = new ArenaInformation(arenainfoDataList);
-                }
-            }
-            else
+            if (sheet.TryGetNextRound(blockIndex, out var nextRoundData))
             {
-                var currentArenaInfoAddress = ArenaInformation.DeriveAddress(
-                                                                avatarAddress.Value,
-                                                                currentRoundData.ChampionshipId,
-                                                                currentRoundData.Round);
-                var nextArenaInfoAddress = sheet.TryGetNextRound(blockIndex, out var nextRoundData)
-                    ? ArenaInformation.DeriveAddress(
-                        avatarAddress.Value,
-                        nextRoundData.ChampionshipId,
-                        nextRoundData.Round)
-                    : default;
-                var dict = await _agent.GetStateBulk(
-                    new[]
-                    {
-                    currentArenaInfoAddress,
-                    nextArenaInfoAddress
-                    }
-                );
-                currentArenaInfo =
-                    dict[currentArenaInfoAddress] is List currentList
-                        ? new ArenaInformation(currentList)
-                        : null;
-                nextArenaInfo =
-                    dict[nextArenaInfoAddress] is List nextList
-                        ? new ArenaInformation(nextList)
-                        : null;
+                var nextDummyArenaInfo = await Game.Game.instance.ArenaServiceManager.GetDummyArenaInfoAsync(avatarAddress.Value, nextRoundData.ChampionshipId, nextRoundData.Round);
+                var nextArenaInfoAddr = new Address(nextDummyArenaInfo.Addr);
+                arenainfoDataList = List.Empty
+                    .Add(nextArenaInfoAddr.Serialize())
+                    .Add((Integer)nextDummyArenaInfo.Win)
+                    .Add((Integer)nextDummyArenaInfo.Lose)
+                    .Add((Integer)nextDummyArenaInfo.Ticket)
+                    .Add((Integer)nextDummyArenaInfo.TicketResetCount)
+                    .Add((Integer)nextDummyArenaInfo.PurchasedTicketCount);
+                nextArenaInfo = new ArenaInformation(arenainfoDataList);
             }
 
             return (currentArenaInfo, nextArenaInfo);
@@ -337,13 +304,6 @@ namespace Nekoyume.State
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
             var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            /*var participantsAddr = ArenaParticipants.DeriveAddress(
-                currentRoundData.ChampionshipId,
-                currentRoundData.Round);
-            var participants
-                = await _agent.GetStateAsync(participantsAddr) is List participantsList
-                    ? new ArenaParticipants(participantsList)
-                    : null;*/
             var participants = await Game.Game.instance.ArenaServiceManager.GetArenaParticipantListAsync(currentRoundData.ChampionshipId, currentRoundData.Round, Game.Game.instance.Agent.Address);
             if (participants is null || participants.Count == 0)
             {

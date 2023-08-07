@@ -65,12 +65,13 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
                 Debug.LogWarning("ArenaServiceManager is not initialized.");
                 return null;
             }
+
             var (code, error, mediaType, content) = await _client.ArenaParticipantListAsync(championshipId, round, agentAddr);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
                 Debug.LogError(
-                    $"FetchProducts failed: {code}, {error}, {mediaType}, {content}  sendData:{championshipId}, {round}, {agentAddr}");
+                    $"failed: {code}, {error}, {mediaType}, {content}  sendData:{championshipId}, {round}, {agentAddr}");
                 return null;
             }
 
@@ -113,7 +114,7 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
                 !string.IsNullOrEmpty(error))
             {
                 Debug.LogError(
-                    $"FetchProducts failed: {code}, {error}, {mediaType}, {content}");
+                    $"failed: {code}, {error}, {mediaType}, {content}");
                 return null;
             }
 
@@ -156,7 +157,7 @@ namespace NineChronicles.ExternalServices.ArenaService.Runtime
                 !string.IsNullOrEmpty(error))
             {
                 Debug.LogError(
-                    $"FetchProducts failed: {code}, {error}, {mediaType}, {content}");
+                    $"failed: {code}, {error}, {mediaType}, {content}");
                 return null;
             }
 
