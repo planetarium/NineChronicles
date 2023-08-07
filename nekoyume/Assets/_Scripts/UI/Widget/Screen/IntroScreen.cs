@@ -36,6 +36,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private Button videoSkipButton;
 
         private int _guideIndex = 0;
         private const int GuideCount = 3;
@@ -52,6 +53,7 @@ namespace Nekoyume.UI
             mobileIndicator.Close();
 
             videoPlayer.loopPointReached += _ => OnVideoEnd();
+            videoSkipButton.onClick.AddListener(OnVideoEnd);
 
             startButton.onClick.AddListener(() =>
             {
@@ -80,6 +82,7 @@ namespace Nekoyume.UI
             startButton.interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
+            videoSkipButton.interactable = true;
             GetGuestPrivateKey();
         }
 
@@ -115,8 +118,13 @@ namespace Nekoyume.UI
                 PlayerPrefs.Save();
 
                 videoImage.gameObject.SetActive(true);
+                videoSkipButton.gameObject.SetActive(false);
                 videoPlayer.Play();
                 Analyzer.Instance.Track("Unity/Intro/Video/Start");
+
+                yield return new WaitForSeconds(5);
+
+                videoSkipButton.gameObject.SetActive(true);
             }
             else
             {
