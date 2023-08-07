@@ -5,7 +5,7 @@ root = true
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
-tab_width = 8
+tab_width = 4
 trim_trailing_whitespace = true
 
 [*.{cs,csproj,md,xml}]
@@ -41,3 +41,8 @@ quote_type = double
 
 [*.sln]
 indent_style = tab
+
+[*.{yaml, yml}]
+indent_size = 2
+quote_type = double
+tab_width = 2
