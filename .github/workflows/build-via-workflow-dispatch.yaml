@@ -8,15 +8,11 @@ on:
         type: choice
         default: "Android"
         options:
-          - "Android"
+          - "Android(AAB)"
+          - "Android(APK)"
           - "StandaloneWindows"
           - "StandaloneLinux64"
           - "StandaloneOSX"
-      androidAppBundle:
-        description: "Android App Bundle"
-        required: false
-        type: boolean
-        default: false
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -26,7 +22,15 @@ env:
 jobs:
   build:
     name: Build for ${{ github.event.inputs.targetPlatform }}
-    runs-on: ubuntu-latest
+    env:
+      TARGET_PLATFORM: ${{
+        startsWith(github.event.inputs.targetPlatform, 'Android')
+        && 'Android'
+        || github.event.inputs.targetPlatform
+        }}
+
+    runs-on:
+      labels: ["linux", "8cores"]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,30 +39,28 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: nekoyume/Library
-          key: Library-nekoyume-ubuntu-${{ github.event.inputs.targetPlatform }}
+          key: Library-nekoyume-ubuntu-${{ github.env.TARGET_PLATFORM }}
           restore-keys: |
             Library-nekoyume-ubuntu-
             Library-
       - uses: game-ci/unity-builder@v2
         with:
-          androidAppBundle: ${{ github.event.inputs.androidAppBundle }}
+          androidAppBundle: ${{ github.event.inputs.targetPlatform == 'Android(AAB)' }}
           androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
           androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
-          buildMethod: "Editor.Builder.Build${{ github.event.inputs.targetPlatform }}"
-          buildName: ${{ github.event.inputs.targetPlatform }}
+          buildMethod: "Editor.Builder.Build${{ github.env.TARGET_PLATFORM }}"
+          buildName: ${{ github.env.TARGET_PLATFORM }}
           projectPath: nekoyume
-          targetPlatform: ${{ github.event.inputs.targetPlatform }}
+          targetPlatform: ${{ github.env.TARGET_PLATFORM }}
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11.0
       - name: Pack
         run: |
-          targetPlatform=${{ github.event.inputs.targetPlatform }}
-
-          if [ "$targetPlatform" == "Android" ]; then
+          if [ github.env.TARGET_PLATFORM == "Android" ]; then
             tr -d "\r" < .github/bin/pack.sh > .github/bin/pack_trimed.sh
             rm .github/bin/pack.sh
             mv .github/bin/pack_trimed.sh .github/bin/pack.sh
@@ -68,11 +70,11 @@ jobs:
           pip3 install wheel
           sudo bash .github/bin/pack.sh \
           /tmp/packages \
-          "${{ github.event.inputs.targetPlatform }}" \
+          "${{ github.env.TARGET_PLATFORM }}" \
           "/tmp/player"
       - uses: actions/upload-artifact@v3
         with:
-          name: Build-${{ github.event.inputs.targetPlatform }}
+          name: Build-${{ github.env.TARGET_PLATFORM }}
           path: /tmp/packages
           retention-days: 7
           if-no-files-found: error
