@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game.LiveAsset;
@@ -17,6 +19,9 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Org.BouncyCastle.Crypto.Digests;
 using UnityEngine;
+using ZXing;
+using ZXing.QrCode;
+using FormatException = System.FormatException;
 using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.Helper
@@ -414,6 +419,67 @@ namespace Nekoyume.Helper
             }
 
             apv = version;
+        }
+
+        public static string GetKeystoreJson()
+        {
+            var store = Web3KeyStore.DefaultKeyStore;
+            if (!store.ListIds().Any())
+            {
+                return string.Empty;
+            }
+
+            var ppk = store.Get(store.ListIds().First());
+            var stream = new MemoryStream();
+            ppk.WriteJson(stream);
+            return Encoding.ASCII.GetString(stream.ToArray());
+
+        }
+
+        public static string GetKeystoreBase64StringFromQrCodePng()
+        {
+            var json = GetKeystoreJson();
+            if (string.IsNullOrEmpty(json))
+            {
+                return string.Empty;
+            }
+
+            var writer = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new QrCodeEncodingOptions
+                {
+                    Width = 400, Height = 400,
+                },
+            };
+
+            var encoded = new Texture2D(400, 400);
+            var res = writer.Write(json);
+            encoded.SetPixels32(res);
+            return Convert.ToBase64String(encoded.EncodeToPNG());
+
+        }
+
+        /// <summary>
+        /// Example method for export keystore with mailto protocol.
+        /// But, it not work about img tag.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="subject"></param>
+        public static void ExportKeystoreWithMailto(string email, string subject)
+        {
+            var base64 = GetKeystoreBase64StringFromQrCodePng();
+            if (!string.IsNullOrEmpty(base64))
+            {
+                string MyEscapeURL(string url)
+                {
+                    return WWW.EscapeURL(url).Replace("+","%20");
+                }
+                subject = MyEscapeURL(subject);
+                var imageTag = $"<img src='data:image/png;base64,{base64}'>";
+                var mailto = "mailto:" + email + "?subject=" + subject + "&html-body=" + imageTag;
+                Application.OpenURL(mailto);
+            }
         }
     }
 }
