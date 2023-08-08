@@ -1,3 +1,7 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +27,6 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -38,8 +41,12 @@ using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
+using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
+#endif
+#if ENABLE_FIREBASE
+using NineChronicles.GoogleServices.Firebase.Runtime;
 #endif
 
 namespace Nekoyume.Game
@@ -235,16 +242,6 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
-
-#if !UNITY_ANDROID
-            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
-            InitializeAnalyzer(
-                agentAddr: _commandLineOptions.PrivateKey is null
-                    ? null
-                    : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
-                rpcServerHost: _commandLineOptions.RpcServerHost);
-            Analyzer.Track("Unity/Started");
-#endif
         }
 
         private IEnumerator Start()
@@ -267,15 +264,20 @@ namespace Nekoyume.Game
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
             _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+#endif
 
-            // NOTE: Initialize Analyzer after Load CommandLineOptions, Initialize State
+#if ENABLE_FIREBASE
+            // NOTE: Initialize Firebase.
+            yield return FirebaseManager.InitializeAsync().ToCoroutine();
+#endif
+            // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
+            //       initialize Firebase Manager.
             InitializeAnalyzer(
                 agentAddr: _commandLineOptions.PrivateKey is null
                     ? null
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
-#endif
 
 #if ENABLE_IL2CPP
             // Because of strict AOT environments, use StaticCompositeResolver for IL2CPP.
@@ -1349,9 +1351,9 @@ namespace Nekoyume.Game
 
         private void InitializeAnalyzer(
             Address? agentAddr = null,
-            string? rpcServerHost = null)
+            string rpcServerHost = null)
         {
-            var uniqueId = agentAddr?.ToString() ?? null;
+            var uniqueId = agentAddr?.ToString();
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
