@@ -297,13 +297,12 @@ namespace Nekoyume.UI
 
             // todo: 복사되었습니다. 토스트.
         }
-
+        
         private void SharePrivateKeyToQRCode()
         {
             new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
-                .SetSubject("Test").SetText("Hello world!").SetUrl("https://www.nine-corporation.com/")
-                .AddEmailRecipient("jonny@planetariumhq.com")
-                .SetCallback((result, shareTarget) => Debug.Log("Share result: " + result + ", selected app: " + shareTarget))
+                .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
                 .Share();
         }
 
