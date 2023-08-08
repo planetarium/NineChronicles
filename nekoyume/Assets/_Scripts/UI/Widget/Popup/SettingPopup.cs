@@ -13,6 +13,7 @@ using UniRx;
 using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
 
+
 namespace Nekoyume.UI
 {
     public class SettingPopup : PopupWidget
@@ -97,6 +98,9 @@ namespace Nekoyume.UI
         private Image pushDisabledImage;
 
         [SerializeField]
+        private Button addressShareButton;
+
+        [SerializeField]
         private List<GameObject> mobileDisabledMenus;
 
         [SerializeField]
@@ -132,6 +136,9 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_COPIED"),
                         NotificationCell.NotificationType.Notification))
                 .AddTo(addressCopyButton);
+
+            addressShareButton.OnClickAsObservable().Subscribe(_ => SharePrivateKeyToQRCode())
+                .AddTo(addressShareButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
                 .AddTo(privateKeyCopyButton);
@@ -289,6 +296,15 @@ namespace Nekoyume.UI
             ClipboardHelper.CopyToClipboard(privateKeyContentInputField.text);
 
             // todo: 복사되었습니다. 토스트.
+        }
+
+        private void SharePrivateKeyToQRCode()
+        {
+            new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                .SetSubject("Test").SetText("Hello world!").SetUrl("https://www.nine-corporation.com/")
+                .AddEmailRecipient("jonny@planetariumhq.com")
+                .SetCallback((result, shareTarget) => Debug.Log("Share result: " + result + ", selected app: " + shareTarget))
+                .Share();
         }
 
         private void SetVolumeMaster(float value)
