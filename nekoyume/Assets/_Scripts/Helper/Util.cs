@@ -423,7 +423,18 @@ namespace Nekoyume.Helper
 
         public static string GetKeystoreJson()
         {
-            var store = Web3KeyStore.DefaultKeyStore;
+            IKeyStore store;
+
+            if (Platform.IsMobilePlatform())
+            {
+                string dataPath = Platform.GetPersistentDataPath("keystore");
+                store = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                store = Web3KeyStore.DefaultKeyStore;
+            }
+
             if (!store.ListIds().Any())
             {
                 return string.Empty;
