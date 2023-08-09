@@ -993,8 +993,15 @@ namespace Nekoyume.Game
             }
             else
             {
-                var intro = Widget.Find<IntroScreen>();
-                intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                if (loginPopup.CheckLocalPassphrase())
+                {
+                    Widget.Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+                }
+                else
+                {
+                    var intro = Widget.Find<IntroScreen>();
+                    intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                }
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
