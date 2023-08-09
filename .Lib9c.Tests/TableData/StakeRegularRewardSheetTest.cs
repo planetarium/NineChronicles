@@ -14,13 +14,13 @@ namespace Lib9c.Tests.TableData
 
         public StakeRegularRewardSheetTest()
         {
-            const string TableContent = @"level,required_gold,item_id,rate
+            const string tableContent = @"level,required_gold,item_id,rate
 0,0,0,0
 1,10,400000,50
 1,10,500000,50";
 
             _sheet = new StakeRegularRewardSheet();
-            _sheet.Set(TableContent);
+            _sheet.Set(tableContent);
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             _currency = Currency.Legacy("NCG", 2, null);
@@ -57,20 +57,19 @@ namespace Lib9c.Tests.TableData
 
             var patchedSheet = new StakeRegularRewardSheet();
             const string tableContentWithRune =
-                @"level,required_gold,item_id,rate,type,currency_ticker
+                @"level,required_gold,item_id,rate,type,currency_ticker,decimal_rate
 1,50,400000,10,Item
 1,50,500000,800,Item
 1,50,20001,6000,Rune
-1,50,,100,Currency,NCG
-1,50,,100,Currency,CRYSTAL
-1,50,,100,Currency,GARAGE
+1,50,,,Currency,CRYSTAL,0.1
+1,50,,100,Currency,GARAGE,
 ";
             patchedSheet.Set(tableContentWithRune);
             Assert.Single(patchedSheet);
             row = patchedSheet[1];
             Assert.Equal(50, row.RequiredGold);
-            Assert.Equal(6, row.Rewards.Count);
-            for (var i = 0; i < 6; i++)
+            Assert.Equal(5, row.Rewards.Count);
+            for (var i = 0; i < 5; i++)
             {
                 reward = row.Rewards[i];
                 var itemId = i switch
@@ -80,7 +79,6 @@ namespace Lib9c.Tests.TableData
                     2 => 20001,
                     3 => 0,
                     4 => 0,
-                    5 => 0,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 var rate = i switch
@@ -88,9 +86,8 @@ namespace Lib9c.Tests.TableData
                     0 => 10,
                     1 => 800,
                     2 => 6000,
-                    3 => 100,
+                    3 => 0,
                     4 => 100,
-                    5 => 100,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 var rewardType = i switch
@@ -100,7 +97,6 @@ namespace Lib9c.Tests.TableData
                     2 => StakeRegularRewardSheet.StakeRewardType.Rune,
                     3 => StakeRegularRewardSheet.StakeRewardType.Currency,
                     4 => StakeRegularRewardSheet.StakeRewardType.Currency,
-                    5 => StakeRegularRewardSheet.StakeRewardType.Currency,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 var currencyTicker = i switch
@@ -108,15 +104,24 @@ namespace Lib9c.Tests.TableData
                     0 => null,
                     1 => null,
                     2 => null,
-                    3 => "NCG",
-                    4 => "CRYSTAL",
-                    5 => "GARAGE",
+                    3 => "CRYSTAL",
+                    4 => "GARAGE",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                var decimalRate = i switch
+                {
+                    0 => 10m,
+                    1 => 800m,
+                    2 => 6000m,
+                    3 => 0.1m,
+                    4 => 0m,
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 Assert.Equal(itemId, reward.ItemId);
                 Assert.Equal(rate, reward.Rate);
                 Assert.Equal(rewardType, reward.Type);
                 Assert.Equal(currencyTicker, reward.CurrencyTicker);
+                Assert.Equal(decimalRate, reward.DecimalRate);
             }
         }
 
