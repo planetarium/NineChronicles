@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ClaimStakeRewardTest
+    public class ClaimStakeReward5Test
     {
         private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
         private readonly Address _agentAddr = new Address(AgentAddressHex);
@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
-        public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
+        public ClaimStakeReward5Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -42,8 +42,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward(_avatarAddr);
-            var deserialized = new ClaimStakeReward();
+            var action = new ClaimStakeReward5(_avatarAddr);
+            var deserialized = new ClaimStakeReward5();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
@@ -247,7 +247,7 @@ namespace Lib9c.Tests.Action
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
                 .MintAsset(context, stakeStateAddr, _ncg * stakeAmount);
 
-            var action = new ClaimStakeReward(avatarAddr);
+            var action = new ClaimStakeReward5(avatarAddr);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = prevState,
