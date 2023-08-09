@@ -567,7 +567,7 @@ namespace Nekoyume.Model
             bool log = Simulator.LogEvent;
             foreach (var bleed in bleeds)
             {
-                var effect = bleed.GiveEffect(this, Simulator.WaveTurn);
+                var effect = bleed.GiveEffect(this, Simulator.WaveTurn, log);
                 if (log)
                 {
                     Simulator.Log.Add(effect);
