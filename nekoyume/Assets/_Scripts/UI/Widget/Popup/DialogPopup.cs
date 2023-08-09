@@ -15,7 +15,7 @@ namespace Nekoyume.UI
 {
     public class DialogPopup : PopupWidget
     {
-        public float textInterval = 0.06f;
+        public float textInterval = 0.03f;
         public Color itemTextColor;
         private const string TimerFormat = "({0})";
 
