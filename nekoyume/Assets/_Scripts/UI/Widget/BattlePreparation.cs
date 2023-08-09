@@ -688,24 +688,6 @@ namespace Nekoyume.UI
             return maxActionPoint / stage.CostAP;
         }
 
-        private static void ShowHelpTooltip(StageType stageType)
-        {
-            switch (stageType)
-            {
-                case StageType.HackAndSlash:
-                    HelpTooltip.HelpMe(100004, true);
-                    break;
-                case StageType.Mimisbrunnr:
-                    HelpTooltip.HelpMe(100020, true);
-                    break;
-                case StageType.EventDungeon:
-                    // ignore.
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
-            }
-        }
-
         private bool CheckEquipmentElementalType()
         {
             var (equipments, _) = States.Instance.GetEquippedItems(BattleType.Adventure);

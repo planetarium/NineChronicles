@@ -278,7 +278,6 @@ namespace Nekoyume.UI
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
-            HelpTooltip.HelpMe(100010, true);
         }
 
         #endregion

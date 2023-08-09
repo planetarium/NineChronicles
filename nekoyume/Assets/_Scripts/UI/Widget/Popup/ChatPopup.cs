@@ -13,7 +13,6 @@ namespace Nekoyume.UI
             confirm.onClick.AddListener(() =>
             {
                 Application.OpenURL(GameConfig.DiscordLink);
-                HelpTooltip.HelpMe(100012, true);
                 Close(true);
             });
 
@@ -30,7 +29,6 @@ namespace Nekoyume.UI
             SubmitWidget = () =>
             {
                 Application.OpenURL(GameConfig.DiscordLink);
-                HelpTooltip.HelpMe(100012, true);
                 Close(true);
             };
 

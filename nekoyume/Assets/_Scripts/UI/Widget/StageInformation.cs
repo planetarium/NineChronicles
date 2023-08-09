@@ -162,7 +162,6 @@ namespace Nekoyume.UI
 
             base.Show(true);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
-            HelpTooltip.HelpMe(100003, true);
         }
 
         public void Show(

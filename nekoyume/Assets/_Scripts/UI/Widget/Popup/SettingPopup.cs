@@ -230,7 +230,6 @@ namespace Nekoyume.UI
             worldbossPushToggle.isOn = settings.isWorldbossPushEnabled;
 
             base.Show(true);
-            HelpTooltip.HelpMe(100014, true);
 
 #if UNITY_ANDROID || UNITY_IOS
             foreach (var menu in mobileEnabledMenus)

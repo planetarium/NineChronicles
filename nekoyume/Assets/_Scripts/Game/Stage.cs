@@ -316,7 +316,6 @@ namespace Nekoyume.Game
 
             Game.instance.IsInWorld = true;
             yield return StartCoroutine(CoStageEnter(log));
-            HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
