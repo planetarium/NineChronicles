@@ -21,9 +21,11 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1458
     /// </summary>
     [ActionType(ActionTypeText)]
+    [ActionObsolete(ObsoleteBlockIndex)]
     public class ClaimStakeReward5 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward5";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200060ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -123,6 +125,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
             if (context.Rehearsal)
             {
