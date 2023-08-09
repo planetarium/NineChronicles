@@ -57,12 +57,12 @@ namespace Lib9c.Tests.TableData
 
             var patchedSheet = new StakeRegularRewardSheet();
             const string tableContentWithRune =
-                @"level,required_gold,item_id,rate,type,currency_ticker,decimal_rate
+                @"level,required_gold,item_id,rate,type,currency_ticker,currency_decimal_places,decimal_rate
 1,50,400000,10,Item
 1,50,500000,800,Item
 1,50,20001,6000,Rune
-1,50,,,Currency,CRYSTAL,0.1
-1,50,,100,Currency,GARAGE,
+1,50,,,Currency,CRYSTAL,18,0.1
+1,50,,100,Currency,GARAGE,18,
 ";
             patchedSheet.Set(tableContentWithRune);
             Assert.Single(patchedSheet);
@@ -108,6 +108,15 @@ namespace Lib9c.Tests.TableData
                     4 => "GARAGE",
                     _ => throw new ArgumentOutOfRangeException()
                 };
+                var currencyDecimalPlaces = i switch
+                {
+                    0 => (int?)null,
+                    1 => null,
+                    2 => null,
+                    3 => 18,
+                    4 => 18,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
                 var decimalRate = i switch
                 {
                     0 => 10m,
@@ -121,6 +130,7 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(rate, reward.Rate);
                 Assert.Equal(rewardType, reward.Type);
                 Assert.Equal(currencyTicker, reward.CurrencyTicker);
+                Assert.Equal(currencyDecimalPlaces, reward.CurrencyDecimalPlaces);
                 Assert.Equal(decimalRate, reward.DecimalRate);
             }
         }

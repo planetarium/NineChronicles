@@ -25,7 +25,7 @@ namespace Nekoyume.TableData
             /// The rate of reward.
             /// </summary>
             [Obsolete(
-                "This field is used from `claim_stake_reward5` or earlier. Use `DecimalRate` instead.")]
+                "This field is used from `ClaimStakeReward.V2` or earlier. Use `DecimalRate` instead.")]
             public readonly int Rate;
 
             public readonly StakeRewardType Type;
@@ -37,8 +37,15 @@ namespace Nekoyume.TableData
             public readonly string CurrencyTicker;
 
             /// <summary>
+            /// The decimal places of currency.
+            /// This field is only used when <see cref="Type"/> is <see cref="StakeRewardType.Currency"/>.
+            /// </summary>
+            public readonly int? CurrencyDecimalPlaces;
+
+            /// <summary>
             /// The decimal rate of reward.
-            /// This field is used from `claim_stake_reward6` or later.
+            /// This field is used from `V3`(in blockchain state) or later.
+            /// This field is set to `Rate` when `ClaimStakeReward.V2` or earlier.
             /// </summary>
             public readonly decimal DecimalRate;
 
@@ -49,6 +56,9 @@ namespace Nekoyume.TableData
                 if (fields.Length == 2)
                 {
                     Type = StakeRewardType.Item;
+                    CurrencyTicker = null;
+                    CurrencyDecimalPlaces = null;
+                    DecimalRate = Rate;
                     return;
                 }
 
@@ -56,6 +66,8 @@ namespace Nekoyume.TableData
                 if (fields.Length == 3)
                 {
                     CurrencyTicker = null;
+                    CurrencyDecimalPlaces = null;
+                    DecimalRate = Rate;
                     return;
                 }
 
@@ -63,11 +75,20 @@ namespace Nekoyume.TableData
 
                 if (fields.Length == 4)
                 {
+                    CurrencyDecimalPlaces = null;
                     DecimalRate = Rate;
                     return;
                 }
 
-                DecimalRate = ParseDecimal(fields[4], 0m);
+                CurrencyDecimalPlaces = ParseInt(fields[4], 0);
+
+                if (fields.Length == 5)
+                {
+                    DecimalRate = Rate;
+                    return;
+                }
+
+                DecimalRate = ParseDecimal(fields[5], 0m);
             }
 
             public RewardInfo(
@@ -75,12 +96,14 @@ namespace Nekoyume.TableData
                 int rate = 0,
                 StakeRewardType type = StakeRewardType.Item,
                 string currencyTicker = null,
+                int? currencyDecimalPlaces = null,
                 decimal decimalRate = 0m)
             {
                 ItemId = itemId;
                 Rate = rate;
                 Type = type;
                 CurrencyTicker = currencyTicker;
+                CurrencyDecimalPlaces = currencyDecimalPlaces;
                 DecimalRate = decimalRate;
             }
 
@@ -92,6 +115,9 @@ namespace Nekoyume.TableData
                        (CurrencyTicker is null
                            ? other.CurrencyTicker is null
                            : CurrencyTicker == other.CurrencyTicker) &&
+                       (CurrencyDecimalPlaces is null
+                           ? other.CurrencyDecimalPlaces is null
+                           : CurrencyDecimalPlaces == other.CurrencyDecimalPlaces) &&
                        DecimalRate == other.DecimalRate;
             }
 
@@ -109,6 +135,7 @@ namespace Nekoyume.TableData
                        Rate ^
                        (int)Type ^
                        (CurrencyTicker?.GetHashCode() ?? 0) ^
+                       (CurrencyDecimalPlaces?.GetHashCode() ?? 0) ^
                        DecimalRate.GetHashCode();
             }
         }
