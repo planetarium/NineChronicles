@@ -213,7 +213,6 @@ namespace Nekoyume.UI
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
-            ShowHelpTooltip(_stageType);
 
             switch (_stageType)
             {
