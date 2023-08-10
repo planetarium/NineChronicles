@@ -179,15 +179,15 @@ namespace Nekoyume.Action
             var level =
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var itemSheet = sheets.GetItemSheet();
-            stakeState.CalculateAccumulatedItemRewards(
+            stakeState.CalculateAccumulatedItemRewardsV3(
                 context.BlockIndex,
                 out var itemV1Step,
                 out var itemV2Step);
-            stakeState.CalculateAccumulatedRuneRewards(
+            stakeState.CalculateAccumulatedRuneRewardsV3(
                 context.BlockIndex,
                 out var runeV1Step,
                 out var runeV2Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
+            stakeState.CalculateAccumulatedCurrencyRewardsV2(
                 context.BlockIndex,
                 out var currencyV1Step,
                 out var currencyV2Step);
