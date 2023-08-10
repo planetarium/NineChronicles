@@ -13,6 +13,7 @@ using UniRx;
 using TimeSpan = System.TimeSpan;
 using Nekoyume.UI.Scroller;
 
+
 namespace Nekoyume.UI
 {
     public class SettingPopup : PopupWidget
@@ -97,6 +98,9 @@ namespace Nekoyume.UI
         private Image pushDisabledImage;
 
         [SerializeField]
+        private Button addressShareButton;
+
+        [SerializeField]
         private List<GameObject> mobileDisabledMenus;
 
         [SerializeField]
@@ -132,6 +136,9 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_COPIED"),
                         NotificationCell.NotificationType.Notification))
                 .AddTo(addressCopyButton);
+
+            addressShareButton.OnClickAsObservable().Subscribe(_ => SharePrivateKeyToQRCode())
+                .AddTo(addressShareButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
                 .AddTo(privateKeyCopyButton);
@@ -230,7 +237,6 @@ namespace Nekoyume.UI
             worldbossPushToggle.isOn = settings.isWorldbossPushEnabled;
 
             base.Show(true);
-            HelpTooltip.HelpMe(100014, true);
 
 #if UNITY_ANDROID || UNITY_IOS
             foreach (var menu in mobileEnabledMenus)
@@ -289,6 +295,14 @@ namespace Nekoyume.UI
             ClipboardHelper.CopyToClipboard(privateKeyContentInputField.text);
 
             // todo: 복사되었습니다. 토스트.
+        }
+        
+        private void SharePrivateKeyToQRCode()
+        {
+            new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")
+                .SetSubject(L10nManager.Localize("UI_SHARE_QR_TITLE"))
+                .SetText(L10nManager.Localize("UI_SHARE_QR_CONTENT"))
+                .Share();
         }
 
         private void SetVolumeMaster(float value)

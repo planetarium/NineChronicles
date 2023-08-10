@@ -104,7 +104,6 @@ namespace Nekoyume.UI
                     _tutorial.gameObject.SetActive(false);
                     WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
                 });
-                HelpTooltip.HelpMe(100001, true);
             }
         }
 

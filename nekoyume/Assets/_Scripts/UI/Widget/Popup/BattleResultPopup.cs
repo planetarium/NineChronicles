@@ -91,6 +91,7 @@ namespace Nekoyume.UI
         public struct DefeatTextArea
         {
             public GameObject root;
+            public TextMeshProUGUI worldStageId;
             public TextMeshProUGUI defeatText;
             public TextMeshProUGUI expText;
         }
@@ -397,7 +398,6 @@ namespace Nekoyume.UI
             nextButton.gameObject.SetActive(false);
 
             UpdateView(isBoosted);
-            HelpTooltip.HelpMe(100006, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -505,6 +505,11 @@ namespace Nekoyume.UI
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
             }
 
+            var stageText = StageInformation.GetStageIdString(
+                SharedModel.StageType,
+                SharedModel.StageID,
+                true);
+            defeatTextArea.worldStageId.text = $"{SharedModel.WorldName} {stageText}";
             defeatTextArea.defeatText.text = L10nManager.Localize(key);
             defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
             bottomText.enabled = false;
@@ -607,6 +612,11 @@ namespace Nekoyume.UI
                 repeatButton.gameObject.SetActive(value);
                 repeatButton.interactable = value;
             }
+            else
+            {
+                stagePreparationButton.gameObject.SetActive(true);
+                stagePreparationButton.interactable = true;
+            }
 
             if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
             {
@@ -618,9 +628,7 @@ namespace Nekoyume.UI
             {
                 case NextState.GoToMain:
                     SubmitWidget = closeButton.onClick.Invoke;
-                    fullFormat = SharedModel.ActionPointNotEnough
-                        ? L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT")
-                        : L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                    fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
                     break;
                 case NextState.RepeatStage:
                     SubmitWidget = repeatButton.onClick.Invoke;
@@ -631,7 +639,9 @@ namespace Nekoyume.UI
                     fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                     break;
                 default:
-                    bottomText.text = string.Empty;
+                    bottomText.text = SharedModel.ActionPointNotEnough
+                        ? L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT")
+                        : string.Empty;
                     yield break;
             }
 

@@ -100,7 +100,6 @@ namespace Nekoyume.UI
                 ReactiveShopState.BuyItemProducts,
                 ReactiveShopState.BuyFungibleAssetProducts,
                 ShowItemTooltip);
-            HelpTooltip.HelpMe(100018, true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             Find<DataLoadingScreen>().Close();
         }

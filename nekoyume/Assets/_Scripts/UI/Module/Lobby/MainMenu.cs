@@ -95,10 +95,8 @@ namespace Nekoyume.UI.Module.Lobby
         {
             if (!IsUnlocked)
             {
-                if (_cat)
-                {
-                    _cat.Hide();
-                }
+                var tooltip = Widget.Find<MessageCatTooltip>();
+                tooltip.HideAll(false);
 
                 _cat = Widget.Find<MessageCatTooltip>()
                     .Show(true, _messageForCat, gameObject);
@@ -115,6 +113,7 @@ namespace Nekoyume.UI.Module.Lobby
             }
             else
             {
+#if !UNITY_ANDROID
                 if (!_cat)
                 {
                     return IsUnlocked;
@@ -122,6 +121,7 @@ namespace Nekoyume.UI.Module.Lobby
 
                 _cat.Hide();
                 _cat = null;
+#endif
             }
 
             return IsUnlocked;

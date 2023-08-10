@@ -190,7 +190,6 @@ namespace Nekoyume.UI
             grindModeToggle.isOn = false;
             information.UpdateInventory(BattleType.Adventure);
             OnClickPresetTab(adventureButton, BattleType.Adventure, _onToggleCallback[BattleType.Adventure]);
-            HelpTooltip.HelpMe(100013, true);
 
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var isActiveDcc = Dcc.instance.IsVisible(avatarState.address, out var id, out var isVisible);

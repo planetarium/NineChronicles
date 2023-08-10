@@ -261,7 +261,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => Widget.Find<PrologueDialogPopup>().isActiveAndEnabled);
             yield return StartCoroutine(_fenrir.CoFinisher(new[] {580214, 999999}, new[] {true, true}));
             yield return new WaitForSeconds(1f);
-            Time.timeScale = 1f;
+            Time.timeScale = 1.25f;
             _fenrir.Animator.Idle();
         }
     }

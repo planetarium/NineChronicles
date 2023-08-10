@@ -316,7 +316,6 @@ namespace Nekoyume.Game
 
             Game.instance.IsInWorld = true;
             yield return StartCoroutine(CoStageEnter(log));
-            HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -586,9 +585,7 @@ namespace Nekoyume.Game
             }
             else if (_battleResultModel.ActionPointNotEnough)
             {
-                _battleResultModel.NextState = StageType == StageType.EventDungeon
-                    ? BattleResultPopup.NextState.None
-                    : BattleResultPopup.NextState.GoToMain;
+                _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }
             else if (isClear)
             {

@@ -162,7 +162,6 @@ namespace Nekoyume.UI
 
             base.Show(true);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
-            HelpTooltip.HelpMe(100003, true);
         }
 
         public void Show(
@@ -386,8 +385,7 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
-                    return stageId.ToString()
-                        .ToString(CultureInfo.InvariantCulture);
+                    return stageId.ToString(CultureInfo.InvariantCulture);
                 case StageType.Mimisbrunnr:
                     var enter = isTitle ? string.Empty : "\n";
                     return $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}";

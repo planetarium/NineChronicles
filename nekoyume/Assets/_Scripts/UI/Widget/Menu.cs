@@ -13,6 +13,8 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.Action;
+using Nekoyume.Blockchain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
@@ -158,6 +160,48 @@ namespace Nekoyume.UI
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
+        }
+
+        private static void HackAndSlashForTutorial(int stageId)
+        {
+            var sheets = Game.Game.instance.TableSheets;
+            var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
+            if (stageRow is null)
+            {
+                return;
+            }
+
+            var requiredCost = stageRow.CostAP;
+            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert);
+                return;
+            }
+
+            if (!sheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+            {
+                return;
+            }
+
+            var worldId = worldRow.Id;
+
+            Find<LoadingScreen>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+
+            var stage = Game.Game.instance.Stage;
+            stage.IsExitReserved = false;
+            var player = stage.GetPlayer();
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
+            ActionRenderHandler.Instance.Pending = true;
+            var emptyGuids = new List<Guid>();
+            Game.Game.instance.ActionManager
+                .HackAndSlash(emptyGuids, emptyGuids, new List<Consumable>(),
+                    new List<RuneSlotInfo>(), worldId, stageId)
+                .Subscribe();
         }
 
         private void HackAndSlash(int stageId)
@@ -644,7 +688,7 @@ namespace Nekoyume.UI
 
         public void TutorialActionHackAndSlash()
         {
-            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
+            HackAndSlashForTutorial(GuidedQuest.WorldQuest?.Goal ?? 1);
         }
 
         // Invoke from TutorialController.PlayAction()

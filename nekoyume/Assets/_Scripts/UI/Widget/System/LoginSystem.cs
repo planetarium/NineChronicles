@@ -278,12 +278,44 @@ namespace Nekoyume.UI
             }
         }
 
+        public bool CheckLocalPassphrase()
+        {
+            if (Platform.IsMobilePlatform())
+            {
+                try
+                {
+                    _privateKey = CheckPrivateKey(KeyStore, GetPassPhrase());
+                    if (_privateKey != null)
+                    {
+                        Login = true;
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
         private bool CheckPasswordVaildInCreate()
         {
             var passPhrase = passPhraseField.text;
             var retyped = retypeField.text;
             return !(string.IsNullOrEmpty(passPhrase) || string.IsNullOrEmpty(retyped)) &&
                    passPhrase == retyped && CheckPassWord(passPhrase);
+        }
+
+        private void SetPassPhrase(string passPhrase)
+        {
+            PlayerPrefs.SetString("LOCAL_PASSPHRASE", Helper.Util.AesEncrypt(passPhrase));
+        }
+
+        private string GetPassPhrase()
+        {
+            return Helper.Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
         }
 
         private void CheckLogin(System.Action success)
@@ -301,6 +333,10 @@ namespace Nekoyume.UI
             var login = _privateKey is not null;
             if (login)
             {
+                if (Platform.IsMobilePlatform())
+                {
+                    SetPassPhrase(loginField.text);
+                }
                 success?.Invoke();
             }
             else

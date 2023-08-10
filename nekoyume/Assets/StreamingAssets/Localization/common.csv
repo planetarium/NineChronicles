@@ -61,6 +61,7 @@ UI_AFTER_N_SECONDS,"After {0:0} seconds,",{0:0}초 후,Após {0: 0} segundos,{0:
 UI_BATTLE_RESULT_NEXT_STAGE_FORMAT,{0} You will proceed to the next stage.,{0} 다음 스테이지로 이동합니다.,{0} você irá para a próxima fase.,{0} 次のステージへ進みます。,{0} avanzarás al siguiente escenario.,{0} คุณจะเข้าสู่ด่านต่อไป,{0} kamu akan melanjutkan ke stage berikutnya.,,{0}，您将进入下一阶段。,{0} 您將進入下一關卡。,{0} Ikaw ay tutungo na sa susunod na paglalakbay.
 UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT,{0} You will repeat the current stage.,{0} 이번 스테이지를 다시 시작합니다.,{0} você repetirá a fase atual.,{0} 現在のステージをくり返します。,{0} repetiras el mismo escenario,{0} คุณจะเข้าสู่ด่านเดิมอีกครั้ง,{0} kamu akan mengulang stage ini kembali.,,{0}，您将重复当前阶段。,{0} 您將重複當前關卡。,{0} Uulitin mo ang kasalukiyang paglalakbay na ito.
 UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT,You do not have enough action points. {0} you will be returned to the lobby.,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.,Você não tem ponto de ação suficiente. {0} você retornará ao principal,アクションポイントが足りません。 {0} メイン画面へ戻ります。,No tienes suficientes puntos de acción. {0} serás devuelto al menú principal,คุณมีแต้ม action point ไม่เพียงพอ {0} คุณจะกลับไปที่หน้าหลัก,Action point-mu tidak cukup. {0} kamu akan kembali ke lobi.,,您没有足够的动作点。 {0}您将返回大厅,您沒有足夠的行動點。 {0} 您將返回大廳,"Hindi sapat ang iyong ""action points"". {0} Babalik ka sa panimulang ""lobby""."
+UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT,You do not have enough action points.,,,,,,,,,,
 UI_BATTLE_AGAIN,Again,다시 전투,De novo,もう一度,Repetir,อีกครั้ง,Lagi,,再次,再次,Ulit
 UI_BATTLE_AGAIN_FORMAT,{0} Battle starts again.,{0} 다시 전투를 시작합니다.,{0} batalha começa novamente,{0} もう一度バトルを始めます。,{0} la batalla empieza nuevamente,{0} การต่อสู้เริ่มขึ้นอีกครั้ง,{0} pertarungan kembali dimulai,,{0}战斗再次开始,{0}戰鬥再次開始,{0} Ulitin ang laban
 UI_BATTLE_EXIT_FORMAT,{0} You will be returned to the lobby.,{0} 메인으로 이동합니다.,{0} você retornará ao principal,{0} ロビーへ戻ります。,{0} serás devuelto al menú principal,{0} คุณจะกลับไปที่หน้าหลัก,{0} kamu akan kembali ke lobby,,{0}您将返回大厅,{0}您將返回大廳,"{0} Babalik ka sa panimulang ""lobby"""
@@ -565,6 +566,12 @@ UI_GOT_IT,Got it,확인,Está bem,OK,Entendido,ตกลง,,,确认,知道了,K
 UI_SKIP,Skip,스킵,Pular,スキップ,Omitir,ข้าม,,,跳跃,跳過,Laktawan
 UI_COPY,Copy,복사,cópia de,写す,Copiar,คัดลอก,,,复制,複製,Kopyahin
 UI_COPIED,Copied to clipboard!,클립보드에 복사되었습니다!,Copiado para a área de transferência!,クリップボードにコピーしました！,Copiado al portapapeles,คัดลอกไปยังคลิปบอร์ด!,Disalin ke Clipboard!,Скопирован в буфер обмена!,复制到剪贴板！,複製到剪貼板！,Nakopya sa clipboard!
+UI_SHARE,Share,공유,,,,,,,,,
+UI_SHARE_QR_TITLE,Nine Chronicle KeyBackUp,,,,,,,,,,
+UI_SHARE_QR_CONTENT,"Hello, player
+The requested keystore backup.
+Please save the image in a safe place.
+When you restore an account using that key store, you must have the password you saved.",,,,,,,,,,
 UI_PRESS_TO_START,Press to Start,Press to Start,Press to Start,Press to Start,Presiona una tecla para comenzar.,Press to Start,Press to Start,Press to Start,Press to Start,點擊後開始,Pindutin para Magsimula
 UI_MAIN_MENU_MIMISBRUNNR,Mimisbrunnr,미미르의 샘,Mimisbrunnr,ミミスブルンニュ,Mimisbrunnr,mimisbrunnr,Mimisbrunnr,МИМИСБРУННР,Mimisbrunnr,mimisbrunnr,Mimisbrunnr
 UI_MIMISBRUNNR,MIMISBRUNNR,미미르의 샘,mímisbrunnr,ミーミルの泉,Mimisbrunnr,MIMISBRUNNR,MIMISBRUNNR,MIMISBRUNNR,密米尔之泉,mimisbrunnr,MIMISBRUNNR
