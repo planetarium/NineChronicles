@@ -460,6 +460,13 @@ namespace Nekoyume.UI
 
         private void CheckInput()
         {
+#if UNITY_ANDROID
+            if (Input.anyKeyDown)
+            {
+                WidgetHandler.Instance.HideAllMessageCat();
+            }
+#endif
+
             if (!CanHandleInputEvent)
             {
                 return;
@@ -483,7 +490,6 @@ namespace Nekoyume.UI
 
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                WidgetHandler.Instance.HideAllMessageCat();
                 SubmitWidget?.Invoke();
             }
         }

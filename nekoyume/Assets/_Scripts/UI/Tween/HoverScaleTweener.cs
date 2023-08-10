@@ -15,8 +15,8 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private RectTransform target;
 
-        private ObservablePointerEnterTrigger _enterTrigger;
-        private ObservablePointerExitTrigger _exitTrigger;
+        private ObservableEventTrigger _enterTrigger;
+        private ObservableEventTrigger _exitTrigger;
         private Func<bool> _onPointerEnter;
         private Func<bool> _onPointerExit;
 
@@ -32,8 +32,7 @@ namespace Nekoyume.UI.Tween
         private void Awake()
         {
             _originLocalScale = target.localScale;
-            _enterTrigger = gameObject.AddComponent<ObservablePointerEnterTrigger>();
-            _exitTrigger = gameObject.AddComponent<ObservablePointerExitTrigger>();
+            _enterTrigger = gameObject.AddComponent<ObservableEventTrigger>();
         }
 
         private void OnEnable()
@@ -42,7 +41,7 @@ namespace Nekoyume.UI.Tween
             _enterTrigger.OnPointerEnterAsObservable()
                 .Subscribe(OnPointerEnter)
                 .AddTo(_disposables);
-            _exitTrigger.OnPointerExitAsObservable()
+            _enterTrigger.OnPointerExitAsObservable()
                 .Subscribe(OnPointerExit)
                 .AddTo(_disposables);
         }
