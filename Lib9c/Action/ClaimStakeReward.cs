@@ -19,7 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/?
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2071
     /// </summary>
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
