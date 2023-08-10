@@ -66,6 +66,10 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.Ring:
                     equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
+                case ItemSubType.Aura:
+                    equipment = new Aura((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex,
+                        madeWithMimisbrunnrRecipe);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(
                         itemRow.Id.ToString(CultureInfo.InvariantCulture));
@@ -146,6 +150,8 @@ namespace Nekoyume.Model.Item
                                 return new Necklace(serialized);
                             case ItemSubType.Ring:
                                 return new Ring(serialized);
+                            case ItemSubType.Aura:
+                                return new Aura(serialized);
                         }
                         break;
                     case ItemType.Material:
