@@ -165,7 +165,6 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             Show(true);
-            HelpTooltip.HelpMe(100002, true);
 
             if (!blockWorldUnlockPopup)
             {

@@ -127,7 +127,6 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Clear();
-            HelpTooltip.HelpMe(100017, true);
             enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
             base.Show(ignoreShowAnimation);
         }

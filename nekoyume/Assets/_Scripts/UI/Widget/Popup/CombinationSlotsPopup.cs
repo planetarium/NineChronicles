@@ -53,7 +53,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
-            HelpTooltip.HelpMe(100008, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

@@ -93,7 +93,6 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(musicName);
             }
 
-            HelpTooltip.HelpMe(100007, true);
             StartCoroutine(speechBubble.CoShowText(true));
         }
 

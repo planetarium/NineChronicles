@@ -266,11 +266,6 @@ namespace Nekoyume.UI
                     break;
             }
 
-            if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
-            {
-                HelpTooltip.HelpMe(100016, true);
-            }
-
             if (!AudioController.instance.CurrentPlayingMusicName
                     .Equals(AudioController.MusicCode.Combination))
             {

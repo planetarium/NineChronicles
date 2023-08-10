@@ -89,12 +89,6 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            HelpTooltip.HelpMe(100000, true);
-        }
-
         private void ClearPlayers()
         {
             foreach (var player in players)

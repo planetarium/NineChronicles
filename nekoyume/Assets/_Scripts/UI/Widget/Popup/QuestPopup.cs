@@ -66,7 +66,6 @@ namespace Nekoyume.UI
             ChangeState(0);
             DoneScrollAnimation();
             base.Show(ignoreShowAnimation);
-            HelpTooltip.HelpMe(100011, true);
         }
 
         #endregion
