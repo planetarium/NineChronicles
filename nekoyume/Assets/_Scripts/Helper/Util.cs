@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -421,6 +422,52 @@ namespace Nekoyume.Helper
             apv = version;
         }
 
+        public static string AesEncrypt(string plainText)
+        {
+            using Aes aesAlg = Aes.Create();
+            using SHA256 sha256 = SHA256.Create();
+            aesAlg.Key = sha256.ComputeHash(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
+            byte[] iv = new byte[16];
+            Array.Copy(aesAlg.Key, iv, 16);
+            aesAlg.IV = iv;
+
+            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+            using var msEncrypt = new System.IO.MemoryStream();
+            using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+            using (var swEncrypt = new System.IO.StreamWriter(csEncrypt))
+            {
+                swEncrypt.Write(plainText);
+            }
+
+            return Convert.ToBase64String(msEncrypt.ToArray());
+        }
+
+        public static string AesDecrypt(string encryptedText)
+        {
+            string result = string.Empty;
+            try {
+                using Aes aesAlg = Aes.Create();
+                using SHA256 sha256 = SHA256.Create();
+                aesAlg.Key = sha256.ComputeHash(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
+                byte[] iv = new byte[16];
+                Array.Copy(aesAlg.Key, iv, 16);
+                aesAlg.IV = iv;
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using var msDecrypt = new System.IO.MemoryStream(Convert.FromBase64String(encryptedText));
+                using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+                using var srDecrypt = new System.IO.StreamReader(csDecrypt);
+                result = srDecrypt.ReadToEnd();
+            }
+            catch
+            {
+                return result;
+            }
+            return result;
+        }
+
         public static string GetKeystoreJson()
         {
             IKeyStore store;
@@ -470,6 +517,5 @@ namespace Nekoyume.Helper
 
             return encoded;
         }
-
     }
 }
