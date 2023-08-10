@@ -77,8 +77,12 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
+            var loading = Find<DataLoadingScreen>();
+            loading.Show();
+
             var products = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
+
             if (!_productInitialized && products != null)
             {
                 foreach (var product in products.OrderBy(p => p.DisplayOrder))
@@ -99,7 +103,6 @@ namespace Nekoyume.UI
 
                 _productInitialized = true;
             }
-
 
             if (products != null)
             {
@@ -123,13 +126,21 @@ namespace Nekoyume.UI
                 }
 
                 firstTab ??= tab;
-                tab.Toggle.isOn = false;
+                tab.Toggle.onObject.SetActive(false);
+                tab.Toggle.offObject.SetActive(true);
+                tab.Toggle.SetIsOnWithoutNotify(false);
+                RefreshToggleValue(false, tab, products);
             }
 
             if (firstTab != null)
             {
-                firstTab.Toggle.isOn = true;
+                firstTab.Toggle.onObject.SetActive(true);
+                firstTab.Toggle.offObject.SetActive(false);
+                firstTab.Toggle.SetIsOnWithoutNotify(true);
+                RefreshToggleValue(true, firstTab, products);
             }
+
+            loading.Close();
         }
 
         private static string GetProductImageNameFromProductId(string productId)
@@ -147,8 +158,15 @@ namespace Nekoyume.UI
         private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
         {
             PurchaseButtonLoadingEnd();
+
             var products = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
+
+            RefreshToggleValue(isOn, tab, products);
+        }
+
+        private void RefreshToggleValue(bool isOn, InAppProductTab tab, IReadOnlyList<NineChronicles.ExternalServices.IAPService.Runtime.Models.ProductSchema> products)
+        {
             if (isOn)
             {
                 Analyzer.Instance.Track(
