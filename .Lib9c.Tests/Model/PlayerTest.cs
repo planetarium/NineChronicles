@@ -163,6 +163,55 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
+        public void UseAuraSkill()
+        {
+            var defaultAttack = SkillFactory.GetV1(
+                _tableSheets.SkillSheet.Values.First(r => r.Id == GameConfig.DefaultAttackId),
+                100,
+                100
+            );
+            var skillRow = _tableSheets.SkillSheet[800001];
+            var skill = SkillFactory.Get(skillRow, 0, 100, 0, StatType.NONE);
+
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                null,
+                new List<Nekoyume.Model.Skill.Skill>(),
+                1,
+                1,
+                _tableSheets.StageSheet[1],
+                _tableSheets.StageWaveSheet[1],
+                false,
+                20,
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
+            );
+            var player = simulator.Player;
+            var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
+            player.Targets.Add(enemy);
+            simulator.Characters = new SimplePriorityQueue<CharacterBase, decimal>();
+            simulator.Characters.Enqueue(enemy, 0);
+            player.InitAI();
+            player.OverrideSkill(skill);
+            player.AddSkill(defaultAttack);
+            Assert.Equal(2, player.Skills.Count());
+            var prevAtk = player.ATK;
+            var prevDef = player.DEF;
+            player.Tick();
+            Assert.NotEmpty(simulator.Log);
+            Assert.Equal(nameof(WaveTurnEnd), simulator.Log.Last().GetType().Name);
+            Assert.Equal(prevAtk + prevAtk * 0.3, player.ATK);
+            Assert.Equal(prevDef - prevDef * 0.2, player.DEF);
+        }
+
+        [Fact]
         public void SetCostumeStat()
         {
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);

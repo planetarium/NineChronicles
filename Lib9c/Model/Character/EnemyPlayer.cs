@@ -49,6 +49,7 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
+            aura = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             hairIndex = enemyPlayerDigest.HairIndex;
