@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Libplanet.KeyStore;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Game.LiveAsset;
@@ -18,7 +20,10 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Org.BouncyCastle.Crypto.Digests;
 using UnityEngine;
+using ZXing;
+using ZXing.QrCode;
 using Inventory = Nekoyume.Model.Item.Inventory;
+using FormatException = System.FormatException;
 
 namespace Nekoyume.Helper
 {
@@ -461,6 +466,56 @@ namespace Nekoyume.Helper
                 return result;
             }
             return result;
+        }
+
+        public static string GetKeystoreJson()
+        {
+            IKeyStore store;
+
+            if (Platform.IsMobilePlatform())
+            {
+                string dataPath = Platform.GetPersistentDataPath("keystore");
+                store = new Web3KeyStore(dataPath);
+            }
+            else
+            {
+                store = Web3KeyStore.DefaultKeyStore;
+            }
+
+            if (!store.ListIds().Any())
+            {
+                return string.Empty;
+            }
+
+            var ppk = store.Get(store.ListIds().First());
+            var stream = new MemoryStream();
+            ppk.WriteJson(stream);
+            return Encoding.ASCII.GetString(stream.ToArray());
+        }
+
+        public static Texture2D GetQrCodePngFromKeystore()
+        {
+            var json = GetKeystoreJson();
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
+
+            var writer = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new QrCodeEncodingOptions
+                {
+                    Width = 400,
+                    Height = 400,
+                },
+            };
+
+            var encoded = new Texture2D(400, 400);
+            var res = writer.Write(json);
+            encoded.SetPixels32(res);
+
+            return encoded;
         }
     }
 }
