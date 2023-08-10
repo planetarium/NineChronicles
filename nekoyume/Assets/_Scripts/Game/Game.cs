@@ -431,7 +431,8 @@ namespace Nekoyume.Game
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
                 UnityEngine.Debug.unityLogger.logEnabled = true;
-                Instantiate(debugConsolePrefab);
+                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
+                Util.IngameDebugConsoleCommands.Initailize();
             }
             else
             {
@@ -1378,6 +1379,11 @@ namespace Nekoyume.Game
                 uniqueId,
                 rpcServerHost,
                 isTrackable);
+        }
+
+        public void ShowCLO()
+        {
+            Debug.Log(_commandLineOptions.ToString());
         }
 
 #if UNITY_ANDROID
