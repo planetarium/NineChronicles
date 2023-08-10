@@ -518,9 +518,7 @@ namespace Nekoyume.Blockchain
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
                 actions: actions.Select(action => action.PlainValue),
-                updatedAddresses: actions.CalculateUpdateAddresses(),
-                maxGasPrice: Currencies.Mead * 1,
-                gasLimit: gasLimit
+                updatedAddresses: actions.CalculateUpdateAddresses()
             );
 
             string actionsName = default;

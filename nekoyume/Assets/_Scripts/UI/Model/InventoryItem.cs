@@ -103,6 +103,8 @@ namespace Nekoyume.UI.Model
                             return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
                         case ItemSubType.Ring:
                             return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1;
+                        case ItemSubType.Aura:
+                            return level >= 1;
                     }
                     break;
                 case ItemType.Consumable:
