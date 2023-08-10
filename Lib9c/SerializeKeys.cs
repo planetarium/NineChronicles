@@ -44,6 +44,7 @@ namespace Lib9c
         public const string OptionCountFromCombinationKey = "oc";
         public const string RequiredCharacterLevelKey = "rc";
         public const string MadeWithMimisbrunnrRecipeKey = "mwmr";
+        public const string EquipmentExpKey = "e";
 
         // Stat
         public const string StatTypeKey = "stt";

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Action;
-using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -19,6 +19,7 @@ namespace Nekoyume.Model.Item
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
         public bool equipped;
         public int level;
+        public BigInteger exp;
         public int optionCountFromCombination;
 
         public DecimalStat Stat { get; }
@@ -59,6 +60,18 @@ namespace Nekoyume.Model.Item
                 catch (InvalidCastException)
                 {
                     level = (int) ((Integer) value).Value;
+                }
+            }
+
+            if (serialized.TryGetValue((Text)EquipmentExpKey, out value))
+            {
+                try
+                {
+                    exp = value.ToBigInteger();
+                }
+                catch (InvalidCastException)
+                {
+                    exp = ((Integer)value).Value;
                 }
             }
 
@@ -111,6 +124,11 @@ namespace Nekoyume.Model.Item
             if (MadeWithMimisbrunnrRecipe)
             {
                 dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
+            }
+
+            if (exp > 0)
+            {
+                dict = dict.SetItem(EquipmentExpKey, exp.Serialize());
             }
 
             return dict;
@@ -253,7 +271,8 @@ namespace Nekoyume.Model.Item
         protected bool Equals(Equipment other)
         {
             return base.Equals(other) && equipped == other.equipped && level == other.level &&
-                   Equals(Stat, other.Stat) && SetId == other.SetId && SpineResourcePath == other.SpineResourcePath;
+                   exp == other.exp && Equals(Stat, other.Stat) && SetId == other.SetId &&
+                   SpineResourcePath == other.SpineResourcePath;
         }
 
         public override bool Equals(object obj)
