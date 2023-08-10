@@ -58,6 +58,7 @@ namespace Nekoyume.Model
         public Belt belt;
         public Necklace necklace;
         public Ring ring;
+        public Aura aura;
 
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
@@ -104,6 +105,7 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
+            aura = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             monsterMapForBeforeV100310 = new CollectionMap();
@@ -135,6 +137,7 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
+            aura = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             monsterMapForBeforeV100310 = new CollectionMap();
@@ -165,6 +168,7 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
+            aura = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             monsterMapForBeforeV100310 = new CollectionMap();
@@ -214,6 +218,7 @@ namespace Nekoyume.Model
             belt = value.belt;
             necklace = value.necklace;
             ring = value.ring;
+            aura = value.aura;
             monsterMap = value.monsterMap;
             eventMap = value.eventMap;
             monsterMapForBeforeV100310 = value.monsterMapForBeforeV100310;
@@ -317,6 +322,9 @@ namespace Nekoyume.Model
                         break;
                     case ItemSubType.Ring:
                         ring = equipment as Ring;
+                        break;
+                    case ItemSubType.Aura:
+                        aura = equipment as Aura;
                         break;
                     default:
                         throw new RequiredBlockIndexException();
