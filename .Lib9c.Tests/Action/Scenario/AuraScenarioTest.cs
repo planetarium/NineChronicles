@@ -9,7 +9,9 @@ namespace Lib9c.Tests.Action.Scenario
     using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Arena;
     using Nekoyume.Model;
+    using Nekoyume.Model.BattleStatus.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Skill;
@@ -23,6 +25,7 @@ namespace Lib9c.Tests.Action.Scenario
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
+        private readonly Address _enemyAvatarAddress;
         private readonly IAccountStateDelta _initialState;
         private readonly Aura _aura;
         private readonly TableSheets _tableSheets;
@@ -32,20 +35,11 @@ namespace Lib9c.Tests.Action.Scenario
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
             _avatarAddress = new PrivateKey().ToAddress();
+            _enemyAvatarAddress = new PrivateKey().ToAddress();
             var rankingMapAddress = _avatarAddress.Derive("ranking_map");
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
-            agentState.avatarAddresses.Add(0, _avatarAddress);
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
-            var avatarState = new AvatarState(
-                _avatarAddress,
-                _agentAddress,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                gameConfigState,
-                rankingMapAddress
-            );
-
             var auraRow =
                 _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Aura);
             _aura = (Aura)ItemFactory.CreateItemUsable(auraRow, Guid.NewGuid(), 0L);
@@ -53,25 +47,40 @@ namespace Lib9c.Tests.Action.Scenario
             var skillRow = _tableSheets.SkillSheet[800001];
             var skill = SkillFactory.Get(skillRow, 0, 100, 0, StatType.NONE);
             _aura.Skills.Add(skill);
-            avatarState.inventory.AddItem(_aura);
+            var addresses = new[] { _avatarAddress, _enemyAvatarAddress };
+            _initialState = new MockStateDelta();
+            for (int i = 0; i < addresses.Length; i++)
+            {
+                var avatarAddress = addresses[i];
+                agentState.avatarAddresses.Add(i, avatarAddress);
+                var avatarState = new AvatarState(
+                    _avatarAddress,
+                    _agentAddress,
+                    0,
+                    _tableSheets.GetAvatarSheets(),
+                    gameConfigState,
+                    rankingMapAddress
+                );
+                avatarState.inventory.AddItem(_aura);
+                _initialState = _initialState.SetState(avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
 
-            _initialState = new Tests.Action.MockStateDelta()
+            _initialState = _initialState
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, avatarState.SerializeV2())
-                .SetState(
-                    _avatarAddress.Derive(LegacyInventoryKey),
-                    avatarState.inventory.Serialize())
-                .SetState(
-                    _avatarAddress.Derive(LegacyWorldInformationKey),
-                    avatarState.worldInformation.Serialize())
-                .SetState(
-                    _avatarAddress.Derive(LegacyQuestListKey),
-                    avatarState.questList.Serialize())
                 .SetState(
                     Addresses.GoldCurrency,
                     new GoldCurrencyState(Currency.Legacy("NCG", 2, minters: null)).Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
-                .MintAsset(new ActionContext(), _agentAddress, Currencies.Crystal * 1);
+                .MintAsset(new ActionContext(), _agentAddress, Currencies.Crystal * 2);
             foreach (var (key, value) in sheets)
             {
                 _initialState = _initialState
@@ -108,7 +117,7 @@ namespace Lib9c.Tests.Action.Scenario
             });
 
             var avatarState = _initialState.GetAvatarStateV2(_avatarAddress);
-            Assert_Aura(avatarState, nextState, itemSlotStateAddress);
+            Assert_Player(avatarState, nextState, _avatarAddress, itemSlotStateAddress);
         }
 
         [Fact]
@@ -146,24 +155,143 @@ namespace Lib9c.Tests.Action.Scenario
                 Random = new TestRandom(),
                 Signer = _agentAddress,
             });
-            Assert_Aura(avatarState, nextState, itemSlotStateAddress);
+            Assert_Player(avatarState, nextState, _avatarAddress, itemSlotStateAddress);
         }
 
-        private void Assert_Aura(AvatarState avatarState, IAccountStateDelta nextState, Address itemSlotStateAddress)
+        [Fact]
+        public void Arena()
         {
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var prevState = _initialState;
+            var addresses = new[] { _avatarAddress, _enemyAvatarAddress };
+            foreach (var avatarAddress in addresses)
+            {
+                var itemSlotStateAddress = ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena);
+                Assert.Null(_initialState.GetState(itemSlotStateAddress));
+
+                var avatarState = prevState.GetAvatarStateV2(avatarAddress);
+                for (int i = 0; i < 50; i++)
+                {
+                    avatarState.worldInformation.ClearStage(1, i + 1, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+                }
+
+                prevState = prevState.SetState(
+                    avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize()
+                );
+
+                var join = new JoinArena
+                {
+                    avatarAddress = avatarAddress,
+                    championshipId = 1,
+                    round = 1,
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>
+                    {
+                        _aura.ItemId,
+                    },
+                    runeInfos = new List<RuneSlotInfo>(),
+                };
+                var nextState = join.Execute(new ActionContext
+                {
+                    BlockIndex = 1,
+                    Signer = _agentAddress,
+                    PreviousState = prevState,
+                });
+                var arenaAvatarStateAdr = ArenaAvatarState.DeriveAddress(avatarAddress);
+                var serializedArenaAvatarState = (List)nextState.GetState(arenaAvatarStateAdr);
+                var arenaAvatarState = new ArenaAvatarState(serializedArenaAvatarState);
+                Assert_Equipments(arenaAvatarState.Equipments);
+                prevState = nextState;
+            }
+
+            foreach (var avatarAddress in addresses)
+            {
+                var enemyAvatarAddress = avatarAddress.Equals(_avatarAddress)
+                    ? _enemyAvatarAddress
+                    : _avatarAddress;
+                var battle = new BattleArena
+                {
+                    myAvatarAddress = avatarAddress,
+                    enemyAvatarAddress = enemyAvatarAddress,
+                    championshipId = 1,
+                    round = 1,
+                    ticket = 1,
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>
+                    {
+                        _aura.ItemId,
+                    },
+                    runeInfos = new List<RuneSlotInfo>(),
+                };
+
+                var nextState = battle.Execute(new ActionContext
+                {
+                    Signer = _agentAddress,
+                    PreviousState = prevState,
+                    BlockIndex = 2,
+                    Random = new TestRandom(),
+                });
+                var avatarState = prevState.GetAvatarStateV2(avatarAddress);
+                var enemyAvatarState = prevState.GetAvatarStateV2(enemyAvatarAddress);
+                var simulator = new ArenaSimulator(new TestRandom());
+                var myArenaPlayerDigest = new ArenaPlayerDigest(
+                    avatarState,
+                    battle.equipments,
+                    battle.costumes,
+                    new List<RuneState>()
+                );
+                var enemySlotAddress =
+                    ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
+                var enemySlotState = Assert_ItemSlot(prevState, enemySlotAddress);
+                var enemyArenaPlayerDigest = new ArenaPlayerDigest(
+                    enemyAvatarState,
+                    enemySlotState.Equipments,
+                    enemySlotState.Costumes,
+                    new List<RuneState>()
+                );
+                var log = simulator.Simulate(
+                    myArenaPlayerDigest,
+                    enemyArenaPlayerDigest,
+                    _tableSheets.GetArenaSimulatorSheets());
+                // Check player, enemy equip aura
+                foreach (var spawn in log.OfType<ArenaSpawnCharacter>())
+                {
+                    ArenaCharacter character = spawn.Character;
+                    Assert.Equal(21, character.ATK);
+                    Assert.Equal(11, character.CRI);
+                }
+
+                Assert_ItemSlot(nextState, ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena));
+                prevState = nextState;
+            }
+        }
+
+        private void Assert_Player(AvatarState avatarState, IAccountStateDelta state, Address avatarAddress, Address itemSlotStateAddress)
+        {
+            var nextAvatarState = state.GetAvatarStateV2(avatarAddress);
             var equippedItem = Assert.IsType<Aura>(nextAvatarState.inventory.Equipments.First());
             Assert.True(equippedItem.equipped);
-            var rawItemSlot = Assert.IsType<List>(nextState.GetState(itemSlotStateAddress));
-            var itemSlotState = new ItemSlotState(rawItemSlot);
-            var equipmentId = itemSlotState.Equipments.Single();
-            Assert.Equal(_aura.ItemId, equipmentId);
+            Assert_ItemSlot(state, itemSlotStateAddress);
             var player = new Player(avatarState, _tableSheets.GetSimulatorSheets());
             var equippedPlayer = new Player(nextAvatarState, _tableSheets.GetSimulatorSheets());
             Assert.Null(player.aura);
             Assert.NotNull(equippedPlayer.aura);
             Assert.Equal(player.ATK + 1, equippedPlayer.ATK);
             Assert.Equal(player.CRI + 1, equippedPlayer.CRI);
+        }
+
+        private void Assert_Equipments(IEnumerable<Guid> equipments)
+        {
+            var equipmentId = Assert.Single(equipments);
+            Assert.Equal(_aura.ItemId, equipmentId);
+        }
+
+        private ItemSlotState Assert_ItemSlot(IAccountStateDelta state, Address itemSlotStateAddress)
+        {
+            var rawItemSlot = Assert.IsType<List>(state.GetState(itemSlotStateAddress));
+            var itemSlotState = new ItemSlotState(rawItemSlot);
+            Assert_Equipments(itemSlotState.Equipments);
+            return itemSlotState;
         }
     }
 }
