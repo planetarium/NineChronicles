@@ -1,21 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class StakingPopup : PopupWidget
     {
         [SerializeField] private GameObject none;
@@ -330,7 +331,7 @@ namespace Nekoyume.UI
                 return 0;
             }
 
-            var result = deposit / regular.Rewards[index].Rate;
+            var result = (long)Math.Truncate(deposit / regular.Rewards[index].DecimalRate);
             var levelBonus = regularFixed.Rewards.FirstOrDefault(
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
