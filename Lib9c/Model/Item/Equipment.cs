@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -19,7 +18,7 @@ namespace Nekoyume.Model.Item
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
         public bool equipped;
         public int level;
-        public BigInteger exp;
+        public long exp;
         public int optionCountFromCombination;
 
         public DecimalStat Stat { get; }
@@ -67,11 +66,11 @@ namespace Nekoyume.Model.Item
             {
                 try
                 {
-                    exp = value.ToBigInteger();
+                    exp = value.ToLong();
                 }
                 catch (InvalidCastException)
                 {
-                    exp = ((Integer)value).Value;
+                    exp = (long)((Integer)value).Value;
                 }
             }
 

@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Model.Item
         [InlineData(0)]
         [InlineData(1)]
         [InlineData(14176747520000)] // Max exp. of equipment
-        public void Serialize(BigInteger exp)
+        public void Serialize(long exp)
         {
             Assert.NotNull(_equipmentRow);
 
