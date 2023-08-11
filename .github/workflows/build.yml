@@ -181,10 +181,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Download Android Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: Build-Android
           path: build/Android
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Add Authentication
         run: echo "$GOOGLE_PLAY_KEY_FILE" > $GOOGLE_PLAY_KEY_FILE_PATH
       - name: Set up Fastlane
