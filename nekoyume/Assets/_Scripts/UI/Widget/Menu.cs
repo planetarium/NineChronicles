@@ -364,7 +364,6 @@ namespace Nekoyume.UI
         {
             if (!btnQuest.IsUnlocked)
             {
-                btnQuest.JingleTheCat();
                 return;
             }
 
@@ -385,7 +384,6 @@ namespace Nekoyume.UI
         {
             if (!btnShop.IsUnlocked)
             {
-                btnShop.JingleTheCat();
                 return;
             }
 
@@ -416,7 +414,6 @@ namespace Nekoyume.UI
 
             if (!btnCombination.IsUnlocked)
             {
-                btnCombination.JingleTheCat();
                 return;
             }
 
@@ -436,7 +433,6 @@ namespace Nekoyume.UI
         {
             if (!btnRanking.IsUnlocked)
             {
-                btnRanking.JingleTheCat();
                 return;
             }
 
@@ -454,7 +450,6 @@ namespace Nekoyume.UI
         //{
         //    if (!btnMimisbrunnr.IsUnlocked)
         //    {
-        //        btnMimisbrunnr.JingleTheCat();
         //        return;
         //    }
 
@@ -521,7 +516,6 @@ namespace Nekoyume.UI
         {
             if (!btnStaking.IsUnlocked)
             {
-                btnStaking.JingleTheCat();
                 return;
             }
 
@@ -532,7 +526,6 @@ namespace Nekoyume.UI
         {
             if (!btnWorldBoss.IsUnlocked)
             {
-                btnWorldBoss.JingleTheCat();
                 return;
             }
 
