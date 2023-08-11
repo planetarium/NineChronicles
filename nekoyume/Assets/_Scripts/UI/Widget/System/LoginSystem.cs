@@ -28,6 +28,7 @@ namespace Nekoyume.UI
             CreatePassword,
             CreatePassword_Mobile,
             Login_Mobile,
+            ConnectedAddress_Mobile,
         }
 
         private static class AnalyzeCache
@@ -157,6 +158,7 @@ namespace Nekoyume.UI
                 case States.Show:
                     header.SetActive(true);
                     contentText.gameObject.SetActive(true);
+                    contentText.text = L10nManager.Localize("UI_LOGIN_SHOW_CONTENT");
                     accountGroup.SetActive(true);
                     accountAddressHolder.gameObject.SetActive(true);
                     submitButton.Text = L10nManager.Localize("UI_GAME_SIGN_UP");
@@ -218,6 +220,12 @@ namespace Nekoyume.UI
                     submitButton.Text = L10nManager.Localize("UI_OK");
                     findPassphraseField.Select();
                     break;
+                case States.ConnectedAddress_Mobile:
+                    accountGroup.SetActive(true);
+                    contentText.gameObject.SetActive(true);
+                    contentText.text = L10nManager.Localize("UI_CONNECTED_ADDRESS_CONTENT");
+                    submitButton.Text = L10nManager.Localize("UI_IMPORT");
+                    break;
                 case States.Failed:
                     var upper = _prevState.ToString().ToUpper();
                     var format = L10nManager.Localize($"UI_LOGIN_{upper}_FAIL");
@@ -249,7 +257,9 @@ namespace Nekoyume.UI
 
             if (!strong)
             {
-                Find<TitleOneButtonSystem>().Show("UI_CONFIRM", "UI_INVALID_CREATED_PASSWORD");
+                var popup = Find<TitleOneButtonSystem>();
+                popup.Show("UI_CONFIRM", "UI_INVALID_CREATED_PASSWORD");
+                popup.SubmitCallback = () => { popup.Close(); };
             }
         }
 
@@ -274,7 +284,9 @@ namespace Nekoyume.UI
             retypeText.gameObject.SetActive(!vaild);
             if (!vaild)
             {
-                Find<TitleOneButtonSystem>().Show("UI_CONFIRM", "UI_INVALID_RETYPE_PASSWORD");
+                var popup = Find<TitleOneButtonSystem>();
+                popup.Show("UI_CONFIRM", "UI_INVALID_RETYPE_PASSWORD");
+                popup.SubmitCallback = () => { popup.Close(); };
             }
         }
 
@@ -414,6 +426,10 @@ namespace Nekoyume.UI
                         Close();
                     });
                     break;
+                case States.ConnectedAddress_Mobile:
+                    Find<IntroScreen>().Show();
+                    Close();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -515,6 +531,29 @@ namespace Nekoyume.UI
                     break;
             }
 #endif
+            base.Show();
+        }
+
+        // Keystore 가 없을 때에만 가능해야 함
+        public void Show(Address? connectedAddress)
+        {
+            // accountExist
+            if (connectedAddress.HasValue)
+            {
+                SetState(States.ConnectedAddress_Mobile);
+                SetImage(connectedAddress.Value);
+            }
+            else
+            {
+                KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
+                _privateKey = new PrivateKey();
+                SetState(States.CreatePassword_Mobile);
+                Find<OneButtonSystem>().Show(
+                    L10nManager.Localize("UI_CREATE_PASSWORD_NOTI"),
+                    L10nManager.Localize("UI_PROCEED"),
+                    null);
+            }
+
             base.Show();
         }
 
