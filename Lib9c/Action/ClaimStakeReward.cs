@@ -412,7 +412,7 @@ namespace Nekoyume.Action
                             continue;
                         }
 
-                        var majorUnit = rewardQuantityForSingleStep * itemRewardStep;
+                        var majorUnit = rewardQuantityForSingleStep * runeRewardStep;
                         if (majorUnit < 1)
                         {
                             continue;
