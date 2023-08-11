@@ -142,6 +142,8 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
+        public PortalConnect PortalConnect => portalConnect;
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -163,7 +165,7 @@ namespace Nekoyume.Game
         private Thread _headlessThread;
         private Thread _marketThread;
 
-        private DeepLinkHandler _deepLinkHandler;
+        private PortalConnect portalConnect;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -263,7 +265,7 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
 #if ENABLE_FIREBASE
@@ -673,6 +675,7 @@ namespace Nekoyume.Game
             }
 
 #if UNITY_ANDROID
+            // 근데 이 시점에서 자동 로그인 한 사람이 pledge가 안되어 있으면 access token도 없는데 어캄
             // Check MeadPledge
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
@@ -682,7 +685,7 @@ namespace Nekoyume.Game
 
                     while (!States.PledgeRequested)
                     {
-                        _deepLinkHandler.OpenPortal(States.AgentState.address);
+                        yield return portalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
                         if (!States.PledgeRequested)

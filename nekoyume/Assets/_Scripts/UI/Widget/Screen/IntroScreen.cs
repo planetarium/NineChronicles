@@ -107,6 +107,25 @@ namespace Nekoyume.UI
 #endif
         }
 
+        public void Show()
+        {
+            mobileContainer.SetActive(true);
+            startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+            mobileIndicator.Close();
+
+            Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+            qrCodeGuideBackground.Show();
+            qrCodeGuideContainer.SetActive(true);
+            foreach (var image in qrCodeGuideImages)
+            {
+                image.SetActive(false);
+            }
+
+            _guideIndex = 0;
+            ShowQrCodeGuide();
+        }
+
         private IEnumerator CoShowMobile()
         {
             yield return new WaitForSeconds(2);
