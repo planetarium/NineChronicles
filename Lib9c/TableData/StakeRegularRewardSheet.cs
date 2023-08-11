@@ -25,7 +25,9 @@ namespace Nekoyume.TableData
             /// The rate of reward.
             /// </summary>
             [Obsolete(
-                "This field is used from `ClaimStakeReward.V2` or earlier. Use `DecimalRate` instead.")]
+                "This field is used from `ClaimStakeReward.V2` or earlier." +
+                " Use `DecimalRate` instead." +
+                " Deprecated this field because we need to support decimal rate.")]
             public readonly int Rate;
 
             public readonly StakeRewardType Type;
