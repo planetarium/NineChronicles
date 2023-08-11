@@ -4,12 +4,11 @@
 #nullable enable
 
 using System.Collections.Generic;
-using Firebase.Analytics;
 using mixpanel;
 using Nekoyume.State;
 
 #if ENABLE_FIREBASE
-using NineChronicles.GoogleServices.Firebase.Runtime;
+using Firebase.Analytics;
 #endif
 
 //using Sentry;
@@ -131,10 +130,10 @@ namespace Nekoyume
             string targetNetwork,
             string rpcServerHost)
         {
-            FirebaseAnalytics.SetUserProperty("client-host", clientHost);
-            FirebaseAnalytics.SetUserProperty("client-hash", clientHash);
-            FirebaseAnalytics.SetUserProperty("target-network", targetNetwork);
-            FirebaseAnalytics.SetUserProperty("rpc-server-host", rpcServerHost);
+            FirebaseAnalytics.SetUserProperty("client_host", clientHost);
+            FirebaseAnalytics.SetUserProperty("client_hash", clientHash);
+            FirebaseAnalytics.SetUserProperty("target_network", targetNetwork);
+            FirebaseAnalytics.SetUserProperty("rpc_server_host", rpcServerHost);
         }
 #endif
 
@@ -178,7 +177,7 @@ namespace Nekoyume
             {
                 Mixpanel.Track(eventName);
 #if ENABLE_FIREBASE
-                FirebaseAnalytics.LogEvent(eventName);
+                FirebaseAnalytics.LogEvent(eventName.Replace("/", "_"));
 #endif
                 return;
             }
@@ -192,13 +191,13 @@ namespace Nekoyume
                 var (key, value) = properties[i];
                 mixpanelValues[key] = value;
 #if ENABLE_FIREBASE
-                firebaseParameters[i] = new Parameter(key, value);
+                firebaseParameters[i] = new Parameter(key.Replace("/", "_"), value);
 #endif
             }
 
             Mixpanel.Track(eventName, mixpanelValues);
 #if ENABLE_FIREBASE
-            FirebaseAnalytics.LogEvent(eventName, firebaseParameters);
+            FirebaseAnalytics.LogEvent(eventName.Replace("/", "_"), firebaseParameters);
 #endif
         }
 
@@ -223,7 +222,7 @@ namespace Nekoyume
 
 #if ENABLE_FIREBASE
             var firebaseParameters = ValuesToParameters(valueDict);
-            FirebaseAnalytics.LogEvent(eventName, firebaseParameters);
+            FirebaseAnalytics.LogEvent(eventName.Replace("/", "_"), firebaseParameters);
 #endif
 
             // if (returnTrace)
@@ -268,7 +267,7 @@ namespace Nekoyume
         {
             var (key, value) = item;
             var str = value.ToString();
-            return new Parameter(key, str);
+            return new Parameter(key.Replace("/", "_"), str);
         }
 
         private static Parameter[] ValuesToParameters(Dictionary<string, Value> values)
