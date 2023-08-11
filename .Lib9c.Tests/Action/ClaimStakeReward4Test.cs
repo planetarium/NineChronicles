@@ -1,7 +1,8 @@
-#nullable enable
-
 namespace Lib9c.Tests.Action
 {
+#nullable enable
+
+    using System.Collections.Generic;
     using System.Linq;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
@@ -10,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -35,7 +37,14 @@ namespace Lib9c.Tests.Action
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates(
-                agentAddr: _agentAddr);
+                agentAddr: _agentAddr,
+                sheetsOverride: new Dictionary<string, string>
+                {
+                    {
+                        nameof(StakeRegularRewardSheet),
+                        ClaimStakeReward.V2.StakeRegularRewardSheetCsv
+                    },
+                });
             _ncg = _initialStatesWithAvatarStateV1.GetGoldCurrency();
         }
 
