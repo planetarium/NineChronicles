@@ -70,7 +70,7 @@ namespace Nekoyume.Blockchain
         private ActionRenderer _actionRenderer;
 
         // approximately 4h
-        private const int WorkshopNotifiedBlockCount = 1200;
+        private const int WorkshopNotifiedBlockCount = 0;
 
         private ActionRenderHandler()
         {
