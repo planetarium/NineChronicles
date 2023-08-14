@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
             switch (itemType)
             {
                 case ItemType.Consumable:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.ConsumableItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
                         Guid.NewGuid());
                     break;
                 case ItemType.Equipment:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Action
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
-                    nextTradableItemInShopItem = nextShopItem.ItemUsable;
+                    nextTradableItemInShopItem = (ITradableItem)nextShopItem.ItemUsable;
                     break;
                 case ItemType.Costume:
                     nextTradableItemInShopItem = nextShopItem.Costume;
@@ -242,8 +242,8 @@ namespace Lib9c.Tests.Action
                 case ItemType.Consumable:
                 case ItemType.Equipment:
                     Assert.NotNull(mail.attachment.itemUsable);
-                    attachmentItem = mail.attachment.itemUsable;
-                    Assert.Equal(tradableItem, mail.attachment.itemUsable);
+                    attachmentItem = (ITradableItem)mail.attachment.itemUsable;
+                    Assert.Equal((ItemUsable)tradableItem, mail.attachment.itemUsable);
                     break;
                 case ItemType.Costume:
                     Assert.NotNull(mail.attachment.costume);
