@@ -4,6 +4,9 @@ on:
       - main
       - development
       - rc-v*
+      - release/*
+      - hotfix/*
+      - fast-track/*
     tags: ["*"]
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]

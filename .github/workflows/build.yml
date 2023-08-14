@@ -8,6 +8,7 @@ on:
       - rc-v*
       - release/*
       - hotfix/*
+      - fast-track/*
       - ci/*
     tags: ["*"]
   pull_request:
