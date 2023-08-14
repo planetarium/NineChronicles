@@ -266,6 +266,33 @@ namespace Lib9c.Tests.Action.Scenario
             }
         }
 
+        [Fact]
+        public void Grinding()
+        {
+            var avatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            Assert.True(avatarState.inventory.TryGetNonFungibleItem(_aura.ItemId, out _));
+
+            var grinding = new Grinding
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>
+                {
+                    _aura.ItemId,
+                },
+            };
+            var nextState = grinding.Execute(new ActionContext
+            {
+                Signer = _agentAddress,
+                PreviousState = _initialState,
+                BlockIndex = 1L,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.False(nextAvatarState.inventory.TryGetNonFungibleItem(_aura.ItemId, out _));
+            var previousCrystal = _initialState.GetBalance(_agentAddress, Currencies.Crystal);
+            Assert.True(nextState.GetBalance(_agentAddress, Currencies.Crystal) > previousCrystal);
+        }
+
         private void Assert_Player(AvatarState avatarState, IAccountStateDelta state, Address avatarAddress, Address itemSlotStateAddress)
         {
             var nextAvatarState = state.GetAvatarStateV2(avatarAddress);
