@@ -62,7 +62,15 @@ namespace Nekoyume.Blockchain
 
         FungibleAssetValue GetBalance(Address address, Currency currency);
 
-        Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency);
+        Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            long? blockIndex = null);
+
+        Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            BlockHash blockHash);
 
         Task<Dictionary<Address, AvatarState>> GetAvatarStates(
             IEnumerable<Address> addressList,

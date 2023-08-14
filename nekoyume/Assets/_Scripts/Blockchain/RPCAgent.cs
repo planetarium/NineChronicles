@@ -162,7 +162,10 @@ namespace Nekoyume.Blockchain
 
         public IValue GetState(Address address)
         {
-            byte[] raw = _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray()).ResponseAsync.Result;
+            var raw = _service.GetState(
+                address.ToByteArray(),
+                BlockTipHash.ToByteArray()
+            ).ResponseAsync.Result;
             return _codec.Decode(raw);
         }
 
@@ -174,9 +177,8 @@ namespace Nekoyume.Blockchain
                 game.CachedStateAddresses.TryGetValue(address, out var cached) &&
                 cached &&
                 game.CachedStates.TryGetValue(address, out var value) &&
-                !(value is Null))
+                value is not Null)
             {
-                await Task.CompletedTask;
                 return value;
             }
 
@@ -208,22 +210,15 @@ namespace Nekoyume.Blockchain
             return decoded;
         }
 
-        public FungibleAssetValue GetBalance(Address address, Currency currency)
+        public FungibleAssetValue GetBalance(Address addr, Currency currency)
         {
-            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
-            var result = _service.GetBalance(
-                address.ToByteArray(),
-                _codec.Encode(CurrencyExtensions.Serialize(currency)),
-                BlockTipHash.ToByteArray()
-            );
-            byte[] raw = result.ResponseAsync.Result;
-            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
-                new Currency(serialized.ElementAt(0)),
-                serialized.ElementAt(1).ToBigInteger());
+            return GetBalanceAsync(addr, currency).Result;
         }
 
-        public async Task<FungibleAssetValue> GetBalanceAsync(Address addr, Currency currency)
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            Address addr,
+            Currency currency,
+            long? blockIndex = null)
         {
             var game = Game.Game.instance;
             if (game.CachedBalance.TryGetValue(currency, out var cache) &&
@@ -234,16 +229,14 @@ namespace Nekoyume.Blockchain
                 return fav;
             }
 
-            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
-            var raw = await _service.GetBalance(
-                addr.ToByteArray(),
-                _codec.Encode(CurrencyExtensions.Serialize(currency)),
-                BlockTipHash.ToByteArray()
-            );
-            var serialized = (List)_codec.Decode(raw);
-            var balance = FungibleAssetValue.FromRawValue(
-                new Currency(serialized.ElementAt(0)),
-                serialized.ElementAt(1).ToBigInteger());
+            var blockHash = await GetBlockHashAsync(blockIndex);
+            if (blockHash is null)
+            {
+                Debug.LogError($"Failed to get block hash from block index: {blockIndex}");
+                return 0 * currency;
+            }
+
+            var balance = await GetBalanceAsync(addr, currency, blockHash.Value);
             if (addr.Equals(Address))
             {
                 if (!game.CachedBalance.ContainsKey(currency))
@@ -256,6 +249,21 @@ namespace Nekoyume.Blockchain
             }
 
             return balance;
+        }
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            BlockHash blockHash)
+        {
+            var raw = await _service.GetBalance(
+                address.ToByteArray(),
+                _codec.Encode(currency.Serialize()),
+                BlockTipHash.ToByteArray());
+            var serialized = (List) _codec.Decode(raw);
+            return FungibleAssetValue.FromRawValue(
+                new Currency(serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger());
         }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
@@ -399,18 +407,20 @@ namespace Nekoyume.Blockchain
             Task currencyTask = Task.Run(async () =>
             {
                 var state = await GetStateAsync(GoldCurrencyState.Address);
-                Currency goldCurrency = new GoldCurrencyState(
+                var goldCurrency = new GoldCurrencyState(
                     (Dictionary)state
                 ).Currency;
 
                 await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
+                    await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
-                    new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
+                    new GoldBalanceState(
+                        Address,
+                        await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
-                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
+                    await GetBalanceAsync(Address, Currencies.Crystal));
 
                 if (await GetStateAsync(
                         StakeState.DeriveAddress(States.Instance.AgentState.address))
@@ -421,12 +431,9 @@ namespace Nekoyume.Blockchain
                     var level = 0;
                     try
                     {
-                        balance = await GetBalanceAsync(stakingState.address,
-                            goldCurrency);
+                        balance = await GetBalanceAsync(stakingState.address, goldCurrency);
                         level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                            .FindLevelByStakedAmount(
-                                Address,
-                                balance);
+                            .FindLevelByStakedAmount(Address, balance);
                     }
                     catch
                     {
