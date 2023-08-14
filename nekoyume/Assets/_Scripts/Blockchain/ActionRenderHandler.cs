@@ -69,7 +69,7 @@ namespace Nekoyume.Blockchain
 
         private ActionRenderer _actionRenderer;
 
-        // approximately 4h
+        // approximately 4h == 1200 block count
         private const int WorkshopNotifiedBlockCount = 0;
 
         private ActionRenderHandler()
