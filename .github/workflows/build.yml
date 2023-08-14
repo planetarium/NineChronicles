@@ -171,13 +171,13 @@ jobs:
         with:
           name: Build-Android
           path: build/Android
-      - name: Display structure of downloaded files
-        run: ls -R
+      - name: unzip artifact for deployment
+        run: |
+          mkdir -p build/Android
+          unzip build/Android.zip -d build/Android
       - name: Add Authentication
-        uses: timheuer/base64-to-file@v1
-        with:
-            fileName: ${{ env.GOOGLE_PLAY_KEY_FILE_PATH }}
-            encodedString: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
+        run: |
+          echo ${{secrets.GOOGLE_PLAY_KEY_FILE}} | base64 -d > ${{ env.GOOGLE_PLAY_KEY_FILE_PATH }}
       - name: Set up Fastlane
         uses: ruby/setup-ruby@v1
         with:
