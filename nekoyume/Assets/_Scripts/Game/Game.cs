@@ -266,7 +266,6 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
 #if ENABLE_FIREBASE
@@ -326,6 +325,10 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
+#if UNITY_ANDROID
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
+#endif
+
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -678,6 +681,15 @@ namespace Nekoyume.Game
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
+
+                if (!States.PledgeRequested)
+                {
+                    var clickRetry = false;
+                    var popup = Widget.Find<TitleOneButtonSystem>();
+                    popup.Show("Time Out", "Please try again", "Retry", false);
+                    popup.SubmitCallback = () => clickRetry = true;
+                    yield return new WaitUntil(() => clickRetry);
+                }
             }
 
 #if UNITY_ANDROID
@@ -692,13 +704,6 @@ namespace Nekoyume.Game
                         yield return portalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
-                        if (!States.PledgeRequested)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
                     }
                 }
 
@@ -712,13 +717,6 @@ namespace Nekoyume.Game
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
                         yield return SetTimeOut(() => States.PledgeApproved);
-                        if (!States.PledgeApproved)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
                     }
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");

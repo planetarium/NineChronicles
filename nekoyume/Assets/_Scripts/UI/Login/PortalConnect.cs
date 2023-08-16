@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using UnityEngine;
@@ -14,17 +15,22 @@ namespace Nekoyume.UI
     public class PortalConnect
     {
         [Serializable]
-        public class AccessTokenResult
+        public class RequestResult
+        {
+            public string title;
+            public string message;
+            public string code;
+        }
+
+        [Serializable]
+        public class AccessTokenResult : RequestResult
         {
             public string accessToken;
         }
 
         [Serializable]
-        public class RequestPledgeResult
+        public class RequestPledgeResult : RequestResult
         {
-            public string title;
-            public string message;
-            public string code;
             public string txId;
         }
 
@@ -39,7 +45,7 @@ namespace Nekoyume.UI
         private readonly string portalUrl;
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
-        private const int Timeout = 30;
+        private const int Timeout = 180;
 
         public PortalConnect(string url)
         {
@@ -76,11 +82,7 @@ namespace Nekoyume.UI
 
             if (param.ContainsKey("clientSecret"))
             {
-                if (!clientSecret.Equals(param["clientSecret"]))
-                {
-                    Debug.LogError($"clientSecret is not matched. {clientSecret} != {param["clientSecret"]}");
-                    return;
-                }
+                clientSecret = param["clientSecret"];
             }
 
             if (param.ContainsKey("code"))
@@ -116,20 +118,33 @@ namespace Nekoyume.UI
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
 
-            await request.SendWebRequest();
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.Log(e.Text);
+            }
 
+            var json = request.downloadHandler.text;
+            var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                var json = request.downloadHandler.text;
-                var data = JsonUtility.FromJson<AccessTokenResult>(json);
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
                 }
+                else
+                {
+                    Debug.LogError($"AccessToken Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}");
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
+                ShowRequestErrorPopup(data);
             }
         }
 
@@ -153,10 +168,10 @@ namespace Nekoyume.UI
 
             yield return request.SendWebRequest();
 
+            var json = request.downloadHandler.text;
+            var data = JsonUtility.FromJson<RequestPledgeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                var json = request.downloadHandler.text;
-                var data = JsonUtility.FromJson<RequestPledgeResult>(json);
                 if (!string.IsNullOrEmpty(data.txId))
                 {
                     txId = data.txId;
@@ -164,13 +179,24 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"RequestPledge Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                var json = request.downloadHandler.text;
                 Debug.LogError($"RequestPledge Error: {request.error}\n{json}");
+                ShowRequestErrorPopup(data);
             }
+        }
+
+        private void ShowRequestErrorPopup(RequestResult data)
+        {
+            var message = $"An abnormal condition has been identified. Please try again after finishing the app.\n{data.message}";
+            message += string.IsNullOrEmpty(data.code) ? string.Empty : $"\nCode: {data.code}";
+
+            var popup = Widget.Find<TitleOneButtonSystem>();
+            popup.Show(data.title, message, "OK", false);
+            popup.SubmitCallback = Application.Quit;
         }
     }
 }
