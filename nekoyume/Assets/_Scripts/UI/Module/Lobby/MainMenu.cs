@@ -93,15 +93,6 @@ namespace Nekoyume.UI.Module.Lobby
 
         private bool PointEnterTrigger()
         {
-            if (!IsUnlocked)
-            {
-                var tooltip = Widget.Find<MessageCatTooltip>();
-                tooltip.HideAll(false);
-
-                _cat = Widget.Find<MessageCatTooltip>()
-                    .Show(true, _messageForCat, gameObject);
-            }
-
             return IsUnlocked;
         }
 
@@ -111,33 +102,11 @@ namespace Nekoyume.UI.Module.Lobby
             {
                 ResetLocalizationKey();
             }
-            else
-            {
-#if !UNITY_ANDROID
-                if (!_cat)
-                {
-                    return IsUnlocked;
-                }
-
-                _cat.Hide();
-                _cat = null;
-#endif
-            }
 
             return IsUnlocked;
         }
 
         #endregion
-
-        public void JingleTheCat()
-        {
-            if (!_cat)
-            {
-                return;
-            }
-
-            _cat.Jingle();
-        }
 
         private void ResetLocalizationKey()
         {

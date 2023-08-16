@@ -606,9 +606,9 @@ namespace Nekoyume.UI
                                       SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
-                var value =
-                    SharedModel.StageID >= Battle.RequiredStageForExitButton ||
-                    SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton;
+                var value = SharedModel.IsClear &&
+                            (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                             SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
                 repeatButton.gameObject.SetActive(value);
                 repeatButton.interactable = value;
             }

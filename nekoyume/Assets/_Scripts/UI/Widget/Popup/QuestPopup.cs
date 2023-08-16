@@ -4,7 +4,9 @@ using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using UnityEngine;
 using UnityEngine.UI;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -37,6 +39,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
+        [SerializeField]
+        private Button receiveAllButton;
+
+        [SerializeField]
+        private GameObject receiveAllContainer;
+
         private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
@@ -56,6 +64,7 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+            receiveAllButton.onClick.AddListener(ReceiveAll);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -128,6 +137,32 @@ namespace Nekoyume.UI
                     quest.Complete &&
                     quest.isReceivable);
             }
+
+            receiveAllContainer.SetActive(list.Any(quest =>
+                quest.IsPaidInAction && quest.isReceivable));
+        }
+
+        private void ReceiveAll()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var questList = _questList.Value;
+            var mailRewards = questList
+                .Where(q => q.isReceivable && q.Complete)
+                .SelectMany(q =>
+                {
+                    LocalLayerModifier.RemoveReceivableQuest(avatarAddress, q.Id);
+                    return q.Reward.ItemMap;
+                }).Select(itemMap =>
+                {
+                    var item = ItemFactory.CreateMaterial(
+                        TableSheets.Instance.MaterialItemSheet,
+                        itemMap.Item1);
+                    var itemId = item.ItemId;
+                    var count = itemMap.Item2;
+                    LocalLayerModifier.AddItem(avatarAddress, itemId, count);
+                    return new MailReward(item, count);
+                }).ToList();
+            Find<MailRewardScreen>().Show(mailRewards);
         }
     }
 
