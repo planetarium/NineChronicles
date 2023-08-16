@@ -209,7 +209,7 @@ namespace Nekoyume.UI
             {
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
-                Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
             });
             guestButton.interactable = true;
         }
