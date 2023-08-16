@@ -240,6 +240,12 @@ namespace Nekoyume.UI
                                 (int)result,
                                 _benefitRates[level]);
                             break;
+                        case StakeRegularRewardSheet.StakeRewardType.Currency:
+                            interestBenefitsViews[i].Set(
+                                regular.Rewards[i].CurrencyTicker,
+                                (int)result,
+                                _benefitRates[level]);
+                            break;
                     }
                 }
             }
@@ -304,7 +310,17 @@ namespace Nekoyume.UI
                     model.HourGlassInterest = GetReward(regular, regularFixed,regular.RequiredGold, 0);
                     model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
                     model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
-                    model.GoldenMeatInterest = GetReward(regular, regularFixed, regular.RequiredGold, 3);
+
+                    var crystalRewardIndex = GetCrystalRewardIndex(regular);
+                    if(crystalRewardIndex != -1)
+                    {
+                        model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, crystalRewardIndex);
+                    }
+                    else
+                    {
+                        model.CrystalInterest = 0;
+                    }
+
                     model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, 4);
                 }
 
@@ -336,6 +352,17 @@ namespace Nekoyume.UI
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
+        }
+
+        private static int GetCrystalRewardIndex(StakeRegularRewardSheet.Row regular)
+        {
+            for (int i = 0; i < regular.Rewards.Count; i++)
+            {
+                if (regular.Rewards[i].CurrencyTicker == "CRYSTAL")
+                    return i;
+            }
+
+            return -1;
         }
     }
 }
