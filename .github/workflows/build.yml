@@ -73,6 +73,31 @@ jobs:
         with:
           python-version: 3.11.0
 
+      - name: Setup Keystore and Passwords
+        if: steps.check-android.outputs.is_android == 'true'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/9c-signing-keystore.keystore
+          echo "${{ secrets.ANDROID_KEYSTORE_PASS }}" > /tmp/keystore.pwd
+          echo "${{ secrets.ANDROID_KEY_ALIAS_NAME }}" > /tmp/keyalias.name
+          echo "${{ secrets.ANDROID_KEY_ALIAS_PASS }}" > /tmp/key.pwd
+
+      - name: Set up Java
+        if: steps.check-android.outputs.is_android == 'true'
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install bundletool
+        if: steps.check-android.outputs.is_android == 'true'
+        run: |
+            sudo bash .github/bin/install-bundletool.sh /tmp
+
+      - name: Convert AAB to APKS
+        if: steps.check-android.outputs.is_android == 'true'
+        run: |
+          java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/packages/Android/9c.aab" --output="/tmp/packages/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/key.pwd --mode=universal --local-testing
+
       - name: Pack
         run: |
           targetPlatform=${{ matrix.targetPlatform }}
