@@ -571,7 +571,7 @@ namespace Nekoyume.Game
             _battleResultModel.StageID = log.stageId;
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
-            _battleResultModel.IsClear = log.IsClear;
+            _battleResultModel.IsClear = isClear;
             var isMulti = PlayCount > 1;
 
             if (IsExitReserved)
@@ -600,7 +600,7 @@ namespace Nekoyume.Game
                     _battleResultModel.NextState = BattleResultPopup.NextState.NextStage;
                 }
             }
-            else
+            else  // Failed
             {
                 _battleResultModel.NextState = BattleResultPopup.NextState.None;
             }

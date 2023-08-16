@@ -641,6 +641,7 @@ GameObject:
   - component: {fileID: 2300888738013243646}
   - component: {fileID: 7587823053832371763}
   - component: {fileID: 5333993403680860447}
+  - component: {fileID: 6070358987996683733}
   m_Layer: 5
   m_Name: IAP_ProductTab
   m_TagString: Untagged
@@ -780,6 +781,19 @@ MonoBehaviour:
   disabledText: {fileID: 5825503032614024788}
   enabledText: {fileID: 6729935436368134996}
   <Toggle>k__BackingField: {fileID: 2300888738013243646}
+--- !u!114 &6070358987996683733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6049426971333627130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &6820251113957128798
 GameObject:
   m_ObjectHideFlags: 0
