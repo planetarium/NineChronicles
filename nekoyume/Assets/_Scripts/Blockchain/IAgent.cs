@@ -72,10 +72,10 @@ namespace Nekoyume.Blockchain
             Currency currency,
             BlockHash blockHash);
 
-        Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+        Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             long? blockIndex = null);
 
-        Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList);
+        Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList);
     }
 }

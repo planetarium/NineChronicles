@@ -764,7 +764,7 @@ namespace Nekoyume.Game
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
-            var dict = await Agent.GetStateBulk(map.Keys);
+            var dict = await Agent.GetStateBulkAsync(map.Keys);
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.

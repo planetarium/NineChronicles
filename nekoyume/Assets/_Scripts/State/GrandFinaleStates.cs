@@ -150,7 +150,7 @@ namespace Nekoyume.State
                     avatarAddr.Derive(scoreDeriveString))
                 ).ToArray();
             // NOTE: If addresses is too large, and split and get separately.
-            var scores = await agent.GetStateBulk(
+            var scores = await agent.GetStateBulkAsync(
                 avatarAndScoreAddrList.Select(tuple => tuple.Item2));
             var avatarAddrAndScores = avatarAndScoreAddrList
                 .Select(tuple =>
@@ -219,8 +219,8 @@ namespace Nekoyume.State
             }
 
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
-            var runeStateBulk = await agent.GetStateBulk(runeAddrBulk);
-            var stateBulk = await agent.GetStateBulk(addrBulk);
+            var runeStateBulk = await agent.GetStateBulkAsync(runeAddrBulk);
+            var stateBulk = await agent.GetStateBulkAsync(addrBulk);
             var runeStates = new List<RuneState>();
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {

@@ -88,7 +88,7 @@ namespace Nekoyume
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
                 ItemSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
-            var itemBulk = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
+            var itemBulk = await Game.Game.instance.Agent.GetStateBulkAsync(itemAddresses);
             var itemSlotStates = new List<ItemSlotState>();
             foreach (var value in itemBulk.Values)
             {
@@ -104,7 +104,7 @@ namespace Nekoyume
                 RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena),
                 RuneSlotState.DeriveAddress(avatarAddress, BattleType.Raid)
             };
-            var runeBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
+            var runeBulk = await Game.Game.instance.Agent.GetStateBulkAsync(runeAddresses);
             var runeSlotStates = new List<RuneSlotState>();
             foreach (var value in runeBulk.Values)
             {
@@ -122,7 +122,7 @@ namespace Nekoyume
             var runeListSheet = Game.Game.instance.TableSheets.RuneListSheet;
             var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
             var addresses = runeIds.Select(id => RuneState.DeriveAddress(avatarState.address, id)).ToList();
-            var bulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            var bulk = await Game.Game.instance.Agent.GetStateBulkAsync(addresses);
             var runeStates = new List<RuneState>();
             foreach (var value in bulk.Values)
             {
