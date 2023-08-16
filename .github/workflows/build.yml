@@ -23,6 +23,11 @@ jobs:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on:
       labels: ["linux", "8cores"]
+    outputs:
+      is_android: ${{ steps.check-android.outputs.is_android }}
+    defaults:
+        run:
+          shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -73,6 +78,12 @@ jobs:
         with:
           python-version: 3.11.0
 
+      - name: Install bundletool
+        if: steps.check-android.outputs.is_android == 'true'
+        run: |
+          tr -d "\r" < .github/bin/install-bundletool.sh > .github/bin/install-bundletool-trimed.sh
+          bash .github/bin/install-bundletool-trimed.sh /tmp
+
       - name: Setup Keystore and Passwords
         if: steps.check-android.outputs.is_android == 'true'
         run: |
@@ -88,15 +99,14 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Install bundletool
-        if: steps.check-android.outputs.is_android == 'true'
+      - name: Move Folder
         run: |
-            sudo bash .github/bin/install-bundletool.sh /tmp
+          sudo mv $GITHUB_WORKSPACE/build /tmp/player
 
       - name: Convert AAB to APKS
         if: steps.check-android.outputs.is_android == 'true'
         run: |
-          java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/packages/Android/9c.aab" --output="/tmp/packages/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/key.pwd --mode=universal --local-testing
+          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/9c.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/key.pwd --mode=universal --local-testing
 
       - name: Pack
         run: |
@@ -108,7 +118,6 @@ jobs:
             mv .github/bin/pack_trimed.sh .github/bin/pack.sh
           fi
 
-          sudo mv $GITHUB_WORKSPACE/build /tmp/player
           pip3 install wheel
           sudo bash .github/bin/pack.sh \
           /tmp/packages \
