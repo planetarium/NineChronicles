@@ -5,14 +5,19 @@ on:
     branches:
       - main
       - development
-      - rc-v*
       - release/*
-      - hotfix/*
       - fast-track/*
-      - ci/*
     tags: ["*"]
   pull_request:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
+  workflow_dispatch:
+    inputs:
+      clo:
+        description: "Assets/StreamingAssets/clo.json"
+        required: false
+        type: string
+        default: ""
+
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -23,8 +28,6 @@ jobs:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on:
       labels: ["linux", "8cores"]
-    outputs:
-      is_android: ${{ steps.check-android.outputs.is_android }}
     defaults:
         run:
           shell: bash
@@ -34,20 +37,11 @@ jobs:
         projectPath:
           - nekoyume
         targetPlatform:
-          - Android
           - StandaloneWindows
           - StandaloneLinux64
           - StandaloneOSX
 
     steps:
-      - name: Set CRLF
-        run: |
-          targetPlatform=${{ matrix.targetPlatform }}
-
-          if [ "$targetPlatform" == "Android" ]; then
-            git config --global core.autocrlf true
-          fi
-
       - uses: actions/checkout@v3
         with:
           lfs: true
@@ -63,60 +57,23 @@ jobs:
 
       - uses: game-ci/unity-builder@v2
         with:
-          androidKeystoreName: 9c-aos-signing-keystore.keystore # This file won't exist, but this property needs to exist.
-          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
-          androidKeyaliasName: ${{ secrets.ANDROID_KEY_ALIAS_NAME }}
-          androidKeyaliasPass: ${{ secrets.ANDROID_KEY_ALIAS_PASS }}
-          androidAppBundle: true
           projectPath: ${{ matrix.projectPath }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
+          buildName: ${{ matrix.targetPlatform }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.11.0
 
-      - name: Install bundletool
-        if: steps.check-android.outputs.is_android == 'true'
-        run: |
-          tr -d "\r" < .github/bin/install-bundletool.sh > .github/bin/install-bundletool-trimed.sh
-          bash .github/bin/install-bundletool-trimed.sh /tmp
-
-      - name: Setup Keystore and Passwords
-        if: steps.check-android.outputs.is_android == 'true'
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/9c-signing-keystore.keystore
-          echo "${{ secrets.ANDROID_KEYSTORE_PASS }}" > /tmp/keystore.pwd
-          echo "${{ secrets.ANDROID_KEY_ALIAS_NAME }}" > /tmp/keyalias.name
-          echo "${{ secrets.ANDROID_KEY_ALIAS_PASS }}" > /tmp/key.pwd
-
-      - name: Set up Java
-        if: steps.check-android.outputs.is_android == 'true'
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-
       - name: Move Folder
         run: |
           sudo mv $GITHUB_WORKSPACE/build /tmp/player
 
-      - name: Convert AAB to APKS
-        if: steps.check-android.outputs.is_android == 'true'
-        run: |
-          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/9c.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/key.pwd --mode=universal --local-testing
-
       - name: Pack
         run: |
           targetPlatform=${{ matrix.targetPlatform }}
-
-          if [ "$targetPlatform" == "Android" ]; then
-            tr -d "\r" < .github/bin/pack.sh > .github/bin/pack_trimed.sh
-            rm .github/bin/pack.sh
-            mv .github/bin/pack_trimed.sh .github/bin/pack.sh
-          fi
 
           pip3 install wheel
           sudo bash .github/bin/pack.sh \
@@ -132,7 +89,7 @@ jobs:
           if-no-files-found: error
 
   extract:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.event.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -163,7 +120,7 @@ jobs:
           fi
 
   release:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -196,7 +153,7 @@ jobs:
 
 
   update-latest-metadata:
-    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/ci/') || startsWith(github.ref, 'refs/heads/rc-v/') || startsWith(github.event.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.event.ref, 'refs/tags/')
     runs-on: ubuntu-20.04
     needs: [extract, release]
     environment:
