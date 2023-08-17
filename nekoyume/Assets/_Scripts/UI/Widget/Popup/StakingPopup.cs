@@ -311,17 +311,8 @@ namespace Nekoyume.UI
                     model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
                     model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
 
-                    var crystalRewardIndex = GetCrystalRewardIndex(regular);
-                    if(crystalRewardIndex != -1)
-                    {
-                        model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, crystalRewardIndex);
-                    }
-                    else
-                    {
-                        model.CrystalInterest = 0;
-                    }
-
-                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, 4);
+                    model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetCrystalRewardIndex(regular));
+                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenPowderRewardIndex(regular));
                 }
 
                 model.BenefitRate = _benefitRates[level];
@@ -342,7 +333,7 @@ namespace Nekoyume.UI
             StakeRegularFixedRewardSheet.Row regularFixed,
             long deposit, int index)
         {
-            if (regular.Rewards.Count <= index)
+            if (regular.Rewards.Count <= index || index < 0)
             {
                 return 0;
             }
@@ -361,7 +352,16 @@ namespace Nekoyume.UI
                 if (regular.Rewards[i].CurrencyTicker == "CRYSTAL")
                     return i;
             }
+            return -1;
+        }
 
+        private static int GetGoldenPowderRewardIndex(StakeRegularRewardSheet.Row regular)
+        {
+            for (int i = 0; i < regular.Rewards.Count; i++)
+            {
+                if (regular.Rewards[i].ItemId == 600201)
+                    return i;
+            }
             return -1;
         }
     }
