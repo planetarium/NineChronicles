@@ -104,7 +104,7 @@ jobs:
 
       - name: Convert AAB to APKS
         run: |
-          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/9c.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
+          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/NineChronicles.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
 
       - name: Pack
         run: |
