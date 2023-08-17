@@ -12,11 +12,6 @@ on:
     types: [ready_for_review, opened, reopened, auto_merge_enabled]
   workflow_dispatch:
     inputs:
-      clo:
-        description: "Assets/StreamingAssets/clo.json"
-        required: false
-        type: string
-        default: ""
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}

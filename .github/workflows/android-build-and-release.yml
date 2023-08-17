@@ -90,7 +90,7 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/9c-signing-keystore.keystore
           echo "${{ secrets.ANDROID_KEYSTORE_PASS }}" > /tmp/keystore.pwd
           echo "${{ secrets.ANDROID_KEY_ALIAS_NAME }}" > /tmp/keyalias.name
-          echo "${{ secrets.ANDROID_KEY_ALIAS_PASS }}" > /tmp/key.pwd
+          echo "${{ secrets.ANDROID_KEY_ALIAS_PASS }}" > /tmp/keyalias.pwd
 
       - name: Set up Java
         uses: actions/setup-java@v2
@@ -104,7 +104,7 @@ jobs:
 
       - name: Convert AAB to APKS
         run: |
-          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/9c.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/key.pwd --mode=universal --local-testing
+          sudo java -jar /tmp/bundletool-all-*.jar build-apks --bundle="/tmp/player/Android/9c.aab" --output="/tmp/player/Android/result.apks" --ks="/tmp/9c-signing-keystore.keystore" --ks-pass=file:/tmp/keystore.pwd --ks-key-alias=$(cat /tmp/keyalias.name) --key-pass=file:/tmp/keyalias.pwd --mode=universal --local-testing
 
       - name: Pack
         run: |
