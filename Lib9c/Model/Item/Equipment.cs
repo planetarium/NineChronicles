@@ -178,11 +178,10 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public void SetLevel(IRandom random, EquipmentItemUpgradePointSheet.Row targetLevelRow,
-            EnhancementCostSheetV2.Row costRow)
+        public void SetLevel(IRandom random, EnhancementCostSheetV3.Row row)
         {
-            level = targetLevelRow.Level;
-            var rand = random.Next(costRow.BaseStatGrowthMin, costRow.BaseStatGrowthMax + 1);
+            level = row.Level;
+            var rand = random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand.NormalizeFromTenThousandths();
             var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
             if (baseStat > 0)
@@ -194,7 +193,7 @@ namespace Nekoyume.Model.Item
 
             if (GetOptionCount() > 0)
             {
-                UpdateOptionsV2(random, costRow, false);
+                UpdateOptionsV3(random, row);
             }
         }
 
@@ -235,6 +234,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        [Obsolete("Since ItemEnhancement12, Use UpdateOptionV3 instead.")]
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             foreach (var stat in StatsMap.GetAdditionalStats())
@@ -274,6 +274,59 @@ namespace Nekoyume.Model.Item
                 {
                     addPower = Math.Max(1.0m, addPower);
                 }
+
+                var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
+                if (addStatPowerRatio > 0)
+                {
+                    addStatPowerRatio = Math.Max(1.0m, addStatPowerRatio);
+                }
+
+                var chance = skill.Chance + (int)addChance;
+                var power = skill.Power + (int)addPower;
+                var statPowerRatio = skill.StatPowerRatio + (int)addStatPowerRatio;
+
+                skill.Update(chance, power, statPowerRatio);
+            }
+        }
+
+        private void UpdateOptionsV3(IRandom random, EnhancementCostSheetV3.Row row)
+        {
+            foreach (var stat in StatsMap.GetAdditionalStats())
+            {
+                var rand = random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
+                var ratio = rand.NormalizeFromTenThousandths();
+                var addValue = stat.AdditionalValue * ratio;
+                if (addValue > 0)
+                {
+                    addValue = Math.Max(1.0m, addValue);
+                }
+
+                StatsMap.SetStatAdditionalValue(stat.StatType, stat.AdditionalValue + addValue);
+            }
+
+            var skills = new List<Skill.Skill>();
+            skills.AddRange(Skills);
+            skills.AddRange(BuffSkills);
+            foreach (var skill in skills)
+            {
+                var chanceRand = random.Next(row.ExtraSkillChanceGrowthMin,
+                    row.ExtraSkillChanceGrowthMax + 1);
+                var chanceRatio = chanceRand.NormalizeFromTenThousandths();
+                var addChance = skill.Chance * chanceRatio;
+                if (addChance > 0)
+                {
+                    addChance = Math.Max(1.0m, addChance);
+                }
+
+                var damageRand = random.Next(row.ExtraSkillDamageGrowthMin,
+                    row.ExtraSkillDamageGrowthMax + 1);
+                var damageRatio = damageRand.NormalizeFromTenThousandths();
+                var addPower = skill.Power * damageRatio;
+                if (addPower > 0)
+                {
+                    addPower = Math.Max(1.0m, addPower);
+                }
+
                 var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
                 if (addStatPowerRatio > 0)
                 {
