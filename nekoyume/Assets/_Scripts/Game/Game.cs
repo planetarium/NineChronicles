@@ -315,6 +315,13 @@ namespace Nekoyume.Game
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
 
+#if UNITY_ANDROID
+            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
+            Debug.Log("[Game] Start() IAPStoreManager initialized");
+#endif
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             // Initialize TableSheets. This should be done before initialize the Agent.
@@ -343,12 +350,50 @@ namespace Nekoyume.Game
                     }
                 )
             );
-
             yield return new WaitUntil(() => agentInitialized);
-
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
+            IEnumerator InitializeWithAgent()
+            {
+                // Initialize D:CC NFT data
+                StartCoroutine(CoInitDccAvatar());
+                StartCoroutine(CoInitDccConnecting());
+
+                yield return SyncTableSheetsAsync().ToCoroutine();
+                Debug.Log("[Game] Start() TableSheets synchronized");
+                RxProps.Start(Agent, States, TableSheets);
+                // Initialize MainCanvas second
+                yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+                // Initialize NineChroniclesAPIClient.
+                _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+                if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
+                {
+                    _rpcClient =
+                        new NineChroniclesAPIClient(
+                            $"http://{_commandLineOptions.RpcServerHost}/graphql");
+                }
+
+                WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+                // Initialize Rank.SharedModel
+                RankPopup.UpdateSharedModel();
+                // Initialize Stage
+                Stage.Initialize();
+                Arena.Initialize();
+                RaidStage.Initialize();
+
+                Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+                {
+                    var petList = States.Instance.PetStates.GetPetStatesAll()
+                        .Where(petState => petState != null)
+                        .Select(petState => petState.PetId)
+                        .ToList();
+                    SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+                }).AddTo(gameObject);
+            }
+
+            var initializingCoroutine = StartCoroutine(InitializeWithAgent());
             yield return StartCoroutine(CoCheckPledge());
 
 #if UNITY_EDITOR
@@ -360,52 +405,10 @@ namespace Nekoyume.Game
                 _marketThread.Start();
             }
 #endif
-
+            yield return initializingCoroutine;
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
-            yield return SyncTableSheetsAsync().ToCoroutine();
-            Debug.Log("[Game] Start() TableSheets synchronized");
-            RxProps.Start(Agent, States, TableSheets);
-#if UNITY_ANDROID
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
-            Debug.Log("[Game] Start() IAPStoreManager initialized");
-#endif
-            // Initialize MainCanvas second
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
-            yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
-            // Initialize NineChroniclesAPIClient.
-            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
-            {
-                _rpcClient =
-                    new NineChroniclesAPIClient(
-                        $"http://{_commandLineOptions.RpcServerHost}/graphql");
-            }
-
-            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-            // Initialize Rank.SharedModel
-            RankPopup.UpdateSharedModel();
-            // Initialize Stage
-            Stage.Initialize();
-            Arena.Initialize();
-            RaidStage.Initialize();
-            // Initialize D:CC NFT data
-            StartCoroutine(CoInitDccAvatar());
-            StartCoroutine(CoInitDccConnecting());
-
-            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
-            {
-                var petList = States.Instance.PetStates.GetPetStatesAll()
-                    .Where(petState => petState != null)
-                    .Select(petState => petState.PetId)
-                    .ToList();
-                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
-            }).AddTo(gameObject);
-
             Helper.Util.TryGetAppProtocolVersionFromToken(
                 _commandLineOptions.AppProtocolVersion,
                 out var appProtocolVersion);
