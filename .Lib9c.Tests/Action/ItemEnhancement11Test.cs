@@ -5,7 +5,6 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -17,7 +16,8 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
-    using static Lib9c.SerializeKeys;
+    using static Nekoyume.Action.ItemEnhancement11;
+    using static SerializeKeys;
 
     public class ItemEnhancement11Test
     {
@@ -74,23 +74,23 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, false)]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, true)]
+        [InlineData(0, 1000, true, 0, 1, EnhancementResult.Success, 0, 0, false)]
+        [InlineData(6, 980, true, 0, 7, EnhancementResult.Success, 0, 0, false)]
+        [InlineData(0, 1000, false, 1, 1, EnhancementResult.GreatSuccess, 0, 0, false)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 0, 320, false)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 2, 480, false)]
+        [InlineData(0, 1000, true, 0, 1, EnhancementResult.Success, 0, 0, true)]
+        [InlineData(6, 980, true, 0, 7, EnhancementResult.Success, 0, 0, true)]
+        [InlineData(0, 1000, false, 1, 1, EnhancementResult.GreatSuccess, 0, 0, true)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 0, 320, true)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 2, 480, true)]
         public void Execute(
             int level,
             int expectedGold,
             bool backward,
             int randomSeed,
             int expectedLevel,
-            ItemEnhancement.EnhancementResult expected,
+            EnhancementResult expected,
             int monsterCollectLevel,
             int expectedCrystal,
             bool stake
@@ -203,24 +203,24 @@ namespace Lib9c.Tests.Action
                 .First(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ResultModel)slot.Result;
             Assert.Equal(expected, slotResult.enhancementResult);
 
             switch (slotResult.enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                case EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
                     break;
-                case ItemEnhancement.EnhancementResult.Success:
+                case EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.InRange(resultEquipment.StatsMap.ATK, baseMinAtk + extraMinAtk, baseMaxAtk + extraMaxAtk + 1);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+                case EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
                     break;
             }
