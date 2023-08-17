@@ -338,8 +338,7 @@ namespace Nekoyume.Game
 #endif
 
             GL.Clear(true, true, Color.black);
-
-            StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -359,11 +358,13 @@ namespace Nekoyume.Game
             IEnumerator InitializeWithAgent()
             {
 #if UNITY_ANDROID
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
 #endif
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 Debug.Log("[Game] Start() TableSheets synchronized");
                 RxProps.Start(Agent, States, TableSheets);
@@ -379,6 +380,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(InitializeWithAgent());
+            yield return createSecondWidgetCoroutine;
             var initializeSecondWidgetsCoroutine = StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
             yield return StartCoroutine(CoCheckPledge());
 
@@ -394,6 +396,7 @@ namespace Nekoyume.Game
             // Initialize D:CC NFT data
             StartCoroutine(CoInitDccAvatar());
             StartCoroutine(CoInitDccConnecting());
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
             yield return initializeSecondWidgetsCoroutine;
             // Initialize Stage
             Stage.Initialize();
@@ -401,9 +404,6 @@ namespace Nekoyume.Game
             RaidStage.Initialize();
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
             Helper.Util.TryGetAppProtocolVersionFromToken(
                 _commandLineOptions.AppProtocolVersion,
                 out var appProtocolVersion);
