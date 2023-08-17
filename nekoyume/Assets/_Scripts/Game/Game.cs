@@ -320,11 +320,10 @@ namespace Nekoyume.Game
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
-            yield return StartCoroutine(ResourcesHelper.CoInitialize());
+            ResourcesHelper.Initialize();
             Debug.Log("[Game] Start() ResourcesHelper initialized");
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
-            yield return null;
 #if UNITY_ANDROID
             portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
@@ -335,9 +334,7 @@ namespace Nekoyume.Game
 
             GL.Clear(true, true, Color.black);
 
-            yield return StartCoroutine(
-                CoLogin(
-                    succeed =>
+            StartCoroutine(CoLogin(succeed =>
                     {
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
@@ -397,9 +394,8 @@ namespace Nekoyume.Game
             Arena.Initialize();
             RaidStage.Initialize();
             // Initialize D:CC NFT data
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.LoadDcc);
-            yield return StartCoroutine(CoInitDccAvatar());
-            yield return StartCoroutine(CoInitDccConnecting());
+            StartCoroutine(CoInitDccAvatar());
+            StartCoroutine(CoInitDccConnecting());
 
             Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
             {
