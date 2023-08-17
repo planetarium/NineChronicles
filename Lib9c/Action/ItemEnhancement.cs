@@ -19,39 +19,41 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 using Serilog;
-
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1164
+    /// Updated at https://github.com/planetarium/lib9c/pull/2068
     /// </summary>
     [Serializable]
-    [ActionType("item_enhancement11")]
-    public class ItemEnhancement : GameAction, IItemEnhancementV2
+    [ActionType("item_enhancement12")]
+    public class ItemEnhancement : GameAction, IItemEnhancementV4
     {
         public enum EnhancementResult
         {
-            GreatSuccess = 0,
+            // Result is fixed to Success.
+            // GreatSuccess = 0,
             Success = 1,
-            Fail = 2,
+            // Fail = 2,
         }
 
+        public const int MaterialCountLimit = 50;
+
         public Guid itemId;
-        public Guid materialId;
+        public List<Guid> materialIds;
         public Address avatarAddress;
         public int slotIndex;
 
-        Guid IItemEnhancementV2.ItemId => itemId;
-        Guid IItemEnhancementV2.MaterialId => materialId;
-        Address IItemEnhancementV2.AvatarAddress => avatarAddress;
-        int IItemEnhancementV2.SlotIndex => slotIndex;
+        Guid IItemEnhancementV4.ItemId => itemId;
+        IEnumerable<Guid> IItemEnhancementV4.MaterialIds => materialIds;
+        Address IItemEnhancementV4.AvatarAddress => avatarAddress;
+        int IItemEnhancementV4.SlotIndex => slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "item_enhancement11.result";
+            protected override string TypeId => "item_enhancement12.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
@@ -101,7 +103,9 @@ namespace Nekoyume.Action
                 var dict = new Dictionary<string, IValue>
                 {
                     ["itemId"] = itemId.Serialize(),
-                    ["materialId"] = materialId.Serialize(),
+                    ["materialIds"] = new List(
+                        materialIds.OrderBy(i => i).Select(i => i.Serialize())
+                    ),
                     ["avatarAddress"] = avatarAddress.Serialize(),
                     ["slotIndex"] = slotIndex.Serialize(),
                 };
@@ -113,7 +117,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             itemId = plainValue["itemId"].ToGuid();
-            materialId = plainValue["materialId"].ToGuid();
+            materialIds = plainValue["materialId"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             if (plainValue.TryGetValue((Text)"slotIndex", out var value))
             {
@@ -126,6 +130,13 @@ namespace Nekoyume.Action
             context.UseGas(1);
             var ctx = context;
             var states = ctx.PreviousState;
+
+            if (ctx.Rehearsal)
+            {
+                return states;
+            }
+
+            // Collect addresses
             var slotAddress = avatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -136,34 +147,44 @@ namespace Nekoyume.Action
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}ItemEnhancement exec started", addressesHex);
-            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out var agentState, out var avatarState, out _))
+            Log.Debug("{AddressesHex} ItemEnhancement exec started", addressesHex);
+
+            // Validate avatar
+            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out var agentState,
+                    out var avatarState, out var migrationRequired))
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException(
+                    $"{addressesHex} Aborted as the avatar state of the signer was failed to load."
+                );
             }
 
-            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
+            // Validate AP
+            var requiredActionPoint = GetRequiredAp();
+            if (avatarState.actionPoint < requiredActionPoint)
+            {
+                throw new NotEnoughActionPointException(
+                    $"{addressesHex} Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
+                );
+            }
+
+            // Validate target equipment item
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId,
+                    out ItemUsable enhancementItem))
             {
                 throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory."
+                    $"{addressesHex} Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory."
                 );
             }
 
             if (enhancementItem.RequiredBlockIndex > context.BlockIndex)
             {
                 throw new RequiredBlockIndexException(
-                    $"{addressesHex}Aborted as the equipment to enhance ({itemId}) is not available yet;" +
+                    $"{addressesHex} Aborted as the equipment to enhance ({itemId}) is not available yet;" +
                     $" it will be available at the block #{enhancementItem.RequiredBlockIndex}."
                 );
             }
@@ -171,194 +192,204 @@ namespace Nekoyume.Action
             if (!(enhancementItem is Equipment enhancementEquipment))
             {
                 throw new InvalidCastException(
-                    $"{addressesHex}Aborted as the item is not a {nameof(Equipment)}, but {enhancementItem.GetType().Name}."
-
+                    $"{addressesHex} Aborted as the item is not a {nameof(Equipment)}, but {enhancementItem.GetType().Name}."
                 );
             }
 
+            // Validate combination slot
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState is null)
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the slot state was failed to load. #{slotIndex}");
+                throw new FailedLoadStateException(
+                    $"{addressesHex} Aborted as the slot state was failed to load. #{slotIndex}"
+                );
             }
 
             if (!slotState.Validate(avatarState, ctx.BlockIndex))
             {
-                throw new CombinationSlotUnlockException($"{addressesHex}Aborted as the slot state was failed to invalid. #{slotIndex}");
+                throw new CombinationSlotUnlockException(
+                    $"{addressesHex} Aborted as the slot state was failed to invalid. #{slotIndex}"
+                );
             }
+
             sw.Stop();
-            Log.Verbose("{AddressesHex}ItemEnhancement Get Equipment: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} ItemEnhancement Get Equipment: {Elapsed}", addressesHex,
+                sw.Elapsed);
 
             sw.Restart();
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
-                typeof(EnhancementCostSheetV2),
+                typeof(EnhancementCostSheetV3),
                 typeof(MaterialItemSheet),
                 typeof(CrystalEquipmentGrindingSheet),
                 typeof(CrystalMonsterCollectionMultiplierSheet),
                 typeof(StakeRegularRewardSheet)
             });
 
-            var enhancementCostSheet = sheets.GetSheet<EnhancementCostSheetV2>();
-            if (!TryGetRow(enhancementEquipment, enhancementCostSheet, out var row))
+            // Validate from sheet
+            var enhancementCostSheet = sheets.GetSheet<EnhancementCostSheetV3>();
+            EnhancementCostSheetV3.Row startCostRow;
+            if (enhancementEquipment.level == 0)
             {
-                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), enhancementEquipment.level);
+                startCostRow = new EnhancementCostSheetV3.Row();
+            }
+            else
+            {
+                if (!TryGetRow(enhancementEquipment, enhancementCostSheet, out startCostRow))
+                {
+                    throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet),
+                        enhancementEquipment.level);
+                }
             }
 
             var maxLevel = GetEquipmentMaxLevel(enhancementEquipment, enhancementCostSheet);
             if (enhancementEquipment.level >= maxLevel)
             {
                 throw new EquipmentLevelExceededException(
-                    $"{addressesHex}Aborted due to invalid equipment level: {enhancementEquipment.level} < {maxLevel}");
+                    $"{addressesHex} Aborted due to invalid equipment level: {enhancementEquipment.level} < {maxLevel}");
             }
 
-            if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
+            // Validate enhancement materials
+            if (!materialIds.Any() || materialIds.Count > MaterialCountLimit)
             {
-                throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the signer does not have a necessary material ({materialId})."
-                );
+                throw new InvalidItemCountException();
             }
 
-            if (materialItem.RequiredBlockIndex > context.BlockIndex)
+            var materialEquipments = new List<Equipment>();
+
+            foreach (var materialId in materialIds)
             {
-                throw new RequiredBlockIndexException(
-                    $"{addressesHex}Aborted as the material ({materialId}) is not available yet;" +
-                    $" it will be available at the block #{materialItem.RequiredBlockIndex}."
-                );
+                if (!avatarState.inventory.TryGetNonFungibleItem(materialId,
+                        out ItemUsable materialItem))
+                {
+                    throw new NotEnoughMaterialException(
+                        $"{addressesHex} Aborted as the signer does not have a necessary material ({materialId})."
+                    );
+                }
+
+                if (materialItem.RequiredBlockIndex > context.BlockIndex)
+                {
+                    throw new RequiredBlockIndexException(
+                        $"{addressesHex} Aborted as the material ({materialId}) is not available yet;" +
+                        $" it will be available at the block #{materialItem.RequiredBlockIndex}."
+                    );
+                }
+
+                if (!(materialItem is Equipment materialEquipment))
+                {
+                    throw new InvalidCastException(
+                        $"{addressesHex} Aborted as the material item is not an {nameof(Equipment)}, but {materialItem.GetType().Name}."
+                    );
+                }
+
+                if (enhancementEquipment.ItemId == materialId)
+                {
+                    throw new InvalidMaterialException(
+                        $"{addressesHex} Aborted as an equipment to enhance ({materialId}) was used as a material too."
+                    );
+                }
+
+                if (materialEquipment.ItemSubType != enhancementEquipment.ItemSubType)
+                {
+                    throw new InvalidMaterialException(
+                        $"{addressesHex} Aborted as the material item is not a {enhancementEquipment.ItemSubType}," +
+                        $" but {materialEquipment.ItemSubType}."
+                    );
+                }
+
+                materialEquipments.Add(materialEquipment);
             }
 
-            if (!(materialItem is Equipment materialEquipment))
-            {
-                throw new InvalidCastException(
-                    $"{addressesHex}Aborted as the material item is not an {nameof(Equipment)}, but {materialItem.GetType().Name}."
-                );
-            }
-
-            if (enhancementEquipment.ItemId == materialId)
-            {
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as an equipment to enhance ({materialId}) was used as a material too."
-                );
-            }
-
-            if (materialEquipment.ItemSubType != enhancementEquipment.ItemSubType)
-            {
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as the material item is not a {enhancementEquipment.ItemSubType}," +
-                    $" but {materialEquipment.ItemSubType}."
-                );
-            }
-
-            if (materialEquipment.Grade != enhancementEquipment.Grade)
-            {
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as grades of the equipment to enhance ({enhancementEquipment.Grade})" +
-                    $" and a material ({materialEquipment.Grade}) does not match."
-                );
-            }
-
-            if (materialEquipment.level != enhancementEquipment.level)
-            {
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as levels of the equipment to enhance ({enhancementEquipment.level})" +
-                    $" and a material ({materialEquipment.level}) does not match."
-                );
-            }
             sw.Stop();
-            Log.Verbose("{AddressesHex}ItemEnhancement Get Material: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} ItemEnhancement Get Material: {Elapsed}",
+                addressesHex, sw.Elapsed);
 
             sw.Restart();
+
+            // Do the action
             // Subtract required action point
-            var requiredActionPoint = GetRequiredAp();
-            if (avatarState.actionPoint < requiredActionPoint)
-            {
-                throw new NotEnoughActionPointException(
-                    $"{addressesHex}Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
-                );
-            }
             avatarState.actionPoint -= requiredActionPoint;
 
+            // Unequip items
+            enhancementEquipment.Unequip();
+            foreach (var materialEquipment in materialEquipments)
+            {
+                materialEquipment.Unequip();
+            }
+
+            // clone enhancement item
+            var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
+
+            // Equipment level up & Update
+            enhancementEquipment.exp +=
+                materialEquipments.Aggregate(0L, (total, m) => total + m.exp);
+            var row = enhancementCostSheet
+                .OrderByDescending(r => r.Value.Exp)
+                .First(row =>
+                    row.Value.ItemSubType == enhancementEquipment.ItemSubType &&
+                    row.Value.Grade == enhancementEquipment.Grade &&
+                    row.Value.Exp <= enhancementEquipment.exp
+                ).Value;
+
+            if (row.Level > enhancementEquipment.level)
+            {
+                enhancementEquipment.SetLevel(ctx.Random, row);
+            }
+
+            EnhancementCostSheetV3.Row targetCostRow;
+            if (enhancementEquipment.level == 0)
+            {
+                targetCostRow = new EnhancementCostSheetV3.Row();
+            }
+            else
+            {
+                if (!TryGetRow(enhancementEquipment, enhancementCostSheet, out targetCostRow))
+                {
+                    throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet),
+                        enhancementEquipment.level);
+                }
+            }
+
             // TransferAsset (NCG)
-            var requiredNcg = row.Cost;
+            // Total cost = Total cost to reach target level - total cost to reach start level (already used)
+            var requiredNcg = targetCostRow.Cost - startCostRow.Cost;
             if (requiredNcg > 0)
             {
                 var arenaSheet = states.GetSheet<ArenaSheet>();
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-                states = states.TransferAsset(ctx, ctx.Signer, feeStoreAddress, states.GetGoldCurrency() * requiredNcg);
+                var feeStoreAddress =
+                    Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
+                states = states.TransferAsset(ctx, ctx.Signer, feeStoreAddress,
+                    states.GetGoldCurrency() * requiredNcg);
             }
 
-            // Unequip items
-            materialEquipment.Unequip();
-            enhancementEquipment.Unequip();
-
-            // clone items
-            var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
-
-            // Equipment level up & Update
-            var equipmentResult = GetEnhancementResult(row, ctx.Random);
-            FungibleAssetValue crystal = 0 * CrystalCalculator.CRYSTAL;
-            if (equipmentResult != EnhancementResult.Fail)
-            {
-                enhancementEquipment.LevelUp(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
-            }
-            else
-            {
-                Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                    context.Signer,
-                    agentState.MonsterCollectionRound
-                );
-
-                Currency currency = states.GetGoldCurrency();
-                FungibleAssetValue stakedAmount = 0 * currency;
-                if (states.TryGetStakeState(context.Signer, out StakeState stakeState))
-                {
-                    stakedAmount = states.GetBalance(stakeState.address, currency);
-                }
-                else
-                {
-                    if (states.TryGetState(monsterCollectionAddress, out Dictionary _))
-                    {
-                        stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
-                    }
-                }
-
-                crystal = CrystalCalculator.CalculateCrystal(
-                    context.Signer,
-                    new[] { preItemUsable },
-                    stakedAmount,
-                    true,
-                    sheets.GetSheet<CrystalEquipmentGrindingSheet>(),
-                    sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(),
-                    sheets.GetSheet<StakeRegularRewardSheet>()
-                );
-
-                if (crystal > 0 * CrystalCalculator.CRYSTAL)
-                {
-                    states = states.MintAsset(context, context.Signer, crystal);
-                }
-            }
-
-            var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
+            // Required block index = Sum of all required blocks from start level to target level
+            var requiredBlockCount = GetRequiredBlockCount(preItemUsable, enhancementEquipment,
+                enhancementCostSheet);
             var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
 
-            // Remove material
-            avatarState.inventory.RemoveNonFungibleItem(materialId);
+            // Remove materials
+            foreach (var materialId in materialIds)
+            {
+                avatarState.inventory.RemoveNonFungibleItem(materialId);
+            }
+
             sw.Stop();
-            Log.Verbose("{AddressesHex}ItemEnhancement Upgrade Equipment: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} ItemEnhancement Upgrade Equipment: {Elapsed}", addressesHex,
+                sw.Elapsed);
 
             // Send scheduled mail
             var result = new ResultModel
             {
                 preItemUsable = preItemUsable,
                 itemUsable = enhancementEquipment,
-                materialItemIdList = new[] { materialId },
+                materialItemIdList = materialIds.ToArray(),
                 actionPoint = requiredActionPoint,
-                enhancementResult = equipmentResult,
+                enhancementResult = EnhancementResult.Success, // Result is fixed to Success
                 gold = requiredNcg,
-                CRYSTAL = crystal,
+                CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
             };
 
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
@@ -378,52 +409,47 @@ namespace Nekoyume.Action
             sw.Restart();
             states = states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(questListAddress, avatarState.questList.Serialize());
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                    .SetState(avatarAddress, avatarState.SerializeV2());
+            }
+
             sw.Stop();
-            Log.Verbose("{AddressesHex}ItemEnhancement Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} ItemEnhancement Set AvatarState: {Elapsed}", addressesHex,
+                sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}ItemEnhancement Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex} ItemEnhancement Total Executed Time: {Elapsed}", addressesHex,
+                ended - started);
             return states.SetState(slotAddress, slotState.Serialize());
         }
 
-        public static EnhancementResult GetEnhancementResult(EnhancementCostSheetV2.Row row, IRandom random)
+        public static int GetRequiredBlockCount(Equipment preEquipment, Equipment targetEquipment,
+            EnhancementCostSheetV3 sheet)
         {
-            var rand = random.Next(1, GameConfig.MaximumProbability + 1);
-            if (rand <= row.GreatSuccessRatio)
-            {
-                return EnhancementResult.GreatSuccess;
-            }
-
-            return rand <= row.GreatSuccessRatio + row.SuccessRatio ? EnhancementResult.Success : EnhancementResult.Fail;
+            return sheet.OrderedList
+                .Where(e =>
+                    e.ItemSubType == targetEquipment.ItemSubType &&
+                    e.Grade == targetEquipment.Grade &&
+                    e.Level > preEquipment.level &&
+                    e.Level <= targetEquipment.level)
+                .Aggregate(0, (blocks, row) => blocks + row.RequiredBlockIndex);
         }
 
-        public static int GetRequiredBlockCount(EnhancementCostSheetV2.Row row, EnhancementResult result)
+        public static bool TryGetRow(Equipment equipment, EnhancementCostSheetV3 sheet,
+            out EnhancementCostSheetV3.Row row)
         {
-            switch (result)
-            {
-                case EnhancementResult.GreatSuccess:
-                    return row.GreatSuccessRequiredBlockIndex;
-                case EnhancementResult.Success:
-                    return row.SuccessRequiredBlockIndex;
-                case EnhancementResult.Fail:
-                    return row.FailRequiredBlockIndex;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
-            }
-        }
-
-        public static bool TryGetRow(Equipment equipment, EnhancementCostSheetV2 sheet, out EnhancementCostSheetV2.Row row)
-        {
-            var grade = equipment.Grade;
-            var level = equipment.level + 1;
-            var itemSubType = equipment.ItemSubType;
-            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade && x.Level == level && x.ItemSubType == itemSubType);
+            row = sheet.OrderedList.FirstOrDefault(x =>
+                x.Grade == equipment.Grade &&
+                x.Level == equipment.level &&
+                x.ItemSubType == equipment.ItemSubType
+            );
             return row != null;
         }
 
-        public static int GetEquipmentMaxLevel(Equipment equipment, EnhancementCostSheetV2 sheet)
+        public static int GetEquipmentMaxLevel(Equipment equipment, EnhancementCostSheetV3 sheet)
         {
             return sheet.OrderedList.Where(x => x.Grade == equipment.Grade).Max(x => x.Level);
         }
