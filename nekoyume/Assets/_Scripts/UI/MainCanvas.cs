@@ -276,61 +276,37 @@ namespace Nekoyume.UI
 
             // module
             secondWidgets.Add(Widget.Create<StageTitle>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CombinationMain>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Craft>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Enhancement>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Grind>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Rune>());
-            yield return null;
             secondWidgets.Add(Widget.Create<DccMain>());
-            yield return null;
             secondWidgets.Add(Widget.Create<DccCollection>());
             yield return null;
 
             // header menu
             secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
-            yield return null;
-
             // Popup included in header menu
             secondWidgets.Add(Widget.Create<MailPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<QuestPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<RankPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<QuitSystem>());
-            yield return null;
             secondWidgets.Add(Widget.Create<BuffBonusPopup>());
             yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<InputBoxPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CombinationResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<EnhancementResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<BattleResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
             yield return null;
 
@@ -402,23 +378,14 @@ namespace Nekoyume.UI
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ConsumableTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<MaterialTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CostumeTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<RuneTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<FungibleAssetTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<HelpTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<VanilaTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
             yield return null;
 
