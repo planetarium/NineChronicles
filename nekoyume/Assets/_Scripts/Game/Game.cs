@@ -339,7 +339,7 @@ namespace Nekoyume.Game
 
             GL.Clear(true, true, Color.black);
 
-            StartCoroutine(MainCanvas.instance.InitializeSecond());
+            StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;

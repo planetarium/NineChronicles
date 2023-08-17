@@ -210,7 +210,7 @@ namespace Nekoyume.UI
             UpdateLayers();
         }
 
-        public IEnumerator InitializeSecond()
+        public IEnumerator CreateSecondWidgets()
         {
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
