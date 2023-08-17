@@ -138,7 +138,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private void UpdateDynamicRatio()
+        public void UpdateDynamicRatio()
         {
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
@@ -150,7 +150,7 @@ namespace Nekoyume.Game
             GL.Clear(true, true, Color.black);
         }
 
-        private void UpdateStaticRatioWithLetterBox()
+        public void UpdateStaticRatioWithLetterBox()
         {
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
