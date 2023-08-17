@@ -129,6 +129,8 @@ namespace Lib9c.Tests
 
         public EnhancementCostSheet EnhancementCostSheet { get; private set; }
 
+        public EquipmentItemUpgradePointSheet EquipmentItemUpgradePointSheet { get; private set; }
+
         public EnhancementCostSheetV2 EnhancementCostSheetV2 { get; private set; }
 
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; internal set; }
