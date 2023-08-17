@@ -254,13 +254,10 @@ namespace Nekoyume.Game
 #endif
             Debug.Log("[Game] Start() invoked");
 
-            // Initialize RequestManager and LiveAssetManager
+            // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
-
 #if UNITY_ANDROID
             yield return liveAssetManager.InitializeApplicationCLO();
 
