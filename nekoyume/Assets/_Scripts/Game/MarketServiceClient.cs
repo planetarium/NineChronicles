@@ -10,6 +10,7 @@ using MarketService.Response;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -39,7 +40,17 @@ namespace Nekoyume.Game
                 url = url + "&itemIds=" + string.Join("&itemIds=", itemIds);
             }
 
-            var json = await _client.GetStringAsync(url);
+            string json;
+            try
+            {
+                json = await _client.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return (new List<ItemProductResponseModel>(), 0);
+            }
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -61,7 +72,17 @@ namespace Nekoyume.Game
                 url = url + "&tickers=" + string.Join("&tickers=", tickers);
             }
 
-            var json = await _client.GetStringAsync(url);
+            string json;
+            try
+            {
+                json = await _client.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return (new List<FungibleAssetValueProductResponseModel>(), 0);
+            }
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -74,7 +95,19 @@ namespace Nekoyume.Game
             GetProducts(Address address)
         {
             var url = $"{_url}/Market/products/{address}";
-            var json = await _client.GetStringAsync(url);
+            string json;
+            try
+            {
+                json = await _client.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return (
+                    new List<FungibleAssetValueProductResponseModel>(),
+                    new List<ItemProductResponseModel>());
+            }
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -88,7 +121,19 @@ namespace Nekoyume.Game
         public async Task<(List<FungibleAssetValueProductResponseModel>, List<ItemProductResponseModel>)> GetProducts(Guid productId)
         {
             var url = $"{_url}/Market/products?productIds={productId}";
-            var json = await _client.GetStringAsync(url);
+            string json;
+            try
+            {
+                json = await _client.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return (
+                    new List<FungibleAssetValueProductResponseModel>(),
+                    new List<ItemProductResponseModel>());
+            }
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -108,7 +153,17 @@ namespace Nekoyume.Game
             bool useElementalIcon = true)
         {
             var url = $"{_url}/Market/products?productIds={productId}";
-            var json = await _client.GetStringAsync(url);
+            string json;
+            try
+            {
+                json = await _client.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return (string.Empty, null, null);
+            }
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
