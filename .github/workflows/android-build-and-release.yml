@@ -59,7 +59,7 @@ jobs:
       - name: Copy clo.json
         run: |
           if [ -n "${{ github.event.inputs.clo }}" ]; then
-            echo ${{ github.event.inputs.clo }} > nekoyume/Assets/StreamingAssets/clo.json
+            echo ${{ github.event.inputs.clo }} > ${{ matrix.projectPath }}/Assets/StreamingAssets/clo.json
           fi
 
       - uses: game-ci/unity-builder@v2
