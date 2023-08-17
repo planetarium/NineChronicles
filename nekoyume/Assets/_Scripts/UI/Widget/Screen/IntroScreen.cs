@@ -17,6 +17,7 @@ namespace Nekoyume.UI
 {
     public class IntroScreen : LoadingScreen
     {
+        [SerializeField] private GameObject pcContainer;
         [Header("Mobile")]
         [SerializeField] private GameObject mobileContainer;
         // [SerializeField] private Button touchScreenButton;
@@ -101,6 +102,7 @@ namespace Nekoyume.UI
             _privateKey = privateKey;
 
 #if UNITY_ANDROID
+            pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
@@ -108,6 +110,7 @@ namespace Nekoyume.UI
             mobileIndicator.Close();
             StartCoroutine(CoShowMobile());
 #else
+            pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             indicator.Show("Verifying transaction..");
@@ -117,6 +120,7 @@ namespace Nekoyume.UI
 
         public void Show()
         {
+            pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
