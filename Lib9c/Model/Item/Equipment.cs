@@ -157,6 +157,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        [Obsolete("Since ItemEnhancement12, Use `SetLevel` instead.")]
         public void LevelUp(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
@@ -174,6 +175,26 @@ namespace Nekoyume.Model.Item
             if (GetOptionCount() > 0)
             {
                 UpdateOptionsV2(random, row, isGreatSuccess);
+            }
+        }
+
+        public void SetLevel(IRandom random, EquipmentItemUpgradePointSheet.Row targetLevelRow,
+            EnhancementCostSheetV2.Row costRow)
+        {
+            level = targetLevelRow.Level;
+            var rand = random.Next(costRow.BaseStatGrowthMin, costRow.BaseStatGrowthMax + 1);
+            var ratio = rand.NormalizeFromTenThousandths();
+            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
+            if (baseStat > 0)
+            {
+                baseStat = Math.Max(1.0m, baseStat);
+            }
+
+            StatsMap.AddStatValue(UniqueStatType, baseStat);
+
+            if (GetOptionCount() > 0)
+            {
+                UpdateOptionsV2(random, costRow, false);
             }
         }
 
