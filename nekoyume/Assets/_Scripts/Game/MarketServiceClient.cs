@@ -22,6 +22,7 @@ namespace Nekoyume.Game
         {
             _url = url;
             _client = new HttpClient();
+            _client.Timeout = TimeSpan.FromSeconds(10);
         }
 
         public async Task<(List<ItemProductResponseModel>, int)> GetBuyProducts(
