@@ -59,8 +59,14 @@ namespace Nekoyume.UI
             {
                 startButtonContainer.SetActive(false);
 
-                // Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-                StartCoroutine(CoSocialLogin());
+                if (Find<LoginSystem>().KeyStore.ListIds().Any())
+                {
+                    Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+                }
+                else
+                {
+                    StartCoroutine(CoSocialLogin());
+                }
             });
             // signinButton.onClick.AddListener(() =>
             // {

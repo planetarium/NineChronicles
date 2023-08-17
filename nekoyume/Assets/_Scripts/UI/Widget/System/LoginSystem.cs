@@ -477,18 +477,9 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID
             Login = false;
 
-            // QR코드를 찍을 경우, LoginSystem을 켰을 때에 Keystore에 키가 저장되어 있는 것 까지를 기대하고 있음
-            if (KeyStore.ListIds().Any())
-            {
-                SetState(States.Login_Mobile);
-                SetImage(KeyStore.List().First().Item2.Address);
-            }
-            else
-            {
-                SetState(States.CreatePassword_Mobile);
-                _privateKey = new PrivateKey();
-                // SetImage(_privateKey.PublicKey.ToAddress());
-            }
+            // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
+            SetState(States.Login_Mobile);
+            SetImage(KeyStore.List().First().Item2.Address);
 #else
             var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
             SetState(state);
