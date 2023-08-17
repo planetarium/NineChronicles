@@ -52,27 +52,29 @@ namespace Nekoyume.UI
             indicator.Close();
             mobileIndicator.Close();
 
-            videoPlayer.loopPointReached += _ => OnVideoEnd();
-            videoSkipButton.onClick.AddListener(OnVideoEnd);
+            // videoPlayer.loopPointReached += _ => OnVideoEnd();
+            // videoSkipButton.onClick.AddListener(OnVideoEnd);
 
             startButton.onClick.AddListener(() =>
             {
                 startButtonContainer.SetActive(false);
-                Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-            });
-            signinButton.onClick.AddListener(() =>
-            {
-                Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-                qrCodeGuideBackground.Show();
-                qrCodeGuideContainer.SetActive(true);
-                foreach (var image in qrCodeGuideImages)
-                {
-                    image.SetActive(false);
-                }
 
-                _guideIndex = 0;
-                ShowQrCodeGuide();
+                // Find<LoginSystem>().Show(_keyStorePath, _privateKey);
+                StartCoroutine(CoSocialLogin());
             });
+            // signinButton.onClick.AddListener(() =>
+            // {
+            //     Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+            //     qrCodeGuideBackground.Show();
+            //     qrCodeGuideContainer.SetActive(true);
+            //     foreach (var image in qrCodeGuideImages)
+            //     {
+            //         image.SetActive(false);
+            //     }
+            //
+            //     _guideIndex = 0;
+            //     ShowQrCodeGuide();
+            // });
             qrCodeGuideNextButton.onClick.AddListener(() =>
             {
                 _guideIndex++;
@@ -94,7 +96,7 @@ namespace Nekoyume.UI
 
 #if UNITY_ANDROID
             mobileContainer.SetActive(true);
-            videoImage.gameObject.SetActive(false);
+            // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
             mobileIndicator.Close();
@@ -105,6 +107,25 @@ namespace Nekoyume.UI
             indicator.Show("Verifying transaction..");
             Find<LoginSystem>().Show(_keyStorePath, _privateKey);
 #endif
+        }
+
+        public void Show()
+        {
+            mobileContainer.SetActive(true);
+            startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+            mobileIndicator.Close();
+
+            Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+            qrCodeGuideBackground.Show();
+            qrCodeGuideContainer.SetActive(true);
+            foreach (var image in qrCodeGuideImages)
+            {
+                image.SetActive(false);
+            }
+
+            _guideIndex = 0;
+            ShowQrCodeGuide();
         }
 
         private IEnumerator CoShowMobile()
@@ -133,7 +154,7 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
-            signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
+            // signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
         }
 
         private void OnVideoEnd()
@@ -188,9 +209,23 @@ namespace Nekoyume.UI
             {
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
-                Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
             });
             guestButton.interactable = true;
+        }
+
+        private IEnumerator CoSocialLogin()
+        {
+            var popup = Find<TitleOneButtonSystem>();
+            popup.Show("UI_LOGIN_ON_BROWSER_TITLE","UI_LOGIN_ON_BROWSER_CONTENT");
+            popup.SubmitCallback = null;
+            popup.SubmitCallback = () =>
+            {
+                Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
+            };
+
+            yield return new WaitForSeconds(1);
+            Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
         }
     }
 }

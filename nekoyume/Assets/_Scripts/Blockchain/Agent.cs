@@ -401,7 +401,7 @@ namespace Nekoyume.Blockchain
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
-            var loadingScreen = Widget.Find<PreloadingScreen>();
+            // var loadingScreen = Widget.Find<PreloadingScreen>();
 
             PreloadEndedAsync += async () =>
             {
