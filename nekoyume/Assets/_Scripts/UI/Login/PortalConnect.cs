@@ -77,6 +77,11 @@ namespace Nekoyume.UI
                 _onPortalEnd = null;
             }
 
+            if (Widget.Find<LoginSystem>().KeyStore.ListIds().Any())
+            {
+                return;
+            }
+
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
 
