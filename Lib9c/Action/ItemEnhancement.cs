@@ -46,7 +46,7 @@ namespace Nekoyume.Action
         public int slotIndex;
 
         Guid IItemEnhancementV4.ItemId => itemId;
-        IEnumerable<Guid> IItemEnhancementV4.MaterialIds => materialIds;
+        List<Guid> IItemEnhancementV4.MaterialIds => materialIds;
         Address IItemEnhancementV4.AvatarAddress => avatarAddress;
         int IItemEnhancementV4.SlotIndex => slotIndex;
 
@@ -117,7 +117,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             itemId = plainValue["itemId"].ToGuid();
-            materialIds = plainValue["materialId"].ToList(StateExtensions.ToGuid);
+            materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             if (plainValue.TryGetValue((Text)"slotIndex", out var value))
             {
