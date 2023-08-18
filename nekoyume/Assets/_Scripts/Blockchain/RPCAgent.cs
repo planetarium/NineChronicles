@@ -130,9 +130,15 @@ namespace Nekoyume.Blockchain
             {
                 new ClientFilter()
             }).WithCancellationToken(_channel.ShutdownToken);
-            var getTipTask = Task.Run(async () => await _service.GetTip());
-            yield return new WaitUntil(() => getTipTask.IsCompleted);
-            OnRenderBlock(null, getTipTask.Result);
+
+            IEnumerator GetTip()
+            {
+                var getTipTask = Task.Run(async () => await _service.GetTip());
+                yield return new WaitUntil(() => getTipTask.IsCompleted);
+                OnRenderBlock(null, getTipTask.Result);
+            }
+
+            StartCoroutine(GetTip());
             yield return null;
 
             // Android Mono only support arm7(32bit) backend in unity engine.
