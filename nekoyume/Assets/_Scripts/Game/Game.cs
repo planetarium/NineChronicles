@@ -352,15 +352,18 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            IEnumerator InitializeWithAgent()
+            // Only use on Android or...
+            IEnumerator InitializeIAP()
             {
-#if UNITY_ANDROID
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
-#endif
+            }
+
+            IEnumerator InitializeWithAgent()
+            {
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 Debug.Log("[Game] Start() TableSheets synchronized");
@@ -376,6 +379,9 @@ namespace Nekoyume.Game
                 }).AddTo(gameObject);
             }
 
+#if UNITY_ANDROID
+            StartCoroutine(InitializeIAP());
+#endif
             yield return StartCoroutine(InitializeWithAgent());
             yield return createSecondWidgetCoroutine;
             var initializeSecondWidgetsCoroutine = StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
