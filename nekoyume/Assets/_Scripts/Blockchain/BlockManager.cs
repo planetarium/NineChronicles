@@ -11,6 +11,7 @@ using Libplanet.Types.Blocks;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Nekoyume.Blockchain
 {
@@ -83,6 +84,23 @@ namespace Nekoyume.Blockchain
 
         public static async Task<Block> ImportBlockAsync(string path)
         {
+#if UNITY_ANDROID
+            var directory = Platform.GetStreamingAssetsPath("genesis-block");
+            var loadingRequest = UnityWebRequest.Get(directory);
+            loadingRequest.SendWebRequest();
+            while (!loadingRequest.isDone)
+            {
+                if (loadingRequest.result is UnityWebRequest.Result.ConnectionError
+                    or UnityWebRequest.Result.ProtocolError)
+                {
+                    return null;
+                }
+            }
+
+            var buffer = loadingRequest.downloadHandler.data;
+            var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
+            return BlockMarshaler.UnmarshalBlock(dict);
+#else
             if (File.Exists(path))
             {
                 var buffer = File.ReadAllBytes(path);
@@ -97,6 +115,7 @@ namespace Nekoyume.Blockchain
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
+#endif
         }
 
         public static Block ProposeGenesisBlock(
