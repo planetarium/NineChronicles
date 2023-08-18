@@ -17293,9 +17293,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: On every turn, (28% > 32~33%) chance to apply all enemies bleed for 5 turns.
-    Bleeding enemies take damage equal to (450% > 480~500%) of the caster's ATK on
-    action.
+  m_text: On every turn, <color=#FBF0B8>(28% > <color=#E3C32C>32~33%</color><sprite
+    name=icon_Arrow>) chance</color> to apply all enemies bleed for 5 turns. Bleeding
+    enemies take <color=#FBF0B8>damage equal to (450% ><color=#E3C32C> 480~500%</color><sprite
+    name=icon_Arrow>)</color> of the caster's ATK on action.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -17305,8 +17306,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4290310395
-  m_fontColor: {r: 0.9843137, g: 0.9411765, b: 0.72156864, a: 1}
+    rgba: 4285169545
+  m_fontColor: {r: 0.5372549, g: 0.49803922, b: 0.41568628, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
