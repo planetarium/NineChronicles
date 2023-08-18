@@ -659,7 +659,7 @@ namespace Lib9c.Tests.Action
                         materialItemIdList = new[] { materialEquipment.NonFungibleId },
                         gold = 0,
                         actionPoint = 0,
-                        enhancementResult = ItemEnhancement.EnhancementResult.GreatSuccess,
+                        enhancementResult = ItemEnhancement11.EnhancementResult.GreatSuccess,
                         CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
                     };
 
