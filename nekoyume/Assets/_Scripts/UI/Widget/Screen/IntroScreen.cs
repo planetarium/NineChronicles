@@ -6,7 +6,6 @@ using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -35,7 +34,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button qrCodeGuideNextButton;
         [SerializeField] private CodeReaderView codeReaderView;
 
-        [SerializeField] private LoadingIndicator mobileIndicator;
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
@@ -51,7 +49,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
             indicator.Close();
-            mobileIndicator.Close();
 
             // videoPlayer.loopPointReached += _ => OnVideoEnd();
             // videoSkipButton.onClick.AddListener(OnVideoEnd);
@@ -107,13 +104,11 @@ namespace Nekoyume.UI
             // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
-            mobileIndicator.Close();
             StartCoroutine(CoShowMobile());
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-            indicator.Show("Verifying transaction..");
             Find<LoginSystem>().Show(_keyStorePath, _privateKey);
 #endif
         }
@@ -124,7 +119,6 @@ namespace Nekoyume.UI
             mobileContainer.SetActive(true);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
-            mobileIndicator.Close();
 
             Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
             qrCodeGuideBackground.Show();
