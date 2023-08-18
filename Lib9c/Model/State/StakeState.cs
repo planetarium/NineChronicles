@@ -56,6 +56,12 @@ namespace Nekoyume.Model.State
         public const long StakeRewardSheetV2Index = 6_700_000L;
         public const long CurrencyAsRewardStartIndex = 6_910_000L;
 
+        // NOTE: Why `ClaimStakeReward5.ObsoleteBlockIndex + 1`?
+        //       Because we need to make sure that the reward sheet V3 is applied
+        //       after the `ClaimStakeReward5` action is deprecated.
+        //       And we expect the index will be 7_650_000L.
+        public const long StakeRewardSheetV3Index = ClaimStakeReward5.ObsoleteBlockIndex + 1;
+
         public long CancellableBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
         public long ReceivedBlockIndex { get; private set; }
@@ -181,7 +187,9 @@ namespace Nekoyume.Model.State
         }
 
         [Obsolete("Use CalculateAccumulatedItemRewards() instead.")]
-        public int CalculateAccumulatedItemRewardsV2(long blockIndex, out int v1Step,
+        public int CalculateAccumulatedItemRewardsV2(
+            long blockIndex,
+            out int v1Step,
             out int v2Step)
         {
             v2Step = GetRewardStepV1(blockIndex, StakeRewardSheetV2Index);
@@ -189,11 +197,27 @@ namespace Nekoyume.Model.State
             return v1Step + v2Step;
         }
 
-        public int CalculateAccumulatedItemRewards(long blockIndex, out int v1Step, out int v2Step)
+        [Obsolete("Use CalculateAccumulatedItemRewards() instead.")]
+        public int CalculateAccumulatedItemRewardsV3(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step)
         {
             v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index);
             v1Step = GetRewardStep(blockIndex, null) - v2Step;
             return v1Step + v2Step;
+        }
+
+        public int CalculateAccumulatedItemRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step,
+            out int v3Step)
+        {
+            v3Step = GetRewardStep(blockIndex, StakeRewardSheetV3Index);
+            v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index) - v3Step;
+            v1Step = GetRewardStep(blockIndex, null) - v2Step - v3Step;
+            return v1Step + v2Step + v3Step;
         }
 
         public int CalculateAccumulatedRuneRewards(long blockIndex)
@@ -228,7 +252,8 @@ namespace Nekoyume.Model.State
             return v1Step + v2Step;
         }
 
-        public int CalculateAccumulatedRuneRewards(
+        [Obsolete("Use CalculateAccumulatedRuneRewards() instead.")]
+        public int CalculateAccumulatedRuneRewardsV3(
             long blockIndex,
             out int v1Step,
             out int v2Step)
@@ -236,6 +261,18 @@ namespace Nekoyume.Model.State
             v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index);
             v1Step = GetRewardStep(blockIndex, ClaimStakeReward2.ObsoletedIndex) - v2Step;
             return v1Step + v2Step;
+        }
+
+        public int CalculateAccumulatedRuneRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step,
+            out int v3Step)
+        {
+            v3Step = GetRewardStep(blockIndex, StakeRewardSheetV3Index);
+            v2Step = GetRewardStep(blockIndex, StakeRewardSheetV2Index) - v3Step;
+            v1Step = GetRewardStep(blockIndex, ClaimStakeReward2.ObsoletedIndex) - v2Step - v3Step;
+            return v1Step + v2Step + v3Step;
         }
 
         [Obsolete("Use CalculateAccumulatedCurrencyRewards() instead.")]
@@ -249,7 +286,8 @@ namespace Nekoyume.Model.State
             return v2Step;
         }
 
-        public int CalculateAccumulatedCurrencyRewards(
+        [Obsolete("Use CalculateAccumulatedCurrencyRewards() instead.")]
+        public int CalculateAccumulatedCurrencyRewardsV2(
             long blockIndex,
             out int v1Step,
             out int v2Step)
@@ -257,6 +295,31 @@ namespace Nekoyume.Model.State
             v1Step = 0;
             v2Step = GetRewardStep(blockIndex, CurrencyAsRewardStartIndex);
             return v2Step;
+        }
+
+        public int CalculateAccumulatedCurrencyRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step,
+            out int v3Step)
+        {
+            v3Step = GetRewardStep(blockIndex, StakeRewardSheetV3Index);
+            v2Step = GetRewardStep(blockIndex, CurrencyAsRewardStartIndex) - v3Step;
+            v1Step = 0;
+            return v2Step + v3Step;
+        }
+
+        public int CalculateAccumulatedCurrencyCrystalRewards(
+            long blockIndex,
+            out int v1Step,
+            out int v2Step,
+            out int v3Step)
+        {
+            // NOTE: CRYSTAL as reward is enabled from the StakeRewardSheetV3Index.
+            v3Step = GetRewardStep(blockIndex, StakeRewardSheetV3Index);
+            v2Step = 0;
+            v1Step = 0;
+            return v3Step;
         }
 
         /// <summary>

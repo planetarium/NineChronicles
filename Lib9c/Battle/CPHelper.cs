@@ -20,9 +20,22 @@ namespace Nekoyume.Battle
             CostumeStatSheet costumeStatSheet)
         {
             var levelStatsCp = GetStatsCP(row.ToStats(level), level);
-            var equipmentsCp = equipments.Sum(GetCP);
-            var costumeCp = costumes.Sum(c => GetCP(c, costumeStatSheet));
-            var runeCp = runeOptions.Sum(x => x.Cp);
+            var equipmentsCp = 0;
+            var costumeCp = 0;
+            var runeCp = 0;
+
+            foreach (var equipment in equipments)
+            {
+                equipmentsCp += GetCP(equipment);
+            }
+            foreach (var costume in costumes)
+            {
+                costumeCp += GetCP(costume, costumeStatSheet);
+            }
+            foreach (var runeOption in runeOptions)
+            {
+                runeCp += runeOption.Cp;
+            }
             var totalCp = DecimalToInt(levelStatsCp + equipmentsCp + costumeCp + runeCp);
             return totalCp;
         }
@@ -113,7 +126,13 @@ namespace Nekoyume.Battle
         private static decimal GetStatsCP(IStats stats, int characterLevel = 1)
         {
             var statTuples = stats.GetStats(true);
-            return statTuples.Sum(tuple => GetStatCP(tuple.statType, tuple.value, characterLevel));
+            decimal cp = 0m;
+            foreach (var tuple in statTuples)
+            {
+                cp += GetStatCP(tuple.statType, tuple.value, characterLevel);
+            }
+
+            return cp;
         }
 
         public static decimal GetStatCP(StatType statType, decimal statValue, int characterLevel = 1)

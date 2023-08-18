@@ -671,6 +671,9 @@ namespace Nekoyume.Model.State
                                 ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
                                 : int.MaxValue;
                         break;
+                    case ItemSubType.Aura:
+                        requiredLevel = 1;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException($"{equipment.ItemSubType} / invalid equipment type");
                 }
