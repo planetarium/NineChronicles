@@ -399,29 +399,44 @@ namespace StateViewer.Editor.Features
             try
             {
                 Address? addr;
-                IValue? value;
+                IValue? state;
+                FungibleAssetValue? ncgFav;
+                FungibleAssetValue? crystalFav;
                 if (string.IsNullOrEmpty(blockHashOrIndex))
                 {
-                    (addr, value) = await stateProxy.GetStateAsync(addrStr);
+                    (addr, state) = await stateProxy.GetStateAsync(addrStr);
+                    (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
+                    (_, crystalFav) = stateProxy.GetBalance(addr.Value, Currencies.Crystal);
                 }
                 else if (long.TryParse(blockHashOrIndex, out var blockIndex))
                 {
-                    (addr, value) = await stateProxy.GetStateAsync(addrStr, blockIndex);
+                    (addr, state) = await stateProxy.GetStateAsync(addrStr, blockIndex);
+                    (_, ncgFav) = await stateProxy.GetBalanceAsync(
+                        addr!.Value,
+                        ncg.Value,
+                        blockIndex);
+                    (_, crystalFav) = await stateProxy.GetBalanceAsync(
+                        addr.Value,
+                        Currencies.Crystal,
+                        blockIndex);
                 }
                 else
                 {
                     var blockHash = BlockHash.FromString(blockHashOrIndex);
-                    (addr, value) = await stateProxy.GetStateAsync(addrStr, blockHash);
+                    (addr, state) = await stateProxy.GetStateAsync(addrStr, blockHash);
+                    (_, ncgFav) = await stateProxy.GetBalanceAsync(
+                        addr!.Value,
+                        ncg.Value,
+                        blockHash);
+                    (_, crystalFav) = await stateProxy.GetBalanceAsync(
+                        addr.Value,
+                        Currencies.Crystal,
+                        blockHash);
                 }
 
-                stateTreeView.SetData(addr, value);
-                await UniTask.Run(() =>
-                {
-                    var (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
-                    ncgValue = $"{ncgFav.MajorUnit}.{ncgFav.MinorUnit}";
-                    var (_, crystalFav) = stateProxy.GetBalance(addr!.Value, Currencies.Crystal);
-                    crystalValue = $"{crystalFav.MajorUnit}.{crystalFav.MinorUnit}";
-                });
+                stateTreeView.SetData(addr, state);
+                ncgValue = $"{ncgFav.Value.MajorUnit}.{ncgFav.Value.MinorUnit}";
+                crystalValue = $"{crystalFav.Value.MajorUnit}.{crystalFav.Value.MinorUnit}";
             }
             catch (KeyNotFoundException)
             {

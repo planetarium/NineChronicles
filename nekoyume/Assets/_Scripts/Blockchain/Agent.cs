@@ -264,7 +264,7 @@ namespace Nekoyume.Blockchain
             return await Task.Run(() => blocks.GetState(address, blockHash));
         }
 
-        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             long? blockIndex = null)
         {
@@ -289,7 +289,7 @@ namespace Nekoyume.Blockchain
             });
         }
 
-        public async Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList)
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             return await Task.Run(async () =>
             {
@@ -313,8 +313,26 @@ namespace Nekoyume.Blockchain
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
-        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency) =>
-            Task.Run(() => blocks.GetBalance(address, currency));
+        public Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            long? blockIndex = null)
+        {
+            if (blockIndex.HasValue)
+            {
+                throw new NotImplementedException($"{nameof(blockIndex)} is not supported yet.");
+            }
+
+            return Task.Run(() => blocks.GetBalance(address, currency));
+        }
+
+        public Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            BlockHash blockHash)
+        {
+            return Task.Run(() => blocks.GetBalance(address, currency, blockHash));
+        }
 
         #region Mono
 
