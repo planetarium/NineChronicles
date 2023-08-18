@@ -1,6 +1,6 @@
 namespace Lib9c.Tests.Util
 {
-    using System.Collections.Immutable;
+    using System.Collections.Generic;
     using System.IO;
     using Lib9c.Tests.Action;
     using Libplanet.Action.State;
@@ -23,29 +23,15 @@ namespace Lib9c.Tests.Util
                 Address? adminAddr = null,
                 Address? agentAddr = null,
                 int avatarIndex = 0,
-                bool isDevEx = false
-            )
+                bool isDevEx = false,
+                Dictionary<string, string> sheetsOverride = null)
         {
             adminAddr ??= new PrivateKey().ToAddress();
             var context = new ActionContext();
             var states = new MockStateDelta().SetState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
-            var sheets = TableSheetsImporter.ImportSheets(
-                isDevEx
-                    ? Path.GetFullPath("../../").Replace(
-                        Path.Combine(".Lib9c.DevExtensions.Tests", "bin"),
-                        Path.Combine("Lib9c", "TableCSV"))
-                    : null
-            );
-            foreach (var (key, value) in sheets)
-            {
-                states = states.SetState(
-                    Addresses.TableSheet.Derive(key),
-                    value.Serialize());
-            }
 
-            var tableSheets = new TableSheets(sheets);
             var goldCurrency = Currency.Legacy(
                 "NCG",
                 2,
@@ -56,7 +42,10 @@ namespace Lib9c.Tests.Util
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .MintAsset(context, goldCurrencyState.address, goldCurrency * 1_000_000_000);
 
-            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
+            var tuple = InitializeTableSheets(states, isDevEx, sheetsOverride);
+            states = tuple.states;
+            var tableSheets = new TableSheets(tuple.sheets);
+            var gameConfigState = new GameConfigState(tuple.sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
             agentAddr ??= new PrivateKey().ToAddress();
@@ -93,6 +82,37 @@ namespace Lib9c.Tests.Util
                 avatarAddr,
                 initialStatesWithAvatarStateV1,
                 initialStatesWithAvatarStateV2);
+        }
+
+        private static (IAccountStateDelta states, Dictionary<string, string> sheets)
+            InitializeTableSheets(
+                IAccountStateDelta states,
+                bool isDevEx = false,
+                Dictionary<string, string> sheetsOverride = null)
+        {
+            var sheets = TableSheetsImporter.ImportSheets(
+                isDevEx
+                    ? Path.GetFullPath("../../").Replace(
+                        Path.Combine(".Lib9c.DevExtensions.Tests", "bin"),
+                        Path.Combine("Lib9c", "TableCSV"))
+                    : null
+            );
+            if (sheetsOverride != null)
+            {
+                foreach (var (key, value) in sheetsOverride)
+                {
+                    sheets[key] = value;
+                }
+            }
+
+            foreach (var (key, value) in sheets)
+            {
+                states = states.SetState(
+                    Addresses.TableSheet.Derive(key),
+                    value.Serialize());
+            }
+
+            return (states, sheets);
         }
     }
 }
