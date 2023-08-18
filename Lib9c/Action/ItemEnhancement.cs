@@ -244,7 +244,7 @@ namespace Nekoyume.Action
             }
 
             var maxLevel = GetEquipmentMaxLevel(enhancementEquipment, enhancementCostSheet);
-            if (enhancementEquipment.level >= maxLevel)
+            if (enhancementEquipment.level > maxLevel)
             {
                 throw new EquipmentLevelExceededException(
                     $"{addressesHex} Aborted due to invalid equipment level: {enhancementEquipment.level} < {maxLevel}");
@@ -334,7 +334,7 @@ namespace Nekoyume.Action
 
             if (row.Level > enhancementEquipment.level)
             {
-                enhancementEquipment.SetLevel(ctx.Random, row);
+                enhancementEquipment.SetLevel(ctx.Random, row.Level, enhancementCostSheet);
             }
 
             EnhancementCostSheetV3.Row targetCostRow;

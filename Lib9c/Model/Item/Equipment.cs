@@ -178,22 +178,29 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public void SetLevel(IRandom random, EnhancementCostSheetV3.Row row)
+        public void SetLevel(IRandom random, int targetLevel, EnhancementCostSheetV3 sheet)
         {
-            level = row.Level;
-            var rand = random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
-            var ratio = rand.NormalizeFromTenThousandths();
-            var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
-            if (baseStat > 0)
+            var startLevel = level;
+            level = targetLevel;
+            for (var i = startLevel + 1; i <= targetLevel; i++)
             {
-                baseStat = Math.Max(1.0m, baseStat);
-            }
+                var row = sheet.OrderedList.First(
+                    r => r.Level == i && r.Grade == Grade && r.ItemSubType == ItemSubType
+                );
+                var rand = random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+                var ratio = rand.NormalizeFromTenThousandths();
+                var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
+                if (baseStat > 0)
+                {
+                    baseStat = Math.Max(1.0m, baseStat);
+                }
 
-            StatsMap.AddStatValue(UniqueStatType, baseStat);
+                StatsMap.AddStatValue(UniqueStatType, baseStat);
 
-            if (GetOptionCount() > 0)
-            {
-                UpdateOptionsV3(random, row);
+                if (GetOptionCount() > 0)
+                {
+                    UpdateOptionsV3(random, row);
+                }
             }
         }
 
