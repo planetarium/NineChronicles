@@ -261,16 +261,23 @@ namespace Lib9c.Tests.Action
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
             if (startLevel != expectedLevel)
             {
-                var baseMinAtk = preItemUsable.StatsMap.BaseATK *
-                                 (targetRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
-                var baseMaxAtk = preItemUsable.StatsMap.BaseATK *
-                                 (targetRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                var extraMinAtk = preItemUsable.StatsMap.AdditionalATK *
-                                  (targetRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() +
-                                   1);
-                var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK *
-                                  (targetRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() +
-                                   1);
+                var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;
+                var baseMaxAtk = (decimal)preItemUsable.StatsMap.BaseATK;
+                var extraMinAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
+                var extraMaxAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
+
+                for (var i = startLevel + 1; i <= expectedLevel; i++)
+                {
+                    var currentRow = _tableSheets.EnhancementCostSheetV3.OrderedList
+                        .First(x =>
+                            x.Grade == 1 && x.ItemSubType == equipment.ItemSubType && x.Level == i);
+
+                    baseMinAtk *= currentRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1;
+                    baseMaxAtk *= currentRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1;
+                    extraMinAtk *= currentRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1;
+                    extraMaxAtk *= currentRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1;
+                }
+
                 Assert.InRange(
                     resultEquipment.StatsMap.ATK,
                     baseMinAtk + extraMinAtk,
