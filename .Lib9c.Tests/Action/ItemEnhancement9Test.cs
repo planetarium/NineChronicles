@@ -186,8 +186,8 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
-            Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
+            Assert.Equal(preItemUsable.ItemId, slotResult.preItemUsable.ItemId);
+            Assert.Equal(preItemUsable.ItemId, resultEquipment.ItemId);
             Assert.Equal(costRow.Cost, slotResult.gold);
         }
 

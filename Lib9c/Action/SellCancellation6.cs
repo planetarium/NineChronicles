@@ -157,7 +157,7 @@ namespace Nekoyume.Action
             int itemCount = 1;
             if (!(shopItem.ItemUsable is null))
             {
-                tradableItem = shopItem.ItemUsable;
+                tradableItem = (ITradableItem)shopItem.ItemUsable;
             }
             else if (!(shopItem.Costume is null))
             {

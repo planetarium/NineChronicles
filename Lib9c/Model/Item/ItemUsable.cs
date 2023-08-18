@@ -28,7 +28,6 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public Guid TradableId => ItemId;
         public Guid NonFungibleId => ItemId;
 
         public StatsMap StatsMap

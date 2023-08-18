@@ -163,7 +163,7 @@ namespace Nekoyume.Action
                                             out var item) &&
                                         avatarState.inventory.RemoveNonFungibleItem(tradableId))
                                     {
-                                        tradableItem = (ITradableItem) item.item;
+                                        tradableItem = item.item as ITradableItem;
                                     }
 
                                     break;
