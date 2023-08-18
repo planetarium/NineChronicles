@@ -34,6 +34,8 @@ namespace Lib9c.Tests.Action
             _initialState = new MockStateDelta();
 
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(StakeRegularRewardSheet)] =
+                ClaimStakeReward.V2.StakeRegularRewardSheetCsv;
             foreach (var (key, value) in sheets)
             {
                 _initialState = _initialState

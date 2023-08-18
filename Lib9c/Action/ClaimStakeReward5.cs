@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using Bencodex.Types;
 using Lib9c;
 using Lib9c.Abstractions;
@@ -19,12 +18,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2071
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1458
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class ClaimStakeReward5 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
-        private const string ActionTypeText = "claim_stake_reward6";
+        private const string ActionTypeText = "claim_stake_reward5";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200060ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -36,22 +37,22 @@ namespace Nekoyume.Action
             public const int MaxLevel = 5;
 
             public const string StakeRegularRewardSheetCsv =
-                @"level,required_gold,item_id,rate,type,currency_ticker,currency_decimal_places,decimal_rate
-1,50,400000,,Item,,,10
-1,50,500000,,Item,,,800
-1,50,20001,,Rune,,,6000
-2,500,400000,,Item,,,8
-2,500,500000,,Item,,,800
-2,500,20001,,Rune,,,6000
-3,5000,400000,,Item,,,5
-3,5000,500000,,Item,,,800
-3,5000,20001,,Rune,,,6000
-4,50000,400000,,Item,,,5
-4,50000,500000,,Item,,,800
-4,50000,20001,,Rune,,,6000
-5,500000,400000,,Item,,,5
-5,500000,500000,,Item,,,800
-5,500000,20001,,Rune,,,6000";
+                @"level,required_gold,item_id,rate,type
+1,50,400000,10,Item
+1,50,500000,800,Item
+1,50,20001,6000,Rune
+2,500,400000,8,Item
+2,500,500000,800,Item
+2,500,20001,6000,Rune
+3,5000,400000,5,Item
+3,5000,500000,800,Item
+3,5000,20001,6000,Rune
+4,50000,400000,5,Item
+4,50000,500000,800,Item
+4,50000,20001,6000,Rune
+5,500000,400000,5,Item
+5,500000,500000,800,Item
+5,500000,20001,6000,Rune";
 
             public const string StakeRegularFixedRewardSheetCsv =
                 @"level,required_gold,item_id,count
@@ -93,97 +94,22 @@ namespace Nekoyume.Action
             }
         }
 
-        /// <summary>
-        /// This is the version 2 of the stake reward sheet.
-        /// The version 2 is used for calculating the reward for the stake
-        /// that is accumulated before the table patch.
-        /// </summary>
-        public static class V2
-        {
-            public const int MaxLevel = 7;
-
-            public const string StakeRegularRewardSheetCsv =
-                @"level,required_gold,item_id,rate,type,currency_ticker
-1,50,400000,10,Item,
-1,50,500000,800,Item,
-1,50,20001,6000,Rune,
-2,500,400000,8,Item,
-2,500,500000,800,Item,
-2,500,20001,6000,Rune,
-3,5000,400000,5,Item,
-3,5000,500000,800,Item,
-3,5000,20001,6000,Rune,
-4,50000,400000,5,Item,
-4,50000,500000,800,Item,
-4,50000,20001,6000,Rune,
-5,500000,400000,5,Item,
-5,500000,500000,800,Item,
-5,500000,20001,6000,Rune,
-6,5000000,400000,10,Item,
-6,5000000,500000,800,Item,
-6,5000000,20001,6000,Rune,
-6,5000000,800201,100,Item,
-7,10000000,400000,10,Item,
-7,10000000,500000,800,Item,
-7,10000000,20001,6000,Rune,
-7,10000000,600201,50,Item,
-7,10000000,800201,50,Item,
-7,10000000,,100,Currency,GARAGE
-";
-
-            public const string StakeRegularFixedRewardSheetCsv =
-                @"level,required_gold,item_id,count
-1,50,500000,1
-2,500,500000,2
-3,5000,500000,2
-4,50000,500000,2
-5,500000,500000,2
-6,5000000,500000,2
-7,10000000,500000,2
-";
-
-            private static StakeRegularRewardSheet _stakeRegularRewardSheet;
-            private static StakeRegularFixedRewardSheet _stakeRegularFixedRewardSheet;
-
-            public static StakeRegularRewardSheet StakeRegularRewardSheet
-            {
-                get
-                {
-                    if (_stakeRegularRewardSheet is null)
-                    {
-                        _stakeRegularRewardSheet = new StakeRegularRewardSheet();
-                        _stakeRegularRewardSheet.Set(StakeRegularRewardSheetCsv);
-                    }
-
-                    return _stakeRegularRewardSheet;
-                }
-            }
-
-            public static StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet
-            {
-                get
-                {
-                    if (_stakeRegularFixedRewardSheet is null)
-                    {
-                        _stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
-                        _stakeRegularFixedRewardSheet.Set(StakeRegularFixedRewardSheetCsv);
-                    }
-
-                    return _stakeRegularFixedRewardSheet;
-                }
-            }
-        }
+        // NOTE: Use this when the <see cref="StakeRegularFixedRewardSheet"/> or
+        // <see cref="StakeRegularRewardSheet"/> is patched.
+        // public static class V2
+        // {
+        // }
 
         internal Address AvatarAddress { get; private set; }
 
         Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
-        public ClaimStakeReward(Address avatarAddress) : this()
+        public ClaimStakeReward5(Address avatarAddress) : this()
         {
             AvatarAddress = avatarAddress;
         }
 
-        public ClaimStakeReward()
+        public ClaimStakeReward5()
         {
         }
 
@@ -199,6 +125,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
             if (context.Rehearsal)
             {
@@ -252,26 +179,18 @@ namespace Nekoyume.Action
             var level =
                 stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var itemSheet = sheets.GetItemSheet();
-            stakeState.CalculateAccumulatedItemRewards(
+            stakeState.CalculateAccumulatedItemRewardsV3(
                 context.BlockIndex,
                 out var itemV1Step,
-                out var itemV2Step,
-                out var itemV3Step);
-            stakeState.CalculateAccumulatedRuneRewards(
+                out var itemV2Step);
+            stakeState.CalculateAccumulatedRuneRewardsV3(
                 context.BlockIndex,
                 out var runeV1Step,
-                out var runeV2Step,
-                out var runeV3Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
+                out var runeV2Step);
+            stakeState.CalculateAccumulatedCurrencyRewardsV2(
                 context.BlockIndex,
                 out var currencyV1Step,
-                out var currencyV2Step,
-                out var currencyV3Step);
-            stakeState.CalculateAccumulatedCurrencyCrystalRewards(
-                context.BlockIndex,
-                out var currencyCrystalV1Step,
-                out var currencyCrystalV2Step,
-                out var currencyCrystalV3Step);
+                out var currencyV2Step);
             if (itemV1Step > 0)
             {
                 var v1Level = Math.Min(level, V1.MaxLevel);
@@ -286,16 +205,17 @@ namespace Nekoyume.Action
                     itemV1Step,
                     runeV1Step,
                     currencyV1Step,
-                    currencyCrystalV1Step,
                     fixedRewardV1,
                     regularRewardV1);
             }
 
             if (itemV2Step > 0)
             {
-                var v2Level = Math.Min(level, V2.MaxLevel);
-                var fixedRewardV2 = V2.StakeRegularFixedRewardSheet[v2Level].Rewards;
-                var regularRewardV2 = V2.StakeRegularRewardSheet[v2Level].Rewards;
+                var regularFixedReward =
+                    states.TryGetSheet<StakeRegularFixedRewardSheet>(out var fixedRewardSheet)
+                        ? fixedRewardSheet[level].Rewards
+                        : new List<StakeRegularFixedRewardSheet.RewardInfo>();
+                var regularReward = sheets.GetSheet<StakeRegularRewardSheet>()[level].Rewards;
                 states = ProcessReward(
                     context,
                     states,
@@ -305,25 +225,6 @@ namespace Nekoyume.Action
                     itemV2Step,
                     runeV2Step,
                     currencyV2Step,
-                    currencyCrystalV2Step,
-                    fixedRewardV2,
-                    regularRewardV2);
-            }
-
-            if (itemV3Step > 0)
-            {
-                var regularFixedReward = GetRegularFixedRewardInfos(states, level);
-                var regularReward = sheets.GetSheet<StakeRegularRewardSheet>()[level].Rewards;
-                states = ProcessReward(
-                    context,
-                    states,
-                    ref avatarState,
-                    itemSheet,
-                    stakedAmount,
-                    itemV3Step,
-                    runeV3Step,
-                    currencyV3Step,
-                    currencyCrystalV3Step,
                     regularFixedReward,
                     regularReward);
             }
@@ -349,124 +250,81 @@ namespace Nekoyume.Action
                     avatarState.inventory.Serialize());
         }
 
-        private static List<StakeRegularFixedRewardSheet.RewardInfo> GetRegularFixedRewardInfos(
-            IAccountState states,
-            int level)
-        {
-            return states.TryGetSheet<StakeRegularFixedRewardSheet>(out var fixedRewardSheet)
-                ? fixedRewardSheet[level].Rewards
-                : new List<StakeRegularFixedRewardSheet.RewardInfo>();
-        }
-
         private IAccountStateDelta ProcessReward(
             IActionContext context,
             IAccountStateDelta states,
             ref AvatarState avatarState,
             ItemSheet itemSheet,
-            FungibleAssetValue stakedFav,
+            FungibleAssetValue stakedAmount,
             int itemRewardStep,
             int runeRewardStep,
             int currencyRewardStep,
-            int currencyCrystalRewardStep,
             List<StakeRegularFixedRewardSheet.RewardInfo> fixedReward,
             List<StakeRegularRewardSheet.RewardInfo> regularReward)
         {
+            var stakedCurrency = stakedAmount.Currency;
+
             // Regular Reward
             foreach (var reward in regularReward)
             {
-                var rateFav = FungibleAssetValue.Parse(
-                    stakedFav.Currency,
-                    reward.DecimalRate.ToString(CultureInfo.InvariantCulture));
-                var rewardQuantityForSingleStep = stakedFav.DivRem(rateFav, out _);
-                if (rewardQuantityForSingleStep <= 0)
-                {
-                    continue;
-                }
-
                 switch (reward.Type)
                 {
                     case StakeRegularRewardSheet.StakeRewardType.Item:
-                    {
-                        if (itemRewardStep == 0)
+                        var (quantity, _) = stakedAmount.DivRem(stakedCurrency * reward.Rate);
+                        if (quantity < 1)
                         {
+                            // If the quantity is zero, it doesn't add the item into inventory.
                             continue;
                         }
 
-                        var itemRow = itemSheet[reward.ItemId];
-                        var item = itemRow is MaterialItemSheet.Row materialRow
+                        ItemSheet.Row row = itemSheet[reward.ItemId];
+                        ItemBase item = row is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateItem(itemRow, context.Random);
-                        var majorUnit = (int)rewardQuantityForSingleStep * itemRewardStep;
-                        if (majorUnit < 1)
-                        {
-                            continue;
-                        }
-
-                        avatarState.inventory.AddItem(item, majorUnit);
+                            : ItemFactory.CreateItem(row, context.Random);
+                        avatarState.inventory.AddItem(item, (int)quantity * itemRewardStep);
                         break;
-                    }
                     case StakeRegularRewardSheet.StakeRewardType.Rune:
-                    {
-                        if (runeRewardStep == 0)
+                        var runeReward = runeRewardStep *
+                                         RuneHelper.CalculateStakeReward(stakedAmount, reward.Rate);
+                        if (runeReward < 1 * RuneHelper.StakeRune)
                         {
                             continue;
                         }
 
-                        var majorUnit = rewardQuantityForSingleStep * runeRewardStep;
-                        if (majorUnit < 1)
-                        {
-                            continue;
-                        }
-
-                        var runeReward = RuneHelper.StakeRune * majorUnit;
                         states = states.MintAsset(context, AvatarAddress, runeReward);
                         break;
-                    }
                     case StakeRegularRewardSheet.StakeRewardType.Currency:
-                    {
                         if (string.IsNullOrEmpty(reward.CurrencyTicker))
                         {
                             throw new NullReferenceException("currency ticker is null or empty");
                         }
 
-                        var isCrystal = reward.CurrencyTicker == Currencies.Crystal.Ticker;
-                        if (isCrystal
-                                ? currencyCrystalRewardStep == 0
-                                : currencyRewardStep == 0)
+                        var rewardCurrency =
+                            Currencies.GetMinterlessCurrency(reward.CurrencyTicker);
+                        var rewardCurrencyQuantity =
+                            stakedAmount.DivRem(reward.Rate * stakedAmount.Currency).Quotient;
+                        if (rewardCurrencyQuantity <= 0)
                         {
                             continue;
                         }
 
-                        var rewardCurrency = reward.CurrencyDecimalPlaces == null
-                            ? Currencies.GetMinterlessCurrency(reward.CurrencyTicker)
-                            : Currency.Uncapped(
-                                reward.CurrencyTicker,
-                                Convert.ToByte(reward.CurrencyDecimalPlaces.Value),
-                                minters: null);
-                        var majorUnit = isCrystal
-                                ? rewardQuantityForSingleStep * currencyCrystalRewardStep
-                                : rewardQuantityForSingleStep * currencyRewardStep;
-                        var rewardFav = rewardCurrency * majorUnit;
                         states = states.MintAsset(
                             context,
                             context.Signer,
-                            rewardFav);
+                            rewardCurrencyQuantity * currencyRewardStep * rewardCurrency);
                         break;
-                    }
                     default:
-                        throw new ArgumentException(
-                            $"Can't handle reward type: {reward.Type}",
-                            nameof(regularReward));
+                        break;
                 }
             }
 
             // Fixed Reward
             foreach (var reward in fixedReward)
             {
-                var itemRow = itemSheet[reward.ItemId];
-                var item = itemRow is MaterialItemSheet.Row materialRow
+                ItemSheet.Row row = itemSheet[reward.ItemId];
+                ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(itemRow, context.Random);
+                    : ItemFactory.CreateItem(row, context.Random);
                 avatarState.inventory.AddItem(item, reward.Count * itemRewardStep);
             }
 
