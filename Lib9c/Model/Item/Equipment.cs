@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Action;
-using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -19,6 +18,7 @@ namespace Nekoyume.Model.Item
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
         public bool equipped;
         public int level;
+        public long exp;
         public int optionCountFromCombination;
 
         public DecimalStat Stat { get; }
@@ -59,6 +59,18 @@ namespace Nekoyume.Model.Item
                 catch (InvalidCastException)
                 {
                     level = (int) ((Integer) value).Value;
+                }
+            }
+
+            if (serialized.TryGetValue((Text)EquipmentExpKey, out value))
+            {
+                try
+                {
+                    exp = value.ToLong();
+                }
+                catch (InvalidCastException)
+                {
+                    exp = (long)((Integer)value).Value;
                 }
             }
 
@@ -113,6 +125,11 @@ namespace Nekoyume.Model.Item
                 dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
             }
 
+            if (exp > 0)
+            {
+                dict = dict.SetItem(EquipmentExpKey, exp.Serialize());
+            }
+
             return dict;
 #pragma warning restore LAA1002
         }
@@ -140,6 +157,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        [Obsolete("Since ItemEnhancement12, Use `SetLevel` instead.")]
         public void LevelUp(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
@@ -157,6 +175,32 @@ namespace Nekoyume.Model.Item
             if (GetOptionCount() > 0)
             {
                 UpdateOptionsV2(random, row, isGreatSuccess);
+            }
+        }
+
+        public void SetLevel(IRandom random, int targetLevel, EnhancementCostSheetV3 sheet)
+        {
+            var startLevel = level;
+            level = targetLevel;
+            for (var i = startLevel + 1; i <= targetLevel; i++)
+            {
+                var row = sheet.OrderedList.First(
+                    r => r.Level == i && r.Grade == Grade && r.ItemSubType == ItemSubType
+                );
+                var rand = random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+                var ratio = rand.NormalizeFromTenThousandths();
+                var baseStat = StatsMap.GetBaseStat(UniqueStatType) * ratio;
+                if (baseStat > 0)
+                {
+                    baseStat = Math.Max(1.0m, baseStat);
+                }
+
+                StatsMap.AddStatValue(UniqueStatType, baseStat);
+
+                if (GetOptionCount() > 0)
+                {
+                    UpdateOptionsV3(random, row);
+                }
             }
         }
 
@@ -197,6 +241,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        [Obsolete("Since ItemEnhancement12, Use UpdateOptionV3 instead.")]
         private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             foreach (var stat in StatsMap.GetAdditionalStats())
@@ -236,6 +281,59 @@ namespace Nekoyume.Model.Item
                 {
                     addPower = Math.Max(1.0m, addPower);
                 }
+
+                var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
+                if (addStatPowerRatio > 0)
+                {
+                    addStatPowerRatio = Math.Max(1.0m, addStatPowerRatio);
+                }
+
+                var chance = skill.Chance + (int)addChance;
+                var power = skill.Power + (int)addPower;
+                var statPowerRatio = skill.StatPowerRatio + (int)addStatPowerRatio;
+
+                skill.Update(chance, power, statPowerRatio);
+            }
+        }
+
+        private void UpdateOptionsV3(IRandom random, EnhancementCostSheetV3.Row row)
+        {
+            foreach (var stat in StatsMap.GetAdditionalStats())
+            {
+                var rand = random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
+                var ratio = rand.NormalizeFromTenThousandths();
+                var addValue = stat.AdditionalValue * ratio;
+                if (addValue > 0)
+                {
+                    addValue = Math.Max(1.0m, addValue);
+                }
+
+                StatsMap.SetStatAdditionalValue(stat.StatType, stat.AdditionalValue + addValue);
+            }
+
+            var skills = new List<Skill.Skill>();
+            skills.AddRange(Skills);
+            skills.AddRange(BuffSkills);
+            foreach (var skill in skills)
+            {
+                var chanceRand = random.Next(row.ExtraSkillChanceGrowthMin,
+                    row.ExtraSkillChanceGrowthMax + 1);
+                var chanceRatio = chanceRand.NormalizeFromTenThousandths();
+                var addChance = skill.Chance * chanceRatio;
+                if (addChance > 0)
+                {
+                    addChance = Math.Max(1.0m, addChance);
+                }
+
+                var damageRand = random.Next(row.ExtraSkillDamageGrowthMin,
+                    row.ExtraSkillDamageGrowthMax + 1);
+                var damageRatio = damageRand.NormalizeFromTenThousandths();
+                var addPower = skill.Power * damageRatio;
+                if (addPower > 0)
+                {
+                    addPower = Math.Max(1.0m, addPower);
+                }
+
                 var addStatPowerRatio = skill.StatPowerRatio * damageRatio;
                 if (addStatPowerRatio > 0)
                 {
@@ -253,7 +351,8 @@ namespace Nekoyume.Model.Item
         protected bool Equals(Equipment other)
         {
             return base.Equals(other) && equipped == other.equipped && level == other.level &&
-                   Equals(Stat, other.Stat) && SetId == other.SetId && SpineResourcePath == other.SpineResourcePath;
+                   exp == other.exp && Equals(Stat, other.Stat) && SetId == other.SetId &&
+                   SpineResourcePath == other.SpineResourcePath;
         }
 
         public override bool Equals(object obj)

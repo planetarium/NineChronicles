@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class RapidCombinationTest7
+    public class RapidCombination7Test
     {
         private readonly IAccountStateDelta _initialState;
 
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public RapidCombinationTest7()
+        public RapidCombination7Test()
         {
             _initialState = new MockStateDelta();
 
@@ -642,16 +642,16 @@ namespace Lib9c.Tests.Action
 
                 case 11:
                 {
-                    Assert.True(ItemEnhancement.TryGetRow(
+                    Assert.True(ItemEnhancement11.TryGetRow(
                         equipment,
                         _tableSheets.EnhancementCostSheetV2,
                         out var costRow));
-                    var equipmentResult = ItemEnhancement.GetEnhancementResult(costRow, random);
+                    var equipmentResult = ItemEnhancement11.GetEnhancementResult(costRow, random);
                     equipment.LevelUp(
                         random,
                         costRow,
-                        equipmentResult == ItemEnhancement.EnhancementResult.GreatSuccess);
-                    resultModel = new ItemEnhancement.ResultModel
+                        equipmentResult == ItemEnhancement11.EnhancementResult.GreatSuccess);
+                    resultModel = new ItemEnhancement11.ResultModel
                     {
                         id = mailId,
                         preItemUsable = preItemUsable,
@@ -659,7 +659,7 @@ namespace Lib9c.Tests.Action
                         materialItemIdList = new[] { materialEquipment.NonFungibleId },
                         gold = 0,
                         actionPoint = 0,
-                        enhancementResult = ItemEnhancement.EnhancementResult.GreatSuccess,
+                        enhancementResult = ItemEnhancement11.EnhancementResult.GreatSuccess,
                         CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
                     };
 
