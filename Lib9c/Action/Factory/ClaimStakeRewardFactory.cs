@@ -13,7 +13,7 @@ namespace Nekoyume.Action.Factory
         {
             if (blockIndex > ClaimStakeReward5.ObsoleteBlockIndex)
             {
-                return new ClaimStakeReward(avatarAddress);
+                return new ClaimStakeReward6(avatarAddress);
             }
 
             if (blockIndex > ClaimStakeReward4.ObsoleteBlockIndex)
@@ -47,7 +47,7 @@ namespace Nekoyume.Action.Factory
             3 => new ClaimStakeReward3(avatarAddress),
             4 => new ClaimStakeReward4(avatarAddress),
             5 => new ClaimStakeReward5(avatarAddress),
-            6 => new ClaimStakeReward(avatarAddress),
+            6 => new ClaimStakeReward6(avatarAddress),
             _ => throw new ArgumentOutOfRangeException(
                 $"Invalid version: {version}"),
         };

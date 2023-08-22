@@ -48,8 +48,8 @@ namespace Lib9c.Tests.Action.Factory
         [InlineData(ClaimStakeReward4.ObsoleteBlockIndex, typeof(ClaimStakeReward4))]
         [InlineData(ClaimStakeReward4.ObsoleteBlockIndex + 1, typeof(ClaimStakeReward5))]
         [InlineData(ClaimStakeReward5.ObsoleteBlockIndex, typeof(ClaimStakeReward5))]
-        [InlineData(ClaimStakeReward5.ObsoleteBlockIndex + 1, typeof(ClaimStakeReward))]
-        [InlineData(long.MaxValue, typeof(ClaimStakeReward))]
+        [InlineData(ClaimStakeReward5.ObsoleteBlockIndex + 1, typeof(ClaimStakeReward6))]
+        [InlineData(long.MaxValue, typeof(ClaimStakeReward6))]
         public void Create_ByBlockIndex_Success(
             long blockIndex,
             Type type)
