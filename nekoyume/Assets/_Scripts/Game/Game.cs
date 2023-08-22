@@ -345,7 +345,7 @@ namespace Nekoyume.Game
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            StartCoroutine(CoLogin(succeed =>
+            yield return StartCoroutine(CoLogin(succeed =>
                     {
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
