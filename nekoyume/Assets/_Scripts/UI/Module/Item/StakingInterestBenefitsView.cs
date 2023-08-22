@@ -25,5 +25,12 @@ namespace Nekoyume.UI.Module
             countText.text = $"+{count}";
             benefitsText.text = $"{benefitsRate}%";
         }
+
+        public void Set(string ticker, int count, int benefitsRate)
+        {
+            iconImage.sprite = SpriteHelper.GetFavIcon(ticker);
+            countText.text = $"+{count}";
+            benefitsText.text = $"{benefitsRate}%";
+        }
     }
 }

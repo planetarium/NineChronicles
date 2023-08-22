@@ -1358,7 +1358,7 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 7729283318293921382}
     apPotionInterestText: {fileID: 8650886195334095416}
     runeInterestText: {fileID: 2446878902685662512}
-    goldenMeatInterestText: {fileID: 943233714504173707}
+    crystalInterestText: {fileID: 943233714504173707}
     goldenPowderInterestText: {fileID: 9005158052925215597}
     arenaTicketBuffText: {fileID: 5929345045979458712}
     crystalBuffText: {fileID: 3975137677533920718}
@@ -1369,7 +1369,7 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 3994420566036772641}
     apPotionInterestText: {fileID: 1328320525002464068}
     runeInterestText: {fileID: 438522784159206070}
-    goldenMeatInterestText: {fileID: 3560731267983232967}
+    crystalInterestText: {fileID: 3560731267983232967}
     goldenPowderInterestText: {fileID: 2218210677059849736}
     arenaTicketBuffText: {fileID: 6311796465302195411}
     crystalBuffText: {fileID: 6886577038886266521}
@@ -1380,7 +1380,7 @@ MonoBehaviour:
     hourGlassInterestText: {fileID: 8761415201397826876}
     apPotionInterestText: {fileID: 7809945492967645938}
     runeInterestText: {fileID: 7367062187494286046}
-    goldenMeatInterestText: {fileID: 2285219783213786364}
+    crystalInterestText: {fileID: 2285219783213786364}
     goldenPowderInterestText: {fileID: 1225177905193218134}
     arenaTicketBuffText: {fileID: 1873431143519149783}
     crystalBuffText: {fileID: 8765903993948831001}
@@ -1647,7 +1647,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.25
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3290,7 +3290,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.25
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4026,7 +4026,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.25
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4838,7 +4838,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15.15
+  m_fontSize: 13
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -6011,7 +6011,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
+  m_fontSize: 15.25
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1

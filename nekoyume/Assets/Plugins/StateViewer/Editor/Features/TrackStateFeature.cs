@@ -279,7 +279,7 @@ namespace StateViewer.Editor.Features
                 sourceCsvRow.BlockIndex,
                 out var v4ItemV1Step,
                 out var v4ItemV2Step);
-            stakeState.CalculateAccumulatedItemRewards(
+            stakeState.CalculateAccumulatedItemRewardsV3(
                 sourceCsvRow.BlockIndex,
                 out var v5ItemV1Step,
                 out var v5ItemV2Step);
@@ -287,7 +287,7 @@ namespace StateViewer.Editor.Features
                 sourceCsvRow.BlockIndex,
                 out var v4RuneV1Step,
                 out var v4RuneV2Step);
-            stakeState.CalculateAccumulatedRuneRewards(
+            stakeState.CalculateAccumulatedRuneRewardsV3(
                 sourceCsvRow.BlockIndex,
                 out var v5RuneV1Step,
                 out var v5RuneV2Step);
@@ -295,7 +295,7 @@ namespace StateViewer.Editor.Features
                 sourceCsvRow.BlockIndex,
                 out var v4CurrencyV1Step,
                 out var v4CurrencyV2Step);
-            stakeState.CalculateAccumulatedCurrencyRewards(
+            stakeState.CalculateAccumulatedCurrencyRewardsV2(
                 sourceCsvRow.BlockIndex,
                 out var v5CurrencyV1Step,
                 out var v5CurrencyV2Step);
