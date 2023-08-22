@@ -166,7 +166,9 @@ namespace Nekoyume.UI
         private void OnSubmit()
         {
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
-            if (!IsInteractableButton(baseItem, materialItem))
+
+            //Equip Upgragd ToDO
+/*            if (!IsInteractableButton(baseItem, materialItem))
             {
                 NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
@@ -182,7 +184,7 @@ namespace Nekoyume.UI
             }
 
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-            EnhancementAction(baseItem, materialItem);
+            EnhancementAction(baseItem, materialItem);*/
         }
 
         private void EnhancementAction(Equipment baseItem, Equipment materialItem)
@@ -280,7 +282,7 @@ namespace Nekoyume.UI
         }
 
         private void UpdateInformation(EnhancementInventoryItem baseModel,
-            EnhancementInventoryItem materialModel)
+            List<EnhancementInventoryItem> materialModels)
         {
             if (baseModel is null)
             {
@@ -300,7 +302,8 @@ namespace Nekoyume.UI
 
                 baseSlot.AddMaterial(baseModel.ItemBase);
 
-                if (materialModel is null)
+                //Equip Upgragd ToDO
+/*                if (materialModel is null)
                 {
                     if (materialSlot.IsExist)
                     {
@@ -317,7 +320,7 @@ namespace Nekoyume.UI
                     }
 
                     materialSlot.AddMaterial(materialModel.ItemBase);
-                }
+                }*/
 
                 var equipment = baseModel.ItemBase as Equipment;
                 if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var row))
