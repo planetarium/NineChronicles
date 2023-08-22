@@ -37,12 +37,12 @@ namespace Nekoyume.IAPStore
 
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             var products = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
-                States.Instance.AgentState.address);
+                Game.Game.instance.Agent.Address);
             if (products is null)
             {
                 // TODO: not initialized case handling
                 Debug.LogError(
-                    $"IAPServiceManager.GetProductsAsync({States.Instance.AgentState.address}): Products is null.");
+                    $"IAPServiceManager.GetProductsAsync({Game.Game.instance.Agent.Address}): Products is null.");
                 return;
             }
 
