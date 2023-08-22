@@ -358,16 +358,6 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
-            // Only use on Android or...
-            IEnumerator InitializeIAP()
-            {
-                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-                Debug.Log("[Game] Start() IAPStoreManager initialize start");
-            }
-
             IEnumerator InitializeWithAgent()
             {
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
@@ -386,6 +376,16 @@ namespace Nekoyume.Game
             }
 
 #if UNITY_ANDROID
+            // Only use on Android or...
+            IEnumerator InitializeIAP()
+            {
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+                Debug.Log("[Game] Start() IAPStoreManager initialize start");
+            }
+
             StartCoroutine(InitializeIAP());
 #endif
             yield return StartCoroutine(InitializeWithAgent());
