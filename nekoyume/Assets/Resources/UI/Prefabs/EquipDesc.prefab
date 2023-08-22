@@ -633,6 +633,7 @@ RectTransform:
   - {fileID: 6000150487839344897}
   - {fileID: 6872759188819889742}
   - {fileID: 8656333591159275071}
+  - {fileID: 4526581038261696046}
   m_Father: {fileID: 3436769837260208417}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14108,8 +14109,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5574788625320700951}
-  m_Father: {fileID: 4007887530917094648}
-  m_RootOrder: 2
+  m_Father: {fileID: 1769221680356877294}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -23752,7 +23753,6 @@ RectTransform:
   m_Children:
   - {fileID: 3436769837260208417}
   - {fileID: 4652141775875525810}
-  - {fileID: 4526581038261696046}
   m_Father: {fileID: 7455478367156160242}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -33762,6 +33762,7 @@ MonoBehaviour:
     - toggle: {fileID: 1356632953561502174}
       disableText: {fileID: 376100366394573118}
       enableText: {fileID: 6801251912781755049}
+  premiumCraftableIcon: {fileID: 2191791816448869469}
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 2052619893874140298}
     recipeTabs:

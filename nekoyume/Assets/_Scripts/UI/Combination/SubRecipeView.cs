@@ -128,6 +128,9 @@ namespace Nekoyume.UI
         private RecipeTabGroup normalRecipeTabGroup;
 
         [SerializeField]
+        private GameObject premiumCraftableIcon;
+
+        [SerializeField]
         private RecipeTabGroup legendaryRecipeTabGroup;
 
         [SerializeField]
@@ -330,6 +333,11 @@ namespace Nekoyume.UI
                                     recipeTab.enableText.text = tabNames[i];
                                 }
                             }
+                        }
+                        else
+                        {
+                            var craftable = CheckCraftableSubRecipe(equipmentRow, PremiumRecipeIndex);
+                            premiumCraftableIcon.gameObject.SetActive(craftable);
                         }
 
                         var recipeGroup = isNormalRecipe ? normalRecipeTabGroup : legendaryRecipeTabGroup;
@@ -631,7 +639,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
+        private static Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
         {
             var replacedMaterialMap = new Dictionary<int, int>();
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -898,6 +906,64 @@ namespace Nekoyume.UI
 
             errorMessage = null;
             return true;
+        }
+
+        private static bool CheckCraftableSubRecipe(
+            EquipmentItemRecipeSheet.Row equipmentRow, int index)
+        {
+            var subRecipeIds = equipmentRow.SubRecipeIds;
+            if (subRecipeIds == null || !subRecipeIds.Any())
+            {
+                return false;
+            }
+
+            var subRecipe = TableSheets.Instance.EquipmentItemSubRecipeSheetV2[subRecipeIds[index]];
+            var isUnlocked = Craft.SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id) ||
+                             TableSheets.Instance.EquipmentItemRecipeSheet[equipmentRow.Id].CRYSTAL == 0;
+            if (!isUnlocked)
+            {
+                return false;
+            }
+
+            var slots = Widget.Find<CombinationSlotsPopup>();
+            var isSlotEnough = slots.TryGetEmptyCombinationSlot(out var _);
+            if (!isSlotEnough)
+            {
+                return false;
+            }
+
+            var materialMap = new Dictionary<int, int>();
+            materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
+            foreach (var material in subRecipe.Materials)
+            {
+                materialMap.Add(material.Id, material.Count);
+            }
+
+            var replacedMaterials = GetReplacedMaterials(materialMap);
+            var sheet = TableSheets.Instance.CrystalMaterialCostSheet;
+            var costCrystal = 0 * CrystalCalculator.CRYSTAL;
+            var replaceableMaterials = true;
+            foreach (var pair in replacedMaterials)
+            {
+                try
+                {
+                    costCrystal +=
+                        CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                }
+                catch (ArgumentException)
+                {
+                    replaceableMaterials = false;
+                    continue;
+                }
+            }
+
+            var costNCG = equipmentRow.RequiredGold + subRecipe.RequiredGold;
+            var isCostEnough =
+                States.Instance.GoldBalanceState.Gold.MajorUnit >= costNCG &&
+                States.Instance.CrystalBalance.MajorUnit >= costCrystal.MajorUnit &&
+                replaceableMaterials;
+
+            return isCostEnough;
         }
     }
 }
