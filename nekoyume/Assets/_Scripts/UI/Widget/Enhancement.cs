@@ -83,6 +83,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkillPositionTooltip skillTooltip;
 
+        [SerializeField]
+        private EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll;
+
         private static readonly int HashToRegisterBase =
             Animator.StringToHash("RegisterBase");
 
@@ -321,6 +324,8 @@ namespace Nekoyume.UI
 
                     materialSlot.AddMaterial(materialModel.ItemBase);
                 }*/
+
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
 
                 var equipment = baseModel.ItemBase as Equipment;
                 if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var row))
