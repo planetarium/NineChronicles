@@ -80,11 +80,11 @@ namespace Nekoyume.UI.Module
 
         private EnhancementInventoryItem _selectedModel;
         private EnhancementInventoryItem _baseModel;
-        private EnhancementInventoryItem _materialModel;
+        private List<EnhancementInventoryItem> _materialModels = new List<EnhancementInventoryItem>();
 
         private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
-        private Action<EnhancementInventoryItem, EnhancementInventoryItem> _onUpdateView;
+        private Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> _onUpdateView;
 
         private void Awake()
         {
@@ -137,11 +137,12 @@ namespace Nekoyume.UI.Module
             _selectedItemSubType.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
         }
 
-        public (Equipment, Equipment) GetSelectedModels()
+        public (Equipment, List<Equipment>) GetSelectedModels()
         {
             var baseItem = (Equipment)_baseModel?.ItemBase;
-            var materialItem = (Equipment)_materialModel?.ItemBase;
-            return (baseItem, materialItem);
+            var materialItems = _materialModels.Select((i) => (Equipment)i.ItemBase).ToList();
+
+            return (baseItem, materialItems);
         }
 
         public string GetSubmitText()
@@ -166,9 +167,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = _selectedModel;
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
+                _selectedModel.SelectedMaterial.SetValueAndForceNotify(true);
+                _materialModels.Add(_selectedModel);
             }
 
             UpdateView();
@@ -182,10 +182,18 @@ namespace Nekoyume.UI.Module
                 _baseModel = null;
             }
 
-            _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-            _materialModel = null;
+            ClearAllMaterialModels();
 
             UpdateView();
+        }
+
+        private void ClearAllMaterialModels()
+        {
+            foreach (var model in _materialModels)
+            {
+                model?.SelectedMaterial.SetValueAndForceNotify(false);
+            }
+            _materialModels.Clear();
         }
 
         public void Select(ItemSubType itemSubType,Guid itemId)
@@ -222,17 +230,22 @@ namespace Nekoyume.UI.Module
             {
                 _baseModel.SelectedBase.SetValueAndForceNotify(false);
                 _baseModel = null;
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
+
+                ClearAllMaterialModels();
+
                 UpdateView();
                 return;
             }
-            else if (item.Equals(_materialModel)) // 재료 해제
+
+            foreach (var model in _materialModels)
             {
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
-                UpdateView();
-                return;
+                if (item.Equals(model))
+                {
+                    model.SelectedMaterial.SetValueAndForceNotify(false);
+                    _materialModels.Remove(model);
+                    UpdateView();
+                    return;
+                }
             }
 
 
@@ -248,9 +261,8 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = item;
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
+                item.SelectedMaterial.SetValueAndForceNotify(true);
+                _materialModels.Add(item);
             }
 
             UpdateView();
@@ -294,8 +306,7 @@ namespace Nekoyume.UI.Module
         private void UpdateView(bool jumpToFirst = false)
         {
             var models = GetModels();
-            DisableItem(models);
-            _onUpdateView?.Invoke(_baseModel, _materialModel);
+            _onUpdateView?.Invoke(_baseModel, _materialModels);
             scroll.UpdateData(models, jumpToFirst);
         }
 
@@ -346,7 +357,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
-            Action<EnhancementInventoryItem, EnhancementInventoryItem> onUpdateView)
+            Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView)
         {
             _onSelectItem = onSelectItem;
             _onUpdateView = onUpdateView;
