@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
@@ -19,6 +20,12 @@ namespace Nekoyume.UI
         {
             public string title;
             public string message;
+            public string resultCode;
+        }
+
+        [Serializable]
+        public class RequestCodeResult : RequestResult
+        {
             public string code;
         }
 
@@ -43,8 +50,10 @@ namespace Nekoyume.UI
         private string txId;
 
         private readonly string portalUrl;
+        private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
+        private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
 
         public PortalConnect(string url)
@@ -63,7 +72,7 @@ namespace Nekoyume.UI
         {
             _onPortalEnd = onPortalEnd;
 
-            clientSecret = GenerateClientSecret();
+            clientSecret = GetClientSecret();
             Application.OpenURL($"{portalUrl}/mobile-signin?clientSecret={clientSecret}");
         }
 
@@ -93,23 +102,74 @@ namespace Nekoyume.UI
             if (param.ContainsKey("code"))
             {
                 code = param["code"];
+                if (string.IsNullOrEmpty(code))
+                {
+                    RequestCode(OnSuccess);
+                    return;
+                }
             }
 
-            Address? address = param.ContainsKey("ncAddress") ? new Address(param["ncAddress"]) : null;
-            Widget.Find<LoginSystem>().Show(address);
-            AccessToken();
+            OnSuccess();
+
+            void OnSuccess()
+            {
+                Address? address = param.ContainsKey("ncAddress") ? new Address(param["ncAddress"]) : null;
+                Widget.Find<LoginSystem>().Show(address);
+                AccessToken();
+            }
         }
 
-        private static string GenerateClientSecret(int length = 16)
+        private static string GetClientSecret()
         {
+            if (PlayerPrefs.HasKey(ClientSecretKey))
+            {
+                return PlayerPrefs.GetString(ClientSecretKey);
+            }
+
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const int length = 16;
             var stringBuilder = new StringBuilder(length);
             for (int i = 0; i < length; i++)
             {
                 stringBuilder.Append(chars[Random.Range(0, chars.Length)]);
             }
 
-            return stringBuilder.ToString();
+            var clientSecret = stringBuilder.ToString();
+            PlayerPrefs.SetString(ClientSecretKey, clientSecret);
+            PlayerPrefs.Save();
+
+            return clientSecret;
+        }
+
+        private async void RequestCode(System.Action onSuccess)
+        {
+            var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            var form = new WWWForm();
+            var request = UnityWebRequest.Post(url, form);
+            request.timeout = Timeout;
+
+            await request.SendWebRequest();
+
+            var json = request.downloadHandler.text;
+            var data = JsonUtility.FromJson<RequestCodeResult>(json);
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                if (!string.IsNullOrEmpty(data.code))
+                {
+                    code = data.code;
+                    onSuccess.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"AccessToken Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
+            }
+            else
+            {
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
+                ShowRequestErrorPopup(data);
+            }
         }
 
         private async void AccessToken()
@@ -180,6 +240,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.txId))
                 {
                     txId = data.txId;
+                    PlayerPrefs.DeleteKey(ClientSecretKey);
                 }
                 else
                 {
@@ -197,7 +258,7 @@ namespace Nekoyume.UI
         private void ShowRequestErrorPopup(RequestResult data)
         {
             var message = $"An abnormal condition has been identified. Please try again after finishing the app.\n{data.message}";
-            message += string.IsNullOrEmpty(data.code) ? string.Empty : $"\nCode: {data.code}";
+            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nCode: {data.resultCode}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
