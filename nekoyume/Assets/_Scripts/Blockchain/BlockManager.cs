@@ -86,13 +86,12 @@ namespace Nekoyume.Blockchain
 
         public static async Task<Block> ImportBlockAsync(string path)
         {
-            // If it contains "main", it is main-net genesis block.
-            if (path.Contains("main"))
-            {
-                path = Platform.GetStreamingAssetsPath("genesis-block-9c-main");
-            }
+            // If it contains "main", it is main-net genesis block. client have to contain main-net genesis block.
+            var localPath = path.Contains("main")
+                ? Platform.GetStreamingAssetsPath("genesis-block-9c-main")
+                : path;
 #if UNITY_ANDROID
-            var loadingRequest = UnityWebRequest.Get(path);
+            var loadingRequest = UnityWebRequest.Get(localPath);
             await loadingRequest.SendWebRequest();
             if (loadingRequest.result == UnityWebRequest.Result.Success)
             {
@@ -101,9 +100,9 @@ namespace Nekoyume.Blockchain
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
 #else
-            if (File.Exists(path))
+            if (File.Exists(localPath))
             {
-                var buffer = File.ReadAllBytes(path);
+                var buffer = await File.ReadAllBytesAsync(localPath);
                 var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
