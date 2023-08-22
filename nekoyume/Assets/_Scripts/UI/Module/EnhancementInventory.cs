@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
@@ -188,31 +188,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void OnClickItem(EnhancementInventoryItem item)
-        {
-            if (item.Equals(_baseModel)) // 둘다 해제
-            {
-                _baseModel.SelectedBase.SetValueAndForceNotify(false);
-                _baseModel = null;
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
-            }
-            else if (item.Equals(_materialModel)) // 재료 해제
-            {
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
-            }
-            else
-            {
-                ClearSelectedItem();
-                _selectedModel = item;
-                _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onSelectItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
-            }
-
-            UpdateView();
-        }
-
         public void Select(ItemSubType itemSubType,Guid itemId)
         {
             var items = _equipments[itemSubType];
@@ -239,9 +214,27 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnDoubleClickItem(EnhancementInventoryItem item)
+        private void OnClickItem(EnhancementInventoryItem item)
         {
             ClearSelectedItem();
+
+            if (item.Equals(_baseModel)) // 둘다 해제
+            {
+                _baseModel.SelectedBase.SetValueAndForceNotify(false);
+                _baseModel = null;
+                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
+                _materialModel = null;
+                UpdateView();
+                return;
+            }
+            else if (item.Equals(_materialModel)) // 재료 해제
+            {
+                _materialModel.SelectedMaterial.SetValueAndForceNotify(false);
+                _materialModel = null;
+                UpdateView();
+                return;
+            }
+
 
             if (_baseModel is null)
             {
@@ -383,7 +376,6 @@ namespace Nekoyume.UI.Module
             }).AddTo(_disposables);
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
-            scroll.OnDoubleClick.Subscribe(OnDoubleClickItem).AddTo(_disposables);
         }
 
         private void AddItem(ItemBase itemBase)
