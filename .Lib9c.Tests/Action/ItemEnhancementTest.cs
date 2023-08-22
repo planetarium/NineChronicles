@@ -121,16 +121,16 @@ namespace Lib9c.Tests.Action
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, startLevel);
             if (startLevel == 0)
             {
-                equipment.exp = (long)row.Exp!;
+                equipment.Exp = (long)row.Exp!;
             }
             else
             {
-                equipment.exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
+                equipment.Exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
                     r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
                     r.Level == equipment.level).Exp;
             }
 
-            var startExp = equipment.exp;
+            var startExp = equipment.Exp;
             _avatarState.inventory.AddItem(equipment, count: 1);
 
             var expectedExpIncrement = 0L;
@@ -143,16 +143,16 @@ namespace Lib9c.Tests.Action
                     (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, materialLevel);
                 if (materialLevel == 0)
                 {
-                    material.exp = (long)row.Exp!;
+                    material.Exp = (long)row.Exp!;
                 }
                 else
                 {
-                    material.exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
+                    material.Exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
                         r.Grade == material.Grade && r.ItemSubType == material.ItemSubType &&
                         r.Level == material.level).Exp;
                 }
 
-                expectedExpIncrement += material.exp;
+                expectedExpIncrement += material.Exp;
                 _avatarState.inventory.AddItem(material, count: 1);
             }
 
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(default, resultEquipment.ItemId);
             Assert.Equal(expectedLevel, resultEquipment.level);
-            Assert.Equal(startExp + expectedExpIncrement, resultEquipment.exp);
+            Assert.Equal(startExp + expectedExpIncrement, resultEquipment.Exp);
             Assert.Equal(
                 (3_000_000 - expectedCost) * _currency,
                 nextState.GetBalance(_agentAddress, _currency)
