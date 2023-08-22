@@ -178,7 +178,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Build-Android
-          path: build/Android
+          path: build
       - name: unzip artifact for deployment
         run: |
           mkdir -p build/Android
