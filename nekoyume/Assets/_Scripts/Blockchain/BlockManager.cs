@@ -103,7 +103,7 @@ namespace Nekoyume.Blockchain
             if (File.Exists(localPath))
             {
                 var buffer = await File.ReadAllBytesAsync(localPath);
-                var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
+                var dict = (Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
 #endif

@@ -467,7 +467,7 @@ namespace Nekoyume.Blockchain
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
                 if (await GetStateAsync(
-                        StakeState.DeriveAddress(States.Instance.AgentState.address))
+                        StakeState.DeriveAddress(Address))
                     is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
@@ -503,7 +503,7 @@ namespace Nekoyume.Blockchain
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
-                var agentAddress = States.Instance.AgentState.address;
+                var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;
