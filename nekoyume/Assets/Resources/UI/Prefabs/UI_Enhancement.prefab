@@ -91480,6 +91480,11 @@ PrefabInstance:
       propertyPath: scrollOffset
       value: -0.5483871
       objectReference: {fileID: 0}
+    - target: {fileID: 6056138216070264072, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
+        type: 3}
+      propertyPath: startAxisCellCount
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6281545363620271030, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
       propertyPath: m_AnchorMax.y
