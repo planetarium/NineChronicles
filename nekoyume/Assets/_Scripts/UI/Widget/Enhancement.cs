@@ -22,6 +22,7 @@ namespace Nekoyume.UI
 {
     using Nekoyume.EnumType;
     using Nekoyume.UI.Module.Common;
+    using System.Linq;
     using UniRx;
 
     public class Enhancement : Widget
@@ -105,6 +106,7 @@ namespace Nekoyume.UI
         private EnhancementCostSheetV3 _costSheet;
         private BigInteger _costNcg = 0;
         private string _errorMessage;
+        private IOrderedEnumerable<KeyValuePair<int, EnhancementCostSheetV3.Row>> _decendingbyExpCostSheet;
 
         protected override void Awake()
         {
@@ -122,9 +124,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
-
+            _decendingbyExpCostSheet = _costSheet.OrderByDescending(r => r.Value.Exp);
             baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
-            materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
+            //materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -168,10 +170,10 @@ namespace Nekoyume.UI
 
         private void OnSubmit()
         {
-            var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
+            var (baseItem, materialItems) = enhancementInventory.GetSelectedModels();
 
             //Equip Upgragd ToDO
-/*            if (!IsInteractableButton(baseItem, materialItem))
+            if (!IsInteractableButton(baseItem, materialItems))
             {
                 NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
@@ -186,8 +188,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-            EnhancementAction(baseItem, materialItem);*/
+            EnhancementAction(baseItem, materialItems);
         }
 
         private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
@@ -224,9 +225,9 @@ namespace Nekoyume.UI
             enhancementInventory.DeselectItem(true);
         }
 
-        private bool IsInteractableButton(IItem item, IItem material)
+        private bool IsInteractableButton(IItem item, List<Equipment> materials)
         {
-            if (item is null || material is null)
+            if (item is null || materials.Count == 0)
             {
                 _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
@@ -287,10 +288,11 @@ namespace Nekoyume.UI
         private void UpdateInformation(EnhancementInventoryItem baseModel,
             List<EnhancementInventoryItem> materialModels)
         {
+            _costNcg = 0;
             if (baseModel is null)
             {
                 baseSlot.RemoveMaterial();
-                materialSlot.RemoveMaterial();
+                //materialSlot.RemoveMaterial();
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
                 animator.Play(HashToRegisterBase);
@@ -306,44 +308,49 @@ namespace Nekoyume.UI
 
                 baseSlot.AddMaterial(baseModel.ItemBase);
 
-                //Equip Upgragd ToDO
-/*                if (materialModel is null)
-                {
-                    if (materialSlot.IsExist)
-                    {
-                        animator.Play(HashToUnregisterMaterial);
-                    }
-
-                    materialSlot.RemoveMaterial();
-                }
-                else
-                {
-                    if (!materialSlot.IsExist)
-                    {
-                        animator.Play(HashToPostRegisterMaterial);
-                    }
-
-                    materialSlot.AddMaterial(materialModel.ItemBase);
-                }*/
-
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
                 if(materialModels.Count != 0)
                 {
                     enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1]);
+                    animator.Play(HashToPostRegisterMaterial);
+                    noneContainer.SetActive(false);
+                }
+                else
+                {
+                    noneContainer.SetActive(true);
                 }
 
                 var equipment = baseModel.ItemBase as Equipment;
-                if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var row))
+                if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var baseItemCostRow))
                 {
-                    return;
+                    baseItemCostRow = new EnhancementCostSheetV3.Row();
                 }
 
-                noneContainer.SetActive(false);
+                var targetExp = materialModels.Aggregate(0L, (total, m) => total + (m.ItemBase as Equipment).Exp);
+
+                EnhancementCostSheetV3.Row targetRow;
+                try
+                {
+                    targetRow = _decendingbyExpCostSheet
+                    .First(row =>
+                        row.Value.ItemSubType == equipment.ItemSubType &&
+                        row.Value.Grade == equipment.Grade &&
+                        row.Value.Exp <= targetExp
+                    ).Value;
+                }
+                catch
+                {
+                    targetRow = new EnhancementCostSheetV3.Row();
+                }
+
                 itemInformationContainer.SetActive(true);
 
                 ClearInformation();
-                _costNcg = row.Cost;
-                upgradeButton.SetCost(CostType.NCG, (long)row.Cost);
+
+
+                _costNcg = targetRow.Cost - baseItemCostRow.Cost;
+                upgradeButton.SetCost(CostType.NCG, (long)_costNcg);
+
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 
@@ -375,11 +382,11 @@ namespace Nekoyume.UI
 
                 var itemOptionInfo = new ItemOptionInfo(equipment);
 
-                if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
+                if (baseItemCostRow.BaseStatGrowthMin != 0 && baseItemCostRow.BaseStatGrowthMax != 0)
                 {
                     var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
                     var mainAdd = (int)Math.Max(1,
-                        (mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
+                        (mainValue * baseItemCostRow.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                     mainStatView.gameObject.SetActive(true);
                     mainStatView.Set(mainStatType.ToString(),
                         mainStatType.ValueToString(mainValue),
@@ -394,7 +401,7 @@ namespace Nekoyume.UI
                     var statValue = stats[i].value;
                     var count = stats[i].count;
 
-                    if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
+                    if (baseItemCostRow.ExtraStatGrowthMin == 0 && baseItemCostRow.ExtraStatGrowthMax == 0)
                     {
                         statViews[i].Set(statType.ToString(),
                             statType.ValueToString(statValue),
@@ -405,7 +412,7 @@ namespace Nekoyume.UI
                     {
                         var statAdd = Math.Max(1,
                             (int)(statValue *
-                                  row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
+                                  baseItemCostRow.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
                         statViews[i].Set(statType.ToString(),
                             statType.ValueToString(statValue),
                             $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
@@ -433,8 +440,8 @@ namespace Nekoyume.UI
                         skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Buff ||
                         skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Debuff;
 
-                    if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
-                        row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
+                    if (baseItemCostRow.ExtraSkillDamageGrowthMin == 0 && baseItemCostRow.ExtraSkillDamageGrowthMax == 0 &&
+                        baseItemCostRow.ExtraSkillChanceGrowthMin == 0 && baseItemCostRow.ExtraSkillChanceGrowthMax == 0)
                     {
                         var view = skillViews[i];
                         view.Set(skillName,
@@ -453,13 +460,13 @@ namespace Nekoyume.UI
                     {
                         var powerAdd = Math.Max(isBuff || power == 0 ? 0 : 1,
                             (int)(power *
-                                  row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
                         var ratioAdd = Math.Max(0,
                             (int)(ratio *
-                                  row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
                         var chanceAdd = Math.Max(1,
                             (int)(chance *
-                                  row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
+                                  baseItemCostRow.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
                         var totalPower = power + powerAdd;
                         var totalChance = chance + chanceAdd;
                         var totalRatio = ratio + ratioAdd;
