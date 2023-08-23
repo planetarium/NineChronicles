@@ -45,6 +45,22 @@ namespace Nekoyume.UI.Scroller
             public StatType Type;
         }
 
+        [Serializable]
+        private struct EventScheduleTab
+        {
+            public GameObject container;
+            public BlocksAndDatesPeriod blocksAndDatesPeriod;
+            public TextMeshProUGUI remainingTimeText;
+        }
+
+        [Serializable]
+        private struct OpenAllRecipeArea
+        {
+            public GameObject container;
+            public Button button;
+            public TextMeshProUGUI costText;
+        }
+
         [SerializeField]
         private GameObject viewport;
 
@@ -61,13 +77,9 @@ namespace Nekoyume.UI.Scroller
         private GameObject consumableTab;
 
         [SerializeField]
-        private GameObject eventScheduleTab;
+        private EventScheduleTab eventScheduleTab;
 
         [SerializeField]
-        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
-
-        [SerializeField]
-        private TextMeshProUGUI eventScheduleTabRemainingTimeText;
 
         [SerializeField]
         private GameObject emptyObject;
@@ -76,13 +88,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI emptyObjectText;
 
         [SerializeField]
-        private GameObject openAllRecipeArea;
-
-        [SerializeField]
-        private Button openAllRecipeButton;
-
-        [SerializeField]
-        private TextMeshProUGUI openAllRecipeCostText;
+        private OpenAllRecipeArea openAllRecipeArea;
 
         [SerializeField]
         private float animationInterval = 0.3f;
@@ -119,7 +125,7 @@ namespace Nekoyume.UI.Scroller
                 });
             }
 
-            openAllRecipeButton.onClick.AddListener(OpenEveryAvailableRecipes);
+            openAllRecipeArea.button.onClick.AddListener(OpenEveryAvailableRecipes);
         }
 
         private void OnDisable()
@@ -189,7 +195,7 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
-            eventScheduleTab.SetActive(false);
+            eventScheduleTab.container.SetActive(false);
             if (updateToggle)
             {
                 var toggle = equipmentCategoryToggles
@@ -286,11 +292,11 @@ namespace Nekoyume.UI.Scroller
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            openAllRecipeArea.SetActive(false);
+            openAllRecipeArea.container.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
-            eventScheduleTab.SetActive(false);
+            eventScheduleTab.container.SetActive(false);
             if (updateToggle)
             {
                 var toggle = consumableCategoryToggles
@@ -355,10 +361,10 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(UpdateEventScheduleEntireTime)
                 .AddTo(_disposablesAtShow);
             RxProps.EventRecipeRemainingTimeText
-                .SubscribeTo(eventScheduleTabRemainingTimeText)
+                .SubscribeTo(eventScheduleTab.remainingTimeText)
                 .AddTo(_disposablesAtShow);
 
-            openAllRecipeArea.SetActive(false);
+            openAllRecipeArea.container.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(false);
@@ -369,7 +375,7 @@ namespace Nekoyume.UI.Scroller
                 var items = Craft.SharedModel.EventConsumableRecipeMap.Values.ToList();
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
-                eventScheduleTab.SetActive(true);
+                eventScheduleTab.container.SetActive(true);
                 Show(items, true);
                 AnimateScroller();
             }
@@ -379,7 +385,7 @@ namespace Nekoyume.UI.Scroller
                 var items = Craft.SharedModel.EventMaterialRecipeMap.Values.ToList();
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
-                eventScheduleTab.SetActive(true);
+                eventScheduleTab.container.SetActive(true);
                 Show(items, true);
                 AnimateScroller();
             }
@@ -389,7 +395,7 @@ namespace Nekoyume.UI.Scroller
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
                 viewport.SetActive(false);
                 emptyObject.SetActive(true);
-                eventScheduleTab.SetActive(false);
+                eventScheduleTab.container.SetActive(false);
             }
         }
 
@@ -398,11 +404,11 @@ namespace Nekoyume.UI.Scroller
         {
             if (row is null)
             {
-                eventScheduleTabEntireBlocksAndDatesPeriod.Hide();
+                eventScheduleTab.blocksAndDatesPeriod.Hide();
                 return;
             }
 
-            eventScheduleTabEntireBlocksAndDatesPeriod.Show(
+            eventScheduleTab.blocksAndDatesPeriod.Show(
                 row.StartBlockIndex,
                 row.RecipeEndBlockIndex,
                 Game.Game.instance.Agent.BlockIndex,
@@ -416,13 +422,13 @@ namespace Nekoyume.UI.Scroller
         {
             if (row is null)
             {
-                eventScheduleTabRemainingTimeText.text = string.Empty;
+                eventScheduleTab.remainingTimeText.text = string.Empty;
                 return;
             }
 
             var value = row.RecipeEndBlockIndex - currentBlockIndex;
             var time = value.BlockRangeToTimeSpanString();
-            eventScheduleTabRemainingTimeText.text = $"{value}({time})";
+            eventScheduleTab.remainingTimeText.text = $"{value}({time})";
         }
 
         private void UpdateUnlockAllButton()
@@ -432,13 +438,13 @@ namespace Nekoyume.UI.Scroller
             _openCost = Craft.SharedModel.UnlockableRecipesOpenCost;
 
             var isActive = _unlockableRecipeIds.Any();
-            openAllRecipeArea.SetActive(isActive);
+            openAllRecipeArea.container.SetActive(isActive);
             if (isActive)
             {
-                openAllRecipeCostText.text = _openCost.ToString();
+                openAllRecipeArea.costText.text = _openCost.ToString();
 
                 var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
-                openAllRecipeCostText.color = hasEnoughBalance
+                openAllRecipeArea.costText.color = hasEnoughBalance
                     ? Palette.GetColor(ColorType.ButtonEnabled)
                     : Palette.GetColor(ColorType.ButtonDisabled);
             }
