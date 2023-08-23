@@ -848,10 +848,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 26
   m_fontSizeBase: 26
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 24
   m_fontSizeMax: 28
   m_fontStyle: 1
@@ -1289,8 +1289,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4899211836412131013}
         m_TargetAssemblyTypeName: Nekoyume.UI.Alert, Nekoyume
-        m_MethodName: Close
-        m_Mode: 6
+        m_MethodName: OnClickButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

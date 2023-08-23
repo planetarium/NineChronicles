@@ -1,21 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.LiveAsset;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class StakingPopup : PopupWidget
     {
         [SerializeField] private GameObject none;
@@ -239,6 +240,12 @@ namespace Nekoyume.UI
                                 (int)result,
                                 _benefitRates[level]);
                             break;
+                        case StakeRegularRewardSheet.StakeRewardType.Currency:
+                            interestBenefitsViews[i].Set(
+                                regular.Rewards[i].CurrencyTicker,
+                                (int)result,
+                                _benefitRates[level]);
+                            break;
                     }
                 }
             }
@@ -303,8 +310,9 @@ namespace Nekoyume.UI
                     model.HourGlassInterest = GetReward(regular, regularFixed,regular.RequiredGold, 0);
                     model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
                     model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
-                    model.GoldenMeatInterest = GetReward(regular, regularFixed, regular.RequiredGold, 3);
-                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, 4);
+
+                    model.CrystalInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetCrystalRewardIndex(regular));
+                    model.GoldenPowderInterest = GetReward(regular, regularFixed, regular.RequiredGold, GetGoldenPowderRewardIndex(regular));
                 }
 
                 model.BenefitRate = _benefitRates[level];
@@ -325,16 +333,36 @@ namespace Nekoyume.UI
             StakeRegularFixedRewardSheet.Row regularFixed,
             long deposit, int index)
         {
-            if (regular.Rewards.Count <= index)
+            if (regular.Rewards.Count <= index || index < 0)
             {
                 return 0;
             }
 
-            var result = deposit / regular.Rewards[index].Rate;
+            var result = (long)Math.Truncate(deposit / regular.Rewards[index].DecimalRate);
             var levelBonus = regularFixed.Rewards.FirstOrDefault(
                 reward => reward.ItemId == regular.Rewards[index].ItemId)?.Count ?? 0;
 
             return result + levelBonus;
+        }
+
+        private static int GetCrystalRewardIndex(StakeRegularRewardSheet.Row regular)
+        {
+            for (int i = 0; i < regular.Rewards.Count; i++)
+            {
+                if (regular.Rewards[i].CurrencyTicker == "CRYSTAL")
+                    return i;
+            }
+            return -1;
+        }
+
+        private static int GetGoldenPowderRewardIndex(StakeRegularRewardSheet.Row regular)
+        {
+            for (int i = 0; i < regular.Rewards.Count; i++)
+            {
+                if (regular.Rewards[i].ItemId == 600201)
+                    return i;
+            }
+            return -1;
         }
     }
 }
