@@ -294,6 +294,7 @@ namespace Nekoyume.UI
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
                 animator.Play(HashToRegisterBase);
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, true);
                 closeButton.interactable = true;
             }
             else
@@ -326,6 +327,10 @@ namespace Nekoyume.UI
                 }*/
 
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
+                if(materialModels.Count != 0)
+                {
+                    enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1]);
+                }
 
                 var equipment = baseModel.ItemBase as Equipment;
                 if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var row))

@@ -13,6 +13,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Animator animator;
 
+        [SerializeField]
+        private GameObject seletedObj;
+
         private static readonly int Register = Animator.StringToHash("Register");
 
         public override void UpdateContent(Model.EnhancementInventoryItem viewModel)
@@ -20,16 +23,12 @@ namespace Nekoyume.UI.Scroller
             if(viewModel == null || viewModel.ItemBase == null)
             {
                 animator.SetBool(Register, false);
+                seletedObj.SetActive(false);
                 return;
             }
-
-            itemImage.overrideSprite = viewModel.ItemBase.GetIconSprite();
+            seletedObj.SetActive(true);
             animator.SetBool(Register, true);
-        }
-
-        public void ResetSlot()
-        {
-            animator.SetBool(Register, false);
+            itemImage.overrideSprite = viewModel.ItemBase.GetIconSprite();
         }
     }
 }

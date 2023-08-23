@@ -477,7 +477,8 @@ MonoBehaviour:
   cellSize: {x: 60, y: 60}
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 1
-  fillWithNullToEmptyCellGroup: 0
+  fillWithNullToEmptyCellGroup: 1
+  fillWithNullToMinimumCount: 15
   cellTemplate: {fileID: 7000702757969056040, guid: f80eb7773aeba9043b7658c4b8d050de,
     type: 3}
 --- !u!1 &9076212337804232365
