@@ -142,6 +142,13 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var costSheetV3Address = Addresses.GetSheetAddress<EnhancementCostSheetV3>();
+            var sheetState = states.GetState(costSheetV3Address);
+            if (sheetState != null)
+            {
+                throw new ActionObsoletedException(nameof(ItemEnhancement11));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();

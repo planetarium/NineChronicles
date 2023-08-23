@@ -18,7 +18,7 @@ namespace Nekoyume.Model.Item
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
         public bool equipped;
         public int level;
-        public long exp;
+        public long Exp;
         public int optionCountFromCombination;
 
         public DecimalStat Stat { get; }
@@ -41,6 +41,7 @@ namespace Nekoyume.Model.Item
             SetId = data.SetId;
             SpineResourcePath = data.SpineResourcePath;
             MadeWithMimisbrunnrRecipe = madeWithMimisbrunnrRecipe;
+            Exp = data.Exp ?? 0L;
         }
 
         public Equipment(Dictionary serialized) : base(serialized)
@@ -66,11 +67,11 @@ namespace Nekoyume.Model.Item
             {
                 try
                 {
-                    exp = value.ToLong();
+                    Exp = value.ToLong();
                 }
                 catch (InvalidCastException)
                 {
-                    exp = (long)((Integer)value).Value;
+                    Exp = (long)((Integer)value).Value;
                 }
             }
 
@@ -125,9 +126,9 @@ namespace Nekoyume.Model.Item
                 dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
             }
 
-            if (exp > 0)
+            if (Exp > 0)
             {
-                dict = dict.SetItem(EquipmentExpKey, exp.Serialize());
+                dict = dict.SetItem(EquipmentExpKey, Exp.Serialize());
             }
 
             return dict;
@@ -351,7 +352,7 @@ namespace Nekoyume.Model.Item
         protected bool Equals(Equipment other)
         {
             return base.Equals(other) && equipped == other.equipped && level == other.level &&
-                   exp == other.exp && Equals(Stat, other.Stat) && SetId == other.SetId &&
+                   Exp == other.Exp && Equals(Stat, other.Stat) && SetId == other.SetId &&
                    SpineResourcePath == other.SpineResourcePath;
         }
 

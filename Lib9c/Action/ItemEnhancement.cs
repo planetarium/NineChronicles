@@ -322,14 +322,14 @@ namespace Nekoyume.Action
             var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
 
             // Equipment level up & Update
-            enhancementEquipment.exp +=
-                materialEquipments.Aggregate(0L, (total, m) => total + m.exp);
+            enhancementEquipment.Exp +=
+                materialEquipments.Aggregate(0L, (total, m) => total + m.Exp);
             var row = enhancementCostSheet
                 .OrderByDescending(r => r.Value.Exp)
                 .First(row =>
                     row.Value.ItemSubType == enhancementEquipment.ItemSubType &&
                     row.Value.Grade == enhancementEquipment.Grade &&
-                    row.Value.Exp <= enhancementEquipment.exp
+                    row.Value.Exp <= enhancementEquipment.Exp
                 ).Value;
 
             if (row.Level > enhancementEquipment.level)

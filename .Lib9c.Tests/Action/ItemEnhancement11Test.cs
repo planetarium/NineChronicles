@@ -15,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static Nekoyume.Action.ItemEnhancement11;
     using static SerializeKeys;
@@ -71,6 +72,9 @@ namespace Lib9c.Tests.Action
             {
                 _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            var costV3SheetAddress = Addresses.GetSheetAddress<EnhancementCostSheetV3>();
+            _initialState = _initialState.SetState(costV3SheetAddress, null);
         }
 
         [Theory]

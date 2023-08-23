@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Model.Item
             Assert.NotNull(_equipmentRow);
 
             var costume = new Equipment(_equipmentRow, Guid.NewGuid(), 0);
-            costume.exp = exp;
+            costume.Exp = exp;
             var serialized = costume.Serialize();
             var deserialized = new Equipment((Bencodex.Types.Dictionary)serialized);
             var reSerialized = deserialized.Serialize();
