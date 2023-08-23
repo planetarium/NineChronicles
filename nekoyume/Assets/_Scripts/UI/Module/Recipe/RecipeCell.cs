@@ -112,14 +112,16 @@ namespace Nekoyume.UI.Module
             {
                 consumableView.Hide();
                 IsLocked = true;
+
+                var resultItem = equipmentRow.GetResultEquipmentItemRow();
                 if (checkLocked)
                 {
-                    UpdateLocked(equipmentRow);
+                    UpdateLocked(equipmentRow, resultItem);
                 }
                 else
                 {
                     IsLocked = false;
-                    SetEquipmentView(equipmentRow);
+                    SetEquipmentView(resultItem);
                 }
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
@@ -175,9 +177,10 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void UpdateLocked(EquipmentItemRecipeSheet.Row equipmentRow)
+        public void UpdateLocked(EquipmentItemRecipeSheet.Row equipmentRow, ItemSheet.Row resultItem)
         {
             animator.Rebind();
+            lockedObject.gradeBg.sprite = recipeViewData.GetData(resultItem.Grade).BgSprite;
             lockedObject.vfxObject.SetActive(false);
             lockedObject.unlockConditionText.enabled = false;
             lockedObject.unlockInfoContainer.SetActive(false);
@@ -193,7 +196,7 @@ namespace Nekoyume.UI.Module
 
             if (equipmentRow.CRYSTAL == 0)
             {
-                SetEquipmentView(equipmentRow);
+                SetEquipmentView(resultItem);
                 IsLocked = false;
                 return;
             }
@@ -256,13 +259,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            SetEquipmentView(equipmentRow);
+            SetEquipmentView(resultItem);
             IsLocked = false;
         }
 
-        private void SetEquipmentView(EquipmentItemRecipeSheet.Row row)
+        private void SetEquipmentView(ItemSheet.Row resultItem)
         {
-            var resultItem = row.GetResultEquipmentItemRow();
             var viewData = recipeViewData.GetData(resultItem.Grade);
             gradeEffectObject.SetActive(resultItem.Grade >= 5);
             equipmentView.Show(viewData, resultItem);
@@ -295,7 +297,9 @@ namespace Nekoyume.UI.Module
             lockOpenVFXObject.SetActive(true);
             lockedObject.container.SetActive(false);
             Craft.SharedModel.DummyLockedRecipes.Remove(RecipeId);
-            SetEquipmentView(_recipeRow as EquipmentItemRecipeSheet.Row);
+            var row = _recipeRow as EquipmentItemRecipeSheet.Row;
+            var resultItem = row.GetResultEquipmentItemRow();
+            SetEquipmentView(resultItem);
         }
 
         private void SetSelected(SheetRow<int> row)
@@ -328,7 +332,8 @@ namespace Nekoyume.UI.Module
         {
             if (_recipeRow is EquipmentItemRecipeSheet.Row row)
             {
-                UpdateLocked(row);
+                var resultItem = row.GetResultEquipmentItemRow();
+                UpdateLocked(row, resultItem);
             }
         }
 
