@@ -70,13 +70,9 @@ namespace Nekoyume
 
         public const long V200040ObsoleteIndex = 7_330_000L;
 
-        // NOTE:
-        // Target Release Date: 2023-08-17T12:00:00
-        // Current Datetime(Block Index): 2023-08-09T20:30:00(7,521,470)
-        // Seconds Per Block: 9.5
-        // Estimated Release Block Index: 7,591,385
-        //     7,521,470 + (8 * 24 - 7.5) * 60 * 60 / 9.5 = 7,521,470 + 69,915 = 7,591,385
         public const long V200060ObsoleteIndex = 7_649_999L;
+
+        public const long V200061ObsoleteIndex = 7_660_000L;
 
         // While v200020, the action obsolete wasn't work well.
         // So other previous `V*ObsoletedIndex`s lost its meaning and
