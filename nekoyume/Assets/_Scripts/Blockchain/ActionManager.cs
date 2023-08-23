@@ -789,7 +789,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<ItemEnhancement>> ItemEnhancement(
             Equipment baseEquipment,
-            Equipment materialEquipment,
+            List<Equipment> materialEquipments,
             int slotIndex,
             BigInteger costNCG)
         {
@@ -801,11 +801,16 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.ItemId,
                 baseEquipment.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.ItemId,
-                materialEquipment.RequiredBlockIndex, 1);
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            foreach (var materialEquip in materialEquipments)
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
+                    materialEquip.RequiredBlockIndex, 1);
+                LocalLayerModifier.SetItemEquip(avatarAddress, materialEquip.NonFungibleId, false);
+            }
+
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
@@ -814,11 +819,11 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
-
+            
             var action = new ItemEnhancement
             {
                 itemId = baseEquipment.NonFungibleId,
-                materialId = materialEquipment.NonFungibleId,
+                materialIds = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList(),
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };

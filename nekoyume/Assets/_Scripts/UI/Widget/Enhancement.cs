@@ -102,7 +102,7 @@ namespace Nekoyume.UI
             Animator.StringToHash("Close");
 
 
-        private EnhancementCostSheetV2 _costSheet;
+        private EnhancementCostSheetV3 _costSheet;
         private BigInteger _costNcg = 0;
         private string _errorMessage;
 
@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
-            _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
 
             baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
             materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
@@ -190,7 +190,7 @@ namespace Nekoyume.UI
             EnhancementAction(baseItem, materialItem);*/
         }
 
-        private void EnhancementAction(Equipment baseItem, Equipment materialItem)
+        private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
         {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
@@ -198,11 +198,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
             if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
             {
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
-                slots.SetCaching(avatarAddress, slotIndex, true, row.SuccessRequiredBlockIndex,
+                slots.SetCaching(avatarAddress, slotIndex, true, row.RequiredBlockIndex,
                     itemUsable: baseItem);
             }
 
@@ -211,11 +211,11 @@ namespace Nekoyume.UI
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 
-            StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
+            StartCoroutine(CoCombineNPCAnimation(baseItem, row.RequiredBlockIndex, Clear));
         }
 
         private void Clear()
@@ -350,10 +350,10 @@ namespace Nekoyume.UI
                 itemNameText.text = equipment.GetLocalizedNonColoredName();
                 currentLevelText.text = $"+{equipment.level}";
                 nextLevelText.text = $"+{equipment.level + 1}";
-                successRatioText.text =
+/*                successRatioText.text =
                     ((row.GreatSuccessRatio + row.SuccessRatio).NormalizeFromTenThousandths())
                     .ToString("0%");
-                requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}";
+                requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}";*/
 
                 var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                 if (!sheet.TryGetValue(equipment.Id, out var requirementRow))

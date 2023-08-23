@@ -706,13 +706,13 @@ namespace Nekoyume.Blockchain
 
                         switch (enhancementResultModel.enhancementResult)
                         {
-                            case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                            /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                                break;
+                                break;*/
                             case Action.ItemEnhancement.EnhancementResult.Success:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
-                            case Action.ItemEnhancement.EnhancementResult.Fail:
+                            /*case Action.ItemEnhancement.EnhancementResult.Fail:
                                 Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
                                     new Dictionary<string, Value>
                                     {
@@ -725,7 +725,7 @@ namespace Nekoyume.Blockchain
                                             States.Instance.AgentState.address.ToString(),
                                     });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                                break;
+                                break;*/
                             default:
                                 Debug.LogError(
                                     $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
@@ -1089,13 +1089,13 @@ namespace Nekoyume.Blockchain
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                        break;
+                        break;*/
                     case Action.ItemEnhancement.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                    /*case Action.ItemEnhancement.EnhancementResult.Fail:
                         Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
                             new Dictionary<string, Value>
                             {
@@ -1106,7 +1106,7 @@ namespace Nekoyume.Blockchain
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                        break;
+                        break;*/
                     default:
                         Debug.LogError(
                             $"Unexpected result.enhancementResult: {result.enhancementResult}");

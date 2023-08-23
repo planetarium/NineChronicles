@@ -46,7 +46,7 @@ namespace Lib9cCommonTool.Runtime
             var subRecipeId = recipeRow.SubRecipeIds[subRecipeIndex];
             var subRecipeRow = tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId];
             var skillSheet = tableSheets.SkillSheet;
-            var enhancementCostSheetV2 = tableSheets.EnhancementCostSheetV2;
+            var enhancementCostSheetV3 = tableSheets.EnhancementCostSheetV3;
             var options = subRecipeRow.Options
                 .Select(option => tableSheets.EquipmentItemOptionSheet[option.Id])
                 .ToArray();
@@ -74,13 +74,10 @@ namespace Lib9cCommonTool.Runtime
             if (level > 0 &&
                 ItemEnhancement.TryGetRow(
                     equipment,
-                    enhancementCostSheetV2,
+                    enhancementCostSheetV3,
                     out var enhancementCostRow))
             {
-                for (var i = 0; i < level; i++)
-                {
-                    equipment.LevelUp(random, enhancementCostRow, true);
-                }
+                equipment.SetLevel(random, level, enhancementCostSheetV3);
             }
 
             return equipment;
