@@ -135,7 +135,7 @@
                     productId,
                     new FungibleAssetValue(currencyState, 100, 0),
                     blockIndex,
-                    nonFungibleItem);
+                    (ITradableItem)nonFungibleItem);
                 ShardedShopState shardedShopState =
                     new ShardedShopState(shopAddress);
                 shardedShopState.Register(si);

@@ -98,7 +98,7 @@ namespace Lib9c.Tests.Action
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                tradableItem = itemUsable;
+                tradableItem = (ITradableItem)itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
             else if (itemType == ItemType.Costume)
@@ -365,7 +365,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                itemUsable);
+                (ITradableItem)itemUsable);
             shopState.Register(shopItem);
 
             IAccountStateDelta prevState = _initialState
@@ -405,7 +405,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                itemUsable);
+                (ITradableItem)itemUsable);
             shopState.Register(shopItem);
 
             IAccountStateDelta prevState = _initialState
