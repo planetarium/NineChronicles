@@ -184,7 +184,7 @@ namespace Nekoyume.Blockchain
                 OnRenderBlock(null, getTipTask.Result);
             }
 
-            StartCoroutine(GetTip());
+            var getTipCoroutine = StartCoroutine(GetTip());
 
             if (_genesis == null)
             {
@@ -209,6 +209,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
+            yield return getTipCoroutine;
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
