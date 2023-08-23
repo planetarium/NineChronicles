@@ -1,22 +1,23 @@
-using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using Nekoyume.EnumType;
-using Nekoyume.L10n;
-using Nekoyume.State;
 using System.Numerics;
+using Coffee.UIEffects;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module.Common;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -28,6 +29,13 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : RectScrollDefaultContext
         {
+        }
+
+        private enum Filter
+        {
+            Name,
+            Level,
+            Grade,
         }
 
         [Serializable]
@@ -61,6 +69,15 @@ namespace Nekoyume.UI.Scroller
             public TextMeshProUGUI costText;
         }
 
+        [Serializable]
+        private struct SortArea
+        {
+            public GameObject container;
+            public TMP_Dropdown filter;
+            public Button button;
+            public UIFlip buttonArrow;
+        }
+
         [SerializeField]
         private GameObject viewport;
 
@@ -80,6 +97,7 @@ namespace Nekoyume.UI.Scroller
         private EventScheduleTab eventScheduleTab;
 
         [SerializeField]
+        private SortArea sortArea;
 
         [SerializeField]
         private GameObject emptyObject;
@@ -100,6 +118,9 @@ namespace Nekoyume.UI.Scroller
         private List<int> _unlockableRecipeIds = new ();
 
         private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
+
+        private readonly ReactiveProperty<Filter> _selectedFilter = new();
+        private readonly ReactiveProperty<bool> _isAscending = new();
 
         protected void Awake()
         {
@@ -124,6 +145,33 @@ namespace Nekoyume.UI.Scroller
                     ShowAsFood(type);
                 });
             }
+
+            var options = Enum.GetNames(typeof(Filter)).Select(f => f.ToString()).ToList();
+            sortArea.filter.AddOptions(options);
+            sortArea.filter.onValueChanged.AddListener(index =>
+            {
+                _selectedFilter.Value = (Filter)index;
+                AudioController.PlayClick();
+            });
+            sortArea.button.onClick.AddListener(() =>
+            {
+                _isAscending.Value = !_isAscending.Value;
+                AudioController.PlayClick();
+            });
+
+            _selectedFilter.Value = Filter.Level;
+            _isAscending.Value = true;
+
+            _selectedFilter.Subscribe(filter =>
+            {
+                _isAscending.SetValueAndForceNotify(true);
+            });
+            _isAscending.Subscribe(ascending =>
+            {
+                sortArea.buttonArrow.vertical = !_isAscending.Value;
+                // Todo : Sort with selected filter, ascending.
+                Debug.LogError($"Sort with {_selectedFilter.Value}, ascending: {_isAscending.Value}");
+            });
 
             openAllRecipeArea.button.onClick.AddListener(OpenEveryAvailableRecipes);
         }
@@ -229,6 +277,7 @@ namespace Nekoyume.UI.Scroller
 
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
             Show(items);
 
             var max = 0;
@@ -317,6 +366,7 @@ namespace Nekoyume.UI.Scroller
                 .ToList();
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
             Show(items);
 
             var max = -1;
@@ -375,6 +425,7 @@ namespace Nekoyume.UI.Scroller
                 var items = Craft.SharedModel.EventConsumableRecipeMap.Values.ToList();
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
+                sortArea.container.SetActive(true);
                 eventScheduleTab.container.SetActive(true);
                 Show(items, true);
                 AnimateScroller();
@@ -385,6 +436,7 @@ namespace Nekoyume.UI.Scroller
                 var items = Craft.SharedModel.EventMaterialRecipeMap.Values.ToList();
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
+                sortArea.container.SetActive(true);
                 eventScheduleTab.container.SetActive(true);
                 Show(items, true);
                 AnimateScroller();
@@ -395,6 +447,7 @@ namespace Nekoyume.UI.Scroller
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
                 viewport.SetActive(false);
                 emptyObject.SetActive(true);
+                sortArea.container.SetActive(false);
                 eventScheduleTab.container.SetActive(false);
             }
         }
