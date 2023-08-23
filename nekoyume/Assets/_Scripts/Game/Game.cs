@@ -22,6 +22,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -142,6 +143,8 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
+        public PortalConnect PortalConnect => portalConnect;
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -163,7 +166,7 @@ namespace Nekoyume.Game
         private Thread _headlessThread;
         private Thread _marketThread;
 
-        private DeepLinkHandler _deepLinkHandler;
+        private PortalConnect portalConnect;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -263,7 +266,6 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
 #if ENABLE_FIREBASE
@@ -323,6 +325,10 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
+#if UNITY_ANDROID
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
+#endif
+
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -358,10 +364,12 @@ namespace Nekoyume.Game
             }
 #endif
 
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
             yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
 #if UNITY_ANDROID
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
             IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
             yield return IAPServiceManager.InitializeAsync().AsCoroutine();
             IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
@@ -369,6 +377,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() IAPStoreManager initialized");
 #endif
             // Initialize MainCanvas second
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
@@ -388,6 +397,7 @@ namespace Nekoyume.Game
             Arena.Initialize();
             RaidStage.Initialize();
             // Initialize D:CC NFT data
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.LoadDcc);
             yield return StartCoroutine(CoInitDccAvatar());
             yield return StartCoroutine(CoInitDccConnecting());
 
@@ -405,6 +415,7 @@ namespace Nekoyume.Game
                 out var appProtocolVersion);
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
 
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ProgressCompleted);
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
@@ -529,7 +540,7 @@ namespace Nekoyume.Game
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<IntroScreen>().IsActive() ||
-                Widget.Find<PreloadingScreen>().IsActive() ||
+                Widget.Find<GrayLoadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
                 // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
@@ -670,34 +681,35 @@ namespace Nekoyume.Game
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
+
+                if (!States.PledgeRequested)
+                {
+                    var clickRetry = false;
+                    var popup = Widget.Find<TitleOneButtonSystem>();
+                    popup.Show("Time Out", "Please try again", "Retry", false);
+                    popup.SubmitCallback = () => clickRetry = true;
+                    yield return new WaitUntil(() => clickRetry);
+                }
             }
 
 #if UNITY_ANDROID
-            // Check MeadPledge
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
                 if (!States.PledgeRequested)
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.RequestPledge);
 
                     while (!States.PledgeRequested)
                     {
-                        _deepLinkHandler.OpenPortal(States.AgentState.address);
+                        yield return portalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
-                        if (!States.PledgeRequested)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
                     }
                 }
 
                 if (States.PledgeRequested && !States.PledgeApproved)
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ApprovePledge);
 
                     while (!States.PledgeApproved)
                     {
@@ -705,19 +717,12 @@ namespace Nekoyume.Game
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
                         yield return SetTimeOut(() => States.PledgeApproved);
-                        if (!States.PledgeApproved)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
                     }
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
-                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
             }
 #endif
             yield break;
@@ -795,9 +800,7 @@ namespace Nekoyume.Game
             {
                 IsInitialized = true;
                 Widget.Find<IntroScreen>().Close();
-                Widget.Find<GrayLoadingScreen>().Close();
-                Widget.Find<PreloadingScreen>().Show();
-                StartCoroutine(ClosePreloadingScene(4));
+                EnterNext();
             }
             else
             {
@@ -805,10 +808,62 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator ClosePreloadingScene(float time)
+        private static async void EnterNext()
         {
-            yield return new WaitForSeconds(time);
-            Widget.Find<PreloadingScreen>().Close();
+            if (!GameConfig.IsEditor)
+            {
+                if (States.Instance.AgentState.avatarAddresses.Any() &&
+                    States.Instance.AvatarStates.Any(x => x.Value.level > 49) &&
+                    Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var loadingScreen = Widget.Find<DataLoadingScreen>();
+                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    loadingScreen.Show();
+                    await RxProps.SelectAvatarAsync(slotIndex);
+                    loadingScreen.Close();
+                    Event.OnRoomEnter.Invoke(false);
+                    Event.OnUpdateAddresses.Invoke();
+                }
+                else
+                {
+                    Widget.Find<Synopsis>().Show();
+                }
+            }
+            else
+            {
+                PlayerFactory.Create();
+
+                if (Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var avatarState = States.Instance.AvatarStates[slotIndex];
+                    if (avatarState?.inventory == null ||
+                        avatarState.questList == null ||
+                        avatarState.worldInformation == null)
+                    {
+                        EnterLogin();
+                    }
+                    else
+                    {
+                        await RxProps.SelectAvatarAsync(slotIndex);
+                        Event.OnRoomEnter.Invoke(false);
+                        Event.OnUpdateAddresses.Invoke();
+                    }
+                }
+                else
+                {
+                    EnterLogin();
+                }
+            }
+
+            Widget.Find<GrayLoadingScreen>().Close();
+        }
+
+        private static void EnterLogin()
+        {
+            Widget.Find<Login>().Show();
+            Event.OnNestEnter.Invoke();
         }
 
         #endregion
@@ -996,7 +1051,7 @@ namespace Nekoyume.Game
             {
                 if (loginPopup.CheckLocalPassphrase())
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
                 }
                 else
                 {

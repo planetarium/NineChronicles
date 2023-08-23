@@ -29,9 +29,9 @@ namespace Nekoyume.UI
         public void ShowAndQuit(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
 #if UNITY_EDITOR
-            CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
+            SubmitCallback = UnityEditor.EditorApplication.ExitPlaymode;
 #else
-            CloseCallback = UnityEngine.Application.Quit;
+            SubmitCallback = UnityEngine.Application.Quit;
 #endif
             Show(title, content, labelOK, localize);
         }

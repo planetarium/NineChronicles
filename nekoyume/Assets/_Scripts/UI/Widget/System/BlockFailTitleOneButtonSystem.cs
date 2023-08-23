@@ -22,16 +22,16 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_OK"), false);
             StartCoroutine(CoCheckBlockIndex(idx));
 #if UNITY_EDITOR
-            CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
+            SubmitCallback = UnityEditor.EditorApplication.ExitPlaymode;
 #else
-            CloseCallback = () => Application.Quit(21);
+            SubmitCallback = () => Application.Quit(21);
 #endif
         }
 
         private IEnumerator CoCheckBlockIndex(long blockIndex)
         {
             yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == blockIndex);
-            CloseCallback = null;
+            SubmitCallback = null;
             Close();
         }
     }

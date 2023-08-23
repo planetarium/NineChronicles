@@ -20,7 +20,7 @@
               <action android:name="android.intent.action.VIEW"/>
               <category android:name="android.intent.category.DEFAULT"/>
               <category android:name="android.intent.category.BROWSABLE"/>
-              <data android:scheme="ninechronicles-launcher" android:host="request-pledge"/>
+              <data android:scheme="ninechronicles-launcher" android:host="mobile-login"/>
             </intent-filter>
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
         </activity>
