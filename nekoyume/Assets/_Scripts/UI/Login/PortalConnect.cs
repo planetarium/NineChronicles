@@ -74,6 +74,7 @@ namespace Nekoyume.UI
 
             clientSecret = GetClientSecret();
             Application.OpenURL($"{portalUrl}/mobile-signin?clientSecret={clientSecret}");
+            Analyzer.Instance.Track("Unity/Portal/1");
         }
 
         private void OnDeepLinkActivated(string url)
@@ -90,6 +91,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            Analyzer.Instance.Track("Unity/Portal/2");
 
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
@@ -143,6 +146,8 @@ namespace Nekoyume.UI
 
         private async void RequestCode(System.Action onSuccess)
         {
+            Analyzer.Instance.Track("Unity/Portal/3");
+
             var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
@@ -263,6 +268,7 @@ namespace Nekoyume.UI
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
             popup.SubmitCallback = Application.Quit;
+            Analyzer.Instance.Track("Unity/Portal/0");
         }
     }
 }
