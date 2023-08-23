@@ -743,7 +743,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                NotificationSystem.CancelReserve(result.itemUsable.TradableId);
+                NotificationSystem.CancelReserve(result.itemUsable.ItemId);
                 NotificationSystem.Push(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
@@ -877,7 +877,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
                 if (blockCount >= WorkshopNotifiedBlockCount)
@@ -944,7 +944,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -991,7 +991,7 @@ namespace Nekoyume.Blockchain
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
-                result.itemUsable.TradableId);
+                result.itemUsable.ItemId);
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
@@ -1056,7 +1056,7 @@ namespace Nekoyume.Blockchain
                     .Forget();
                 LocalLayerModifier.AddItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
                 foreach (var tradableId in result.materialItemIdList)
@@ -1075,7 +1075,7 @@ namespace Nekoyume.Blockchain
 
                 LocalLayerModifier.RemoveItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -1119,7 +1119,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
                 if (blockCount >= WorkshopNotifiedBlockCount)
