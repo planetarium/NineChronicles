@@ -138,6 +138,8 @@ namespace Nekoyume.Game
 
         public EnhancementCostSheetV2 EnhancementCostSheetV2 { get; private set; }
 
+        public EnhancementCostSheetV3 EnhancementCostSheetV3 { get; private set; }
+
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; private set; }
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }

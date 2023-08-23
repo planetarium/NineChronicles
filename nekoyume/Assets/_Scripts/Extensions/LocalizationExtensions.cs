@@ -102,13 +102,13 @@ namespace Nekoyume
                         case ItemEnhancement.ResultModel result:
                             switch (result.enhancementResult)
                             {
-                                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                /*case ItemEnhancement.EnhancementResult.GreatSuccess:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
-                                    break;
+                                    break;*/
                                 case ItemEnhancement.EnhancementResult.Success:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
-                                case ItemEnhancement.EnhancementResult.Fail:
+                                /*case ItemEnhancement.EnhancementResult.Fail:
                                     if (result.CRYSTAL.MajorUnit > 0)
                                     {
                                         failAndGainCrystal = true;
@@ -119,7 +119,7 @@ namespace Nekoyume
                                         formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
                                     }
 
-                                    break;
+                                    break;*/
                                 default:
                                     Debug.LogError(
                                         $"Unexpected result.enhancementResult: {result.enhancementResult}");

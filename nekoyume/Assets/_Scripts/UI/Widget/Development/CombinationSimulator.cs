@@ -213,7 +213,7 @@ namespace Nekoyume.UI
             var task = Task.Run(() =>
             {
                 var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-                foreach (var row in sheet)
+/*                foreach (var row in sheet)
                 {
                     var counts = new Dictionary<ItemEnhancement.EnhancementResult, int>()
                     {
@@ -232,7 +232,7 @@ namespace Nekoyume.UI
                               $"<color=#0078FF>[Success] {(row.SuccessRatio.NormalizeFromTenThousandths()):P2}</color> --> <color=#00A4FF>{(counts[ItemEnhancement.EnhancementResult.Success] / (float)count):P2}</color> / " +
                               $"<color=#FF1800>[Fail] {(row.FailRatio.NormalizeFromTenThousandths()):P2}</color> --> <color=#F16558>{(counts[ItemEnhancement.EnhancementResult.Fail] / (float)count):P2}</color>");
                 }
-
+*/
                 return true;
             });
 
