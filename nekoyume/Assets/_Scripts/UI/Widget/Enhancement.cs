@@ -85,6 +85,15 @@ namespace Nekoyume.UI
         private SkillPositionTooltip skillTooltip;
 
         [SerializeField]
+        private Slider expSlider;
+
+        [SerializeField]
+        private TextMeshProUGUI sliderPercentText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelStateText;
+
+        [SerializeField]
         private EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll;
 
         private static readonly int HashToRegisterBase =
@@ -200,12 +209,26 @@ namespace Nekoyume.UI
             }
 
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
-            if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
+
+            var targetExp = baseItem.Exp + materialItems.Aggregate(0L, (total, m) => total + m.Exp);
+            EnhancementCostSheetV3.Row targetRow;
+            try
             {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                slots.SetCaching(avatarAddress, slotIndex, true, row.RequiredBlockIndex,
-                    itemUsable: baseItem);
+                targetRow = _decendingbyExpCostSheet
+                .First(row =>
+                    row.Value.ItemSubType == baseItem.ItemSubType &&
+                    row.Value.Grade == baseItem.Grade &&
+                    row.Value.Exp <= targetExp
+                ).Value;
             }
+            catch
+            {
+                targetRow = new EnhancementCostSheetV3.Row();
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            slots.SetCaching(avatarAddress, slotIndex, true, targetRow.RequiredBlockIndex,
+                itemUsable: baseItem);
 
             NotificationSystem.Push(MailType.Workshop,
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
@@ -216,7 +239,7 @@ namespace Nekoyume.UI
 
             enhancementInventory.DeselectItem(true);
 
-            StartCoroutine(CoCombineNPCAnimation(baseItem, row.RequiredBlockIndex, Clear));
+            StartCoroutine(CoCombineNPCAnimation(baseItem, targetRow.RequiredBlockIndex, Clear));
         }
 
         private void Clear()
@@ -273,6 +296,11 @@ namespace Nekoyume.UI
             successRatioText.text = "0%";
             requiredBlockIndexText.text = "0";
 
+            expSlider.value = 0;
+            sliderPercentText.text = "0%";
+
+            levelStateText.text = string.Empty;
+
             mainStatView.gameObject.SetActive(false);
             foreach (var stat in statViews)
             {
@@ -298,6 +326,7 @@ namespace Nekoyume.UI
                 animator.Play(HashToRegisterBase);
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels, true);
                 closeButton.interactable = true;
+                ClearInformation();
             }
             else
             {
@@ -326,7 +355,7 @@ namespace Nekoyume.UI
                     baseItemCostRow = new EnhancementCostSheetV3.Row();
                 }
 
-                var targetExp = materialModels.Aggregate(0L, (total, m) => total + (m.ItemBase as Equipment).Exp);
+                var targetExp = (baseModel.ItemBase as Equipment).Exp + materialModels.Aggregate(0L, (total, m) => total + (m.ItemBase as Equipment).Exp);
 
                 EnhancementCostSheetV3.Row targetRow;
                 try
@@ -340,7 +369,7 @@ namespace Nekoyume.UI
                 }
                 catch
                 {
-                    targetRow = new EnhancementCostSheetV3.Row();
+                    targetRow = baseItemCostRow;
                 }
 
                 itemInformationContainer.SetActive(true);
@@ -356,13 +385,39 @@ namespace Nekoyume.UI
 
                 itemNameText.text = equipment.GetLocalizedNonColoredName();
                 currentLevelText.text = $"+{equipment.level}";
-                nextLevelText.text = $"+{equipment.level + 1}";
-/*                successRatioText.text =
-                    ((row.GreatSuccessRatio + row.SuccessRatio).NormalizeFromTenThousandths())
-                    .ToString("0%");
-                requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}";*/
+                nextLevelText.text = $"+{targetRow.Level}";
 
-                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                var targetRangeRows = _costSheet.Values.
+                    Where((r) =>
+                    r.Grade == equipment.Grade &&
+                    r.ItemSubType == equipment.ItemSubType &&
+                    equipment.level <= r.Level &&
+                    r.Level <= targetRow.Level + 1
+                    ).ToList();
+
+                if(equipment.level == 0)
+                {
+                    targetRangeRows.Insert(0, new EnhancementCostSheetV3.Row());
+                }
+
+                if(targetRangeRows.Count < 2)
+                {
+                    Debug.LogError("[Enhancement] Faild Get TargetRangeRows");
+                }
+                else
+                {
+                    var nextExp = targetRangeRows[targetRangeRows.Count - 1].Exp;
+                    var prevExp = targetRangeRows[targetRangeRows.Count - 2].Exp;
+                    var lerp = Mathf.InverseLerp(prevExp, nextExp, targetExp);
+                    expSlider.value = lerp;
+                    sliderPercentText.text = $"{(int)(lerp * 100)}%";
+                }
+                
+                levelStateText.text = $"Lv. {targetRow.Level}/{ItemEnhancement.GetEquipmentMaxLevel(equipment, _costSheet)}";
+
+                //expSlider
+
+/*                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                 if (!sheet.TryGetValue(equipment.Id, out var requirementRow))
                 {
                     levelText.enabled = false;
@@ -378,7 +433,7 @@ namespace Nekoyume.UI
                         : Palette.GetColor(EnumType.ColorType.TextDenial);
 
                     levelText.enabled = true;
-                }
+                }*/
 
                 var itemOptionInfo = new ItemOptionInfo(equipment);
 

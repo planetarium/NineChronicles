@@ -3152,6 +3152,9 @@ MonoBehaviour:
   itemInformationContainer: {fileID: 9033703093585415908}
   animator: {fileID: 571921049296418333}
   skillTooltip: {fileID: 5353099750564427836}
+  expSlider: {fileID: 4356530646812621283}
+  sliderPercentText: {fileID: 6034277302818658809}
+  levelStateText: {fileID: 1840477575236701054}
   enhancementSelectedMaterialItemScroll: {fileID: 6896149981698751506}
 --- !u!1 &573877729677872940
 GameObject:
@@ -18811,8 +18814,6 @@ GameObject:
   - component: {fileID: 8114056711665152576}
   - component: {fileID: 6625531009353882730}
   - component: {fileID: 6034277302818658809}
-  - component: {fileID: 2981972442443349417}
-  - component: {fileID: 158419013184273006}
   m_Layer: 5
   m_Name: PercentText
   m_TagString: Untagged
@@ -18937,51 +18938,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2981972442443349417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3442107454597374021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 35
-  l10nKey: 
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
---- !u!114 &158419013184273006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3442107454597374021}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 0
 --- !u!1 &3460054378870264817
 GameObject:
   m_ObjectHideFlags: 0
@@ -30576,7 +30532,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.000015, y: -30}
+  m_AnchoredPosition: {x: 10.0000305, y: -30}
   m_SizeDelta: {x: -20, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6815232031930088218
@@ -72253,7 +72209,22 @@ PrefabInstance:
     - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_margin.x
+      value: -6.4098434
+      objectReference: {fileID: 0}
+    - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_margin.z
+      value: -3.6229706
+      objectReference: {fileID: 0}
+    - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_fontSizeMin
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1444397434721364587, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
@@ -74364,7 +74335,7 @@ PrefabInstance:
     - target: {fileID: 6937746025776212025, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 10.000015
+      value: 10.0000305
       objectReference: {fileID: 0}
     - target: {fileID: 6937746025776212025, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
