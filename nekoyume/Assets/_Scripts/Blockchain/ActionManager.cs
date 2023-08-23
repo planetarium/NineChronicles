@@ -799,9 +799,9 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.TradableId,
+            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.ItemId,
                 baseEquipment.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.TradableId,
+            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.ItemId,
                 materialEquipment.RequiredBlockIndex, 1);
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
@@ -1172,8 +1172,11 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
-                    equipment.RequiredBlockIndex, 1);
+                LocalLayerModifier.RemoveItem(
+                    avatarAddress,
+                    equipment.ItemId,
+                    equipment.RequiredBlockIndex,
+                    1);
             });
 
             if (chargeAp)
