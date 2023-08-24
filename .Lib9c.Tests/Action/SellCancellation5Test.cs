@@ -124,7 +124,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 requiredBlockIndex,
-                (ITradableItem)nonFungibleItem);
+                nonFungibleItem);
 
             if (contain)
             {
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                (ITradableItem)itemUsable);
+                itemUsable);
 
             IAccountStateDelta prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
@@ -279,7 +279,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                (ITradableItem)itemUsable);
+                itemUsable);
             shopState.Register(shopItem);
 
             IAccountStateDelta prevState = _initialState
@@ -319,7 +319,7 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                (ITradableItem)itemUsable);
+                itemUsable);
             shopState.Register(shopItem);
 
             IAccountStateDelta prevState = _initialState

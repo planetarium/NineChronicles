@@ -10,10 +10,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Consumable : ItemUsable, ITradableItem
+    public class Consumable : ItemUsable
     {
-        public Guid TradableId => ItemId;
-
         public StatType MainStat => Stats.Any() ? Stats[0].StatType : StatType.NONE;
 
         public List<DecimalStat> Stats { get; }

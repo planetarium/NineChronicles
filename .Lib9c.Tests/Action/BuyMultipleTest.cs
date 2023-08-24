@@ -275,7 +275,7 @@
                     shopItemId,
                     new FungibleAssetValue(_goldCurrencyState.Currency, product.Price, 0),
                     product.RequiredBlockIndex,
-                    (ITradableItem)nonFungibleItem);
+                    nonFungibleItem);
                 shopState.Register(shopItem);
 
                 if (product.Buy)
@@ -504,7 +504,7 @@
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 1, 0),
                 100,
-                (ITradableItem)equipment));
+                equipment));
 
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
@@ -574,7 +574,7 @@
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 10,
-                (ITradableItem)equipment));
+                equipment));
 
             previousStates = previousStates
                 .SetState(Addresses.Shop, shopState.Serialize());

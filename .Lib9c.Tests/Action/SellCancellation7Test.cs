@@ -110,7 +110,7 @@
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                tradableItem = (ITradableItem)itemUsable;
+                tradableItem = itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
             else if (itemType == ItemType.Costume)
@@ -411,7 +411,7 @@
                 avatarAddress,
                 orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                itemUsable.ItemId,
+                itemUsable.TradableId,
                 0,
                 itemUsable.ItemSubType,
                 1
@@ -421,7 +421,7 @@
                 order.StartedBlockIndex,
                 order.ExpiredBlockIndex,
                 orderId,
-                itemUsable.ItemId,
+                itemUsable.TradableId,
                 order.Price,
                 0,
                 0,
@@ -439,7 +439,7 @@
                 orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemUsable.ItemSubType,
-                tradableId = itemUsable.ItemId,
+                tradableId = itemUsable.TradableId,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
