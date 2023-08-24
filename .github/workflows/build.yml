@@ -13,6 +13,10 @@ on:
   workflow_dispatch:
     inputs:
 
+permissions:
+    id-token: write
+    contents: read
+
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -143,7 +147,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GitHubActions-${{ github.run_id }}
-          role-duration-seconds: 3000
+          role-duration-seconds: 1200
           aws-region: ap-northeast-2
 
       - name: release
@@ -175,7 +179,7 @@ jobs:
         with:
             role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
             role-session-name: GitHubActions-${{ github.run_id }}
-            role-duration-seconds: 3000
+            role-duration-seconds: 600
             aws-region: ap-northeast-2
 
       - name: update-latest-metadata
