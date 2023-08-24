@@ -96,6 +96,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll;
 
+        [SerializeField]
+        private TextMeshProUGUI currentEquipmentCP;
+        [SerializeField]
+        private TextMeshProUGUI nextEquipmentCP;
+
         private static readonly int HashToRegisterBase =
             Animator.StringToHash("RegisterBase");
 
@@ -313,6 +318,11 @@ namespace Nekoyume.UI
             }
         }
 
+        private int UpgradeStat(int baseStat, int upgradeStat)
+        {
+            return Nekoyume.Battle.CPHelper.DecimalToInt(Math.Max(1.0m, baseStat * upgradeStat.NormalizeFromTenThousandths()));
+        }
+
         private void UpdateInformation(EnhancementInventoryItem baseModel,
             List<EnhancementInventoryItem> materialModels)
         {
@@ -415,28 +425,92 @@ namespace Nekoyume.UI
                 
                 levelStateText.text = $"Lv. {targetRow.Level}/{ItemEnhancement.GetEquipmentMaxLevel(equipment, _costSheet)}";
 
-                //expSlider
+                //check Current CP
+                currentEquipmentCP.text = Nekoyume.Battle.CPHelper.GetCP(equipment).ToString();
 
-/*                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-                if (!sheet.TryGetValue(equipment.Id, out var requirementRow))
+                if(equipment.level == targetRow.Level)
                 {
-                    levelText.enabled = false;
+                    nextEquipmentCP.text = currentEquipmentCP.text;
                 }
                 else
                 {
-                    levelText.text =
-                        L10nManager.Localize("UI_REQUIRED_LEVEL", requirementRow.Level);
-                    var hasEnoughLevel =
-                        States.Instance.CurrentAvatarState.level >= requirementRow.Level;
-                    levelText.color = hasEnoughLevel
-                        ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                        : Palette.GetColor(EnumType.ColorType.TextDenial);
+                    var itemOptionInfo = new ItemOptionInfo(equipment);
 
-                    levelText.enabled = true;
-                }*/
+                    var baseStatMin = itemOptionInfo.MainStat.baseValue;
+                    var baseStatMax = itemOptionInfo.MainStat.baseValue;
 
-                var itemOptionInfo = new ItemOptionInfo(equipment);
+                    var statOptionsMin = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
+                    var statOptionsMax = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
 
+                    var skillChancesMin = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                    var skillChancesMax = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                    var skillPowersMin = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                    var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                    var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+                    var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+
+                    int targetRequiredBlockIndex = 0;
+                    int targetBaseStatGrowthMin = 0;
+                    int targetBaseStatGrowthMax = 0;
+                    int targetExtraStatGrowthMin = 0;
+                    int targetExtraStatGrowthMax = 0;
+                    int targetExtraSkillDamageGrowthMin = 0;
+                    int targetExtraSkillDamageGrowthMax = 0;
+                    int targetExtraSkillChanceGrowthMin = 0;
+                    int targetExtraSkillChanceGrowthMax = 0;
+
+                    for (int i = 1; i < targetRangeRows.Count; i++)
+                    {
+                        targetRequiredBlockIndex += targetRangeRows[i].RequiredBlockIndex;
+
+                        targetBaseStatGrowthMin += targetRangeRows[i].BaseStatGrowthMin;
+                        targetBaseStatGrowthMax += targetRangeRows[i].BaseStatGrowthMax;
+
+                        targetExtraStatGrowthMin += targetRangeRows[i].ExtraStatGrowthMin;
+                        targetExtraStatGrowthMax += targetRangeRows[i].ExtraStatGrowthMax;
+
+                        targetExtraSkillDamageGrowthMin += targetRangeRows[i].ExtraSkillDamageGrowthMin;
+                        targetExtraSkillDamageGrowthMax += targetRangeRows[i].ExtraSkillDamageGrowthMax;
+
+                        targetExtraSkillChanceGrowthMin += targetRangeRows[i].ExtraSkillChanceGrowthMin;
+                        targetExtraSkillChanceGrowthMax += targetRangeRows[i].ExtraSkillChanceGrowthMax;
+
+                        baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
+                        baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
+
+                        for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
+                        {
+                            statOptionsMin[statIndex] += UpgradeStat(statOptionsMin[statIndex], targetRangeRows[i].ExtraStatGrowthMin);
+                            statOptionsMax[statIndex] += UpgradeStat(statOptionsMax[statIndex], targetRangeRows[i].ExtraStatGrowthMax);
+                        }
+
+                        for (int skillIndex = 0; skillIndex < itemOptionInfo.SkillOptions.Count; skillIndex++)
+                        {
+                            skillChancesMin[skillIndex] += UpgradeStat(skillChancesMin[skillIndex], targetRangeRows[i].ExtraSkillChanceGrowthMin);
+                            skillChancesMax[skillIndex] += UpgradeStat(skillChancesMax[skillIndex], targetRangeRows[i].ExtraSkillChanceGrowthMax);
+
+                            skillPowersMin[skillIndex] += UpgradeStat(skillPowersMin[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMin);
+                            skillPowersMax[skillIndex] += UpgradeStat(skillPowersMax[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMax);
+
+                            skillStatPowerRatioMin[skillIndex] += UpgradeStat(skillStatPowerRatioMin[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMin);
+                            skillStatPowerRatioMax[skillIndex] += UpgradeStat(skillStatPowerRatioMax[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMax);
+                        }
+                    }
+
+                    decimal nextCp = 0m;
+                    nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.MainStat.type, baseStatMax);
+                    for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
+                    {
+                        nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.StatOptions[statIndex].type, statOptionsMax[statIndex]);
+                    }
+                    nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
+                    nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
+                }
+
+
+
+
+/*
                 if (baseItemCostRow.BaseStatGrowthMin != 0 && baseItemCostRow.BaseStatGrowthMax != 0)
                 {
                     var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
@@ -548,6 +622,7 @@ namespace Nekoyume.UI
                         });
                     }
                 }
+*/
             }
         }
     }
