@@ -428,37 +428,30 @@ namespace Nekoyume.UI
                 //check Current CP
                 currentEquipmentCP.text = Nekoyume.Battle.CPHelper.GetCP(equipment).ToString();
 
-                if(equipment.level == targetRow.Level)
+                var itemOptionInfo = new ItemOptionInfo(equipment);
+                var baseStatMin = itemOptionInfo.MainStat.baseValue;
+                var baseStatMax = itemOptionInfo.MainStat.baseValue;
+                var statOptionsMin = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
+                var statOptionsMax = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
+                var skillChancesMin = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                var skillChancesMax = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                var skillPowersMin = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+                var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+
+                int targetRequiredBlockIndex = 0;
+                int targetBaseStatGrowthMin = 0;
+                int targetBaseStatGrowthMax = 0;
+                int targetExtraStatGrowthMin = 0;
+                int targetExtraStatGrowthMax = 0;
+                int targetExtraSkillDamageGrowthMin = 0;
+                int targetExtraSkillDamageGrowthMax = 0;
+                int targetExtraSkillChanceGrowthMin = 0;
+                int targetExtraSkillChanceGrowthMax = 0;
+
+                if(equipment.level != targetRow.Level)
                 {
-                    nextEquipmentCP.text = currentEquipmentCP.text;
-                }
-                else
-                {
-                    var itemOptionInfo = new ItemOptionInfo(equipment);
-
-                    var baseStatMin = itemOptionInfo.MainStat.baseValue;
-                    var baseStatMax = itemOptionInfo.MainStat.baseValue;
-
-                    var statOptionsMin = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
-                    var statOptionsMax = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
-
-                    var skillChancesMin = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
-                    var skillChancesMax = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
-                    var skillPowersMin = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
-                    var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
-                    var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
-                    var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
-
-                    int targetRequiredBlockIndex = 0;
-                    int targetBaseStatGrowthMin = 0;
-                    int targetBaseStatGrowthMax = 0;
-                    int targetExtraStatGrowthMin = 0;
-                    int targetExtraStatGrowthMax = 0;
-                    int targetExtraSkillDamageGrowthMin = 0;
-                    int targetExtraSkillDamageGrowthMax = 0;
-                    int targetExtraSkillChanceGrowthMin = 0;
-                    int targetExtraSkillChanceGrowthMax = 0;
-
                     for (int i = 1; i < targetRangeRows.Count; i++)
                     {
                         targetRequiredBlockIndex += targetRangeRows[i].RequiredBlockIndex;
@@ -496,133 +489,146 @@ namespace Nekoyume.UI
                             skillStatPowerRatioMax[skillIndex] += UpgradeStat(skillStatPowerRatioMax[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMax);
                         }
                     }
-
-                    decimal nextCp = 0m;
-                    nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.MainStat.type, baseStatMax);
-                    for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
-                    {
-                        nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.StatOptions[statIndex].type, statOptionsMax[statIndex]);
-                    }
-                    nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
-                    nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
                 }
-
-
-
-
-/*
-                if (baseItemCostRow.BaseStatGrowthMin != 0 && baseItemCostRow.BaseStatGrowthMax != 0)
+                decimal nextCp = 0m;
+                nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.MainStat.type, baseStatMax);
+                for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
                 {
-                    var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
-                    var mainAdd = (int)Math.Max(1,
-                        (mainValue * baseItemCostRow.BaseStatGrowthMax.NormalizeFromTenThousandths()));
-                    mainStatView.gameObject.SetActive(true);
-                    mainStatView.Set(mainStatType.ToString(),
-                        mainStatType.ValueToString(mainValue),
-                        $"(<size=80%>max</size> +{mainStatType.ValueToString(mainAdd)})");
+                    nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.StatOptions[statIndex].type, statOptionsMax[statIndex]);
                 }
+                nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
+                nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
 
-                var stats = itemOptionInfo.StatOptions;
-                for (var i = 0; i < stats.Count; i++)
+
+                //StatView
+                mainStatView.gameObject.SetActive(true);
+                mainStatView.Set(itemOptionInfo.MainStat.type.ToString(),
+                    itemOptionInfo.MainStat.type.ValueToString(itemOptionInfo.MainStat.baseValue),
+                    $"{baseStatMin.ToCurrencyNotation()} ~ {baseStatMax.ToCurrencyNotation()}");
+
+                for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
                 {
-                    statViews[i].gameObject.SetActive(true);
-                    var statType = stats[i].type;
-                    var statValue = stats[i].value;
-                    var count = stats[i].count;
-
-                    if (baseItemCostRow.ExtraStatGrowthMin == 0 && baseItemCostRow.ExtraStatGrowthMax == 0)
-                    {
-                        statViews[i].Set(statType.ToString(),
-                            statType.ValueToString(statValue),
-                            string.Empty,
-                            count);
-                    }
-                    else
-                    {
-                        var statAdd = Math.Max(1,
-                            (int)(statValue *
-                                  baseItemCostRow.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
-                        statViews[i].Set(statType.ToString(),
-                            statType.ValueToString(statValue),
-                            $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
-                            count);
-                    }
+                    statViews[statIndex].gameObject.SetActive(true);
+                    statViews[statIndex].Set(itemOptionInfo.StatOptions[statIndex].type.ToString(),
+                            itemOptionInfo.StatOptions[statIndex].type.ValueToString(itemOptionInfo.StatOptions[statIndex].value),
+                            $"{statOptionsMin[statIndex].ToCurrencyNotation()} ~ {statOptionsMax[statIndex].ToCurrencyNotation()}",
+                            itemOptionInfo.StatOptions[statIndex].count);
                 }
 
-                var skills = itemOptionInfo.SkillOptions;
-                for (var i = 0; i < skills.Count; i++)
-                {
-                    skillViews[i].gameObject.SetActive(true);
-                    var skill = skills[i];
-                    var skillName = skill.skillRow.GetLocalizedName();
-                    var power = skill.power;
-                    var chance = skill.chance;
-                    var ratio = skill.statPowerRatio;
-                    var refStatType = skill.refStatType;
-                    var effectString = SkillExtensions.EffectToString(
-                        skill.skillRow.Id,
-                        skill.skillRow.SkillType,
-                        power,
-                        ratio,
-                        refStatType);
-                    var isBuff =
-                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Buff ||
-                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Debuff;
 
-                    if (baseItemCostRow.ExtraSkillDamageGrowthMin == 0 && baseItemCostRow.ExtraSkillDamageGrowthMax == 0 &&
-                        baseItemCostRow.ExtraSkillChanceGrowthMin == 0 && baseItemCostRow.ExtraSkillChanceGrowthMax == 0)
-                    {
-                        var view = skillViews[i];
-                        view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
-                            string.Empty,
-                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
-                            string.Empty);
-                        var skillRow = skill.skillRow;
-                        view.SetDescriptionButton(() =>
-                        {
-                            skillTooltip.Show(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
-                            skillTooltip.transform.position = view.DescriptionPosition;
-                        });
-                    }
-                    else
-                    {
-                        var powerAdd = Math.Max(isBuff || power == 0 ? 0 : 1,
-                            (int)(power *
-                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
-                        var ratioAdd = Math.Max(0,
-                            (int)(ratio *
-                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
-                        var chanceAdd = Math.Max(1,
-                            (int)(chance *
-                                  baseItemCostRow.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
-                        var totalPower = power + powerAdd;
-                        var totalChance = chance + chanceAdd;
-                        var totalRatio = ratio + ratioAdd;
-                        var skillRow = skill.skillRow;
+                /*
+                                if (baseItemCostRow.BaseStatGrowthMin != 0 && baseItemCostRow.BaseStatGrowthMax != 0)
+                                {
+                                    var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
+                                    var mainAdd = (int)Math.Max(1,
+                                        (mainValue * baseItemCostRow.BaseStatGrowthMax.NormalizeFromTenThousandths()));
+                                    mainStatView.gameObject.SetActive(true);
+                                    mainStatView.Set(mainStatType.ToString(),
+                                        mainStatType.ValueToString(mainValue),
+                                        $"(<size=80%>max</size> +{mainStatType.ValueToString(mainAdd)})");
+                                }
 
-                        var powerString = SkillExtensions.EffectToString(
-                            skillRow.Id,
-                            skillRow.SkillType,
-                            powerAdd,
-                            ratioAdd,
-                            skill.refStatType);
+                                var stats = itemOptionInfo.StatOptions;
+                                for (var i = 0; i < stats.Count; i++)
+                                {
+                                    statViews[i].gameObject.SetActive(true);
+                                    var statType = stats[i].type;
+                                    var statValue = stats[i].value;
+                                    var count = stats[i].count;
 
-                        var view = skillViews[i];
-                        view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
-                            $"(<size=80%>max</size> +{powerString})",
-                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
-                            $"(<size=80%>max</size> +{chanceAdd}%)");
-                        view.SetDescriptionButton(() =>
-                        {
-                            skillTooltip.Show(
-                                skillRow, totalChance, totalChance, totalPower, totalPower, totalRatio, totalRatio, refStatType);
-                            skillTooltip.transform.position = view.DescriptionPosition;
-                        });
-                    }
-                }
-*/
+                                    if (baseItemCostRow.ExtraStatGrowthMin == 0 && baseItemCostRow.ExtraStatGrowthMax == 0)
+                                    {
+                                        statViews[i].Set(statType.ToString(),
+                                            statType.ValueToString(statValue),
+                                            string.Empty,
+                                            count);
+                                    }
+                                    else
+                                    {
+                                        var statAdd = Math.Max(1,
+                                            (int)(statValue *
+                                                  baseItemCostRow.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
+                                        statViews[i].Set(statType.ToString(),
+                                            statType.ValueToString(statValue),
+                                            $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
+                                            count);
+                                    }
+                                }
+
+                                var skills = itemOptionInfo.SkillOptions;
+                                for (var i = 0; i < skills.Count; i++)
+                                {
+                                    skillViews[i].gameObject.SetActive(true);
+                                    var skill = skills[i];
+                                    var skillName = skill.skillRow.GetLocalizedName();
+                                    var power = skill.power;
+                                    var chance = skill.chance;
+                                    var ratio = skill.statPowerRatio;
+                                    var refStatType = skill.refStatType;
+                                    var effectString = SkillExtensions.EffectToString(
+                                        skill.skillRow.Id,
+                                        skill.skillRow.SkillType,
+                                        power,
+                                        ratio,
+                                        refStatType);
+                                    var isBuff =
+                                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Buff ||
+                                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Debuff;
+
+                                    if (baseItemCostRow.ExtraSkillDamageGrowthMin == 0 && baseItemCostRow.ExtraSkillDamageGrowthMax == 0 &&
+                                        baseItemCostRow.ExtraSkillChanceGrowthMin == 0 && baseItemCostRow.ExtraSkillChanceGrowthMax == 0)
+                                    {
+                                        var view = skillViews[i];
+                                        view.Set(skillName,
+                                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
+                                            string.Empty,
+                                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
+                                            string.Empty);
+                                        var skillRow = skill.skillRow;
+                                        view.SetDescriptionButton(() =>
+                                        {
+                                            skillTooltip.Show(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
+                                            skillTooltip.transform.position = view.DescriptionPosition;
+                                        });
+                                    }
+                                    else
+                                    {
+                                        var powerAdd = Math.Max(isBuff || power == 0 ? 0 : 1,
+                                            (int)(power *
+                                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                                        var ratioAdd = Math.Max(0,
+                                            (int)(ratio *
+                                                  baseItemCostRow.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                                        var chanceAdd = Math.Max(1,
+                                            (int)(chance *
+                                                  baseItemCostRow.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
+                                        var totalPower = power + powerAdd;
+                                        var totalChance = chance + chanceAdd;
+                                        var totalRatio = ratio + ratioAdd;
+                                        var skillRow = skill.skillRow;
+
+                                        var powerString = SkillExtensions.EffectToString(
+                                            skillRow.Id,
+                                            skillRow.SkillType,
+                                            powerAdd,
+                                            ratioAdd,
+                                            skill.refStatType);
+
+                                        var view = skillViews[i];
+                                        view.Set(skillName,
+                                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
+                                            $"(<size=80%>max</size> +{powerString})",
+                                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
+                                            $"(<size=80%>max</size> +{chanceAdd}%)");
+                                        view.SetDescriptionButton(() =>
+                                        {
+                                            skillTooltip.Show(
+                                                skillRow, totalChance, totalChance, totalPower, totalPower, totalRatio, totalRatio, refStatType);
+                                            skillTooltip.transform.position = view.DescriptionPosition;
+                                        });
+                                    }
+                                }
+                */
             }
         }
     }
