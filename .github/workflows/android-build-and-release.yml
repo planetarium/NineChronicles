@@ -133,29 +133,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       network: ${{ steps.extract.outputs.network }}
-      signing: ${{ steps.extract.outputs.signing }}
-      version: ${{ steps.extract.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: extract
         id: extract
         run: |
           if [[ "${{ startsWith(github.ref, 'refs/heads/release/') }}" == "true" ]]; then
-              timestamp=$(date +%s)
-
               echo "::set-output name=network::internal"
-              echo "::set-output name=signing::--no-signing"
-              echo "::set-output name=version::$timestamp"
           elif [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]]; then
-              TAG_NAME=${GITHUB_REF#refs/tags/}
-
               echo "::set-output name=network::main"
-              echo "::set-output name=signing::--signing"
-              echo "::set-output name=version::$TAG_NAME"
           else
             echo "::set-output name=network::null"
-            echo "::set-output name=signing::null"
-            echo "::set-output name=version::null"
           fi
 
   release-to-google-play:

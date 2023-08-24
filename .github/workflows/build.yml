@@ -13,6 +13,10 @@ on:
   workflow_dispatch:
     inputs:
 
+permissions:
+    id-token: write
+    contents: read
+
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -132,11 +136,22 @@ jobs:
     needs: extract
     environment:
       name: ${{ needs.extract.outputs.network }}
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       version: ${{ needs.extract.outputs.version }}
       network: ${{ needs.extract.outputs.network }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          role-duration-seconds: 1200
+          aws-region: ap-northeast-2
 
       - name: release
         uses: planetarium/9c-toolbelt@main
@@ -144,8 +159,9 @@ jobs:
           COMMAND_LIST: "release|player|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|${{ matrix.targetPlatform }}|${{ needs.extract.outputs.signing }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}|--run-id=${{ github.run_id }}"
           ENV: production
           GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           ESIGNER_CREDENTIAL_ID: ${{ secrets.ESIGNER_CREDENTIAL_ID }}
           ESIGNER_USERNAME: ${{ secrets.ESIGNER_USERNAME }}
@@ -159,13 +175,25 @@ jobs:
     needs: [extract, release]
     environment:
       name: ${{ needs.extract.outputs.network }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+            role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
+            role-session-name: GitHubActions-${{ github.run_id }}
+            role-duration-seconds: 1200
+            aws-region: ap-northeast-2
+
       - name: update-latest-metadata
         uses: planetarium/9c-toolbelt@main
         with:
           COMMAND_LIST: "release|update-latest|${{ github.sha }}|${{ needs.extract.outputs.version }}|${{ needs.extract.outputs.network }}|--slack-channel=${{ secrets.SLACK_CHANNEL }}"
           ENV: production
           GITHUB_TOKEN: ${{ secrets.P_GITHUB_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
