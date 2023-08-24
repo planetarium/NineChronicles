@@ -82,14 +82,14 @@
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             shopState.Register(new ShopItem(
                 _agentAddress,
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                consumable));
+                (ITradableItem)consumable));
 
             shopState.Register(new ShopItem(
                 _agentAddress,
