@@ -28,6 +28,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("battle_arena12")]
+    [ActionObsolete(ActionObsoleteConfig.V200070ObsoleteIndex)]
     public class BattleArena12 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -93,6 +94,12 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 return states;
+            }
+
+            CheckObsolete(ActionObsoleteConfig.V200070ObsoleteIndex, context);
+            if (championshipId == 6 && round >= 2 || championshipId > 6)
+            {
+                throw new ActionObsoletedException();
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(

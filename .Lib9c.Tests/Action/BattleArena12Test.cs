@@ -270,7 +270,7 @@ namespace Lib9c.Tests.Action
             {
                 myAvatarAddress = _avatar1Address,
                 enemyAvatarAddress = _avatar2Address,
-                championshipId = 9999999,
+                championshipId = 0,
                 round = 1,
                 ticket = 1,
                 costumes = new List<Guid>(),
@@ -1060,6 +1060,45 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_ActionObsoleteException()
+        {
+            var action = new BattleArena12
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = 6,
+                round = 2,
+                ticket = 1,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                runeInfos = new List<RuneSlotInfo>(),
+            };
+
+            // Unavailable round
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                Signer = _agent1Address,
+                BlockIndex = 1L,
+            }));
+
+            action.championshipId = 7;
+            action.round = 1;
+            // Unavailable championship
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                Signer = _agent1Address,
+                BlockIndex = 1L,
+            }));
+
+            // Unavailable block index
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                Signer = _agent1Address,
+                BlockIndex = 7_716_401L,
             }));
         }
 
