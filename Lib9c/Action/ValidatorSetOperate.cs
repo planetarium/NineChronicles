@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -11,10 +9,11 @@ using Libplanet.Types.Consensus;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("op_validator_set")]
-    public sealed class ValidatorSetOperate
-        : GameAction, IEquatable<ValidatorSetOperate>
+    [ActionType(TypeIdentifier)]
+    public sealed class ValidatorSetOperate : ActionBase, IEquatable<ValidatorSetOperate>
     {
+        public const string TypeIdentifier = "op_validator_set";
+
         // fixme: this is a temporary key for backward compatibility.
         private static readonly byte[] PowerKey = { 0x70 }; // 'p'
         private static readonly byte[] PublicKeyKey = { 0x50 }; // 'P'
@@ -50,11 +49,6 @@ namespace Nekoyume.Action
 
         public bool Equals(ValidatorSetOperate other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
             if (ReferenceEquals(this, other))
             {
                 return true;
@@ -92,26 +86,30 @@ namespace Nekoyume.Action
         }
 
         public override IValue PlainValue =>
-            (Error is null)
-                ? (IValue)Bencodex.Types.Dictionary.Empty
-                    .Add(
-                        "op",
-                        Operator is ValidatorSetOperatorType op
-                            ? new Text(op.ToString())
-                            : (IValue)Null.Value
-                    )
-                    .Add("operand", Operand.Bencoded)
-                : (Text)Error;
+            Dictionary.Empty
+                .Add("type_id", TypeIdentifier)
+                .Add("values", (Error is null)
+                    ? (IValue)Bencodex.Types.Dictionary.Empty
+                        .Add(
+                            "op",
+                            Operator is ValidatorSetOperatorType op
+                                ? new Text(op.ToString())
+                                : (IValue)Null.Value
+                        )
+                        .Add("operand", Operand.Bencoded)
+                    : (Text)Error);
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            if (plainValue is Text t)
+            IValue values = ((Dictionary)plainValue)["values"];
+
+            if (values is Text t)
             {
                 Error = t;
                 return;
             }
 
-            if (!(plainValue is Dictionary d))
+            if (!(values is Dictionary d))
             {
                 Error =
                     "The action serialization is invalid; " +
@@ -154,22 +152,6 @@ namespace Nekoyume.Action
             // FIXME: This is a temporary code for backward compatibility.
             Operand = BackwardCompatibility(operandDict);
             Error = null;
-        }
-
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            new Dictionary<string, IValue>
-            {
-                [ValidatorSetOperateKey] = PlainValue
-            }.ToImmutableDictionary();
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
-        {
-            if (plainValue.TryGetValue(ValidatorSetOperateKey, out IValue rawValue))
-            {
-                LoadPlainValue(rawValue);
-            }
-
-            Error =
-                $"The serialized dictionary lacks the key \"{nameof(ValidatorSetOperateKey)}\".";
         }
 
         private Validator BackwardCompatibility(Bencodex.Types.Dictionary dict)
