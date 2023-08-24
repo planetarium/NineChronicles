@@ -136,6 +136,9 @@ jobs:
     needs: extract
     environment:
       name: ${{ needs.extract.outputs.network }}
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       version: ${{ needs.extract.outputs.version }}
       network: ${{ needs.extract.outputs.network }}
@@ -172,14 +175,16 @@ jobs:
     needs: [extract, release]
     environment:
       name: ${{ needs.extract.outputs.network }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
             role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_ROLE_TO_ASSUME }}
             role-session-name: GitHubActions-${{ github.run_id }}
-            role-duration-seconds: 600
+            role-duration-seconds: 1200
             aws-region: ap-northeast-2
 
       - name: update-latest-metadata
