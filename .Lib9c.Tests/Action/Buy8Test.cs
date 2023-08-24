@@ -207,7 +207,7 @@
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         0);
-                    tradableItem = (ITradableItem)itemUsable;
+                    tradableItem = itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                 }
                 else if (orderData.ItemType == ItemType.Costume)

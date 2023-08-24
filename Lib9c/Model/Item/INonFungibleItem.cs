@@ -2,9 +2,8 @@ using System;
 
 namespace Nekoyume.Model.Item
 {
-    public interface INonFungibleItem: IItem
+    public interface INonFungibleItem: ITradableItem
     {
         Guid NonFungibleId { get; }
-        long RequiredBlockIndex { get; set; }
     }
 }

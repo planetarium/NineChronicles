@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Action
                         AvatarAddress = AvatarAddress,
                         ItemCount = 1,
                         Price = 1 * Gold,
-                        TradableId = equipment.ItemId,
+                        TradableId = equipment.TradableId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
@@ -330,7 +330,7 @@ namespace Lib9c.Tests.Action
                 {
                     var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
                     var id = Guid.NewGuid();
-                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(equipmentRow, id, requiredBlockIndex);
+                    tradableItem = ItemFactory.CreateItemUsable(equipmentRow, id, requiredBlockIndex);
                     break;
                 }
 
