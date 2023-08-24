@@ -1,8 +1,7 @@
-namespace Lib9c.Tests.Action
-{
 #nullable enable
 
-    using System.Collections.Generic;
+namespace Lib9c.Tests.Action
+{
     using System.Linq;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
@@ -11,12 +10,11 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ClaimStakeReward4Test
+    public class ClaimStakeReward6Test
     {
         private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
         private readonly Address _agentAddr = new Address(AgentAddressHex);
@@ -25,7 +23,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
-        public ClaimStakeReward4Test(ITestOutputHelper outputHelper)
+        public ClaimStakeReward6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -37,22 +35,15 @@ namespace Lib9c.Tests.Action
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates(
-                agentAddr: _agentAddr,
-                sheetsOverride: new Dictionary<string, string>
-                {
-                    {
-                        nameof(StakeRegularRewardSheet),
-                        ClaimStakeReward6.V2.StakeRegularRewardSheetCsv
-                    },
-                });
+                agentAddr: _agentAddr);
             _ncg = _initialStatesWithAvatarStateV1.GetGoldCurrency();
         }
 
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward4(_avatarAddr);
-            var deserialized = new ClaimStakeReward4();
+            var action = new ClaimStakeReward6(_avatarAddr);
+            var deserialized = new ClaimStakeReward6();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
@@ -90,7 +81,7 @@ namespace Lib9c.Tests.Action
             ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
             136800,
             1026,
-            4,
+            3,
             null,
             null,
             0L
@@ -180,9 +171,21 @@ namespace Lib9c.Tests.Action
             10_000_000L,
             7_110_390L,
             7_160_778L,
-            0,
-            0,
-            0,
+            1_000_000,
+            12_502,
+            1_666,
+            null,
+            null,
+            0)]
+        // test tx(3baf5904b8499975a27d3873e58953ef8d0aa740318e99b2fe6a85428c9eb7aa)
+        [InlineData(
+            5_350_456L,
+            500_000L,
+            7_576_016L,
+            7_625_216L,
+            100_000,
+            627,
+            83,
             null,
             null,
             0)]
@@ -244,6 +247,7 @@ namespace Lib9c.Tests.Action
             string expectedCurrencyTicker,
             long expectedCurrencyAmount)
         {
+            var context = new ActionContext();
             var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
             var initialStakeState = new StakeState(stakeStateAddr, startedBlockIndex);
             if (!(previousRewardReceiveIndex is null))
@@ -253,9 +257,9 @@ namespace Lib9c.Tests.Action
 
             prevState = prevState
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
-                .MintAsset(new ActionContext(), stakeStateAddr, _ncg * stakeAmount);
+                .MintAsset(context, stakeStateAddr, _ncg * stakeAmount);
 
-            var action = new ClaimStakeReward4(avatarAddr);
+            var action = new ClaimStakeReward6(avatarAddr);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = prevState,
