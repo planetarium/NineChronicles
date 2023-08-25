@@ -288,24 +288,13 @@ namespace Nekoyume.UI.Module
 
         private bool IsDisable(EnhancementInventoryItem a, EnhancementInventoryItem b)
         {
-            if (a.ItemBase.ItemSubType != b.ItemBase.ItemSubType)
-            {
-                return true;
-            }
-
-            if (a.ItemBase.Grade != b.ItemBase.Grade)
-            {
-                return true;
-            }
-
-            var ae = (Equipment)a.ItemBase;
-            var be = (Equipment)b.ItemBase;
-            return ae.level != be.level;
+            return a.ItemBase.ItemSubType != b.ItemBase.ItemSubType || _materialModels.Count >= 50;
         }
 
         private void UpdateView(bool jumpToFirst = false)
         {
             var models = GetModels();
+            DisableItem(models);
             _onUpdateView?.Invoke(_baseModel, _materialModels);
             scroll.UpdateData(models, jumpToFirst);
         }
