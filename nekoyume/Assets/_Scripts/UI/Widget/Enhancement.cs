@@ -40,15 +40,6 @@ namespace Nekoyume.UI
         private UpgradeEquipmentSlot baseSlot;
 
         [SerializeField]
-        private UpgradeEquipmentSlot materialSlot;
-
-        [SerializeField]
-        private TextMeshProUGUI successRatioText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredBlockIndexText;
-
-        [SerializeField]
         private TextMeshProUGUI itemNameText;
 
         [SerializeField]
@@ -139,7 +130,8 @@ namespace Nekoyume.UI
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
             _decendingbyExpCostSheet = _costSheet.OrderByDescending(r => r.Value.Exp);
-            baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
+
+            baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectItem(true));
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -299,8 +291,6 @@ namespace Nekoyume.UI
             itemNameText.text = string.Empty;
             currentLevelText.text = string.Empty;
             nextLevelText.text = string.Empty;
-            successRatioText.text = "0%";
-            requiredBlockIndexText.text = "0";
 
             expSlider.value = 0;
             sliderPercentText.text = "0%";
