@@ -529,7 +529,7 @@ namespace Lib9c.DevExtensions.Action
                 }
 
                 if (eLevel > 0 &&
-                    ItemEnhancement.TryGetRow(
+                    ItemEnhancement11.TryGetRow(
                         equipment,
                         enhancementCostSheetV2,
                         out var enhancementCostRow))

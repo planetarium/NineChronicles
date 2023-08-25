@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Action
                 {
                     {
                         nameof(StakeRegularRewardSheet),
-                        ClaimStakeReward.V2.StakeRegularRewardSheetCsv
+                        ClaimStakeReward6.V2.StakeRegularRewardSheetCsv
                     },
                 });
             _ncg = _initialStatesWithAvatarStateV1.GetGoldCurrency();

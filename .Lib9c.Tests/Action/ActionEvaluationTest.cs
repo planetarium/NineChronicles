@@ -192,7 +192,10 @@ namespace Lib9c.Tests.Action
                     AuthorizedMiners = Dictionary.Empty,
                     Credits = Dictionary.Empty,
                 },
-                ItemEnhancement _ => new ItemEnhancement(),
+                ItemEnhancement _ => new ItemEnhancement
+                {
+                    materialIds = new List<Guid>(),
+                },
                 MigrationActivatedAccountsState _ => new MigrationActivatedAccountsState(),
                 MigrationAvatarState _ => new MigrationAvatarState
                 {
