@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
@@ -24,6 +25,13 @@ namespace Nekoyume.Action
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction, IPatchTableSheetV1
     {
+        private static readonly string[] PrefixRules = new string[] {
+            "StakeRegularRewardSheet_",
+            "StakeRegularFixedRewardSheet_",
+            // "CrystalMonsterCollectionMultiplierSheet_",
+            // "StakeActionPointCoefficientSheet_",
+        };
+
         // FIXME: We should eliminate or justify this concept in another way after v100340.
         // (Until that) please consult Nine Chronicles Dev if you have any questions about this account.
         private static readonly Address Operator =
@@ -65,8 +73,14 @@ namespace Nekoyume.Action
             }
 #endif
 
-            var sheets = states.GetState(sheetAddress);
-            var value = sheets is null ? string.Empty : sheets.ToDotnetString();
+            var sheet = states.GetState(sheetAddress);
+            if (!(sheet is null) && PrefixRules.Any(TableName.StartsWith))
+            {
+                var msg = $"{TableName} already exists.";
+                throw new ArgumentException(nameof(TableName), msg);
+            }
+
+            var value = sheet is null ? string.Empty : sheet.ToDotnetString();
 
             Log.Verbose(
                 "{AddressesHex}{TableName} was patched\n" +
