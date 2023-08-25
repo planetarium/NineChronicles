@@ -20,11 +20,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("grinding")]
+    [ActionType("grinding2")]
     public class Grinding : GameAction, IGrindingV1
     {
         public const int CostAp = 5;
-        public const int Limit = 10;
+        public const int Limit = 50;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public bool ChargeAp;

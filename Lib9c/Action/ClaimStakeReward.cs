@@ -19,12 +19,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2071
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2083
     /// </summary>
     [ActionType(ActionTypeText)]
     public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
-        private const string ActionTypeText = "claim_stake_reward6";
+        private const string ActionTypeText = "claim_stake_reward7";
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -107,24 +107,24 @@ namespace Nekoyume.Action
 1,50,400000,10,Item,
 1,50,500000,800,Item,
 1,50,20001,6000,Rune,
-2,500,400000,8,Item,
-2,500,500000,800,Item,
+2,500,400000,4,Item,
+2,500,500000,600,Item,
 2,500,20001,6000,Rune,
-3,5000,400000,5,Item,
-3,5000,500000,800,Item,
+3,5000,400000,2,Item,
+3,5000,500000,400,Item,
 3,5000,20001,6000,Rune,
-4,50000,400000,5,Item,
-4,50000,500000,800,Item,
+4,50000,400000,2,Item,
+4,50000,500000,400,Item,
 4,50000,20001,6000,Rune,
-5,500000,400000,5,Item,
-5,500000,500000,800,Item,
+5,500000,400000,2,Item,
+5,500000,500000,400,Item,
 5,500000,20001,6000,Rune,
-6,5000000,400000,10,Item,
-6,5000000,500000,800,Item,
+6,5000000,400000,2,Item,
+6,5000000,500000,400,Item,
 6,5000000,20001,6000,Rune,
-6,5000000,800201,100,Item,
-7,10000000,400000,10,Item,
-7,10000000,500000,800,Item,
+6,5000000,800201,50,Item,
+7,10000000,400000,2,Item,
+7,10000000,500000,400,Item,
 7,10000000,20001,6000,Rune,
 7,10000000,600201,50,Item,
 7,10000000,800201,50,Item,

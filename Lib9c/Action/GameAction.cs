@@ -13,7 +13,8 @@ namespace Nekoyume.Action
     public abstract class GameAction : ActionBase
     {
         public Guid Id { get; private set; }
-        public override IValue PlainValue => Dictionary.Empty
+
+        public override sealed IValue PlainValue => Dictionary.Empty
             .Add("type_id", this.GetType().GetCustomAttribute<ActionTypeAttribute>() is { } attribute
                 ? attribute.TypeIdentifier
                 : throw new NullReferenceException($"Type is missing {nameof(ActionTypeAttribute)}: {this.GetType()}"))
@@ -31,7 +32,7 @@ namespace Nekoyume.Action
             Id = Guid.NewGuid();
         }
 
-        public override void LoadPlainValue(IValue plainValue)
+        public override sealed void LoadPlainValue(IValue plainValue)
         {
 #pragma warning disable LAA1002
             var dict = ((Dictionary)((Dictionary)plainValue)["values"])

@@ -110,14 +110,14 @@
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
-                consumable));
+                (ITradableItem)consumable));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,

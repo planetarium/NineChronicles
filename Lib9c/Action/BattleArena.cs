@@ -24,10 +24,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1938
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2094
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena12")]
+    [ActionType("battle_arena13")]
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -364,7 +364,7 @@ namespace Nekoyume.Action
 
             var enemyRuneStates = new List<RuneState>();
             var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
-            foreach (var address in enemyRuneSlotInfos.Select(info => RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
+            foreach (var address in enemyRuneSlotInfos.Select(info => RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId)))
             {
                 if (states.TryGetState(address, out List rawRuneState))
                 {

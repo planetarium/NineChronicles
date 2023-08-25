@@ -32,6 +32,11 @@ namespace Nekoyume.Blockchain
             new Address("B892052f1E10bf700143dd9bEcd81E31CD7f7095"),
             // v100351
             new Address("0xd7e1b90dea34108fb2d3a6ac7dbf3f33bae2c77d"),
+            // v200060
+            new Address("3FadCb61827E4B70eBAFAF61E2c02fc2711FBb5A"),
+            new Address("7655122899Ccd2cC87B38A35D7158c9516504119"),
+            new Address("3165fda4aAE0362EFFd8Ae6e8674AA49381b4485"),
+            new Address("CAFC88175f88973d01e6A9479b31eC0beb020b8a"),
         }.ToImmutableHashSet();
 
         public NCStagePolicy(TimeSpan txLifeTime, int quotaPerSigner)
