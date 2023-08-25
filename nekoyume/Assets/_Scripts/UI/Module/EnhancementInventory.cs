@@ -357,7 +357,8 @@ namespace Nekoyume.UI.Module
         }
 
         public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
-            Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView)
+            Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView,
+            EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll)
         {
             _onSelectItem = onSelectItem;
             _onUpdateView = onUpdateView;
@@ -387,6 +388,7 @@ namespace Nekoyume.UI.Module
             }).AddTo(_disposables);
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
+            enhancementSelectedMaterialItemScroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
         private void AddItem(ItemBase itemBase)

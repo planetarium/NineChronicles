@@ -143,7 +143,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Clear();
-            enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
+            enhancementInventory.Set(ShowItemTooltip, UpdateInformation, enhancementSelectedMaterialItemScroll);
             base.Show(ignoreShowAnimation);
         }
 
