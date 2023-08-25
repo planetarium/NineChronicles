@@ -91,6 +91,9 @@ namespace Nekoyume.UI
         private EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll;
 
         [SerializeField]
+        private TimeBlock requierdBlockTimeViewr;
+
+        [SerializeField]
         private TextMeshProUGUI currentEquipmentCP;
         [SerializeField]
         private TextMeshProUGUI nextEquipmentCP;
@@ -425,11 +428,14 @@ namespace Nekoyume.UI
                 var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
                 var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
                 var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+                long requiredBlock = 0;
 
                 if (equipment.level != targetRow.Level)
                 {
                     for (int i = 1; i < targetRangeRows.Count; i++)
                     {
+                        requiredBlock += targetRangeRows[i].RequiredBlockIndex;
+
                         baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
                         baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
 
@@ -461,6 +467,7 @@ namespace Nekoyume.UI
                 nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
                 nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
 
+                requierdBlockTimeViewr.SetTimeBlock($"{requiredBlock:#,0}", requiredBlock.BlockRangeToTimeSpanString());
 
                 //StatView
                 mainStatView.gameObject.SetActive(true);
