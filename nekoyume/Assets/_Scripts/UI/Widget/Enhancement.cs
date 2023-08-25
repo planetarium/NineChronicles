@@ -34,6 +34,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton upgradeButton;
 
         [SerializeField]
+        private ConditionalButton removeAllButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -132,6 +135,9 @@ namespace Nekoyume.UI
             _decendingbyExpCostSheet = _costSheet.OrderByDescending(r => r.Value.Exp);
 
             baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectItem(true));
+            removeAllButton.OnSubmitSubject
+                .Subscribe(_ => enhancementInventory.DeselectItem(false))
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -377,6 +383,7 @@ namespace Nekoyume.UI
 
                 ClearInformation();
 
+                removeAllButton.Interactable = materialModels.Count >= 2;
 
                 _costNcg = targetRow.Cost - baseItemCostRow.Cost;
                 upgradeButton.SetCost(CostType.NCG, (long)_costNcg);
