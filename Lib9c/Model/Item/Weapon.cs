@@ -6,10 +6,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Weapon : Equipment, ITradableItem
+    public class Weapon : Equipment
     {
-        public Guid TradableId => ItemId;
-
         public Weapon(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex,
             bool madeWithMimisbrunnrRecipe = false) : base(data, id, requiredBlockIndex,
             madeWithMimisbrunnrRecipe)

@@ -213,7 +213,7 @@ namespace Lib9c.Model.Order
             if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
             {
                 ItemBase item = inventoryItem.item;
-                int cp = 0;
+                int cp = CPHelper.GetCP((ITradableItem) item, costumeStatSheet);
                 int level = item is Equipment equipment ? equipment.level : 0;
                 return new OrderDigest(
                     SellerAgentAddress,
@@ -368,7 +368,7 @@ namespace Lib9c.Model.Order
                 out Inventory.Item inventoryItem))
             {
                 ItemBase item = inventoryItem.item;
-                int cp = 0;
+                int cp = CPHelper.GetCP((ITradableItem) item, costumeStatSheet);
                 int level = item is Equipment equipment ? equipment.level : 0;
                 return new OrderDigest(
                     SellerAgentAddress,
