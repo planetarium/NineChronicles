@@ -2013,6 +2013,7 @@ MonoBehaviour:
   tutorialActions: 
   enhancementInventory: {fileID: 6241664505025257659}
   upgradeButton: {fileID: 5830942400651351240}
+  removeAllButton: {fileID: 8905278954593753675}
   closeButton: {fileID: 2124392581732449511}
   baseSlot: {fileID: 6838219919668454885}
   itemNameText: {fileID: 4351941982631844481}
@@ -48185,6 +48186,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1146466338705447457}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8905278954593753675 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8393857624628101226, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1146466338705447457}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1845810407859908035
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -51509,7 +51522,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
