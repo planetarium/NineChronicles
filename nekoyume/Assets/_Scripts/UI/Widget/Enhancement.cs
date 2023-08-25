@@ -140,7 +140,6 @@ namespace Nekoyume.UI
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
             _decendingbyExpCostSheet = _costSheet.OrderByDescending(r => r.Value.Exp);
             baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
-            //materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -217,22 +216,24 @@ namespace Nekoyume.UI
 
             var targetExp = baseItem.Exp + materialItems.Aggregate(0L, (total, m) => total + m.Exp);
             EnhancementCostSheetV3.Row targetRow;
+            int requiredBlockIndex = 0;
             try
             {
-                targetRow = _decendingbyExpCostSheet
-                .First(row =>
-                    row.Value.ItemSubType == baseItem.ItemSubType &&
-                    row.Value.Grade == baseItem.Grade &&
-                    row.Value.Exp <= targetExp
-                ).Value;
+                requiredBlockIndex = sheet.OrderedList
+                    .Where(e =>
+                        e.ItemSubType == baseItem.ItemSubType &&
+                        e.Grade == baseItem.Grade &&
+                        e.Exp > baseItem.Exp &&
+                        e.Exp <= targetExp)
+                .Aggregate(0, (blocks, row) => blocks + row.RequiredBlockIndex);
             }
             catch
             {
-                targetRow = new EnhancementCostSheetV3.Row();
+                requiredBlockIndex = 0;
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCaching(avatarAddress, slotIndex, true, targetRow.RequiredBlockIndex,
+            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
                 itemUsable: baseItem);
 
             NotificationSystem.Push(MailType.Workshop,
@@ -244,7 +245,7 @@ namespace Nekoyume.UI
 
             enhancementInventory.DeselectItem(true);
 
-            StartCoroutine(CoCombineNPCAnimation(baseItem, targetRow.RequiredBlockIndex, Clear));
+            StartCoroutine(CoCombineNPCAnimation(baseItem, requiredBlockIndex, Clear));
         }
 
         private void Clear()
@@ -440,34 +441,10 @@ namespace Nekoyume.UI
                 var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
                 var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
 
-                int targetRequiredBlockIndex = 0;
-                int targetBaseStatGrowthMin = 0;
-                int targetBaseStatGrowthMax = 0;
-                int targetExtraStatGrowthMin = 0;
-                int targetExtraStatGrowthMax = 0;
-                int targetExtraSkillDamageGrowthMin = 0;
-                int targetExtraSkillDamageGrowthMax = 0;
-                int targetExtraSkillChanceGrowthMin = 0;
-                int targetExtraSkillChanceGrowthMax = 0;
-
                 if (equipment.level != targetRow.Level)
                 {
                     for (int i = 1; i < targetRangeRows.Count; i++)
                     {
-                        targetRequiredBlockIndex += targetRangeRows[i].RequiredBlockIndex;
-
-                        targetBaseStatGrowthMin += targetRangeRows[i].BaseStatGrowthMin;
-                        targetBaseStatGrowthMax += targetRangeRows[i].BaseStatGrowthMax;
-
-                        targetExtraStatGrowthMin += targetRangeRows[i].ExtraStatGrowthMin;
-                        targetExtraStatGrowthMax += targetRangeRows[i].ExtraStatGrowthMax;
-
-                        targetExtraSkillDamageGrowthMin += targetRangeRows[i].ExtraSkillDamageGrowthMin;
-                        targetExtraSkillDamageGrowthMax += targetRangeRows[i].ExtraSkillDamageGrowthMax;
-
-                        targetExtraSkillChanceGrowthMin += targetRangeRows[i].ExtraSkillChanceGrowthMin;
-                        targetExtraSkillChanceGrowthMax += targetRangeRows[i].ExtraSkillChanceGrowthMax;
-
                         baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
                         baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
 
