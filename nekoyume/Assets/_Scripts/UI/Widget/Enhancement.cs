@@ -475,24 +475,27 @@ namespace Nekoyume.UI
 
                 //StatView
                 mainStatView.gameObject.SetActive(true);
-                mainStatView.Set(itemOptionInfo.MainStat.type.ToString(),
-                    itemOptionInfo.MainStat.type.ValueToString(itemOptionInfo.MainStat.baseValue),
-                    $"{baseStatMin.ToCurrencyNotation()} ~ {baseStatMax.ToCurrencyNotation()}");
+                var statType = itemOptionInfo.MainStat.type;
+                mainStatView.Set(statType.ToString(),
+                    statType.ValueToString(itemOptionInfo.MainStat.baseValue),
+                    $"{statType.ValueToShortString(baseStatMin)} ~ {statType.ValueToShortString(baseStatMax)}");
                 mainStatView.SetDescriptionButton(() =>
                 {
                     statTooltip.transform.position = mainStatView.DescriptionPosition;
-                    statTooltip.Set("", $"{baseStatMin} ~ {baseStatMax}<sprite name=icon_Arrow>");
+                    statTooltip.Set("", $"{statType.ValueToString(baseStatMin)} ~ {statType.ValueToString(baseStatMax)}<sprite name=icon_Arrow>");
                     statTooltip.gameObject.SetActive(true);
                 });
 
                 for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
                 {
+                    var optionStatType = itemOptionInfo.StatOptions[statIndex].type;
                     statViews[statIndex].gameObject.SetActive(true);
-                    statViews[statIndex].Set(itemOptionInfo.StatOptions[statIndex].type.ToString(),
-                            itemOptionInfo.StatOptions[statIndex].type.ValueToString(itemOptionInfo.StatOptions[statIndex].value),
-                            $"{statOptionsMin[statIndex].ToCurrencyNotation()} ~ {statOptionsMax[statIndex].ToCurrencyNotation()}",
+                    statViews[statIndex].Set(optionStatType.ToString(),
+                            optionStatType.ValueToString(itemOptionInfo.StatOptions[statIndex].value),
+                            $"{optionStatType.ValueToShortString(statOptionsMin[statIndex])} ~ {optionStatType.ValueToShortString(statOptionsMax[statIndex])}",
                             itemOptionInfo.StatOptions[statIndex].count);
-                    var tooltipContext = $"{statOptionsMin[statIndex]} ~ {statOptionsMax[statIndex]}<sprite name=icon_Arrow>";
+
+                    var tooltipContext = $"{optionStatType.ValueToString(statOptionsMin[statIndex])} ~ {optionStatType.ValueToString(statOptionsMax[statIndex])}<sprite name=icon_Arrow>";
                     var statView = statViews[statIndex];
                     statViews[statIndex].SetDescriptionButton(() =>
                     {
