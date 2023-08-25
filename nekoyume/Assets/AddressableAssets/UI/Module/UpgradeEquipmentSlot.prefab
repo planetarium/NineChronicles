@@ -5285,7 +5285,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b0b49150c56ba24aae9700f8d35501b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  removeButton: {fileID: 3033985720685706668}
+  removeButtons:
+  - {fileID: 3033985720685706668}
+  - {fileID: 0}
   itemImage: {fileID: 7214592647959077557}
   plusContainer: {fileID: 4027977603190161013}
   emptyEffectContainer: {fileID: 5268703895425525503}
