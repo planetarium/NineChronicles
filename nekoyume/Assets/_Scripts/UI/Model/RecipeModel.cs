@@ -1,32 +1,30 @@
+using System.Collections.Generic;
+using System.Linq;
 using Bencodex.Types;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
-using System.Collections.Generic;
-using System.Linq;
-using Libplanet.Crypto;
 using Nekoyume.TableData.Event;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
-using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
 namespace Nekoyume.UI.Model
 {
     public class RecipeModel
     {
-        public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap = new();
+        public readonly Dictionary<ItemSubType, List<SheetRow<int>>> EquipmentRecipeMap = new();
 
-        public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap = new();
+        public readonly Dictionary<StatType, List<SheetRow<int>>> ConsumableRecipeMap = new();
 
-        public readonly Dictionary<ItemSubType, RecipeRow.Model> EventConsumableRecipeMap = new();
+        public readonly List<SheetRow<int>> EventConsumableRecipeMap = new();
 
-        public readonly Dictionary<int, RecipeRow.Model> EventMaterialRecipeMap = new();
+        public readonly List<SheetRow<int>> EventMaterialRecipeMap = new();
 
         public readonly ReactiveProperty<SheetRow<int>> SelectedRow = new();
 
@@ -76,25 +74,17 @@ namespace Nekoyume.UI.Model
 
             foreach (var recipe in recipes)
             {
-                var key = Util.IsEventEquipmentRecipe(recipe.Id)
-                    ? "crystal_equipment"
-                    : GetEquipmentGroup(recipe.ResultEquipmentId);
+                var isEventEquipment = Util.IsEventEquipmentRecipe(recipe.Id);
 
-                if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
+                var itemSubType = !isEventEquipment
+                    ? recipe.GetResultEquipmentItemRow().ItemSubType
+                    : ItemSubType.EquipmentMaterial;
+                if (!EquipmentRecipeMap.ContainsKey(itemSubType))
                 {
-                    var resultItem = recipe.GetResultEquipmentItemRow();
-
-                    recipeViewModel = new RecipeRow.Model(
-                        resultItem.GetLocalizedName(false, false),
-                        resultItem.Grade)
-                    {
-                        ItemSubType = resultItem.ItemSubType,
-                    };
-
-                    EquipmentRecipeMap[key] = recipeViewModel;
+                    EquipmentRecipeMap[itemSubType] = new List<SheetRow<int>>();
                 }
 
-                recipeViewModel.Rows.Add(recipe);
+                EquipmentRecipeMap[itemSubType].Add(recipe);
             }
         }
 
@@ -106,29 +96,21 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var tableSheets = Game.Game.instance.TableSheets;
-            var consumableRecipeSheet = tableSheets.ConsumableItemRecipeSheet;
+            var consumableRecipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
 
             foreach (var group in groups)
             {
-                var key = group.Key;
-                if (!ConsumableRecipeMap.TryGetValue(key, out var model))
-                {
-                    var name = L10nManager.Localize($"ITEM_GROUPNAME_{key}");
-                    model = new RecipeRow.Model(name, group.Grade)
-                    {
-                        ItemSubType = ItemSubType.Food,
-                    };
-                    ConsumableRecipeMap[key] = model;
-                }
-
-                var first = group.RecipeIds.FirstOrDefault();
-                if (!consumableRecipeSheet.TryGetValue(first, out var firstRecipe))
+                if (!consumableRecipeSheet.TryGetValue(group.Key, out var firstRecipe))
                 {
                     continue;
                 }
 
-                model.StatType = firstRecipe.GetUniqueStat().StatType;
+                var resultItem = firstRecipe.GetResultConsumableItemRow();
+                var statType = resultItem.GetUniqueStat().StatType;
+                if (!ConsumableRecipeMap.ContainsKey(statType))
+                {
+                    ConsumableRecipeMap[statType] = new List<SheetRow<int>>();
+                }
 
                 foreach (var recipeId in group.RecipeIds)
                 {
@@ -137,7 +119,7 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    model.Rows.Add(recipe);
+                    ConsumableRecipeMap[statType].Add(recipe);
                 }
             }
         }
@@ -150,17 +132,10 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var title = L10nManager.Localize("UI_EVENT_FOOD");
-            var value = new RecipeRow.Model(title, 0)
-            {
-                ItemSubType = ItemSubType.Food,
-            };
             foreach (var row in rows)
             {
-                value.Rows.Add(row);
+                EventConsumableRecipeMap.Add(row);
             }
-
-            EventConsumableRecipeMap[ItemSubType.Food] = value;
         }
 
         public void UpdateEventMaterial(List<EventMaterialItemRecipeSheet.Row> rows)
@@ -171,20 +146,9 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var groups = rows.GroupBy(x => x.ResultMaterialItemId);
-            foreach (var group in groups)
+            foreach (var row in rows)
             {
-                var result = group.First().GetResultMaterialItemRow();
-                var model = new RecipeRow.Model(result.GetLocalizedName(false, false), 0)
-                {
-                    ItemSubType = result.ItemSubType,
-                };
-                foreach (var row in group)
-                {
-                    model.Rows.Add(row);
-                }
-
-                EventMaterialRecipeMap[group.Key] = model;
+                EventMaterialRecipeMap.Add(row);
             }
         }
 
@@ -239,14 +203,6 @@ namespace Nekoyume.UI.Model
 
             UnlockableRecipesOpenCost = totalCost;
             UnlockableRecipes.SetValueAndForceNotify(unlockableRecipes);
-        }
-
-        public static string GetEquipmentGroup(int itemId)
-        {
-            var idString = itemId.ToString();
-            var tierArea = idString[..4];
-            var variationArea = idString[5..];
-            return string.Format(EquipmentSplitFormat, tierArea, variationArea);
         }
     }
 }

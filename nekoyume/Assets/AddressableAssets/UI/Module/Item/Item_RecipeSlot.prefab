@@ -3369,6 +3369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 2408656741481977993}
   animator: {fileID: 5407224977007566879}
+  canvasGroup: {fileID: 4930007547896894781}
   recipeViewData: {fileID: 11400000, guid: 6940251d1766aa94a851e15c50d632ae, type: 2}
   gradeEffectObject: {fileID: 23138145583324376}
   equipmentView: {fileID: 3784456826752368087}

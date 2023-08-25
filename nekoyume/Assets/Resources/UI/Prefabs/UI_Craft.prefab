@@ -11328,19 +11328,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eabbd9794b2a2d447870c77f7df1ffc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -1.8604658
-  scrollOffset: -1.8604658
+  cellInterval: -0.68493164
+  scrollOffset: -0.68493164
   loop: 0
   cellContainer: {fileID: 1687619416264471927}
   reuseCellMarginCount: 0
   paddingHead: 0
   paddingTail: 0
   spacing: 0
-  cellPrefab: {fileID: 3809548151753425870, guid: 794dca580fdd94c239fd3aab39c1da8a,
-    type: 3}
-  cellSize: 160
-  forcedScrollSensitivity: 8
+  startAxisSpacing: 0
+  startAxisCellCount: 5
+  cellSize: {x: 100, y: 100}
+  forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
+  fillWithNullToEmptyCellGroup: 0
+  cellTemplate: {fileID: 409872150822889065, guid: 9102ea9092785405295b3a86fcd0d154,
+    type: 3}
   viewport: {fileID: 1687619415917816435}
   equipmentCategoryToggles:
   - Toggle: {fileID: 6852428432784729487}

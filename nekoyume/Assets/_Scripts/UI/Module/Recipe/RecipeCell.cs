@@ -1,24 +1,26 @@
+using System;
+using System.Collections.Generic;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
+using Nekoyume.Model.Stat;
+using Nekoyume.State;
+using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
+using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Nekoyume.Game.ScriptableObject;
-using Nekoyume.TableData;
-using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
-using Nekoyume.State;
-using TMPro;
-using System;
-using Nekoyume.Model.Mail;
-using Nekoyume.EnumType;
-using Nekoyume.L10n;
-using Nekoyume.UI.Scroller;
-using System.Collections.Generic;
-using Nekoyume.TableData.Event;
 
 namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public class RecipeCell : MonoBehaviour
+    public class RecipeCell : GridCell<SheetRow<int>, RecipeScroll.ContextModel>
     {
         [Serializable]
         public class LockedObject
@@ -33,6 +35,7 @@ namespace Nekoyume.UI.Module
 
         [SerializeField] private Button button = null;
         [SerializeField] private Animator animator = null;
+        [SerializeField] private CanvasGroup canvasGroup = null;
         [SerializeField] private RecipeViewData recipeViewData = null;
         [SerializeField] private GameObject gradeEffectObject = null;
         [SerializeField] private RecipeView equipmentView = null;
@@ -49,6 +52,10 @@ namespace Nekoyume.UI.Module
         private bool _isWaitingForUnlock = false;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
+
+        private static readonly int AnimationHashShow = Animator.StringToHash("Show");
+        private static readonly int AnimationHashClicked = Animator.StringToHash("Clicked");
+        private static readonly int AnimationHashNormal = Animator.StringToHash("Normal");
 
         public int RecipeId => _recipeRow.Key;
 
@@ -311,13 +318,13 @@ namespace Nekoyume.UI.Module
                 if (equals)
                 {
                     animator.Rebind();
-                    animator.SetTrigger("Clicked");
+                    animator.SetTrigger(AnimationHashClicked);
                     Craft.SharedModel.SelectedRecipeCell = this;
                 }
                 else
                 {
                     animator.Rebind();
-                    animator.SetTrigger("Normal");
+                    animator.SetTrigger(AnimationHashNormal);
                 }
             }
         }
@@ -348,6 +355,37 @@ namespace Nekoyume.UI.Module
             lockedObject.unlockPriceText.color = unlockable
                 ? Palette.GetColor(ColorType.ButtonEnabled)
                 : Palette.GetColor(ColorType.TextDenial);
+        }
+
+        public override void UpdateContent(SheetRow<int> itemData)
+        {
+            Show(itemData);
+        }
+
+        public void HideWithAlpha()
+        {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
+
+            canvasGroup.alpha = 0;
+        }
+
+        public void ShowWithAlpha(bool ignoreShowAnimation = false)
+        {
+            if (!gameObject.activeSelf && !ignoreShowAnimation)
+            {
+                return;
+            }
+
+            canvasGroup.alpha = 1;
+            if (ignoreShowAnimation)
+            {
+                return;
+            }
+
+            animator.SetTrigger(AnimationHashShow);
         }
     }
 }

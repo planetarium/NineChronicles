@@ -18,6 +18,7 @@ using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -25,9 +26,13 @@ namespace Nekoyume.UI.Scroller
     using Module;
     using UniRx;
 
-    public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
+    public class RecipeScroll : GridScroll<SheetRow<int>, RecipeScroll.ContextModel, RecipeScroll.CellCellGroup>
     {
-        public class ContextModel : RectScrollDefaultContext
+        public class ContextModel : GridScrollDefaultContext
+        {
+        }
+
+        public class CellCellGroup : GridCellGroup<SheetRow<int>, ContextModel>
         {
         }
 
@@ -79,6 +84,9 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField]
+        private RecipeCell cellTemplate = null;
+
+        [SerializeField]
         private GameObject viewport;
 
         [SerializeField]
@@ -121,6 +129,8 @@ namespace Nekoyume.UI.Scroller
 
         private readonly ReactiveProperty<Filter> _selectedFilter = new();
         private readonly ReactiveProperty<bool> _isAscending = new();
+
+        protected override FancyCell<SheetRow<int>, ContextModel> CellTemplate => cellTemplate;
 
         protected void Awake()
         {
@@ -259,40 +269,16 @@ namespace Nekoyume.UI.Scroller
             }
 
             viewport.SetActive(true);
-            List<RecipeRow.Model> items;
-            if (type is not ItemSubType.EquipmentMaterial)
-            {
-                items = Craft.SharedModel.EquipmentRecipeMap.Values
-                    .Where(x => x.ItemSubType == type &&
-                                !Util.IsEventEquipmentRecipe(x.Rows.First().Key))
-                    .ToList();
-            }
-            else
-            {
-                items = new List<RecipeRow.Model>
-                {
-                    Craft.SharedModel.EquipmentRecipeMap["crystal_equipment"]
-                };
-            }
-
+            var items = Craft.SharedModel.EquipmentRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
             Show(items);
 
-            var max = 0;
-            foreach (var item in items)
-            {
-                if (item.Rows.Any(row => row is EquipmentItemRecipeSheet.Row equipmentRow
-                                         && !IsEquipmentLocked(equipmentRow)))
-                {
-                    max = Mathf.Max(max, items.IndexOf(item));
-                }
-            }
-            // `Scroller.ViewportSize`(viewport.rect.size.x,y) was not initialized.
-            const float viewportSizeVertical = 458f;  // in `UI_Craft` prefab
-            AdjustCellIntervalAndScrollOffset(viewportSizeVertical);
-            JumpTo(max - 1);
+            var max = items.Last(row =>
+                row is EquipmentItemRecipeSheet.Row equipmentRow &&
+                !IsEquipmentLocked(equipmentRow));
+            JumpTo(max);
 
             AnimateScroller();
 
@@ -361,25 +347,16 @@ namespace Nekoyume.UI.Scroller
             }
 
             viewport.SetActive(true);
-            var items = Craft.SharedModel.ConsumableRecipeMap.Values
-                .Where(x => x.StatType == type)
-                .ToList();
+            var items = Craft.SharedModel.ConsumableRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
             Show(items);
 
-            var max = -1;
-            foreach (var item in items)
-            {
-                if (item.Rows.Any(row => row is ConsumableItemRecipeSheet.Row consumableRow
-                    && !IsConsumableLocked(consumableRow)))
-                {
-                    max = Mathf.Max(max, items.IndexOf(item));
-                }
-            }
-            max = max != -1 ? max : items.Count - 1;
-            JumpTo(max - 1);
+            var max = items.Last(row =>
+                row is ConsumableItemRecipeSheet.Row consumableRow &&
+                !IsConsumableLocked(consumableRow));
+            JumpTo(max);
 
             AnimateScroller();
 
@@ -422,7 +399,7 @@ namespace Nekoyume.UI.Scroller
             if (RxProps.EventScheduleRowForRecipe is not null &&
                 RxProps.EventConsumableItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventConsumableRecipeMap.Values.ToList();
+                var items = Craft.SharedModel.EventConsumableRecipeMap;
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
                 sortArea.container.SetActive(true);
@@ -433,7 +410,7 @@ namespace Nekoyume.UI.Scroller
             else if (RxProps.EventScheduleRowForRecipe is not null &&
                      RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventMaterialRecipeMap.Values.ToList();
+                var items = Craft.SharedModel.EventMaterialRecipeMap;
                 viewport.SetActive(true);
                 emptyObject.SetActive(false);
                 sortArea.container.SetActive(true);
@@ -443,7 +420,7 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
-                Show(new List<RecipeRow.Model>(), true);
+                Show(new List<SheetRow<int>>(), true);
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
                 viewport.SetActive(false);
                 emptyObject.SetActive(true);
@@ -452,8 +429,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void UpdateEventScheduleEntireTime(
-            EventScheduleSheet.Row row)
+        private void UpdateEventScheduleEntireTime(EventScheduleSheet.Row row)
         {
             if (row is null)
             {
@@ -509,7 +485,7 @@ namespace Nekoyume.UI.Scroller
             {
                 StopCoroutine(_animationCoroutine);
                 _animationCoroutine = null;
-                var rows = GetComponentsInChildren<RecipeRow>(true);
+                var rows = GetComponentsInChildren<RecipeCell>(true);
                 foreach (var row in rows)
                 {
                     row.ShowWithAlpha(true);
@@ -526,7 +502,7 @@ namespace Nekoyume.UI.Scroller
             yield return null;
             Relayout();
 
-            var rows = GetComponentsInChildren<RecipeRow>();
+            var rows = GetComponentsInChildren<RecipeCell>();
             var wait = new WaitForSeconds(animationInterval);
 
             foreach (var row in rows)
