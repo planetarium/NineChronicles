@@ -268,9 +268,9 @@ RectTransform:
   m_Father: {fileID: 5905760621655100319}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 130, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 130, y: -43.690002}
   m_SizeDelta: {x: 220, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &3991355284921008315
@@ -428,7 +428,7 @@ GameObject:
   - component: {fileID: 1334701857404465415}
   - component: {fileID: 3606356603224996375}
   - component: {fileID: 2074335582978858380}
-  - component: {fileID: 8903074580568053833}
+  - component: {fileID: 7223061728220352566}
   m_Layer: 5
   m_Name: Position_Tooltip_Stat
   m_TagString: Untagged
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8903074580568053833
+--- !u!114 &7223061728220352566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -516,16 +516,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8623438254022133907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5b889cf95a54e84a95f42574e587173, type: 3}
+  m_Script: {fileID: 11500000, guid: 68e3d5a901604291b9a96472285be307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   touchHandler: {fileID: 2074335582978858380}
   titleText: {fileID: 0}
   contentText: {fileID: 2184870233825423634}
-  cooldownText: {fileID: 0}
-  buffObject: {fileID: 0}
-  debuffObject: {fileID: 0}
-  buffIconImage: {fileID: 0}
-  buffStatTypeText: {fileID: 0}
-  debuffIconImage: {fileID: 0}
-  debuffStatTypeText: {fileID: 0}

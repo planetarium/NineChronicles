@@ -76,7 +76,7 @@ namespace Nekoyume.UI
         private Animator animator;
 
         [SerializeField]
-        private SkillPositionTooltip skillTooltip;
+        private PositionTooltip statTooltip;
 
         [SerializeField]
         private Slider expSlider;
@@ -143,7 +143,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Clear();
-            enhancementInventory.Set(ShowItemTooltip, UpdateInformation, enhancementSelectedMaterialItemScroll);
+            enhancementInventory.Set(UpdateInformation, enhancementSelectedMaterialItemScroll);
             base.Show(ignoreShowAnimation);
         }
 
@@ -165,18 +165,6 @@ namespace Nekoyume.UI
             animator.Play(HashToClose);
             Close(true);
             Find<CombinationMain>().Show();
-        }
-
-        private void ShowItemTooltip(EnhancementInventoryItem model, RectTransform target)
-        {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model, enhancementInventory.GetSubmitText(),
-                !model.Disabled.Value,
-                () => enhancementInventory.SelectItem(),
-                () => enhancementInventory.ClearSelectedItem(),
-                () => NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
-                    NotificationCell.NotificationType.Alert));
         }
 
         private void OnSubmit()
@@ -479,6 +467,12 @@ namespace Nekoyume.UI
                 mainStatView.Set(itemOptionInfo.MainStat.type.ToString(),
                     itemOptionInfo.MainStat.type.ValueToString(itemOptionInfo.MainStat.baseValue),
                     $"{baseStatMin.ToCurrencyNotation()} ~ {baseStatMax.ToCurrencyNotation()}");
+                mainStatView.SetDescriptionButton(() =>
+                {
+                    statTooltip.transform.position = mainStatView.DescriptionPosition;
+                    statTooltip.Set("", $"{baseStatMin} ~ {baseStatMax}<sprite name=icon_Arrow>");
+                    statTooltip.gameObject.SetActive(true);
+                });
 
                 for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
                 {
@@ -487,6 +481,14 @@ namespace Nekoyume.UI
                             itemOptionInfo.StatOptions[statIndex].type.ValueToString(itemOptionInfo.StatOptions[statIndex].value),
                             $"{statOptionsMin[statIndex].ToCurrencyNotation()} ~ {statOptionsMax[statIndex].ToCurrencyNotation()}",
                             itemOptionInfo.StatOptions[statIndex].count);
+                    var tooltipContext = $"{statOptionsMin[statIndex]} ~ {statOptionsMax[statIndex]}<sprite name=icon_Arrow>";
+                    var statView = statViews[statIndex];
+                    statViews[statIndex].SetDescriptionButton(() =>
+                    {
+                        statTooltip.transform.position = statView.DescriptionPosition;;
+                        statTooltip.Set("", tooltipContext);
+                        statTooltip.gameObject.SetActive(true);
+                    });
                 }
 
                 for (int skillIndex = 0; skillIndex < itemOptionInfo.SkillOptions.Count; skillIndex++)

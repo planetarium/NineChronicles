@@ -345,11 +345,9 @@ namespace Nekoyume.UI.Module
             return usableItems;
         }
 
-        public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
-            Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView,
+        public void Set(Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView,
             EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll)
         {
-            _onSelectItem = onSelectItem;
             _onUpdateView = onUpdateView;
 
             _disposables.DisposeAllAndClear();
