@@ -14,20 +14,24 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake2")]
-    public class Stake : GameAction, IStakeV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class Stake2 : GameAction, IStakeV1
     {
+        public const long ObsoleteBlockIndex =
+            ActionObsoleteConfig.V200070ObsoleteIndex;
+
         internal BigInteger Amount { get; set; }
 
         BigInteger IStakeV1.Amount => Amount;
 
-        public Stake(BigInteger amount)
+        public Stake2(BigInteger amount)
         {
             Amount = amount >= 0
                 ? amount
                 : throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
-        public Stake()
+        public Stake2()
         {
         }
 
@@ -41,6 +45,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
             IAccountStateDelta states = context.PreviousState;
 

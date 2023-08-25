@@ -12,7 +12,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class StakeTest
+    public class Stake2Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Currency _currency;
@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Address _signerAddress;
 
-        public StakeTest(ITestOutputHelper outputHelper)
+        public Stake2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenNotEnoughBalance()
         {
-            var action = new Stake(200);
+            var action = new Stake2(200);
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     monsterCollectionAddress,
                     new MonsterCollectionState(monsterCollectionAddress, 1, 0).SerializeV2());
-            var action = new Stake(200);
+            var action = new Stake2(200);
             Assert.Throws<MonsterCollectionExistingException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -96,7 +96,7 @@ namespace Lib9c.Tests.Action
             var states = _initialState
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
                 .MintAsset(context, stakeStateAddress, _currency * 50);
-            var action = new Stake(100);
+            var action = new Stake2(100);
             Assert.Throws<StakeExistingClaimableException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenCancelOrUpdateWhileLockup()
         {
-            var action = new Stake(51);
+            var action = new Stake2(51);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = _initialState,
@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
             });
 
             // Cancel
-            var updateAction = new Stake(0);
+            var updateAction = new Stake2(0);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
             }));
 
             // Less
-            updateAction = new Stake(50);
+            updateAction = new Stake2(50);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -143,7 +143,7 @@ namespace Lib9c.Tests.Action
                     new StakeState(stakeState.address, 4611070 - 100).Serialize());
             }
 
-            updateAction = new Stake(51);
+            updateAction = new Stake2(51);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var action = new Stake(100);
+            var action = new Stake2(100);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = _initialState,
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
                 stakeState.CancellableBlockIndex,
                 stakeState.Achievements);
             states = states.SetState(stakeState.address, producedStakeState.SerializeV2());
-            var cancelAction = new Stake(0);
+            var cancelAction = new Stake2(0);
             states = cancelAction.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Update()
         {
-            var action = new Stake(50);
+            var action = new Stake2(50);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = _initialState,
@@ -228,7 +228,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_currency * 50, states.GetBalance(stakeState.address, _currency));
             Assert.Equal(_currency * 50, states.GetBalance(_signerAddress, _currency));
 
-            var updateAction = new Stake(100);
+            var updateAction = new Stake2(100);
             states = updateAction.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -247,8 +247,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new Stake(100);
-            var deserialized = new Stake();
+            var action = new Stake2(100);
+            var deserialized = new Stake2();
             deserialized.LoadPlainValue(action.PlainValue);
 
             Assert.Equal(action.Amount, deserialized.Amount);
