@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
         private static readonly Currency Gold = Currency.Legacy("NCG", 2, null);
         private static readonly TableSheets TableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         private static readonly ITradableItem TradableItem =
-            (ITradableItem)ItemFactory.CreateItemUsable(TableSheets.EquipmentItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Armor), Guid.NewGuid(), 1L);
+            ItemFactory.CreateItemUsable(TableSheets.EquipmentItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Armor), Guid.NewGuid(), 1L);
 
         private readonly Address _sellerAgentAddress2;
         private readonly Address _sellerAvatarAddress2;

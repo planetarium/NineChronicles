@@ -210,7 +210,7 @@ namespace Lib9c.Tests.Action
                     productId,
                     new FungibleAssetValue(_goldCurrencyState.Currency, shopItemData.Price, 0),
                     requiredBlockIndex,
-                    (ITradableItem)nonFungibleItem);
+                    nonFungibleItem);
 
                 // Case for backward compatibility.
                 if (shopItemData.ContainsInInventory)
@@ -454,7 +454,7 @@ namespace Lib9c.Tests.Action
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                (ITradableItem)itemUsable);
+                itemUsable);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
             shopState.Register(shopItem);
@@ -506,7 +506,7 @@ namespace Lib9c.Tests.Action
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                (ITradableItem)itemUsable);
+                itemUsable);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
             shopState.Register(shopItem);
