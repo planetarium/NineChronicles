@@ -14,6 +14,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
@@ -36,8 +37,9 @@ namespace Nekoyume.UI.Scroller
         {
         }
 
-        private enum Filter
+        public enum Filter
         {
+            Default,
             Name,
             Level,
             Grade,
@@ -87,7 +89,7 @@ namespace Nekoyume.UI.Scroller
         private RecipeCell cellTemplate = null;
 
         [SerializeField]
-        private GameObject viewport;
+        private RectTransform viewport;
 
         [SerializeField]
         private List<EquipmentCategoryToggle> equipmentCategoryToggles;
@@ -108,9 +110,6 @@ namespace Nekoyume.UI.Scroller
         private SortArea sortArea;
 
         [SerializeField]
-        private GameObject emptyObject;
-
-        [SerializeField]
         private TextMeshProUGUI emptyObjectText;
 
         [SerializeField]
@@ -126,9 +125,6 @@ namespace Nekoyume.UI.Scroller
         private List<int> _unlockableRecipeIds = new ();
 
         private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
-
-        private readonly ReactiveProperty<Filter> _selectedFilter = new();
-        private readonly ReactiveProperty<bool> _isAscending = new();
 
         protected override FancyCell<SheetRow<int>, ContextModel> CellTemplate => cellTemplate;
 
@@ -156,34 +152,31 @@ namespace Nekoyume.UI.Scroller
                 });
             }
 
+            openAllRecipeArea.button.onClick.AddListener(OpenEveryAvailableRecipes);
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, viewport.rect.width);
+
             var options = Enum.GetNames(typeof(Filter)).Select(f => f.ToString()).ToList();
             sortArea.filter.AddOptions(options);
             sortArea.filter.onValueChanged.AddListener(index =>
             {
-                _selectedFilter.Value = (Filter)index;
                 AudioController.PlayClick();
+
+                var items = ItemsSource.SelectMany(x => x).ToList();
+                SetFilterAndAscending((Filter)index, true, items, true);
             });
             sortArea.button.onClick.AddListener(() =>
             {
-                _isAscending.Value = !_isAscending.Value;
                 AudioController.PlayClick();
-            });
 
-            _selectedFilter.Value = Filter.Level;
-            _isAscending.Value = true;
-
-            _selectedFilter.Subscribe(filter =>
-            {
-                _isAscending.SetValueAndForceNotify(true);
+                var items = ItemsSource.SelectMany(x => x).ToList();
+                SetFilterAndAscending((Filter)sortArea.filter.value, !sortArea.buttonArrow.vertical, items, true);
             });
-            _isAscending.Subscribe(ascending =>
-            {
-                sortArea.buttonArrow.vertical = !_isAscending.Value;
-                // Todo : Sort with selected filter, ascending.
-                Debug.LogError($"Sort with {_selectedFilter.Value}, ascending: {_isAscending.Value}");
-            });
-
-            openAllRecipeArea.button.onClick.AddListener(OpenEveryAvailableRecipes);
         }
 
         private void OnDisable()
@@ -268,26 +261,14 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            viewport.SetActive(true);
             var items = Craft.SharedModel.EquipmentRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
-            emptyObject.SetActive(!items.Any());
+            emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            Show(items);
+            SetFilterAndAscending(Filter.Default, true, items);
 
-            if (jumpToRecipe == null)
-            {
-                var max = items.LastOrDefault(row =>
-                    row is EquipmentItemRecipeSheet.Row equipmentRow &&
-                    !IsEquipmentLocked(equipmentRow));
-                JumpTo(max);
-            }
-            else
-            {
-                JumpTo(jumpToRecipe);
-            }
-
-            AnimateScroller();
+            jumpToRecipe ??= items.LastOrDefault(row => !IsEquipmentLocked(row));
+            JumpTo(jumpToRecipe);
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
@@ -353,19 +334,14 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            viewport.SetActive(true);
             var items = Craft.SharedModel.ConsumableRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
-            emptyObject.SetActive(!items.Any());
+            emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            Show(items);
+            SetFilterAndAscending(Filter.Default, true, items);
 
-            var max = items.Last(row =>
-                row is ConsumableItemRecipeSheet.Row consumableRow &&
-                !IsConsumableLocked(consumableRow));
+            var max = items.Last(row => !IsConsumableLocked(row));
             JumpTo(max);
-
-            AnimateScroller();
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
@@ -403,37 +379,27 @@ namespace Nekoyume.UI.Scroller
             equipmentTab.SetActive(false);
             consumableTab.SetActive(false);
 
+            List<SheetRow<int>> items;
             if (RxProps.EventScheduleRowForRecipe is not null &&
                 RxProps.EventConsumableItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventConsumableRecipeMap;
-                viewport.SetActive(true);
-                emptyObject.SetActive(false);
-                sortArea.container.SetActive(true);
-                eventScheduleTab.container.SetActive(true);
-                Show(items, true);
-                AnimateScroller();
+                items = Craft.SharedModel.EventConsumableRecipeMap;
             }
             else if (RxProps.EventScheduleRowForRecipe is not null &&
                      RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventMaterialRecipeMap;
-                viewport.SetActive(true);
-                emptyObject.SetActive(false);
-                sortArea.container.SetActive(true);
-                eventScheduleTab.container.SetActive(true);
-                Show(items, true);
-                AnimateScroller();
+                items = Craft.SharedModel.EventMaterialRecipeMap;
             }
             else
             {
-                Show(new List<SheetRow<int>>(), true);
-                emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
-                viewport.SetActive(false);
-                emptyObject.SetActive(true);
-                sortArea.container.SetActive(false);
-                eventScheduleTab.container.SetActive(false);
+                items = new List<SheetRow<int>>();
             }
+
+            emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
+            emptyObjectText.gameObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
+            eventScheduleTab.container.SetActive(items.Any());
+            SetFilterAndAscending(Filter.Default, true, items, true);
         }
 
         private void UpdateEventScheduleEntireTime(EventScheduleSheet.Row row)
@@ -548,6 +514,71 @@ namespace Nekoyume.UI.Scroller
                 toggle.IndicatorImage.enabled =
                     toggle.Type == resultItem.ItemSubType;
             }
+        }
+
+        private void SetFilterAndAscending<T>(Filter filter, bool isAscending, List<T> items, bool jumpToFirst = false) where T : SheetRow<int>
+        {
+            sortArea.filter.SetValueWithoutNotify((int)filter);
+            sortArea.buttonArrow.vertical = isAscending;
+
+            items = GetSortedItems(items, (Filter)sortArea.filter.value, sortArea.buttonArrow.vertical);
+            Show(items, jumpToFirst);
+            AnimateScroller();
+        }
+
+        public static List<T> GetSortedItems<T>(List<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
+        {
+            int ResultItemId(T row)
+            {
+                return row switch
+                {
+                    EquipmentItemRecipeSheet.Row recipe => recipe.ResultEquipmentId,
+                    EventConsumableItemRecipeSheet.Row recipe => recipe.ResultConsumableItemId,
+                    ConsumableItemRecipeSheet.Row recipe => recipe.ResultConsumableItemId,
+                    EventMaterialItemRecipeSheet.Row recipe => recipe.ResultMaterialItemId,
+                    _ => throw new ArgumentException("Invalid row type")
+                };
+            }
+
+            string GetItemNameString(T recipeRow)
+            {
+                return L10nManager.Localize($"ITEM_NAME_{ResultItemId(recipeRow)}");
+            }
+
+            int GetItemRequirementLevel(T recipeRow)
+            {
+                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                return sheet.TryGetValue(ResultItemId(recipeRow), out var row) ? row.Level : 1;
+            }
+
+            int GetItemGrade(T recipeRow)
+            {
+                return Game.Game.instance.TableSheets.ItemSheet[ResultItemId(recipeRow)].Grade;
+            }
+
+            Func<T, int> func;
+            switch (selectedFilter)
+            {
+                case RecipeScroll.Filter.Name:
+                    return isAscending
+                        ? items.OrderBy(GetItemNameString).ToList()
+                        : items.OrderByDescending(GetItemNameString).ToList();
+
+                case RecipeScroll.Filter.Level:
+                    func = GetItemRequirementLevel;
+                    break;
+                case RecipeScroll.Filter.Grade:
+                    func = GetItemGrade;
+                    break;
+                case RecipeScroll.Filter.Default:
+                default:
+                    func = x => x.Key;
+                    break;
+            }
+
+            return isAscending
+                ? items.OrderBy(func).ToList()
+                : items.OrderByDescending(func).ToList();
         }
     }
 }

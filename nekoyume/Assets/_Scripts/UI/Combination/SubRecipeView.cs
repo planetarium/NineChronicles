@@ -525,9 +525,7 @@ namespace Nekoyume.UI
                         }
 
                         var sheet = TableSheets.Instance.ItemRequirementSheet;
-                        var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
-
-                        if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                        if (!sheet.TryGetValue(equipmentRow.ResultEquipmentId, out var row))
                         {
                             levelText.enabled = false;
                         }
@@ -577,9 +575,7 @@ namespace Nekoyume.UI
                 recipeId = consumableRow.Id;
 
                 var sheet = TableSheets.Instance.ItemRequirementSheet;
-                var resultItemRow = consumableRow.GetResultConsumableItemRow();
-
-                if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                if (!sheet.TryGetValue(consumableRow.ResultConsumableItemId, out var row))
                 {
                     levelText.enabled = false;
                 }

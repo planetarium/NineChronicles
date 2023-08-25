@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -11,6 +13,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 
@@ -18,9 +21,9 @@ namespace Nekoyume.UI.Model
 {
     public class RecipeModel
     {
-        public readonly Dictionary<ItemSubType, List<SheetRow<int>>> EquipmentRecipeMap = new();
+        public readonly Dictionary<ItemSubType, List<EquipmentItemRecipeSheet.Row>> EquipmentRecipeMap = new();
 
-        public readonly Dictionary<StatType, List<SheetRow<int>>> ConsumableRecipeMap = new();
+        public readonly Dictionary<StatType, List<ConsumableItemRecipeSheet.Row>> ConsumableRecipeMap = new();
 
         public readonly List<SheetRow<int>> EventConsumableRecipeMap = new();
 
@@ -81,7 +84,7 @@ namespace Nekoyume.UI.Model
                     : ItemSubType.EquipmentMaterial;
                 if (!EquipmentRecipeMap.ContainsKey(itemSubType))
                 {
-                    EquipmentRecipeMap[itemSubType] = new List<SheetRow<int>>();
+                    EquipmentRecipeMap[itemSubType] = new List<EquipmentItemRecipeSheet.Row>();
                 }
 
                 EquipmentRecipeMap[itemSubType].Add(recipe);
@@ -109,7 +112,7 @@ namespace Nekoyume.UI.Model
                 var statType = resultItem.GetUniqueStat().StatType;
                 if (!ConsumableRecipeMap.ContainsKey(statType))
                 {
-                    ConsumableRecipeMap[statType] = new List<SheetRow<int>>();
+                    ConsumableRecipeMap[statType] = new List<ConsumableItemRecipeSheet.Row>();
                 }
 
                 foreach (var recipeId in group.RecipeIds)

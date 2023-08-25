@@ -11344,7 +11344,7 @@ MonoBehaviour:
   fillWithNullToEmptyCellGroup: 0
   cellTemplate: {fileID: 409872150822889065, guid: 9102ea9092785405295b3a86fcd0d154,
     type: 3}
-  viewport: {fileID: 1687619415917816435}
+  viewport: {fileID: 1687619415917816436}
   equipmentCategoryToggles:
   - Toggle: {fileID: 6852428432784729487}
     Type: 6
@@ -11386,7 +11386,6 @@ MonoBehaviour:
     filter: {fileID: 5799812560705901213}
     button: {fileID: 8872794263930549831}
     buttonArrow: {fileID: 8833010837352579621}
-  emptyObject: {fileID: 5810326467934443780}
   emptyObjectText: {fileID: 8431232344488711851}
   openAllRecipeArea:
     container: {fileID: 4675770433093221473}
@@ -27443,7 +27442,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 5}
-  m_SizeDelta: {x: 0, y: 135}
+  m_SizeDelta: {x: 0, y: 168}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &4070272531227766322
 MonoBehaviour:
