@@ -202,9 +202,27 @@ namespace Nekoyume.UI
             }
 
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
-
             var targetExp = baseItem.Exp + materialItems.Aggregate(0L, (total, m) => total + m.Exp);
-            EnhancementCostSheetV3.Row targetRow;
+            int requiredBlockIndex = GetBlockIndex(baseItem, sheet, targetExp);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
+                itemUsable: baseItem);
+
+            NotificationSystem.Push(MailType.Workshop,
+                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
+                NotificationCell.NotificationType.Information);
+
+            Game.Game.instance.ActionManager
+                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
+
+            enhancementInventory.DeselectItem(true);
+
+            StartCoroutine(CoCombineNPCAnimation(baseItem, requiredBlockIndex, Clear));
+        }
+
+        private int GetBlockIndex(Equipment baseItem, EnhancementCostSheetV3 sheet, long targetExp)
+        {
             int requiredBlockIndex = 0;
             try
             {
@@ -221,20 +239,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex = 0;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
-                itemUsable: baseItem);
-
-            NotificationSystem.Push(MailType.Workshop,
-                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
-                NotificationCell.NotificationType.Information);
-
-            Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
-
-            enhancementInventory.DeselectItem(true);
-
-            StartCoroutine(CoCombineNPCAnimation(baseItem, requiredBlockIndex, Clear));
+            return requiredBlockIndex;
         }
 
         private void Clear()
@@ -428,14 +433,11 @@ namespace Nekoyume.UI
                 var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
                 var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
                 var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
-                long requiredBlock = 0;
 
                 if (equipment.level != targetRow.Level)
                 {
                     for (int i = 1; i < targetRangeRows.Count; i++)
                     {
-                        requiredBlock += targetRangeRows[i].RequiredBlockIndex;
-
                         baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
                         baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
 
@@ -458,6 +460,7 @@ namespace Nekoyume.UI
                         }
                     }
                 }
+
                 decimal nextCp = 0m;
                 nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.MainStat.type, baseStatMax);
                 for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
@@ -467,7 +470,8 @@ namespace Nekoyume.UI
                 nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
                 nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
 
-                requierdBlockTimeViewr.SetTimeBlock($"{requiredBlock:#,0}", requiredBlock.BlockRangeToTimeSpanString());
+                long requiredBlockIndex = GetBlockIndex(equipment, _costSheet, targetExp);
+                requierdBlockTimeViewr.SetTimeBlock($"{requiredBlockIndex:#,0}", requiredBlockIndex.BlockRangeToTimeSpanString());
 
                 //StatView
                 mainStatView.gameObject.SetActive(true);
