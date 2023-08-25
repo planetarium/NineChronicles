@@ -24,11 +24,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2094
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1938
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena13")]
-    public class BattleArena : GameAction, IBattleArenaV1
+    [ActionType("battle_arena12")]
+    [ActionObsolete(ActionObsoleteConfig.V200070ObsoleteIndex)]
+    public class BattleArena12 : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
         public Address myAvatarAddress;
@@ -93,6 +94,12 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 return states;
+            }
+
+            CheckObsolete(ActionObsoleteConfig.V200070ObsoleteIndex, context);
+            if (championshipId == 6 && round >= 2 || championshipId > 6)
+            {
+                throw new ActionObsoletedException();
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(
@@ -364,7 +371,7 @@ namespace Nekoyume.Action
 
             var enemyRuneStates = new List<RuneState>();
             var enemyRuneSlotInfos = enemyRuneSlotState.GetEquippedRuneSlotInfos();
-            foreach (var address in enemyRuneSlotInfos.Select(info => RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId)))
+            foreach (var address in enemyRuneSlotInfos.Select(info => RuneState.DeriveAddress(myAvatarAddress, info.RuneId)))
             {
                 if (states.TryGetState(address, out List rawRuneState))
                 {

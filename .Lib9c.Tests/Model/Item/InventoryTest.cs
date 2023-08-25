@@ -408,7 +408,7 @@
             var equipment = (Equipment)ItemFactory.CreateItem(equipmentRow, random);
             inventory.AddItem(equipment);
             Assert.Equal(2, inventory.Items.Count);
-            tradableItems.Add((ITradableItem)equipment);
+            tradableItems.Add(equipment);
             Assert.Equal(2, tradableItems.Count);
 
             var costumeRow = TableSheets.CostumeItemSheet.First;
@@ -464,7 +464,7 @@
             Assert.Empty(inventory.Items);
             inventory.AddItem(itemUsable);
             Assert.Single(inventory.Equipments);
-            var tradableId = nonFungibleItem.NonFungibleId;
+            var tradableId = nonFungibleItem.TradableId;
             Assert.False(inventory.RemoveTradableItem(tradableId, 1));
             Assert.True(inventory.RemoveTradableItem(tradableId, 0));
             Assert.Empty(inventory.Equipments);

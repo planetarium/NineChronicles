@@ -14,7 +14,6 @@ namespace Lib9c.Tests.Action.Scenario
     using Nekoyume.Model.BattleStatus.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
-    using Nekoyume.Model.Market;
     using Nekoyume.Model.Skill;
     using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
@@ -30,7 +29,6 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly IAccountStateDelta _initialState;
         private readonly Aura _aura;
         private readonly TableSheets _tableSheets;
-        private readonly Currency _currency;
 
         public AuraScenarioTest()
         {
@@ -76,12 +74,11 @@ namespace Lib9c.Tests.Action.Scenario
                         avatarState.questList.Serialize());
             }
 
-            _currency = Currency.Legacy("NCG", 2, minters: null);
             _initialState = _initialState
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(
                     Addresses.GoldCurrency,
-                    new GoldCurrencyState(_currency).Serialize())
+                    new GoldCurrencyState(Currency.Legacy("NCG", 2, minters: null)).Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .MintAsset(new ActionContext(), _agentAddress, Currencies.Crystal * 2);
             foreach (var (key, value) in sheets)

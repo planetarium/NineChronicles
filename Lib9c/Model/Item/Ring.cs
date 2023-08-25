@@ -6,10 +6,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Ring : Equipment, ITradableItem
+    public class Ring : Equipment
     {
-        public Guid TradableId => ItemId;
-
         public Ring(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex,
             bool madeWithMimisbrunnrRecipe = false) : base(data, id, requiredBlockIndex,
             madeWithMimisbrunnrRecipe)

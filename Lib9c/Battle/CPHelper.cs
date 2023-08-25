@@ -108,7 +108,7 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use GetCp")]
-        public static int GetCP(INonFungibleItem tradableItem, CostumeStatSheet sheet)
+        public static int GetCP(ITradableItem tradableItem, CostumeStatSheet sheet)
         {
             if (tradableItem is ItemUsable itemUsable)
             {
