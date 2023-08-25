@@ -229,9 +229,7 @@ namespace Nekoyume.UI
             }
 
             var itemRow = row.GetResultEquipmentItemRow();
-            recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
-            var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
-            recipeScroll.GoToRecipeGroup(group);
+            recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true, row);
             if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeId))
             {
                 SharedModel.SelectedRow.Value = row;

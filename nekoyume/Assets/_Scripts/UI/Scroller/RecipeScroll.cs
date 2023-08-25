@@ -246,7 +246,7 @@ namespace Nekoyume.UI.Scroller
             UpdateUnlockAllButton();
         }
 
-        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
+        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false, EquipmentItemRecipeSheet.Row jumpToRecipe = null)
         {
             _disposablesAtShow.DisposeAllAndClear();
             Craft.SharedModel.DisplayingItemSubtype = type;
@@ -275,10 +275,17 @@ namespace Nekoyume.UI.Scroller
             sortArea.container.SetActive(items.Any());
             Show(items);
 
-            var max = items.Last(row =>
-                row is EquipmentItemRecipeSheet.Row equipmentRow &&
-                !IsEquipmentLocked(equipmentRow));
-            JumpTo(max);
+            if (jumpToRecipe == null)
+            {
+                var max = items.LastOrDefault(row =>
+                    row is EquipmentItemRecipeSheet.Row equipmentRow &&
+                    !IsEquipmentLocked(equipmentRow));
+                JumpTo(max);
+            }
+            else
+            {
+                JumpTo(jumpToRecipe);
+            }
 
             AnimateScroller();
 
@@ -541,17 +548,6 @@ namespace Nekoyume.UI.Scroller
                 toggle.IndicatorImage.enabled =
                     toggle.Type == resultItem.ItemSubType;
             }
-        }
-
-        public void GoToRecipeGroup(string equipmentRecipeGroup)
-        {
-            if (!Craft.SharedModel.EquipmentRecipeMap
-                    .TryGetValue(equipmentRecipeGroup, out var model))
-            {
-                return;
-            }
-
-            JumpTo(model);
         }
     }
 }
