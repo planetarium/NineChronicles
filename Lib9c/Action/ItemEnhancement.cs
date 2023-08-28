@@ -364,10 +364,10 @@ namespace Nekoyume.Action
                     states.GetGoldCurrency() * requiredNcg);
             }
 
-            // Required block index = Sum of all required blocks from start level to target level
-            var requiredBlockCount = GetRequiredBlockCount(preItemUsable, enhancementEquipment,
-                enhancementCostSheet);
-            var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;
+            // Required block index = Total required block to reach target level - total required block to reach start level (already elapsed)
+            var requiredBlockIndex =
+                ctx.BlockIndex +
+                (targetCostRow.RequiredBlockIndex - startCostRow.RequiredBlockIndex);
             enhancementEquipment.Update(requiredBlockIndex);
 
             // Remove materials
