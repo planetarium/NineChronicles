@@ -226,13 +226,20 @@ namespace Nekoyume.UI
             int requiredBlockIndex = 0;
             try
             {
-                requiredBlockIndex = sheet.OrderedList
-                    .Where(e =>
-                        e.ItemSubType == baseItem.ItemSubType &&
-                        e.Grade == baseItem.Grade &&
-                        e.Exp > baseItem.Exp &&
-                        e.Exp <= targetExp)
-                .Aggregate(0, (blocks, row) => blocks + row.RequiredBlockIndex);
+                if (!ItemEnhancement.TryGetRow(baseItem, _costSheet, out var baseItemCostRow))
+                {
+                    baseItemCostRow = new EnhancementCostSheetV3.Row();
+                }
+
+                EnhancementCostSheetV3.Row targetRow;
+                targetRow = _decendingbyExpCostSheet
+                .First(row =>
+                    row.Value.ItemSubType == baseItem.ItemSubType &&
+                    row.Value.Grade == baseItem.Grade &&
+                    row.Value.Exp <= targetExp
+                ).Value;
+
+                requiredBlockIndex = targetRow.RequiredBlockIndex - baseItemCostRow.RequiredBlockIndex;
             }
             catch
             {
