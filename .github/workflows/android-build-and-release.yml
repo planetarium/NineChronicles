@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: ""
+      version-code:
+        description: "Google Play Console VersionCode"
+      app-version:
+        description: "Google Play Console VersionName ex(40.0.0)"
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -74,6 +78,8 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
           buildMethod: 'Editor.Builder.Build${{ matrix.targetPlatform }}'
           buildName: ${{ matrix.targetPlatform }}
+          androidVersionCode: ${{ github.event.inputs.version-code }}
+          version: ${{ github.event.inputs.app-version }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
