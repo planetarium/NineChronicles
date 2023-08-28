@@ -60,9 +60,6 @@ namespace Nekoyume.UI
         [Space]
         public GameObject passPhraseGroup;
         public TMP_InputField passPhraseField;
-        public TextMeshProUGUI passPhraseText;
-        public TextMeshProUGUI weakText;
-        public TextMeshProUGUI strongText;
 
         [Space]
         public GameObject retypeGroup;
@@ -115,8 +112,6 @@ namespace Nekoyume.UI
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
-            strongText.gameObject.SetActive(false);
-            weakText.gameObject.SetActive(false);
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
@@ -250,9 +245,6 @@ namespace Nekoyume.UI
             }
 
             var strong = CheckPassWord(text);
-            strongText.gameObject.SetActive(strong);
-            weakText.gameObject.SetActive(!strong);
-            passPhraseText.gameObject.SetActive(!strong);
             retypeField.interactable = true;
         }
 
