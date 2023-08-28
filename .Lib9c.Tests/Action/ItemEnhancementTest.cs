@@ -14,7 +14,6 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
     using static SerializeKeys;
 
@@ -90,30 +89,28 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // from 0 to 1 using one level 0 material
-        [InlineData(0, 1, 0, 25, 0, 1)]
+        [InlineData(0, 1, 0, 1)]
         // from 0 to N using multiple level 0 materials
-        [InlineData(0, 2, 0, 87, 0, 3)]
-        [InlineData(0, 4, 20, 837, 0, 15)]
+        [InlineData(0, 2, 0, 3)]
+        [InlineData(0, 4, 0, 15)]
         // from K to K with material(s). Check requiredBlock == 0
-        [InlineData(10, 10, 0, 0, 0, 1)]
+        [InlineData(10, 10, 0, 1)]
         // from K to N using one level X material
-        [InlineData(5, 6, 40, 1300, 6, 1)]
+        [InlineData(5, 6, 6, 1)]
         // from K to N using multiple materials
-        [InlineData(5, 7, 120, 3800, 4, 6)]
-        [InlineData(5, 9, 600, 10275, 7, 5)]
+        [InlineData(5, 7, 4, 6)]
+        [InlineData(5, 9, 7, 5)]
         // from 20 to 21 (just to reach level 21 exp)
-        [InlineData(20, 21, 1310720, 7500, 20, 1)]
+        [InlineData(20, 21, 20, 1)]
         // from 20 to 21 (over level 21)
-        [InlineData(20, 21, 1310720, 7500, 20, 2)]
+        [InlineData(20, 21, 20, 2)]
         // from 21 to 21 (no level up)
-        [InlineData(21, 21, 0, 0, 1, 1)]
-        [InlineData(21, 21, 0, 0, 21, 1)]
+        [InlineData(21, 21, 1, 1)]
+        [InlineData(21, 21, 21, 1)]
         // Test: change of exp, change of level, required block, NCG price
         public void Execute(
             int startLevel,
             int expectedLevel,
-            int expectedCost,
-            int expectedBlockIndex,
             int materialLevel,
             int materialCount)
         {
@@ -132,6 +129,16 @@ namespace Lib9c.Tests.Action
 
             var startExp = equipment.Exp;
             _avatarState.inventory.AddItem(equipment, count: 1);
+
+            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
+                r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                r.Level == expectedLevel);
+            var startRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(r =>
+                r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                r.Level == startLevel);
+            var expectedCost = expectedTargetRow.Cost - (startRow?.Cost ?? 0);
+            var expectedBlockIndex =
+                expectedTargetRow.RequiredBlockIndex - (startRow?.RequiredBlockIndex ?? 0);
 
             var expectedExpIncrement = 0L;
             var materialIds = new List<Guid>();
@@ -242,20 +249,6 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            EnhancementCostSheetV3.Row startRow;
-
-            if (startLevel != 0)
-            {
-                startRow = _tableSheets.EnhancementCostSheetV3.OrderedList
-                    .First(x => x.Grade == 1 && x.Level == startLevel);
-            }
-            else
-            {
-                startRow = new EnhancementCostSheetV3.Row();
-            }
-
-            var targetRow = _tableSheets.EnhancementCostSheetV3.OrderedList
-                .First(x => x.Grade == 1 && x.Level == expectedLevel);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
