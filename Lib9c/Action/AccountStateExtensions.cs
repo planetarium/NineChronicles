@@ -473,7 +473,14 @@ namespace Nekoyume.Action
         public static T GetSheet<T>(this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
+            return GetSheet<T>(states, address);
+        }
 
+        public static T GetSheet<T>(
+            this IAccountState states,
+            Address sheetAddr)
+            where T : ISheet, new()
+        {
             try
             {
                 var csv = GetSheetCsv<T>(states);
@@ -483,7 +490,7 @@ namespace Nekoyume.Action
                     hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(csv));
                 }
 
-                var cacheKey = address.ToHex() + ByteUtil.Hex(hash);
+                var cacheKey = sheetAddr.ToHex() + ByteUtil.Hex(hash);
                 if (SheetsCache.TryGetValue(cacheKey, out var cached))
                 {
                     return (T)cached;
