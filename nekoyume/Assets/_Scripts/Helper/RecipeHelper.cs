@@ -32,13 +32,7 @@ namespace Nekoyume.Helper
 
         public static DecimalStat GetUniqueStat(this ConsumableItemSheet.Row row)
         {
-            return row.Stats.Any() ? row.Stats[0] : new DecimalStat(StatType.NONE);
-        }
-
-        public static DecimalStat GetUniqueStat(this ConsumableItemRecipeSheet.Row recipeRow)
-        {
-            var resultItem = GetResultConsumableItemRow(recipeRow);
-            return GetUniqueStat(resultItem);
+            return row.Stats.Any() ? row.Stats.First() : new DecimalStat(StatType.NONE);
         }
     }
 }
