@@ -2,11 +2,13 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Numerics;
+    using Bencodex.Types;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Consensus;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Loader;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -176,8 +178,11 @@ namespace Lib9c.Tests.Action
             var deserialized = new ValidatorSetOperate();
             deserialized.LoadPlainValue(action.PlainValue);
 
+            var dict = Assert.IsType<Dictionary>(action.PlainValue);
+            Assert.Equal(new Text("op_validator_set"), dict["type_id"]);
             Assert.Equal(ValidatorSetOperatorType.Append, action.Operator);
             Assert.Equal(_validator, action.Operand);
+            Assert.Null(deserialized.Error);
         }
 
         [Fact]
@@ -187,8 +192,11 @@ namespace Lib9c.Tests.Action
             var deserialized = new ValidatorSetOperate();
             deserialized.LoadPlainValue(action.PlainValue);
 
+            var dict = Assert.IsType<Dictionary>(action.PlainValue);
+            Assert.Equal(new Text("op_validator_set"), dict["type_id"]);
             Assert.Equal(ValidatorSetOperatorType.Update, action.Operator);
             Assert.Equal(_validator, action.Operand);
+            Assert.Null(deserialized.Error);
         }
 
         [Fact]
@@ -198,8 +206,24 @@ namespace Lib9c.Tests.Action
             var deserialized = new ValidatorSetOperate();
             deserialized.LoadPlainValue(action.PlainValue);
 
+            var dict = Assert.IsType<Dictionary>(action.PlainValue);
+            Assert.Equal(new Text("op_validator_set"), dict["type_id"]);
             Assert.Equal(ValidatorSetOperatorType.Remove, action.Operator);
             Assert.Equal(_validator, action.Operand);
+            Assert.Null(deserialized.Error);
+        }
+
+        [Fact]
+        public void LoadPlainValueViaActionLoader()
+        {
+            var loader = new NCActionLoader();
+            var action = ValidatorSetOperate.Append(_validator);
+            var loaded = loader.LoadAction(0, action.PlainValue);
+
+            var deserialized = Assert.IsType<ValidatorSetOperate>(loaded);
+            Assert.Equal(ValidatorSetOperatorType.Append, deserialized.Operator);
+            Assert.Equal(_validator, deserialized.Operand);
+            Assert.Null(deserialized.Error);
         }
     }
 }

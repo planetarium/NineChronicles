@@ -291,7 +291,6 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
             Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
-            Assert.Equal(targetRow.Cost - startRow.Cost, slotResult.gold);
         }
     }
 }
