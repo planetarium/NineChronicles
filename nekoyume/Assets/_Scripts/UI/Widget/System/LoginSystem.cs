@@ -244,7 +244,6 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
             }
 
-            var strong = CheckPassWord(text);
             retypeField.interactable = true;
         }
 
