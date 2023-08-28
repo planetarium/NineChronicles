@@ -113,30 +113,9 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
-extract:
-  needs: build
-  runs-on: ubuntu-latest
-  outputs:
-    network: ${{ steps.extract.outputs.network }}
-  steps:
-    - uses: actions/checkout@v3
-    - name: extract
-      id: extract
-      run: |
-        if [[ "${{ startsWith(github.ref, 'refs/heads/release/') }}" == "true" ]]; then
-            echo "::set-output name=network::internal"
-        elif [[ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]]; then
-            echo "::set-output name=network::main"
-        else
-          echo "::set-output name=network::null"
-        fi
-
   release-to-google-play:
     name: Release to the Google Play Store
     runs-on: ubuntu-latest
-    needs: ["extract"]
-    environment:
-      name: ${{ needs.extract.outputs.network }}
     env:
       GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
       GOOGLE_PLAY_KEY_FILE_PATH:
