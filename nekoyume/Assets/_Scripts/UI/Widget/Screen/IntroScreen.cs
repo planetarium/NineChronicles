@@ -120,6 +120,7 @@ namespace Nekoyume.UI
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 
+            Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
             qrCodeGuideBackground.Show();
             qrCodeGuideContainer.SetActive(true);
             foreach (var image in qrCodeGuideImages)
@@ -219,14 +220,12 @@ namespace Nekoyume.UI
 
         private IEnumerator CoSocialLogin()
         {
-            Analyzer.Instance.Track("Unity/Intro/SocialLogin_1");
             var popup = Find<TitleOneButtonSystem>();
             popup.Show("UI_LOGIN_ON_BROWSER_TITLE","UI_LOGIN_ON_BROWSER_CONTENT");
             popup.SubmitCallback = null;
             popup.SubmitCallback = () =>
             {
                 Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
-                Analyzer.Instance.Track("Unity/Intro/SocialLogin_2");
             };
 
             yield return new WaitForSeconds(1);

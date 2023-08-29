@@ -530,13 +530,11 @@ namespace Nekoyume.UI
             // accountExist
             if (connectedAddress.HasValue)
             {
-                Analyzer.Instance.Track("Unity/Login/1");
                 SetState(States.ConnectedAddress_Mobile);
                 SetImage(connectedAddress.Value);
             }
             else
             {
-                Analyzer.Instance.Track("Unity/Login/2");
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
                 SetState(States.CreatePassword_Mobile);

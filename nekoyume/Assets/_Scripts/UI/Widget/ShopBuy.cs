@@ -43,6 +43,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            SharedModel = new Shop();
 
             sellButton.onClick.AddListener(() =>
             {
@@ -68,7 +69,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            SharedModel = new Shop();
             SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(data =>
             {
                 if (data is null)
