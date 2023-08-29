@@ -60,9 +60,6 @@ namespace Nekoyume.UI
         [Space]
         public GameObject passPhraseGroup;
         public TMP_InputField passPhraseField;
-        public TextMeshProUGUI passPhraseText;
-        public TextMeshProUGUI weakText;
-        public TextMeshProUGUI strongText;
 
         [Space]
         public GameObject retypeGroup;
@@ -115,8 +112,6 @@ namespace Nekoyume.UI
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
-            strongText.gameObject.SetActive(false);
-            weakText.gameObject.SetActive(false);
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
@@ -249,18 +244,7 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
             }
 
-            var strong = CheckPassWord(text);
-            strongText.gameObject.SetActive(strong);
-            weakText.gameObject.SetActive(!strong);
-            passPhraseText.gameObject.SetActive(!strong);
-            retypeField.interactable = strong;
-
-            if (!strong)
-            {
-                var popup = Find<TitleOneButtonSystem>();
-                popup.Show("UI_CONFIRM", "UI_INVALID_CREATED_PASSWORD");
-                popup.SubmitCallback = () => { popup.Close(); };
-            }
+            retypeField.interactable = true;
         }
 
         private static bool CheckPassWord(string text)
@@ -278,16 +262,10 @@ namespace Nekoyume.UI
             }
 
             UpdateSubmitButton();
-            var vaild = submitButton.IsSubmittable;
-            correctText.gameObject.SetActive(vaild);
-            incorrectText.gameObject.SetActive(!vaild);
-            retypeText.gameObject.SetActive(!vaild);
-            if (!vaild)
-            {
-                var popup = Find<TitleOneButtonSystem>();
-                popup.Show("UI_CONFIRM", "UI_INVALID_RETYPE_PASSWORD");
-                popup.SubmitCallback = () => { popup.Close(); };
-            }
+            var valid = submitButton.IsSubmittable;
+            correctText.gameObject.SetActive(valid);
+            incorrectText.gameObject.SetActive(!valid);
+            retypeText.gameObject.SetActive(!valid);
         }
 
         public bool CheckLocalPassphrase()
@@ -312,12 +290,12 @@ namespace Nekoyume.UI
             return false;
         }
 
-        private bool CheckPasswordVaildInCreate()
+        private bool CheckPasswordValidInCreate()
         {
             var passPhrase = passPhraseField.text;
             var retyped = retypeField.text;
             return !(string.IsNullOrEmpty(passPhrase) || string.IsNullOrEmpty(retyped)) &&
-                   passPhrase == retyped && CheckPassWord(passPhrase);
+                   passPhrase == retyped;
         }
 
         private void SetPassPhrase(string passPhrase)
@@ -621,7 +599,7 @@ namespace Nekoyume.UI
                 case States.ResetPassphrase:
                 case States.CreatePassword:
                 case States.CreatePassword_Mobile:
-                    submitButton.Interactable = CheckPasswordVaildInCreate();
+                    submitButton.Interactable = CheckPasswordValidInCreate();
                     break;
                 case States.Login:
                 case States.Login_Mobile:
