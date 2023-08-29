@@ -240,12 +240,6 @@ namespace Nekoyume.UI
             retypeField.interactable = true;
         }
 
-        private static bool CheckPassWord(string text)
-        {
-            var result = Zxcvbn.Zxcvbn.MatchPassword(text);
-            return result.Score >= 2;
-        }
-
         public void CheckRetypePassphrase(string text)
         {
             if (!AnalyzeCache.IsTrackedRetypePassword)
@@ -283,6 +277,12 @@ namespace Nekoyume.UI
             return false;
         }
 
+
+        public static string GetPassPhrase()
+        {
+            return Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
+        }
+
         private bool CheckPasswordValidInCreate()
         {
             var passPhrase = passPhraseField.text;
@@ -293,11 +293,6 @@ namespace Nekoyume.UI
         private void SetPassPhrase(string passPhrase)
         {
             PlayerPrefs.SetString("LOCAL_PASSPHRASE", Util.AesEncrypt(passPhrase));
-        }
-
-        private string GetPassPhrase()
-        {
-            return Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
         }
 
         private void CheckLogin(System.Action success)
@@ -354,6 +349,7 @@ namespace Nekoyume.UI
                     break;
                 case States.SetPassword:
                     KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
+                    SetPassPhrase(passPhraseField.text);
                     Close();
                     break;
                 case States.Login:
