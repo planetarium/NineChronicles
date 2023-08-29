@@ -79,16 +79,16 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // success first group
-        [InlineData(10001, 1, 600201, 2, 1, 10620000, null)]
-        [InlineData(10001, 2, 600201, 4, 1, 10620000, null)]
+        [InlineData(10001, 1, 600201, 2, 1, new[] { 10620000 }, null)]
+        [InlineData(10001, 2, 600201, 4, 0, new[] { 10630000, 10640000 }, null)]
         // success second group
-        [InlineData(10002, 1, 600202, 2, 1, 10620001, null)]
-        [InlineData(10002, 2, 600202, 4, 1, 10620001, null)]
+        [InlineData(10002, 1, 600202, 2, 1, new[] { 10620001 }, null)]
+        [InlineData(10002, 2, 600202, 4, 6, new[] { 10630001, 10640001 }, null)]
         // fail by invalid group
-        [InlineData(100003, 1, null, 0, 0, null, typeof(RowNotInTableException))]
+        [InlineData(100003, 1, null, 0, 0, new int[] { }, typeof(RowNotInTableException))]
         // fail by not enough material
-        [InlineData(10001, 1, 600201, 1, 0, 10620000, typeof(NotEnoughMaterialException))]
-        [InlineData(10001, 2, 600201, 1, 0, 10620000, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 1, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 2, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
         // TODO: Fail by not enough NCG
         public void Execute(
             int groupId,
@@ -96,7 +96,7 @@ namespace Lib9c.Tests.Action
             int? materialId,
             int materialCount,
             int seed,
-            int? expectedEquipmentId,
+            int[] expectedEquipmentId,
             Type expectedExc
         )
         {
@@ -146,10 +146,13 @@ namespace Lib9c.Tests.Action
                     Random = random,
                 });
 
-                var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory
-                    .Equipments.FirstOrDefault(e => e.Id == expectedEquipmentId);
-                Assert.NotNull(resultEquipment);
-                Assert.Equal(1, resultEquipment.RequiredBlockIndex);
+                foreach (var equipmentId in expectedEquipmentId)
+                {
+                    var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory
+                        .Equipments.FirstOrDefault(e => e.Id == equipmentId);
+                    Assert.NotNull(resultEquipment);
+                    Assert.Equal(1, resultEquipment.RequiredBlockIndex);
+                }
             }
             else
             {
