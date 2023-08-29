@@ -79,16 +79,20 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // success first group
-        [InlineData(10001, 600201, 2, 1, 10620000, null)]
+        [InlineData(10001, 1, 600201, 2, 1, 10620000, null)]
+        [InlineData(10001, 2, 600201, 4, 1, 10620000, null)]
         // success second group
-        [InlineData(10002, 600202, 2, 1, 10620001, null)]
+        [InlineData(10002, 1, 600202, 2, 1, 10620001, null)]
+        [InlineData(10002, 2, 600202, 4, 1, 10620001, null)]
         // fail by invalid group
-        [InlineData(100003, null, 0, 0, null, typeof(RowNotInTableException))]
+        [InlineData(100003, 1, null, 0, 0, null, typeof(RowNotInTableException))]
         // fail by not enough material
-        [InlineData(10001, 600201, 1, 0, 10620000, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 1, 600201, 1, 0, 10620000, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 2, 600201, 1, 0, 10620000, typeof(NotEnoughMaterialException))]
         // TODO: Fail by not enough NCG
         public void Execute(
             int groupId,
+            int summonCount,
             int? materialId,
             int materialCount,
             int seed,
@@ -128,6 +132,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = _avatarAddress,
                 GroupId = groupId,
+                SummonCount = summonCount,
             };
 
             if (expectedExc == null)
@@ -141,8 +146,8 @@ namespace Lib9c.Tests.Action
                     Random = random,
                 });
 
-                var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
-                    .FirstOrDefault(e => e.Id == expectedEquipmentId);
+                var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory
+                    .Equipments.FirstOrDefault(e => e.Id == expectedEquipmentId);
                 Assert.NotNull(resultEquipment);
                 Assert.Equal(1, resultEquipment.RequiredBlockIndex);
             }
