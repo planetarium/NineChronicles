@@ -83,6 +83,7 @@ namespace Nekoyume.UI
         public ConditionalButton submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
+        public Button setPasswordLaterButton;
 
         public IKeyStore KeyStore;
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
@@ -139,6 +140,7 @@ namespace Nekoyume.UI
             submitButton.Interactable = false;
             findPassphraseButton.gameObject.SetActive(false);
             backToLoginButton.gameObject.SetActive(false);
+            setPasswordLaterButton.gameObject.SetActive(false);
 
             accountAddressText.gameObject.SetActive(false);
             accountAddressHolder.gameObject.SetActive(false);
@@ -164,6 +166,7 @@ namespace Nekoyume.UI
                     submitButton.Text = L10nManager.Localize("UI_CONFIRM");
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
+                    setPasswordLaterButton.gameObject.SetActive(true);
                     break;
                 case States.CreateAccount:
                     titleText.gameObject.SetActive(false);
@@ -287,7 +290,8 @@ namespace Nekoyume.UI
         {
             var passPhrase = passPhraseField.text;
             var retyped = retypeField.text;
-            return passPhrase == retyped;
+            return !(string.IsNullOrEmpty(passPhrase) || string.IsNullOrEmpty(retyped)) &&
+                   passPhrase == retyped;
         }
 
         private void SetPassPhrase(string passPhrase)
