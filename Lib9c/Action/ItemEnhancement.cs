@@ -220,6 +220,7 @@ namespace Nekoyume.Action
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
+                typeof(EquipmentItemSheet),
                 typeof(EnhancementCostSheetV3),
                 typeof(MaterialItemSheet),
                 typeof(CrystalEquipmentGrindingSheet),
@@ -308,6 +309,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // Do the action
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             // Subtract required action point
             avatarState.actionPoint -= requiredActionPoint;
 
@@ -322,8 +324,12 @@ namespace Nekoyume.Action
             var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
 
             // Equipment level up & Update
+            enhancementEquipment.Exp = enhancementEquipment.GetRealExp(equipmentItemSheet,
+                enhancementCostSheet);
+
             enhancementEquipment.Exp +=
-                materialEquipments.Aggregate(0L, (total, m) => total + m.Exp);
+                materialEquipments.Aggregate(0L,
+                    (total, m) => total + m.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var row = enhancementCostSheet
                 .OrderByDescending(r => r.Value.Exp)
                 .First(row =>
