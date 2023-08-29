@@ -44,6 +44,17 @@ namespace Lib9c
 
         public static readonly Currency Mead = Currency.Legacy("Mead", 18, null);
 
+        /// <summary>
+        /// Covers the reward.CurrencyTicker is following cases:
+        ///     - Currencies.Crystal.Ticker
+        ///     - Currencies.Garage.Ticker
+        ///     - lower case is starting with "rune_" or "runestone_"
+        ///     - lower case is starting with "soulstone_"
+        /// </summary>
+        /// <param name="ticker"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public static Currency GetMinterlessCurrency(string? ticker)
         {
             if (string.IsNullOrEmpty(ticker))
