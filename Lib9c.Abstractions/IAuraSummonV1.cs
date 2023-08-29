@@ -6,5 +6,7 @@ namespace Lib9c.Abstractions
     {
         Address AvatarAddress { get; }
         int GroupId { get; }
+
+        int SummonCount { get; }
     }
 }

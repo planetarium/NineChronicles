@@ -29,8 +29,12 @@ namespace Nekoyume.Action
         public const string GroupIdKey = "gid";
         public int GroupId;
 
+        public const string SummonCountKey = "sc";
+        public int SummonCount;
+
         Address IAuraSummonV1.AvatarAddress => AvatarAddress;
         int IAuraSummonV1.GroupId => GroupId;
+        int IAuraSummonV1.SummonCount => SummonCount;
 
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -38,6 +42,7 @@ namespace Nekoyume.Action
             {
                 [AvatarAddressKey] = AvatarAddress.Serialize(),
                 [GroupIdKey] = GroupId.Serialize(),
+                [SummonCountKey] = SummonCount.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -45,6 +50,7 @@ namespace Nekoyume.Action
         {
             AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
             GroupId = plainValue[GroupIdKey].ToInteger();
+            SummonCount = plainValue[SummonCountKey].ToInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
