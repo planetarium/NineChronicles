@@ -664,18 +664,32 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
-            this IAccountState states,
+            this IAccountState state,
             params Type[] sheetTypes)
         {
             Dictionary<Type, (Address address, ISheet sheet)> result = sheetTypes.ToDictionary(
                 sheetType => sheetType,
                 sheetType => (Addresses.GetSheetAddress(sheetType.Name), (ISheet)null));
-#pragma warning disable LAA1002
-            var addresses = result
-                .Select(tuple => tuple.Value.address)
-                .ToArray();
-#pragma warning restore LAA1002
-            var csvValues = states.GetStates(addresses);
+            return state.GetSheetsInternal(result);
+        }
+
+        public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
+            this IAccountState state,
+            params (Type sheetType, string sheetName)[] sheetTuples)
+        {
+            Dictionary<Type, (Address address, ISheet sheet)> result = sheetTuples.ToDictionary(
+                tuple => tuple.sheetType,
+                tuple => (Addresses.GetSheetAddress(tuple.sheetName), (ISheet)null));
+            return state.GetSheetsInternal(result);
+        }
+
+        private static Dictionary<Type, (Address address, ISheet sheet)> GetSheetsInternal(
+            this IAccountState state,
+            Dictionary<Type, (Address address, ISheet sheet)> result)
+        {
+            var sheetTypes = result.Keys.ToArray();
+            var addresses = result.Values.Select(e => e.address).ToArray();
+            var csvValues = state.GetStates(addresses);
             for (var i = 0; i < sheetTypes.Length; i++)
             {
                 var sheetType = sheetTypes[i];
