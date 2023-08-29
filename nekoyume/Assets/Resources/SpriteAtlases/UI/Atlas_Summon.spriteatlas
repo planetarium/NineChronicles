@@ -38,11 +38,13 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: e3e9ef04085c97f439e5b7067a4f3b9a, type: 3}
+  - {fileID: 21300000, guid: 50d239c4b16e85949a630e5a79a00e15, type: 3}
+  - {fileID: 21300000, guid: 36e1b0278f58c894690e5bed72aabfef, type: 3}
   - {fileID: 21300000, guid: f06a9ca721279d142b07498f3b630587, type: 3}
   - {fileID: 21300000, guid: 9439424af706c3f42a76382ff17aa751, type: 3}
   m_PackedSpriteNamesToIndex:
-  - Aura_Bg
+  - Summon_Bg
+  - Aura_Bottom
   - NormalAura
   - GoldenAura
   m_RenderDataMap: {}
