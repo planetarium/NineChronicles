@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -58,7 +59,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             var states = context.PreviousState;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
-            var worldInfoAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
 
             if (context.Rehearsal)
@@ -77,7 +77,6 @@ namespace Nekoyume.Action
                     $"{addressesHex} Aborted as the avatar state of the signer was failed to load.");
             }
 
-
             // Validate Work
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
@@ -90,7 +89,6 @@ namespace Nekoyume.Action
                 typeof(SkillSheet),
             });
 
-            // Pick target recipe ID
             var summonSheet = sheets.GetSheet<AuraSummonSheet>();
             var summonRow = summonSheet.OrderedList.FirstOrDefault(row => row.GroupId == GroupId);
             if (summonRow is null)
@@ -126,103 +124,67 @@ namespace Nekoyume.Action
                 );
             }
 
-            var recipeValue = context.Random.Next(1, summonRow.CumulativeRecipe6Ratio + 1);
-            int recipeId;
-            if (recipeValue <= summonRow.CumulativeRecipe1Ratio)
+            for (var i = 0; i < SummonCount; i++)
             {
-                recipeId = summonRow.Recipe1;
-            }
-            else if (recipeValue <= summonRow.CumulativeRecipe2Ratio)
-            {
-                recipeId = summonRow.Recipe2;
-            }
-            else if (recipeValue <= summonRow.CumulativeRecipe3Ratio)
-            {
-                recipeId = summonRow.Recipe3;
-            }
-            else if (recipeValue <= summonRow.CumulativeRecipe4Ratio)
-            {
-                recipeId = summonRow.Recipe4;
-            }
-            else if (recipeValue <= summonRow.CumulativeRecipe5Ratio)
-            {
-                recipeId = summonRow.Recipe5;
-            }
-            else
-            {
-                recipeId = summonRow.Recipe6;
-            }
+                int recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, context.Random);
 
-            // Validate RecipeId
-            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var recipeRow = recipeSheet.OrderedList.FirstOrDefault(
-                r => r.ResultEquipmentId == recipeId
-            );
-            if (recipeRow is null)
-            {
-                throw new SheetRowNotFoundException(
-                    addressesHex,
-                    nameof(EquipmentItemRecipeSheet),
-                    recipeId);
-            }
-
-            // Validate Recipe ResultEquipmentId
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
-            if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId, out var equipmentRow))
-            {
-                throw new SheetRowNotFoundException(
-                    addressesHex,
-                    nameof(equipmentItemSheet),
-                    recipeRow.ResultEquipmentId);
-            }
-
-            // Use materials
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-            var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
-            if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
-                    summonRow.CostMaterialCount))
-            {
-                throw new NotEnoughMaterialException(
-                    $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
-            }
-
-            // Transfer NCG cost
-            if (summonRow.CostNcg > 0)
-            {
-                var arenaSheet = states.GetSheet<ArenaSheet>();
-                var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var feeStoreAddress =
-                    Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
-
-                states = states.TransferAsset(
-                    context,
-                    context.Signer,
-                    feeStoreAddress,
-                    states.GetGoldCurrency() * summonRow.CostNcg
+                // Validate RecipeId
+                var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
+                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(
+                    r => r.ResultEquipmentId == recipeId
                 );
+                if (recipeRow is null)
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(EquipmentItemRecipeSheet),
+                        recipeId);
+                }
+
+                // Validate Recipe ResultEquipmentId
+                var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+                if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId,
+                        out var equipmentRow))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(equipmentItemSheet),
+                        recipeRow.ResultEquipmentId);
+                }
+
+                // Use materials
+                var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+                var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
+                if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
+                        summonRow.CostMaterialCount))
+                {
+                    throw new NotEnoughMaterialException(
+                        $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
+                }
+
+                // Create Equipment
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                    equipmentRow,
+                    context.Random.GenerateRandomGuid(),
+                    context.BlockIndex
+                );
+
+                // Add or update equipment
+                avatarState.blockIndex = context.BlockIndex;
+                avatarState.updatedAt = context.BlockIndex;
+                avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
+                avatarState.UpdateFromCombination(equipment);
+                avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
+
+                // Create Mail
+                var mail = new SummonMail(
+                    context.BlockIndex,
+                    Id,
+                    context.BlockIndex
+                );
+                avatarState.Update(mail);
             }
 
-            // Create Equipment
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                equipmentRow,
-                context.Random.GenerateRandomGuid(),
-                context.BlockIndex
-            );
-
-            // Add or update equipment
-            avatarState.blockIndex = context.BlockIndex;
-            avatarState.updatedAt = context.BlockIndex;
-            avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
-            avatarState.UpdateFromCombination(equipment);
-            avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
-
-            // Create Mail
-            var mail = new SummonMail(
-                context.BlockIndex,
-                Id,
-                context.BlockIndex
-            );
-            avatarState.Update(mail);
             // Set states
             return states
                 .SetState(AvatarAddress, avatarState.SerializeV2())
