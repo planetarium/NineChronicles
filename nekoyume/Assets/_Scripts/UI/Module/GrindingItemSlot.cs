@@ -1,5 +1,4 @@
 ﻿using System;
-using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
@@ -10,16 +9,16 @@ namespace Nekoyume.UI.Module
     public class GrindingItemSlot : MonoBehaviour
     {
         [SerializeField]
-        private Button removeButton;
+        private Image itemImage;
 
         [SerializeField]
-        private Image itemImage;
+        private Animator animator;
 
         [SerializeField]
         private GameObject selectedSlotObject;
 
         [SerializeField]
-        private Animator animator;
+        private Button removeButton;
 
         private static readonly int Register = Animator.StringToHash("Register");
 

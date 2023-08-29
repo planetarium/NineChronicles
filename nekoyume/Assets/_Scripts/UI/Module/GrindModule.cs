@@ -59,6 +59,9 @@ namespace Nekoyume.UI.Module
         private CanvasGroup canvasGroup;
 
         [SerializeField]
+        private ConditionalButton removeAllButton;
+
+        [SerializeField]
         private Animator animator;
 
         [SerializeField]
@@ -88,7 +91,7 @@ namespace Nekoyume.UI.Module
                 (ItemType.Costume, _ => true),
             };
 
-        private const int LimitGrindingCount = 10;
+        private const int LimitGrindingCount = 50;
         private static readonly BigInteger MaximumCrystal = 100_000;
         private static readonly BigInteger MiddleCrystal = 1_000;
 
@@ -117,6 +120,7 @@ namespace Nekoyume.UI.Module
                 DimConditionPredicateList,
                 reverseInventoryOrder);
             grindButton.Interactable = false;
+            removeAllButton.Interactable = false;
             UpdateStakingBonusObject(States.Instance.StakingLevel);
             crystalRewardText.text = string.Empty;
         }
@@ -135,6 +139,17 @@ namespace Nekoyume.UI.Module
 
             grindButton.SetCost(CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
+            removeAllButton.OnSubmitSubject.Subscribe(_ =>
+            {
+                var items = _selectedItemsForGrind.ToList();
+                _selectedItemsForGrind.Clear();
+
+                foreach (var item in items)
+                {
+                    item.GrindingCount.SetValueAndForceNotify(0);
+                }
+                animator.SetTrigger(EmptySlot);
+            });
             stakingBonus.SetBonusTextFunc(level =>
             {
                 if (level > 0 &&
@@ -215,11 +230,15 @@ namespace Nekoyume.UI.Module
                 }
             }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveReset()
-                .Subscribe(_ => { itemSlots.ForEach(slot => slot.ResetSlot()); })
+                .Subscribe(_ =>
+                {
+                    itemSlots.ForEach(slot => slot.ResetSlot());
+                })
                 .AddTo(_disposables);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
+                removeAllButton.Interactable = count > 1;
                 UpdateCrystalReward();
             }).AddTo(_disposables);
 
@@ -240,9 +259,8 @@ namespace Nekoyume.UI.Module
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var isEquipped = model.Equipped.Value;
-            var isValid =
-                _selectedItemsForGrind.Count < 10 && isEquipment
-                || !isRegister;
+            var isValid = _selectedItemsForGrind.Count < LimitGrindingCount && isEquipment ||
+                          !isRegister;
 
             if (isValid)
             {
