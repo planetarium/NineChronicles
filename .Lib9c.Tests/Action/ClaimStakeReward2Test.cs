@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
 
             var sheets = TableSheetsImporter.ImportSheets();
             sheets[nameof(StakeRegularRewardSheet)] =
-                ClaimStakeReward.V2.StakeRegularRewardSheetCsv;
+                ClaimStakeReward8.V2.StakeRegularRewardSheetCsv;
             foreach (var (key, value) in sheets)
             {
                 _initialState = _initialState

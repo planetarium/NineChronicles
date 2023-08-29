@@ -22,9 +22,11 @@ namespace Nekoyume.Action
     /// Hard forked at https://github.com/planetarium/lib9c/pull/2106
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class ClaimStakeReward8 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward8";
+        private const long ObsoleteBlockIndex = ActionObsoleteConfig.V200080ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -178,12 +180,12 @@ namespace Nekoyume.Action
 
         Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
-        public ClaimStakeReward(Address avatarAddress) : this()
+        public ClaimStakeReward8(Address avatarAddress) : this()
         {
             AvatarAddress = avatarAddress;
         }
 
-        public ClaimStakeReward()
+        public ClaimStakeReward8()
         {
         }
 
