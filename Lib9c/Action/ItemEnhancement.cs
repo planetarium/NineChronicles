@@ -69,7 +69,8 @@ namespace Nekoyume.Action
             public ResultModel(Dictionary serialized) : base(serialized)
             {
                 id = serialized["id"].ToGuid();
-                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
+                materialItemIdList =
+                    serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
                 gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
                 enhancementResult = serialized["enhancementResult"].ToEnum<EnhancementResult>();
@@ -397,7 +398,9 @@ namespace Nekoyume.Action
                 CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
             };
 
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
+            var mail = new ItemEnhanceMail(
+                result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex
+            );
             result.id = mail.id;
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
