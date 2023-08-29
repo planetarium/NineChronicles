@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     public class ClaimStakeReward7 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
         private const string ActionTypeText = "claim_stake_reward7";
-        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200062ObsoleteIndex;
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200063ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
