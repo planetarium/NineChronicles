@@ -19,12 +19,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2106
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2083
     /// </summary>
     [ActionType(ActionTypeText)]
-    public class ClaimStakeReward : GameAction, IClaimStakeReward, IClaimStakeRewardV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class ClaimStakeReward7 : GameAction, IClaimStakeReward, IClaimStakeRewardV1
     {
-        private const string ActionTypeText = "claim_stake_reward8";
+        private const string ActionTypeText = "claim_stake_reward7";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200063ObsoleteIndex;
 
         /// <summary>
         /// This is the version 1 of the stake reward sheet.
@@ -178,12 +180,12 @@ namespace Nekoyume.Action
 
         Address IClaimStakeRewardV1.AvatarAddress => AvatarAddress;
 
-        public ClaimStakeReward(Address avatarAddress) : this()
+        public ClaimStakeReward7(Address avatarAddress) : this()
         {
             AvatarAddress = avatarAddress;
         }
 
-        public ClaimStakeReward()
+        public ClaimStakeReward7()
         {
         }
 
@@ -199,6 +201,7 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
             if (context.Rehearsal)
             {
@@ -437,41 +440,12 @@ namespace Nekoyume.Action
                             continue;
                         }
 
-                        // NOTE: prepare reward currency.
-                        Currency rewardCurrency;
-                        // NOTE: this line covers the reward.CurrencyTicker is following cases:
-                        //       - Currencies.Crystal.Ticker
-                        //       - Currencies.Garage.Ticker
-                        //       - lower case is starting with "rune_" or "runestone_"
-                        //       - lower case is starting with "soulstone_"
-                        try
-                        {
-                            rewardCurrency =
-                                Currencies.GetMinterlessCurrency(reward.CurrencyTicker);
-                        }
-                        // NOTE: throw exception if reward.CurrencyTicker is null or empty.
-                        catch (ArgumentNullException)
-                        {
-                            throw;
-                        }
-                        // NOTE: handle the case that reward.CurrencyTicker isn't covered by
-                        //       Currencies.GetMinterlessCurrency().
-                        catch (ArgumentException)
-                        {
-                            // NOTE: throw exception if reward.CurrencyDecimalPlaces is null.
-                            if (reward.CurrencyDecimalPlaces is null)
-                            {
-                                throw new ArgumentException(
-                                    $"Decimal places of {reward.CurrencyTicker} is null");
-                            }
-
-                            // NOTE: new currency is created as uncapped currency.
-                            rewardCurrency = Currency.Uncapped(
+                        var rewardCurrency = reward.CurrencyDecimalPlaces == null
+                            ? Currencies.GetMinterlessCurrency(reward.CurrencyTicker)
+                            : Currency.Uncapped(
                                 reward.CurrencyTicker,
                                 Convert.ToByte(reward.CurrencyDecimalPlaces.Value),
                                 minters: null);
-                        }
-
                         var majorUnit = isCrystal
                                 ? rewardQuantityForSingleStep * currencyCrystalRewardStep
                                 : rewardQuantityForSingleStep * currencyRewardStep;
