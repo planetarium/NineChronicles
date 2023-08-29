@@ -332,13 +332,12 @@ namespace Nekoyume.Action
                     (total, m) => total + m.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var row = enhancementCostSheet
                 .OrderByDescending(r => r.Value.Exp)
-                .First(row =>
+                .FirstOrDefault(row =>
                     row.Value.ItemSubType == enhancementEquipment.ItemSubType &&
                     row.Value.Grade == enhancementEquipment.Grade &&
                     row.Value.Exp <= enhancementEquipment.Exp
                 ).Value;
-
-            if (row.Level > enhancementEquipment.level)
+            if (!(row is null) && row.Level > enhancementEquipment.level)
             {
                 enhancementEquipment.SetLevel(ctx.Random, row.Level, enhancementCostSheet);
             }
