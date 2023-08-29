@@ -1,9 +1,8 @@
 using System;
 using Bencodex.Types;
-using Lib9c.Model.Stake;
 using Nekoyume.Model.State;
 
-namespace Lib9c.Model.State
+namespace Nekoyume.Model.Stake
 {
     public readonly struct StakeStateV2 : IState
     {

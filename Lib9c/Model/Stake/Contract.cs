@@ -1,7 +1,7 @@
 using System;
 using Bencodex.Types;
 
-namespace Lib9c.Model.Stake
+namespace Nekoyume.Model.Stake
 {
     public class Contract
     {
