@@ -5,6 +5,7 @@ using Jdenticon;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -25,8 +26,7 @@ namespace Nekoyume.UI
             FindPassphrase,
             ResetPassphrase,
             Failed,
-            CreatePassword,
-            CreatePassword_Mobile,
+            SetPassword,
             Login_Mobile,
             ConnectedAddress_Mobile,
         }
@@ -159,16 +159,9 @@ namespace Nekoyume.UI
                     submitButton.Text = L10nManager.Localize("UI_GAME_SIGN_UP");
                     bg.SetActive(false);
                     break;
-                case States.CreatePassword:
-                    titleText.text = L10nManager.Localize("UI_GAME_CREATE_PASSWORD");
-                    submitButton.Text = L10nManager.Localize("UI_GAME_START");
-                    passPhraseGroup.SetActive(true);
-                    retypeGroup.SetActive(true);
-                    passPhraseField.Select();
-                    break;
-                case States.CreatePassword_Mobile:
-                    titleText.text = L10nManager.Localize("UI_GAME_CREATE_PASSWORD");
-                    submitButton.Text = L10nManager.Localize("UI_GAME_START");
+                case States.SetPassword:
+                    titleText.text = "Please Set password for your private key.";
+                    submitButton.Text = L10nManager.Localize("UI_CONFIRM");
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
                     break;
@@ -294,18 +287,17 @@ namespace Nekoyume.UI
         {
             var passPhrase = passPhraseField.text;
             var retyped = retypeField.text;
-            return !(string.IsNullOrEmpty(passPhrase) || string.IsNullOrEmpty(retyped)) &&
-                   passPhrase == retyped;
+            return passPhrase == retyped;
         }
 
         private void SetPassPhrase(string passPhrase)
         {
-            PlayerPrefs.SetString("LOCAL_PASSPHRASE", Helper.Util.AesEncrypt(passPhrase));
+            PlayerPrefs.SetString("LOCAL_PASSPHRASE", Util.AesEncrypt(passPhrase));
         }
 
         private string GetPassPhrase()
         {
-            return Helper.Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
+            return Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
         }
 
         private void CheckLogin(System.Action success)
@@ -327,6 +319,7 @@ namespace Nekoyume.UI
                 {
                     SetPassPhrase(loginField.text);
                 }
+
                 success?.Invoke();
             }
             else
@@ -354,11 +347,13 @@ namespace Nekoyume.UI
                     SetImage(_privateKey.PublicKey.ToAddress());
                     break;
                 case States.CreateAccount:
-                    SetState(States.CreatePassword);
-                    break;
-                case States.CreatePassword:
+                    Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitAgent);
                     CreateProtectedPrivateKey(_privateKey);
                     Login = _privateKey is not null;
+                    Close();
+                    break;
+                case States.SetPassword:
+                    KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
                     Close();
                     break;
                 case States.Login:
@@ -388,12 +383,6 @@ namespace Nekoyume.UI
                     break;
                 case States.Failed:
                     SetState(_prevState);
-                    break;
-                case States.CreatePassword_Mobile:
-                    CreateProtectedPrivateKey(_privateKey);
-                    Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitAgent);
-                    Login = _privateKey is not null;
-                    Close();
                     break;
                 case States.Login_Mobile:
                     CheckLogin(() =>
@@ -474,7 +463,7 @@ namespace Nekoyume.UI
             {
                 case States.CreateAccount:
                 case States.ResetPassphrase:
-                case States.CreatePassword:
+                case States.SetPassword:
                 {
                     {
                         if (passPhraseField.isFocused)
@@ -517,7 +506,6 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/2");
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
-                SetState(States.CreatePassword_Mobile);
                 Find<OneButtonSystem>().Show(
                     L10nManager.Localize("UI_CREATE_PASSWORD_NOTI"),
                     L10nManager.Localize("UI_PROCEED"),
@@ -525,6 +513,12 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+        }
+
+        public void ShowResetPassword()
+        {
+            base.Show();
+            SetState(States.SetPassword);
         }
 
         private void CreatePrivateKey()
@@ -597,19 +591,16 @@ namespace Nekoyume.UI
             switch (State.Value)
             {
                 case States.ResetPassphrase:
-                case States.CreatePassword:
-                case States.CreatePassword_Mobile:
+                case States.SetPassword:
                     submitButton.Interactable = CheckPasswordValidInCreate();
-                    break;
-                case States.Login:
-                case States.Login_Mobile:
-                    submitButton.Interactable = !string.IsNullOrEmpty(loginField.text);
                     break;
                 case States.FindPassphrase:
                     submitButton.Interactable = !string.IsNullOrEmpty(findPassphraseField.text);
                     break;
                 case States.CreateAccount:
                 case States.Show:
+                case States.Login:
+                case States.Login_Mobile:
                     submitButton.Interactable = true;
                     break;
                 case States.Failed:
@@ -626,21 +617,17 @@ namespace Nekoyume.UI
                 switch (State.Value)
                 {
                     case States.ResetPassphrase:
-                    case States.CreatePassword:
-                    case States.CreatePassword_Mobile:
-                    {
+                    case States.SetPassword:
+                        if (passPhraseField.isFocused)
                         {
-                            if (passPhraseField.isFocused)
-                            {
-                                retypeField.Select();
-                            }
-                            else
-                            {
-                                passPhraseField.Select();
-                            }
+                            retypeField.Select();
                         }
+                        else
+                        {
+                            passPhraseField.Select();
+                        }
+
                         break;
-                    }
                     case States.Login:
                     case States.Login_Mobile:
                         loginField.Select();
