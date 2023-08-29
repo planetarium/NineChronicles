@@ -89,29 +89,64 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // from 0 to 1 using one level 0 material
-        [InlineData(0, 1, 0, 1)]
+        [InlineData(0, false, 1, 0, false, 1)]
+        [InlineData(0, false, 1, 0, true, 1)]
+        [InlineData(0, true, 1, 0, false, 1)]
+        [InlineData(0, true, 1, 0, true, 1)]
         // from 0 to N using multiple level 0 materials
-        [InlineData(0, 2, 0, 3)]
-        [InlineData(0, 4, 0, 15)]
+        [InlineData(0, false, 2, 0, false, 3)]
+        [InlineData(0, false, 4, 0, false, 15)]
+        [InlineData(0, false, 2, 0, true, 3)]
+        [InlineData(0, false, 4, 0, true, 15)]
+        [InlineData(0, true, 2, 0, false, 3)]
+        [InlineData(0, true, 4, 0, false, 15)]
+        [InlineData(0, true, 2, 0, true, 3)]
+        [InlineData(0, true, 4, 0, true, 15)]
         // from K to K with material(s). Check requiredBlock == 0
-        [InlineData(10, 10, 0, 1)]
+        [InlineData(10, false, 10, 0, false, 1)]
+        [InlineData(10, false, 10, 0, true, 1)]
+        [InlineData(10, true, 10, 0, false, 1)]
+        [InlineData(10, true, 10, 0, true, 1)]
         // from K to N using one level X material
-        [InlineData(5, 6, 6, 1)]
+        [InlineData(5, false, 6, 6, false, 1)]
+        [InlineData(5, false, 6, 6, true, 1)]
+        [InlineData(5, true, 6, 6, false, 1)]
+        [InlineData(5, true, 6, 6, true, 1)]
         // from K to N using multiple materials
-        [InlineData(5, 7, 4, 6)]
-        [InlineData(5, 9, 7, 5)]
+        [InlineData(5, false, 7, 4, false, 6)]
+        [InlineData(5, false, 9, 7, false, 5)]
+        [InlineData(5, false, 7, 4, true, 6)]
+        [InlineData(5, false, 9, 7, true, 5)]
+        [InlineData(5, true, 7, 4, false, 6)]
+        [InlineData(5, true, 9, 7, false, 5)]
+        [InlineData(5, true, 7, 4, true, 6)]
+        [InlineData(5, true, 9, 7, true, 5)]
         // from 20 to 21 (just to reach level 21 exp)
-        [InlineData(20, 21, 20, 1)]
+        [InlineData(20, false, 21, 20, false, 1)]
+        [InlineData(20, false, 21, 20, true, 1)]
+        [InlineData(20, true, 21, 20, false, 1)]
+        [InlineData(20, true, 21, 20, true, 1)]
         // from 20 to 21 (over level 21)
-        [InlineData(20, 21, 20, 2)]
+        [InlineData(20, false, 21, 20, false, 2)]
+        [InlineData(20, false, 21, 20, true, 2)]
+        [InlineData(20, true, 21, 20, false, 2)]
+        [InlineData(20, true, 21, 20, true, 2)]
         // from 21 to 21 (no level up)
-        [InlineData(21, 21, 1, 1)]
-        [InlineData(21, 21, 21, 1)]
+        [InlineData(21, false, 21, 1, false, 1)]
+        [InlineData(21, false, 21, 21, false, 1)]
+        [InlineData(21, false, 21, 1, true, 1)]
+        [InlineData(21, false, 21, 21, true, 1)]
+        [InlineData(21, true, 21, 1, false, 1)]
+        [InlineData(21, true, 21, 21, false, 1)]
+        [InlineData(21, true, 21, 1, true, 1)]
+        [InlineData(21, true, 21, 21, true, 1)]
         // Test: change of exp, change of level, required block, NCG price
         public void Execute(
             int startLevel,
+            bool oldStart,
             int expectedLevel,
             int materialLevel,
+            bool oldMaterial,
             int materialCount)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1 && r.Exp > 0);
@@ -122,12 +157,17 @@ namespace Lib9c.Tests.Action
             }
             else
             {
-                equipment.Exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
-                    r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                equipment.Exp = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
+                    r.ItemSubType == equipment.ItemSubType && r.Grade == equipment.Grade &&
                     r.Level == equipment.level).Exp;
             }
 
             var startExp = equipment.Exp;
+            if (oldStart)
+            {
+                equipment.Exp = 0L;
+            }
+
             _avatarState.inventory.AddItem(equipment, count: 1);
 
             var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
@@ -154,12 +194,17 @@ namespace Lib9c.Tests.Action
                 }
                 else
                 {
-                    material.Exp = _tableSheets.EnhancementCostSheetV3.Values.First(r =>
-                        r.Grade == material.Grade && r.ItemSubType == material.ItemSubType &&
+                    material.Exp = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
+                        r.ItemSubType == material.ItemSubType && r.Grade == material.Grade &&
                         r.Level == material.level).Exp;
                 }
 
                 expectedExpIncrement += material.Exp;
+                if (oldMaterial)
+                {
+                    material.Exp = 0L;
+                }
+
                 _avatarState.inventory.AddItem(material, count: 1);
             }
 
