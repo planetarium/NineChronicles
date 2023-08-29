@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nekoyume.Helper
 {
-    public class KeyStoreHelper
+    public static class KeyStoreHelper
     {
         public static IKeyStore GetKeystore()
         {
@@ -49,9 +49,24 @@ namespace Nekoyume.Helper
                 return;
             }
 
-            store.Remove(tuple.Item1);
+            ResetPassword(pk, newPassword);
+        }
+
+        public static void ResetPassword(PrivateKey pk, string newPassword)
+        {
+            var store = GetKeystore();
+            var tuple = store.List().FirstOrDefault(tuple => tuple.Item2.Address == pk.PublicKey.ToAddress());
+            if (tuple is null)
+            {
+                Debug.Log($"Keystore not has key. Address: {pk.PublicKey.ToAddress()}");
+            }
+            else
+            {
+                store.Remove(tuple.Item1);
+            }
+
             store.Add(ProtectedPrivateKey.Protect(pk, newPassword));
-            Debug.Log($"{addressToReset} password reset success!");
+            Debug.Log($"{pk.PublicKey.ToAddress()} password reset success!");
         }
     }
 }
