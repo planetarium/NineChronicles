@@ -140,6 +140,7 @@ namespace Lib9c.Tests.Action
             0L
         )]
         // stake before currency as reward, non prev.
+        // receive v2(w/o currency) * 2, receive v2(w/ currency). check GARAGE.
         [InlineData(
             StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -153,6 +154,7 @@ namespace Lib9c.Tests.Action
             100_000L
         )]
         // stake before currency as reward, prev.
+        // receive v2(w/o currency), receive v2(w/ currency). check GARAGE.
         [InlineData(
             StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -165,7 +167,33 @@ namespace Lib9c.Tests.Action
             "GARAGE",
             100_000L
         )]
-        // stake before v3(crystal), non prev.
+        // stake before v3(crystal), non prev. receive v2. check CRYSTAL.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index - 1,
+            500L,
+            null,
+            StakeState.StakeRewardSheetV3Index - 1 + StakeState.RewardInterval,
+            125,
+            2,
+            0,
+            AgentAddressHex,
+            "CRYSTAL",
+            0L
+        )]
+        // stake after v3(crystal), non prev. receive v3. check CRYSTAL.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index,
+            500L,
+            null,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
+            125,
+            2,
+            0,
+            AgentAddressHex,
+            "CRYSTAL",
+            5_000L
+        )]
+        // stake before v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
         [InlineData(
             StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -178,7 +206,7 @@ namespace Lib9c.Tests.Action
             "CRYSTAL",
             1_000_000_000L
         )]
-        // stake before v3(crystal), prev.
+        // stake before v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
         [InlineData(
             StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -191,7 +219,7 @@ namespace Lib9c.Tests.Action
             "CRYSTAL",
             1_000_000_000L
         )]
-        // stake after v3(crystal), non prev.
+        // stake after v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
         [InlineData(
             StakeState.StakeRewardSheetV3Index,
             10_000_000L,
@@ -204,7 +232,7 @@ namespace Lib9c.Tests.Action
             "CRYSTAL",
             3_000_000_000L
         )]
-        // stake after v3(crystal), prev.
+        // stake after v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
         [InlineData(
             StakeState.StakeRewardSheetV3Index,
             10_000_000L,
