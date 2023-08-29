@@ -35,9 +35,10 @@ namespace Nekoyume.Action
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            ImmutableDictionary<string, IValue>.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+            ImmutableDictionary<string, IValue>.Empty.Add(AmountKey, (IValue)(Integer)Amount);
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             Amount = plainValue[AmountKey].ToBigInteger();
         }
@@ -77,7 +78,8 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}Stake exec started", addressesHex);
             var stakePolicySheet = states.GetSheet<StakePolicySheet>();
             var currentStakeRegularRewardSheetAddress =
-                Addresses.GetSheetAddress(stakePolicySheet[nameof(StakeRegularRewardSheet)].TableName);
+                Addresses.GetSheetAddress(stakePolicySheet[nameof(StakeRegularRewardSheet)]
+                    .TableName);
 
             var stakeRegularRewardSheet = states.GetSheet<StakeRegularRewardSheet>(
                 currentStakeRegularRewardSheetAddress);
@@ -101,8 +103,10 @@ namespace Nekoyume.Action
             }
 
             var latestStakeContract = new Contract(
-                stakeRegularFixedRewardSheetTableName: stakePolicySheet["StakeRegularFixedRewardSheet"].TableName,
-                stakeRegularRewardSheetTableName: stakePolicySheet["StakeRegularRewardSheet"].TableName
+                stakeRegularFixedRewardSheetTableName:
+                    stakePolicySheet["StakeRegularFixedRewardSheet"].TableName,
+                stakeRegularRewardSheetTableName:
+                    stakePolicySheet["StakeRegularRewardSheet"].TableName
             );
 
             if (!states.TryGetStakeStateV2(context.Signer, out var stakeStateV2))
@@ -132,7 +136,7 @@ namespace Nekoyume.Action
                 {
                     throw new RequiredBlockIndexException();
                 }
-                
+
                 return states
                     .SetState(stakeStateAddress, Null.Value)
                     .TransferAsset(context, stakeStateAddress, context.Signer, stakedBalance);
@@ -146,7 +150,8 @@ namespace Nekoyume.Action
             }
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Stake Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}Stake Total Executed Time: {Elapsed}", addressesHex,
+                ended - started);
 
             // Stake with more or less amount.
             return states

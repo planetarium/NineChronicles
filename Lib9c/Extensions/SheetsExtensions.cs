@@ -411,7 +411,9 @@ namespace Nekoyume.Extensions
             );
         }
 
-        public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, Address agentAddress,
+        public static int FindLevelByStakedAmount(
+            this IStakeRewardSheet sheet,
+            Address agentAddress,
             FungibleAssetValue balance)
         {
             List<IStakeRewardRow> orderedRows =

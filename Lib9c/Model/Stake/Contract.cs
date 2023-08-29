@@ -10,17 +10,19 @@ namespace Nekoyume.Model.Stake
 
         public const string StakeRegularFixedRewardSheetPrefix
             = "StakeRegularFixedRewardSheet_";
+
         public const string StakeRegularRewardSheetPrefix
             = "StakeRegularRewardSheet_";
 
         public string StakeRegularFixedRewardSheetTableName { get; init; }
-       public string StakeRegularRewardSheetTableName { get; init; }
+        public string StakeRegularRewardSheetTableName { get; init; }
 
-       public Contract(
+        public Contract(
             string stakeRegularFixedRewardSheetTableName,
             string stakeRegularRewardSheetTableName)
-       {
-            if (!stakeRegularFixedRewardSheetTableName.StartsWith(StakeRegularFixedRewardSheetPrefix))
+        {
+            if (!stakeRegularFixedRewardSheetTableName.StartsWith(
+                    StakeRegularFixedRewardSheetPrefix))
             {
                 throw new ArgumentException(nameof(stakeRegularFixedRewardSheetTableName));
             }
@@ -32,10 +34,10 @@ namespace Nekoyume.Model.Stake
 
             StakeRegularFixedRewardSheetTableName = stakeRegularFixedRewardSheetTableName;
             StakeRegularRewardSheetTableName = stakeRegularRewardSheetTableName;
-       }
-       
-       public Contract(IValue serialized)
-       {
+        }
+
+        public Contract(IValue serialized)
+        {
             if (serialized is not List list)
             {
                 throw new ArgumentException(
@@ -64,14 +66,14 @@ namespace Nekoyume.Model.Stake
             StakeRegularRewardSheetTableName = (Text)list[reservedCount + 1];
         }
 
-       public List Serialize()
-       {
+        public List Serialize()
+        {
             return new List(
                 (Text)StateTypeName,
                 (Integer)StateTypeVersion,
                 (Text)StakeRegularFixedRewardSheetTableName,
                 (Text)StakeRegularRewardSheetTableName
             );
-       }
+        }
     }
 }
