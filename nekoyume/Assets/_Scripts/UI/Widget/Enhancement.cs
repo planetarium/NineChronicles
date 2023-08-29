@@ -333,15 +333,18 @@ namespace Nekoyume.UI
                             r.ItemSubType == equipment.ItemSubType).Select((r) => r.Exp).ToList();
             expTable.Insert(0, 0);
 
-            float GetSliderGage(float exp)
+            float GetSliderGage(float exp, out long nextExp)
             {
+                nextExp = 0;
                 for (int i = 0; i < expTable.Count; i++)
                 {
                     if(expTable[i] > exp)
                     {
+                        nextExp = expTable[i];
                         return Mathf.InverseLerp(expTable[i-1], expTable[i], exp);
                     }
                 }
+                nextExp = expTable[expTable.Count - 1];
                 return 1;
             }
 
@@ -354,13 +357,13 @@ namespace Nekoyume.UI
                     elapsedTime += Time.deltaTime;
 
                     _sliderAnchorPoint = Mathf.Lerp(startAnchorPoint, targetExp, sliderEffectCurve.Evaluate(elapsedTime / duration));
-                    expSlider.value = GetSliderGage(_sliderAnchorPoint);
-                    sliderPercentText.text = $"{(int)(expSlider.value * 100)}%";
+                    expSlider.value = GetSliderGage(_sliderAnchorPoint, out var nextExp);
+                    sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{nextExp}";
                     yield return new WaitForEndOfFrame();
                 }
                 _sliderAnchorPoint = targetExp;
-                expSlider.value = GetSliderGage(_sliderAnchorPoint);
-                sliderPercentText.text = $"{(int)(expSlider.value * 100)}%";
+                expSlider.value = GetSliderGage(_sliderAnchorPoint, out var lastExp);
+                sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{lastExp}";
                 yield return 0;
             }
 
@@ -410,7 +413,7 @@ namespace Nekoyume.UI
                 ClearInformation();
                 expSlider.value = 0;
                 _sliderAnchorPoint = 0;
-                sliderPercentText.text = "0%";
+                sliderPercentText.text = "0% 0/0";
             }
             else
             {
