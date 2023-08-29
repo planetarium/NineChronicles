@@ -414,6 +414,7 @@ namespace Nekoyume.UI
                 expSlider.value = 0;
                 _sliderAnchorPoint = 0;
                 sliderPercentText.text = "0% 0/0";
+                removeAllButton.Interactable = false;
             }
             else
             {
