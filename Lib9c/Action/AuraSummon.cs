@@ -104,7 +104,7 @@ namespace Nekoyume.Action
             var itemCount = inventory.TryGetItem(summonRow.CostMaterial, out var item)
                 ? item.count
                 : 0;
-            if (itemCount < summonRow.CostMaterialCount)
+            if (itemCount < summonRow.CostMaterialCount * SummonCount)
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex} Not enough material to summon");
@@ -122,7 +122,7 @@ namespace Nekoyume.Action
                     context,
                     context.Signer,
                     feeStoreAddress,
-                    states.GetGoldCurrency() * summonRow.CostNcg
+                    states.GetGoldCurrency() * summonRow.CostNcg * SummonCount
                 );
             }
 
