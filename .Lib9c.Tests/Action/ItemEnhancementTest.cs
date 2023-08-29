@@ -88,20 +88,25 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        // from 0 to 1 using one level 0 material
-        [InlineData(0, false, 1, 0, false, 1)]
-        [InlineData(0, false, 1, 0, true, 1)]
-        [InlineData(0, true, 1, 0, false, 1)]
-        [InlineData(0, true, 1, 0, true, 1)]
+        // from 0 to 0 using one level 0 material
+        [InlineData(0, false, 0, 0, false, 1)]
+        [InlineData(0, false, 0, 0, true, 1)]
+        [InlineData(0, true, 0, 0, false, 1)]
+        [InlineData(0, true, 0, 0, true, 1)]
+        // from 0 to 1 using two level 0 material
+        [InlineData(0, false, 1, 0, false, 3)]
+        [InlineData(0, false, 1, 0, true, 3)]
+        [InlineData(0, true, 1, 0, false, 3)]
+        [InlineData(0, true, 1, 0, true, 3)]
         // from 0 to N using multiple level 0 materials
-        [InlineData(0, false, 2, 0, false, 3)]
-        [InlineData(0, false, 4, 0, false, 15)]
-        [InlineData(0, false, 2, 0, true, 3)]
-        [InlineData(0, false, 4, 0, true, 15)]
-        [InlineData(0, true, 2, 0, false, 3)]
-        [InlineData(0, true, 4, 0, false, 15)]
-        [InlineData(0, true, 2, 0, true, 3)]
-        [InlineData(0, true, 4, 0, true, 15)]
+        [InlineData(0, false, 2, 0, false, 7)]
+        [InlineData(0, false, 4, 0, false, 31)]
+        [InlineData(0, false, 2, 0, true, 7)]
+        [InlineData(0, false, 4, 0, true, 31)]
+        [InlineData(0, true, 2, 0, false, 7)]
+        [InlineData(0, true, 4, 0, false, 31)]
+        [InlineData(0, true, 2, 0, true, 7)]
+        [InlineData(0, true, 4, 0, true, 31)]
         // from K to K with material(s). Check requiredBlock == 0
         [InlineData(10, false, 10, 0, false, 1)]
         [InlineData(10, false, 10, 0, true, 1)]
@@ -149,7 +154,7 @@ namespace Lib9c.Tests.Action
             bool oldMaterial,
             int materialCount)
         {
-            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1 && r.Exp > 0);
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Id == 10110000);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, startLevel);
             if (startLevel == 0)
             {
@@ -170,15 +175,16 @@ namespace Lib9c.Tests.Action
 
             _avatarState.inventory.AddItem(equipment, count: 1);
 
-            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
-                r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
-                r.Level == expectedLevel);
+            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(
+                r =>
+                    r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                    r.Level == expectedLevel);
             var startRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(r =>
                 r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
                 r.Level == startLevel);
-            var expectedCost = expectedTargetRow.Cost - (startRow?.Cost ?? 0);
+            var expectedCost = (expectedTargetRow?.Cost ?? 0) - (startRow?.Cost ?? 0);
             var expectedBlockIndex =
-                expectedTargetRow.RequiredBlockIndex - (startRow?.RequiredBlockIndex ?? 0);
+                (expectedTargetRow?.RequiredBlockIndex ?? 0) - (startRow?.RequiredBlockIndex ?? 0);
 
             var expectedExpIncrement = 0L;
             var materialIds = new List<Guid>();

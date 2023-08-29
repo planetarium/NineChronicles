@@ -69,7 +69,8 @@ namespace Nekoyume.Action
             public ResultModel(Dictionary serialized) : base(serialized)
             {
                 id = serialized["id"].ToGuid();
-                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
+                materialItemIdList =
+                    serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
                 gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
                 enhancementResult = serialized["enhancementResult"].ToEnum<EnhancementResult>();
@@ -332,13 +333,12 @@ namespace Nekoyume.Action
                     (total, m) => total + m.GetRealExp(equipmentItemSheet, enhancementCostSheet));
             var row = enhancementCostSheet
                 .OrderByDescending(r => r.Value.Exp)
-                .First(row =>
+                .FirstOrDefault(row =>
                     row.Value.ItemSubType == enhancementEquipment.ItemSubType &&
                     row.Value.Grade == enhancementEquipment.Grade &&
                     row.Value.Exp <= enhancementEquipment.Exp
                 ).Value;
-
-            if (row.Level > enhancementEquipment.level)
+            if (!(row is null) && row.Level > enhancementEquipment.level)
             {
                 enhancementEquipment.SetLevel(ctx.Random, row.Level, enhancementCostSheet);
             }
@@ -398,7 +398,9 @@ namespace Nekoyume.Action
                 CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
             };
 
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
+            var mail = new ItemEnhanceMail(
+                result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex
+            );
             result.id = mail.id;
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
