@@ -130,10 +130,7 @@ namespace Nekoyume.Model.Item
                 dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
             }
 
-            if (Exp > 0)
-            {
-                dict = dict.SetItem(EquipmentExpKey, Exp.Serialize());
-            }
+            dict = dict.SetItem(EquipmentExpKey, Exp.Serialize());
 
             return dict;
 #pragma warning restore LAA1002
@@ -208,13 +205,13 @@ namespace Nekoyume.Model.Item
                 }
             }
         }
+
         public long GetRealExp(EquipmentItemSheet itemSheet, EnhancementCostSheetV3 costSheet)
         {
             if (Exp != 0) return Exp;
             if (level == 0)
             {
-                return (long)itemSheet.OrderedList.First(r =>
-                    r.ItemSubType == ItemSubType && r.Grade == Grade).Exp!;
+                return (long)itemSheet.OrderedList.First(r => r.Id == Id).Exp!;
             }
 
             return costSheet.OrderedList.First(r =>
