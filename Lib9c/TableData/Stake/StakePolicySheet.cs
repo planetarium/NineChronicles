@@ -8,7 +8,7 @@ namespace Nekoyume.TableData.Stake
         [Serializable]
         public class Row : SheetRow<string>
         {
-            public override string Key => TableName;
+            public override string Key => TableTypeName;
 
             public string TableTypeName { get; private set; }
 
