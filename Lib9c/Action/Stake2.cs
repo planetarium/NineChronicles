@@ -17,8 +17,7 @@ namespace Nekoyume.Action
     [ActionObsolete(ObsoleteBlockIndex)]
     public class Stake2 : GameAction, IStakeV1
     {
-        public const long ObsoleteBlockIndex =
-            ActionObsoleteConfig.V200070ObsoleteIndex;
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200080ObsoleteIndex;
 
         internal BigInteger Amount { get; set; }
 
