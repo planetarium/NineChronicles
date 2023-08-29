@@ -121,7 +121,7 @@ namespace Nekoyume.UI
         private BigInteger _costNcg = 0;
         private string _errorMessage;
         private IOrderedEnumerable<KeyValuePair<int, EnhancementCostSheetV3.Row>> _decendingbyExpCostSheet;
-        private long _sliderAnchorPoint = 0;
+        private float _sliderAnchorPoint = 0;
         private Coroutine _sliderEffectCor;
 
         protected override void Awake()
@@ -333,7 +333,7 @@ namespace Nekoyume.UI
                             r.ItemSubType == equipment.ItemSubType).Select((r) => r.Exp).ToList();
             expTable.Insert(0, 0);
 
-            float GetSliderGage(long exp)
+            float GetSliderGage(float exp)
             {
                 for (int i = 0; i < expTable.Count; i++)
                 {
@@ -353,12 +353,14 @@ namespace Nekoyume.UI
                 {
                     elapsedTime += Time.deltaTime;
 
-                    _sliderAnchorPoint = (long)Mathf.Lerp(startAnchorPoint, targetExp, sliderEffectCurve.Evaluate(elapsedTime / duration));
-
+                    _sliderAnchorPoint = Mathf.Lerp(startAnchorPoint, targetExp, sliderEffectCurve.Evaluate(elapsedTime / duration));
                     expSlider.value = GetSliderGage(_sliderAnchorPoint);
                     sliderPercentText.text = $"{(int)(expSlider.value * 100)}%";
                     yield return new WaitForEndOfFrame();
                 }
+                _sliderAnchorPoint = targetExp;
+                expSlider.value = GetSliderGage(_sliderAnchorPoint);
+                sliderPercentText.text = $"{(int)(expSlider.value * 100)}%";
                 yield return 0;
             }
 
