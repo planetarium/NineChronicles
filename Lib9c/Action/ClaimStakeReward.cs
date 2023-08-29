@@ -437,24 +437,35 @@ namespace Nekoyume.Action
                             continue;
                         }
 
+                        // NOTE: prepare reward currency.
                         Currency rewardCurrency;
+                        // NOTE: this line covers the reward.CurrencyTicker is following cases:
+                        //       - Currencies.Crystal.Ticker
+                        //       - Currencies.Garage.Ticker
+                        //       - lower case is starting with "rune_" or "runestone_"
+                        //       - lower case is starting with "soulstone_"
                         try
                         {
                             rewardCurrency =
                                 Currencies.GetMinterlessCurrency(reward.CurrencyTicker);
                         }
+                        // NOTE: throw exception if reward.CurrencyTicker is null or empty.
                         catch (ArgumentNullException)
                         {
                             throw;
                         }
+                        // NOTE: handle the case that reward.CurrencyTicker isn't covered by
+                        //       Currencies.GetMinterlessCurrency().
                         catch (ArgumentException)
                         {
+                            // NOTE: throw exception if reward.CurrencyDecimalPlaces is null.
                             if (reward.CurrencyDecimalPlaces is null)
                             {
                                 throw new ArgumentException(
                                     $"Decimal places of {reward.CurrencyTicker} is null");
                             }
 
+                            // NOTE: new currency is created as uncapped currency.
                             rewardCurrency = Currency.Uncapped(
                                 reward.CurrencyTicker,
                                 Convert.ToByte(reward.CurrencyDecimalPlaces.Value),
