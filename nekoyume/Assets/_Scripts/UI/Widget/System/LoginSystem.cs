@@ -513,8 +513,13 @@ namespace Nekoyume.UI
 
         public void ShowResetPassword()
         {
-            base.Show();
+            if (_capturedImage != null)
+            {
+                _capturedImage.Show();
+            }
+
             SetState(States.SetPassword);
+            base.Show();
         }
 
         private void CreatePrivateKey()
