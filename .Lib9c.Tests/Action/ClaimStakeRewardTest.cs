@@ -165,6 +165,58 @@ namespace Lib9c.Tests.Action
             "GARAGE",
             100_000L
         )]
+        // stake before v3(crystal), non prev.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
+            10_000_000L,
+            null,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
+            35_000_000,
+            175_006,
+            11_665,
+            AgentAddressHex,
+            "CRYSTAL",
+            1_000_000_000L
+        )]
+        // stake before v3(crystal), prev.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
+            10_000_000L,
+            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
+            30_000_000,
+            150_004,
+            9_999,
+            AgentAddressHex,
+            "CRYSTAL",
+            1_000_000_000L
+        )]
+        // stake after v3(crystal), non prev.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index,
+            10_000_000L,
+            null,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
+            75_000_000,
+            375_006,
+            24_999,
+            AgentAddressHex,
+            "CRYSTAL",
+            3_000_000_000L
+        )]
+        // stake after v3(crystal), prev.
+        [InlineData(
+            StakeState.StakeRewardSheetV3Index,
+            10_000_000L,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
+            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
+            50_000_000,
+            250_004,
+            16_666,
+            AgentAddressHex,
+            "CRYSTAL",
+            2_000_000_000L
+        )]
         public void Execute_Success(
             long startedBlockIndex,
             long stakeAmount,
