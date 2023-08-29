@@ -193,6 +193,29 @@ namespace Nekoyume.UI
             EnhancementAction(baseItem, materialItems);
         }
 
+        //Used for migrating and showing equipment before update
+        private long GetItemExp(Equipment equipment)
+        {
+            if (equipment.Exp != 0)
+                return equipment.Exp;
+
+            if(equipment.level != 0 && ItemEnhancement.TryGetRow(equipment, _costSheet, out var baseItemCostRow))
+                return baseItemCostRow.Exp;
+
+            if(Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(equipment.Id, out var equipmentSheetRow))
+            {
+                if(equipmentSheetRow.Exp == null)
+                {
+                    Debug.LogError($"[Enhancement] {equipment.Id} EquipmentSheetRow Exp is Null");
+                    return 0; 
+                }
+                return equipmentSheetRow.Exp.Value;
+            }
+
+            Debug.LogError($"[Enhancement] can't find {equipment.Id} EquipmentSheetRow");
+            return 0;
+        }
+
         private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
         {
             var slots = Find<CombinationSlotsPopup>();
@@ -202,7 +225,9 @@ namespace Nekoyume.UI
             }
 
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
-            var targetExp = baseItem.Exp + materialItems.Aggregate(0L, (total, m) => total + m.Exp);
+
+            var baseItemExp = GetItemExp(baseItem);
+            var targetExp = baseItemExp + materialItems.Aggregate(0L, (total, m) => total + GetItemExp(m));
             int requiredBlockIndex = GetBlockIndex(baseItem, sheet, targetExp);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -365,7 +390,8 @@ namespace Nekoyume.UI
                     baseItemCostRow = new EnhancementCostSheetV3.Row();
                 }
 
-                var targetExp = (baseModel.ItemBase as Equipment).Exp + materialModels.Aggregate(0L, (total, m) => total + (m.ItemBase as Equipment).Exp);
+                var baseModelExp = GetItemExp(equipment);
+                var targetExp = baseModelExp + materialModels.Aggregate(0L, (total, m) => total + GetItemExp((m.ItemBase as Equipment)));
 
                 EnhancementCostSheetV3.Row targetRow;
                 try
