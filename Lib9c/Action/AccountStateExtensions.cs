@@ -20,6 +20,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Coupons;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stake;
 
 namespace Nekoyume.Action
 {
@@ -922,6 +923,62 @@ namespace Nekoyume.Action
             }
 
             stakeState = null;
+            return false;
+        }
+
+        public static bool TryGetStakeStateV2(
+            this IAccountState state,
+            Address agentAddr,
+            out StakeStateV2 stakeStateV2)
+        {
+            var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
+            var stakeStateValue = state.GetState(stakeStateAddr);
+            if (stakeStateValue is null)
+            {
+                stakeStateV2 = default;
+                return false;
+            }
+
+            if (stakeStateValue is List list)
+            {
+                stakeStateV2 = new StakeStateV2(list);
+                return true;
+            }
+
+            if (stakeStateValue is Dictionary dict)
+            {
+                var stakeStateV1 = new StakeState(dict);
+                string stakeRegularFixedRewardSheetTableName;
+                string stakeRegularRewardSheetTableName;
+                if (stakeStateV1.StartedBlockIndex < StakeState.StakeRewardSheetV2Index)
+                {
+                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V1";
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V1";
+                }
+                else if (stakeStateV1.StartedBlockIndex < StakeState.StakeRewardSheetV3Index)
+                {
+                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V2";
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V2";
+                }
+                // FIXME: consider this case.
+                // else if (stakeStateV1.StartedBlockIndex < StakeState.CurrencyAsRewardStartIndex)
+                // {
+                // }
+                else
+                {
+                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V3";
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V3";
+                }
+
+                stakeStateV2 = new StakeStateV2(
+                    stakeStateV1,
+                    new Contract(
+                        stakeRegularFixedRewardSheetTableName: stakeRegularFixedRewardSheetTableName,
+                        stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName));
+                return true;
+            }
+
+            stakeStateV2 = default;
             return false;
         }
 
