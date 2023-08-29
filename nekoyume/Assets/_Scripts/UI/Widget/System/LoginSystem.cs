@@ -240,6 +240,9 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
             }
 
+            var valid = submitButton.IsSubmittable && !string.IsNullOrEmpty(retypeField.text);
+            correctText.gameObject.SetActive(valid);
+            incorrectText.gameObject.SetActive(!valid);
             retypeField.interactable = true;
         }
 
