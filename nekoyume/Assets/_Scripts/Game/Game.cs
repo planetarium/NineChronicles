@@ -369,12 +369,18 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
 #if UNITY_ANDROID
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
-            Debug.Log("[Game] Start() IAPStoreManager initialized");
+            IEnumerator InitializeIAP()
+            {
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                Debug.Log("[Game] Start() IAPServiceManager initialized");
+                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+                yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
+                Debug.Log("[Game] Start() IAPStoreManager initialized");
+            }
+
+            StartCoroutine(InitializeIAP());
 #endif
             // Initialize MainCanvas second
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
