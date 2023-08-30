@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
@@ -102,10 +99,11 @@ namespace Nekoyume.UI
                 clientSecret = param["clientSecret"];
             }
 
+            var accountExist = param.ContainsKey("ncAddress");
             if (param.ContainsKey("code"))
             {
                 code = param["code"];
-                if (string.IsNullOrEmpty(code))
+                if (string.IsNullOrEmpty(code) && !accountExist)
                 {
                     RequestCode(OnSuccess);
                     return;
@@ -116,9 +114,15 @@ namespace Nekoyume.UI
 
             void OnSuccess()
             {
-                Address? address = param.ContainsKey("ncAddress") ? new Address(param["ncAddress"]) : null;
+                if (!accountExist)
+                {
+                    AccessToken();
+                }
+
+                Address? address = accountExist
+                    ? new Address(param["ncAddress"])
+                    : null;
                 Widget.Find<LoginSystem>().Show(address);
-                AccessToken();
             }
         }
 
@@ -149,8 +153,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
-            var form = new WWWForm();
-            var request = UnityWebRequest.Post(url, form);
+            var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
 
             await request.SendWebRequest();
@@ -172,8 +175,8 @@ namespace Nekoyume.UI
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
@@ -213,8 +216,8 @@ namespace Nekoyume.UI
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
@@ -255,18 +258,30 @@ namespace Nekoyume.UI
             }
             else
             {
-                Debug.LogError($"RequestPledge Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"RequestPledge Error: {request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
         private void ShowRequestErrorPopup(RequestResult data)
         {
-            var message = $"An abnormal condition has been identified. Please try again after finishing the app.\n{data.message}";
-            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nCode: {data.resultCode}";
+            var message = "An abnormal condition has been identified. Please try again after finishing the app.";
+            message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
+            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nResponse code : {data.resultCode}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
+            popup.SubmitCallback = Application.Quit;
+            Analyzer.Instance.Track("Unity/Portal/0");
+        }
+
+        private void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
+        {
+            var message = "An abnormal condition has been identified. Please try again after finishing the app.";
+            message += string.IsNullOrEmpty(errorMessage) ? string.Empty : $"\n{errorMessage}";
+
+            var popup = Widget.Find<TitleOneButtonSystem>();
+            popup.Show(result.ToString(), message, "OK", false);
             popup.SubmitCallback = Application.Quit;
             Analyzer.Instance.Track("Unity/Portal/0");
         }
