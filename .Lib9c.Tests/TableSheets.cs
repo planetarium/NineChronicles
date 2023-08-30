@@ -9,6 +9,7 @@ namespace Lib9c.Tests
     using Nekoyume.TableData.Garages;
     using Nekoyume.TableData.GrandFinale;
     using Nekoyume.TableData.Pet;
+    using Nekoyume.TableData.Stake;
 
     public class TableSheets
     {
@@ -146,6 +147,8 @@ namespace Lib9c.Tests
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
 
         public StakeAchievementRewardSheet StakeAchievementRewardSheet { get; private set; }
+
+        public StakePolicySheet StakePolicySheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
 
