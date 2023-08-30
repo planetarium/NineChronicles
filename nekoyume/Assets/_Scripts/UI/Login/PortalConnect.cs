@@ -20,7 +20,6 @@ namespace Nekoyume.UI
         {
             public string title;
             public string message;
-            public string resultCode;
         }
 
         [Serializable]
@@ -102,10 +101,11 @@ namespace Nekoyume.UI
                 clientSecret = param["clientSecret"];
             }
 
+            var accountExist = param.ContainsKey("ncAddress");
             if (param.ContainsKey("code"))
             {
                 code = param["code"];
-                if (string.IsNullOrEmpty(code))
+                if (string.IsNullOrEmpty(code) && !accountExist)
                 {
                     RequestCode(OnSuccess);
                     return;
@@ -116,9 +116,15 @@ namespace Nekoyume.UI
 
             void OnSuccess()
             {
-                Address? address = param.ContainsKey("ncAddress") ? new Address(param["ncAddress"]) : null;
+                if (!accountExist)
+                {
+                    AccessToken();
+                }
+
+                Address? address = accountExist
+                    ? new Address(param["ncAddress"])
+                    : null;
                 Widget.Find<LoginSystem>().Show(address);
-                AccessToken();
             }
         }
 
@@ -149,8 +155,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
-            var form = new WWWForm();
-            var request = UnityWebRequest.Post(url, form);
+            var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
 
             await request.SendWebRequest();
@@ -159,7 +164,7 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<RequestCodeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (!string.IsNullOrEmpty(data.code))
+                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.code))
                 {
                     code = data.code;
                     onSuccess.Invoke();
@@ -167,13 +172,13 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"AccessToken Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
+                    ShowRequestErrorPopup(data, request.responseCode);
                 }
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
@@ -201,20 +206,20 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (!string.IsNullOrEmpty(data.accessToken))
+                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
                 }
                 else
                 {
                     Debug.LogError($"AccessToken Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
+                    ShowRequestErrorPopup(data, request.responseCode);
                 }
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
@@ -242,7 +247,7 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<RequestPledgeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (!string.IsNullOrEmpty(data.txId))
+                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.txId))
                 {
                     txId = data.txId;
                     PlayerPrefs.DeleteKey(ClientSecretKey);
@@ -250,23 +255,35 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"RequestPledge Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
+                    ShowRequestErrorPopup(data, request.responseCode);
                 }
             }
             else
             {
-                Debug.LogError($"RequestPledge Error: {request.error}\n{json}");
-                ShowRequestErrorPopup(data);
+                Debug.LogError($"RequestPledge Error: {request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                ShowRequestErrorPopup(request.result, request.error);
             }
         }
 
-        private void ShowRequestErrorPopup(RequestResult data)
+        private void ShowRequestErrorPopup(RequestResult data, long responseCode)
         {
-            var message = $"An abnormal condition has been identified. Please try again after finishing the app.\n{data.message}";
-            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nCode: {data.resultCode}";
+            var message = "An abnormal condition has been identified. Please try again after finishing the app.";
+            message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
+            message += $"\nResponse code : {responseCode}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
+            popup.SubmitCallback = Application.Quit;
+            Analyzer.Instance.Track("Unity/Portal/0");
+        }
+
+        private void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
+        {
+            var message = "An abnormal condition has been identified. Please try again after finishing the app.";
+            message += string.IsNullOrEmpty(errorMessage) ? string.Empty : $"\n{errorMessage}";
+
+            var popup = Widget.Find<TitleOneButtonSystem>();
+            popup.Show(result.ToString(), message, "OK", false);
             popup.SubmitCallback = Application.Quit;
             Analyzer.Instance.Track("Unity/Portal/0");
         }
