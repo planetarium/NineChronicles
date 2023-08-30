@@ -14,9 +14,10 @@ namespace Nekoyume.UI
         EndPledge,
         CompleteLogin,
 
-        InitIAP,
         InitTableSheet,
+        InitIAP,
         InitCanvas,
+        LoadDcc,
 
         ProgressCompleted,
     }
@@ -40,8 +41,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private LoadingSlider loadingSlider;
 
-        private int _progress = 0;
-
         public void Show(string message, bool localize, float alpha = 0.4f)
         {
             loadingSlider.container.SetActive(false);
@@ -62,19 +61,8 @@ namespace Nekoyume.UI
 
         public void ShowProgress(GameInitProgress progress)
         {
-            switch (progress)
-            {
-                case GameInitProgress.InitAgent:
-                case GameInitProgress.ProgressCompleted:
-                    _progress = (int)progress;
-                    break;
-                default:
-                    _progress++;
-                    break;
-            }
-
-            const int end = (int)GameInitProgress.ProgressCompleted;
-            var percent = Mathf.RoundToInt((float)_progress / end * 100);
+            const int end = (int)GameInitProgress.ProgressCompleted + 1;
+            var percent = Mathf.RoundToInt((float)progress / end * 100);
 
             text.text = L10nManager.Localize($"UI_LOADING_GAME_START_{(int)progress}");
 

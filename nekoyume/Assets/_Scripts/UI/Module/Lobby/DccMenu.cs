@@ -21,12 +21,9 @@ namespace Nekoyume.UI.Module.Lobby
             void SetNotification()
             {
                 var hasNotification = false;
-                if (Game.Game.instance.IsInitialized)
+                foreach (var row in TableSheets.Instance.PetSheet)
                 {
-                    foreach (var row in TableSheets.Instance.PetSheet)
-                    {
-                        hasNotification |= PetFrontHelper.HasNotification(row.Id);
-                    }
+                    hasNotification |= PetFrontHelper.HasNotification(row.Id);
                 }
 
                 notification.SetActive(hasNotification);

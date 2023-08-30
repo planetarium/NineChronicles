@@ -55,6 +55,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+            SharedModel = new Shop();
             CloseWidget = null;
 
             reregistrationButton.onClick.AddListener(() =>
@@ -105,7 +106,6 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            SharedModel = new Shop();
             SharedModel.ItemCountableAndPricePopup.Value.Item
                 .Subscribe(SubscribeSellPopup)
                 .AddTo(gameObject);
