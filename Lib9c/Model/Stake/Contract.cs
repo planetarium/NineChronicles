@@ -14,10 +14,10 @@ namespace Nekoyume.Model.Stake
         public const string StakeRegularRewardSheetPrefix
             = "StakeRegularRewardSheet_";
 
-        public string StakeRegularFixedRewardSheetTableName { get; init; }
-        public string StakeRegularRewardSheetTableName { get; init; }
-        public long RewardInterval { get; init; }
-        public long LockupInterval { get; init; }
+        public string StakeRegularFixedRewardSheetTableName { get; }
+        public string StakeRegularRewardSheetTableName { get; }
+        public long RewardInterval { get; }
+        public long LockupInterval { get; }
 
         public Contract(
             string stakeRegularFixedRewardSheetTableName,
