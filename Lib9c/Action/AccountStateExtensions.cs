@@ -988,7 +988,9 @@ namespace Nekoyume.Action
                     stakeStateV1,
                     new Contract(
                         stakeRegularFixedRewardSheetTableName: stakeRegularFixedRewardSheetTableName,
-                        stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName));
+                        stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName,
+                        rewardInterval: StakeState.RewardInterval,
+                        lockupInterval: StakeState.LockupInterval));
                 return true;
             }
 

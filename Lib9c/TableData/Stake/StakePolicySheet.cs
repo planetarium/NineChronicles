@@ -8,16 +8,15 @@ namespace Nekoyume.TableData.Stake
         [Serializable]
         public class Row : SheetRow<string>
         {
-            public override string Key => TableTypeName;
+            public override string Key => AttrName;
 
-            public string TableTypeName { get; private set; }
-
-            public string TableName { get; private set; }
+            public string AttrName { get; private set; }
+            public string Value { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                TableTypeName = fields[0];
-                TableName = fields[1];
+                AttrName = fields[0];
+                Value = fields[1];
             }
         }
 

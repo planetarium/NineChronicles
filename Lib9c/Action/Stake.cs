@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
@@ -78,8 +79,7 @@ namespace Nekoyume.Action
             Log.Debug("{AddressesHex}Stake exec started", addressesHex);
             var stakePolicySheet = states.GetSheet<StakePolicySheet>();
             var currentStakeRegularRewardSheetAddress =
-                Addresses.GetSheetAddress(stakePolicySheet[nameof(StakeRegularRewardSheet)]
-                    .TableName);
+                Addresses.GetSheetAddress(stakePolicySheet[nameof(StakeRegularRewardSheet)].Value);
 
             var stakeRegularRewardSheet = states.GetSheet<StakeRegularRewardSheet>(
                 currentStakeRegularRewardSheetAddress);
@@ -104,9 +104,13 @@ namespace Nekoyume.Action
 
             var latestStakeContract = new Contract(
                 stakeRegularFixedRewardSheetTableName:
-                    stakePolicySheet["StakeRegularFixedRewardSheet"].TableName,
+                    stakePolicySheet["StakeRegularFixedRewardSheet"].Value,
                 stakeRegularRewardSheetTableName:
-                    stakePolicySheet["StakeRegularRewardSheet"].TableName
+                    stakePolicySheet["StakeRegularRewardSheet"].Value,
+                rewardInterval:
+                    long.Parse(stakePolicySheet["RewardInterval"].Value, CultureInfo.InvariantCulture),
+                lockupInterval:
+                    long.Parse(stakePolicySheet["LockupInterval"].Value, CultureInfo.InvariantCulture)
             );
 
             if (!states.TryGetStakeStateV2(context.Signer, out var stakeStateV2))

@@ -11,28 +11,37 @@ namespace Nekoyume.Model.Stake
 
         public readonly Contract Contract;
         public readonly long StartedBlockIndex;
-        public readonly long ClaimedBlockIndex;
+        public readonly long ReceivedBlockIndex;
 
         public long CancellableBlockIndex =>
-            StartedBlockIndex + StakeState.LockupInterval;
+            StartedBlockIndex + Contract.LockupInterval;
+
+        public long ClaimedBlockIndex => ReceivedBlockIndex == 0
+            ? StartedBlockIndex
+            : StartedBlockIndex + Math.DivRem(
+                ReceivedBlockIndex - StartedBlockIndex,
+                Contract.RewardInterval,
+                out _
+            ) * Contract.RewardInterval;
+
         public long ClaimableBlockIndex =>
-            ClaimedBlockIndex + StakeState.RewardInterval;
+            ClaimedBlockIndex + Contract.RewardInterval;
 
         public StakeStateV2(
             Contract contract,
             long startedBlockIndex)
-            : this(contract, startedBlockIndex, startedBlockIndex)
+            : this(contract, startedBlockIndex, 0)
         {
         }
 
         public StakeStateV2(
             Contract contract,
             long startedBlockIndex,
-            long claimedBlockIndex)
+            long receivedBlockIndex)
         {
             Contract = contract;
             StartedBlockIndex = startedBlockIndex;
-            ClaimedBlockIndex = claimedBlockIndex;
+            ReceivedBlockIndex = receivedBlockIndex;
         }
 
         public StakeStateV2(
@@ -41,7 +50,7 @@ namespace Nekoyume.Model.Stake
         ) : this(
             contract,
             stakeState.StartedBlockIndex,
-            stakeState.GetClaimableBlockIndex(long.MaxValue) - StakeState.RewardInterval
+            stakeState.ReceivedBlockIndex
         )
         {
         }
@@ -69,7 +78,7 @@ namespace Nekoyume.Model.Stake
 
             Contract = new Contract(list[reservedCount]);
             StartedBlockIndex = (Integer)list[reservedCount + 1];
-            ClaimedBlockIndex = (Integer)list[reservedCount + 2];
+            ReceivedBlockIndex = (Integer)list[reservedCount + 2];
         }
 
         public IValue Serialize() => new List(
@@ -77,7 +86,7 @@ namespace Nekoyume.Model.Stake
             (Integer)StateTypeVersion,
             Contract.Serialize(),
             (Integer)StartedBlockIndex,
-            (Integer)ClaimedBlockIndex
+            (Integer)ReceivedBlockIndex
         );
     }
 }
