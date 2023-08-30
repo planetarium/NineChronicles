@@ -182,7 +182,7 @@ namespace Nekoyume.State
             var runeIds = runeListSheet.Values.Select(x => x.Id).ToList();
             var runeAddresses = runeIds.Select(id => RuneState.DeriveAddress(avatarAddress, id))
                 .ToList();
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(runeAddresses);
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(runeAddresses);
             RuneStates.Clear();
             foreach (var value in stateBulk.Values)
             {
@@ -217,7 +217,7 @@ namespace Nekoyume.State
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     RuneSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+                var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -294,7 +294,7 @@ namespace Nekoyume.State
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Arena),
                     ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
                 };
-                var stateBulk = await agent.GetStateBulk(addresses);
+                var stateBulk = await agent.GetStateBulkAsync(addresses);
                 foreach (var value in stateBulk.Values)
                 {
                     if (value is List list)
@@ -346,7 +346,7 @@ namespace Nekoyume.State
                 ItemSlotState.DeriveAddress(avatarState.address, BattleType.Raid)
             };
 
-            var stateBulk = await Game.Game.instance.Agent.GetStateBulk(addresses);
+            var stateBulk = await Game.Game.instance.Agent.GetStateBulkAsync(addresses);
             foreach (var value in stateBulk.Values)
             {
                 if (value is List list)
@@ -527,7 +527,7 @@ namespace Nekoyume.State
             }.Select(key => (Key: key, KeyAddress: address.Derive(key))).ToArray();
 
             var states =
-                await agent.GetStateBulk(addressPairList.Select(value => value.KeyAddress));
+                await agent.GetStateBulkAsync(addressPairList.Select(value => value.KeyAddress));
             // Make Tuple list by state value and state address key.
             var stateAndKeys = states.Join(
                 addressPairList,
@@ -798,7 +798,7 @@ namespace Nekoyume.State
                                 recipeId), recipeId))
                         .ToList();
                 var states =
-                    await Game.Game.instance.Agent.GetStateBulk(
+                    await Game.Game.instance.Agent.GetStateBulkAsync(
                         hammerPointStateAddresses.Select(tuple => tuple.Item1));
                 var joinedStates = states.Join(
                     hammerPointStateAddresses,
@@ -864,7 +864,7 @@ namespace Nekoyume.State
         private async UniTask SetPetStates(Address avatarAddress)
         {
             var petIds = TableSheets.Instance.PetSheet.Values.Select(row => row.Id).ToList();
-            var petRawStates = await Game.Game.instance.Agent.GetStateBulk(
+            var petRawStates = await Game.Game.instance.Agent.GetStateBulkAsync(
                 petIds.Select(id => PetState.DeriveAddress(avatarAddress, id))
             );
             foreach (var petId in petIds)

@@ -789,7 +789,7 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<ItemEnhancement>> ItemEnhancement(
             Equipment baseEquipment,
-            Equipment materialEquipment,
+            List<Equipment> materialEquipments,
             int slotIndex,
             BigInteger costNCG)
         {
@@ -799,13 +799,18 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.TradableId,
+            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.ItemId,
                 baseEquipment.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.TradableId,
-                materialEquipment.RequiredBlockIndex, 1);
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            foreach (var materialEquip in materialEquipments)
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
+                    materialEquip.RequiredBlockIndex, 1);
+                LocalLayerModifier.SetItemEquip(avatarAddress, materialEquip.NonFungibleId, false);
+            }
+
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/Item Enhancement",
@@ -814,11 +819,11 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
-
+            
             var action = new ItemEnhancement
             {
                 itemId = baseEquipment.NonFungibleId,
-                materialId = materialEquipment.NonFungibleId,
+                materialIds = materialEquipments.Select((matEquipment) => matEquipment.NonFungibleId).ToList(),
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
@@ -1172,8 +1177,11 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
-                    equipment.RequiredBlockIndex, 1);
+                LocalLayerModifier.RemoveItem(
+                    avatarAddress,
+                    equipment.ItemId,
+                    equipment.RequiredBlockIndex,
+                    1);
             });
 
             if (chargeAp)

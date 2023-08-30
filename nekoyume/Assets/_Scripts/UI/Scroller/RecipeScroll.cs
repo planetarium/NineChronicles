@@ -1,22 +1,25 @@
-using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using Nekoyume.EnumType;
-using Nekoyume.L10n;
-using Nekoyume.State;
 using System.Numerics;
+using Coffee.UIEffects;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module.Common;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -24,10 +27,22 @@ namespace Nekoyume.UI.Scroller
     using Module;
     using UniRx;
 
-    public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
+    public class RecipeScroll : GridScroll<SheetRow<int>, RecipeScroll.ContextModel, RecipeScroll.CellCellGroup>
     {
-        public class ContextModel : RectScrollDefaultContext
+        public class ContextModel : GridScrollDefaultContext
         {
+        }
+
+        public class CellCellGroup : GridCellGroup<SheetRow<int>, ContextModel>
+        {
+        }
+
+        public enum Filter
+        {
+            Default,
+            Name,
+            Level,
+            Grade,
         }
 
         [Serializable]
@@ -45,8 +60,36 @@ namespace Nekoyume.UI.Scroller
             public StatType Type;
         }
 
+        [Serializable]
+        private struct EventScheduleTab
+        {
+            public GameObject container;
+            public BlocksAndDatesPeriod blocksAndDatesPeriod;
+            public TextMeshProUGUI remainingTimeText;
+        }
+
+        [Serializable]
+        private struct OpenAllRecipeArea
+        {
+            public GameObject container;
+            public Button button;
+            public TextMeshProUGUI costText;
+        }
+
+        [Serializable]
+        private struct SortArea
+        {
+            public GameObject container;
+            public TMP_Dropdown filter;
+            public Button button;
+            public UIFlip buttonArrow;
+        }
+
         [SerializeField]
-        private GameObject viewport;
+        private RecipeCell cellTemplate = null;
+
+        [SerializeField]
+        private RectTransform viewport;
 
         [SerializeField]
         private List<EquipmentCategoryToggle> equipmentCategoryToggles;
@@ -61,28 +104,16 @@ namespace Nekoyume.UI.Scroller
         private GameObject consumableTab;
 
         [SerializeField]
-        private GameObject eventScheduleTab;
+        private EventScheduleTab eventScheduleTab;
 
         [SerializeField]
-        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
-
-        [SerializeField]
-        private TextMeshProUGUI eventScheduleTabRemainingTimeText;
-
-        [SerializeField]
-        private GameObject emptyObject;
+        private SortArea sortArea;
 
         [SerializeField]
         private TextMeshProUGUI emptyObjectText;
 
         [SerializeField]
-        private GameObject openAllRecipeArea;
-
-        [SerializeField]
-        private Button openAllRecipeButton;
-
-        [SerializeField]
-        private TextMeshProUGUI openAllRecipeCostText;
+        private OpenAllRecipeArea openAllRecipeArea;
 
         [SerializeField]
         private float animationInterval = 0.3f;
@@ -94,6 +125,8 @@ namespace Nekoyume.UI.Scroller
         private List<int> _unlockableRecipeIds = new ();
 
         private List<IDisposable> _disposablesAtShow = new List<IDisposable>();
+
+        protected override FancyCell<SheetRow<int>, ContextModel> CellTemplate => cellTemplate;
 
         protected void Awake()
         {
@@ -119,7 +152,31 @@ namespace Nekoyume.UI.Scroller
                 });
             }
 
-            openAllRecipeButton.onClick.AddListener(OpenEveryAvailableRecipes);
+            openAllRecipeArea.button.onClick.AddListener(OpenEveryAvailableRecipes);
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, viewport.rect.width);
+
+            var options = Enum.GetNames(typeof(Filter)).Select(f => f.ToString()).ToList();
+            sortArea.filter.AddOptions(options);
+            sortArea.filter.onValueChanged.AddListener(index =>
+            {
+                AudioController.PlayClick();
+
+                var items = ItemsSource.SelectMany(x => x).ToList();
+                SetFilterAndAscending((Filter)index, true, items, true);
+            });
+            sortArea.button.onClick.AddListener(() =>
+            {
+                AudioController.PlayClick();
+
+                var items = ItemsSource.SelectMany(x => x).ToList();
+                SetFilterAndAscending((Filter)sortArea.filter.value, !sortArea.buttonArrow.vertical, items, true);
+            });
         }
 
         private void OnDisable()
@@ -182,14 +239,14 @@ namespace Nekoyume.UI.Scroller
             UpdateUnlockAllButton();
         }
 
-        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
+        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false, EquipmentItemRecipeSheet.Row jumpToRecipe = null)
         {
             _disposablesAtShow.DisposeAllAndClear();
             Craft.SharedModel.DisplayingItemSubtype = type;
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
-            eventScheduleTab.SetActive(false);
+            eventScheduleTab.container.SetActive(false);
             if (updateToggle)
             {
                 var toggle = equipmentCategoryToggles
@@ -204,42 +261,14 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            viewport.SetActive(true);
-            List<RecipeRow.Model> items;
-            if (type is not ItemSubType.EquipmentMaterial)
-            {
-                items = Craft.SharedModel.EquipmentRecipeMap.Values
-                    .Where(x => x.ItemSubType == type &&
-                                !Util.IsEventEquipmentRecipe(x.Rows.First().Key))
-                    .ToList();
-            }
-            else
-            {
-                items = new List<RecipeRow.Model>
-                {
-                    Craft.SharedModel.EquipmentRecipeMap["crystal_equipment"]
-                };
-            }
-
+            var items = Craft.SharedModel.EquipmentRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
-            emptyObject.SetActive(!items.Any());
-            Show(items);
+            emptyObjectText.gameObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
+            SetFilterAndAscending(Filter.Default, true, items);
 
-            var max = 0;
-            foreach (var item in items)
-            {
-                if (item.Rows.Any(row => row is EquipmentItemRecipeSheet.Row equipmentRow
-                                         && !IsEquipmentLocked(equipmentRow)))
-                {
-                    max = Mathf.Max(max, items.IndexOf(item));
-                }
-            }
-            // `Scroller.ViewportSize`(viewport.rect.size.x,y) was not initialized.
-            const float viewportSizeVertical = 458f;  // in `UI_Craft` prefab
-            AdjustCellIntervalAndScrollOffset(viewportSizeVertical);
-            JumpTo(max - 1);
-
-            AnimateScroller();
+            jumpToRecipe ??= items.LastOrDefault(row => !IsEquipmentLocked(row));
+            JumpTo(jumpToRecipe);
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
@@ -286,11 +315,11 @@ namespace Nekoyume.UI.Scroller
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            openAllRecipeArea.SetActive(false);
+            openAllRecipeArea.container.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
-            eventScheduleTab.SetActive(false);
+            eventScheduleTab.container.SetActive(false);
             if (updateToggle)
             {
                 var toggle = consumableCategoryToggles
@@ -305,27 +334,14 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            viewport.SetActive(true);
-            var items = Craft.SharedModel.ConsumableRecipeMap.Values
-                .Where(x => x.StatType == type)
-                .ToList();
+            var items = Craft.SharedModel.ConsumableRecipeMap[type];
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
-            emptyObject.SetActive(!items.Any());
-            Show(items);
+            emptyObjectText.gameObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
+            SetFilterAndAscending(Filter.Default, true, items);
 
-            var max = -1;
-            foreach (var item in items)
-            {
-                if (item.Rows.Any(row => row is ConsumableItemRecipeSheet.Row consumableRow
-                    && !IsConsumableLocked(consumableRow)))
-                {
-                    max = Mathf.Max(max, items.IndexOf(item));
-                }
-            }
-            max = max != -1 ? max : items.Count - 1;
-            JumpTo(max - 1);
-
-            AnimateScroller();
+            var max = items.Last(row => !IsConsumableLocked(row));
+            JumpTo(max);
 
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
@@ -355,54 +371,46 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(UpdateEventScheduleEntireTime)
                 .AddTo(_disposablesAtShow);
             RxProps.EventRecipeRemainingTimeText
-                .SubscribeTo(eventScheduleTabRemainingTimeText)
+                .SubscribeTo(eventScheduleTab.remainingTimeText)
                 .AddTo(_disposablesAtShow);
 
-            openAllRecipeArea.SetActive(false);
+            openAllRecipeArea.container.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(false);
 
+            List<SheetRow<int>> items;
             if (RxProps.EventScheduleRowForRecipe is not null &&
                 RxProps.EventConsumableItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventConsumableRecipeMap.Values.ToList();
-                viewport.SetActive(true);
-                emptyObject.SetActive(false);
-                eventScheduleTab.SetActive(true);
-                Show(items, true);
-                AnimateScroller();
+                items = Craft.SharedModel.EventConsumableRecipeMap;
             }
             else if (RxProps.EventScheduleRowForRecipe is not null &&
                      RxProps.EventMaterialItemRecipeRows.Value?.Count is not (null or 0))
             {
-                var items = Craft.SharedModel.EventMaterialRecipeMap.Values.ToList();
-                viewport.SetActive(true);
-                emptyObject.SetActive(false);
-                eventScheduleTab.SetActive(true);
-                Show(items, true);
-                AnimateScroller();
+                items = Craft.SharedModel.EventMaterialRecipeMap;
             }
             else
             {
-                Show(new List<RecipeRow.Model>(), true);
-                emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
-                viewport.SetActive(false);
-                emptyObject.SetActive(true);
-                eventScheduleTab.SetActive(false);
+                items = new List<SheetRow<int>>();
             }
+
+            emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
+            emptyObjectText.gameObject.SetActive(!items.Any());
+            sortArea.container.SetActive(items.Any());
+            eventScheduleTab.container.SetActive(items.Any());
+            SetFilterAndAscending(Filter.Default, true, items, true);
         }
 
-        private void UpdateEventScheduleEntireTime(
-            EventScheduleSheet.Row row)
+        private void UpdateEventScheduleEntireTime(EventScheduleSheet.Row row)
         {
             if (row is null)
             {
-                eventScheduleTabEntireBlocksAndDatesPeriod.Hide();
+                eventScheduleTab.blocksAndDatesPeriod.Hide();
                 return;
             }
 
-            eventScheduleTabEntireBlocksAndDatesPeriod.Show(
+            eventScheduleTab.blocksAndDatesPeriod.Show(
                 row.StartBlockIndex,
                 row.RecipeEndBlockIndex,
                 Game.Game.instance.Agent.BlockIndex,
@@ -416,13 +424,13 @@ namespace Nekoyume.UI.Scroller
         {
             if (row is null)
             {
-                eventScheduleTabRemainingTimeText.text = string.Empty;
+                eventScheduleTab.remainingTimeText.text = string.Empty;
                 return;
             }
 
             var value = row.RecipeEndBlockIndex - currentBlockIndex;
             var time = value.BlockRangeToTimeSpanString();
-            eventScheduleTabRemainingTimeText.text = $"{value}({time})";
+            eventScheduleTab.remainingTimeText.text = $"{value}({time})";
         }
 
         private void UpdateUnlockAllButton()
@@ -432,13 +440,13 @@ namespace Nekoyume.UI.Scroller
             _openCost = Craft.SharedModel.UnlockableRecipesOpenCost;
 
             var isActive = _unlockableRecipeIds.Any();
-            openAllRecipeArea.SetActive(isActive);
+            openAllRecipeArea.container.SetActive(isActive);
             if (isActive)
             {
-                openAllRecipeCostText.text = _openCost.ToString();
+                openAllRecipeArea.costText.text = _openCost.ToString();
 
                 var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
-                openAllRecipeCostText.color = hasEnoughBalance
+                openAllRecipeArea.costText.color = hasEnoughBalance
                     ? Palette.GetColor(ColorType.ButtonEnabled)
                     : Palette.GetColor(ColorType.ButtonDisabled);
             }
@@ -450,7 +458,7 @@ namespace Nekoyume.UI.Scroller
             {
                 StopCoroutine(_animationCoroutine);
                 _animationCoroutine = null;
-                var rows = GetComponentsInChildren<RecipeRow>(true);
+                var rows = GetComponentsInChildren<RecipeCell>(true);
                 foreach (var row in rows)
                 {
                     row.ShowWithAlpha(true);
@@ -467,7 +475,7 @@ namespace Nekoyume.UI.Scroller
             yield return null;
             Relayout();
 
-            var rows = GetComponentsInChildren<RecipeRow>();
+            var rows = GetComponentsInChildren<RecipeCell>();
             var wait = new WaitForSeconds(animationInterval);
 
             foreach (var row in rows)
@@ -508,15 +516,75 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void GoToRecipeGroup(string equipmentRecipeGroup)
+        private void SetFilterAndAscending<T>(Filter filter, bool isAscending, List<T> items, bool jumpToFirst = false) where T : SheetRow<int>
         {
-            if (!Craft.SharedModel.EquipmentRecipeMap
-                    .TryGetValue(equipmentRecipeGroup, out var model))
+            sortArea.filter.SetValueWithoutNotify((int)filter);
+            sortArea.buttonArrow.vertical = isAscending;
+
+            items = GetSortedItems(items, (Filter)sortArea.filter.value, sortArea.buttonArrow.vertical);
+            Show(items, jumpToFirst);
+            AnimateScroller();
+        }
+
+        public static List<T> GetSortedItems<T>(List<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
+        {
+            int ResultItemId(T row)
             {
-                return;
+                return row switch
+                {
+                    EquipmentItemRecipeSheet.Row recipe => recipe.ResultEquipmentId,
+                    EventConsumableItemRecipeSheet.Row recipe => recipe.ResultConsumableItemId,
+                    ConsumableItemRecipeSheet.Row recipe => recipe.ResultConsumableItemId,
+                    EventMaterialItemRecipeSheet.Row recipe => recipe.ResultMaterialItemId,
+                    _ => throw new ArgumentException("Invalid row type")
+                };
             }
 
-            JumpTo(model);
+            string GetItemNameString(T recipeRow)
+            {
+                return L10nManager.Localize($"ITEM_NAME_{ResultItemId(recipeRow)}");
+            }
+
+            int GetItemRequirementLevel(T recipeRow)
+            {
+                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                return sheet.TryGetValue(ResultItemId(recipeRow), out var row) ? row.Level : 1;
+            }
+
+            int GetItemGrade(T recipeRow)
+            {
+                return Game.Game.instance.TableSheets.ItemSheet[ResultItemId(recipeRow)].Grade;
+            }
+
+            IEnumerable<T> sortedItems; ;
+            switch (selectedFilter)
+            {
+                case Filter.Name:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemNameString)
+                        : items.OrderByDescending(GetItemNameString);
+                    break;
+                case Filter.Level:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemRequirementLevel)
+                        : items.OrderByDescending(GetItemRequirementLevel);
+                    break;
+                case Filter.Grade:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemGrade)
+                        : items.OrderByDescending(GetItemGrade);
+                    break;
+                case Filter.Default:
+                default:
+                    sortedItems = isAscending
+                        ? items.OrderBy(x => x.Key)
+                        : items.OrderByDescending(x => x.Key);
+                    break;
+            }
+
+            return sortedItems
+                .Where(row => row is not EquipmentItemRecipeSheet.Row { UnlockStage: 999 })
+                .ToList();
         }
     }
 }

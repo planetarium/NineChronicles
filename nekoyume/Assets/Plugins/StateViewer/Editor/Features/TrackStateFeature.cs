@@ -7,6 +7,7 @@ using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Nekoyume.Model.State;
 using StateViewer.Runtime;
@@ -55,49 +56,55 @@ namespace StateViewer.Editor.Features
 
         public class OutputCsvRow : SourceCsvRow
         {
-            [Index(7), Name("stake_state_addr")]
+            [Index(7), Name("stake_balance_addr")]
+            public string StakeBalanceAddr { get; set; }
+
+            [Index(8), Name("prev_stake_balance")]
+            public string PrevStakeBalance { get; set; }
+
+            [Index(9), Name("stake_state_addr")]
             public string StakeStateAddr { get; set; }
 
-            [Index(8), Name("prev_stake_started_block_index")]
+            [Index(10), Name("prev_stake_started_block_index")]
             public long PrevStakeStartedBlockIndex { get; set; } = -1L;
 
-            [Index(9), Name("prev_stake_received_block_index")]
+            [Index(11), Name("prev_stake_received_block_index")]
             public long PrevStakeReceivedBlockIndex { get; set; } = -1L;
 
-            [Index(10), Name("v4_item_reward_v1_step")]
+            [Index(12), Name("v4_item_reward_v1_step")]
             public int V4ItemRewardV1Step { get; set; } = -1;
 
-            [Index(11), Name("v4_item_reward_v2_step")]
+            [Index(13), Name("v4_item_reward_v2_step")]
             public int V4ItemRewardV2Step { get; set; } = -1;
 
-            [Index(12), Name("v5_item_reward_v1_step")]
+            [Index(14), Name("v5_item_reward_v1_step")]
             public int V5ItemRewardV1Step { get; set; } = -1;
 
-            [Index(13), Name("v5_item_reward_v2_step")]
+            [Index(15), Name("v5_item_reward_v2_step")]
             public int V5ItemRewardV2Step { get; set; } = -1;
 
-            [Index(14), Name("v4_rune_reward_v1_step")]
+            [Index(16), Name("v4_rune_reward_v1_step")]
             public int V4RuneRewardV1Step { get; set; } = -1;
 
-            [Index(15), Name("v4_rune_reward_v2_step")]
+            [Index(17), Name("v4_rune_reward_v2_step")]
             public int V4RuneRewardV2Step { get; set; } = -1;
 
-            [Index(16), Name("v5_rune_reward_v1_step")]
+            [Index(18), Name("v5_rune_reward_v1_step")]
             public int V5RuneRewardV1Step { get; set; } = -1;
 
-            [Index(17), Name("v5_rune_reward_v2_step")]
+            [Index(19), Name("v5_rune_reward_v2_step")]
             public int V5RuneRewardV2Step { get; set; } = -1;
 
-            [Index(18), Name("v4_currency_reward_v1_step")]
+            [Index(20), Name("v4_currency_reward_v1_step")]
             public int V4CurrencyRewardV1Step { get; set; } = -1;
 
-            [Index(19), Name("v4_currency_reward_v2_step")]
+            [Index(21), Name("v4_currency_reward_v2_step")]
             public int V4CurrencyRewardV2Step { get; set; } = -1;
 
-            [Index(20), Name("v5_currency_reward_v1_step")]
+            [Index(22), Name("v5_currency_reward_v1_step")]
             public int V5CurrencyRewardV1Step { get; set; } = -1;
 
-            [Index(21), Name("v5_currency_reward_v2_step")]
+            [Index(23), Name("v5_currency_reward_v2_step")]
             public int V5CurrencyRewardV2Step { get; set; } = -1;
         }
 
@@ -111,6 +118,8 @@ namespace StateViewer.Editor.Features
         private UIState _uiState = UIState.Idle;
 
         private readonly StateViewerWindow _editorWindow;
+
+        private readonly Currency _ncg;
 
         private Vector2 _scrollPosition;
 
@@ -126,6 +135,12 @@ namespace StateViewer.Editor.Features
         public TrackStateFeature(StateViewerWindow editorWindow)
         {
             _editorWindow = editorWindow;
+#pragma warning disable CS0618
+            _ncg = Currency.Legacy(
+                "NCG",
+                2,
+                new Address("0x47D082a115c63E7b58B1532d20E631538eaFADde"));
+#pragma warning restore CS0618
             sourceCsv = string.Empty;
             outputFilePath = Path.Combine(Application.streamingAssetsPath, "tracked-output.csv");
         }
@@ -233,13 +248,25 @@ namespace StateViewer.Editor.Features
                 }
 
                 var prevBlockHash = BlockHash.FromString(sourceCsvRow.PrevBlockHash);
-                var stakeStateAddr = StakeState.DeriveAddress(new Address(sourceCsvRow.SignerAddr));
+                var signerAddr = new Address(sourceCsvRow.SignerAddr);
+                var stakeAddr = StakeState.DeriveAddress(signerAddr);
                 try
                 {
-                    var (_, value) = stateProxy is null
+                    var (_, stakeBalance) = stateProxy is null
+                        ? ((Address?)null, (FungibleAssetValue?)null)
+                        : await stateProxy.GetBalanceAsync(
+                            stakeAddr,
+                            _ncg,
+                            prevBlockHash);
+                    var (_, stakeStateValue) = stateProxy is null
                         ? ((Address?)null, (IValue)null)
-                        : await stateProxy.GetStateAsync(stakeStateAddr, prevBlockHash);
-                    var rowToWrite = ToOutputCsvRow(sourceCsvRow, stakeStateAddr, value);
+                        : await stateProxy.GetStateAsync(stakeAddr, prevBlockHash);
+                    var rowToWrite = ToOutputCsvRow(
+                        sourceCsvRow,
+                        stakeAddr,
+                        stakeBalance,
+                        stakeAddr,
+                        stakeStateValue);
                     csvWriter.WriteRecord(rowToWrite);
                     await csvWriter.NextRecordAsync();
                 }
@@ -256,10 +283,12 @@ namespace StateViewer.Editor.Features
 
         private static OutputCsvRow ToOutputCsvRow(
             SourceCsvRow sourceCsvRow,
+            Address stakeBalanceAddr,
+            FungibleAssetValue? stakeBalance,
             Address stakeStateAddr,
-            IValue value)
+            IValue stakeStateValue)
         {
-            if (value is not Dictionary dict)
+            if (stakeStateValue is not Dictionary dict)
             {
                 return new OutputCsvRow
                 {
@@ -270,11 +299,14 @@ namespace StateViewer.Editor.Features
                     SignerAddr = sourceCsvRow.SignerAddr,
                     PrevBlockIndex = sourceCsvRow.PrevBlockIndex,
                     PrevBlockHash = sourceCsvRow.PrevBlockHash,
+                    StakeBalanceAddr = stakeBalanceAddr.ToString(),
+                    PrevStakeBalance = stakeBalance?.GetQuantityString() ?? "0",
                     StakeStateAddr = stakeStateAddr.ToString(),
                 };
             }
 
             var stakeState = new StakeState(dict);
+#pragma warning disable CS0618
             stakeState.CalculateAccumulatedItemRewardsV2(
                 sourceCsvRow.BlockIndex,
                 out var v4ItemV1Step,
@@ -299,6 +331,7 @@ namespace StateViewer.Editor.Features
                 sourceCsvRow.BlockIndex,
                 out var v5CurrencyV1Step,
                 out var v5CurrencyV2Step);
+#pragma warning restore CS0618
             return new OutputCsvRow
             {
                 Index = sourceCsvRow.Index,
@@ -308,6 +341,8 @@ namespace StateViewer.Editor.Features
                 SignerAddr = sourceCsvRow.SignerAddr,
                 PrevBlockIndex = sourceCsvRow.PrevBlockIndex,
                 PrevBlockHash = sourceCsvRow.PrevBlockHash,
+                StakeBalanceAddr = stakeBalanceAddr.ToString(),
+                PrevStakeBalance = stakeBalance?.GetQuantityString() ?? "",
                 StakeStateAddr = stakeStateAddr.ToString(),
                 PrevStakeStartedBlockIndex = stakeState.StartedBlockIndex,
                 PrevStakeReceivedBlockIndex = stakeState.ReceivedBlockIndex,

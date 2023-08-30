@@ -247,7 +247,7 @@ namespace Nekoyume.Blockchain
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatars =
-                await Game.Game.instance.Agent.GetAvatarStates(new[] { avatarAddress });
+                await Game.Game.instance.Agent.GetAvatarStatesAsync(new[] { avatarAddress });
             if (avatars.TryGetValue(avatarAddress, out var avatarState))
             {
                 await UpdateCurrentAvatarStateAsync(avatarState);

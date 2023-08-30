@@ -53,14 +53,13 @@ namespace Nekoyume.UI.Module
 
             if (currentAvatarLevel >= requirementLevel)
             {
-                normalLevelText.text = $"Lv. {requirementLevel}";
-                normalLevelText.fontSharedMaterial = viewData.LevelTextMaterial;
+                normalLevelText.text = requirementLevel.ToString();
                 normalLevelText.gameObject.SetActive(true);
                 lockedLevelText.gameObject.SetActive(false);
             }
             else
             {
-                lockedLevelText.text = $"Lv. {requirementLevel}";
+                lockedLevelText.text = requirementLevel.ToString();
                 lockedLevelText.gameObject.SetActive(true);
                 normalLevelText.gameObject.SetActive(false);
             }

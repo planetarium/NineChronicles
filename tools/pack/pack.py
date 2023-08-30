@@ -22,7 +22,7 @@ def zip_for_macos(build_result_dir: str, out_dir: str):
     archive_path = os.path.join(out_dir, 'macOS.tar.gz')
     executable_path = os.path.join(
         build_result_dir,
-        '9c.app/Contents/MacOS/9c'
+        'NineChronicles.app/Contents/MacOS/NineChronicles'
     )
     os.chmod(executable_path, 0o755)
     with tarfile.open(archive_path, 'w:gz') as archive:
@@ -36,7 +36,7 @@ def zip_for_linux(build_result_dir: str, out_dir: str):
     archive_path = os.path.join(out_dir, 'Linux.tar.gz')
     executable_path = os.path.join(
         build_result_dir,
-        '9c'
+        'NineChronicles'
     )
     os.chmod(executable_path, 0o755)
     with tarfile.open(archive_path, 'w:gz') as archive:
@@ -83,7 +83,8 @@ ZIP = {
 
 
 def cleanup_debug_dir(build_result_dir: str):
-    shutil.rmtree(os.path.join(build_result_dir, "9c_BurstDebugInformation_DoNotShip"))
+    shutil.rmtree(os.path.join(build_result_dir,
+                  "NineChronicles_BurstDebugInformation_DoNotShip"))
 
     if len(os.listdir(build_result_dir)) == 0:
         raise Exception("Build result is empty")
