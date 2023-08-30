@@ -14,27 +14,16 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ClaimStakeRewardTest
+    public class ClaimStakeReward7Test
     {
         private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
-
-        // VALUE: 6_692_400L
-        // - receive v1 reward * 1
-        // - receive v2(w/o currency) reward * 4
-        // - receive v2(w/ currency) reward * 14
-        // - receive v3 reward * n
-        private const long BlockIndexForTest =
-            StakeState.StakeRewardSheetV3Index -
-            ((StakeState.StakeRewardSheetV3Index - StakeState.StakeRewardSheetV2Index) / StakeState.RewardInterval + 1) *
-            StakeState.RewardInterval;
-
         private readonly Address _agentAddr = new Address(AgentAddressHex);
         private readonly Address _avatarAddr;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
         private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
-        public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
+        public ClaimStakeReward7Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -53,8 +42,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialization()
         {
-            var action = new ClaimStakeReward(_avatarAddr);
-            var deserialized = new ClaimStakeReward();
+            var action = new ClaimStakeReward7(_avatarAddr);
+            var deserialized = new ClaimStakeReward7();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
@@ -151,7 +140,6 @@ namespace Lib9c.Tests.Action
             0L
         )]
         // stake before currency as reward, non prev.
-        // receive v2(w/o currency) * 2, receive v2(w/ currency). check GARAGE.
         [InlineData(
             StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -165,7 +153,6 @@ namespace Lib9c.Tests.Action
             100_000L
         )]
         // stake before currency as reward, prev.
-        // receive v2(w/o currency), receive v2(w/ currency). check GARAGE.
         [InlineData(
             StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
             10_000_000L,
@@ -177,200 +164,6 @@ namespace Lib9c.Tests.Action
             AgentAddressHex,
             "GARAGE",
             100_000L
-        )]
-        // stake before v3(crystal), non prev. receive v2. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - 1,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index - 1 + StakeState.RewardInterval,
-            125,
-            2,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            0L
-        )]
-        // stake after v3(crystal), non prev. receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            125,
-            2,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            5_000L
-        )]
-        // stake before v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
-            10_000_000L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            35_000_000,
-            175_006,
-            11_665,
-            AgentAddressHex,
-            "CRYSTAL",
-            1_000_000_000L
-        )]
-        // stake before v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
-            10_000_000L,
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            30_000_000,
-            150_004,
-            9_999,
-            AgentAddressHex,
-            "CRYSTAL",
-            1_000_000_000L
-        )]
-        // stake after v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            10_000_000L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
-            75_000_000,
-            375_006,
-            24_999,
-            AgentAddressHex,
-            "CRYSTAL",
-            3_000_000_000L
-        )]
-        // stake after v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            10_000_000L,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
-            50_000_000,
-            250_004,
-            16_666,
-            AgentAddressHex,
-            "CRYSTAL",
-            2_000_000_000L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            BlockIndexForTest + StakeState.RewardInterval,
-            62,
-            2,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, do not receive v2(w/o currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval - 1,
-            62,
-            2,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval * 2 - 1,
-            187,
-            4,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, do not receive v2(w/ currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval - 1,
-            562,
-            10,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency).
-        // check GARAGE is 0 when stake 500.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval * 2 - 1,
-            687,
-            12,
-            0,
-            AgentAddressHex,
-            "GARAGE",
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency).
-        // check GARAGE is 100,000 when stake 10,000,000.
-        [InlineData(
-            BlockIndexForTest,
-            10_000_000L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval * 2 - 1,
-            27_000_000,
-            137_512,
-            9_996,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency) * ???, no receive v3.
-        // check CRYSTAL is 0.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval - 1,
-            2_312,
-            38,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency) * ???, receive v3.
-        // check CRYSTAL is ???.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 2 - 1,
-            2_437,
-            40,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            5_000L
         )]
         public void Execute_Success(
             long startedBlockIndex,
@@ -442,7 +235,7 @@ namespace Lib9c.Tests.Action
                 .SetState(stakeStateAddr, initialStakeState.Serialize())
                 .MintAsset(context, stakeStateAddr, _ncg * stakeAmount);
 
-            var action = new ClaimStakeReward(avatarAddr);
+            var action = new ClaimStakeReward7(avatarAddr);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = prevState,

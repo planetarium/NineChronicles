@@ -16,15 +16,17 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.100
-    - name: bulid
+    - name: build
       run: |
         dotnet_args="-c Release -p:NoPackageAnalysis=true"
         if [[ ! "$GITHUB_REF" =~ ^refs/tags/* ]]; then
           project_suffix=dev.${{ github.sha }}
           dotnet_args="$dotnet_args --version-suffix $project_suffix"
         fi
-        dotnet build "$dotnet_args"
-        dotnet pack "$dotnet_args"
+        # shellcheck disable=SC2086
+        dotnet build $dotnet_args
+        # shellcheck disable=SC2086
+        dotnet pack $dotnet_args
     - name: push
       if: github.event_name != 'pull_request'
       run: |
