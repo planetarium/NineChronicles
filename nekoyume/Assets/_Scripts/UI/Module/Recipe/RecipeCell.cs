@@ -311,6 +311,10 @@ namespace Nekoyume.UI.Module
 
         private void SetSelected(SheetRow<int> row)
         {
+            if (row == null && Craft.SharedModel.SelectedRecipeCell != this)
+            {
+                return;
+            }
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
             if (!_isWaitingForUnlock)
