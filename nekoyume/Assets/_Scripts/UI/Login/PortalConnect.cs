@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
@@ -20,6 +17,7 @@ namespace Nekoyume.UI
         {
             public string title;
             public string message;
+            public string resultCode;
         }
 
         [Serializable]
@@ -164,7 +162,7 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<RequestCodeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.code))
+                if (!string.IsNullOrEmpty(data.code))
                 {
                     code = data.code;
                     onSuccess.Invoke();
@@ -172,7 +170,7 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"AccessToken Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data, request.responseCode);
+                    ShowRequestErrorPopup(data);
                 }
             }
             else
@@ -206,14 +204,14 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.accessToken))
+                if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
                 }
                 else
                 {
                     Debug.LogError($"AccessToken Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data, request.responseCode);
+                    ShowRequestErrorPopup(data);
                 }
             }
             else
@@ -247,7 +245,7 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<RequestPledgeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (request.responseCode == 200 && !string.IsNullOrEmpty(data.txId))
+                if (!string.IsNullOrEmpty(data.txId))
                 {
                     txId = data.txId;
                     PlayerPrefs.DeleteKey(ClientSecretKey);
@@ -255,7 +253,7 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"RequestPledge Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data, request.responseCode);
+                    ShowRequestErrorPopup(data);
                 }
             }
             else
@@ -265,11 +263,11 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowRequestErrorPopup(RequestResult data, long responseCode)
+        private void ShowRequestErrorPopup(RequestResult data)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
             message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
-            message += $"\nResponse code : {responseCode}";
+            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nResponse code : {data.resultCode}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
