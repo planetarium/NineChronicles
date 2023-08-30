@@ -52,10 +52,10 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
             sliderAnimator.SetValue(0f, false);
 
             GameConfigStateSubject.GameConfigState
-                .ObserveOnMainThread()
                 .Subscribe(state => sliderAnimator.SetMaxValue(state.ActionPointMax))
                 .AddTo(gameObject);
 
