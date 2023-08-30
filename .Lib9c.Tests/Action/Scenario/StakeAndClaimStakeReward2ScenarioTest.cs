@@ -633,7 +633,7 @@ namespace Lib9c.Tests.Action.Scenario
             var context = new ActionContext();
             var states = _initialState.MintAsset(context, _signerAddress, _currency * stakeAmount);
 
-            IAction action = new Stake(stakeAmount);
+            IAction action = new Stake2(stakeAmount);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -684,7 +684,7 @@ namespace Lib9c.Tests.Action.Scenario
             var context = new ActionContext();
             var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
-            IAction action = new Stake(stakeAmount);
+            IAction action = new Stake2(stakeAmount);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -709,7 +709,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = newStakeBlockIndex,
             });
 
-            action = new Stake(newStakeAmount);
+            action = new Stake2(newStakeAmount);
             // 스테이킹 추가는 가능
             // 락업기간 이전에 deposit을 추가해서 save 할 수 있는지
             states = action.Execute(new ActionContext
@@ -758,7 +758,7 @@ namespace Lib9c.Tests.Action.Scenario
             var context = new ActionContext();
             var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
-            IAction action = new Stake(stakeAmount);
+            IAction action = new Stake2(stakeAmount);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -783,7 +783,7 @@ namespace Lib9c.Tests.Action.Scenario
                 BlockIndex = StakeState.LockupInterval - 1,
             });
 
-            action = new Stake(newStakeAmount);
+            action = new Stake2(newStakeAmount);
             // 락업기간 이전에 deposit을 감소해서 save할때 락업되어 거부되는가
             Assert.Throws<RequiredBlockIndexException>(() => states = action.Execute(new ActionContext
             {
@@ -816,7 +816,7 @@ namespace Lib9c.Tests.Action.Scenario
             var context = new ActionContext();
             var states = _initialState.MintAsset(context, _signerAddress, _currency * initialBalance);
 
-            IAction action = new Stake(stakeAmount);
+            IAction action = new Stake2(stakeAmount);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -850,7 +850,7 @@ namespace Lib9c.Tests.Action.Scenario
                     states.GetBalance(stakeState.address, _currency));
             }
 
-            action = new Stake(newStakeAmount);
+            action = new Stake2(newStakeAmount);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
@@ -908,7 +908,7 @@ namespace Lib9c.Tests.Action.Scenario
         {
             var context = new ActionContext();
             var states = _initialState.MintAsset(context, _signerAddress, _currency * 500);
-            IAction action = new Stake(500);
+            IAction action = new Stake2(500);
             states = action.Execute(new ActionContext
             {
                 PreviousState = states,
