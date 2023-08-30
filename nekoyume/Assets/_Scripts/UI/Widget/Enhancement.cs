@@ -411,6 +411,10 @@ namespace Nekoyume.UI
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels, true);
                 closeButton.interactable = true;
                 ClearInformation();
+
+                if (_sliderEffectCor != null)
+                    StopCoroutine(_sliderEffectCor);
+
                 expSlider.value = 0;
                 _sliderAnchorPoint = 0;
                 sliderPercentText.text = "0% 0/0";
