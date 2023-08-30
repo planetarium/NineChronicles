@@ -41,11 +41,15 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 50d239c4b16e85949a630e5a79a00e15, type: 3}
   - {fileID: 21300000, guid: 36e1b0278f58c894690e5bed72aabfef, type: 3}
   - {fileID: 21300000, guid: f06a9ca721279d142b07498f3b630587, type: 3}
+  - {fileID: 21300000, guid: 73b94218bff0b4f43a45a7989cc81f77, type: 3}
+  - {fileID: 21300000, guid: 68d9a4d99b981d541a964c97c13c3d08, type: 3}
   - {fileID: 21300000, guid: 9439424af706c3f42a76382ff17aa751, type: 3}
   m_PackedSpriteNamesToIndex:
   - Summon_Bg
   - Aura_Bottom
   - NormalAura
+  - Aura_Pattern
+  - Aura_list_Bg
   - GoldenAura
   m_RenderDataMap: {}
   m_Tag: Atlas_Summon
