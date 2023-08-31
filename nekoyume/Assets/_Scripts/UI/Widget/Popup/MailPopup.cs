@@ -716,6 +716,11 @@ namespace Nekoyume.UI
             showQueue.Dequeue()?.Invoke();
         }
 
+        public void Read(SummonMail summonMail)
+        {
+            throw new NotImplementedException();
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)
