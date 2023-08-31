@@ -5,6 +5,12 @@ namespace Nekoyume.TableData.Stake
 {
     public class StakePolicySheet : Sheet<string, StakePolicySheet.Row>
     {
+        public static readonly (string attrName, string value)[] SheetPrefixRules =
+        {
+            ("StakeRegularRewardSheet", "StakeRegularRewardSheet_"),
+            ("StakeRegularFixedRewardSheet", "StakeRegularFixedRewardSheet_"),
+        };
+
         [Serializable]
         public class Row : SheetRow<string>
         {
@@ -17,6 +23,28 @@ namespace Nekoyume.TableData.Stake
             {
                 AttrName = fields[0];
                 Value = fields[1];
+                Validate();
+            }
+
+            public override void Validate()
+            {
+                foreach (var (attrName, value) in SheetPrefixRules)
+                {
+                    if (AttrName != attrName)
+                    {
+                        continue;
+                    }
+
+                    if (Value.StartsWith(value))
+                    {
+                        continue;
+                    }
+
+                    throw new SheetRowValidateException(
+                        $"{nameof(Value)}({Value}) must start with" +
+                        $" \"{value}\" when {nameof(AttrName)}({AttrName}) is" +
+                        $" \"{attrName}\"");
+                }
             }
         }
 

@@ -8,6 +8,7 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Stake;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -25,13 +26,6 @@ namespace Nekoyume.Action
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction, IPatchTableSheetV1
     {
-        private static readonly string[] PrefixRules = new string[] {
-            "StakeRegularRewardSheet_",
-            "StakeRegularFixedRewardSheet_",
-            // "CrystalMonsterCollectionMultiplierSheet_",
-            // "StakeActionPointCoefficientSheet_",
-        };
-
         // FIXME: We should eliminate or justify this concept in another way after v100340.
         // (Until that) please consult Nine Chronicles Dev if you have any questions about this account.
         private static readonly Address Operator =
@@ -74,7 +68,8 @@ namespace Nekoyume.Action
 #endif
 
             var sheet = states.GetState(sheetAddress);
-            if (!(sheet is null) && PrefixRules.Any(TableName.StartsWith))
+            if (sheet is not null &&
+                StakePolicySheet.SheetPrefixRules.Any(tuple => TableName.StartsWith(tuple.value)))
             {
                 var msg = $"{TableName} already exists.";
                 throw new ArgumentException(nameof(TableName), msg);
