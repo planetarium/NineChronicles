@@ -80,10 +80,10 @@ namespace Lib9c.Tests.Action
         [Theory]
         // success first group
         [InlineData(10001, 1, 600201, 2, 1, new[] { 10620000 }, null)]
-        [InlineData(10001, 2, 600201, 4, 0, new[] { 10630000, 10640000 }, null)]
+        [InlineData(10001, 2, 600201, 4, 54, new[] { 10630000, 10640000 }, null)]
         // success second group
         [InlineData(10002, 1, 600202, 2, 1, new[] { 10620001 }, null)]
-        [InlineData(10002, 2, 600202, 4, 6, new[] { 10630001, 10640001 }, null)]
+        [InlineData(10002, 2, 600202, 4, 4, new[] { 10630001, 10640001 }, null)]
         // fail by invalid group
         [InlineData(100003, 1, null, 0, 0, new int[] { }, typeof(RowNotInTableException))]
         // fail by not enough material
@@ -152,6 +152,7 @@ namespace Lib9c.Tests.Action
                         .Equipments.FirstOrDefault(e => e.Id == equipmentId);
                     Assert.NotNull(resultEquipment);
                     Assert.Equal(1, resultEquipment.RequiredBlockIndex);
+                    Assert.True(resultEquipment.optionCountFromCombination > 0);
                 }
             }
             else
