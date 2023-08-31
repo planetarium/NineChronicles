@@ -19,6 +19,5 @@ namespace Nekoyume.Model.Mail
         void Read(ProductSellerMail productSellerMail);
         void Read(ProductCancelMail productCancelMail);
         void Read(UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail);
-        void Read(SummonMail summonMail);
     }
 }
