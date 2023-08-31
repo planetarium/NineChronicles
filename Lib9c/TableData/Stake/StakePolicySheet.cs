@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Nekoyume.TableData.Stake
 {
     public class StakePolicySheet : Sheet<string, StakePolicySheet.Row>
     {
-        public static readonly (string attrName, string value)[] SheetPrefixRules =
-        {
-            ("StakeRegularRewardSheet", "StakeRegularRewardSheet_"),
-            ("StakeRegularFixedRewardSheet", "StakeRegularFixedRewardSheet_"),
-        };
-
         [Serializable]
         public class Row : SheetRow<string>
         {
@@ -48,8 +43,51 @@ namespace Nekoyume.TableData.Stake
             }
         }
 
+        public static readonly string[] RequiredAttrNames =
+        {
+            "StakeRegularFixedRewardSheet",
+            "StakeRegularRewardSheet",
+            "RewardInterval",
+            "LockupInterval",
+        };
+
+        public static readonly (string attrName, string value)[] SheetPrefixRules =
+        {
+            ("StakeRegularFixedRewardSheet", "StakeRegularFixedRewardSheet_"),
+            ("StakeRegularRewardSheet", "StakeRegularRewardSheet_"),
+        };
+
+        public string StakeRegularFixedRewardSheetValue =>
+            this["StakeRegularFixedRewardSheet"].Value;
+
+        public string StakeRegularRewardSheetValue =>
+            this["StakeRegularRewardSheet"].Value;
+
+        public long RewardInterval =>
+            long.Parse(this["RewardInterval"].Value, CultureInfo.InvariantCulture);
+
+        public long LockupInterval =>
+            long.Parse(this["LockupInterval"].Value, CultureInfo.InvariantCulture);
+
         public StakePolicySheet() : base(nameof(StakePolicySheet))
         {
+        }
+
+        public override void Set(string csv, bool isReversed = false)
+        {
+            base.Set(csv, isReversed);
+            foreach (var requiredAttrName in RequiredAttrNames)
+            {
+                if (ContainsKey(requiredAttrName))
+                {
+                    continue;
+                }
+
+                throw new SheetRowNotFoundException(
+                    Name,
+                    nameof(Row.AttrName),
+                    requiredAttrName);
+            }
         }
     }
 }
