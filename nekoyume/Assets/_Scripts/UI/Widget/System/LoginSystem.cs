@@ -7,7 +7,9 @@ using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -162,7 +164,7 @@ namespace Nekoyume.UI
                     bg.SetActive(false);
                     break;
                 case States.SetPassword:
-                    titleText.text = "Please Set password for your private key.";
+                    titleText.text = L10nManager.Localize("UI_SET_PASSWORD_TITLE");
                     submitButton.Text = L10nManager.Localize("UI_CONFIRM");
                     passPhraseGroup.SetActive(true);
                     retypeGroup.SetActive(true);
@@ -240,9 +242,9 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
             }
 
-            var valid = submitButton.IsSubmittable && !string.IsNullOrEmpty(retypeField.text);
+            var valid = submitButton.IsSubmittable;
             correctText.gameObject.SetActive(valid);
-            incorrectText.gameObject.SetActive(!valid);
+            incorrectText.gameObject.SetActive(!valid && !string.IsNullOrEmpty(retypeField.text));
             retypeField.interactable = true;
         }
 
@@ -357,6 +359,7 @@ namespace Nekoyume.UI
                 case States.SetPassword:
                     KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
                     SetPassPhrase(passPhraseField.text);
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Close();
                     break;
                 case States.Login:
@@ -509,10 +512,7 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/2");
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
-                Find<OneButtonSystem>().Show(
-                    L10nManager.Localize("UI_CREATE_PASSWORD_NOTI"),
-                    L10nManager.Localize("UI_PROCEED"),
-                    null);
+                SetState(States.CreateAccount);
             }
 
             base.Show();
