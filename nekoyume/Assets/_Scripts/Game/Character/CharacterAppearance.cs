@@ -237,6 +237,18 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateWeapon(weaponId, vfx);
         }
 
+        private void UpdateAura(Aura aura)
+        {
+            if (aura == null)
+            {
+                SpineController.UpdateAura(0, null);
+                return;
+            }
+
+            var vfx = ResourcesHelper.GetAuraPrefab(aura.Id, aura.level);
+            SpineController.UpdateAura(aura.Id, vfx);
+        }
+
         private void UpdateEar(int index, bool isDcc)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;

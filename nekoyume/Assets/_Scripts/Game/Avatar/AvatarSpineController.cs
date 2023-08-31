@@ -30,10 +30,14 @@ namespace Nekoyume.Game.Avatar
         [SerializeField]
         private AvatarScriptableObject avatarScriptableObject;
 
+        [SerializeField]
+        private GameObject auraPos;
+
         private Shader _shader;
         private Spine.Animation _targetAnimation;
         private Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
+        private GameObject _cachedAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
@@ -235,6 +239,21 @@ namespace Nekoyume.Game.Avatar
             boneFollower.SkeletonRenderer = skeletonAnimation;
             boneFollower.SetBone(boneName);
             _cachedWeaponVFX = parent;
+        }
+
+        public void UpdateAura(int auraId, GameObject auraVFXPrefab = null)
+        {
+            Destroy(_cachedAuraVFX);
+
+            if(auraVFXPrefab is null)
+            {
+                return;
+            }
+
+            var vfx = Instantiate(auraVFXPrefab, auraPos.transform);
+            vfx.transform.localPosition = Vector3.zero;
+
+            _cachedAuraVFX = vfx;
         }
 
         public void UpdateFullCostume(int index, bool isDcc)
