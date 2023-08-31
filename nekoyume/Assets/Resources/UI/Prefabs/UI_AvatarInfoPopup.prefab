@@ -8743,6 +8743,12 @@ PrefabInstance:
       propertyPath: itemSubType
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 387531924573887712, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 222e1c961ca1c5245938ab18919f54e9,
+        type: 3}
     - target: {fileID: 570257463785617384, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_Pivot.x
