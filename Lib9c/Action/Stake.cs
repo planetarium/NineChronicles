@@ -47,7 +47,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            var states = context.PreviousState;
 
             // Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&
@@ -104,13 +104,13 @@ namespace Nekoyume.Action
 
             var latestStakeContract = new Contract(
                 stakeRegularFixedRewardSheetTableName:
-                    stakePolicySheet["StakeRegularFixedRewardSheet"].Value,
+                stakePolicySheet["StakeRegularFixedRewardSheet"].Value,
                 stakeRegularRewardSheetTableName:
-                    stakePolicySheet["StakeRegularRewardSheet"].Value,
+                stakePolicySheet["StakeRegularRewardSheet"].Value,
                 rewardInterval:
-                    long.Parse(stakePolicySheet["RewardInterval"].Value, CultureInfo.InvariantCulture),
+                long.Parse(stakePolicySheet["RewardInterval"].Value, CultureInfo.InvariantCulture),
                 lockupInterval:
-                    long.Parse(stakePolicySheet["LockupInterval"].Value, CultureInfo.InvariantCulture)
+                long.Parse(stakePolicySheet["LockupInterval"].Value, CultureInfo.InvariantCulture)
             );
 
             if (!states.TryGetStakeStateV2(context.Signer, out var stakeStateV2))
@@ -132,39 +132,38 @@ namespace Nekoyume.Action
                 throw new StakeExistingClaimableException();
             }
 
-            // NOTE: Try cancel.
-            if (Amount == 0)
+            // NOTE: When the staking state is locked up.
+            if (stakeStateV2.CancellableBlockIndex > context.BlockIndex)
             {
-                // NOTE: Cannot cancel until lockup ends.
-                if (stakeStateV2.CancellableBlockIndex > context.BlockIndex)
+                // NOTE: Cannot re-contract with less balance.
+                if (targetStakeBalance < stakedBalance)
                 {
                     throw new RequiredBlockIndexException();
                 }
+            }
 
+            // NOTE: Withdraw staking.
+            if (Amount == 0)
+            {
                 return states
                     .SetState(stakeStateAddress, Null.Value)
                     .TransferAsset(context, stakeStateAddress, context.Signer, stakedBalance);
             }
 
-            // NOTE: Cannot re-contract with less balance when the staking is locked up.
-            if (stakeStateV2.CancellableBlockIndex > context.BlockIndex &&
-                targetStakeBalance <= stakedBalance)
-            {
-                throw new RequiredBlockIndexException();
-            }
+            // NOTE: Contract a new staking.
+            var newStakeState = new StakeStateV2(
+                latestStakeContract,
+                context.BlockIndex);
+            states = states
+                .TransferAsset(context, stakeStateAddress, context.Signer, stakedBalance)
+                .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance)
+                .SetState(stakeStateAddress, newStakeState.Serialize());
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}Stake Total Executed Time: {Elapsed}", addressesHex,
                 ended - started);
 
-            // Stake with more or less amount.
-            return states
-                .TransferAsset(context, stakeStateAddress, context.Signer, stakedBalance)
-                .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance)
-                .SetState(
-                    stakeStateAddress,
-                    new StakeStateV2(latestStakeContract, stakeStateV2.StartedBlockIndex)
-                        .Serialize());
+            return states;
         }
     }
 }
