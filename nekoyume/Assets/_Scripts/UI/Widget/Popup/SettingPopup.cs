@@ -139,7 +139,7 @@ namespace Nekoyume.UI
 
             addressShareButton.OnClickAsObservable().Subscribe(_ =>
             {
-                if (LoginSystem.GetPassPhrase().Equals(string.Empty))
+                if (LoginSystem.GetPassPhrase(_privateKey.ToAddress().ToString()).Equals(string.Empty))
                 {
                     Find<LoginSystem>().ShowResetPassword();
                 }

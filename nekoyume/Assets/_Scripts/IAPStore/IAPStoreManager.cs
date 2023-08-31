@@ -179,7 +179,7 @@ namespace Nekoyume.IAPStore
                         IconAndButtonSystem.SystemType.Information);
                     popup.ConfirmCallback = () =>
                     {
-                        if (LoginSystem.GetPassPhrase().Equals(string.Empty))
+                        if (LoginSystem.GetPassPhrase(states.AgentState.address.ToString()).Equals(string.Empty))
                         {
                             Widget.Find<LoginSystem>().ShowResetPassword();
                         }
