@@ -130,9 +130,7 @@ namespace Nekoyume.Action
 
                 // Validate RecipeId
                 var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(
-                    r => r.ResultEquipmentId == recipeId
-                );
+                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(r => r.Id == recipeId);
                 if (recipeRow is null)
                 {
                     throw new SheetRowNotFoundException(
