@@ -119,6 +119,11 @@ namespace Nekoyume.UI
             incorrectText.gameObject.SetActive(false);
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
             submitButton.OnSubmitSubject.Subscribe(_ => Submit()).AddTo(gameObject);
+            setPasswordLaterButton.onClick.AddListener(() =>
+            {
+                Analyzer.Instance.Track("Unity/SetPassword/Cancel");
+                Close(true);
+            });
 
             passPhraseField.onEndEdit.AddListener(CheckPassphrase);
             retypeField.onEndEdit.AddListener(CheckRetypePassphrase);
@@ -360,6 +365,7 @@ namespace Nekoyume.UI
                     KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
                     SetPassPhrase(passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
+                    Analyzer.Instance.Track("Unity/SetPassword/Complete");
                     Close();
                     break;
                 case States.Login:
@@ -520,6 +526,7 @@ namespace Nekoyume.UI
 
         public void ShowResetPassword()
         {
+            Analyzer.Instance.Track("Unity/SetPassword/Show");
             if (_capturedImage != null)
             {
                 _capturedImage.Show();
