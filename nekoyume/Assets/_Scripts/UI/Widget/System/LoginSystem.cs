@@ -274,7 +274,11 @@ namespace Nekoyume.UI
             {
                 try
                 {
-                    _privateKey = CheckPrivateKey(KeyStore, GetPassPhrase());
+                    var passPhrase = GetPassPhrase(KeyStore
+                        .List()
+                        .Select(tuple => tuple.Item2.Address.ToString())
+                        .FirstOrDefault());
+                    _privateKey = CheckPrivateKey(KeyStore, passPhrase);
                     if (_privateKey != null)
                     {
                         Login = true;
@@ -291,9 +295,9 @@ namespace Nekoyume.UI
         }
 
 
-        public static string GetPassPhrase()
+        public static string GetPassPhrase(string address)
         {
-            return Util.AesDecrypt(PlayerPrefs.GetString("LOCAL_PASSPHRASE", string.Empty));
+            return Util.AesDecrypt(PlayerPrefs.GetString($"LOCAL_PASSPHRASE_{address}", string.Empty));
         }
 
         private bool CheckPasswordValidInCreate()
@@ -304,9 +308,9 @@ namespace Nekoyume.UI
                    passPhrase == retyped;
         }
 
-        private void SetPassPhrase(string passPhrase)
+        private void SetPassPhrase(string address, string passPhrase)
         {
-            PlayerPrefs.SetString("LOCAL_PASSPHRASE", Util.AesEncrypt(passPhrase));
+            PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", Util.AesEncrypt(passPhrase));
         }
 
         private void CheckLogin(System.Action success)
@@ -326,7 +330,7 @@ namespace Nekoyume.UI
             {
                 if (Platform.IsMobilePlatform())
                 {
-                    SetPassPhrase(loginField.text);
+                    SetPassPhrase(_privateKey.ToAddress().ToString(), loginField.text);
                 }
 
                 success?.Invoke();
@@ -363,7 +367,7 @@ namespace Nekoyume.UI
                     break;
                 case States.SetPassword:
                     KeyStoreHelper.ResetPassword(_privateKey, passPhraseField.text);
-                    SetPassPhrase(passPhraseField.text);
+                    SetPassPhrase(_privateKey.ToAddress().ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
                     Close();
