@@ -1491,6 +1491,44 @@ namespace Nekoyume.Blockchain
                 });
         }
 
+        public IObservable<ActionEvaluation<AuraSummon>> AuraSummon(int groupId, int summonCount)
+        {
+            // analytics
+            var sentryTx = Analyzer.Instance.Track(
+                "",
+                new Dictionary<string, Value>()
+                {
+                }, true);
+
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            // check material enough
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.AuraSummonSheet[groupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * summonCount;
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, count);
+
+            var action = new AuraSummon
+            {
+                AvatarAddress = avatarAddress,
+                GroupId = groupId,
+                SummonCount = summonCount,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<AuraSummon>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

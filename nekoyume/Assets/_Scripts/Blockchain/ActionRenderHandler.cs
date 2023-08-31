@@ -35,6 +35,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -140,6 +141,7 @@ namespace Nekoyume.Blockchain
             Grinding();
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
+            AuraSummon();
 
             // Market
             RegisterProduct();
@@ -603,6 +605,15 @@ namespace Nekoyume.Blockchain
                                          $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
                     }
                 })
+                .AddTo(_disposables);
+        }
+
+        private void AuraSummon()
+        {
+            _actionRenderer.EveryRender<AuraSummon>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
         }
 
@@ -1155,6 +1166,52 @@ namespace Nekoyume.Blockchain
                 Widget.Find<CombinationSlotsPopup>()
                     .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+        }
+
+        private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.AuraSummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            var random = new LocalRandom(eval.RandomSeed);
+            Debug.Log("Summon Result");
+            var resultList = new List<EquipmentItemSheet.Row>();
+            for (int i = 0; i < action.SummonCount; i++)
+            {
+                var itemId = SummonHelper.PickAuraSummonRecipe(summonRow, random);
+                var itemRow = TableSheets.Instance.EquipmentItemSheet[itemId];
+                resultList.Add(itemRow);
+
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                    itemRow,
+                    random.GenerateRandomGuid(),
+                    eval.BlockIndex
+                );
+                Debug.Log($"[{nameof(ActionRenderHandler)}] id : {itemRow.Id}, Name : {itemRow.GetLocalizedName()}, grade : {itemRow.Grade}");
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"[{nameof(ActionRenderHandler)}] Summon Sorted Result");
+            foreach (var item in resultList.OrderByDescending(row => row.Grade))
+            {
+                sb.AppendLine($"{item.GetLocalizedName()} {item.Grade}");
+            }
+            Debug.Log(sb.ToString());
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
