@@ -124,15 +124,16 @@ namespace Nekoyume.Action
                 );
             }
 
+            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+
             for (var i = 0; i < SummonCount; i++)
             {
-                int recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, context.Random);
+                var recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, context.Random);
 
                 // Validate RecipeId
-                var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(
-                    r => r.ResultEquipmentId == recipeId
-                );
+                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(r => r.Id == recipeId);
                 if (recipeRow is null)
                 {
                     throw new SheetRowNotFoundException(
@@ -142,7 +143,6 @@ namespace Nekoyume.Action
                 }
 
                 // Validate Recipe ResultEquipmentId
-                var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
                 if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId,
                         out var equipmentRow))
                 {
@@ -153,7 +153,6 @@ namespace Nekoyume.Action
                 }
 
                 // Use materials
-                var materialSheet = sheets.GetSheet<MaterialItemSheet>();
                 var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
                 if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
                         summonRow.CostMaterialCount))
@@ -170,12 +169,13 @@ namespace Nekoyume.Action
                 );
 
                 // Add or update equipment
-                avatarState.blockIndex = context.BlockIndex;
-                avatarState.updatedAt = context.BlockIndex;
                 avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
                 avatarState.UpdateFromCombination(equipment);
-                avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
+                avatarState.UpdateQuestRewards(materialSheet);
             }
+
+            avatarState.blockIndex = context.BlockIndex;
+            avatarState.updatedAt = context.BlockIndex;
 
             // Set states
             return states
