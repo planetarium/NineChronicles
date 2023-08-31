@@ -175,14 +175,6 @@ namespace Nekoyume.Action
                 avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
                 avatarState.UpdateFromCombination(equipment);
                 avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
-
-                // Create Mail
-                var mail = new SummonMail(
-                    context.BlockIndex,
-                    Id,
-                    context.BlockIndex
-                );
-                avatarState.Update(mail);
             }
 
             // Set states
