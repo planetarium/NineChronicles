@@ -11,7 +11,7 @@ using Libplanet.Crypto;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Summon;
@@ -127,6 +127,9 @@ namespace Nekoyume.Action
             var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
+            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
+            var skillSheet = sheets.GetSheet<SkillSheet>();
 
             for (var i = 0; i < SummonCount; i++)
             {
@@ -152,6 +155,23 @@ namespace Nekoyume.Action
                         recipeRow.ResultEquipmentId);
                 }
 
+                // Validate subRecipeId
+                if (recipeRow.SubRecipeIds.Count == 0)
+                {
+                    throw new InvalidRecipeIdException(
+                        $"Recipe {recipeId} does not have any subRecipe.");
+                }
+
+                var subRecipeId = recipeRow.SubRecipeIds[0];
+                if (!equipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId, out var subRecipeRow))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(EquipmentItemSubRecipeSheetV2),
+                        subRecipeId
+                    );
+                }
+
                 // Use materials
                 var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
                 if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
@@ -166,6 +186,15 @@ namespace Nekoyume.Action
                     equipmentRow,
                     context.Random.GenerateRandomGuid(),
                     context.BlockIndex
+                );
+
+                AddAndUnlockOption(
+                    agentState,
+                    equipment,
+                    context.Random,
+                    subRecipeRow,
+                    optionSheet,
+                    skillSheet
                 );
 
                 // Add or update equipment
@@ -183,6 +212,52 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(context.Signer, agentState.Serialize());
+        }
+
+        public static void AddAndUnlockOption(
+            AgentState agentState,
+            Equipment equipment,
+            IRandom random,
+            EquipmentItemSubRecipeSheetV2.Row subRecipe,
+            EquipmentItemOptionSheet optionSheet,
+            SkillSheet skillSheet
+        )
+        {
+            foreach (var optionInfo in subRecipe.Options
+                         .OrderByDescending(e => e.Ratio)
+                         .ThenBy(e => e.RequiredBlockIndex)
+                         .ThenBy(e => e.Id))
+            {
+                if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
+                {
+                    continue;
+                }
+
+                var value = random.Next(1, GameConfig.MaximumProbability + 1);
+                var ratio = optionInfo.Ratio;
+
+                if (value > ratio)
+                {
+                    continue;
+                }
+
+                if (optionRow.StatType != StatType.NONE)
+                {
+                    var stat = CombinationEquipment5.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(stat.StatType, stat.BaseValue);
+                    equipment.optionCountFromCombination++;
+                    agentState.unlockedOptions.Add(optionRow.Id);
+                }
+                else
+                {
+                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    if (skill is null) continue;
+
+                    equipment.Skills.Add(skill);
+                    equipment.optionCountFromCombination++;
+                    agentState.unlockedOptions.Add(optionRow.Id);
+                }
+            }
         }
     }
 }
