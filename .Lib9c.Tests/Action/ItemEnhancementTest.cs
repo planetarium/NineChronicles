@@ -5,19 +5,17 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
-    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
-    using static Lib9c.SerializeKeys;
+    using static SerializeKeys;
 
     public class ItemEnhancementTest
     {
@@ -53,7 +51,11 @@ namespace Lib9c.Tests.Action
             _currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             var gold = new GoldCurrencyState(_currency);
-            var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+            var slotAddress = _avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                0
+            ));
 
             var context = new ActionContext();
             _initialState = new MockStateDelta()
@@ -61,49 +63,156 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000)
-                .TransferAsset(context, Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
+                .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100_000_000_000)
+                .TransferAsset(
+                    context,
+                    Addresses.GoldCurrency,
+                    _agentAddress,
+                    gold.Currency * 3_000_000
+                );
 
-            Assert.Equal(gold.Currency * 99999999000, _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency));
-            Assert.Equal(gold.Currency * 1000, _initialState.GetBalance(_agentAddress, gold.Currency));
+            Assert.Equal(
+                gold.Currency * 99_997_000_000,
+                _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency)
+            );
+            Assert.Equal(
+                gold.Currency * 3_000_000,
+                _initialState.GetBalance(_agentAddress, gold.Currency)
+            );
 
             foreach (var (key, value) in sheets)
             {
-                _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                _initialState =
+                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, false)]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 2, 480, true)]
+        // from 0 to 0 using one level 0 material
+        [InlineData(0, false, 0, 0, false, 1)]
+        [InlineData(0, false, 0, 0, true, 1)]
+        [InlineData(0, true, 0, 0, false, 1)]
+        [InlineData(0, true, 0, 0, true, 1)]
+        // from 0 to 1 using two level 0 material
+        [InlineData(0, false, 1, 0, false, 3)]
+        [InlineData(0, false, 1, 0, true, 3)]
+        [InlineData(0, true, 1, 0, false, 3)]
+        [InlineData(0, true, 1, 0, true, 3)]
+        // from 0 to N using multiple level 0 materials
+        [InlineData(0, false, 2, 0, false, 7)]
+        [InlineData(0, false, 4, 0, false, 31)]
+        [InlineData(0, false, 2, 0, true, 7)]
+        [InlineData(0, false, 4, 0, true, 31)]
+        [InlineData(0, true, 2, 0, false, 7)]
+        [InlineData(0, true, 4, 0, false, 31)]
+        [InlineData(0, true, 2, 0, true, 7)]
+        [InlineData(0, true, 4, 0, true, 31)]
+        // from K to K with material(s). Check requiredBlock == 0
+        [InlineData(10, false, 10, 0, false, 1)]
+        [InlineData(10, false, 10, 0, true, 1)]
+        [InlineData(10, true, 10, 0, false, 1)]
+        [InlineData(10, true, 10, 0, true, 1)]
+        // from K to N using one level X material
+        [InlineData(5, false, 6, 6, false, 1)]
+        [InlineData(5, false, 6, 6, true, 1)]
+        [InlineData(5, true, 6, 6, false, 1)]
+        [InlineData(5, true, 6, 6, true, 1)]
+        // from K to N using multiple materials
+        [InlineData(5, false, 7, 4, false, 6)]
+        [InlineData(5, false, 9, 7, false, 5)]
+        [InlineData(5, false, 7, 4, true, 6)]
+        [InlineData(5, false, 9, 7, true, 5)]
+        [InlineData(5, true, 7, 4, false, 6)]
+        [InlineData(5, true, 9, 7, false, 5)]
+        [InlineData(5, true, 7, 4, true, 6)]
+        [InlineData(5, true, 9, 7, true, 5)]
+        // from 20 to 21 (just to reach level 21 exp)
+        [InlineData(20, false, 21, 20, false, 1)]
+        [InlineData(20, false, 21, 20, true, 1)]
+        [InlineData(20, true, 21, 20, false, 1)]
+        [InlineData(20, true, 21, 20, true, 1)]
+        // from 20 to 21 (over level 21)
+        [InlineData(20, false, 21, 20, false, 2)]
+        [InlineData(20, false, 21, 20, true, 2)]
+        [InlineData(20, true, 21, 20, false, 2)]
+        [InlineData(20, true, 21, 20, true, 2)]
+        // from 21 to 21 (no level up)
+        [InlineData(21, false, 21, 1, false, 1)]
+        [InlineData(21, false, 21, 21, false, 1)]
+        [InlineData(21, false, 21, 1, true, 1)]
+        [InlineData(21, false, 21, 21, true, 1)]
+        [InlineData(21, true, 21, 1, false, 1)]
+        [InlineData(21, true, 21, 21, false, 1)]
+        [InlineData(21, true, 21, 1, true, 1)]
+        [InlineData(21, true, 21, 21, true, 1)]
+        // Test: change of exp, change of level, required block, NCG price
         public void Execute(
-            int level,
-            int expectedGold,
-            bool backward,
-            int randomSeed,
+            int startLevel,
+            bool oldStart,
             int expectedLevel,
-            ItemEnhancement.EnhancementResult expected,
-            int monsterCollectLevel,
-            int expectedCrystal,
-            bool stake
-        )
+            int materialLevel,
+            bool oldMaterial,
+            int materialCount)
         {
-            var context = new ActionContext();
-            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
-            var materialId = Guid.NewGuid();
-            var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, level);
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Id == 10110000);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, startLevel);
+            if (startLevel == 0)
+            {
+                equipment.Exp = (long)row.Exp!;
+            }
+            else
+            {
+                equipment.Exp = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
+                    r.ItemSubType == equipment.ItemSubType && r.Grade == equipment.Grade &&
+                    r.Level == equipment.level).Exp;
+            }
+
+            var startExp = equipment.Exp;
+            if (oldStart)
+            {
+                equipment.Exp = 0L;
+            }
 
             _avatarState.inventory.AddItem(equipment, count: 1);
-            _avatarState.inventory.AddItem(material, count: 1);
+
+            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(
+                r =>
+                    r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                    r.Level == expectedLevel);
+            var startRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(r =>
+                r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                r.Level == startLevel);
+            var expectedCost = (expectedTargetRow?.Cost ?? 0) - (startRow?.Cost ?? 0);
+            var expectedBlockIndex =
+                (expectedTargetRow?.RequiredBlockIndex ?? 0) - (startRow?.RequiredBlockIndex ?? 0);
+
+            var expectedExpIncrement = 0L;
+            var materialIds = new List<Guid>();
+            for (var i = 0; i < materialCount; i++)
+            {
+                var materialId = Guid.NewGuid();
+                materialIds.Add(materialId);
+                var material =
+                    (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, materialLevel);
+                if (materialLevel == 0)
+                {
+                    material.Exp = (long)row.Exp!;
+                }
+                else
+                {
+                    material.Exp = _tableSheets.EnhancementCostSheetV3.OrderedList.First(r =>
+                        r.ItemSubType == material.ItemSubType && r.Grade == material.Grade &&
+                        r.Level == material.level).Exp;
+                }
+
+                expectedExpIncrement += material.Exp;
+                if (oldMaterial)
+                {
+                    material.Exp = 0L;
+                }
+
+                _avatarState.inventory.AddItem(material, count: 1);
+            }
 
             var result = new CombinationConsumable5.ResultModel()
             {
@@ -122,54 +231,42 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(
+                1,
+                1,
+                1,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet
+            );
 
             var slotAddress =
-                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+                _avatarAddress.Derive(string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    0
+                ));
 
-            Assert.Equal(level, equipment.level);
+            Assert.Equal(startLevel, equipment.level);
 
-            if (backward)
-            {
-                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
-            }
-            else
-            {
-                _initialState = _initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, _avatarState.SerializeV2());
-            }
-
-            if (monsterCollectLevel > 0)
-            {
-                var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
-                    .First(r => r.Level == monsterCollectLevel).RequiredGold;
-                if (stake)
-                {
-                    // StakeState;
-                    var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
-                    var stakeState = new StakeState(stakeStateAddress, 1);
-                    _initialState = _initialState
-                            .SetState(stakeStateAddress, stakeState.SerializeV2())
-                            .MintAsset(context, stakeStateAddress, requiredGold * _currency);
-                }
-                else
-                {
-                    var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
-                    _initialState = _initialState.SetState(
-                        mcAddress,
-                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
-                    )
-                        .MintAsset(context, mcAddress, requiredGold * _currency);
-                }
-            }
+            _initialState = _initialState
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    _avatarState.inventory.Serialize()
+                )
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    _avatarState.worldInformation.Serialize()
+                )
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    _avatarState.questList.Serialize()
+                )
+                .SetState(_avatarAddress, _avatarState.SerializeV2());
 
             var action = new ItemEnhancement()
             {
                 itemId = default,
-                materialId = materialId,
+                materialIds = materialIds,
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
             };
@@ -179,7 +276,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = new TestRandom(randomSeed),
+                Random = new TestRandom(),
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
@@ -187,48 +284,57 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(default, resultEquipment.ItemId);
             Assert.Equal(expectedLevel, resultEquipment.level);
-            Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
+            Assert.Equal(startExp + expectedExpIncrement, resultEquipment.Exp);
+            Assert.Equal(
+                (3_000_000 - expectedCost) * _currency,
+                nextState.GetBalance(_agentAddress, _currency)
+            );
 
             var arenaSheet = _tableSheets.ArenaSheet;
             var arenaData = arenaSheet.GetRoundByBlockIndex(1);
-            var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
+            var feeStoreAddress =
+                Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             Assert.Equal(
-                (1000 - expectedGold) * _currency,
+                expectedCost * _currency,
                 nextState.GetBalance(feeStoreAddress, _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            var costRow = _tableSheets.EnhancementCostSheetV2
-                .OrderedList
-                .First(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
-            Assert.Equal(expected, slotResult.enhancementResult);
-
-            switch (slotResult.enhancementResult)
+            if (startLevel != expectedLevel)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
-                    var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
-                    break;
-                case ItemEnhancement.EnhancementResult.Success:
-                    var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
-                    var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
-                    var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.InRange(resultEquipment.StatsMap.ATK, baseMinAtk + extraMinAtk, baseMaxAtk + extraMaxAtk + 1);
-                    break;
-                case ItemEnhancement.EnhancementResult.Fail:
-                    Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
-                    break;
+                var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;
+                var baseMaxAtk = (decimal)preItemUsable.StatsMap.BaseATK;
+                var extraMinAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
+                var extraMaxAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
+
+                for (var i = startLevel + 1; i <= expectedLevel; i++)
+                {
+                    var currentRow = _tableSheets.EnhancementCostSheetV3.OrderedList
+                        .First(x =>
+                            x.Grade == 1 && x.ItemSubType == equipment.ItemSubType && x.Level == i);
+
+                    baseMinAtk *= currentRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1;
+                    baseMaxAtk *= currentRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1;
+                    extraMinAtk *= currentRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1;
+                    extraMaxAtk *= currentRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1;
+                }
+
+                Assert.InRange(
+                    resultEquipment.StatsMap.ATK,
+                    baseMinAtk + extraMinAtk,
+                    baseMaxAtk + extraMaxAtk + 1
+                );
             }
 
+            Assert.Equal(
+                expectedBlockIndex + 1, // +1 for execution
+                resultEquipment.RequiredBlockIndex
+            );
             Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
             Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
-            Assert.Equal(costRow.Cost, slotResult.gold);
-            Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, slotResult.CRYSTAL);
         }
     }
 }

@@ -2,38 +2,36 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
+    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
+    using static Nekoyume.Action.ItemEnhancement11;
     using static SerializeKeys;
 
-    public class ItemEnhancement9Test
+    public class ItemEnhancement11Test
     {
-        private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly Address _slotAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancement9Test()
+        public ItemEnhancement11Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
-            _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
@@ -56,14 +54,13 @@ namespace Lib9c.Tests.Action
             _currency = Currency.Legacy("NCG", 2, null);
 #pragma warning restore CS0618
             var gold = new GoldCurrencyState(_currency);
-            _slotAddress =
-                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+            var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             var context = new ActionContext();
             _initialState = new MockStateDelta()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
+                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000)
                 .TransferAsset(context, Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
@@ -75,15 +72,35 @@ namespace Lib9c.Tests.Action
             {
                 _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            var costV3SheetAddress = Addresses.GetSheetAddress<EnhancementCostSheetV3>();
+            _initialState = _initialState.SetState(costV3SheetAddress, null);
         }
 
         [Theory]
-        [InlineData(0, 1000, true)]
-        [InlineData(6, 980, true)]
-        [InlineData(0, 1000, false)]
-        [InlineData(6, 980, false)]
-        public void Execute(int level, int expectedGold, bool backward)
+        [InlineData(0, 1000, true, 0, 1, EnhancementResult.Success, 0, 0, false)]
+        [InlineData(6, 980, true, 0, 7, EnhancementResult.Success, 0, 0, false)]
+        [InlineData(0, 1000, false, 1, 1, EnhancementResult.GreatSuccess, 0, 0, false)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 0, 320, false)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 2, 480, false)]
+        [InlineData(0, 1000, true, 0, 1, EnhancementResult.Success, 0, 0, true)]
+        [InlineData(6, 980, true, 0, 7, EnhancementResult.Success, 0, 0, true)]
+        [InlineData(0, 1000, false, 1, 1, EnhancementResult.GreatSuccess, 0, 0, true)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 0, 320, true)]
+        [InlineData(6, 980, false, 10, 6, EnhancementResult.Fail, 2, 480, true)]
+        public void Execute(
+            int level,
+            int expectedGold,
+            bool backward,
+            int randomSeed,
+            int expectedLevel,
+            EnhancementResult expected,
+            int monsterCollectLevel,
+            int expectedCrystal,
+            bool stake
+        )
         {
+            var context = new ActionContext();
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
             var materialId = Guid.NewGuid();
@@ -129,7 +146,31 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new ItemEnhancement9()
+            if (monsterCollectLevel > 0)
+            {
+                var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                    .First(r => r.Level == monsterCollectLevel).RequiredGold;
+                if (stake)
+                {
+                    // StakeState;
+                    var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+                    var stakeState = new StakeState(stakeStateAddress, 1);
+                    _initialState = _initialState
+                            .SetState(stakeStateAddress, stakeState.SerializeV2())
+                            .MintAsset(context, stakeStateAddress, requiredGold * _currency);
+                }
+                else
+                {
+                    var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
+                    _initialState = _initialState.SetState(
+                        mcAddress,
+                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
+                    )
+                        .MintAsset(context, mcAddress, requiredGold * _currency);
+                }
+            }
+
+            var action = new ItemEnhancement11()
             {
                 itemId = default,
                 materialId = materialId,
@@ -142,95 +183,56 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                Random = new TestRandom(randomSeed),
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(default, resultEquipment.ItemId);
+            Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
+
+            var arenaSheet = _tableSheets.ArenaSheet;
+            var arenaData = arenaSheet.GetRoundByBlockIndex(1);
+            var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
-                nextState.GetBalance(Addresses.Blacksmith, _currency)
+                nextState.GetBalance(feeStoreAddress, _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            var grade = resultEquipment.Grade;
             var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
-                .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
+                .First(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement9.ResultModel)slot.Result;
+            var slotResult = (ResultModel)slot.Result;
+            Assert.Equal(expected, slotResult.enhancementResult);
 
-            switch ((ItemEnhancement9.EnhancementResult)slotResult.enhancementResult)
+            switch (slotResult.enhancementResult)
             {
-                case ItemEnhancement9.EnhancementResult.GreatSuccess:
+                case EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
-                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement9.EnhancementResult.Success:
+                case EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
-                    Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
-                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
+                    Assert.InRange(resultEquipment.StatsMap.ATK, baseMinAtk + extraMinAtk, baseMaxAtk + extraMaxAtk + 1);
                     break;
-                case ItemEnhancement9.EnhancementResult.Fail:
+                case EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
-                    Assert.Equal(preItemUsable.level, resultEquipment.level);
                     break;
             }
 
-            Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
-            Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
+            Assert.Equal(preItemUsable.ItemId, slotResult.preItemUsable.ItemId);
+            Assert.Equal(preItemUsable.ItemId, resultEquipment.ItemId);
             Assert.Equal(costRow.Cost, slotResult.gold);
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new ItemEnhancement9()
-            {
-                itemId = default,
-                materialId = default,
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-            };
-
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                slotAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
-            };
-
-            var state = new MockStateDelta();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
+            Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, slotResult.CRYSTAL);
         }
     }
 }
