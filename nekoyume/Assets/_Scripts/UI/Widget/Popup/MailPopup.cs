@@ -750,9 +750,5 @@ namespace Nekoyume.UI
         public void Read(SellerMail sellerMail)
         {
         }
-
-        public void Read(SummonMail summonMail)
-        {
-        }
     }
 }
