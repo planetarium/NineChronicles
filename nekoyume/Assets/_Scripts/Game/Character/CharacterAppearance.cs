@@ -241,12 +241,12 @@ namespace Nekoyume.Game.Character
         {
             if (aura == null)
             {
-                SpineController.UpdateAura(0, null);
+                SpineController.UpdateAura(null);
                 return;
             }
 
             var vfx = ResourcesHelper.GetAuraPrefab(aura.Id, aura.level);
-            SpineController.UpdateAura(aura.Id, vfx);
+            SpineController.UpdateAura(vfx);
         }
 
         private void UpdateEar(int index, bool isDcc)

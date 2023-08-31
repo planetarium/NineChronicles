@@ -241,15 +241,17 @@ namespace Nekoyume.Game.Avatar
             _cachedWeaponVFX = parent;
         }
 
-        public void UpdateAura(int auraId, GameObject auraVFXPrefab = null)
+        public void UpdateAura(GameObject auraVFXPrefab = null)
         {
             Destroy(_cachedAuraVFX);
 
             if(auraVFXPrefab is null)
             {
+                auraPos.SetActive(false);
                 return;
             }
 
+            auraPos.SetActive(true);
             var vfx = Instantiate(auraVFXPrefab, auraPos.transform);
             vfx.transform.localPosition = Vector3.zero;
 
