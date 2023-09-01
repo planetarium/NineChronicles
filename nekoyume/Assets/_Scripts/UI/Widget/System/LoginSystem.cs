@@ -605,26 +605,19 @@ namespace Nekoyume.UI
 
         private void UpdateSubmitButton()
         {
-            submitButton.Interactable = true;
-
-            switch (State.Value)
+            submitButton.Interactable = State.Value switch
             {
-                case States.ResetPassphrase:
-                case States.SetPassword:
-                    submitButton.Interactable = CheckPasswordValidInCreate();
-                    break;
-                case States.FindPassphrase:
-                    submitButton.Interactable = !string.IsNullOrEmpty(findPassphraseField.text);
-                    break;
-                case States.CreateAccount:
-                case States.Show:
-                case States.Login:
-                case States.Login_Mobile:
-                    submitButton.Interactable = true;
-                    break;
-                case States.Failed:
-                    break;
-            }
+                States.Show => true,
+                States.CreateAccount => true,
+                States.Failed => true,
+                States.ConnectedAddress_Mobile => true,
+                States.Login => !string.IsNullOrEmpty(loginField.text),
+                States.FindPassphrase => !string.IsNullOrEmpty(findPassphraseField.text),
+                States.Login_Mobile => !string.IsNullOrEmpty(loginField.text),
+                States.ResetPassphrase =>  CheckPasswordValidInCreate(),
+                States.SetPassword =>  CheckPasswordValidInCreate(),
+                _ => false
+            };
         }
 
         protected override void Update()
