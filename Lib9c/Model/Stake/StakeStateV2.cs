@@ -39,7 +39,23 @@ namespace Nekoyume.Model.Stake
             long startedBlockIndex,
             long receivedBlockIndex)
         {
-            Contract = contract;
+            if (startedBlockIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(startedBlockIndex),
+                    startedBlockIndex,
+                    "startedBlockIndex should be greater than or equal to 0.");
+            }
+
+            if (receivedBlockIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(receivedBlockIndex),
+                    receivedBlockIndex,
+                    "receivedBlockIndex should be greater than or equal to 0.");
+            }
+
+            Contract = contract ?? throw new ArgumentNullException(nameof(contract));
             StartedBlockIndex = startedBlockIndex;
             ReceivedBlockIndex = receivedBlockIndex;
         }
@@ -49,7 +65,7 @@ namespace Nekoyume.Model.Stake
             Contract contract
         ) : this(
             contract,
-            stakeState.StartedBlockIndex,
+            stakeState?.StartedBlockIndex ?? throw new ArgumentNullException(nameof(stakeState)),
             stakeState.ReceivedBlockIndex
         )
         {
@@ -88,5 +104,28 @@ namespace Nekoyume.Model.Stake
             (Integer)StartedBlockIndex,
             (Integer)ReceivedBlockIndex
         );
+
+        public bool Equals(StakeStateV2 other)
+        {
+            return Equals(Contract, other.Contract) &&
+                   StartedBlockIndex == other.StartedBlockIndex &&
+                   ReceivedBlockIndex == other.ReceivedBlockIndex;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is StakeStateV2 other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Contract != null ? Contract.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ StartedBlockIndex.GetHashCode();
+                hashCode = (hashCode * 397) ^ ReceivedBlockIndex.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }
