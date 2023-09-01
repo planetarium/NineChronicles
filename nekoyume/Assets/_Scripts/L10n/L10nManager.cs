@@ -244,7 +244,7 @@ namespace Nekoyume.L10n
                     // wait for load
                 }
 
-                String[] fileNames = directory.text.Split("\r\n");
+                String[] fileNames = directory.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
                 foreach (String fileName in fileNames)
