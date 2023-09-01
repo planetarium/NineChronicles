@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         requiredBlockIndex);
-                    tradableItem = itemUsable;
+                    tradableItem = (ITradableItem)itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                 }
                 else if (shopItemData.ItemType == ItemType.Costume)
@@ -581,7 +581,7 @@ namespace Lib9c.Tests.Action
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell6.ExpiredBlockIndex,
-                itemUsable);
+                (ITradableItem)itemUsable);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
             shopState.Register(shopItem);

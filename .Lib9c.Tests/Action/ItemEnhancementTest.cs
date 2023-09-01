@@ -364,6 +364,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(preItemUsable.ItemId, slotResult.preItemUsable.ItemId);
             Assert.Equal(preItemUsable.ItemId, resultEquipment.ItemId);
+            Assert.Equal(expectedCost, slotResult.gold);
         }
     }
 }

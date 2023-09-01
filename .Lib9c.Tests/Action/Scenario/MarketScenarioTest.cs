@@ -219,7 +219,7 @@ namespace Lib9c.Tests.Action.Scenario
                         AvatarAddress = _sellerAvatarAddress2,
                         ItemCount = 1,
                         Price = 1 * _currency,
-                        TradableId = equipment.TradableId,
+                        TradableId = equipment.ItemId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action.Scenario
                         AvatarAddress = _sellerAvatarAddress,
                         ItemCount = 1,
                         Price = 1 * _currency,
-                        TradableId = equipment.TradableId,
+                        TradableId = equipment.ItemId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
@@ -464,7 +464,7 @@ namespace Lib9c.Tests.Action.Scenario
                         ProductId = nonFungibleProductId,
                         Type = ProductType.NonFungible,
                         ItemSubType = equipment.ItemSubType,
-                        TradableId = equipment.TradableId,
+                        TradableId = equipment.ItemId,
                     },
                     new FavProductInfo
                     {
@@ -548,7 +548,7 @@ namespace Lib9c.Tests.Action.Scenario
                         AvatarAddress = _sellerAvatarAddress,
                         ItemCount = 1,
                         Price = 1 * _currency,
-                        TradableId = equipment.TradableId,
+                        TradableId = equipment.ItemId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
@@ -654,14 +654,14 @@ namespace Lib9c.Tests.Action.Scenario
                             ProductId = nonFungibleProductId,
                             Type = ProductType.NonFungible,
                             ItemSubType = equipment.ItemSubType,
-                            TradableId = equipment.TradableId,
+                            TradableId = equipment.ItemId,
                         },
                         new RegisterInfo
                         {
                             AvatarAddress = _sellerAvatarAddress,
                             ItemCount = 1,
                             Price = 1 * _currency,
-                            TradableId = equipment.TradableId,
+                            TradableId = equipment.ItemId,
                             Type = ProductType.NonFungible,
                         }
                     ),
@@ -875,7 +875,7 @@ namespace Lib9c.Tests.Action.Scenario
                         AvatarAddress = _sellerAvatarAddress,
                         ItemCount = 1,
                         Price = 1 * _currency,
-                        TradableId = equipment.TradableId,
+                        TradableId = equipment.ItemId,
                         Type = ProductType.NonFungible,
                     },
                     new AssetInfo
@@ -948,7 +948,7 @@ namespace Lib9c.Tests.Action.Scenario
                     ProductId = nonFungibleProductId,
                     Type = ProductType.NonFungible,
                     ItemSubType = equipment.ItemSubType,
-                    TradableId = equipment.TradableId,
+                    TradableId = equipment.ItemId,
                 },
                 new FavProductInfo
                 {
@@ -975,7 +975,7 @@ namespace Lib9c.Tests.Action.Scenario
             var avatarState = canceledState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Equal(2, avatarState.inventory.Items.Count);
             Assert.True(avatarState.inventory.TryGetTradableItem(tradableMaterial.TradableId, 0L, 1, out var materialItem));
-            Assert.True(avatarState.inventory.TryGetNonFungibleItem(equipment.TradableId, out var equipmentItem));
+            Assert.True(avatarState.inventory.TryGetNonFungibleItem(equipment.ItemId, out var equipmentItem));
             var canceledEquipment = Assert.IsAssignableFrom<ItemUsable>(equipmentItem.item);
             Assert.Equal(100L, canceledEquipment.RequiredBlockIndex);
             Assert.Equal(
@@ -1018,14 +1018,14 @@ namespace Lib9c.Tests.Action.Scenario
                             ProductId = nonFungibleProductId,
                             Type = ProductType.NonFungible,
                             ItemSubType = equipment.ItemSubType,
-                            TradableId = equipment.TradableId,
+                            TradableId = equipment.ItemId,
                         },
                         new RegisterInfo
                         {
                             AvatarAddress = _sellerAvatarAddress,
                             ItemCount = 1,
                             Price = 2 * _currency,
-                            TradableId = equipment.TradableId,
+                            TradableId = equipment.ItemId,
                             Type = ProductType.NonFungible,
                         }
                     ),

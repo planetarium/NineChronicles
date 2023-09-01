@@ -117,7 +117,7 @@ namespace Nekoyume.Action
                     sellerAvatarAddress,
                     productId,
                     price,
-                    equipment);
+                    (ITradableItem)equipment);
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
