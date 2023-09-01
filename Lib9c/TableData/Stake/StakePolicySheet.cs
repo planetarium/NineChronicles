@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Nekoyume.Model.Stake;
 
 namespace Nekoyume.TableData.Stake
 {
@@ -53,8 +54,8 @@ namespace Nekoyume.TableData.Stake
 
         public static readonly (string attrName, string value)[] SheetPrefixRules =
         {
-            ("StakeRegularFixedRewardSheet", "StakeRegularFixedRewardSheet_"),
-            ("StakeRegularRewardSheet", "StakeRegularRewardSheet_"),
+            ("StakeRegularFixedRewardSheet", Contract.StakeRegularFixedRewardSheetPrefix),
+            ("StakeRegularRewardSheet", Contract.StakeRegularRewardSheetPrefix),
         };
 
         public string StakeRegularFixedRewardSheetValue =>
@@ -63,10 +64,10 @@ namespace Nekoyume.TableData.Stake
         public string StakeRegularRewardSheetValue =>
             this["StakeRegularRewardSheet"].Value;
 
-        public long RewardInterval =>
+        public long RewardIntervalValue =>
             long.Parse(this["RewardInterval"].Value, CultureInfo.InvariantCulture);
 
-        public long LockupInterval =>
+        public long LockupIntervalValue =>
             long.Parse(this["LockupInterval"].Value, CultureInfo.InvariantCulture);
 
         public StakePolicySheet() : base(nameof(StakePolicySheet))
