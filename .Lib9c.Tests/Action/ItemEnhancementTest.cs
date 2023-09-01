@@ -98,6 +98,11 @@ namespace Lib9c.Tests.Action
         [InlineData(0, false, 1, 0, true, 3)]
         [InlineData(0, true, 1, 0, false, 3)]
         [InlineData(0, true, 1, 0, true, 3)]
+        // // Duplicated > from 0 to 0
+        [InlineData(0, false, 0, 0, false, 3, true)]
+        [InlineData(0, false, 0, 0, true, 3, true)]
+        [InlineData(0, true, 0, 0, false, 3, true)]
+        [InlineData(0, true, 0, 0, true, 3, true)]
         // from 0 to N using multiple level 0 materials
         [InlineData(0, false, 2, 0, false, 7)]
         [InlineData(0, false, 4, 0, false, 31)]
@@ -107,6 +112,15 @@ namespace Lib9c.Tests.Action
         [InlineData(0, true, 4, 0, false, 31)]
         [InlineData(0, true, 2, 0, true, 7)]
         [InlineData(0, true, 4, 0, true, 31)]
+        // // Duplicated > from 0 to 0
+        [InlineData(0, false, 0, 0, false, 7, true)]
+        [InlineData(0, false, 0, 0, false, 31, true)]
+        [InlineData(0, false, 0, 0, true, 7, true)]
+        [InlineData(0, false, 0, 0, true, 31, true)]
+        [InlineData(0, true, 0, 0, false, 7, true)]
+        [InlineData(0, true, 0, 0, false, 31, true)]
+        [InlineData(0, true, 0, 0, true, 7, true)]
+        [InlineData(0, true, 0, 0, true, 31, true)]
         // from K to K with material(s). Check requiredBlock == 0
         [InlineData(10, false, 10, 0, false, 1)]
         [InlineData(10, false, 10, 0, true, 1)]
@@ -126,6 +140,15 @@ namespace Lib9c.Tests.Action
         [InlineData(5, true, 9, 7, false, 5)]
         [InlineData(5, true, 7, 4, true, 6)]
         [InlineData(5, true, 9, 7, true, 5)]
+        // // Duplicated: from K to K
+        [InlineData(5, true, 5, 4, true, 6, true)]
+        [InlineData(5, true, 7, 7, true, 5, true)]
+        [InlineData(5, true, 5, 4, false, 6, true)]
+        [InlineData(5, true, 7, 7, false, 5, true)]
+        [InlineData(5, false, 5, 4, true, 6, true)]
+        [InlineData(5, false, 7, 7, true, 5, true)]
+        [InlineData(5, false, 5, 4, false, 6, true)]
+        [InlineData(5, false, 7, 7, false, 5, true)]
         // from 20 to 21 (just to reach level 21 exp)
         [InlineData(20, false, 21, 20, false, 1)]
         [InlineData(20, false, 21, 20, true, 1)]
@@ -145,14 +168,15 @@ namespace Lib9c.Tests.Action
         [InlineData(21, true, 21, 21, false, 1)]
         [InlineData(21, true, 21, 1, true, 1)]
         [InlineData(21, true, 21, 21, true, 1)]
-        // Test: change of exp, change of level, required block, NCG price
         public void Execute(
             int startLevel,
             bool oldStart,
             int expectedLevel,
             int materialLevel,
             bool oldMaterial,
-            int materialCount)
+            int materialCount,
+            bool duplicated = false
+            )
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Id == 10110000);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, startLevel);
@@ -188,9 +212,10 @@ namespace Lib9c.Tests.Action
 
             var expectedExpIncrement = 0L;
             var materialIds = new List<Guid>();
+            var duplicatedGuid = Guid.NewGuid();
             for (var i = 0; i < materialCount; i++)
             {
-                var materialId = Guid.NewGuid();
+                var materialId = duplicated ? duplicatedGuid : Guid.NewGuid();
                 materialIds.Add(materialId);
                 var material =
                     (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, materialLevel);
@@ -205,7 +230,11 @@ namespace Lib9c.Tests.Action
                         r.Level == material.level).Exp;
                 }
 
-                expectedExpIncrement += material.Exp;
+                if (!(duplicated && i > 0))
+                {
+                    expectedExpIncrement += material.Exp;
+                }
+
                 if (oldMaterial)
                 {
                     material.Exp = 0L;
@@ -263,7 +292,7 @@ namespace Lib9c.Tests.Action
                 )
                 .SetState(_avatarAddress, _avatarState.SerializeV2());
 
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement
             {
                 itemId = default,
                 materialIds = materialIds,
