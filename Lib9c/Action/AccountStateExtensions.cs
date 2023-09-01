@@ -961,27 +961,37 @@ namespace Nekoyume.Action
 
             if (stakeStateValue is Dictionary dict)
             {
+                var gcs = state.GetGameConfigState();
                 var stakeStateV1 = new StakeState(dict);
-                string stakeRegularFixedRewardSheetTableName;
+                var stakeRegularFixedRewardSheetTableName =
+                    stakeStateV1.StartedBlockIndex <
+                    gcs.StakeRegularFixedRewardSheet_V2_StartBlockIndex
+                        ? "StakeRegularFixedRewardSheet_V1"
+                        : "StakeRegularFixedRewardSheet_V2";
                 string stakeRegularRewardSheetTableName;
-                if (stakeStateV1.StartedBlockIndex < StakeState.StakeRewardSheetV2Index)
+                if (stakeStateV1.StartedBlockIndex <
+                    gcs.StakeRegularRewardSheet_V2_StartBlockIndex)
                 {
-                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V1";
                     stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V1";
                 }
-                else if (stakeStateV1.StartedBlockIndex < StakeState.StakeRewardSheetV3Index)
+                else if (stakeStateV1.StartedBlockIndex <
+                         gcs.StakeRegularRewardSheet_V3_StartBlockIndex)
                 {
-                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V2";
                     stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V2";
                 }
-                // FIXME: consider this case.
-                // else if (stakeStateV1.StartedBlockIndex < StakeState.CurrencyAsRewardStartIndex)
-                // {
-                // }
+                else if (stakeStateV1.StartedBlockIndex <
+                         gcs.StakeRegularRewardSheet_V4_StartBlockIndex)
+                {
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V3";
+                }
+                else if (stakeStateV1.StartedBlockIndex <
+                         gcs.StakeRegularRewardSheet_V5_StartBlockIndex)
+                {
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V4";
+                }
                 else
                 {
-                    stakeRegularFixedRewardSheetTableName = "StakeRegularFixedRewardSheet_V3";
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V3";
+                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V5";
                 }
 
                 stakeStateV2 = new StakeStateV2(
