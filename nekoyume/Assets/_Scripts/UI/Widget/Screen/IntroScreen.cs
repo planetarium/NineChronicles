@@ -6,6 +6,7 @@ using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -14,6 +15,8 @@ using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class IntroScreen : LoadingScreen
     {
         [SerializeField] private GameObject pcContainer;
@@ -23,7 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private RawImage videoImage;
 
         [SerializeField] private GameObject startButtonContainer;
-        [SerializeField] private Button startButton;
+        [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
 
@@ -53,19 +56,22 @@ namespace Nekoyume.UI
             // videoPlayer.loopPointReached += _ => OnVideoEnd();
             // videoSkipButton.onClick.AddListener(OnVideoEnd);
 
-            startButton.onClick.AddListener(() =>
+            startButton.OnSubmitSubject.Subscribe(_ =>
             {
-                startButtonContainer.SetActive(false);
-
                 if (Find<LoginSystem>().KeyStore.ListIds().Any())
                 {
+                    startButtonContainer.SetActive(false);
                     Find<LoginSystem>().Show(_keyStorePath, _privateKey);
                 }
                 else
                 {
+                    startButton.Interactable = false;
+                    Game.Game.instance.PortalConnect.OpenPortal();
+                    Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
+
                     StartCoroutine(CoSocialLogin());
                 }
-            });
+            }).AddTo(gameObject);
             // signinButton.onClick.AddListener(() =>
             // {
             //     Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -85,7 +91,7 @@ namespace Nekoyume.UI
                 ShowQrCodeGuide();
             });
 
-            startButton.interactable = true;
+            startButton.Interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
@@ -219,6 +225,10 @@ namespace Nekoyume.UI
 
         private IEnumerator CoSocialLogin()
         {
+            yield return new WaitForSeconds(180);
+
+            startButton.Interactable = true;
+            yield break;
             Analyzer.Instance.Track("Unity/Intro/SocialLogin_1");
             var popup = Find<TitleOneButtonSystem>();
             popup.Show("UI_LOGIN_ON_BROWSER_TITLE","UI_LOGIN_ON_BROWSER_CONTENT");
