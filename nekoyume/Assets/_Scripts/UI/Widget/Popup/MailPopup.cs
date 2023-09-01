@@ -231,7 +231,7 @@ namespace Nekoyume.UI
                         mailRewards.Add(new MailReward(cItem, 1));
                         LocalLayerModifier.AddItem(
                             avatarAddress,
-                            cItem.TradableId,
+                            cItem.ItemId,
                             cItem.RequiredBlockIndex,
                             1,
                             false);
@@ -245,7 +245,7 @@ namespace Nekoyume.UI
                         mailRewards.Add(new MailReward(eItem, 1));
                         LocalLayerModifier.AddItem(
                             avatarAddress,
-                            eItem.TradableId,
+                            eItem.ItemId,
                             eItem.RequiredBlockIndex,
                             1,
                             false);
@@ -383,7 +383,7 @@ namespace Nekoyume.UI
             {
                 LocalLayerModifier.AddItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1,
                     false);
@@ -579,7 +579,7 @@ namespace Nekoyume.UI
 
                 LocalLayerModifier.AddItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1,
                     false);

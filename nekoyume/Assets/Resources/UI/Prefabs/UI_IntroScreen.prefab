@@ -3089,6 +3089,7 @@ GameObject:
   - component: {fileID: 5127857628884666735}
   - component: {fileID: 6339430284352177565}
   - component: {fileID: 607996873148584063}
+  - component: {fileID: 5873627641848729952}
   m_Layer: 5
   m_Name: IntroScreenImage
   m_TagString: Untagged
@@ -3111,10 +3112,10 @@ RectTransform:
   m_Father: {fileID: 2724005287680946405}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1136, y: 640}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6339430284352177565
 CanvasRenderer:
@@ -3154,6 +3155,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5873627641848729952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4736473018639341524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 4
+  m_AspectRatio: 1.775
 --- !u!1 &4813846419742964622
 GameObject:
   m_ObjectHideFlags: 0

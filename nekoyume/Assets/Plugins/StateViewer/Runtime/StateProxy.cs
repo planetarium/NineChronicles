@@ -87,6 +87,24 @@ namespace StateViewer.Runtime
             return (addr, Agent.GetBalance(addr, currency));
         }
 
+        public async UniTask<(Address addr, FungibleAssetValue fav)> GetBalanceAsync(
+            Address addr,
+            Currency currency,
+            long? blockIndex)
+        {
+            var balance = await Agent.GetBalanceAsync(addr, currency, blockIndex);
+            return (addr, balance);
+        }
+
+        public async UniTask<(Address addr, FungibleAssetValue? fav)> GetBalanceAsync(
+            Address addr,
+            Currency currency,
+            BlockHash blockHash)
+        {
+            var balance = await Agent.GetBalanceAsync(addr, currency, blockHash);
+            return (addr, balance);
+        }
+
         public void RegisterAlias(string alias, Address address)
         {
             if (!Aliases.ContainsKey(alias))

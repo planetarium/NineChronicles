@@ -113,3 +113,7 @@ nekoyume/Assets/StreamingAssets/9c_dev*
 # Keystores
 *.keystore
 *.keystore.meta
+
+# fastlane
+**/fastlane/google-fastlane.json
+**/fastlane/report.xml

@@ -706,13 +706,13 @@ namespace Nekoyume.Blockchain
 
                         switch (enhancementResultModel.enhancementResult)
                         {
-                            case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                            /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                                break;
+                                break;*/
                             case Action.ItemEnhancement.EnhancementResult.Success:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
-                            case Action.ItemEnhancement.EnhancementResult.Fail:
+                            /*case Action.ItemEnhancement.EnhancementResult.Fail:
                                 Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
                                     new Dictionary<string, Value>
                                     {
@@ -725,7 +725,7 @@ namespace Nekoyume.Blockchain
                                             States.Instance.AgentState.address.ToString(),
                                     });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                                break;
+                                break;*/
                             default:
                                 Debug.LogError(
                                     $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
@@ -743,7 +743,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                NotificationSystem.CancelReserve(result.itemUsable.TradableId);
+                NotificationSystem.CancelReserve(result.itemUsable.ItemId);
                 NotificationSystem.Push(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
@@ -877,7 +877,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
                 if (blockCount >= WorkshopNotifiedBlockCount)
@@ -944,7 +944,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -991,7 +991,7 @@ namespace Nekoyume.Blockchain
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
-                result.itemUsable.TradableId);
+                result.itemUsable.ItemId);
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
@@ -1056,7 +1056,7 @@ namespace Nekoyume.Blockchain
                     .Forget();
                 LocalLayerModifier.AddItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
                 foreach (var tradableId in result.materialItemIdList)
@@ -1075,7 +1075,7 @@ namespace Nekoyume.Blockchain
 
                 LocalLayerModifier.RemoveItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -1089,13 +1089,13 @@ namespace Nekoyume.Blockchain
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                        break;
+                        break;*/
                     case Action.ItemEnhancement.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                    /*case Action.ItemEnhancement.EnhancementResult.Fail:
                         Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
                             new Dictionary<string, Value>
                             {
@@ -1106,7 +1106,7 @@ namespace Nekoyume.Blockchain
                                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                             });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                        break;
+                        break;*/
                     default:
                         Debug.LogError(
                             $"Unexpected result.enhancementResult: {result.enhancementResult}");
@@ -1119,7 +1119,7 @@ namespace Nekoyume.Blockchain
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
+                    result.itemUsable.ItemId);
 
                 var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
                 if (blockCount >= WorkshopNotifiedBlockCount)

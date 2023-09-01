@@ -257,7 +257,7 @@ namespace Nekoyume.State
                     nextRoundData.ChampionshipId,
                     nextRoundData.Round)
                 : default;
-            var dict = await _agent.GetStateBulk(
+            var dict = await _agent.GetStateBulkAsync(
                 new[]
                 {
                     currentArenaInfoAddress,
@@ -339,7 +339,7 @@ namespace Nekoyume.State
                         currentRoundData.Round)))
                 .ToArray();
             // NOTE: If addresses is too large, and split and get separately.
-            var scores = await _agent.GetStateBulk(
+            var scores = await _agent.GetStateBulkAsync(
                 avatarAndScoreAddrList.Select(tuple => tuple.Item2));
             var avatarAddrAndScores = avatarAndScoreAddrList
                 .Select(tuple =>
@@ -419,7 +419,7 @@ namespace Nekoyume.State
             addrBulk.Add(arenaAvatarAddress);
 
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
-            var stateBulk = await _agent.GetStateBulk(addrBulk);
+            var stateBulk = await _agent.GetStateBulkAsync(addrBulk);
             var runeStates = new List<RuneState>();
             var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {

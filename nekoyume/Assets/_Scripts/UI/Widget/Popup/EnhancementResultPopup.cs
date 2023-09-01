@@ -130,9 +130,7 @@ namespace Nekoyume.UI
             var equipmentRow = equipmentList[Random.Range(0, equipmentList.Count)];
             var preLevel = Random.Range(0, 10);
             var preEquipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel);
-            var equipment = _editorEnhancementResult == ItemEnhancement.EnhancementResult.Fail
-                ? (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel)
-                : (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
             foreach (var statOption in _editorStatOptions)
             {
                 preEquipment.StatsMap.AddStatAdditionalValue(
@@ -218,9 +216,7 @@ namespace Nekoyume.UI
             var itemOptionInfo = new ItemOptionInfo(equipment);
 
             _resultItem.itemView.SetData(new CountableItem(equipment, 1));
-            _resultItem.beforeGradeText.text = enhancementResult == ItemEnhancement.EnhancementResult.Fail
-                ? $"+{equipment.level}"
-                : $"+{equipment.level - 1}";
+            _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
             _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
             _resultItem.cpText.text = $"CP {itemOptionInfo.CP}";
@@ -284,19 +280,19 @@ namespace Nekoyume.UI
             base.Show(true);
             switch (enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+/*                case ItemEnhancement.EnhancementResult.GreatSuccess:
                     _titleSuccessObject.SetActive(false);
                     _titleGreatSuccessObject.SetActive(true);
                     _titleFailSuccessObject.SetActive(false);
                     Animator.SetTrigger(AnimatorHashGreatSuccess);
-                    break;
+                    break;*/
                 case ItemEnhancement.EnhancementResult.Success:
                     _titleSuccessObject.SetActive(true);
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(false);
                     Animator.SetTrigger(AnimatorHashSuccess);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+/*                case ItemEnhancement.EnhancementResult.Fail:
                     _titleSuccessObject.SetActive(false);
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(true);
@@ -305,7 +301,7 @@ namespace Nekoyume.UI
                     gainCrystalObject.SetActive(gainCrystal);
                     legacyFailText.SetActive(!gainCrystal);
                     Animator.SetTrigger(AnimatorHashFail);
-                    break;
+                    break;*/
                 default:
                     throw new ArgumentOutOfRangeException(nameof(enhancementResult), enhancementResult, null);
             }

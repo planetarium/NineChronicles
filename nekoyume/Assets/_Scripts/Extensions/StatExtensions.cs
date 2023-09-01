@@ -67,6 +67,29 @@ namespace Nekoyume
             }
         }
 
+        public static string ValueToShortString(this StatType statType, int value)
+        {
+            switch (statType)
+            {
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.HIT:
+                case StatType.DRV:
+                case StatType.ArmorPenetration:
+                case StatType.Thorn:
+                    return value.ToCurrencyNotation();
+                case StatType.CRI:
+                    return $"{value:0.#\\%}";
+                case StatType.SPD:
+                case StatType.DRR:
+                case StatType.CDMG:
+                    return ((int)(value / 100m)).ToCurrencyNotation();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
+        }
+
         public static string GetAcronym(this StatType type)
         {
             switch (type)
