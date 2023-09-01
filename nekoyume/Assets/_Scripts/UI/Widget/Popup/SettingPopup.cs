@@ -137,8 +137,17 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Notification))
                 .AddTo(addressCopyButton);
 
-            addressShareButton.OnClickAsObservable().Subscribe(_ => SharePrivateKeyToQRCode())
-                .AddTo(addressShareButton);
+            addressShareButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                if (LoginSystem.GetPassPhrase(_privateKey.ToAddress().ToString()).Equals(string.Empty))
+                {
+                    Find<LoginSystem>().ShowResetPassword();
+                }
+                else
+                {
+                    SharePrivateKeyToQRCode();
+                }
+            }).AddTo(addressShareButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
                 .AddTo(privateKeyCopyButton);
@@ -296,7 +305,7 @@ namespace Nekoyume.UI
 
             // todo: 복사되었습니다. 토스트.
         }
-        
+
         private void SharePrivateKeyToQRCode()
         {
             new NativeShare().AddFile(Util.GetQrCodePngFromKeystore(), "shareQRImg.png")

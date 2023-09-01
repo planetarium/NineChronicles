@@ -177,6 +177,13 @@ namespace Nekoyume.IAPStore
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
+                    popup.ConfirmCallback = () =>
+                    {
+                        if (LoginSystem.GetPassPhrase(states.AgentState.address.ToString()).Equals(string.Empty))
+                        {
+                            Widget.Find<LoginSystem>().ShowResetPassword();
+                        }
+                    };
                     Widget.Find<MobileShop>().UpdateView();
                     _controller.ConfirmPendingPurchase(e.purchasedProduct);
                 }
