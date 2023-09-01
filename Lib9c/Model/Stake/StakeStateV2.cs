@@ -1,5 +1,6 @@
 using System;
 using Bencodex.Types;
+using Libplanet.Crypto;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Stake
@@ -8,6 +9,9 @@ namespace Nekoyume.Model.Stake
     {
         public const string StateTypeName = "stake_state";
         public const int StateTypeVersion = 2;
+
+        public static Address DeriveAddress(Address address) =>
+            StakeState.DeriveAddress(address);
 
         public readonly Contract Contract;
         public readonly long StartedBlockIndex;
@@ -29,15 +33,8 @@ namespace Nekoyume.Model.Stake
 
         public StakeStateV2(
             Contract contract,
-            long startedBlockIndex)
-            : this(contract, startedBlockIndex, 0)
-        {
-        }
-
-        public StakeStateV2(
-            Contract contract,
             long startedBlockIndex,
-            long receivedBlockIndex)
+            long receivedBlockIndex = 0)
         {
             if (startedBlockIndex < 0)
             {

@@ -8,6 +8,14 @@ namespace Lib9c.Tests.Model.Stake
 
     public class StakeStateV2Test
     {
+        [Fact]
+        public void DeriveAddress()
+        {
+            var agentAddr = new PrivateKey().ToAddress();
+            var expectedStakeStateAddr = StakeState.DeriveAddress(agentAddr);
+            Assert.Equal(expectedStakeStateAddr, StakeStateV2.DeriveAddress(agentAddr));
+        }
+
         [Theory]
         [InlineData(0, 0)]
         [InlineData(long.MaxValue, long.MaxValue)]
@@ -27,7 +35,9 @@ namespace Lib9c.Tests.Model.Stake
         [Theory]
         [InlineData(0, 0)]
         [InlineData(long.MaxValue, long.MaxValue)]
-        public void Constructor_Throw_ArgumentNullException(long startedBlockIndex, long receivedBlockIndex)
+        public void Constructor_Throw_ArgumentNullException(
+            long startedBlockIndex,
+            long receivedBlockIndex)
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new StakeStateV2(null, startedBlockIndex, receivedBlockIndex));
@@ -37,7 +47,9 @@ namespace Lib9c.Tests.Model.Stake
         [InlineData(-1, 0)]
         [InlineData(0, -1)]
         [InlineData(-1, -1)]
-        public void Constructor_Throw_ArgumentOutOfRangeException(long startedBlockIndex, long receivedBlockIndex)
+        public void Constructor_Throw_ArgumentOutOfRangeException(
+            long startedBlockIndex,
+            long receivedBlockIndex)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 new StakeStateV2(null, startedBlockIndex, receivedBlockIndex));
@@ -110,10 +122,10 @@ namespace Lib9c.Tests.Model.Stake
                 Contract.StakeRegularRewardSheetPrefix,
                 1,
                 1);
-            var stateL = new StakeStateV2(contract, 0, 0);
-            var stateR = new StakeStateV2(contract, 0, 0);
+            var stateL = new StakeStateV2(contract, 0);
+            var stateR = new StakeStateV2(contract, 0);
             Assert.Equal(stateL, stateR);
-            stateR = new StakeStateV2(contract, 1, 0);
+            stateR = new StakeStateV2(contract, 1);
             Assert.NotEqual(stateL, stateR);
         }
     }
