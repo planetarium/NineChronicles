@@ -1,5 +1,6 @@
 using System;
 using Bencodex.Types;
+using Nekoyume.TableData.Stake;
 
 namespace Nekoyume.Model.Stake
 {
@@ -19,21 +20,55 @@ namespace Nekoyume.Model.Stake
         public long RewardInterval { get; }
         public long LockupInterval { get; }
 
+        public Contract(StakePolicySheet stakePolicySheet) : this(
+            stakePolicySheet.StakeRegularFixedRewardSheetValue,
+            stakePolicySheet.StakeRegularRewardSheetValue,
+            stakePolicySheet.RewardIntervalValue,
+            stakePolicySheet.LockupIntervalValue)
+        {
+        }
+
         public Contract(
             string stakeRegularFixedRewardSheetTableName,
             string stakeRegularRewardSheetTableName,
             long rewardInterval,
             long lockupInterval)
         {
+            if (string.IsNullOrEmpty(stakeRegularFixedRewardSheetTableName))
+            {
+                throw new ArgumentException(
+                    $"{nameof(stakeRegularFixedRewardSheetTableName)} is null or empty");
+            }
+
             if (!stakeRegularFixedRewardSheetTableName.StartsWith(
                     StakeRegularFixedRewardSheetPrefix))
             {
                 throw new ArgumentException(nameof(stakeRegularFixedRewardSheetTableName));
             }
 
+            if (string.IsNullOrEmpty(stakeRegularRewardSheetTableName))
+            {
+                throw new ArgumentException(
+                    $"{nameof(stakeRegularRewardSheetTableName)} is null or empty");
+            }
+
             if (!stakeRegularRewardSheetTableName.StartsWith(StakeRegularRewardSheetPrefix))
             {
                 throw new ArgumentException(nameof(stakeRegularRewardSheetTableName));
+            }
+
+            if (rewardInterval <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(rewardInterval),
+                    $"{nameof(rewardInterval)} must be greater than 0");
+            }
+
+            if (lockupInterval <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(lockupInterval),
+                    $"{nameof(lockupInterval)} must be greater than 0");
             }
 
             StakeRegularFixedRewardSheetTableName = stakeRegularFixedRewardSheetTableName;
@@ -84,6 +119,39 @@ namespace Nekoyume.Model.Stake
                 (Integer)RewardInterval,
                 (Integer)LockupInterval
             );
+        }
+
+        protected bool Equals(Contract other)
+        {
+            return StakeRegularFixedRewardSheetTableName ==
+                   other.StakeRegularFixedRewardSheetTableName &&
+                   StakeRegularRewardSheetTableName == other.StakeRegularRewardSheetTableName &&
+                   RewardInterval == other.RewardInterval &&
+                   LockupInterval == other.LockupInterval;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Contract)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = StakeRegularFixedRewardSheetTableName != null
+                    ? StakeRegularFixedRewardSheetTableName.GetHashCode()
+                    : 0;
+                hashCode = (hashCode * 397) ^ (StakeRegularRewardSheetTableName != null
+                    ? StakeRegularRewardSheetTableName.GetHashCode()
+                    : 0);
+                hashCode = (hashCode * 397) ^ RewardInterval.GetHashCode();
+                hashCode = (hashCode * 397) ^ LockupInterval.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }
