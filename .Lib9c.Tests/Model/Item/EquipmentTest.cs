@@ -43,8 +43,16 @@ namespace Lib9c.Tests.Model.Item
             var deserialized = new Equipment((Bencodex.Types.Dictionary)serialized);
             var reSerialized = deserialized.Serialize();
 
-            Assert.True(((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey));
-            Assert.True(((Bencodex.Types.Dictionary)serialized)[EquipmentExpKey].ToLong() >= 0);
+            if (exp > 0)
+            {
+                Assert.True(((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey));
+                Assert.True(((Bencodex.Types.Dictionary)serialized)[EquipmentExpKey].ToLong() > 0);
+            }
+            else
+            {
+                Assert.False(((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey));
+            }
+
             Assert.Equal(costume, deserialized);
             Assert.Equal(serialized, reSerialized);
         }
