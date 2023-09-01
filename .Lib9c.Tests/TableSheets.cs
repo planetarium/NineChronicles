@@ -13,13 +13,18 @@ namespace Lib9c.Tests
 
     public class TableSheets
     {
-        public TableSheets(Dictionary<string, string> sheets)
+        public TableSheets(Dictionary<string, string> sheets, bool ignoreFailedGetProperty = false)
         {
             foreach (var (key, value) in sheets)
             {
                 var sheetPropertyInfo = GetType().GetProperty(key);
                 if (sheetPropertyInfo is null)
                 {
+                    if (ignoreFailedGetProperty)
+                    {
+                        continue;
+                    }
+
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
                     sb.Append($" / ({key}, csv)");
                     sb.Append(" / failed to get property");
