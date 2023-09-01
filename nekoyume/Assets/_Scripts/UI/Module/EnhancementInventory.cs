@@ -371,6 +371,9 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item);
                 }
 
+                _baseModel = null;
+                _materialModels.Clear();
+
                 UpdateView(resetScrollOnEnable);
             }).AddTo(_disposables);
 
