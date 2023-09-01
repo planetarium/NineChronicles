@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/2068
     /// </summary>
     [Serializable]
-    [ActionType("item_enhancement12")]
+    [ActionType("item_enhancement13")]
     public class ItemEnhancement : GameAction, IItemEnhancementV4
     {
         public enum EnhancementResult
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "item_enhancement12.result";
+            protected override string TypeId => "item_enhancement13.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
@@ -253,14 +253,15 @@ namespace Nekoyume.Action
             }
 
             // Validate enhancement materials
-            if (!materialIds.Any() || materialIds.Count > MaterialCountLimit)
+            var uniqueMaterialIds = materialIds.Distinct().ToList();
+            if (!uniqueMaterialIds.Any() || uniqueMaterialIds.Count > MaterialCountLimit)
             {
                 throw new InvalidItemCountException();
             }
 
             var materialEquipments = new List<Equipment>();
 
-            foreach (var materialId in materialIds)
+            foreach (var materialId in uniqueMaterialIds)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId,
                         out ItemUsable materialItem))
@@ -377,7 +378,7 @@ namespace Nekoyume.Action
             enhancementEquipment.Update(requiredBlockIndex);
 
             // Remove materials
-            foreach (var materialId in materialIds)
+            foreach (var materialId in uniqueMaterialIds)
             {
                 avatarState.inventory.RemoveNonFungibleItem(materialId);
             }
@@ -391,7 +392,7 @@ namespace Nekoyume.Action
             {
                 preItemUsable = preItemUsable,
                 itemUsable = enhancementEquipment,
-                materialItemIdList = materialIds.ToArray(),
+                materialItemIdList = uniqueMaterialIds.ToArray(),
                 actionPoint = requiredActionPoint,
                 enhancementResult = EnhancementResult.Success, // Result is fixed to Success
                 gold = requiredNcg,
