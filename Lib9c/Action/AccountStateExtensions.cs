@@ -471,7 +471,8 @@ namespace Nekoyume.Action
             }
         }
 
-        public static T GetSheet<T>(this IAccountState states) where T : ISheet, new()
+        public static T GetSheet<T>(
+            this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
             return GetSheet<T>(states, address);
@@ -509,11 +510,27 @@ namespace Nekoyume.Action
             }
         }
 
-        public static bool TryGetSheet<T>(this IAccountState states, out T sheet) where T : ISheet, new()
+        public static bool TryGetSheet<T>(this IAccountState states, out T sheet)
+            where T : ISheet, new()
         {
             try
             {
                 sheet = states.GetSheet<T>();
+                return true;
+            }
+            catch (Exception)
+            {
+                sheet = default;
+                return false;
+            }
+        }
+
+        public static bool TryGetSheet<T>(this IAccountState states, Address address, out T sheet)
+            where T : ISheet, new()
+        {
+            try
+            {
+                sheet = states.GetSheet<T>(address);
                 return true;
             }
             catch (Exception)
