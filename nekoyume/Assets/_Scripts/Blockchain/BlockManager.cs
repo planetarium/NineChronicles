@@ -5,15 +5,12 @@ using System.Net;
 using System.Numerics;
 using System.Threading.Tasks;
 using Bencodex;
-using Bencodex.Types;
-using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Libplanet.Crypto;
 using Libplanet.Types.Blocks;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Nekoyume.Blockchain
 {
@@ -86,32 +83,18 @@ namespace Nekoyume.Blockchain
 
         public static async Task<Block> ImportBlockAsync(string path)
         {
-            // If it contains "main", it is main-net genesis block. client have to contain main-net genesis block.
-            var localPath = path.Contains("main")
-                ? Platform.GetStreamingAssetsPath("genesis-block-9c-main")
-                : path;
-#if UNITY_ANDROID
-            var loadingRequest = UnityWebRequest.Get(localPath);
-            await loadingRequest.SendWebRequest();
-            if (loadingRequest.result == UnityWebRequest.Result.Success)
+            if (File.Exists(path))
             {
-                var buffer = loadingRequest.downloadHandler.data;
-                var dict = (Dictionary)_codec.Decode(buffer);
+                var buffer = File.ReadAllBytes(path);
+                var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
-#else
-            if (File.Exists(localPath))
-            {
-                var buffer = await File.ReadAllBytesAsync(localPath);
-                var dict = (Dictionary)_codec.Decode(buffer);
-                return BlockMarshaler.UnmarshalBlock(dict);
-            }
-#endif
+
             var uri = new Uri(path);
-            using var client = new WebClient();
+            using (var client = new WebClient())
             {
-                var rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
-                var dict = (Dictionary)_codec.Decode(rawGenesisBlock);
+                byte[] rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
+                var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
         }

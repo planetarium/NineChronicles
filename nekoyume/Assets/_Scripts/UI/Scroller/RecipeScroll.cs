@@ -146,6 +146,7 @@ namespace Nekoyume.UI.Scroller
                 var type = categoryToggle.Type;
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
+                    Debug.Log("consumableCategoryToggle");
                     if (!value) return;
                     AudioController.PlayClick();
                     ShowAsFood(type);
@@ -334,13 +335,16 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            var items = Craft.SharedModel.ConsumableRecipeMap[type];
+            var items = Craft.SharedModel.ConsumableRecipeMap.ContainsKey(type)
+                ? Craft.SharedModel.ConsumableRecipeMap[type]
+                : new List<ConsumableItemRecipeSheet.Row>();
+
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
             SetFilterAndAscending(Filter.Default, true, items);
 
-            var max = items.Last(row => !IsConsumableLocked(row));
+            var max = items.LastOrDefault(row => !IsConsumableLocked(row));
             JumpTo(max);
 
             Craft.SharedModel.NotifiedRow
@@ -526,7 +530,7 @@ namespace Nekoyume.UI.Scroller
             AnimateScroller();
         }
 
-        public static List<T> GetSortedItems<T>(List<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
+        private static List<T> GetSortedItems<T>(List<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
         {
             int ResultItemId(T row)
             {
@@ -556,29 +560,37 @@ namespace Nekoyume.UI.Scroller
                 return Game.Game.instance.TableSheets.ItemSheet[ResultItemId(recipeRow)].Grade;
             }
 
-            Func<T, int> func;
+            IEnumerable<T> sortedItems;
             switch (selectedFilter)
             {
-                case RecipeScroll.Filter.Name:
-                    return isAscending
-                        ? items.OrderBy(GetItemNameString).ToList()
-                        : items.OrderByDescending(GetItemNameString).ToList();
-
-                case RecipeScroll.Filter.Level:
-                    func = GetItemRequirementLevel;
+                case Filter.Name:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemNameString)
+                        : items.OrderByDescending(GetItemNameString);
                     break;
-                case RecipeScroll.Filter.Grade:
-                    func = GetItemGrade;
+                case Filter.Level:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemRequirementLevel)
+                        : items.OrderByDescending(GetItemRequirementLevel);
                     break;
-                case RecipeScroll.Filter.Default:
+                case Filter.Grade:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemGrade)
+                        : items.OrderByDescending(GetItemGrade);
+                    break;
+                case Filter.Default:
                 default:
-                    func = x => x.Key;
+                    sortedItems = isAscending
+                        ? items.OrderBy(x => x.Key)
+                        : items.OrderByDescending(x => x.Key);
                     break;
             }
 
-            return isAscending
-                ? items.OrderBy(func).ToList()
-                : items.OrderByDescending(func).ToList();
+            return sortedItems
+                .Where(row => row is not EquipmentItemRecipeSheet.Row equipmentRow ||
+                              equipmentRow.UnlockStage != 999 ||
+                              Util.IsEventEquipmentRecipe(equipmentRow.Id))
+                .ToList();
         }
     }
 }
