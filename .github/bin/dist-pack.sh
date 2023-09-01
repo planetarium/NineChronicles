@@ -7,7 +7,7 @@ for rid in "${rids[@]}"; do
     output_dir="./Release/$rid/"
     mkdir -p "$output_dir"
 
-    dotnet publish \
+    dotnet publish Lib9c/Lib9c.csproj \
         -c Release \
         -r $rid \
         -o $output_dir \

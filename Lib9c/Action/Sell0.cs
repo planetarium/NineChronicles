@@ -123,7 +123,7 @@ namespace Nekoyume.Action
                 sellerAvatarAddress,
                 productId,
                 price,
-                nonFungibleItem);
+                (ITradableItem)nonFungibleItem);
 
             IValue shopItemSerialized = shopItem.Serialize();
             IKey productIdSerialized = (IKey)productId.Serialize();

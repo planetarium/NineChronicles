@@ -79,7 +79,7 @@ namespace Lib9c.Model.Order
                     equippableItem.Unequip();
                 }
 
-                return nonFungibleItem;
+                return (ITradableItem)nonFungibleItem;
             }
 
             throw new ItemDoesNotExistException(
@@ -97,7 +97,7 @@ namespace Lib9c.Model.Order
                     equippableItem.Unequip();
                 }
 
-                return nonFungibleItem;
+                return (ITradableItem)nonFungibleItem;
             }
 
             throw new ItemDoesNotExistException(
@@ -313,7 +313,7 @@ namespace Lib9c.Model.Order
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
             {
                 nonFungibleItem.RequiredBlockIndex = blockIndex;
-                return nonFungibleItem;
+                return (ITradableItem)nonFungibleItem;
             }
             throw new ItemDoesNotExistException(
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");

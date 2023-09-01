@@ -99,7 +99,7 @@
             switch (itemType)
             {
                 case ItemType.Consumable:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.ConsumableItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -110,7 +110,7 @@
                         Guid.NewGuid());
                     break;
                 case ItemType.Equipment:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
                         Guid.NewGuid(),
                         0);

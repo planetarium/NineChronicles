@@ -130,7 +130,7 @@ namespace Nekoyume.Action
             }
             nonFungibleItem.RequiredBlockIndex = expiredBlockIndex;
 
-            ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
+            ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, (ITradableItem)nonFungibleItem);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             if (!states.TryGetState(shardedShopAddress, out Bencodex.Types.Dictionary shopStateDict))
             {

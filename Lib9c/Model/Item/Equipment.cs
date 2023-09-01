@@ -130,10 +130,7 @@ namespace Nekoyume.Model.Item
                 dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
             }
 
-            if (Exp > 0)
-            {
-                dict = dict.SetItem(EquipmentExpKey, Exp.Serialize());
-            }
+            dict = dict.SetItem(EquipmentExpKey, Exp.Serialize());
 
             return dict;
 #pragma warning restore LAA1002
