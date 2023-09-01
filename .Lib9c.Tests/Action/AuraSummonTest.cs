@@ -128,12 +128,11 @@ namespace Lib9c.Tests.Action
                     ;
             }
 
-            var action = new AuraSummon
-            {
-                AvatarAddress = _avatarAddress,
-                GroupId = groupId,
-                SummonCount = summonCount,
-            };
+            var action = new AuraSummon(
+                _avatarAddress,
+                groupId,
+                summonCount
+            );
 
             if (expectedExc == null)
             {

@@ -37,6 +37,16 @@ namespace Nekoyume.Action
         int IAuraSummonV1.GroupId => GroupId;
         int IAuraSummonV1.SummonCount => SummonCount;
 
+        public AuraSummon()
+        {
+        }
+
+        public AuraSummon(Address avatarAddress, int groupId, int summonCount)
+        {
+            AvatarAddress = avatarAddress;
+            GroupId = groupId;
+            SummonCount = summonCount;
+        }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
