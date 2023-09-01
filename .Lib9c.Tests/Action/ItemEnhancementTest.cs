@@ -362,8 +362,8 @@ namespace Lib9c.Tests.Action
                 expectedBlockIndex + 1, // +1 for execution
                 resultEquipment.RequiredBlockIndex
             );
-            Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
-            Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
+            Assert.Equal(preItemUsable.ItemId, slotResult.preItemUsable.ItemId);
+            Assert.Equal(preItemUsable.ItemId, resultEquipment.ItemId);
         }
     }
 }
