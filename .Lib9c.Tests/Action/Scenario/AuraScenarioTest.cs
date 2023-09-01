@@ -14,6 +14,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Nekoyume.Model.BattleStatus.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Market;
     using Nekoyume.Model.Skill;
     using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
@@ -29,6 +30,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly IAccountStateDelta _initialState;
         private readonly Aura _aura;
         private readonly TableSheets _tableSheets;
+        private readonly Currency _currency;
 
         public AuraScenarioTest()
         {
@@ -74,11 +76,12 @@ namespace Lib9c.Tests.Action.Scenario
                         avatarState.questList.Serialize());
             }
 
+            _currency = Currency.Legacy("NCG", 2, minters: null);
             _initialState = _initialState
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(
                     Addresses.GoldCurrency,
-                    new GoldCurrencyState(Currency.Legacy("NCG", 2, minters: null)).Serialize())
+                    new GoldCurrencyState(_currency).Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .MintAsset(new ActionContext(), _agentAddress, Currencies.Crystal * 2);
             foreach (var (key, value) in sheets)
@@ -264,6 +267,75 @@ namespace Lib9c.Tests.Action.Scenario
                 Assert_ItemSlot(nextState, ItemSlotState.DeriveAddress(avatarAddress, BattleType.Arena));
                 prevState = nextState;
             }
+        }
+
+        [Fact]
+        public void Grinding()
+        {
+            var avatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            Assert.True(avatarState.inventory.TryGetNonFungibleItem(_aura.ItemId, out _));
+
+            var grinding = new Grinding
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>
+                {
+                    _aura.ItemId,
+                },
+            };
+            var nextState = grinding.Execute(new ActionContext
+            {
+                Signer = _agentAddress,
+                PreviousState = _initialState,
+                BlockIndex = 1L,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.False(nextAvatarState.inventory.TryGetNonFungibleItem(_aura.ItemId, out _));
+            var previousCrystal = _initialState.GetBalance(_agentAddress, Currencies.Crystal);
+            Assert.True(nextState.GetBalance(_agentAddress, Currencies.Crystal) > previousCrystal);
+        }
+
+        [Fact]
+        public void Market()
+        {
+            var avatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            avatarState.inventory.TryGetNonFungibleItem(_aura.ItemId, out Aura aura);
+            Assert.NotNull(aura);
+            Assert.IsAssignableFrom<Equipment>(aura);
+            Assert.Null(aura as ITradableItem);
+            for (int i = 0; i < GameConfig.RequireClearedStageLevel.ActionsInShop; i++)
+            {
+                avatarState.worldInformation.ClearStage(1, i + 1, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            var previousState = _initialState.SetState(
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                avatarState.worldInformation.Serialize());
+
+            var register = new RegisterProduct
+            {
+                AvatarAddress = _avatarAddress,
+                RegisterInfos = new List<IRegisterInfo>
+                {
+                    new RegisterInfo
+                    {
+                        AvatarAddress = _avatarAddress,
+                        Price = 1 * _currency,
+                        TradableId = _aura.ItemId,
+                        ItemCount = 1,
+                        Type = ProductType.NonFungible,
+                    },
+                },
+                ChargeAp = false,
+            };
+            // Because Aura is not ITradableItem.
+            Assert.Throws<ItemDoesNotExistException>(() => register.Execute(new ActionContext
+            {
+                Signer = _agentAddress,
+                PreviousState = previousState,
+                BlockIndex = 0L,
+            }));
         }
 
         private void Assert_Player(AvatarState avatarState, IAccountStateDelta state, Address avatarAddress, Address itemSlotStateAddress)

@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Model.Order
             switch (itemType)
             {
                 case ItemType.Consumable:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.ConsumableItemSheet.First,
                         itemId,
                         0);
@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Model.Order
                         itemId);
                     break;
                 case ItemType.Equipment:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         0);
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Model.Order
             switch (itemType)
             {
                 case ItemType.Consumable:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.ConsumableItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -120,7 +120,7 @@ namespace Lib9c.Tests.Model.Order
                         Guid.NewGuid());
                     break;
                 case ItemType.Equipment:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
                         Guid.NewGuid(),
                         0);

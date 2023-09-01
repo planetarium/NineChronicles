@@ -74,6 +74,10 @@ namespace Nekoyume.Model.Item
                     Exp = (long)((Integer)value).Value;
                 }
             }
+            else
+            {
+                Exp = 0L;
+            }
 
             if (serialized.TryGetValue((Text) LegacyStatKey, out value))
             {
@@ -203,6 +207,19 @@ namespace Nekoyume.Model.Item
                     UpdateOptionsV3(random, row);
                 }
             }
+        }
+
+        public long GetRealExp(EquipmentItemSheet itemSheet, EnhancementCostSheetV3 costSheet)
+        {
+            if (Exp != 0) return Exp;
+            if (level == 0)
+            {
+                return (long)itemSheet.OrderedList.First(r => r.Id == Id).Exp!;
+            }
+
+            return costSheet.OrderedList.First(r =>
+                r.ItemSubType == ItemSubType && r.Grade == Grade &&
+                r.Level == level).Exp;
         }
 
         public List<object> GetOptions()

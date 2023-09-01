@@ -10,6 +10,7 @@ namespace Lib9c.Tests
     using Nekoyume.TableData.GrandFinale;
     using Nekoyume.TableData.Pet;
     using Nekoyume.TableData.Stake;
+    using Nekoyume.TableData.Summon;
 
     public class TableSheets
     {
@@ -238,6 +239,8 @@ namespace Lib9c.Tests
         public PetCostSheet PetCostSheet { get; private set; }
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
+
+        public AuraSummonSheet AuraSummonSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

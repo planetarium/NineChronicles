@@ -2,8 +2,8 @@ namespace Lib9c.Tests.Model.Item
 {
     using System;
     using System.Collections.Generic;
-    using System.Numerics;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static SerializeKeys;
@@ -43,10 +43,16 @@ namespace Lib9c.Tests.Model.Item
             var deserialized = new Equipment((Bencodex.Types.Dictionary)serialized);
             var reSerialized = deserialized.Serialize();
 
-            Assert.Equal(
-                exp != 0,
-                ((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey)
-            );
+            if (exp > 0)
+            {
+                Assert.True(((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey));
+                Assert.True(((Bencodex.Types.Dictionary)serialized)[EquipmentExpKey].ToLong() > 0);
+            }
+            else
+            {
+                Assert.False(((Bencodex.Types.Dictionary)serialized).ContainsKey(EquipmentExpKey));
+            }
+
             Assert.Equal(costume, deserialized);
             Assert.Equal(serialized, reSerialized);
         }

@@ -116,7 +116,7 @@
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         requiredBlockIndex);
-                    tradableItem = itemUsable;
+                    tradableItem = (ITradableItem)itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                     break;
                 }

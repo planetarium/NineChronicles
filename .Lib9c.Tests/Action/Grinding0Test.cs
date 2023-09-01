@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class GrindingTest
+    public class Grinding0Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _ncgCurrency;
         private readonly IAccountStateDelta _initialState;
 
-        public GrindingTest()
+        public Grinding0Test()
         {
             _random = new TestRandom();
             var sheets = TableSheetsImporter.ImportSheets();
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 10, 1, null)]
         // Invalid equipment count.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 0, typeof(InvalidItemCountException))]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 51, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 11, typeof(InvalidItemCountException))]
         // AgentState not exist.
         [InlineData(false, true, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // AvatarState not exist.
@@ -208,7 +208,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(equipmentCount, equipmentIds.Count);
 
-            var action = new Grinding
+            var action = new Grinding0
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = equipmentIds,

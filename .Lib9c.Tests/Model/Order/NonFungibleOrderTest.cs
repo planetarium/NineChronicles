@@ -290,7 +290,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (exc is null)
             {
-                int cp = CPHelper.GetCP(tradableItem, _tableSheets.CostumeStatSheet);
+                int cp = tradableItem is INonFungibleItem nonFungibleItem ? CPHelper.GetCP(nonFungibleItem, _tableSheets.CostumeStatSheet) : 0;
                 Assert.True(cp > 0);
                 OrderDigest digest = order.Digest2(_avatarState, _tableSheets.CostumeStatSheet);
 
