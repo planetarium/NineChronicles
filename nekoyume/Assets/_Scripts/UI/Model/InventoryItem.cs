@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -103,6 +103,8 @@ namespace Nekoyume.UI.Model
                             return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
                         case ItemSubType.Ring:
                             return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1;
+                        case ItemSubType.Aura:
+                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura;
                     }
                     break;
                 case ItemType.Consumable:

@@ -245,10 +245,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateAura(Aura aura)
         {
-            //equip testscript
-            /*SpineController.UpdateAura(ResourcesHelper.GetAuraPrefab(10650001, 1));
-            return;*/
-
             if (aura == null)
             {
                 SpineController.UpdateAura(null);
