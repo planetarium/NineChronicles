@@ -27,8 +27,9 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/2068
     /// </summary>
     [Serializable]
-    [ActionType("item_enhancement13")]
-    public class ItemEnhancement : GameAction, IItemEnhancementV4
+    [ActionObsolete(ActionObsoleteConfig.V200071ObsoleteIndex)]
+    [ActionType("item_enhancement12")]
+    public class ItemEnhancement12 : GameAction, IItemEnhancementV4
     {
         public enum EnhancementResult
         {
@@ -53,7 +54,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "item_enhancement13.result";
+            protected override string TypeId => "item_enhancement12.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
@@ -253,15 +254,14 @@ namespace Nekoyume.Action
             }
 
             // Validate enhancement materials
-            var uniqueMaterialIds = materialIds.Distinct().ToList();
-            if (!uniqueMaterialIds.Any() || uniqueMaterialIds.Count > MaterialCountLimit)
+            if (!materialIds.Any() || materialIds.Count > MaterialCountLimit)
             {
                 throw new InvalidItemCountException();
             }
 
             var materialEquipments = new List<Equipment>();
 
-            foreach (var materialId in uniqueMaterialIds)
+            foreach (var materialId in materialIds)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId,
                         out ItemUsable materialItem))
@@ -378,7 +378,7 @@ namespace Nekoyume.Action
             enhancementEquipment.Update(requiredBlockIndex);
 
             // Remove materials
-            foreach (var materialId in uniqueMaterialIds)
+            foreach (var materialId in materialIds)
             {
                 avatarState.inventory.RemoveNonFungibleItem(materialId);
             }
@@ -392,7 +392,7 @@ namespace Nekoyume.Action
             {
                 preItemUsable = preItemUsable,
                 itemUsable = enhancementEquipment,
-                materialItemIdList = uniqueMaterialIds.ToArray(),
+                materialItemIdList = materialIds.ToArray(),
                 actionPoint = requiredActionPoint,
                 enhancementResult = EnhancementResult.Success, // Result is fixed to Success
                 gold = requiredNcg,
