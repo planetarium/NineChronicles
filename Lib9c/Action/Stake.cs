@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
+using Libplanet.Crypto;
+using Libplanet.Types.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
@@ -46,10 +47,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            var started = DateTimeOffset.UtcNow;
             context.UseGas(1);
             var states = context.PreviousState;
 
-            // Restrict staking if there is a monster collection until now.
+            // NOTE: Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&
                 states.TryGetState(MonsterCollectionState.DeriveAddress(
                     context.Signer,
@@ -68,25 +70,37 @@ namespace Nekoyume.Action
                         StakeState.DeriveAddress(context.Signer));
             }
 
-            // Validate plain values
+            // NOTE: When the amount is less than 0.
             if (Amount < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(Amount));
+                throw new ArgumentOutOfRangeException(
+                    nameof(Amount),
+                    "The amount must be greater than or equal to 0.");
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
-            var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}Stake exec started", addressesHex);
-            var stakePolicySheet = states.GetSheet<StakePolicySheet>();
-            var currentStakeRegularRewardSheetAddress =
-                Addresses.GetSheetAddress(stakePolicySheet[nameof(StakeRegularRewardSheet)].Value);
+            if (!states.TryGetSheet<StakePolicySheet>(out var stakePolicySheet))
+            {
+                throw new StateNullException(Addresses.GetSheetAddress<StakePolicySheet>());
+            }
 
-            var stakeRegularRewardSheet = states.GetSheet<StakeRegularRewardSheet>(
-                currentStakeRegularRewardSheetAddress);
+            var currentStakeRegularRewardSheetAddr = Addresses.GetSheetAddress(
+                stakePolicySheet.StakeRegularRewardSheetValue);
+            if (!states.TryGetSheet<StakeRegularRewardSheet>(
+                    currentStakeRegularRewardSheetAddr,
+                    out var stakeRegularRewardSheet))
+            {
+                throw new StateNullException(currentStakeRegularRewardSheetAddr);
+            }
+
             var minimumRequiredGold = stakeRegularRewardSheet.OrderedRows.Min(x => x.RequiredGold);
+            // NOTE: When the amount is less than the minimum required gold.
             if (Amount != 0 && Amount < minimumRequiredGold)
             {
-                throw new ArgumentOutOfRangeException(nameof(Amount));
+                throw new ArgumentOutOfRangeException(
+                    nameof(Amount),
+                    $"The amount must be greater than or equal to {minimumRequiredGold}.");
             }
 
             var stakeStateAddress = StakeState.DeriveAddress(context.Signer);
@@ -94,6 +108,7 @@ namespace Nekoyume.Action
             var currentBalance = states.GetBalance(context.Signer, currency);
             var stakedBalance = states.GetBalance(stakeStateAddress, currency);
             var targetStakeBalance = currency * Amount;
+            // NOTE: When the total balance is less than the target balance.
             if (currentBalance + stakedBalance < targetStakeBalance)
             {
                 throw new NotEnoughFungibleAssetValueException(
@@ -102,32 +117,33 @@ namespace Nekoyume.Action
                     currentBalance);
             }
 
-            var latestStakeContract = new Contract(
-                stakeRegularFixedRewardSheetTableName:
-                stakePolicySheet["StakeRegularFixedRewardSheet"].Value,
-                stakeRegularRewardSheetTableName:
-                stakePolicySheet["StakeRegularRewardSheet"].Value,
-                rewardInterval:
-                long.Parse(stakePolicySheet["RewardInterval"].Value, CultureInfo.InvariantCulture),
-                lockupInterval:
-                long.Parse(stakePolicySheet["LockupInterval"].Value, CultureInfo.InvariantCulture)
-            );
-
+            var latestStakeContract = new Contract(stakePolicySheet);
+            // NOTE: When the staking state is not exist.
             if (!states.TryGetStakeStateV2(context.Signer, out var stakeStateV2))
             {
+                // NOTE: Cannot withdraw staking.
                 if (Amount == 0)
                 {
                     throw new StateNullException(stakeStateAddress);
                 }
 
-                stakeStateV2 = new StakeStateV2(latestStakeContract, context.BlockIndex);
-                return states
-                    .SetState(stakeStateAddress, stakeStateV2.Serialize())
-                    .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance);
+                // NOTE: Contract a new staking.
+                states = ContractNewStake(
+                    context,
+                    states,
+                    stakeStateAddress,
+                    stakedBalance: null,
+                    targetStakeBalance,
+                    latestStakeContract);
+                Log.Debug(
+                    "{AddressesHex}Stake Total Executed Time: {Elapsed}",
+                    addressesHex,
+                    DateTimeOffset.UtcNow - started);
+                return states;
             }
 
             // NOTE: Cannot anything if staking state is claimable.
-            if (stakeStateV2.ClaimableBlockIndex >= context.BlockIndex)
+            if (stakeStateV2.ClaimableBlockIndex <= context.BlockIndex)
             {
                 throw new StakeExistingClaimableException();
             }
@@ -151,19 +167,41 @@ namespace Nekoyume.Action
             }
 
             // NOTE: Contract a new staking.
-            var newStakeState = new StakeStateV2(
-                latestStakeContract,
-                context.BlockIndex);
-            states = states
-                .TransferAsset(context, stakeStateAddress, context.Signer, stakedBalance)
-                .TransferAsset(context, context.Signer, stakeStateAddress, targetStakeBalance)
-                .SetState(stakeStateAddress, newStakeState.Serialize());
-
-            var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Stake Total Executed Time: {Elapsed}", addressesHex,
-                ended - started);
-
+            states = ContractNewStake(
+                context,
+                states,
+                stakeStateAddress,
+                stakedBalance,
+                targetStakeBalance,
+                latestStakeContract);
+            Log.Debug(
+                "{AddressesHex}Stake Total Executed Time: {Elapsed}",
+                addressesHex,
+                DateTimeOffset.UtcNow - started);
             return states;
+        }
+
+        private static IAccountStateDelta ContractNewStake(
+            IActionContext context,
+            IAccountStateDelta state,
+            Address stakeStateAddr,
+            FungibleAssetValue? stakedBalance,
+            FungibleAssetValue targetStakeBalance,
+            Contract latestStakeContract)
+        {
+            var newStakeState = new StakeStateV2(latestStakeContract, context.BlockIndex);
+            if (stakedBalance.HasValue)
+            {
+                state = state.TransferAsset(
+                    context,
+                    stakeStateAddr,
+                    context.Signer,
+                    stakedBalance.Value);
+            }
+
+            return state
+                .TransferAsset(context, context.Signer, stakeStateAddr, targetStakeBalance)
+                .SetState(stakeStateAddr, newStakeState.Serialize());
         }
     }
 }
