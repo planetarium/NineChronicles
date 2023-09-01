@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/2068
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200071ObsoleteIndex)]
     [ActionType("item_enhancement12")]
     public class ItemEnhancement12 : GameAction, IItemEnhancementV4
     {
