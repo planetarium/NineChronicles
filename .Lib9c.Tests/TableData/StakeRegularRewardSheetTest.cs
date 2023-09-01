@@ -1,6 +1,6 @@
 namespace Lib9c.Tests.TableData
 {
-    using System;
+    using Lib9c.Tests.Fixtures.TableCSV.Stake;
     using Libplanet.Action.State;
     using Libplanet.Types.Assets;
     using Nekoyume.Extensions;
@@ -14,13 +14,8 @@ namespace Lib9c.Tests.TableData
 
         public StakeRegularRewardSheetTest()
         {
-            const string tableContent = @"level,required_gold,item_id,rate
-0,0,0,0
-1,10,400000,50
-1,10,500000,50";
-
             _sheet = new StakeRegularRewardSheet();
-            _sheet.Set(tableContent);
+            _sheet.Set(StakeRegularRewardSheetFixtures.V1);
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             _currency = Currency.Legacy("NCG", 2, null);
@@ -30,115 +25,64 @@ namespace Lib9c.Tests.TableData
         [Fact]
         public void SetToSheet()
         {
-            Assert.Equal(2, _sheet.Count);
-            var row = _sheet[0];
-            Assert.Equal(0, row.Level);
-            Assert.Equal(0, row.RequiredGold);
-            Assert.Single(row.Rewards);
+            Assert.Equal(5, _sheet.Count);
+            var row = _sheet[1];
+            Assert.Equal(50, row.RequiredGold);
+            Assert.Equal(3, row.Rewards.Count);
             var reward = row.Rewards[0];
-            Assert.Equal(0, reward.ItemId);
+            Assert.Equal(400000, reward.ItemId);
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
-            Assert.Null(reward.CurrencyTicker);
-
-            row = _sheet[1];
-            Assert.Equal(10, row.RequiredGold);
-            Assert.Equal(2, row.Rewards.Count);
-            reward = row.Rewards[0];
-            Assert.Equal(400000, reward.ItemId);
-            Assert.Equal(50, reward.Rate);
-            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
-            Assert.Null(reward.CurrencyTicker);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(10m, reward.DecimalRate);
             reward = row.Rewards[1];
             Assert.Equal(500000, reward.ItemId);
-            Assert.Equal(50, reward.Rate);
+            Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
-            Assert.Null(reward.CurrencyTicker);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(800m, reward.DecimalRate);
+            reward = row.Rewards[2];
+            Assert.Equal(20001, reward.ItemId);
+            Assert.Equal(0, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Rune, reward.Type);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(6000m, reward.DecimalRate);
 
-            var patchedSheet = new StakeRegularRewardSheet();
-            const string tableContentWithRune =
-                @"level,required_gold,item_id,rate,type,currency_ticker,currency_decimal_places,decimal_rate
-1,50,400000,10,Item
-1,50,500000,800,Item
-1,50,20001,6000,Rune
-1,50,,,Currency,CRYSTAL,18,0.1
-1,50,,100,Currency,GARAGE,18,
-";
-            patchedSheet.Set(tableContentWithRune);
-            Assert.Single(patchedSheet);
-            row = patchedSheet[1];
-            Assert.Equal(50, row.RequiredGold);
-            Assert.Equal(5, row.Rewards.Count);
-            for (var i = 0; i < 5; i++)
-            {
-                reward = row.Rewards[i];
-                var itemId = i switch
-                {
-                    0 => 400000,
-                    1 => 500000,
-                    2 => 20001,
-                    3 => 0,
-                    4 => 0,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                var rate = i switch
-                {
-                    0 => 10,
-                    1 => 800,
-                    2 => 6000,
-                    3 => 0,
-                    4 => 100,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                var rewardType = i switch
-                {
-                    0 => StakeRegularRewardSheet.StakeRewardType.Item,
-                    1 => StakeRegularRewardSheet.StakeRewardType.Item,
-                    2 => StakeRegularRewardSheet.StakeRewardType.Rune,
-                    3 => StakeRegularRewardSheet.StakeRewardType.Currency,
-                    4 => StakeRegularRewardSheet.StakeRewardType.Currency,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                var currencyTicker = i switch
-                {
-                    0 => null,
-                    1 => null,
-                    2 => null,
-                    3 => "CRYSTAL",
-                    4 => "GARAGE",
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                var currencyDecimalPlaces = i switch
-                {
-                    0 => (int?)null,
-                    1 => null,
-                    2 => null,
-                    3 => 18,
-                    4 => 18,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                var decimalRate = i switch
-                {
-                    0 => 10m,
-                    1 => 800m,
-                    2 => 6000m,
-                    3 => 0.1m,
-                    4 => 0m,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                Assert.Equal(itemId, reward.ItemId);
-                Assert.Equal(rate, reward.Rate);
-                Assert.Equal(rewardType, reward.Type);
-                Assert.Equal(currencyTicker, reward.CurrencyTicker);
-                Assert.Equal(currencyDecimalPlaces, reward.CurrencyDecimalPlaces);
-                Assert.Equal(decimalRate, reward.DecimalRate);
-            }
+            row = _sheet[5];
+            Assert.Equal(500000, row.RequiredGold);
+            Assert.Equal(3, row.Rewards.Count);
+            reward = row.Rewards[0];
+            Assert.Equal(400000, reward.ItemId);
+            Assert.Equal(0, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(5m, reward.DecimalRate);
+            reward = row.Rewards[1];
+            Assert.Equal(500000, reward.ItemId);
+            Assert.Equal(0, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(800m, reward.DecimalRate);
+            reward = row.Rewards[2];
+            Assert.Equal(20001, reward.ItemId);
+            Assert.Equal(0, reward.Rate);
+            Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Rune, reward.Type);
+            Assert.Equal(string.Empty, reward.CurrencyTicker);
+            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Equal(6000m, reward.DecimalRate);
         }
 
         [Theory]
-        [InlineData(0, 0)]
-        [InlineData(1, 0)]
-        [InlineData(100, 1)]
+        [InlineData(50, 1)]
+        [InlineData(500, 2)]
+        [InlineData(5000, 3)]
+        [InlineData(50000, 4)]
+        [InlineData(500000, 5)]
         public void FindLevelByStakedAmount(int balance, int expectedLevel)
         {
             Assert.Equal(
@@ -147,11 +91,15 @@ namespace Lib9c.Tests.TableData
             );
         }
 
-        [Fact]
-        public void FindLevelByStakedAmount_Throw_InsufficientBalanceException()
+        [Theory]
+        [InlineData(49)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        public void FindLevelByStakedAmount_Throws_InsufficientBalanceException(int balance)
         {
             Assert.Throws<InsufficientBalanceException>(
-                () => _sheet.FindLevelByStakedAmount(default, -1 * _currency));
+                () => _sheet.FindLevelByStakedAmount(default, balance * _currency));
         }
     }
 }
