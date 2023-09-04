@@ -125,8 +125,10 @@ namespace Lib9c.Tests.Model.Stake
             var stateL = new StakeStateV2(contract, 0);
             var stateR = new StakeStateV2(contract, 0);
             Assert.Equal(stateL, stateR);
+            Assert.True(stateL == stateR);
             stateR = new StakeStateV2(contract, 1);
             Assert.NotEqual(stateL, stateR);
+            Assert.True(stateL != stateR);
         }
     }
 }

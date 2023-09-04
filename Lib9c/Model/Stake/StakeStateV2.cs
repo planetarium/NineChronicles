@@ -124,5 +124,15 @@ namespace Nekoyume.Model.Stake
                 return hashCode;
             }
         }
+
+        public static bool operator ==(StakeStateV2 left, StakeStateV2 right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(StakeStateV2 left, StakeStateV2 right)
+        {
+            return !(left == right);
+        }
     }
 }
