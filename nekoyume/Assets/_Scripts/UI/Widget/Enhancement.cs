@@ -390,7 +390,12 @@ namespace Nekoyume.UI
 
         private int UpgradeStat(int baseStat, int upgradeStat)
         {
-            return Nekoyume.Battle.CPHelper.DecimalToInt(Math.Max(1.0m, baseStat * upgradeStat.NormalizeFromTenThousandths()));
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
+            if(result > 0)
+            {
+                result = Math.Max(1.0m, result);
+            }
+            return (int)result;
         }
 
         private void UpdateInformation(EnhancementInventoryItem baseModel,
