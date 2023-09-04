@@ -485,7 +485,7 @@ namespace Nekoyume.Action
         {
             try
             {
-                var csv = GetSheetCsv<T>(states);
+                var csv = GetSheetCsv(states, sheetAddr);
                 byte[] hash;
                 using (var sha256 = SHA256.Create())
                 {
@@ -712,7 +712,7 @@ namespace Nekoyume.Action
                 var sheetType = sheetTypes[i];
                 var address = addresses[i];
                 var csvValue = csvValues[i];
-                if (csvValue is null)
+                if (csvValue is null or Null)
                 {
                     throw new FailedLoadStateException(address, sheetType);
                 }
@@ -732,7 +732,7 @@ namespace Nekoyume.Action
                 }
 
                 var sheetConstructorInfo = sheetType.GetConstructor(Type.EmptyTypes);
-                if (!(sheetConstructorInfo?.Invoke(Array.Empty<object>()) is ISheet sheet))
+                if (sheetConstructorInfo?.Invoke(Array.Empty<object>()) is not ISheet sheet)
                 {
                     throw new FailedLoadSheetException(sheetType);
                 }
@@ -748,11 +748,15 @@ namespace Nekoyume.Action
         public static string GetSheetCsv<T>(this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
+            return states.GetSheetCsv(address);
+        }
+
+        public static string GetSheetCsv(this IAccountState states, Address address)
+        {
             var value = states.GetState(address);
-            if (value is null)
+            if (value is null or Null)
             {
-                Log.Warning("{TypeName} is null ({Address})", typeof(T).FullName, address.ToHex());
-                throw new FailedLoadStateException(typeof(T).FullName);
+                throw new FailedLoadStateException(address, typeof(ISheet));
             }
 
             try
@@ -761,7 +765,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error(e, "Unexpected error occurred during GetSheetCsv<{TypeName}>()", typeof(T).FullName);
+                Log.Error(e, "Unexpected error occurred during GetSheetCsv({Address})", address);
                 throw;
             }
         }
