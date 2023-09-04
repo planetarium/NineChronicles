@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                     stakeStateAddress);
             }
 
-            if (stakeStateV2.ClaimableBlockIndex < context.BlockIndex)
+            if (stakeStateV2.ClaimableBlockIndex > context.BlockIndex)
             {
                 throw new RequiredBlockIndexException(
                     ActionTypeText,
@@ -124,17 +124,7 @@ namespace Nekoyume.Action
             var rewardSteps = 1 + (int)Math.DivRem(
                 context.BlockIndex - stakeStateV2.ClaimableBlockIndex,
                 StakeState.RewardInterval,
-                out var remained);
-
-            // states = ProcessReward(
-            //     context,
-            //     states,
-            //     ref avatarState,
-            //     itemSheet,
-            //     stakedAmount,
-            //     rewardSteps,
-            //     stakeRegularFixedRewardSheet[stakingLevel].Rewards,
-            //     stakeRegularRewardSheet[stakingLevel].Rewards);
+                out _);
 
             // Fixed Reward
             foreach (var reward in stakeRegularFixedRewardSheet[stakingLevel].Rewards)
@@ -247,7 +237,7 @@ namespace Nekoyume.Action
             stakeStateV2 = new StakeStateV2(
                 stakeStateV2.Contract,
                 stakeStateV2.StartedBlockIndex,
-                context.BlockIndex - remained);
+                context.BlockIndex);
 
             if (migrationRequired)
             {
