@@ -50,9 +50,6 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
         }
 
-        // StakeState -> StakeStateV2 migration (refactoring?)
-        // StakeStateV2.Contract 기준으로 시트 가져와서 보상 주기
-        // StakeStateV2.ClaimedBlockIndex를 셀프로 액션에서 직접 넣어주니까 잘 넣어줘야...
         public override IAccountStateDelta Execute(IActionContext context)
         {
             context.UseGas(1);
@@ -63,16 +60,14 @@ namespace Nekoyume.Action
 
             var states = context.PreviousState;
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
-            var stakeStateAddress = StakeState.DeriveAddress(context.Signer);
-            var ncg = states.GetGoldCurrency();
-            var stakedAmount = states.GetBalance(stakeStateAddress, ncg);
+            var stakeStateAddr = StakeState.DeriveAddress(context.Signer);
             if (!states.TryGetStakeStateV2(context.Signer, out var stakeStateV2))
             {
                 throw new FailedLoadStateException(
                     ActionTypeText,
                     addressesHex,
                     typeof(StakeState),
-                    stakeStateAddress);
+                    stakeStateAddr);
             }
 
             if (stakeStateV2.ClaimableBlockIndex > context.BlockIndex)
@@ -114,17 +109,21 @@ namespace Nekoyume.Action
             var stakeRegularFixedRewardSheet = sheets.GetSheet<StakeRegularFixedRewardSheet>();
             var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
             // NOTE:
+            var ncg = states.GetGoldCurrency();
+            var stakedNcg = states.GetBalance(stakeStateAddr, ncg);
             var stakingLevel = Math.Min(
                 stakeRegularRewardSheet.FindLevelByStakedAmount(
                     context.Signer,
-                    stakedAmount),
+                    stakedNcg),
                 stakeRegularRewardSheet.Keys.Max());
             var itemSheet = sheets.GetItemSheet();
             // The first reward is given at the claimable block index.
-            var rewardSteps = 1 + (int)Math.DivRem(
-                context.BlockIndex - stakeStateV2.ClaimableBlockIndex,
-                StakeState.RewardInterval,
-                out _);
+            var rewardSteps = stakeStateV2.ClaimableBlockIndex == context.BlockIndex
+                ? 1
+                : 1 + (int)Math.DivRem(
+                    context.BlockIndex - stakeStateV2.ClaimableBlockIndex,
+                    stakeStateV2.Contract.RewardInterval,
+                    out _);
 
             // Fixed Reward
             foreach (var reward in stakeRegularFixedRewardSheet[stakingLevel].Rewards)
@@ -140,9 +139,9 @@ namespace Nekoyume.Action
             foreach (var reward in stakeRegularRewardSheet[stakingLevel].Rewards)
             {
                 var rateFav = FungibleAssetValue.Parse(
-                    stakedAmount.Currency,
+                    stakedNcg.Currency,
                     reward.DecimalRate.ToString(CultureInfo.InvariantCulture));
-                var rewardQuantityForSingleStep = stakedAmount.DivRem(rateFav, out _);
+                var rewardQuantityForSingleStep = stakedNcg.DivRem(rateFav, out _);
                 if (rewardQuantityForSingleStep <= 0)
                 {
                     continue;
@@ -162,7 +161,6 @@ namespace Nekoyume.Action
                         var item = itemRow is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
                             : ItemFactory.CreateItem(itemRow, context.Random);
-
                         avatarState.inventory.AddItem(item, majorUnit);
                         break;
                     }
@@ -180,11 +178,6 @@ namespace Nekoyume.Action
                     }
                     case StakeRegularRewardSheet.StakeRewardType.Currency:
                     {
-                        if (string.IsNullOrEmpty(reward.CurrencyTicker))
-                        {
-                            throw new NullReferenceException("currency ticker is null or empty");
-                        }
-
                         // NOTE: prepare reward currency.
                         Currency rewardCurrency;
                         // NOTE: this line covers the reward.CurrencyTicker is following cases:
@@ -209,7 +202,7 @@ namespace Nekoyume.Action
                             // NOTE: throw exception if reward.CurrencyDecimalPlaces is null.
                             if (reward.CurrencyDecimalPlaces is null)
                             {
-                                throw new ArgumentException(
+                                throw new ArgumentNullException(
                                     $"Decimal places of {reward.CurrencyTicker} is null");
                             }
 
@@ -222,10 +215,22 @@ namespace Nekoyume.Action
 
                         var majorUnit = rewardQuantityForSingleStep * rewardSteps;
                         var rewardFav = rewardCurrency * majorUnit;
-                        states = states.MintAsset(
-                            context,
-                            context.Signer,
-                            rewardFav);
+                        if (Currencies.IsRuneTicker(rewardCurrency.Ticker) ||
+                            Currencies.IsSoulstoneTicker(rewardCurrency.Ticker))
+                        {
+                            states = states.MintAsset(
+                                context,
+                                AvatarAddress,
+                                rewardFav);
+                        }
+                        else
+                        {
+                            states = states.MintAsset(
+                                context,
+                                context.Signer,
+                                rewardFav);
+                        }
+
                         break;
                     }
                     default:
@@ -252,7 +257,7 @@ namespace Nekoyume.Action
             }
 
             return states
-                .SetState(stakeStateAddress, stakeStateV2.Serialize())
+                .SetState(stakeStateAddr, stakeStateV2.Serialize())
                 .SetState(
                     avatarState.address.Derive(LegacyInventoryKey),
                     avatarState.inventory.Serialize());
