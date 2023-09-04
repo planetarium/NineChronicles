@@ -47,5 +47,11 @@ namespace Lib9c.Tests.Fixtures.TableCSV.Stake
 7,10000000,600201,50,Item,
 7,10000000,800201,50,Item,
 7,10000000,,100,Currency,GARAGE";
+        // NOTE: belows are same.
+        // since "claim_stake_reward8".
+        // 7,10000000,20001,6000,Rune,
+        // 7,10000000,,6000,Rune,
+        // since "claim_stake_reward9".
+        // 7,10000000,,6000,Currency,RUNE_GOLDENLEAF
     }
 }
