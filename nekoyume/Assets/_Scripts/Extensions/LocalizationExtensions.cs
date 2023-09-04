@@ -20,6 +20,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
@@ -547,6 +548,11 @@ namespace Nekoyume
             return $"{name}{elemental}";
         }
 
+        public static string GetLocalizedName(this AuraSummonSheet.Row summonRow)
+        {
+            return L10nManager.Localize($"SUMMON_NAME_{summonRow.GroupId}");
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch
@@ -658,6 +664,8 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_NECKLACE");
                 case ItemSubType.Ring:
                     return L10nManager.Localize("UI_RING");
+                case ItemSubType.Aura:
+                    return L10nManager.Localize("UI_AURA");
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:
                 case ItemSubType.MonsterPart:
