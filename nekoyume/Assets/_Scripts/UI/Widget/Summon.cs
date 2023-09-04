@@ -10,32 +10,30 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData.Summon;
+using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Summon : Widget
     {
         [Serializable]
         private class DrawItems
         {
-            public DrawItemModel model;
-            public Button draw1Button;
-            public Button draw10Button;
-        }
-
-        [Serializable]
-        private class DrawItemModel
-        {
-            public int groupId;
-            // 재료
-            // 또는 row
+            public Button infoButton;
+            public TextMeshProUGUI nameText;
+            public SimpleCostButton draw1Button;
+            public SimpleCostButton draw10Button;
         }
 
         [SerializeField] private Button closeButton;
-        [SerializeField] private DrawItems leftDrawItems;
-        [SerializeField] private DrawItems rightDrawItems;
+        [SerializeField] private DrawItems[] drawItems;
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         protected override void Awake()
         {
@@ -52,23 +50,14 @@ namespace Nekoyume.UI
                 Find<CombinationMain>().Show();
             };
 
-            leftDrawItems.draw1Button.onClick.AddListener(() =>
+            LoadingHelper.Summon.Subscribe(value =>
             {
-                AuraSummonAction(leftDrawItems.model.groupId, 1);
-            });
-            leftDrawItems.draw10Button.onClick.AddListener(() =>
-            {
-                AuraSummonAction(leftDrawItems.model.groupId, 10);
-            });
-
-            rightDrawItems.draw1Button.onClick.AddListener(() =>
-            {
-                AuraSummonAction(rightDrawItems.model.groupId, 1);
-            });
-            rightDrawItems.draw10Button.onClick.AddListener(() =>
-            {
-                AuraSummonAction(rightDrawItems.model.groupId, 10);
-            });
+                foreach (var item in drawItems)
+                {
+                    item.draw1Button.Loading = value;
+                    item.draw10Button.Loading = value;
+                }
+            }).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -76,20 +65,43 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             closeButton.interactable = true;
 
-            var groupIds = new[] { 10001, 10002 };
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var tableSheets = Game.Game.instance.TableSheets;
+            var auraSummonSheet = Game.Game.instance.TableSheets.AuraSummonSheet;
 
-            foreach (var groupId in groupIds)
+            var groupIds = new[] { 10001, 10002 };
+            var summonRows = groupIds.Select(id => auraSummonSheet[id]).ToArray();
+
+            _disposables.DisposeAllAndClear();
+            var min = Mathf.Min(summonRows.Length, drawItems.Length);
+            for (int i = 0; i < min; i++)
             {
-                // check material enough
-                var summonRow = tableSheets.AuraSummonSheet[groupId];
-                var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
-                var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
-                        ? items.Sum(x => x.count)
-                        : 0;
-                Debug.LogError($"Group : {groupId}, Material : {materialRow.GetLocalizedName()}, has :{count}.");
+                Subscribe(drawItems[i], summonRows[i]);
+
+                var count = inventory.GetMaterialCount(summonRows[i].CostMaterial);
+                Debug.LogError($"Group : {summonRows[i].GroupId}, Material : {summonRows[i].CostMaterial}, has :{count}.");
             }
+        }
+
+        private void Subscribe(DrawItems items, AuraSummonSheet.Row summonRow)
+        {
+            var costType = (CostType)summonRow.CostMaterial;
+            var cost = summonRow.CostMaterialCount;
+
+            items.infoButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                Debug.LogError($"Summon Group : {summonRow.GetLocalizedName()} was Clicked. Cost : {costType}");
+            }).AddTo(_disposables);
+            items.nameText.text = summonRow.GetLocalizedName();
+
+            items.draw1Button.SetCost(costType, cost);
+            items.draw10Button.SetCost(costType, cost * 10);
+
+            items.draw1Button.OnSubmitSubject
+                .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 1))
+                .AddTo(_disposables);
+            items.draw10Button.OnSubmitSubject
+                .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 10))
+                .AddTo(_disposables);
         }
 
         public void AuraSummonAction(int groupId, int drawCount)
@@ -113,10 +125,13 @@ namespace Nekoyume.UI
             }
 
             ActionManager.Instance.AuraSummon(groupId, drawCount).Subscribe();
+            LoadingHelper.Summon.Value = true;
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
+            LoadingHelper.Summon.Value = false;
+
             var groupId = eval.Action.GroupId;
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
