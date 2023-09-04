@@ -205,24 +205,7 @@ namespace Nekoyume.UI
         //Used for migrating and showing equipment before update
         private long GetItemExp(Equipment equipment)
         {
-            if (equipment.Exp != 0)
-                return equipment.Exp;
-
-            if(equipment.level != 0 && ItemEnhancement.TryGetRow(equipment, _costSheet, out var baseItemCostRow))
-                return baseItemCostRow.Exp;
-
-            if(Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(equipment.Id, out var equipmentSheetRow))
-            {
-                if(equipmentSheetRow.Exp == null)
-                {
-                    Debug.LogError($"[Enhancement] {equipment.Id} EquipmentSheetRow Exp is Null");
-                    return 0; 
-                }
-                return equipmentSheetRow.Exp.Value;
-            }
-
-            Debug.LogError($"[Enhancement] can't find {equipment.Id} EquipmentSheetRow");
-            return 0;
+            return equipment.GetRealExp(Game.Game.instance.TableSheets.EquipmentItemSheet, _costSheet);
         }
 
         private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
@@ -535,7 +518,7 @@ namespace Nekoyume.UI
 
                 if (equipment.level != targetRow.Level)
                 {
-                    for (int i = 1; i < targetRangeRows.Count; i++)
+                    for (int i = 1; i < targetRangeRows.Count - 1; i++)
                     {
                         baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
                         baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
