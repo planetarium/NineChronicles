@@ -45,9 +45,10 @@ namespace Nekoyume.Game.Character
         {
             var armor = (Armor)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+            var aura = (Aura)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Aura);
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
-                digest.Costumes, armor, weapon,
+                digest.Costumes, armor, weapon, aura,
                 digest.EarIndex, digest.LensIndex, digest.HairIndex, digest.TailIndex);
         }
 
@@ -66,9 +67,10 @@ namespace Nekoyume.Game.Character
         {
             var armor = (Armor)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var weapon = (Weapon)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
+            var aura = (Aura)equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Aura);
 
             UpdateAvatar(avatarAddress, animator, hudContainer,
-                costumes, armor, weapon,
+                costumes, armor, weapon, aura,
                 earIndex, lensIndex, hairIndex, tailIndex, isFriendCharacter, onFinish);
         }
 
@@ -79,13 +81,14 @@ namespace Nekoyume.Game.Character
             List<Costume> costumes,
             Armor armor,
             Weapon weapon,
+            Aura aura,
             int earIndex,
             int lensIndex,
             int hairIndex,
             int tailIndex)
         {
             UpdateAvatar(avatarAddress, animator, hudContainer,
-                costumes, armor, weapon,
+                costumes, armor, weapon, aura,
                 earIndex, lensIndex, hairIndex, tailIndex);
         }
 
@@ -123,6 +126,7 @@ namespace Nekoyume.Game.Character
             List<Costume> costumes,
             Armor armor,
             Weapon weapon,
+            Aura aura,
             int earIndex,
             int lensIndex,
             int hairIndex,
@@ -149,6 +153,7 @@ namespace Nekoyume.Game.Character
                 SpineController.UnequipFullCostume(false);
                 UpdateArmor(armor, dccParts[DccPartsType.skin], true);
                 UpdateWeapon(weapon);
+                UpdateAura(aura);
                 UpdateEar(dccParts[DccPartsType.ear_tail], true);
                 UpdateFace(dccParts[DccPartsType.face], true);
                 UpdateHair(dccParts[DccPartsType.hair], true);
@@ -182,6 +187,7 @@ namespace Nekoyume.Game.Character
                     UpdateAcHead(0, false);
                     UpdateArmor(armor, 0, false);
                     UpdateWeapon(weapon);
+                    UpdateAura(aura);
                 }
 
                 if (!isFriendCharacter)
@@ -235,6 +241,18 @@ namespace Nekoyume.Game.Character
             var level = weapon?.level ?? 0;
             var vfx = ResourcesHelper.GetAuraWeaponPrefab(weaponId, level);
             SpineController.UpdateWeapon(weaponId, vfx);
+        }
+
+        private void UpdateAura(Aura aura)
+        {
+            if (aura == null)
+            {
+                SpineController.UpdateAura(null);
+                return;
+            }
+
+            var vfx = ResourcesHelper.GetAuraPrefab(aura.Id, aura.level);
+            SpineController.UpdateAura(vfx);
         }
 
         private void UpdateEar(int index, bool isDcc)

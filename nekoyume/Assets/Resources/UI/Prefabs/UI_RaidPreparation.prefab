@@ -41261,7 +41261,6 @@ GameObject:
   - component: {fileID: 3007282556900613156}
   - component: {fileID: 8454470536818839116}
   - component: {fileID: 2233256861759085455}
-  - component: {fileID: 5104914413473013669}
   - component: {fileID: 4737453967431019539}
   m_Layer: 5
   m_Name: UI_EquipmentSlot (7)
@@ -41379,36 +41378,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5104914413473013669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6571487680118696596}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
-  defaultImage: {fileID: 5947805025425182784}
-  itemImage: {fileID: 6829377829509384249}
-  enhancementText: {fileID: 3467511013136173683}
-  lockImage: {fileID: 5534636169585380487}
-  itemSubType: 10
-  itemType: 2
-  itemSubTypeIndex: 2
-  optionTagBg: {fileID: 8022981496287986897}
-  optionTagImages:
-  - {fileID: 8643077661677571848}
-  - {fileID: 5285567444832032200}
-  - {fileID: 4001002915975008131}
-  - {fileID: 2190616612002460615}
-  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
-  gradeImage: {fileID: 5913773983535482249}
-  gradeHsv: {fileID: 1471732871316946214}
-  enhancementImage: {fileID: 7674225365005800172}
 --- !u!114 &4737453967431019539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47116,6 +47085,7 @@ MonoBehaviour:
   - {fileID: 4581246970454386952}
   - {fileID: 690380215110642240}
   - {fileID: 1218087442858758650}
+  - {fileID: 1102979269519855280}
 --- !u!114 &5363578529385218948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52802,9 +52772,9 @@ MonoBehaviour:
   itemImage: {fileID: 3571212307904441281}
   enhancementText: {fileID: 2060051021048807144}
   lockImage: {fileID: 2116903380669448517}
-  itemSubType: 10
+  itemSubType: 19
   itemType: 2
-  itemSubTypeIndex: 2
+  itemSubTypeIndex: 1
   optionTagBg: {fileID: 4885921454908418804}
   optionTagImages:
   - {fileID: 6745450984994621555}
@@ -71052,7 +71022,6 @@ GameObject:
   - component: {fileID: 2852277278803392559}
   - component: {fileID: 2499142087385548309}
   - component: {fileID: 4924917085746226779}
-  - component: {fileID: 5998222954840505123}
   - component: {fileID: 6379716860197699290}
   m_Layer: 5
   m_Name: UI_EquipmentSlot (8)
@@ -71170,36 +71139,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5998222954840505123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8566578797908797471}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d16648271740229b605e99f40a2c8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
-  defaultImage: {fileID: 7104497006011543718}
-  itemImage: {fileID: 6928434183332962109}
-  enhancementText: {fileID: 5707362542362574918}
-  lockImage: {fileID: 3755635295169951097}
-  itemSubType: 10
-  itemType: 2
-  itemSubTypeIndex: 2
-  optionTagBg: {fileID: 6727804688647453482}
-  optionTagImages:
-  - {fileID: 5521967222324991623}
-  - {fileID: 3863438017683106065}
-  - {fileID: 424192574407072371}
-  - {fileID: 2250556286953449008}
-  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
-  gradeImage: {fileID: 6830130146904146238}
-  gradeHsv: {fileID: 5908006048259650618}
-  enhancementImage: {fileID: 5678672964330166583}
 --- !u!114 &6379716860197699290
 MonoBehaviour:
   m_ObjectHideFlags: 0
