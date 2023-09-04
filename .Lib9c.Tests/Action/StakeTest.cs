@@ -214,7 +214,7 @@ namespace Lib9c.Tests.Action
         // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
         // NOTE: LockupInterval of StakePolicySheetFixtures.V2 is 201,600.
         [InlineData(0, 50, 201_600)]
-        [InlineData(0, 50, 201_601)]
+        [InlineData(0, 50, 201_600 + 1)]
         public void Execute_Success_When_Withdraw_With_StakeStateV2(
             long previousStartedBlockIndex,
             long previousAmount,
