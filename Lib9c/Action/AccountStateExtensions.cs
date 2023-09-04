@@ -962,67 +962,11 @@ namespace Nekoyume.Action
             Address agentAddr,
             out StakeStateV2 stakeStateV2)
         {
-            var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
-            var stakeStateValue = state.GetState(stakeStateAddr);
-            if (stakeStateValue is null)
-            {
-                stakeStateV2 = default;
-                return false;
-            }
-
-            if (stakeStateValue is List list)
-            {
-                stakeStateV2 = new StakeStateV2(list);
-                return true;
-            }
-
-            if (stakeStateValue is Dictionary dict)
-            {
-                var gcs = state.GetGameConfigState();
-                var stakeStateV1 = new StakeState(dict);
-                var stakeRegularFixedRewardSheetTableName =
-                    stakeStateV1.StartedBlockIndex <
-                    gcs.StakeRegularFixedRewardSheet_V2_StartBlockIndex
-                        ? "StakeRegularFixedRewardSheet_V1"
-                        : "StakeRegularFixedRewardSheet_V2";
-                string stakeRegularRewardSheetTableName;
-                if (stakeStateV1.StartedBlockIndex <
-                    gcs.StakeRegularRewardSheet_V2_StartBlockIndex)
-                {
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V1";
-                }
-                else if (stakeStateV1.StartedBlockIndex <
-                         gcs.StakeRegularRewardSheet_V3_StartBlockIndex)
-                {
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V2";
-                }
-                else if (stakeStateV1.StartedBlockIndex <
-                         gcs.StakeRegularRewardSheet_V4_StartBlockIndex)
-                {
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V3";
-                }
-                else if (stakeStateV1.StartedBlockIndex <
-                         gcs.StakeRegularRewardSheet_V5_StartBlockIndex)
-                {
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V4";
-                }
-                else
-                {
-                    stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V5";
-                }
-
-                stakeStateV2 = new StakeStateV2(
-                    stakeStateV1,
-                    new Contract(
-                        stakeRegularFixedRewardSheetTableName: stakeRegularFixedRewardSheetTableName,
-                        stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName,
-                        rewardInterval: StakeState.RewardInterval,
-                        lockupInterval: StakeState.LockupInterval));
-                return true;
-            }
-
-            stakeStateV2 = default;
-            return false;
+            var stakeStateAddr = StakeStateV2.DeriveAddress(agentAddr);
+            return StakeStateUtils.TryMigrate(
+                state,
+                stakeStateAddr,
+                out stakeStateV2);
         }
 
         public static ArenaParticipants GetArenaParticipants(this IAccountState states,
