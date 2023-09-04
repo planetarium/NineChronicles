@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
                 new ActionContext { Signer = Addresses.Admin },
                 _agentAddr,
                 _ncg * amount);
-            ExecuteInternal(
+            Execute(
                 0,
                 previousState,
                 new TestRandom(),
@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
                     stakeStateAddr,
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeState.Serialize());
-            ExecuteInternal(
+            Execute(
                 0,
                 previousState,
                 new TestRandom(),
@@ -172,7 +172,7 @@ namespace Lib9c.Tests.Action
                     stakeStateAddr,
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeStateV2.Serialize());
-            ExecuteInternal(
+            Execute(
                 0,
                 previousState,
                 new TestRandom(),
@@ -202,7 +202,7 @@ namespace Lib9c.Tests.Action
                     stakeStateAddr,
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeState.Serialize());
-            ExecuteInternal(
+            Execute(
                 blockIndex,
                 previousState,
                 new TestRandom(),
@@ -236,7 +236,7 @@ namespace Lib9c.Tests.Action
                     stakeStateAddr,
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeStateV2.Serialize());
-            ExecuteInternal(
+            Execute(
                 blockIndex,
                 previousState,
                 new TestRandom(),
@@ -272,7 +272,7 @@ namespace Lib9c.Tests.Action
             previousState = previousState
                 .SetState(monsterCollectionAddr, monsterCollectionState.SerializeV2());
             Assert.Throws<MonsterCollectionExistingException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     previousState,
                     new TestRandom(),
@@ -286,7 +286,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_ArgumentOutOfRangeException_Via_Negative_Amount(long amount)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     _initialState,
                     new TestRandom(),
@@ -306,7 +306,7 @@ namespace Lib9c.Tests.Action
                 Addresses.GetSheetAddress(sheetName),
                 Null.Value);
             Assert.Throws<StateNullException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     previousState,
                     new TestRandom(),
@@ -321,7 +321,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_ArgumentOutOfRangeException_Via_Minimum_Amount(long amount)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     _initialState,
                     new TestRandom(),
@@ -348,7 +348,7 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     previousState,
                     new TestRandom(),
@@ -360,7 +360,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_StateNullException_Via_0_Amount()
         {
             Assert.Throws<StateNullException>(() =>
-                ExecuteInternal(
+                Execute(
                     0,
                     _initialState,
                     new TestRandom(),
@@ -392,7 +392,7 @@ namespace Lib9c.Tests.Action
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeState.Serialize());
             Assert.Throws<StakeExistingClaimableException>(() =>
-                ExecuteInternal(
+                Execute(
                     blockIndex,
                     previousState,
                     new TestRandom(),
@@ -429,7 +429,7 @@ namespace Lib9c.Tests.Action
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeStateV2.Serialize());
             Assert.Throws<StakeExistingClaimableException>(() =>
-                ExecuteInternal(
+                Execute(
                     blockIndex,
                     previousState,
                     new TestRandom(),
@@ -467,7 +467,7 @@ namespace Lib9c.Tests.Action
                     _ncg * previousAmount)
                 .SetState(stakeStateAddr, stakeState.Serialize());
             Assert.Throws<RequiredBlockIndexException>(() =>
-                ExecuteInternal(
+                Execute(
                     blockIndex,
                     previousState,
                     new TestRandom(),
@@ -475,7 +475,7 @@ namespace Lib9c.Tests.Action
                     reducedAmount));
         }
 
-        private IAccountStateDelta ExecuteInternal(
+        private IAccountStateDelta Execute(
             long blockIndex,
             IAccountStateDelta previousState,
             IRandom random,
