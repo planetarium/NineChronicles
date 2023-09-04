@@ -10,6 +10,9 @@ namespace Nekoyume.UI
     public class CombinationMain : Widget
     {
         [SerializeField]
+        private Button summonButton;
+
+        [SerializeField]
         private Button combineButton;
 
         [SerializeField]
@@ -36,6 +39,13 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            summonButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<Summon>().Show();
+                AudioController.PlayClick();
+            });
 
             combineButton.onClick.AddListener(() =>
             {

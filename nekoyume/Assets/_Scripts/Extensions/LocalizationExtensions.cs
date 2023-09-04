@@ -553,6 +553,13 @@ namespace Nekoyume
             return L10nManager.Localize($"SUMMON_NAME_{summonRow.GroupId}");
         }
 
+        public static string GetLocalizedInformation(this Equipment equipment)
+        {
+            var grade = equipment.GetGradeText();
+            var subType = equipment.GetSubTypeText();
+            return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch

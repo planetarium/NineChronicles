@@ -1188,30 +1188,7 @@ namespace Nekoyume.Blockchain
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
 
-            var random = new LocalRandom(eval.RandomSeed);
-            Debug.Log("Summon Result");
-            var resultList = new List<EquipmentItemSheet.Row>();
-            for (int i = 0; i < action.SummonCount; i++)
-            {
-                var itemId = SummonHelper.PickAuraSummonRecipe(summonRow, random);
-                var itemRow = TableSheets.Instance.EquipmentItemSheet[itemId];
-                resultList.Add(itemRow);
-
-                var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                    itemRow,
-                    random.GenerateRandomGuid(),
-                    eval.BlockIndex
-                );
-                Debug.Log($"[{nameof(ActionRenderHandler)}] id : {itemRow.Id}, Name : {itemRow.GetLocalizedName()}, grade : {itemRow.Grade}");
-            }
-
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"[{nameof(ActionRenderHandler)}] Summon Sorted Result");
-            foreach (var item in resultList.OrderByDescending(row => row.Grade))
-            {
-                sb.AppendLine($"{item.GetLocalizedName()} {item.Grade}");
-            }
-            Debug.Log(sb.ToString());
+            Widget.Find<Summon>().OnActionRender(eval);
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)

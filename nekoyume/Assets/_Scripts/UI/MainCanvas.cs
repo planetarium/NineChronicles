@@ -287,6 +287,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Rune>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Summon>());
+            yield return null;
             secondWidgets.Add(Widget.Create<DccMain>());
             yield return null;
             secondWidgets.Add(Widget.Create<DccCollection>());
@@ -398,6 +400,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CostTwoButtonPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<SummonResultPopup>());
             yield return null;
 
             // tooltip
