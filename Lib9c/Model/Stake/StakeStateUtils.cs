@@ -8,7 +8,6 @@ namespace Nekoyume.Model.Stake
 {
     public static class StakeStateUtils
     {
-        // FIXME: Use StakePolicySheet instead of hard-coding.
         public static bool TryMigrate(
             IAccountState state,
             Address stakeStateAddr,
