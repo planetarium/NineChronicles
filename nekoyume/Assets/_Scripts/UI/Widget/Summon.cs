@@ -15,6 +15,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.UI
 {
@@ -30,9 +31,14 @@ namespace Nekoyume.UI
             public SimpleCostButton draw10Button;
         }
 
+        [SerializeField] private CostIconDataScriptableObject costIconData;
+        [SerializeField] private int[] summonIds;
         [SerializeField] private Button closeButton;
         [SerializeField] private DrawItems[] drawItems;
 
+        public const int SummonGroup = 2;
+        private AuraSummonSheet.Row[] _summonRows;
+        private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         protected override void Awake()
@@ -43,11 +49,13 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<CombinationMain>().Show();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             });
             CloseWidget = () =>
             {
                 Close(true);
                 Find<CombinationMain>().Show();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             };
 
             LoadingHelper.Summon.Subscribe(value =>
@@ -65,42 +73,46 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             closeButton.interactable = true;
 
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var auraSummonSheet = Game.Game.instance.TableSheets.AuraSummonSheet;
-
-            var groupIds = new[] { 10001, 10002 };
-            var summonRows = groupIds.Select(id => auraSummonSheet[id]).ToArray();
-
-            _disposables.DisposeAllAndClear();
-            var min = Mathf.Min(summonRows.Length, drawItems.Length);
-            for (int i = 0; i < min; i++)
+            if (!_isInitialized)
             {
-                Subscribe(drawItems[i], summonRows[i]);
+                _isInitialized = true;
 
-                var count = inventory.GetMaterialCount(summonRows[i].CostMaterial);
-                Debug.LogError($"Group : {summonRows[i].GroupId}, Material : {summonRows[i].CostMaterial}, has :{count}.");
+                var auraSummonSheet = Game.Game.instance.TableSheets.AuraSummonSheet;
+                _summonRows = summonIds.Select(id => auraSummonSheet[id]).ToArray();
+
+                Subscribe();
             }
+
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
+            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
 
-        private void Subscribe(DrawItems items, AuraSummonSheet.Row summonRow)
+        private void Subscribe()
         {
-            var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount;
+            _disposables.DisposeAllAndClear();
+            for (int i = 0; i < SummonGroup; i++)
+            {
+                var items = drawItems[i];
+                var summonRow = _summonRows[i];
 
-            items.infoButton.OnClickAsObservable()
-                .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
-                .AddTo(_disposables);
-            items.nameText.text = summonRow.GetLocalizedName();
+                var costType = (CostType)summonRow.CostMaterial;
+                var cost = summonRow.CostMaterialCount;
 
-            items.draw1Button.SetCost(costType, cost);
-            items.draw10Button.SetCost(costType, cost * 10);
+                items.infoButton.OnClickAsObservable()
+                    .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
+                    .AddTo(_disposables);
+                items.nameText.text = summonRow.GetLocalizedName();
 
-            items.draw1Button.OnSubmitSubject
-                .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 1))
-                .AddTo(_disposables);
-            items.draw10Button.OnSubmitSubject
-                .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 10))
-                .AddTo(_disposables);
+                items.draw1Button.SetCost(costType, cost);
+                items.draw10Button.SetCost(costType, cost * 10);
+
+                items.draw1Button.OnSubmitSubject
+                    .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 1))
+                    .AddTo(_disposables);
+                items.draw10Button.OnSubmitSubject
+                    .Subscribe(_ => AuraSummonAction(summonRow.GroupId, 10))
+                    .AddTo(_disposables);
+            }
         }
 
         public void AuraSummonAction(int groupId, int drawCount)
@@ -125,11 +137,13 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.AuraSummon(groupId, drawCount).Subscribe();
             LoadingHelper.Summon.Value = true;
+            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = false;
+            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
 
             var groupId = eval.Action.GroupId;
             var summonCount = eval.Action.SummonCount;
@@ -177,6 +191,28 @@ namespace Nekoyume.UI
             }
 
             return resultList.OrderByDescending(row => row.Grade).ToList();
+        }
+
+        private void SetMaterialAssets(Inventory inventory)
+        {
+            if (!gameObject.activeSelf)
+            {
+                return;
+            }
+
+            var materials = _summonRows.Select(row =>
+            {
+                var icon = costIconData.GetIcon((CostType)row.CostMaterial);
+                var count = inventory.GetMaterialCount(row.CostMaterial);
+                return (icon, count);
+            }).ToArray();
+
+            var headerMenu = Find<HeaderMenuStatic>();
+            for (var i = 0; i < SummonGroup; i++)
+            {
+                var (icon, count) = materials[i];
+                headerMenu.MaterialAssets[i].SetMaterial(icon, count);
+            }
         }
     }
 }

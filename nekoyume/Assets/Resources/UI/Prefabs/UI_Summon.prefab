@@ -970,6 +970,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
+  summonIds: 1127000012270000
   closeButton: {fileID: 241345997775891456}
   drawItems:
   - infoButton: {fileID: 6598006676150947060}
