@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,11 @@ namespace Nekoyume.Model.State
         public int DailyRuneRewardAmount { get; private set; }
         public int DailyWorldBossInterval { get; private set; }
         public int WorldBossRequiredInterval { get; private set; }
+        public long StakeRegularFixedRewardSheet_V2_StartBlockIndex { get; private set; }
+        public long StakeRegularRewardSheet_V2_StartBlockIndex { get; private set; }
+        public long StakeRegularRewardSheet_V3_StartBlockIndex { get; private set; }
+        public long StakeRegularRewardSheet_V4_StartBlockIndex { get; private set; }
+        public long StakeRegularRewardSheet_V5_StartBlockIndex { get; private set; }
 
         public GameConfigState() : base(Address)
         {
@@ -78,6 +85,41 @@ namespace Nekoyume.Model.State
             {
                 WorldBossRequiredInterval = value12.ToInteger();
             }
+            if (serialized.TryGetValue(
+                    (Text)"stake_regular_fixed_reward_sheet_v2_start_block_index",
+                    out var stakeRegularFixedRewardSheetV2StartBlockIndex))
+            {
+                StakeRegularFixedRewardSheet_V2_StartBlockIndex =
+                    stakeRegularFixedRewardSheetV2StartBlockIndex.ToLong();
+            }
+            if (serialized.TryGetValue(
+                    (Text)"stake_regular_reward_sheet_v2_start_block_index",
+                    out var stakeRegularRewardSheetV2StartBlockIndex))
+            {
+                StakeRegularRewardSheet_V2_StartBlockIndex =
+                    stakeRegularRewardSheetV2StartBlockIndex.ToLong();
+            }
+            if (serialized.TryGetValue(
+                    (Text)"stake_regular_reward_sheet_v3_start_block_index",
+                    out var stakeRegularRewardSheetV3StartBlockIndex))
+            {
+                StakeRegularRewardSheet_V3_StartBlockIndex =
+                    stakeRegularRewardSheetV3StartBlockIndex.ToLong();
+            }
+            if (serialized.TryGetValue(
+                    (Text)"stake_regular_reward_sheet_v4_start_block_index",
+                    out var stakeRegularRewardSheetV4StartBlockIndex))
+            {
+                StakeRegularRewardSheet_V4_StartBlockIndex =
+                    stakeRegularRewardSheetV4StartBlockIndex.ToLong();
+            }
+            if (serialized.TryGetValue(
+                    (Text)"stake_regular_reward_sheet_v5_start_block_index",
+                    out var stakeRegularRewardSheetV5StartBlockIndex))
+            {
+                StakeRegularRewardSheet_V5_StartBlockIndex =
+                    stakeRegularRewardSheetV5StartBlockIndex.ToLong();
+            }
         }
 
         public GameConfigState(string csv) : base(Address)
@@ -130,6 +172,42 @@ namespace Nekoyume.Model.State
             {
                 values.Add((Text)"worldboss_required_interval", WorldBossRequiredInterval.Serialize());
             }
+
+            if (StakeRegularFixedRewardSheet_V2_StartBlockIndex > 0)
+            {
+                values.Add(
+                    (Text) "stake_regular_fixed_reward_sheet_v2_start_block_index",
+                    StakeRegularFixedRewardSheet_V2_StartBlockIndex.Serialize());
+            }
+
+            if (StakeRegularRewardSheet_V2_StartBlockIndex > 0)
+            {
+                values.Add(
+                    (Text) "stake_regular_reward_sheet_v2_start_block_index",
+                    StakeRegularRewardSheet_V2_StartBlockIndex.Serialize());
+            }
+
+            if (StakeRegularRewardSheet_V3_StartBlockIndex > 0)
+            {
+                values.Add(
+                    (Text) "stake_regular_reward_sheet_v3_start_block_index",
+                    StakeRegularRewardSheet_V3_StartBlockIndex.Serialize());
+            }
+
+            if (StakeRegularRewardSheet_V4_StartBlockIndex > 0)
+            {
+                values.Add(
+                    (Text) "stake_regular_reward_sheet_v4_start_block_index",
+                    StakeRegularRewardSheet_V4_StartBlockIndex.Serialize());
+            }
+
+            if (StakeRegularRewardSheet_V5_StartBlockIndex > 0)
+            {
+                values.Add(
+                    (Text) "stake_regular_reward_sheet_v5_start_block_index",
+                    StakeRegularRewardSheet_V5_StartBlockIndex.Serialize());
+            }
+
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
@@ -137,7 +215,12 @@ namespace Nekoyume.Model.State
 
         public void Set(GameConfigSheet sheet)
         {
-            foreach (var row in sheet.OrderedList)
+            if (sheet.OrderedList is not { } orderedList)
+            {
+                throw new NullReferenceException(nameof(sheet.OrderedList));
+            }
+
+            foreach (var row in orderedList)
             {
                 Update(row);
             }
@@ -182,6 +265,26 @@ namespace Nekoyume.Model.State
                     break;
                 case "worldboss_required_interval":
                     WorldBossRequiredInterval = TableExtensions.ParseInt(row.Value);
+                    break;
+                case "stake_regular_fixed_reward_sheet_v2_start_block_index":
+                    StakeRegularFixedRewardSheet_V2_StartBlockIndex =
+                        TableExtensions.ParseLong(row.Value);
+                    break;
+                case "stake_regular_reward_sheet_v2_start_block_index":
+                    StakeRegularRewardSheet_V2_StartBlockIndex =
+                        TableExtensions.ParseLong(row.Value);
+                    break;
+                case "stake_regular_reward_sheet_v3_start_block_index":
+                    StakeRegularRewardSheet_V3_StartBlockIndex =
+                        TableExtensions.ParseLong(row.Value);
+                    break;
+                case "stake_regular_reward_sheet_v4_start_block_index":
+                    StakeRegularRewardSheet_V4_StartBlockIndex =
+                        TableExtensions.ParseLong(row.Value);
+                    break;
+                case "stake_regular_reward_sheet_v5_start_block_index":
+                    StakeRegularRewardSheet_V5_StartBlockIndex =
+                        TableExtensions.ParseLong(row.Value);
                     break;
             }
         }

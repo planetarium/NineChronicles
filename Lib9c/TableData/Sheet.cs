@@ -32,10 +32,10 @@ namespace Nekoyume.TableData
 
         public IReadOnlyList<TValue>? OrderedList => _orderedList;
 
-        
+
         public TValue? First { get; private set; }
 
-        
+
         public TValue? Last { get; private set; }
 
         public ICollection<TKey> Keys => ((IDictionary<TKey, TValue>)_impl).Keys;
@@ -63,7 +63,7 @@ namespace Nekoyume.TableData
         /// <param name="isReversed">true: csv값의 column과 row가 뒤집혀서 작성되어 있다고 판단합니다.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidDataException"></exception>
-        public void Set(string csv, bool isReversed = false)
+        public virtual void Set(string csv, bool isReversed = false)
         {
             if (string.IsNullOrEmpty(csv))
             {

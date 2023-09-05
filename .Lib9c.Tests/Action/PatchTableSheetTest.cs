@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet.Action.State;
@@ -8,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Stake;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -86,7 +88,9 @@ namespace Lib9c.Tests.Action
             const string tableName = "TestTable";
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize())
-                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+                .SetState(
+                    Addresses.TableSheet.Derive(tableName),
+                    Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
@@ -129,7 +133,9 @@ namespace Lib9c.Tests.Action
             const string tableName = "TestTable";
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize())
-                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+                .SetState(
+                    Addresses.TableSheet.Derive(tableName),
+                    Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
@@ -146,6 +152,34 @@ namespace Lib9c.Tests.Action
             );
 
             Assert.NotNull(nextState.GetSheet<CostumeStatSheet>());
+        }
+
+        [Theory]
+        [InlineData("StakeRegularFixedRewardSheet_")]
+        [InlineData("StakeRegularRewardSheet_")]
+        public void Execute_Throw_ArgumentException(string tableName)
+        {
+            var action = new PatchTableSheet
+            {
+                TableName = tableName,
+                TableCsv = string.Empty,
+            };
+            var initialState = new MockStateDelta();
+            var nextState = action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousState = initialState,
+                Rehearsal = false,
+            });
+            Assert.Throws<ArgumentException>(() =>
+            {
+                action.Execute(new ActionContext
+                {
+                    BlockIndex = 0,
+                    PreviousState = nextState,
+                    Rehearsal = false,
+                });
+            });
         }
     }
 }
