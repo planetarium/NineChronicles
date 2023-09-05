@@ -19,7 +19,7 @@ namespace Nekoyume
         public static AvatarState UpdateAvatarStateV2(
             this AvatarState avatarState,
             Address address,
-            IAccountStateDelta states)
+            IAccount states)
         {
             var addresses = new List<Address>
             {
