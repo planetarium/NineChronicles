@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI costText;
 
-        public void SetData(ItemSheet.Row itemRow, CostType costType, int count, BigInteger cost)
+        public void SetData(MaterialItemSheet.Row itemRow, CostType costType, int count, BigInteger cost)
         {
             costIcon.overrideSprite = costIconData.GetIcon(costType);
             costText.text = cost.ToString();

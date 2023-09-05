@@ -74,9 +74,9 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(ItemSheet.Row itemRow, System.Action onClick = null)
+        public void SetData(MaterialItemSheet.Row itemRow, System.Action onClick = null)
         {
-            var material = new Nekoyume.Model.Item.Material(itemRow as MaterialItemSheet.Row);
+            var material = new Nekoyume.Model.Item.Material(itemRow);
             SetData(material, onClick);
         }
 
