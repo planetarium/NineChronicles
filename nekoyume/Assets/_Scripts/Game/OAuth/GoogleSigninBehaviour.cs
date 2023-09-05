@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Google;
+using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -120,7 +121,10 @@ namespace Nekoyume.Game.OAuth
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
 
-            Game.instance.PortalConnect.HandleAccessTokenResult(request);
+            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
+            {
+                Widget.Find<LoginSystem>().Show(null);
+            }
         }
     }
 }

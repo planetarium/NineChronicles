@@ -230,7 +230,6 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
-                    Widget.Find<LoginSystem>().Show(null);
                     return true;
                 }
 
