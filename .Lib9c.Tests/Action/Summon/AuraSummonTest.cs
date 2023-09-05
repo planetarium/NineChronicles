@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action.Summon
 {
     using System;
     using System.Data;

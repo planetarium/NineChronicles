@@ -5,7 +5,7 @@ namespace Nekoyume.Helper
 {
     public class SummonHelper
     {
-        public static int PickAuraSummonRecipe(AuraSummonSheet.Row summonRow, IRandom random)
+        public static int PickAuraSummonRecipe(SummonSheet.Row summonRow, IRandom random)
         {
             var recipeValue = random.Next(1, summonRow.CumulativeRecipe6Ratio + 1);
             if (recipeValue <= summonRow.CumulativeRecipe1Ratio)

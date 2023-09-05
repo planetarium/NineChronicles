@@ -232,7 +232,7 @@ namespace Lib9c.Tests
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 
-        public AuraSummonSheet AuraSummonSheet { get; private set; }
+        public SummonSheet SummonSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

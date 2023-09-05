@@ -90,7 +90,7 @@ namespace Nekoyume.Action
             // Validate Work
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
-                typeof(AuraSummonSheet),
+                typeof(SummonSheet),
                 typeof(EquipmentItemRecipeSheet),
                 typeof(EquipmentItemSheet),
                 typeof(MaterialItemSheet),
@@ -99,7 +99,7 @@ namespace Nekoyume.Action
                 typeof(SkillSheet),
             });
 
-            var summonSheet = sheets.GetSheet<AuraSummonSheet>();
+            var summonSheet = sheets.GetSheet<SummonSheet>();
             var summonRow = summonSheet.OrderedList.FirstOrDefault(row => row.GroupId == GroupId);
             if (summonRow is null)
             {

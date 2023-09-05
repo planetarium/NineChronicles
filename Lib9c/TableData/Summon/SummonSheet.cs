@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Bencodex.Types;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData.Summon
 {
-    public class AuraSummonSheet : Sheet<int, AuraSummonSheet.Row>
+    public class SummonSheet : Sheet<int, SummonSheet.Row>
     {
         public class Row : SheetRow<int>
         {
@@ -69,7 +68,7 @@ namespace Nekoyume.TableData.Summon
             }
         }
 
-        public AuraSummonSheet() : base(nameof(AuraSummonSheet))
+        public SummonSheet() : base(nameof(SummonSheet))
         {
         }
     }
