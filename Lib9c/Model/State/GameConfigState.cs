@@ -215,7 +215,12 @@ namespace Nekoyume.Model.State
 
         public void Set(GameConfigSheet sheet)
         {
-            foreach (var row in sheet.OrderedList!)
+            if (sheet.OrderedList is not { } orderedList)
+            {
+                throw new NullReferenceException(nameof(sheet.OrderedList));
+            }
+
+            foreach (var row in orderedList)
             {
                 Update(row);
             }
