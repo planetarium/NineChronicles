@@ -34,21 +34,21 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(10m, reward.DecimalRate);
             reward = row.Rewards[1];
             Assert.Equal(500000, reward.ItemId);
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(800m, reward.DecimalRate);
             reward = row.Rewards[2];
             Assert.Equal(20001, reward.ItemId);
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Rune, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(6000m, reward.DecimalRate);
 
             row = _sheet[5];
@@ -59,21 +59,21 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(5m, reward.DecimalRate);
             reward = row.Rewards[1];
             Assert.Equal(500000, reward.ItemId);
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Item, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(800m, reward.DecimalRate);
             reward = row.Rewards[2];
             Assert.Equal(20001, reward.ItemId);
             Assert.Equal(0, reward.Rate);
             Assert.Equal(StakeRegularRewardSheet.StakeRewardType.Rune, reward.Type);
             Assert.Equal(string.Empty, reward.CurrencyTicker);
-            Assert.Equal(0, reward.CurrencyDecimalPlaces);
+            Assert.Null(reward.CurrencyDecimalPlaces);
             Assert.Equal(6000m, reward.DecimalRate);
         }
 
