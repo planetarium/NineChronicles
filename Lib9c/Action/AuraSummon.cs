@@ -109,6 +109,13 @@ namespace Nekoyume.Action
                 typeof(SkillSheet),
             });
 
+            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
+            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
+            var skillSheet = sheets.GetSheet<SkillSheet>();
+
             var summonSheet = sheets.GetSheet<SummonSheet>();
             var summonRow = summonSheet.OrderedList.FirstOrDefault(row => row.GroupId == GroupId);
             if (summonRow is null)
@@ -117,15 +124,14 @@ namespace Nekoyume.Action
                     $"{addressesHex} Failed to get {GroupId} in AuraSummonSheet");
             }
 
-            // Validate requirements
+            // Use materials
             var inventory = avatarState.inventory;
-            var itemCount = inventory.TryGetItem(summonRow.CostMaterial, out var item)
-                ? item.count
-                : 0;
-            if (itemCount < summonRow.CostMaterialCount * SummonCount)
+            var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
+            if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
+                    summonRow.CostMaterialCount * SummonCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex} Not enough material to summon");
+                    $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
             }
 
             // Transfer Cost NCG first for fast-fail
@@ -144,12 +150,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
-            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
-            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
-            var skillSheet = sheets.GetSheet<SkillSheet>();
 
             for (var i = 0; i < SummonCount; i++)
             {
@@ -192,14 +192,6 @@ namespace Nekoyume.Action
                     );
                 }
 
-                // Use materials
-                var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
-                if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
-                        summonRow.CostMaterialCount))
-                {
-                    throw new NotEnoughMaterialException(
-                        $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
-                }
 
                 // Create Equipment
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(

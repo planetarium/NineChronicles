@@ -155,6 +155,9 @@ namespace Lib9c.Tests.Action.Summon
                     Assert.Equal(1, resultEquipment.RequiredBlockIndex);
                     Assert.True(resultEquipment.optionCountFromCombination > 0);
                 }
+
+                nextState.GetAvatarStateV2(_avatarAddress).inventory.TryGetItem((int)materialId!, out var resultMaterial);
+                Assert.Equal(0, resultMaterial?.count ?? 0);
             }
             else
             {
