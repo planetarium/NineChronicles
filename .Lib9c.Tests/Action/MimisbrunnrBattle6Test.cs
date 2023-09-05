@@ -28,7 +28,7 @@
 
         private readonly Address _rankingMapAddress;
 
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public MimisbrunnrBattle6Test()
         {
@@ -675,7 +675,7 @@
                 previousAvatarState.Update(mail);
             }
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());

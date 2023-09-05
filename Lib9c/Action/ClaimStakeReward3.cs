@@ -105,9 +105,9 @@ namespace Nekoyume.Action
                 }.ToImmutableSortedDictionary();
         }
 
-        private IAccountStateDelta ProcessReward(
+        private IAccount ProcessReward(
             IActionContext context,
-            IAccountStateDelta states,
+            IAccount states,
             ref AvatarState avatarState,
             ItemSheet itemSheet,
             FungibleAssetValue stakedAmount,
@@ -165,7 +165,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)

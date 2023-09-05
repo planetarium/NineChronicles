@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly IRandom _random;
 
         public HackAndSlashSweep5Test()
@@ -161,7 +161,7 @@ namespace Lib9c.Tests.Action
             var apStone = ItemFactory.CreateTradableMaterial(row);
             avatarState.inventory.AddItem(apStone, apStoneCount);
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -383,7 +383,7 @@ namespace Lib9c.Tests.Action
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 10000001),
             };
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -445,7 +445,7 @@ namespace Lib9c.Tests.Action
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
             };
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -505,7 +505,7 @@ namespace Lib9c.Tests.Action
             var apStone = ItemFactory.CreateTradableMaterial(row);
             avatarState.inventory.AddItem(apStone, holdingApStoneCount);
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -580,7 +580,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -655,7 +655,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
@@ -730,7 +730,7 @@ namespace Lib9c.Tests.Action
                 level = 1,
             };
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());

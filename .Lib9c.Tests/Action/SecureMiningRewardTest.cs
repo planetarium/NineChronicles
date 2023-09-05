@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var action = new SecureMiningReward(recipient: _recipient);
-            IAccountStateDelta nextState = action.Execute(
+            IAccount nextState = action.Execute(
                 new ActionContext
                 {
                     PreviousState = _previousState,

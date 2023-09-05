@@ -450,7 +450,7 @@ namespace Lib9c.Tools.SubCommand
                 .SelectMany(a => a.OutputState.Delta.UpdatedTotalSupplyCurrencies)
                 .ToImmutableHashSet();
 
-            IAccountStateDelta lastStates = actionEvaluations.Count > 0
+            IAccount lastStates = actionEvaluations.Count > 0
                 ? actionEvaluations[actionEvaluations.Count - 1].OutputState
                 : null;
             ImmutableDictionary<string, IValue> totalDelta =

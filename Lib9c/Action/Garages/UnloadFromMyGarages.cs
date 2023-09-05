@@ -118,7 +118,7 @@ namespace Nekoyume.Action.Garages
                 : (string)(Text)list[3];
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var state = context.PreviousState;
@@ -172,9 +172,9 @@ namespace Nekoyume.Action.Garages
             }
         }
 
-        private IAccountStateDelta TransferFungibleAssetValues(
+        private IAccount TransferFungibleAssetValues(
             IActionContext context,
-            IAccountStateDelta states)
+            IAccount states)
         {
             if (FungibleAssetValues is null)
             {
@@ -190,9 +190,9 @@ namespace Nekoyume.Action.Garages
             return states;
         }
 
-        private IAccountStateDelta TransferFungibleItems(
+        private IAccount TransferFungibleItems(
             Address signer,
-            IAccountStateDelta states)
+            IAccount states)
         {
             if (FungibleIdAndCounts is null)
             {
@@ -215,10 +215,10 @@ namespace Nekoyume.Action.Garages
             return states.SetState(inventoryAddr, inventory.Serialize());
         }
 
-        private IAccountStateDelta SendMail(
+        private IAccount SendMail(
             long blockIndex,
             IRandom random,
-            IAccountStateDelta states)
+            IAccount states)
         {
             var avatarValue = states.GetState(RecipientAvatarAddr);
             if (!(avatarValue is Dictionary avatarDict))

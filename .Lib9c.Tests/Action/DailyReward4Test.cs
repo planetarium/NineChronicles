@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public DailyReward4Test(ITestOutputHelper outputHelper)
         {

@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _signer;
         private readonly Address _avatarAddress;
         private readonly ClaimMonsterCollectionReward _action;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public ClaimMonsterCollectionRewardTest(ITestOutputHelper outputHelper)
         {
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
             }
             else
             {
-                IAccountStateDelta nextState = _action.Execute(new ActionContext
+                IAccount nextState = _action.Execute(new ActionContext
                 {
                     PreviousState = _state,
                     Signer = _signer,
@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            IAccountStateDelta nextState = _action.Execute(new ActionContext
+            IAccount nextState = _action.Execute(new ActionContext
                 {
                     PreviousState = new MockStateDelta(),
                     Signer = _signer,

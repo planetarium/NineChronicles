@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
         private static readonly Address AvatarAddress = new Address("47d082a115c63e7b58b1532d20e631538eafadde");
         private static readonly Currency Gold = Currency.Legacy("NCG", 2, minters: null);
 
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public MarketValidationTest()
         {

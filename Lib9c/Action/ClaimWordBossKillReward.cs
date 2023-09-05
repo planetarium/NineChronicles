@@ -23,10 +23,10 @@ namespace Nekoyume.Action
 
         Address IClaimWordBossKillRewardV1.AvatarAddress => AvatarAddress;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;

@@ -22,6 +22,6 @@ public class ActionEvaluation : IActionEvaluation
     public ActionContext InputContext { get; }
     IActionContext IActionEvaluation.InputContext => InputContext;
     public AccountStateDelta OutputState { get; }
-    IAccountStateDelta IActionEvaluation.OutputState => OutputState;
+    IAccount IActionEvaluation.OutputState => OutputState;
     public Exception? Exception { get; }
 }

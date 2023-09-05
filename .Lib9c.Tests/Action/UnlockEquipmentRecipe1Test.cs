@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public UnlockEquipmentRecipe1Test()
         {
@@ -140,7 +140,7 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext
+                IAccount nextState = action.Execute(new ActionContext
                 {
                     PreviousState = state,
                     Signer = _agentAddress,

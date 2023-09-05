@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 
         string IAddRedeemCodeV1.RedeemCsv => redeemCsv;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

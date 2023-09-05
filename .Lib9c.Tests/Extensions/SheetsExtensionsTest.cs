@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Extensions
 
     public class SheetsExtensionsTest
     {
-        private IAccountStateDelta _states;
+        private IAccount _states;
         private Dictionary<string, string> _sheetNameAndFiles;
         private Dictionary<Address, IValue> _sheetsAddressAndValues;
         private Type[] _sheetTypes;
@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Extensions
         }
 
         internal static void InitSheets(
-            IAccountStateDelta states,
+            IAccount states,
             out Dictionary<string, string> sheetNameAndFiles,
             out Dictionary<Address, IValue> sheetsAddressAndValues,
             out Type[] sheetTypes,

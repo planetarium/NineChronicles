@@ -27,13 +27,13 @@ namespace Lib9c.Tests.Action.Garages
         private static readonly Address SenderAgentAddr = Addresses.Admin;
 
         private readonly TableSheets _tableSheets;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
         private readonly Address _recipientAgentAddr;
         private readonly FungibleAssetValue[] _fungibleAssetValues;
         private readonly (HashDigest<SHA256> fungibleId, int count)[] _fungibleIdAndCounts;
         private readonly ITradableFungibleItem[] _tradableFungibleItems;
-        private readonly IAccountStateDelta _previousStates;
+        private readonly IAccount _previousStates;
 
         public DeliverToOthersGaragesTest()
         {
@@ -315,10 +315,10 @@ namespace Lib9c.Tests.Action.Garages
             }
         }
 
-        private static (DeliverToOthersGarages action, IAccountStateDelta nextStates) Execute(
+        private static (DeliverToOthersGarages action, IAccount nextStates) Execute(
             Address signer,
             long blockIndex,
-            IAccountStateDelta previousState,
+            IAccount previousState,
             IRandom random,
             Address recipientAgentAddr,
             IEnumerable<FungibleAssetValue>? fungibleAssetValues,
@@ -355,7 +355,7 @@ namespace Lib9c.Tests.Action.Garages
             FungibleAssetValue[] fungibleAssetValues,
             (HashDigest<SHA256> fungibleId, int count)[] fungibleIdAndCounts,
             ITradableFungibleItem[] _tradableFungibleItems,
-            IAccountStateDelta previousStates)
+            IAccount previousStates)
             GetSuccessfulPreviousStatesWithPlainValue()
         {
             var previousStates = _initialStatesWithAvatarStateV2;

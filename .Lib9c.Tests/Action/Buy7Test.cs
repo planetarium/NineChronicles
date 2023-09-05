@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _productId;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy7Test(ITestOutputHelper outputHelper)
         {
@@ -782,7 +782,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_ShopItemExpired()
         {
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
             Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
             ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
             Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(
@@ -834,7 +834,7 @@ namespace Lib9c.Tests.Action
         [InlineData(10, 20)]
         public void Execute_ErrorCode_InvalidPrice(int shopPrice, int price)
         {
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
             Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
             ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
             Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(

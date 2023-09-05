@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             }
 
-            IAccountStateDelta state = new MockStateDelta()
+            IAccount state = new MockStateDelta()
                 .SetState(Addresses.Admin, adminState.Serialize());
 
             var action = new PrepareRewardAssets(poolAddress, assets);

@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
 
             var action = new MigrationActivatedAccountsState();
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = state,
                 Signer = admin,

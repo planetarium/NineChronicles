@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             useHammerPoint = plainValue[UseHammerPointKey].ToBoolean();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -454,8 +454,8 @@ namespace Nekoyume.Action
                 .SetState(context.Signer, agentState.Serialize());
         }
 
-        private IAccountStateDelta UseAssetsBySuperCraft(
-            IAccountStateDelta states,
+        private IAccount UseAssetsBySuperCraft(
+            IAccount states,
             IActionContext context,
             CrystalHammerPointSheet.Row row,
             HammerPointState hammerPointState)
@@ -475,8 +475,8 @@ namespace Nekoyume.Action
                 hammerPointCost);
         }
 
-        private IAccountStateDelta UseAssetsByNormalCombination(
-            IAccountStateDelta states,
+        private IAccount UseAssetsByNormalCombination(
+            IAccount states,
             IActionContext context,
             AvatarState avatarState,
             HammerPointState hammerPointState,

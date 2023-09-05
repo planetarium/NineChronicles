@@ -28,7 +28,7 @@
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public MimisbrunnrBattle3Test()
         {

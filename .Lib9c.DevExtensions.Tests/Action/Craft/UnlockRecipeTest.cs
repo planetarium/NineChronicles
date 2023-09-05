@@ -19,7 +19,7 @@ namespace Lib9c.DevExtensions.Tests.Action.Craft
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialStateV2;
+        private readonly IAccount _initialStateV2;
         private readonly Address _recipeAddress;
 
         public UnlockRecipeTest()

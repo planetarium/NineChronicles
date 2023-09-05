@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _signer;
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public ClaimMonsterCollectionReward0Test()
         {
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
                 collectionRound = 0,
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            IAccount nextState = action.Execute(new ActionContext
             {
                 PreviousState = _state,
                 Signer = _signer,

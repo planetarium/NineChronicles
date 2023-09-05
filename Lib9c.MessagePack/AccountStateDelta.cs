@@ -13,7 +13,7 @@ using Libplanet.Types.Consensus;
 
 namespace Lib9c.Formatters
 {
-    public struct AccountStateDelta : IAccountStateDelta
+    public struct AccountStateDelta : IAccount
     {
         private IImmutableDictionary<Address, IValue> _states;
         private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
@@ -73,7 +73,7 @@ namespace Lib9c.Formatters
         public IReadOnlyList<IValue?> GetStates(IReadOnlyList<Address> addresses) =>
             addresses.Select(_states.GetValueOrDefault).ToArray();
 
-        public IAccountStateDelta SetState(Address address, IValue state) =>
+        public IAccount SetState(Address address, IValue state) =>
             new AccountStateDelta(_states.SetItem(address, state), _balances, _totalSupplies);
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
@@ -106,7 +106,7 @@ namespace Lib9c.Formatters
             return currency * 0;
         }
 
-        public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
+        public IAccount MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
         {
             // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
             // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
@@ -151,7 +151,7 @@ namespace Lib9c.Formatters
             );
         }
 
-        public IAccountStateDelta TransferAsset(
+        public IAccount TransferAsset(
             IActionContext context,
             Address sender,
             Address recipient,
@@ -182,7 +182,7 @@ namespace Lib9c.Formatters
             return new AccountStateDelta(_states, balances, _totalSupplies);
         }
 
-        public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
+        public IAccount BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
         {
             // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
             // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
@@ -219,7 +219,7 @@ namespace Lib9c.Formatters
             );
         }
 
-        public IAccountStateDelta SetValidator(Validator validator)
+        public IAccount SetValidator(Validator validator)
         {
             return new AccountStateDelta();
         }

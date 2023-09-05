@@ -7,9 +7,9 @@ namespace Lib9c.Tests.Util
 
     public static class CurrencyUtil
     {
-        public static IAccountStateDelta AddCurrency(
+        public static IAccount AddCurrency(
             IActionContext context,
-            IAccountStateDelta state,
+            IAccount state,
             Address agentAddress,
             Currency currency,
             FungibleAssetValue amount

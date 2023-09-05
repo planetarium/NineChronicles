@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public SellTest(ITestOutputHelper outputHelper)
         {
@@ -438,7 +438,7 @@ namespace Lib9c.Tests.Action
             shardedShopState.Add(order.Digest2(avatarState, _tableSheets.CostumeStatSheet), 1);
             Assert.Single(shardedShopState.OrderDigestList);
 
-            IAccountStateDelta previousStates = _initialState
+            IAccount previousStates = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(shardedShopAddress, shardedShopState.Serialize());
 

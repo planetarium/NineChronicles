@@ -33,11 +33,11 @@ namespace Nekoyume.Action
         List<Guid> IGrindingV1.EquipmentsIds => EquipmentIds;
         bool IGrindingV1.ChargeAp => ChargeAp;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            IAccountStateDelta states = ctx.PreviousState;
+            IAccount states = ctx.PreviousState;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);

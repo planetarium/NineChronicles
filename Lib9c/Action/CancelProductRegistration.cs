@@ -25,10 +25,10 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public List<IProductInfo> ProductInfos;
         public bool ChargeAp;
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -144,7 +144,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta Cancel(ProductsState productsState, IProductInfo productInfo, IAccountStateDelta states,
+        public static IAccount Cancel(ProductsState productsState, IProductInfo productInfo, IAccount states,
             AvatarState avatarState, IActionContext context)
         {
             var productId = productInfo.ProductId;

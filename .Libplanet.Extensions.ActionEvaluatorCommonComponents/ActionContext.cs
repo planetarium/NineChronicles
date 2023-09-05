@@ -44,7 +44,7 @@ public class ActionContext : IActionContext
     public int BlockProtocolVersion { get; init; }
     public bool Rehearsal { get; init; }
     public AccountStateDelta PreviousState { get; init; }
-    IAccountStateDelta IActionContext.PreviousState => PreviousState;
+    IAccount IActionContext.PreviousState => PreviousState;
     public IRandom Random { get; init; }
     public HashDigest<SHA256>? PreviousStateRootHash { get; init; }
     public bool BlockAction { get; init; }

@@ -26,8 +26,8 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly Address _avatarAddr;
         private readonly Address _inventoryAddr;
         private readonly Address _worldInformationAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV1;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly TableSheets _tableSheets;
 
         public ItemCraftTest()

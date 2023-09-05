@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         IEnumerable<Guid> IRankingBattleV1.EquipmentIds => equipmentIds;
         IEnumerable<Guid> IRankingBattleV1.ConsumableIds => consumableIds;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

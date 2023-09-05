@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action.Scenario
     public class WorldUnlockScenarioTest
     {
         private TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
         private Address _agentAddress;
         private Address _avatarAddress;
         private Address _rankingMapAddress;

@@ -27,7 +27,7 @@
         private readonly Address _slotAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public ItemEnhancement7Test()
         {

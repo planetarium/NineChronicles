@@ -55,10 +55,10 @@ namespace Nekoyume.Action
             .Add("type_id", "secure_mining_reward")
             .Add("values", Recipient.Bencoded);
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta state = context.PreviousState;
+            IAccount state = context.PreviousState;
             if (context.Rehearsal)
             {
                 return state.MarkBalanceChanged(

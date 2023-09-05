@@ -32,10 +32,10 @@ namespace Nekoyume.Action
         int ICancelMonsterCollectV1.CollectRound => collectRound;
         int ICancelMonsterCollectV1.Level => level;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectRound);
             if (context.Rehearsal)
             {

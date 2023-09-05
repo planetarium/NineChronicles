@@ -29,7 +29,7 @@
         private readonly Address _avatar1Address;
         private readonly Address _avatar2Address;
         private readonly Address _weeklyArenaAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public RankingBattle8Test(ITestOutputHelper outputHelper)
         {

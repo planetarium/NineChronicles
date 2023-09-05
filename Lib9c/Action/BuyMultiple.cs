@@ -216,7 +216,7 @@ namespace Nekoyume.Action
             purchaseInfos = plainValue["products"].ToList(StateExtensions.ToPurchaseInfoLegacy);
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

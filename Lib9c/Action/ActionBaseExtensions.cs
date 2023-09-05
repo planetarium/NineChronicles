@@ -26,7 +26,7 @@ namespace Nekoyume.Action
             {
                 try
                 {
-                    IAccountStateDelta nextStates = action.Execute(rehearsalContext);
+                    IAccount nextStates = action.Execute(rehearsalContext);
                     addresses = addresses.Union(nextStates.Delta.UpdatedAddresses);
                 }
                 catch (NotSupportedException)
@@ -54,7 +54,7 @@ namespace Nekoyume.Action
 
             public bool Rehearsal => true;
 
-            public IAccountStateDelta PreviousState => new AddressTraceStateDelta();
+            public IAccount PreviousState => new AddressTraceStateDelta();
 
             public IRandom Random => default;
 
@@ -74,7 +74,7 @@ namespace Nekoyume.Action
             public long GasLimit() => 0;
         }
 
-        private class AddressTraceStateDelta : IAccountStateDelta
+        private class AddressTraceStateDelta : IAccount
         {
             private AddressTraceDelta _delta;
 
@@ -103,7 +103,7 @@ namespace Nekoyume.Action
             public IImmutableSet<Currency> UpdatedTotalSupplyCurrencies
                 => Delta.UpdatedTotalSupplyCurrencies;
 
-            public IAccountStateDelta BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
+            public IAccount BurnAsset(IActionContext context, Address owner, FungibleAssetValue value)
             {
                 return new AddressTraceStateDelta(
                     new AddressTraceDelta(Delta.UpdatedAddresses.Union(new [] { owner })));
@@ -129,19 +129,19 @@ namespace Nekoyume.Action
                 throw new NotSupportedException();
             }
 
-            public IAccountStateDelta MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
+            public IAccount MintAsset(IActionContext context, Address recipient, FungibleAssetValue value)
             {
                 return new AddressTraceStateDelta(
                     new AddressTraceDelta(Delta.UpdatedAddresses.Union(new[] { recipient })));
             }
 
-            public IAccountStateDelta SetState(Address address, IValue state)
+            public IAccount SetState(Address address, IValue state)
             {
                 return new AddressTraceStateDelta(
                     new AddressTraceDelta(Delta.UpdatedAddresses.Union(new[] { address })));
             }
 
-            public IAccountStateDelta TransferAsset(
+            public IAccount TransferAsset(
                 IActionContext context,
                 Address sender,
                 Address recipient,
@@ -155,7 +155,7 @@ namespace Nekoyume.Action
 
             public ValidatorSet GetValidatorSet() => throw new NotSupportedException();
 
-            public IAccountStateDelta SetValidator(Validator validator)
+            public IAccount SetValidator(Validator validator)
             {
                 throw new NotSupportedException();
             }
