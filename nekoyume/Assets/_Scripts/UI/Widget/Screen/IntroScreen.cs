@@ -41,6 +41,9 @@ namespace Nekoyume.UI
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
+        [SerializeField]
+        private Button googleSignInButton;
+
         private int _guideIndex = 0;
         private const int GuideCount = 3;
 
@@ -67,13 +70,25 @@ namespace Nekoyume.UI
                 else
                 {
                     startButton.Interactable = false;
-                    Game.Game.instance.GetComponent<GoogleSigninTest>().OnSignIn();
-                    // Game.Game.instance.PortalConnect.OpenPortal();
-                    // Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
+                    Game.Game.instance.PortalConnect.OpenPortal();
+                    Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
 
                     StartCoroutine(CoSocialLogin());
                 }
             }).AddTo(gameObject);
+            googleSignInButton.onClick.AddListener(() =>
+            {
+                if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+                {
+                    google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+                }
+
+                if (google.State is not (GoogleSigninBehaviour.SignInState.Signed or
+                    GoogleSigninBehaviour.SignInState.Waiting))
+                {
+                    google.OnSignIn();
+                }
+            });
             // signinButton.onClick.AddListener(() =>
             // {
             //     Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -97,6 +112,7 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
+            googleSignInButton.interactable = true;
             GetGuestPrivateKey();
         }
 
@@ -141,7 +157,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowMobile()
         {
-            yield return new WaitForSeconds(2);
+            yield return null;
 
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)

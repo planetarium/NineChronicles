@@ -10,35 +10,46 @@ namespace Nekoyume.Game.OAuth
 {
     public class GoogleSigninBehaviour : MonoBehaviour
     {
+        public enum SignInState
+        {
+            NotSigned,
+            Signed,
+            Canceled,
+            Waiting
+        }
+
+        public SignInState State { get; private set; } = SignInState.NotSigned;
+
         private const string WebClientId =
             "340841465287-nuft8giaq0q2ci7utp4pi7fag191qc6s.apps.googleusercontent.com";
 
-        private GoogleSignInConfiguration configuration;
-        private string _idToken = string.Empty;
-        private bool requestAble;
-
-        // Defer the configuration creation until Awake so the web Client ID
-        // Can be set via the property inspector in the Editor.
-        private void Awake()
+        private readonly GoogleSignInConfiguration _configuration = new()
         {
-            configuration = new GoogleSignInConfiguration
-            {
-                WebClientId = WebClientId,
-                RequestIdToken = true,
-                RequestEmail = true,
-                RequestAuthCode = true,
-                RequestProfile = true,
-                UseGameSignIn = false
-            };
-            OnSignIn();
-        }
+            WebClientId = WebClientId,
+            RequestIdToken = true,
+            RequestEmail = true,
+            RequestAuthCode = true,
+            RequestProfile = true,
+            UseGameSignIn = false
+        };
+        private string _idToken = string.Empty;
 
         public void OnSignIn()
         {
-            GoogleSignIn.Configuration = configuration;
+            GoogleSignIn.Configuration = _configuration;
             Debug.Log("Calling SignIn");
-            GoogleSignIn.DefaultInstance.SignIn().ContinueWith(
-                OnAuthenticationFinished);
+            State = SignInState.Waiting;
+            GoogleSignIn.DefaultInstance.SignIn()
+                .ContinueWith(OnAuthenticationFinished);
+            StartCoroutine(CoSignInGoogle());
+        }
+
+        private void OnSignInSilently()
+        {
+            GoogleSignIn.Configuration = _configuration;
+            Debug.Log("Calling SignIn Silently");
+            GoogleSignIn.DefaultInstance.SignInSilently()
+                .ContinueWith(OnAuthenticationFinished);
         }
 
         public void OnSignOut()
@@ -72,26 +83,23 @@ namespace Nekoyume.Game.OAuth
             else if (task.IsCanceled)
             {
                 Debug.Log("Canceled");
+                State = SignInState.Canceled;
             }
             else
             {
+                State = SignInState.Signed;
                 var res = task.Result;
                 Debug.Log("Welcome: " + res.UserId + "!" + $"\ntoken: {res.IdToken}");
                 _idToken = res.IdToken;
-                requestAble = true;
             }
         }
 
-        private void Update()
+        private IEnumerator CoSignInGoogle()
         {
-            if (requestAble)
+            yield return new WaitUntil(() => State is SignInState.Signed or SignInState.Canceled);
+            if (State == SignInState.Signed)
             {
-                Debug.Log(_idToken);
-
                 StartCoroutine(CoSendGoogleIdToken(_idToken));
-                _idToken = string.Empty;
-                requestAble = false;
-                Debug.Log("send id token");
             }
         }
 
@@ -110,22 +118,9 @@ namespace Nekoyume.Game.OAuth
             request.uploadHandler.contentType = "application/json";
             request.SetRequestHeader("accept", "application/json");
             request.SetRequestHeader("Content-Type", "application/json");
-
-            Debug.Log(request.url);
             yield return request.SendWebRequest();
-            var json = request.downloadHandler.text;
-            Debug.Log(json);
-        }
 
-        public void OnSignInSilently()
-        {
-            GoogleSignIn.Configuration = configuration;
-            GoogleSignIn.Configuration.UseGameSignIn = false;
-            GoogleSignIn.Configuration.RequestIdToken = true;
-            Debug.Log("Calling SignIn Silently");
-
-            GoogleSignIn.DefaultInstance.SignInSilently()
-                .ContinueWith(OnAuthenticationFinished);
+            Game.instance.PortalConnect.HandleAccessTokenResult(request);
         }
     }
 }

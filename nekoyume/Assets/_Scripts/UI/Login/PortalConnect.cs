@@ -218,6 +218,11 @@ namespace Nekoyume.UI
                 Debug.Log(e.Text);
             }
 
+            HandleAccessTokenResult(request);
+        }
+
+        public bool HandleAccessTokenResult(UnityWebRequest request)
+        {
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -225,18 +230,18 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
+                    Widget.Find<LoginSystem>().Show(null);
+                    return true;
                 }
-                else
-                {
-                    Debug.LogError($"AccessToken Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
-                }
+
+                Debug.LogError($"AccessToken Deserialize Error: {json}");
+                ShowRequestErrorPopup(data);
+                return false;
             }
-            else
-            {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
-                ShowRequestErrorPopup(request.result, request.error);
-            }
+
+            Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
+            ShowRequestErrorPopup(request.result, request.error);
+            return false;
         }
 
         public IEnumerator RequestPledge(Address address)
