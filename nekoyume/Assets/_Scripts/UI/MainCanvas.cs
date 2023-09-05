@@ -403,6 +403,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<SummonResultPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());

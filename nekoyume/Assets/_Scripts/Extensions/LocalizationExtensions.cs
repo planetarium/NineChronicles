@@ -560,6 +560,15 @@ namespace Nekoyume
             return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
         }
 
+        public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)
+        {
+            var grade = equipmentRow.Grade >= 1 ? equipmentRow.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subTypeText = GetLocalizedItemSubTypeText(equipmentRow.ItemSubType);
+
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subTypeText}</color>";
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch

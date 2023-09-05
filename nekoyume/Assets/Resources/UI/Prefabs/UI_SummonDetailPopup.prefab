@@ -270,7 +270,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Probability of appearance
+  m_text: UI_SUMMON_DETAIL_LIST_TITLE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -358,7 +358,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_SUMMON_DETAIL_LIST_TITLE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -916,7 +916,7 @@ GameObject:
   - component: {fileID: 7709473230235399349}
   - component: {fileID: 1981469411499547362}
   - component: {fileID: 8298160105974864810}
-  - component: {fileID: 8850750972831581743}
+  - component: {fileID: 1682391827187810587}
   m_Layer: 0
   m_Name: SummonDetailScroll
   m_TagString: Untagged
@@ -999,8 +999,8 @@ MonoBehaviour:
   viewport: {fileID: 4158181149183134238}
   scrollDirection: 0
   movementType: 1
-  elasticity: 0.125
-  scrollSensitivity: 8
+  elasticity: 0.2
+  scrollSensitivity: 20
   inertia: 1
   decelerationRate: 0.0125
   snap:
@@ -1010,7 +1010,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 4083507999021832145}
---- !u!114 &8850750972831581743
+--- !u!114 &1682391827187810587
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1019,20 +1019,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1882304264372313834}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3e35081f7602cc4c80b5e27b85d4606, type: 3}
+  m_Script: {fileID: 11500000, guid: 1259a0561b2e4906be442a1273b2d50c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.13679245
-  scrollOffset: 0.13679245
+  cellInterval: 0.16055046
+  scrollOffset: 0.16055046
   loop: 0
   cellContainer: {fileID: 4202002745063485487}
   reuseCellMarginCount: 0
   paddingHead: 0
   paddingTail: 0
   spacing: 0
-  cellPrefab: {fileID: 3018884119875456309, guid: 783de6947a238496c998cc09a261b24a,
+  cellPrefab: {fileID: 4114714329697985031, guid: 30183a91177d9e542af3c5158cae7caf,
     type: 3}
-  cellSize: 58
+  cellSize: 70
   forcedScrollSensitivity: 8
   fillWithNullToEmptyViewport: 0
 --- !u!1 &1938207994937604051
@@ -2198,6 +2198,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4202002745063485487}
   - component: {fileID: 905060444058053543}
+  - component: {fileID: 4604743001368963401}
   m_Layer: 0
   m_Name: Content
   m_TagString: Untagged
@@ -2224,11 +2225,11 @@ RectTransform:
   m_Father: {fileID: 4158181149183134238}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &905060444058053543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2255,6 +2256,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &4604743001368963401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292581294417118473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &3392362919067422934
 GameObject:
   m_ObjectHideFlags: 0
@@ -2492,6 +2507,7 @@ GameObject:
   - component: {fileID: 313150535037986629}
   - component: {fileID: 4529156979512243853}
   - component: {fileID: 8269324516075045886}
+  - component: {fileID: 4203101957934027293}
   m_Layer: 0
   m_Name: Text
   m_TagString: Untagged
@@ -2547,7 +2563,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Select a list to see a preview.
+  m_text: UI_SUMMON_DETAIL_DESC
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -2617,6 +2633,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4203101957934027293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3991555541387871237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SUMMON_DETAIL_DESC
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &4294338002116180032
 GameObject:
   m_ObjectHideFlags: 0
@@ -5371,6 +5418,7 @@ GameObject:
   - component: {fileID: 4648831789026815465}
   - component: {fileID: 3492596235137724843}
   - component: {fileID: 3180663789657263957}
+  - component: {fileID: 8759914490724413923}
   m_Layer: 5
   m_Name: Stat
   m_TagString: Untagged
@@ -5443,6 +5491,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &8759914490724413923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8204864264831474972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef3b6e74a4264d77b9dc74b4c3ef9d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionViews:
+  - parentObject: {fileID: 1209471920586737931}
+    optionText: {fileID: 1172319908853638123}
+    percentageSlider: {fileID: 4133499737810128440}
+    sliderFillImage: {fileID: 1525811894805666132}
+  - parentObject: {fileID: 1613600840651139813}
+    optionText: {fileID: 1811710130249850402}
+    percentageSlider: {fileID: 4510636144058141982}
+    sliderFillImage: {fileID: 8599350482979712143}
+  - parentObject: {fileID: 5656338336764651575}
+    optionText: {fileID: 5375765137402207621}
+    percentageSlider: {fileID: 4577980404334983892}
+    sliderFillImage: {fileID: 1277690003506070826}
+  skillViews:
+  - parentObject: {fileID: 5203172793684329482}
+    optionText: {fileID: 5697521843291547477}
+    percentageSlider: {fileID: 8217005176972908222}
+    sliderFillImage: {fileID: 1239710925924290201}
+    tooltipButton: {fileID: 8832641873400587746}
+  optionIcons: []
+  greatSuccessRateText: {fileID: 0}
+  skillTooltip: {fileID: 7819891351396292344}
 --- !u!1 &8440551724188011716
 GameObject:
   m_ObjectHideFlags: 0
@@ -6019,6 +6101,11 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   closeButton: {fileID: 4363158415478926479}
+  titleText: {fileID: 422039592743958125}
+  mainStatTexts:
+  - {fileID: 6732248707513468958}
+  recipeOptionView: {fileID: 8759914490724413923}
+  scroll: {fileID: 1682391827187810587}
 --- !u!1001 &1533755636126638110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6135,6 +6222,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AuraCell
+      objectReference: {fileID: 0}
+    - target: {fileID: 4114714329697985031, guid: 30183a91177d9e542af3c5158cae7caf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4395353868255993223, guid: 30183a91177d9e542af3c5158cae7caf,
         type: 3}
@@ -6310,6 +6402,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AuraCell (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4114714329697985031, guid: 30183a91177d9e542af3c5158cae7caf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4395353868255993223, guid: 30183a91177d9e542af3c5158cae7caf,
         type: 3}
@@ -7327,6 +7424,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3033315205293503920}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7819891351396292344 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5088317553108804424, guid: 9e4148b8f5dd0492c86585ef520e7c8a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3033315205293503920}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b889cf95a54e84a95f42574e587173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3131979499524155929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7468,6 +7577,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AuraCell (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4114714329697985031, guid: 30183a91177d9e542af3c5158cae7caf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4395353868255993223, guid: 30183a91177d9e542af3c5158cae7caf,
         type: 3}
@@ -7934,6 +8048,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AuraCell (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4114714329697985031, guid: 30183a91177d9e542af3c5158cae7caf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4395353868255993223, guid: 30183a91177d9e542af3c5158cae7caf,
         type: 3}
@@ -8798,6 +8917,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6645192029407051864}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8832641873400587746 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2786512169164400058, guid: a812d18fa892c4179af699940de59fec,
+    type: 3}
+  m_PrefabInstance: {fileID: 6645192029407051864}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7348688110759178180
 PrefabInstance:
   m_ObjectHideFlags: 0

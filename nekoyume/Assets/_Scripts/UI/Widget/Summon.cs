@@ -87,10 +87,9 @@ namespace Nekoyume.UI
             var costType = (CostType)summonRow.CostMaterial;
             var cost = summonRow.CostMaterialCount;
 
-            items.infoButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                Debug.LogError($"Summon Group : {summonRow.GetLocalizedName()} was Clicked. Cost : {costType}");
-            }).AddTo(_disposables);
+            items.infoButton.OnClickAsObservable()
+                .Subscribe(_ => Find<SummonDetailPopup>().Show(summonRow))
+                .AddTo(_disposables);
             items.nameText.text = summonRow.GetLocalizedName();
 
             items.draw1Button.SetCost(costType, cost);
