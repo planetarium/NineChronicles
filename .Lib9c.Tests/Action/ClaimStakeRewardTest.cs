@@ -81,6 +81,128 @@ namespace Lib9c.Tests.Action
         }
 
         public static IEnumerable<object[]>
+            GetMemberData_Execute_Success_With_StakePolicySheetFixtureV1()
+        {
+            // NOTE:
+            // - minimum required_gold of StakeRegularRewardSheetFixtures.V1 is 50.
+            // - RewardInterval of StakePolicySheetFixtures.V1 is 50,400.
+
+            // NOTE: staking level 1
+            yield return new object[]
+            {
+                0, null, 50, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 5),
+                    (500_000, 1),
+                },
+            };
+
+            // NOTE: staking level 2
+            yield return new object[]
+            {
+                0, null, 500, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 62),
+                    (500_000, 2),
+                },
+            };
+
+            // NOTE: staking level 3
+            yield return new object[]
+            {
+                0, null, 5000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 1000),
+                    (500_000, 2 + 6),
+                },
+            };
+
+            // NOTE: staking level 4
+            yield return new object[]
+            {
+                0, null, 50_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 8),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 10_000),
+                    (500_000, 2 + 62),
+                },
+            };
+
+            // NOTE: staking level 5
+            yield return new object[]
+            {
+                0, null, 500_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 83),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 100_000),
+                    (500_000, 2 + 625),
+                },
+            };
+
+            // NOTE: staking level 6
+            yield return new object[]
+            {
+                0, null, 5_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 833),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 1_000_000),
+                    (500_000, 2 + 6_250),
+                },
+            };
+
+            // NOTE: staking level 7
+            yield return new object[]
+            {
+                0, null, 10_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 1_666),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 2_000_000),
+                    (500_000, 2 + 12_500),
+                    (600_201, 200_000),
+                    (800_201, 200_000),
+                },
+            };
+        }
+
+        public static IEnumerable<object[]>
             GetMemberData_Execute_Success_With_StakePolicySheetFixtureV2()
         {
             // NOTE:
@@ -451,8 +573,47 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
+        [MemberData(nameof(GetMemberData_Execute_Success_With_StakePolicySheetFixtureV1))]
+        public void Execute_Success_With_StakeState(
+            long startedBlockIndex,
+            long? receivedBlockIndex,
+            long stakedBalance,
+            long blockIndex,
+            (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+            (int itemSheetId, int count)[] expectedItems)
+        {
+            var stakeAddr = StakeState.DeriveAddress(AgentAddr);
+            var stakeState = new StakeState(stakeAddr, startedBlockIndex);
+            if (receivedBlockIndex is not null)
+            {
+                stakeState.Claim((long)receivedBlockIndex);
+            }
+
+            foreach (var initialState in _initialStates)
+            {
+                var previousState = stakedBalance > 0
+                    ? initialState.MintAsset(
+                        new ActionContext(),
+                        stakeAddr,
+                        _ncg * stakedBalance)
+                    : initialState;
+                previousState = previousState.SetState(stakeAddr, stakeState.Serialize());
+                var nextState = Execute(
+                    previousState,
+                    AgentAddr,
+                    AvatarAddr,
+                    blockIndex);
+                Expect(
+                    nextState,
+                    expectedBalances,
+                    AvatarAddr.Derive("inventory"),
+                    expectedItems);
+            }
+        }
+
+        [Theory]
         [MemberData(nameof(GetMemberData_Execute_Success_With_StakePolicySheetFixtureV2))]
-        public void Execute_Success(
+        public void Execute_Success_With_StakeStateV2(
             long startedBlockIndex,
             long? receivedBlockIndex,
             long stakedBalance,
@@ -553,28 +714,6 @@ namespace Lib9c.Tests.Action
                     Assert.Equal(count, inventory.Items.First(e => e.item.Id == itemSheetId).count);
                 }
             }
-
-            // if (expectedRune > 0)
-            // {
-            //     Assert.Equal(
-            //         expectedRune * RuneHelper.StakeRune,
-            //         state.GetBalance(avatarAddr, RuneHelper.StakeRune));
-            // }
-            // else
-            // {
-            //     Assert.Equal(
-            //         0 * RuneHelper.StakeRune,
-            //         state.GetBalance(avatarAddr, RuneHelper.StakeRune));
-            // }
-            //
-            // if (!string.IsNullOrEmpty(expectedCurrencyAddrHex))
-            // {
-            //     var addr = new Address(expectedCurrencyAddrHex);
-            //     var currency = Currencies.GetMinterlessCurrency(expectedCurrencyTicker);
-            //     Assert.Equal(
-            //         expectedCurrencyAmount * currency,
-            //         state.GetBalance(addr, currency));
-            // }
         }
     }
 }
