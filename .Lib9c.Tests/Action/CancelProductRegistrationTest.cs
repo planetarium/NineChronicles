@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
 
     public class CancelProductRegistrationTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;

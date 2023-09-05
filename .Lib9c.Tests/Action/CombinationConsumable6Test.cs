@@ -23,7 +23,7 @@
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
         private readonly AvatarState _avatarState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public CombinationConsumable6Test()
         {

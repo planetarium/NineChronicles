@@ -30,10 +30,10 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public IEnumerable<IProductInfo> ProductInfos;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;
@@ -120,8 +120,8 @@ namespace Nekoyume.Action
             return states;
         }
 
-        private IAccountStateDelta Buy(IActionContext context, IProductInfo productInfo, Address sellerAvatarAddress,
-            IAccountStateDelta states, Address sellerAgentAddress, AvatarState buyerAvatarState, AvatarState sellerAvatarState,
+        private IAccount Buy(IActionContext context, IProductInfo productInfo, Address sellerAvatarAddress,
+            IAccount states, Address sellerAgentAddress, AvatarState buyerAvatarState, AvatarState sellerAvatarState,
             MaterialItemSheet materialSheet, bool sellerMigrationRequired)
         {
             var productId = productInfo.ProductId;
@@ -222,7 +222,7 @@ namespace Nekoyume.Action
 
         // backward compatibility for order - shared shop state.
         // TODO DELETE THIS METHOD AFTER PRODUCT MIGRATION END.
-        private static IAccountStateDelta Buy_Order(PurchaseInfo purchaseInfo, IActionContext context, IAccountStateDelta states, AvatarState buyerAvatarState, MaterialItemSheet materialSheet, AvatarState sellerAvatarState)
+        private static IAccount Buy_Order(PurchaseInfo purchaseInfo, IActionContext context, IAccount states, AvatarState buyerAvatarState, MaterialItemSheet materialSheet, AvatarState sellerAvatarState)
         {
             Address shardedShopAddress =
                 ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);

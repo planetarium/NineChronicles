@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar2Address;
         private readonly IRandom _random;
         private readonly Currency _currency;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public JoinArena1Test(ITestOutputHelper outputHelper)
         {

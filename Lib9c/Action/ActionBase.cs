@@ -29,7 +29,7 @@ namespace Nekoyume.Action
 
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
-        public abstract IAccountStateDelta Execute(IActionContext context);
+        public abstract IAccount Execute(IActionContext context);
 
         /// <summary>
         /// returns "[Signer Address, AvatarState Address, ...]"
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
             return sb.ToString();
         }
 
-        protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
+        protected IAccount LogError(IActionContext context, string message, params object[] values)
         {
             string actionType = GetType().Name;
             object[] prependedValues = new object[values.Length + 2];

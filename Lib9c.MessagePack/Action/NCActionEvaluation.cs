@@ -28,7 +28,7 @@ namespace Nekoyume.Action
 
         [Key(3)]
         [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccountStateDelta OutputState { get; set; }
+        public IAccount OutputState { get; set; }
 
         [Key(4)]
         [MessagePackFormatter(typeof(ExceptionFormatter<Exception>))]
@@ -36,7 +36,7 @@ namespace Nekoyume.Action
 
         [Key(5)]
         [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccountStateDelta PreviousState { get; set; }
+        public IAccount PreviousState { get; set; }
 
         [Key(6)]
         public int RandomSeed { get; set; }
@@ -50,9 +50,9 @@ namespace Nekoyume.Action
             ActionBase? action,
             Address signer,
             long blockIndex,
-            IAccountStateDelta outputStates,
+            IAccount outputStates,
             Exception? exception,
-            IAccountStateDelta previousStates,
+            IAccount previousStates,
             int randomSeed,
             Dictionary<string, IValue> extra
         )

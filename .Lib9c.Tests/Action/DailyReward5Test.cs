@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public DailyReward5Test(ITestOutputHelper outputHelper)
         {
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2)]
         public void Execute(int avatarStateSerializedVersion)
         {
-            IAccountStateDelta previousStates = null;
+            IAccount previousStates = null;
             switch (avatarStateSerializedVersion)
             {
                 case 1:
@@ -145,14 +145,14 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        private IAccountStateDelta SetAvatarStateAsV2To(IAccountStateDelta state, AvatarState avatarState) =>
+        private IAccount SetAvatarStateAsV2To(IAccount state, AvatarState avatarState) =>
             state
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-        private IAccountStateDelta ExecuteInternal(IAccountStateDelta previousStates, long blockIndex = 0)
+        private IAccount ExecuteInternal(IAccount previousStates, long blockIndex = 0)
         {
             var dailyRewardAction = new DailyReward5
             {

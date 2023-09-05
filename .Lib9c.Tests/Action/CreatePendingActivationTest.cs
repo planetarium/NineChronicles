@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action
             );
             var pendingActivation = new PendingActivationState(nonce, pubKey);
             var action = new CreatePendingActivation(pendingActivation);
-            IAccountStateDelta nextState = action.Execute(
+            IAccount nextState = action.Execute(
                 new ActionContext()
                 {
                     BlockIndex = 101,

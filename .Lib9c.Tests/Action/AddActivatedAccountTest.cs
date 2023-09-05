@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext()
+                IAccount nextState = action.Execute(new ActionContext()
                 {
                     BlockIndex = blockIndex,
                     Miner = default,
@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Action
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var action = new AddActivatedAccount(newComer);
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 1,
                 Miner = default,

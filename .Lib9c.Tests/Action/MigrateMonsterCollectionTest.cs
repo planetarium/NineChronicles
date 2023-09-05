@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _signer;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _state;
+        private readonly IAccount _state;
 
         public MigrateMonsterCollectionTest(ITestOutputHelper outputHelper)
         {

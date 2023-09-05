@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly AvatarState _avatarState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public CombinationEquipment7Test(ITestOutputHelper outputHelper)
         {
@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            IAccountStateDelta previousState;
+            IAccount previousState;
             if (backward)
             {
                 previousState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());

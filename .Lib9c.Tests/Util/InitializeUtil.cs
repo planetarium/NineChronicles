@@ -17,8 +17,8 @@ namespace Lib9c.Tests.Util
             TableSheets tableSheets,
             Address agentAddr,
             Address avatarAddr,
-            IAccountStateDelta initialStatesWithAvatarStateV1,
-            IAccountStateDelta initialStatesWithAvatarStateV2
+            IAccount initialStatesWithAvatarStateV1,
+            IAccount initialStatesWithAvatarStateV2
             ) InitializeStates(
                 Address? adminAddr = null,
                 Address? agentAddr = null,
@@ -84,9 +84,9 @@ namespace Lib9c.Tests.Util
                 initialStatesWithAvatarStateV2);
         }
 
-        private static (IAccountStateDelta states, Dictionary<string, string> sheets)
+        private static (IAccount states, Dictionary<string, string> sheets)
             InitializeTableSheets(
-                IAccountStateDelta states,
+                IAccount states,
                 bool isDevEx = false,
                 Dictionary<string, string> sheetsOverride = null)
         {

@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
             var address = new PrivateKey().ToAddress();
             var patron = new PrivateKey().ToAddress();
             var contractAddress = address.Derive(nameof(RequestPledge));
-            IAccountStateDelta states = new MockStateDelta()
+            IAccount states = new MockStateDelta()
                 .SetState(
                     contractAddress,
                     List.Empty.Add(patron.Serialize()).Add(false.Serialize()).Add(mead.Serialize())
@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Action
                 contract = List.Empty.Add(patron.Serialize()).Add(true.Serialize());
             }
 
-            IAccountStateDelta states = new MockStateDelta().SetState(contractAddress, contract);
+            IAccount states = new MockStateDelta().SetState(contractAddress, contract);
 
             var action = new ApprovePledge
             {

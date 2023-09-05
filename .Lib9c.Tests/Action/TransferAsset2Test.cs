@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
                 recipient: _recipient,
                 amount: _currency * 100
             );
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = prevState,
                 Signer = _sender,
@@ -263,7 +263,7 @@ namespace Lib9c.Tests.Action
                 amount: _currency * 100
             );
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = new MockStateDelta(),
                 Signer = default,

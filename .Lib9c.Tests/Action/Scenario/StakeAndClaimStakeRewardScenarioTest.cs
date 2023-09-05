@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action.Scenario
         private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
         private readonly Address _agentAddr = new Address(AgentAddressHex);
         private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
         public StakeAndClaimStakeRewardScenarioTest(ITestOutputHelper outputHelper)

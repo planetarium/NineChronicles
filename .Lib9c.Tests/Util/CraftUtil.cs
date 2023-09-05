@@ -16,8 +16,8 @@ namespace Lib9c.Tests.Util
 
     public static class CraftUtil
     {
-        public static IAccountStateDelta PrepareCombinationSlot(
-            IAccountStateDelta state,
+        public static IAccount PrepareCombinationSlot(
+            IAccount state,
             Address avatarAddress,
             int slotIndex
         )
@@ -36,8 +36,8 @@ namespace Lib9c.Tests.Util
             return state.SetState(slotAddress, slotState.Serialize());
         }
 
-        public static IAccountStateDelta AddMaterialsToInventory(
-            IAccountStateDelta state,
+        public static IAccount AddMaterialsToInventory(
+            IAccount state,
             TableSheets tableSheets,
             Address avatarAddress,
             IEnumerable<EquipmentItemSubRecipeSheet.MaterialInfo> materialList,
@@ -58,8 +58,8 @@ namespace Lib9c.Tests.Util
             );
         }
 
-        public static IAccountStateDelta UnlockStage(
-            IAccountStateDelta state,
+        public static IAccount UnlockStage(
+            IAccount state,
             TableSheets tableSheets,
             Address worldInformationAddress,
             int stage

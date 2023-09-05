@@ -69,7 +69,7 @@ namespace Nekoyume.Action
             name = (Text) plainValue["name"];
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -341,10 +341,10 @@ namespace Nekoyume.Action
             return optionIds;
         }
 
-        public static IAccountStateDelta AddRunesForTest(
+        public static IAccount AddRunesForTest(
             IActionContext context,
             Address avatarAddress,
-            IAccountStateDelta states)
+            IAccount states)
         {
             var runeSheet = states.GetSheet<RuneSheet>();
             foreach (var row in runeSheet.Values)

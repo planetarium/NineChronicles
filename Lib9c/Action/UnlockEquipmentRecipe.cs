@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         IEnumerable<int> IUnlockEquipmentRecipeV1.RecipeIds => RecipeIds;
         Address IUnlockEquipmentRecipeV1.AvatarAddress => AvatarAddress;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -107,7 +107,7 @@ namespace Nekoyume.Action
         }
 
         public static List<int> UnlockedIds(
-            IAccountStateDelta states,
+            IAccount states,
             Address unlockedRecipeIdsAddress,
             EquipmentItemRecipeSheet equipmentRecipeSheet,
             WorldInformation worldInformation,

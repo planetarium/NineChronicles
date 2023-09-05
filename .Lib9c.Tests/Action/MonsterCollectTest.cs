@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _signer;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public MonsterCollectTest()
         {
@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
             }
             else
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext
+                IAccount nextState = action.Execute(new ActionContext
                 {
                     PreviousState = _initialState,
                     Signer = _signer,
@@ -183,7 +183,7 @@ namespace Lib9c.Tests.Action
             {
                 level = 1,
             };
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            IAccount nextState = action.Execute(new ActionContext
             {
                 PreviousState = new MockStateDelta(),
                 Signer = _signer,

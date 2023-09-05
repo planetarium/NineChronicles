@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly IRandom _random;
         private readonly Currency _currency;
 

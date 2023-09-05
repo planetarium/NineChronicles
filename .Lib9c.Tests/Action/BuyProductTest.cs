@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _buyerAvatarState;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _orderId;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public BuyProductTest(ITestOutputHelper outputHelper)
         {

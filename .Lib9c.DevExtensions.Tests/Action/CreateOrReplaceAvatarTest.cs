@@ -23,7 +23,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 {
     public class CreateOrReplaceAvatarTest
     {
-        private readonly IAccountStateDelta _initialStates;
+        private readonly IAccount _initialStates;
 
         public CreateOrReplaceAvatarTest()
         {
@@ -410,7 +410,7 @@ namespace Lib9c.DevExtensions.Tests.Action
         }
 
         private static void Execute(
-            IAccountStateDelta previousStates,
+            IAccount previousStates,
             long blockIndex,
             Address agentAddr,
             int avatarIndex,

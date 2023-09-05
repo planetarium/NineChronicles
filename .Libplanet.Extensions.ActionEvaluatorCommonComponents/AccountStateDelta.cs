@@ -10,7 +10,7 @@ using Libplanet.Types.Consensus;
 
 namespace Libplanet.Extensions.ActionEvaluatorCommonComponents;
 
-public class AccountStateDelta : IAccountStateDelta
+public class AccountStateDelta : IAccount
 {
     private IImmutableDictionary<Address, IValue> _states;
     private IImmutableDictionary<(Address, Currency), BigInteger> _fungibles;
@@ -128,7 +128,7 @@ public class AccountStateDelta : IAccountStateDelta
     public IReadOnlyList<IValue?> GetStates(IReadOnlyList<Address> addresses) =>
         addresses.Select(GetState).ToArray();
 
-    public IAccountStateDelta SetState(Address address, IValue state) =>
+    public IAccount SetState(Address address, IValue state) =>
         new AccountStateDelta(_states.SetItem(address, state), _fungibles, _totalSupplies, _validatorSet);
     public FungibleAssetValue GetBalance(Address address, Currency currency)
     {
@@ -160,7 +160,7 @@ public class AccountStateDelta : IAccountStateDelta
         return BaseState.GetTotalSupply(currency);
     }
 
-    public IAccountStateDelta MintAsset(
+    public IAccount MintAsset(
         IActionContext context, Address recipient, FungibleAssetValue value)
     {
         // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
@@ -214,7 +214,7 @@ public class AccountStateDelta : IAccountStateDelta
         };
     }
 
-    public IAccountStateDelta TransferAsset(
+    public IAccount TransferAsset(
         IActionContext context,
         Address sender,
         Address recipient,
@@ -248,7 +248,7 @@ public class AccountStateDelta : IAccountStateDelta
         };
     }
 
-    public IAccountStateDelta BurnAsset(
+    public IAccount BurnAsset(
         IActionContext context, Address owner, FungibleAssetValue value)
     {
         // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
@@ -295,7 +295,7 @@ public class AccountStateDelta : IAccountStateDelta
         return _validatorSet ?? BaseState.GetValidatorSet();
     }
 
-    public IAccountStateDelta SetValidator(Validator validator)
+    public IAccount SetValidator(Validator validator)
     {
         return new AccountStateDelta(
             _states,

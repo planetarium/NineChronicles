@@ -184,7 +184,7 @@ namespace Lib9c.Benchmarks
                 .SelectMany(a => a.OutputState.Delta.UpdatedFungibleAssets)
                 .ToImmutableHashSet();
 
-            IAccountStateDelta lastStates = actionEvaluations.Count > 0
+            IAccount lastStates = actionEvaluations.Count > 0
                 ? actionEvaluations[actionEvaluations.Count - 1].OutputState
                 : null;
             ImmutableDictionary<string, IValue> totalDelta =

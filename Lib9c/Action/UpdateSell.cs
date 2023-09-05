@@ -51,7 +51,7 @@ namespace Nekoyume.Action
                 .ToEnumerable(info => new UpdateSellInfo((List)info));
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -175,7 +175,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta Cancel(IAccountStateDelta states,
+        public static IAccount Cancel(IAccount states,
             UpdateSellInfo updateSellInfo, string addressesHex, AvatarState avatarState,
             OrderDigestListState digestList, IActionContext context, Address sellerAvatarAddress)
         {

@@ -39,7 +39,7 @@ namespace Lib9c.DevExtensions.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialStateV2;
+        private readonly IAccount _initialStateV2;
         private readonly Address _inventoryAddress;
         private readonly Address _worldInformationAddress;
         private readonly Address _questListAddress;
@@ -345,8 +345,8 @@ namespace Lib9c.DevExtensions.Tests.Action
         // ~MemberData
 
         // Logics
-        private IAccountStateDelta Manipulate(
-            IAccountStateDelta state,
+        private IAccount Manipulate(
+            IAccount state,
             List<(Address addr, IValue value)> targetStateList,
             List<(Address addr, FungibleAssetValue fav)> targetBalanceList
         )
@@ -366,7 +366,7 @@ namespace Lib9c.DevExtensions.Tests.Action
         }
 
         private void TestAvatarState(
-            IAccountStateDelta state,
+            IAccount state,
             string? name, int? level, long? exp, int? actionPoint,
             long? blockIndex, long? dailyRewardReceivedIndex,
             int? hair, int? lens, int? ear, int? tail
@@ -425,7 +425,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             }
         }
 
-        private void TestInventoryState(IAccountStateDelta state, Inventory targetInventory)
+        private void TestInventoryState(IAccount state, Inventory targetInventory)
         {
             var avatarState = state.GetAvatarStateV2(_avatarAddress);
             var inventoryState = avatarState.inventory;
@@ -475,7 +475,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             );
         }
 
-        private void TestQuestState(IAccountStateDelta state, List<int> targetQuestIdList)
+        private void TestQuestState(IAccount state, List<int> targetQuestIdList)
         {
             var avatarState = state.GetAvatarStateV2(_avatarAddress);
             var questState = avatarState.questList;
@@ -485,7 +485,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             }
         }
 
-        private void TestWorldInformation(IAccountStateDelta state, int lastClearedStage)
+        private void TestWorldInformation(IAccount state, int lastClearedStage)
         {
             var avatarState = state.GetAvatarStateV2(_avatarAddress);
             var worldInformation = avatarState.worldInformation;

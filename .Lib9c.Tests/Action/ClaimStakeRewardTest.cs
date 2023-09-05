@@ -30,8 +30,8 @@ namespace Lib9c.Tests.Action
 
         private readonly Address _agentAddr = new Address(AgentAddressHex);
         private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV1;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
         public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
@@ -416,7 +416,7 @@ namespace Lib9c.Tests.Action
         }
 
         private void Execute(
-            IAccountStateDelta prevState,
+            IAccount prevState,
             Address agentAddr,
             Address avatarAddr,
             long startedBlockIndex,

@@ -186,7 +186,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetStatesAsDict()
         {
-            IAccountStateDelta states = new MockStateDelta();
+            IAccount states = new MockStateDelta();
             var dict = new Dictionary<Address, IValue>
             {
                 { new PrivateKey().ToAddress(), Null.Value },
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetSheets()
         {
-            IAccountStateDelta states = new MockStateDelta();
+            IAccount states = new MockStateDelta();
             SheetsExtensionsTest.InitSheets(
                 states,
                 out _,
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action
         [InlineData(true)]
         public void GetCrystalCostState(bool exist)
         {
-            IAccountStateDelta state = new MockStateDelta();
+            IAccount state = new MockStateDelta();
             int expectedCount = exist ? 1 : 0;
             FungibleAssetValue expectedCrystal = exist
                 ? 100 * CrystalCalculator.CRYSTAL
@@ -273,7 +273,7 @@ namespace Lib9c.Tests.Action
             Address previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 1);
             Address beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 2);
             var crystalCostState = new CrystalCostState(default, 100 * CrystalCalculator.CRYSTAL);
-            IAccountStateDelta state = new MockStateDelta()
+            IAccount state = new MockStateDelta()
                 .SetState(dailyCostAddress, crystalCostState.Serialize())
                 .SetState(weeklyCostAddress, crystalCostState.Serialize())
                 .SetState(previousCostAddress, crystalCostState.Serialize())
@@ -303,7 +303,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetCouponWallet()
         {
-            IAccountStateDelta states = new MockStateDelta();
+            IAccount states = new MockStateDelta();
             var guid1 = new Guid("6856AE42-A820-4041-92B0-5D7BAA52F2AA");
             var guid2 = new Guid("701BA698-CCB9-4FC7-B88F-7CB8C707D135");
             var guid3 = new Guid("910296E7-34E4-45D7-9B4E-778ED61F278B");

@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
 
     public class ClaimStakeReward1Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Currency _currency;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly TableSheets _tableSheets;

@@ -31,7 +31,7 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             CheckObsolete(ObsoleteIndex, context);

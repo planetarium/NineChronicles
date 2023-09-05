@@ -31,7 +31,7 @@
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _orderId;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy9Test(ITestOutputHelper outputHelper)
         {
@@ -627,7 +627,7 @@
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
                 PreviousState = _initialState,

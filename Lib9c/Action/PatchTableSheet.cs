@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         string IPatchTableSheetV1.TableName => TableName;
         string IPatchTableSheetV1.TableCsv => TableCsv;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

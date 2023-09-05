@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -139,7 +139,7 @@ namespace Nekoyume.Action
             return Cancel(context, states, avatarState, addressesHex, order);
         }
 
-        public static IAccountStateDelta CancelV2(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order, Guid tradableId, ItemSubType itemSubType)
+        public static IAccount CancelV2(IActionContext context, IAccount states, AvatarState avatarState, string addressesHex, Order order, Guid tradableId, ItemSubType itemSubType)
         {
             var orderTradableId = tradableId;
             var avatarAddress = avatarState.address;
@@ -228,7 +228,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta Cancel(IActionContext context, IAccountStateDelta states, AvatarState avatarState, string addressesHex, Order order)
+        public static IAccount Cancel(IActionContext context, IAccount states, AvatarState avatarState, string addressesHex, Order order)
         {
             var orderTradableId = order.TradableId;
             var avatarAddress = avatarState.address;
