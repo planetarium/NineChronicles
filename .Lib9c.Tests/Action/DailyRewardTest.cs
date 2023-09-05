@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public DailyRewardTest(ITestOutputHelper outputHelper)
         {
@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute(bool legacy)
         {
-            IAccountStateDelta previousStates = null;
+            IAccount previousStates = null;
             switch (legacy)
             {
                 case true:
@@ -165,14 +165,14 @@ rune_skill_slot_unlock_cost,500";
             Assert.Equal(0, (int)avatarRuneAmount.MajorUnit);
         }
 
-        private IAccountStateDelta SetAvatarStateAsV2To(IAccountStateDelta state, AvatarState avatarState) =>
+        private IAccount SetAvatarStateAsV2To(IAccount state, AvatarState avatarState) =>
             state
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-        private IAccountStateDelta ExecuteInternal(IAccountStateDelta previousStates, long blockIndex = 0)
+        private IAccount ExecuteInternal(IAccount previousStates, long blockIndex = 0)
         {
             var dailyRewardAction = new DailyReward
             {

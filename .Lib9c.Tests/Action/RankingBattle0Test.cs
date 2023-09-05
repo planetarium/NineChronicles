@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
 
     public class RankingBattle0Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         private readonly TableSheets _tableSheets;
 

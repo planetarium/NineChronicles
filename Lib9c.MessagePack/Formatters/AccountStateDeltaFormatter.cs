@@ -10,9 +10,9 @@ using MessagePack.Formatters;
 
 namespace Lib9c.Formatters
 {
-    public class AccountStateDeltaFormatter : IMessagePackFormatter<IAccountStateDelta>
+    public class AccountStateDeltaFormatter : IMessagePackFormatter<IAccount>
     {
-        public void Serialize(ref MessagePackWriter writer, IAccountStateDelta value,
+        public void Serialize(ref MessagePackWriter writer, IAccount value,
             MessagePackSerializerOptions options)
         {
             var state = new Dictionary(
@@ -49,14 +49,14 @@ namespace Lib9c.Formatters
             writer.Write(new Codec().Encode(bdict));
         }
 
-        public IAccountStateDelta Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        public IAccount Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
             options.Security.DepthStep(ref reader);
 
             var bytes = reader.ReadBytes();
             if (bytes is null)
             {
-                throw new NullReferenceException($"ReadBytes from serialized {nameof(IAccountStateDelta)} is null.");
+                throw new NullReferenceException($"ReadBytes from serialized {nameof(IAccount)} is null.");
             }
 
             return new AccountStateDelta(new Codec().Decode(bytes.Value.ToArray()));

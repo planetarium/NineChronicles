@@ -20,7 +20,7 @@
 
     public class RapidCombination4Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         private readonly TableSheets _tableSheets;
 

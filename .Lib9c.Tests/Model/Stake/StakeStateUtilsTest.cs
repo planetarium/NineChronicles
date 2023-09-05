@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Model.Stake
             string stakeRegularFixedRewardSheetTableName,
             string stakeRegularRewardSheetTableName)
         {
-            IAccountStateDelta state = new MockStateDelta();
+            IAccount state = new MockStateDelta();
             state = state.SetState(
                 Addresses.GameConfig,
                 new GameConfigState(GameConfigSheetFixtures.Default).Serialize());
@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Model.Stake
             long startedBlockIndex,
             long? receivedBlockIndex)
         {
-            IAccountStateDelta state = new MockStateDelta();
+            IAccount state = new MockStateDelta();
             state = state.SetState(
                 Addresses.GameConfig,
                 new GameConfigState(GameConfigSheetFixtures.Default).Serialize());

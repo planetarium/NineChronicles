@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public IEnumerable<IRegisterInfo> RegisterInfos;
         public bool ChargeAp;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -103,8 +103,8 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta Register(IActionContext context, IRegisterInfo info, AvatarState avatarState,
-            ProductsState productsState, IAccountStateDelta states)
+        public static IAccount Register(IActionContext context, IRegisterInfo info, AvatarState avatarState,
+            ProductsState productsState, IAccount states)
         {
             switch (info)
             {

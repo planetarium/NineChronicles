@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public HackAndSlash18Test()
         {
@@ -171,7 +171,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -429,7 +429,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta state = backward ? new MockStateDelta() : _initialState;
+            IAccount state = backward ? new MockStateDelta() : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -552,7 +552,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta state = _initialState;
+            IAccount state = _initialState;
             if (unlockedIdsExist)
             {
                 state = state.SetState(
@@ -786,7 +786,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
-            IAccountStateDelta state = _initialState
+            IAccount state = _initialState
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(
                     _avatarAddress.Derive(LegacyInventoryKey),
@@ -1079,7 +1079,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());

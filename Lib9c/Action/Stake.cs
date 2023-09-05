@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             Amount = plainValue[AmountKey].ToBigInteger();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             var started = DateTimeOffset.UtcNow;
             context.UseGas(1);
@@ -181,9 +181,9 @@ namespace Nekoyume.Action
             return states;
         }
 
-        private static IAccountStateDelta ContractNewStake(
+        private static IAccount ContractNewStake(
             IActionContext context,
-            IAccountStateDelta state,
+            IAccount state,
             Address stakeStateAddr,
             FungibleAssetValue? stakedBalance,
             FungibleAssetValue targetStakeBalance,

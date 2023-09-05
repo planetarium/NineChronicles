@@ -64,7 +64,7 @@ namespace Nekoyume.Action
             purchaseInfos = plainValue[PurchaseInfosKey].ToList(value => new PurchaseInfo((Dictionary)value));
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

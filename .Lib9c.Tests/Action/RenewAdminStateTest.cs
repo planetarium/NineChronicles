@@ -12,7 +12,7 @@ namespace Lib9c.Tests.Action
 
     public class RenewAdminStateTest
     {
-        private IAccountStateDelta _stateDelta;
+        private IAccount _stateDelta;
         private long _validUntil;
         private AdminState _adminState;
         private PrivateKey _adminPrivateKey;

@@ -28,7 +28,7 @@
 
         private readonly Address _rankingMapAddress;
 
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public MimisbrunnrBattle5Test()
         {

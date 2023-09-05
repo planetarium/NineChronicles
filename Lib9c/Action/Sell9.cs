@@ -58,7 +58,7 @@ namespace Nekoyume.Action
             orderId = plainValue[OrderIdKey].ToGuid();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

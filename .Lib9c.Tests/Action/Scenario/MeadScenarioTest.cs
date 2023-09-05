@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action.Scenario
             Currency mead = Currencies.Mead;
             var patron = new PrivateKey().ToAddress();
             IActionContext context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta().MintAsset(context, patron, 10 * mead);
+            IAccount states = new MockStateDelta().MintAsset(context, patron, 10 * mead);
 
             var agentAddress = new PrivateKey().ToAddress();
             var requestPledge = new RequestPledge
@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
         }
 
-        private IAccountStateDelta Execute(IActionContext context, IAccountStateDelta state, IAction action, Address signer)
+        private IAccount Execute(IActionContext context, IAccount state, IAction action, Address signer)
         {
             Assert.True(state.GetBalance(signer, Currencies.Mead) > 0 * Currencies.Mead);
             var nextState = state.BurnAsset(context, signer, 1 * Currencies.Mead);

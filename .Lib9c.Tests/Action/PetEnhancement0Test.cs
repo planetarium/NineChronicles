@@ -20,8 +20,8 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV1;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly int _targetPetId;
         private readonly long _firstRoundStartBlockIndex;
 
@@ -272,8 +272,8 @@ namespace Lib9c.Tests.Action
                     mintAssets: false));
         }
 
-        private static IAccountStateDelta Execute(
-            IAccountStateDelta prevStates,
+        private static IAccount Execute(
+            IAccount prevStates,
             long blockIndex,
             Address agentAddr,
             Address avatarAddr,

@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar2Address;
         private readonly Address _avatar3Address;
         private readonly Address _avatar4Address;
-        private IAccountStateDelta _initialStates;
+        private IAccount _initialStates;
 
         public BattleGrandFinale2Test(ITestOutputHelper outputHelper)
         {

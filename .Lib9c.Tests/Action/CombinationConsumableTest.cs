@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public CombinationConsumableTest()
         {
@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 GameConfig.RequireClearedStageLevel.CombinationConsumableAction);
 
-            IAccountStateDelta previousState;
+            IAccount previousState;
             if (backward)
             {
                 previousState = _initialState.SetState(_avatarAddress, avatarState.Serialize());

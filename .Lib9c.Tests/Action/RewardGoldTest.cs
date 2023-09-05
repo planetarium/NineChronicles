@@ -377,7 +377,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _baseState,
             };
 
-            IAccountStateDelta delta;
+            IAccount delta;
 
             // 제너시스에 받아야 할 돈들 검사
             delta = action.GenesisGoldDistribution(ctx, _baseState);
@@ -449,7 +449,7 @@ namespace Lib9c.Tests.Action
             void AssertMinerReward(int blockIndex, string expected)
             {
                 ctx.BlockIndex = blockIndex;
-                IAccountStateDelta delta = action.MinerReward(ctx, _baseState);
+                IAccount delta = action.MinerReward(ctx, _baseState);
                 Assert.Equal(FungibleAssetValue.Parse(currency, expected), delta.GetBalance(miner, currency));
             }
 
@@ -569,7 +569,7 @@ namespace Lib9c.Tests.Action
             var patronAddress = new PrivateKey().ToAddress();
             var contractAddress = agentAddress.GetPledgeAddress();
             IActionContext context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta()
+            IAccount states = new MockStateDelta()
                 .MintAsset(context, patronAddress, patronMead * Currencies.Mead)
                 .TransferAsset(context, patronAddress, agentAddress, 1 * Currencies.Mead)
                 .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))

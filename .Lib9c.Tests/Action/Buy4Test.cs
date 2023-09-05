@@ -27,7 +27,7 @@
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy4Test(ITestOutputHelper outputHelper)
         {

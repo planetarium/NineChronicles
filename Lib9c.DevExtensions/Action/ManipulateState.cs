@@ -44,7 +44,7 @@ namespace Lib9c.DevExtensions.Action
                 .ToList();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)
@@ -55,9 +55,9 @@ namespace Lib9c.DevExtensions.Action
             return Execute(context, context.PreviousState, StateList, BalanceList);
         }
 
-        public static IAccountStateDelta Execute(
+        public static IAccount Execute(
             IActionContext context,
-            IAccountStateDelta prevStates,
+            IAccount prevStates,
             List<(Address addr, IValue value)> stateList,
             List<(Address addr, FungibleAssetValue fav)> balanceList)
         {

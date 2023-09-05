@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
 
     public class StakeTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Currency _ncg;
         private readonly Address _agentAddr;
         private readonly StakePolicySheet _stakePolicySheet;
@@ -475,9 +475,9 @@ namespace Lib9c.Tests.Action
                     reducedAmount));
         }
 
-        private IAccountStateDelta Execute(
+        private IAccount Execute(
             long blockIndex,
-            IAccountStateDelta previousState,
+            IAccount previousState,
             IRandom random,
             Address signer,
             long amount)

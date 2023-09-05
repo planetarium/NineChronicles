@@ -21,7 +21,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 {
     public class FaucetRuneTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _avatarAddress;
         private readonly RuneSheet _runeSheet;
 

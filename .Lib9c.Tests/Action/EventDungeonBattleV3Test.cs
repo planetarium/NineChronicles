@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
 
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private IAccountStateDelta _initialStates;
+        private IAccount _initialStates;
 
         public EventDungeonBattleV3Test()
         {
@@ -395,8 +395,8 @@ namespace Lib9c.Tests.Action
                 eventDungeonInfo.RemainingTickets);
         }
 
-        private IAccountStateDelta Execute(
-            IAccountStateDelta previousStates,
+        private IAccount Execute(
+            IAccount previousStates,
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId,

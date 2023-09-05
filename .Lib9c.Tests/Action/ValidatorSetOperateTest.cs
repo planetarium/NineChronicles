@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
 
     public class ValidatorSetOperateTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Validator _validator;
 
         public ValidatorSetOperateTest(ITestOutputHelper outputHelper)

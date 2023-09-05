@@ -31,13 +31,13 @@ namespace Lib9c.Tests.Action.Garages
             Addresses.GetAvatarAddress(AgentAddr, AvatarIndex);
 
         private readonly TableSheets _tableSheets;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
         private readonly Address _recipientAvatarAddr;
         private readonly (Address balanceAddr, FungibleAssetValue value)[] _fungibleAssetValues;
         private readonly (HashDigest<SHA256> fungibleId, int count)[] _fungibleIdAndCounts;
         private readonly IFungibleItem[] _fungibleItems;
-        private readonly IAccountStateDelta _previousStates;
+        private readonly IAccount _previousStates;
 
         public UnloadFromMyGaragesTest()
         {
@@ -323,10 +323,10 @@ namespace Lib9c.Tests.Action.Garages
             }
         }
 
-        private static (UnloadFromMyGarages action, IAccountStateDelta nextStates) Execute(
+        private static (UnloadFromMyGarages action, IAccount nextStates) Execute(
             Address signer,
             long blockIndex,
-            IAccountStateDelta previousState,
+            IAccount previousState,
             IRandom random,
             Address recipientAvatarAddr,
             IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
@@ -376,7 +376,7 @@ namespace Lib9c.Tests.Action.Garages
             (Address balanceAddr, FungibleAssetValue value)[] fungibleAssetValues,
             (HashDigest<SHA256> fungibleId, int count)[] fungibleIdAndCounts,
             IFungibleItem[] _fungibleItems,
-            IAccountStateDelta previousStates)
+            IAccount previousStates)
             GetSuccessfulPreviousStatesWithPlainValue()
         {
             var previousStates = _initialStatesWithAvatarStateV2;

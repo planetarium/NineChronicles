@@ -31,16 +31,16 @@ namespace Nekoyume.Action
 
         Address IClaimMonsterCollectionRewardV2.AvatarAddress => avatarAddress;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             return Claim(context, avatarAddress, addressesHex);
         }
 
-        public static IAccountStateDelta Claim(IActionContext context, Address avatarAddress, string addressesHex)
+        public static IAccount Claim(IActionContext context, Address avatarAddress, string addressesHex)
         {
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);

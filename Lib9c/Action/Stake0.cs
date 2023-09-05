@@ -42,11 +42,11 @@ namespace Nekoyume.Action
             Amount = dictionary[AmountKey].ToBigInteger();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
 
             // Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&

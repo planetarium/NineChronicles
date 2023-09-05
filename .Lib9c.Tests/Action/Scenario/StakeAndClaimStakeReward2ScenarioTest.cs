@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action.Scenario
 
     public class StakeAndClaimStakeReward2ScenarioTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Currency _currency;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly TableSheets _tableSheets;

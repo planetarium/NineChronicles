@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action.Scenario
     {
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
 
         public StakeAndClaimStakeReward3ScenarioTest(ITestOutputHelper outputHelper)

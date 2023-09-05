@@ -42,10 +42,10 @@ namespace Nekoyume.Action
             Assets = serialized["a"].ToList(StateExtensions.ToFungibleAssetValue);
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             if (context.Rehearsal)
             {
                 foreach (var asset in Assets)

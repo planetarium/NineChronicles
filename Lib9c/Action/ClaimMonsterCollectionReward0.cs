@@ -26,10 +26,10 @@ namespace Nekoyume.Action
         Address IClaimMonsterCollectionRewardV1.AvatarAddress => avatarAddress;
         int IClaimMonsterCollectionRewardV1.CollectionRound => collectionRound;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
 
             if (context.Rehearsal)

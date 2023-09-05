@@ -364,7 +364,7 @@ namespace Lib9c.DevExtensions.Action
             CrystalRandomBuff = crystalRandomBuff;
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)
@@ -379,8 +379,8 @@ namespace Lib9c.DevExtensions.Action
                 context.Signer);
         }
 
-        public IAccountStateDelta Execute(
-            IAccountStateDelta states,
+        public IAccount Execute(
+            IAccount states,
             IRandom random,
             long blockIndex,
             Address signer)

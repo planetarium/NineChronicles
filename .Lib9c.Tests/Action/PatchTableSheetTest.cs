@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
 
     public class PatchTableSheetTest
     {
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public PatchTableSheetTest(ITestOutputHelper outputHelper)
         {

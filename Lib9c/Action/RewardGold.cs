@@ -34,7 +34,7 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -57,7 +57,7 @@ namespace Nekoyume.Action
             return MinerReward(context, states);
         }
 
-        public IAccountStateDelta GenesisGoldDistribution(IActionContext ctx, IAccountStateDelta states)
+        public IAccount GenesisGoldDistribution(IActionContext ctx, IAccount states)
         {
             IEnumerable<GoldDistribution> goldDistributions = states.GetGoldDistribution();
             var index = ctx.BlockIndex;
@@ -93,7 +93,7 @@ namespace Nekoyume.Action
         }
 
         [Obsolete("Use WeeklyArenaRankingBoard2 for performance.")]
-        public IAccountStateDelta WeeklyArenaRankingBoard(IActionContext ctx, IAccountStateDelta states)
+        public IAccount WeeklyArenaRankingBoard(IActionContext ctx, IAccount states)
         {
             var gameConfigState = states.GetGameConfigState();
             var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
@@ -126,14 +126,14 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public IAccountStateDelta WeeklyArenaRankingBoard2(IActionContext ctx, IAccountStateDelta states)
+        public IAccount WeeklyArenaRankingBoard2(IActionContext ctx, IAccount states)
         {
             states = PrepareNextArena(ctx, states);
             states = ResetChallengeCount(ctx, states);
             return states;
         }
 
-        public IAccountStateDelta PrepareNextArena(IActionContext ctx, IAccountStateDelta states)
+        public IAccount PrepareNextArena(IActionContext ctx, IAccount states)
         {
             var gameConfigState = states.GetGameConfigState();
             var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
@@ -238,7 +238,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public IAccountStateDelta ResetChallengeCount(IActionContext ctx, IAccountStateDelta states)
+        public IAccount ResetChallengeCount(IActionContext ctx, IAccount states)
         {
             var gameConfigState = states.GetGameConfigState();
             var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
@@ -279,7 +279,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public IAccountStateDelta MinerReward(IActionContext ctx, IAccountStateDelta states)
+        public IAccount MinerReward(IActionContext ctx, IAccount states)
         {
             // 마이닝 보상
             // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
@@ -302,7 +302,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public static IAccountStateDelta TransferMead(IActionContext context, IAccountStateDelta states)
+        public static IAccount TransferMead(IActionContext context, IAccount states)
         {
 #pragma warning disable LAA1002
             var targetAddresses = states

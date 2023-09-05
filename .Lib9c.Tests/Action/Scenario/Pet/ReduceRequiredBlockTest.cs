@@ -26,8 +26,8 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddr;
         private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStateV1;
-        private readonly IAccountStateDelta _initialStateV2;
+        private readonly IAccount _initialStateV1;
+        private readonly IAccount _initialStateV2;
         private readonly Address _inventoryAddr;
         private readonly Address _worldInfoAddr;
         private readonly Address _recipeAddr;

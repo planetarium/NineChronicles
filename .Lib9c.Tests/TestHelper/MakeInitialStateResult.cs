@@ -8,7 +8,7 @@ namespace Lib9c.Tests.TestHelper
 
     public class MakeInitialStateResult
     {
-        private readonly IAccountStateDelta _state;
+        private readonly IAccount _state;
         private readonly CreateTestbed _testbed;
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
@@ -19,7 +19,7 @@ namespace Lib9c.Tests.TestHelper
         private readonly FungibleAssetValue _currencyGold;
 
         public MakeInitialStateResult(
-            IAccountStateDelta state,
+            IAccount state,
             CreateTestbed testbed,
             AgentState agentState,
             AvatarState avatarState,
@@ -40,7 +40,7 @@ namespace Lib9c.Tests.TestHelper
             _agentCurrencyGold = agentCurrencyGold;
         }
 
-        public IAccountStateDelta GetState()
+        public IAccount GetState()
         {
             return _state;
         }

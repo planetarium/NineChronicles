@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatarState;
         private readonly Currency _crystalCurrency;
         private readonly Currency _ncgCurrency;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public GrindingTest()
         {

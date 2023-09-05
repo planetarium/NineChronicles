@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private static readonly Address AvatarAddr =
             Addresses.GetAvatarAddress(AgentAddr, AvatarIndex);
 
-        private readonly IAccountStateDelta[] _initialStates;
+        private readonly IAccount[] _initialStates;
         private readonly Currency _ncg;
         private readonly StakePolicySheet _stakePolicySheet;
 
@@ -60,8 +60,8 @@ namespace Lib9c.Tests.Action
                     StakePolicySheetFixtures.V2
                 },
             };
-            IAccountStateDelta initialStatesWithAvatarStateV1;
-            IAccountStateDelta initialStatesWithAvatarStateV2;
+            IAccount initialStatesWithAvatarStateV1;
+            IAccount initialStatesWithAvatarStateV2;
             (
                 _,
                 _,
@@ -661,8 +661,8 @@ namespace Lib9c.Tests.Action
                 : new StakeStateV2(contract, startedBlockIndex, receivedBlockIndex.Value);
         }
 
-        private static IAccountStateDelta Execute(
-            IAccountStateDelta prevState,
+        private static IAccount Execute(
+            IAccount prevState,
             Address agentAddr,
             Address avatarAddr,
             long blockIndex)

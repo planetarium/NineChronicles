@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Sell6Test(ITestOutputHelper outputHelper)
         {

@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
             _goldCurrency = Currency.Legacy("NCG", 2, null);
         }
 
-        public IAccountStateDelta Init(out Address agentAddress, out Address avatarAddress, out long blockIndex)
+        public IAccount Init(out Address agentAddress, out Address avatarAddress, out long blockIndex)
         {
             agentAddress = new PrivateKey().ToAddress();
             avatarAddress = new PrivateKey().ToAddress();
