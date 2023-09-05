@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action.Summon
     using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Action.Exceptions;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Xunit;
@@ -89,7 +90,8 @@ namespace Lib9c.Tests.Action.Summon
         // fail by not enough material
         [InlineData(10001, 1, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
         [InlineData(10001, 2, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
-        // TODO: Fail by not enough NCG
+        // Fail by exceeding summon limit
+        [InlineData(10001, 11, 600201, 22, 1, new int[] { }, typeof(InvalidSummonCountException))]
         public void Execute(
             int groupId,
             int summonCount,

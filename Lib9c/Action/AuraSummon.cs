@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.Action.Exceptions;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -32,6 +33,8 @@ namespace Nekoyume.Action
 
         public const string SummonCountKey = "sc";
         public int SummonCount;
+
+        private const int SummonLimit = 10;
 
         Address IAuraSummonV1.AvatarAddress => AvatarAddress;
         int IAuraSummonV1.GroupId => GroupId;
@@ -85,6 +88,13 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex} Aborted as the avatar state of the signer was failed to load.");
+            }
+
+            if (SummonCount <= 0 || SummonCount > SummonLimit)
+            {
+                throw new InvalidSummonCountException(
+                    $"{addressesHex} Given summonCount {SummonCount} is not valid. Please use between 1 and 10"
+                );
             }
 
             // Validate Work
@@ -213,6 +223,9 @@ namespace Nekoyume.Action
                 avatarState.UpdateQuestRewards(materialSheet);
             }
 
+            Log.Debug(
+                $"{addressesHex} AuraSummon Exec. finished: {DateTimeOffset.UtcNow - started} Elapsed");
+
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
 
@@ -235,7 +248,6 @@ namespace Nekoyume.Action
         {
             foreach (var optionInfo in subRecipe.Options
                          .OrderByDescending(e => e.Ratio)
-                         .ThenBy(e => e.RequiredBlockIndex)
                          .ThenBy(e => e.Id))
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
