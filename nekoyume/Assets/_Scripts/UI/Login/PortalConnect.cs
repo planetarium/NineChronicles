@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cysharp.Threading.Tasks;
@@ -47,6 +48,7 @@ namespace Nekoyume.UI
         private string txId;
 
         private readonly string portalUrl;
+        private const string GoogleAuthEndpoint = "/api/auth/login/google";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
@@ -146,6 +148,22 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
 
             return clientSecret;
+        }
+
+        public async void SendGoogleIdToken(string idToken)
+        {
+            var formData = new List<IMultipartFormSection>
+                {new MultipartFormDataSection("idToken", idToken)};
+
+            var request = UnityWebRequest.Post($"{portalUrl}{GoogleAuthEndpoint}", formData);
+            request.timeout = Timeout;
+
+            Debug.Log(request.url);
+            await request.SendWebRequest();
+
+            var json = request.downloadHandler.text;
+            ShowRequestErrorPopup(request.result, json);
+            Debug.Log(json);
         }
 
         private async void RequestCode(System.Action onSuccess)

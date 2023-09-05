@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -66,8 +67,9 @@ namespace Nekoyume.UI
                 else
                 {
                     startButton.Interactable = false;
-                    Game.Game.instance.PortalConnect.OpenPortal();
-                    Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
+                    Game.Game.instance.GetComponent<GoogleSigninTest>().OnSignIn();
+                    // Game.Game.instance.PortalConnect.OpenPortal();
+                    // Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
 
                     StartCoroutine(CoSocialLogin());
                 }
