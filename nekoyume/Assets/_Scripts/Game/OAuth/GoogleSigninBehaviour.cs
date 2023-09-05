@@ -110,7 +110,7 @@ namespace Nekoyume.Game.OAuth
             var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
             var request =
                 new UnityWebRequest(
-                    "https://developer-mode.nine-chronicles.com/api/auth/login/google",
+                    $"{Game.instance.PortalConnect.PortalUrl}{PortalConnect.GoogleAuthEndpoint}",
                     "POST");
             var jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyString);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);

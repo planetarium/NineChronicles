@@ -47,8 +47,8 @@ namespace Nekoyume.UI
         private string accessToken;
         private string txId;
 
-        private readonly string portalUrl;
-        private const string GoogleAuthEndpoint = "/api/auth/login/google";
+        public readonly string PortalUrl;
+        public const string GoogleAuthEndpoint = "/api/auth/login/google";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
@@ -57,7 +57,7 @@ namespace Nekoyume.UI
 
         public PortalConnect(string url)
         {
-            portalUrl = url ?? throw new ArgumentNullException(nameof(url));
+            PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
@@ -72,7 +72,7 @@ namespace Nekoyume.UI
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
-            Application.OpenURL($"{portalUrl}/mobile-signin?clientSecret={clientSecret}");
+            Application.OpenURL($"{PortalUrl}/mobile-signin?clientSecret={clientSecret}");
             Analyzer.Instance.Track("Unity/Portal/1");
         }
 
@@ -155,7 +155,7 @@ namespace Nekoyume.UI
             var formData = new List<IMultipartFormSection>
                 {new MultipartFormDataSection("idToken", idToken)};
 
-            var request = UnityWebRequest.Post($"{portalUrl}{GoogleAuthEndpoint}", formData);
+            var request = UnityWebRequest.Post($"{PortalUrl}{GoogleAuthEndpoint}", formData);
             request.timeout = Timeout;
 
             Debug.Log(request.url);
@@ -170,7 +170,7 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Portal/3");
 
-            var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
             var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
 
@@ -200,7 +200,7 @@ namespace Nekoyume.UI
 
         private async void AccessToken()
         {
-            var url = $"{portalUrl}{AccessTokenEndpoint}";
+            var url = $"{PortalUrl}{AccessTokenEndpoint}";
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -245,7 +245,7 @@ namespace Nekoyume.UI
 
         public IEnumerator RequestPledge(Address address)
         {
-            var url = $"{portalUrl}{RequestPledgeEndpoint}";
+            var url = $"{PortalUrl}{RequestPledgeEndpoint}";
             var os = string.Empty;
 #if UNITY_ANDROID
             os = "android";
