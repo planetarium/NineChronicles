@@ -23,7 +23,7 @@
 
     public class SellCancellation7Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
@@ -163,7 +163,7 @@
             avatarState.mailBox.Add(expirationMail);
 
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
-            IAccountStateDelta prevState = _initialState;
+            IAccount prevState = _initialState;
 
             if (inventoryCount > 1)
             {
@@ -298,7 +298,7 @@
                 ),
             };
 
-            IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            IAccount prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new SellCancellation7
             {
@@ -369,7 +369,7 @@
                 1
             );
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
@@ -430,7 +430,7 @@
             );
             shopState.Add(orderDigest, 0);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 

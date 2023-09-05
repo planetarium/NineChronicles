@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly Address _enemyAvatarAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Aura _aura;
         private readonly TableSheets _tableSheets;
         private readonly Currency _currency;
@@ -338,7 +338,7 @@ namespace Lib9c.Tests.Action.Scenario
             }));
         }
 
-        private void Assert_Player(AvatarState avatarState, IAccountStateDelta state, Address avatarAddress, Address itemSlotStateAddress)
+        private void Assert_Player(AvatarState avatarState, IAccount state, Address avatarAddress, Address itemSlotStateAddress)
         {
             var nextAvatarState = state.GetAvatarStateV2(avatarAddress);
             var equippedItem = Assert.IsType<Aura>(nextAvatarState.inventory.Equipments.First());
@@ -358,7 +358,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(_aura.ItemId, equipmentId);
         }
 
-        private ItemSlotState Assert_ItemSlot(IAccountStateDelta state, Address itemSlotStateAddress)
+        private ItemSlotState Assert_ItemSlot(IAccount state, Address itemSlotStateAddress)
         {
             var rawItemSlot = Assert.IsType<List>(state.GetState(itemSlotStateAddress));
             var itemSlotState = new ItemSlotState(rawItemSlot);

@@ -161,7 +161,7 @@ namespace Nekoyume.Action.Garages
                 : memo;
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var state = context.PreviousState;
@@ -214,9 +214,9 @@ namespace Nekoyume.Action.Garages
             }
         }
 
-        private IAccountStateDelta SendBalances(
+        private IAccount SendBalances(
             IActionContext context,
-            IAccountStateDelta states)
+            IAccount states)
         {
             if (FungibleAssetValues is null)
             {
@@ -239,9 +239,9 @@ namespace Nekoyume.Action.Garages
             return states;
         }
 
-        private IAccountStateDelta SendFungibleItems(
+        private IAccount SendFungibleItems(
             Address signer,
-            IAccountStateDelta states)
+            IAccount states)
         {
             if (FungibleIdAndCounts is null)
             {

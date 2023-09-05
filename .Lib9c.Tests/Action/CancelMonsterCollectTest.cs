@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _signer;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public CancelMonsterCollectTest()
         {
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
                 level = collectionLevel,
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            IAccount nextState = action.Execute(new ActionContext
             {
                 PreviousState = _state,
                 Signer = _signer,

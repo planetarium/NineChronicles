@@ -30,7 +30,7 @@ namespace Nekoyume.Action
         Address IRapidCombinationV1.AvatarAddress => avatarAddress;
         int IRapidCombinationV1.SlotIndex => slotIndex;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

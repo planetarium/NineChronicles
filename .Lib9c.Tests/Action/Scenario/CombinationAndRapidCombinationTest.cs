@@ -19,7 +19,7 @@
 
     public class CombinationAndRapidCombinationTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly TableSheets _tableSheets;
         private Address _agentAddress;
         private Address _avatarAddress;

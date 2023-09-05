@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
         private readonly GameConfigState _gameConfigState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public RegisterProductTest()
         {

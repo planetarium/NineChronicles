@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action.Summon
         private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public AuraSummonTest()
         {

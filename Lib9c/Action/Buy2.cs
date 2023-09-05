@@ -52,7 +52,7 @@ namespace Nekoyume.Action
             productId = plainValue["productId"].ToGuid();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

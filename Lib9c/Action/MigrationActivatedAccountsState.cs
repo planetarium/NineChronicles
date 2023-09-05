@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [ActionType("migration_activated_accounts_state")]
     public class MigrationActivatedAccountsState : GameAction, IMigrationActivatedAccountsStateV1
     {
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

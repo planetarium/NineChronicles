@@ -68,7 +68,7 @@ namespace Nekoyume.Action
         public override int GetHashCode() =>
             (Error, (int)Operator, Operand).GetHashCode();
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (Error != null)
@@ -78,7 +78,7 @@ namespace Nekoyume.Action
 
             CheckPermission(context);
 
-            IAccountStateDelta previousState = context.PreviousState;
+            IAccount previousState = context.PreviousState;
             ValidatorSet validatorSet = previousState.GetValidatorSet();
 
             Func<ValidatorSet, Validator, Validator> func = Operator.ToFunc();

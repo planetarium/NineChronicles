@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             PlayCount = plainValue["playCount"].ToInteger();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)
@@ -105,8 +105,8 @@ namespace Nekoyume.Action
                 context.Random);
         }
 
-        public IAccountStateDelta Execute(
-            IAccountStateDelta states,
+        public IAccount Execute(
+            IAccount states,
             Address signer,
             long blockIndex,
             IRandom random)

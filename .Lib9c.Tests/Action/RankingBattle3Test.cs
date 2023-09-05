@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar1Address;
         private readonly Address _avatar2Address;
         private readonly Address _weeklyArenaAddress;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public RankingBattle3Test(ITestOutputHelper outputHelper)
         {

@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public ChargeActionPointTest()
         {
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(0, avatarState.actionPoint);
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());

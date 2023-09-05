@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public HackAndSlash8Test()
         {
@@ -200,7 +200,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
-            IAccountStateDelta state;
+            IAccount state;
             if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -489,7 +489,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta state = backward ? new MockStateDelta() : _initialState;
+            IAccount state = backward ? new MockStateDelta() : _initialState;
             if (!backward)
             {
                 state = _initialState

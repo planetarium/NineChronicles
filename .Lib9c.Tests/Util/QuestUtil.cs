@@ -8,9 +8,9 @@ namespace Lib9c.Tests.Util
 
     public static class QuestUtil
     {
-        public static (IAccountStateDelta, IAccountStateDelta) DisableQuestList(
-            IAccountStateDelta stateV1,
-            IAccountStateDelta stateV2,
+        public static (IAccount, IAccount) DisableQuestList(
+            IAccount stateV1,
+            IAccount stateV2,
             Address avatarAddress
         )
         {

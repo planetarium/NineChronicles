@@ -79,7 +79,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(4);
             var state = context.PreviousState;
@@ -140,8 +140,8 @@ namespace Nekoyume.Action
             }
         }
 
-        private IAccountStateDelta Transfer(
-            IActionContext context, IAccountStateDelta state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
+        private IAccount Transfer(
+            IActionContext context, IAccount state, Address signer, Address recipient, FungibleAssetValue amount, ActivatedAccountsState activatedAccountsState, long blockIndex)
         {
             if (Sender != signer)
             {

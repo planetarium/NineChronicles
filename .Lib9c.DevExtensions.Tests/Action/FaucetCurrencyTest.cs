@@ -14,7 +14,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 {
     public class FaucetCurrencyTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Currency _ncg;
         private readonly Currency _crystal;

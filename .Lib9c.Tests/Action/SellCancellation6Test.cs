@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
 
     public class SellCancellation6Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
@@ -178,7 +178,7 @@ namespace Lib9c.Tests.Action
                 avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex, itemCount, out _)
             );
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(Addresses.Shop, legacyShopState.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
@@ -259,7 +259,7 @@ namespace Lib9c.Tests.Action
                 ),
             };
 
-            IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            IAccount prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new SellCancellation6
             {
@@ -327,7 +327,7 @@ namespace Lib9c.Tests.Action
                 Sell6.ExpiredBlockIndex,
                 tradableItem);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation6
@@ -368,7 +368,7 @@ namespace Lib9c.Tests.Action
                 (ITradableItem)itemUsable);
             shopState.Register(shopItem);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation6
@@ -408,7 +408,7 @@ namespace Lib9c.Tests.Action
                 (ITradableItem)itemUsable);
             shopState.Register(shopItem);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation6

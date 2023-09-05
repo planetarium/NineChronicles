@@ -26,7 +26,7 @@
         private readonly Currency _currency;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Sell4Test(ITestOutputHelper outputHelper)
         {

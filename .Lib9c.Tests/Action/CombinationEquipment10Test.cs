@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public CombinationEquipment10Test(ITestOutputHelper outputHelper)
         {
@@ -305,7 +305,7 @@ namespace Lib9c.Tests.Action
             }
 
             var context = new ActionContext();
-            IAccountStateDelta previousState;
+            IAccount previousState;
             if (backward)
             {
                 previousState = _initialState.SetState(_avatarAddress, avatarState.Serialize());

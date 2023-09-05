@@ -28,14 +28,14 @@ namespace Lib9c.Tests.Action.Garages
 
         private readonly TableSheets _tableSheets;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount _initialStatesWithAvatarStateV2;
         private readonly Currency _ncg;
         private readonly (Address balanceAddr, FungibleAssetValue value)[] _fungibleAssetValues;
         private readonly Address? _inventoryAddr;
         private readonly (HashDigest<SHA256> fungibleId, int count)[] _fungibleIdAndCounts;
         private readonly FungibleAssetValue _cost;
         private readonly ITradableFungibleItem[] _tradableFungibleItems;
-        private readonly IAccountStateDelta _previousStates;
+        private readonly IAccount _previousStates;
 
         public LoadIntoMyGaragesTest()
         {
@@ -395,10 +395,10 @@ namespace Lib9c.Tests.Action.Garages
             }
         }
 
-        private static (LoadIntoMyGarages action, IAccountStateDelta nextStates) Execute(
+        private static (LoadIntoMyGarages action, IAccount nextStates) Execute(
             Address signer,
             long blockIndex,
-            IAccountStateDelta previousState,
+            IAccount previousState,
             IRandom random,
             IEnumerable<(Address balanceAddr, FungibleAssetValue value)>? fungibleAssetValues,
             Address? inventoryAddr,
@@ -452,7 +452,7 @@ namespace Lib9c.Tests.Action.Garages
             (HashDigest<SHA256> fungibleId, int count)[] fungibleIdAndCounts,
             FungibleAssetValue cost,
             ITradableFungibleItem[] _tradableFungibleItems,
-            IAccountStateDelta previousStates)
+            IAccount previousStates)
             GetSuccessfulPreviousStatesWithPlainValue()
         {
             var previousStates = _initialStatesWithAvatarStateV2;

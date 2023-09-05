@@ -33,7 +33,7 @@ namespace Lib9c.Renderers
             _actionLoader = new NCActionLoader();
         }
 
-        public void RenderAction(IValue action, IActionContext context, IAccountStateDelta nextStates) =>
+        public void RenderAction(IValue action, IActionContext context, IAccount nextStates) =>
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = context.BlockAction

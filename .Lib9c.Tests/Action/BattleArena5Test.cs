@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar4Address;
         private readonly Currency _crystal;
         private readonly Currency _ncg;
-        private IAccountStateDelta _initialStates;
+        private IAccount _initialStates;
 
         public BattleArena5Test(ITestOutputHelper outputHelper)
         {
@@ -974,9 +974,9 @@ namespace Lib9c.Tests.Action
             Assert.InRange(materialCount, 0, high);
         }
 
-        private IAccountStateDelta JoinArena(
+        private IAccount JoinArena(
             IActionContext context,
-            IAccountStateDelta states,
+            IAccount states,
             Address signer,
             Address avatarAddress,
             long blockIndex,

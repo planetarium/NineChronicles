@@ -24,7 +24,7 @@
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public BuyMultipleTest(ITestOutputHelper outputHelper)
         {
@@ -307,7 +307,7 @@
                     .SetState(avatarState.address, avatarState.Serialize());
             }
 
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
 
             var buyerGold = previousStates.GetBalance(_buyerAgentAddress, goldCurrency);
             var priceSumData = productDatas
@@ -560,7 +560,7 @@
             var sellerAgentAddress = new PrivateKey().ToAddress();
             var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
 
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
             var shopState = previousStates.GetShopState();
 
             var productId = Guid.NewGuid();

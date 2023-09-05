@@ -30,7 +30,7 @@
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly GameConfigState _gameConfigState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public ReRegisterProductTest(ITestOutputHelper outputHelper)
         {

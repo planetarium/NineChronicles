@@ -50,7 +50,7 @@ namespace Nekoyume.Action
         IEnumerable<Guid> IRankingBattleV2.CostumeIds => costumeIds;
         IEnumerable<Guid> IRankingBattleV2.EquipmentIds => equipmentIds;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -323,9 +323,9 @@ namespace Nekoyume.Action
             return BackwardCompatibleExecute(rawWeeklyArenaState, sheets, avatarState, costumeStatSheet, sw, addressesHex, enemyAvatarState, ctx, states, inventoryAddress, questListAddress, migrationRequired, worldInformationAddress, started);
         }
 
-        private IAccountStateDelta BackwardCompatibleExecute(Dictionary rawWeeklyArenaState, Dictionary<Type, (Address address, ISheet sheet)> sheets,
+        private IAccount BackwardCompatibleExecute(Dictionary rawWeeklyArenaState, Dictionary<Type, (Address address, ISheet sheet)> sheets,
             AvatarState avatarState, CostumeStatSheet costumeStatSheet, Stopwatch sw, string addressesHex,
-            AvatarState enemyAvatarState, IActionContext ctx, IAccountStateDelta states, Address inventoryAddress,
+            AvatarState enemyAvatarState, IActionContext ctx, IAccount states, Address inventoryAddress,
             Address questListAddress, bool migrationRequired, Address worldInformationAddress, DateTimeOffset started)
         {
             Dictionary weeklyArenaMap = (Dictionary) rawWeeklyArenaState["map"];

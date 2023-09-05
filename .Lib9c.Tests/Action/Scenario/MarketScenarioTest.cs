@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly TableSheets _tableSheets;
         private readonly Currency _currency;
         private readonly GameConfigState _gameConfigState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public MarketScenarioTest(ITestOutputHelper outputHelper)
         {

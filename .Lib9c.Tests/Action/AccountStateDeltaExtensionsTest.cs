@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Action
         public void SetWorldBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
         {
             var context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta();
+            IAccount states = new MockStateDelta();
             var rewardInfoAddress = new PrivateKey().ToAddress();
             var rewardRecord = new WorldBossKillRewardRecord();
             for (int i = 0; i < level; i++)
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void SetCouponWallet()
         {
-            IAccountStateDelta states = new MockStateDelta();
+            IAccount states = new MockStateDelta();
             var guid1 = new Guid("6856AE42-A820-4041-92B0-5D7BAA52F2AA");
             var guid2 = new Guid("701BA698-CCB9-4FC7-B88F-7CB8C707D135");
             var guid3 = new Guid("910296E7-34E4-45D7-9B4E-778ED61F278B");
@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
             var mead = Currencies.Mead;
             var price = RequestPledge.DefaultRefillMead * mead;
             ActionContext context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta()
+            IAccount states = new MockStateDelta()
                 .SetState(
                     agentContractAddress,
                     List.Empty.Add(patron.Serialize()).Add(true.Serialize()))
