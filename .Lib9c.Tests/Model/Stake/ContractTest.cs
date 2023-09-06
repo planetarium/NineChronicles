@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Model.Stake
             Contract.StakeRegularRewardSheetPrefix + "test",
             long.MaxValue,
             long.MaxValue)]
-        public void Constructor_Default(
+        public void Constructor(
             string stakeRegularFixedRewardSheetTableName,
             string stakeRegularRewardSheetTableName,
             long rewardInterval,
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Model.Stake
         [Theory]
         [InlineData(StakePolicySheetFixtures.V1)]
         [InlineData(StakePolicySheetFixtures.V2)]
-        public void Constructor_StakePolicySheet(string stakePolicySheetCsv)
+        public void Constructor_With_StakePolicySheet(string stakePolicySheetCsv)
         {
             var sheet = new StakePolicySheet();
             sheet.Set(stakePolicySheetCsv);
