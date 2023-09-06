@@ -20,18 +20,21 @@ namespace Nekoyume.Model.Stake
                 return false;
             }
 
+            // NOTE: StakeStateV2 is serialized as Bencodex List.
             if (serialized is List list)
             {
                 stakeStateV2 = new StakeStateV2(list);
                 return true;
             }
 
+            // NOTE: StakeState is serialized as Bencodex Dictionary.
             if (serialized is not Dictionary dict)
             {
                 stakeStateV2 = default;
                 return false;
             }
 
+            // NOTE: Migration needs GameConfigState.
             var gameConfigState = state.GetGameConfigState();
             if (gameConfigState is null)
             {
@@ -39,6 +42,24 @@ namespace Nekoyume.Model.Stake
                 return false;
             }
 
+            // NOTE: Below is the migration logic from StakeState to StakeStateV2.
+            //       The migration logic is based on the following assumptions:
+            //       - The migration target is StakeState which is serialized as Bencodex Dictionary.
+            //       - The started block index of StakeState is less than or equal to ActionObsoleteConfig.V200080ObsoleteIndex.
+            //       - Migrated StakeStateV2 will be contracted by StakeStateV2.Contract.
+            //       - StakeStateV2.Contract.StakeRegularFixedRewardSheetTableName is one of the following:
+            //         - "StakeRegularFixedRewardSheet_V1"
+            //         - "StakeRegularFixedRewardSheet_V2"
+            //       - StakeStateV2.Contract.StakeRegularRewardSheetTableName is one of the following:
+            //         - "StakeRegularRewardSheet_V1"
+            //         - "StakeRegularRewardSheet_V2"
+            //         - "StakeRegularRewardSheet_V3"
+            //         - "StakeRegularRewardSheet_V4"
+            //         - "StakeRegularRewardSheet_V5"
+            //       - StakeStateV2.Contract.RewardInterval is StakeState.RewardInterval.
+            //       - StakeStateV2.Contract.LockupInterval is StakeState.LockupInterval.
+            //       - StakeStateV2.StartedBlockIndex is StakeState.StartedBlockIndex.
+            //       - StakeStateV2.ReceivedBlockIndex is StakeState.ReceivedBlockIndex.
             var stakeStateV1 = new StakeState(dict);
             var stakeRegularFixedRewardSheetTableName =
                 stakeStateV1.StartedBlockIndex <
