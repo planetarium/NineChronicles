@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Google;
+using Libplanet.Crypto;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -121,7 +122,11 @@ namespace Nekoyume.Game.OAuth
 
             if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
             {
-                Widget.Find<LoginSystem>().Show(null);
+                var addrString =
+                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(request.downloadHandler
+                        .text).address;
+                Address? address = string.IsNullOrEmpty(addrString) ? null : new Address(addrString);
+                Widget.Find<LoginSystem>().Show(address);
             }
         }
     }

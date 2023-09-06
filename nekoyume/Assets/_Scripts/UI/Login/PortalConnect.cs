@@ -31,6 +31,7 @@ namespace Nekoyume.UI
         public class AccessTokenResult : RequestResult
         {
             public string accessToken;
+            public string address;
         }
 
         [Serializable]
