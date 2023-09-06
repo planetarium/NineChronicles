@@ -8,6 +8,7 @@ using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Nekoyume.Action.Exceptions;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -32,6 +33,8 @@ namespace Nekoyume.Action
 
         public const string SummonCountKey = "sc";
         public int SummonCount;
+
+        private const int SummonLimit = 10;
 
         Address IAuraSummonV1.AvatarAddress => AvatarAddress;
         int IAuraSummonV1.GroupId => GroupId;
@@ -87,10 +90,17 @@ namespace Nekoyume.Action
                     $"{addressesHex} Aborted as the avatar state of the signer was failed to load.");
             }
 
+            if (SummonCount <= 0 || SummonCount > SummonLimit)
+            {
+                throw new InvalidSummonCountException(
+                    $"{addressesHex} Given summonCount {SummonCount} is not valid. Please use between 1 and 10"
+                );
+            }
+
             // Validate Work
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
-                typeof(AuraSummonSheet),
+                typeof(SummonSheet),
                 typeof(EquipmentItemRecipeSheet),
                 typeof(EquipmentItemSheet),
                 typeof(MaterialItemSheet),
@@ -99,7 +109,14 @@ namespace Nekoyume.Action
                 typeof(SkillSheet),
             });
 
-            var summonSheet = sheets.GetSheet<AuraSummonSheet>();
+            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
+            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
+            var skillSheet = sheets.GetSheet<SkillSheet>();
+
+            var summonSheet = sheets.GetSheet<SummonSheet>();
             var summonRow = summonSheet.OrderedList.FirstOrDefault(row => row.GroupId == GroupId);
             if (summonRow is null)
             {
@@ -107,15 +124,14 @@ namespace Nekoyume.Action
                     $"{addressesHex} Failed to get {GroupId} in AuraSummonSheet");
             }
 
-            // Validate requirements
+            // Use materials
             var inventory = avatarState.inventory;
-            var itemCount = inventory.TryGetItem(summonRow.CostMaterial, out var item)
-                ? item.count
-                : 0;
-            if (itemCount < summonRow.CostMaterialCount * SummonCount)
+            var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
+            if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
+                    summonRow.CostMaterialCount * SummonCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex} Not enough material to summon");
+                    $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
             }
 
             // Transfer Cost NCG first for fast-fail
@@ -134,12 +150,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
-            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
-            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
-            var skillSheet = sheets.GetSheet<SkillSheet>();
 
             for (var i = 0; i < SummonCount; i++)
             {
@@ -182,14 +192,6 @@ namespace Nekoyume.Action
                     );
                 }
 
-                // Use materials
-                var material = materialSheet.OrderedList.First(m => m.Id == summonRow.CostMaterial);
-                if (!inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex,
-                        summonRow.CostMaterialCount))
-                {
-                    throw new NotEnoughMaterialException(
-                        $"{addressesHex} Aborted as the player has no enough material ({summonRow.CostMaterial} * {summonRow.CostMaterialCount})");
-                }
 
                 // Create Equipment
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(
@@ -213,6 +215,9 @@ namespace Nekoyume.Action
                 avatarState.UpdateQuestRewards(materialSheet);
             }
 
+            Log.Debug(
+                $"{addressesHex} AuraSummon Exec. finished: {DateTimeOffset.UtcNow - started} Elapsed");
+
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
 
@@ -235,7 +240,6 @@ namespace Nekoyume.Action
         {
             foreach (var optionInfo in subRecipe.Options
                          .OrderByDescending(e => e.Ratio)
-                         .ThenBy(e => e.RequiredBlockIndex)
                          .ThenBy(e => e.Id))
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
