@@ -9,10 +9,11 @@ using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Consensus;
 using Libplanet.Crypto;
+using Libplanet.Store.Trie;
 
 namespace Libplanet.Extensions.RemoteBlockChainStates;
 
-public class RemoteBlockState : IBlockState
+public class RemoteBlockState : IAccountState
 {
     private readonly Uri _explorerEndpoint;
     private readonly GraphQLHttpClient _graphQlHttpClient;
@@ -163,6 +164,8 @@ public class RemoteBlockState : IBlockState
                 new Validator(new PublicKey(ByteUtil.ParseHex(x.PublicKey)), x.Power))
             .ToList());
     }
+
+    public ITrie Trie => throw new NotSupportedException();
 
     public BlockHash? BlockHash { get; }
 

@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
+    using Libplanet.Store.Trie;
     using Libplanet.Types.Assets;
     using Libplanet.Types.Consensus;
 
@@ -40,6 +41,8 @@ namespace Lib9c.Tests.Action
             Delta = delta;
             TotalUpdatedFungibles = ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
         }
+
+        public ITrie Trie => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public IAccountDelta Delta { get; private set; }

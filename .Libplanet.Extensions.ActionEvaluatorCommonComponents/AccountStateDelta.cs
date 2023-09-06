@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
+using Libplanet.Store.Trie;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Consensus;
 
@@ -117,6 +118,8 @@ public class AccountStateDelta : IAccount
         : this((Dictionary)new Codec().Decode(bytes))
     {
     }
+
+    public ITrie Trie => throw new NotSupportedException();
 
     public IAccountDelta Delta => _delta;
 

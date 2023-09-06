@@ -49,7 +49,7 @@ public class RemoteActionEvaluator : IActionEvaluator
             else
             {
                 actionEvaluations[i].InputContext.PreviousState.BaseState =
-                    _blockChainStates.GetBlockState(block.PreviousHash);
+                    _blockChainStates.GetAccountState(block.PreviousHash);
             }
 
             actionEvaluations[i].OutputState.BaseState =
