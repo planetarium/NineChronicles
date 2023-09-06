@@ -221,7 +221,7 @@ namespace Nekoyume.Game
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
 
-        public AuraSummonSheet AuraSummonSheet { get; private set; }
+        public SummonSheet SummonSheet { get; private set; }
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 

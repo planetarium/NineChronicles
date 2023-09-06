@@ -2497,8 +2497,8 @@ namespace Nekoyume.Blockchain
         }
 
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
-            IAccountStateDelta prevStates,
-            IAccountStateDelta outputStates,
+            IAccount prevStates,
+            IAccount outputStates,
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {
