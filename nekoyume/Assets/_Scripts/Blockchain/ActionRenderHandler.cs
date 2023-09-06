@@ -1180,7 +1180,7 @@ namespace Nekoyume.Blockchain
             var action = eval.Action;
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.AuraSummonSheet[action.GroupId];
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
             var count = summonRow.CostMaterialCount * action.SummonCount;
             LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);

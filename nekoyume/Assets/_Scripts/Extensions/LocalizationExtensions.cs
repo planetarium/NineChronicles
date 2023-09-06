@@ -548,7 +548,7 @@ namespace Nekoyume
             return $"{name}{elemental}";
         }
 
-        public static string GetLocalizedName(this AuraSummonSheet.Row summonRow)
+        public static string GetLocalizedName(this SummonSheet.Row summonRow)
         {
             return L10nManager.Localize($"SUMMON_NAME_{summonRow.GroupId}");
         }

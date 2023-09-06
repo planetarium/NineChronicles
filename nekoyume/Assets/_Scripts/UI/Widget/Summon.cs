@@ -38,7 +38,7 @@ namespace Nekoyume.UI
         public int goldenSummonId;
 
         public const int SummonGroup = 2;
-        private AuraSummonSheet.Row[] _summonRows;
+        private SummonSheet.Row[] _summonRows;
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -121,7 +121,7 @@ namespace Nekoyume.UI
             // Check material enough
             var inventory = States.Instance.CurrentAvatarState.inventory;
             var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.AuraSummonSheet[groupId];
+            var summonRow = tableSheets.SummonSheet[groupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
 
             var costCount = summonRow.CostMaterialCount * drawCount;

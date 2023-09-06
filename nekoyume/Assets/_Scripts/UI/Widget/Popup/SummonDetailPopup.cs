@@ -41,32 +41,22 @@ namespace Nekoyume.UI
             };
         }
 
-        public void Show(AuraSummonSheet.Row summonRow)
+        public void Show(SummonSheet.Row summonRow)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var equipmentItemSheet = tableSheets.EquipmentItemSheet;
             var equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
             var equipmentItemSubRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
 
-            var recipes = new List<(int recipeId, int recipeRatio)>
+            float ratioSum = summonRow.Recipes.Sum(pair => pair.Item2);
+            var models = summonRow.Recipes.Where(pair => pair.Item1 > 0).Select(pair =>
             {
-                (summonRow.Recipe1, summonRow.Recipe1Ratio),
-                (summonRow.Recipe2, summonRow.Recipe2Ratio),
-                (summonRow.Recipe3, summonRow.Recipe3Ratio),
-                (summonRow.Recipe4, summonRow.Recipe4Ratio),
-                (summonRow.Recipe5, summonRow.Recipe5Ratio),
-                (summonRow.Recipe6, summonRow.Recipe6Ratio)
-            };
-            float ratioSum = recipes.Sum(pair => pair.recipeRatio);
-
-            var models = recipes.Where(pair => pair.recipeId > 0).Select(pair =>
-            {
-                var recipeRow = equipmentItemRecipeSheet[pair.recipeId];
+                var recipeRow = equipmentItemRecipeSheet[pair.Item1];
                 return new SummonDetailCell.Model
                 {
                     EquipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId],
                     Options = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options,
-                    Ratio = pair.recipeRatio / ratioSum,
+                    Ratio = pair.Item2 / ratioSum,
                 };
             }).OrderByDescending(model => model.EquipmentRow.Grade);
 

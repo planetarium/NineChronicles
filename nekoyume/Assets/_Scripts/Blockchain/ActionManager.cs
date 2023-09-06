@@ -1505,7 +1505,7 @@ namespace Nekoyume.Blockchain
 
             // check material enough
             var tableSheets = Game.Game.instance.TableSheets;
-            var summonRow = tableSheets.AuraSummonSheet[groupId];
+            var summonRow = tableSheets.SummonSheet[groupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
             var count = summonRow.CostMaterialCount * summonCount;
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, count);
