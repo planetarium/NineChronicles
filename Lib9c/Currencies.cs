@@ -59,7 +59,9 @@ namespace Lib9c
         {
             if (string.IsNullOrEmpty(ticker))
             {
-                throw new ArgumentNullException(nameof(ticker));
+                throw new ArgumentNullException(
+                    nameof(ticker),
+                    "ticker should not be null or empty.");
             }
 
             switch (ticker)

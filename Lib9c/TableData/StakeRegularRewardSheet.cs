@@ -82,7 +82,9 @@ namespace Nekoyume.TableData
                     return;
                 }
 
-                CurrencyDecimalPlaces = ParseInt(fields[4], 0);
+                CurrencyDecimalPlaces = TryParseInt(fields[4], out var currencyDecimalPlaces)
+                    ? currencyDecimalPlaces
+                    : null;
 
                 if (fields.Length == 5)
                 {

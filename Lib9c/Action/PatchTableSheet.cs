@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
@@ -7,6 +8,7 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Stake;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -65,8 +67,15 @@ namespace Nekoyume.Action
             }
 #endif
 
-            var sheets = states.GetState(sheetAddress);
-            var value = sheets is null ? string.Empty : sheets.ToDotnetString();
+            var sheet = states.GetState(sheetAddress);
+            if (sheet is not null &&
+                StakePolicySheet.SheetPrefixRules.Any(tuple => TableName.StartsWith(tuple.value)))
+            {
+                var msg = $"{TableName} already exists.";
+                throw new ArgumentException(nameof(TableName), msg);
+            }
+
+            var value = sheet is null ? string.Empty : sheet.ToDotnetString();
 
             Log.Verbose(
                 "{AddressesHex}{TableName} was patched\n" +

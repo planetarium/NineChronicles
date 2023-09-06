@@ -20,6 +20,7 @@ using Libplanet.Types.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Coupons;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stake;
 
 namespace Nekoyume.Action
 {
@@ -470,20 +471,28 @@ namespace Nekoyume.Action
             }
         }
 
-        public static T GetSheet<T>(this IAccountState states) where T : ISheet, new()
+        public static T GetSheet<T>(
+            this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
+            return GetSheet<T>(states, address);
+        }
 
+        public static T GetSheet<T>(
+            this IAccountState states,
+            Address sheetAddr)
+            where T : ISheet, new()
+        {
             try
             {
-                var csv = GetSheetCsv<T>(states);
+                var csv = GetSheetCsv(states, sheetAddr);
                 byte[] hash;
                 using (var sha256 = SHA256.Create())
                 {
                     hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(csv));
                 }
 
-                var cacheKey = address.ToHex() + ByteUtil.Hex(hash);
+                var cacheKey = sheetAddr.ToHex() + ByteUtil.Hex(hash);
                 if (SheetsCache.TryGetValue(cacheKey, out var cached))
                 {
                     return (T)cached;
@@ -501,11 +510,27 @@ namespace Nekoyume.Action
             }
         }
 
-        public static bool TryGetSheet<T>(this IAccountState states, out T sheet) where T : ISheet, new()
+        public static bool TryGetSheet<T>(this IAccountState states, out T sheet)
+            where T : ISheet, new()
         {
             try
             {
                 sheet = states.GetSheet<T>();
+                return true;
+            }
+            catch (Exception)
+            {
+                sheet = default;
+                return false;
+            }
+        }
+
+        public static bool TryGetSheet<T>(this IAccountState states, Address address, out T sheet)
+            where T : ISheet, new()
+        {
+            try
+            {
+                sheet = states.GetSheet<T>(address);
                 return true;
             }
             catch (Exception)
@@ -656,24 +681,38 @@ namespace Nekoyume.Action
         }
 
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
-            this IAccountState states,
+            this IAccountState state,
             params Type[] sheetTypes)
         {
             Dictionary<Type, (Address address, ISheet sheet)> result = sheetTypes.ToDictionary(
                 sheetType => sheetType,
                 sheetType => (Addresses.GetSheetAddress(sheetType.Name), (ISheet)null));
-#pragma warning disable LAA1002
-            var addresses = result
-                .Select(tuple => tuple.Value.address)
-                .ToArray();
-#pragma warning restore LAA1002
-            var csvValues = states.GetStates(addresses);
+            return state.GetSheetsInternal(result);
+        }
+
+        public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
+            this IAccountState state,
+            params (Type sheetType, string sheetName)[] sheetTuples)
+        {
+            Dictionary<Type, (Address address, ISheet sheet)> result = sheetTuples.ToDictionary(
+                tuple => tuple.sheetType,
+                tuple => (Addresses.GetSheetAddress(tuple.sheetName), (ISheet)null));
+            return state.GetSheetsInternal(result);
+        }
+
+        private static Dictionary<Type, (Address address, ISheet sheet)> GetSheetsInternal(
+            this IAccountState state,
+            Dictionary<Type, (Address address, ISheet sheet)> result)
+        {
+            var sheetTypes = result.Keys.ToArray();
+            var addresses = result.Values.Select(e => e.address).ToArray();
+            var csvValues = state.GetStates(addresses);
             for (var i = 0; i < sheetTypes.Length; i++)
             {
                 var sheetType = sheetTypes[i];
                 var address = addresses[i];
                 var csvValue = csvValues[i];
-                if (csvValue is null)
+                if (csvValue is null or Null)
                 {
                     throw new FailedLoadStateException(address, sheetType);
                 }
@@ -693,7 +732,7 @@ namespace Nekoyume.Action
                 }
 
                 var sheetConstructorInfo = sheetType.GetConstructor(Type.EmptyTypes);
-                if (!(sheetConstructorInfo?.Invoke(Array.Empty<object>()) is ISheet sheet))
+                if (sheetConstructorInfo?.Invoke(Array.Empty<object>()) is not ISheet sheet)
                 {
                     throw new FailedLoadSheetException(sheetType);
                 }
@@ -709,11 +748,15 @@ namespace Nekoyume.Action
         public static string GetSheetCsv<T>(this IAccountState states) where T : ISheet, new()
         {
             var address = Addresses.GetSheetAddress<T>();
+            return states.GetSheetCsv(address);
+        }
+
+        public static string GetSheetCsv(this IAccountState states, Address address)
+        {
             var value = states.GetState(address);
-            if (value is null)
+            if (value is null or Null)
             {
-                Log.Warning("{TypeName} is null ({Address})", typeof(T).FullName, address.ToHex());
-                throw new FailedLoadStateException(typeof(T).FullName);
+                throw new FailedLoadStateException(address, typeof(ISheet));
             }
 
             try
@@ -722,7 +765,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error(e, "Unexpected error occurred during GetSheetCsv<{TypeName}>()", typeof(T).FullName);
+                Log.Error(e, "Unexpected error occurred during GetSheetCsv({Address})", address);
                 throw;
             }
         }
@@ -916,6 +959,18 @@ namespace Nekoyume.Action
 
             stakeState = null;
             return false;
+        }
+
+        public static bool TryGetStakeStateV2(
+            this IAccountState state,
+            Address agentAddr,
+            out StakeStateV2 stakeStateV2)
+        {
+            var stakeStateAddr = StakeStateV2.DeriveAddress(agentAddr);
+            return StakeStateUtils.TryMigrate(
+                state,
+                stakeStateAddr,
+                out stakeStateV2);
         }
 
         public static ArenaParticipants GetArenaParticipants(this IAccountState states,

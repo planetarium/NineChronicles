@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.TableData
 {
+    using Lib9c.Tests.Fixtures.TableCSV.Stake;
     using Libplanet.Action.State;
     using Libplanet.Types.Assets;
     using Nekoyume.Extensions;
@@ -13,15 +14,8 @@ namespace Lib9c.Tests.TableData
 
         public StakeRegularFixedRewardSheetTest()
         {
-            const string TableContent = @"level,required_gold,item_id,count
-1,50,500000,1
-2,500,500000,2
-3,5000,500000,2
-4,50000,500000,2
-5,500000,500000,2";
-
             _sheet = new StakeRegularFixedRewardSheet();
-            _sheet.Set(TableContent);
+            _sheet.Set(StakeRegularFixedRewardSheetFixtures.V1);
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             _currency = Currency.Legacy("NCG", 2, null);
