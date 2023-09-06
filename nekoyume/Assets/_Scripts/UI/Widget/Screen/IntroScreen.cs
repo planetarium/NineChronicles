@@ -98,19 +98,19 @@ namespace Nekoyume.UI
                         });
                 }
             });
-            // signinButton.onClick.AddListener(() =>
-            // {
-            //     Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-            //     qrCodeGuideBackground.Show();
-            //     qrCodeGuideContainer.SetActive(true);
-            //     foreach (var image in qrCodeGuideImages)
-            //     {
-            //         image.SetActive(false);
-            //     }
-            //
-            //     _guideIndex = 0;
-            //     ShowQrCodeGuide();
-            // });
+            signinButton.onClick.AddListener(() =>
+            {
+                Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+                qrCodeGuideBackground.Show();
+                qrCodeGuideContainer.SetActive(true);
+                foreach (var image in qrCodeGuideImages)
+                {
+                    image.SetActive(false);
+                }
+
+                _guideIndex = 0;
+                ShowQrCodeGuide();
+            });
             qrCodeGuideNextButton.onClick.AddListener(() =>
             {
                 _guideIndex++;
