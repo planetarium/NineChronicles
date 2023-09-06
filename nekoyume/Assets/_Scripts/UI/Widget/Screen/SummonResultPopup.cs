@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +13,28 @@ namespace Nekoyume.UI
 {
     public class SummonResultPopup : PopupWidget
     {
+        [Serializable]
+        private class ResultVideoClip
+        {
+            public VideoClip summoning;
+            public VideoClip result;
+            public VideoClip great;
+        }
+
         [SerializeField] private Button closeButton;
         [SerializeField] private Button drawButton;
         [SerializeField] private TextMeshProUGUI drawButtonText;
 
+        [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private ResultVideoClip normalVideoClip;
+        [SerializeField] private ResultVideoClip goldenVideoClip;
+
         [SerializeField] private SummonItemView[] summonItemViews;
 
-        [SerializeField] private VideoPlayer videoPlayer;
-        [SerializeField] private VideoClip greatVideoClip;
-        [SerializeField] private VideoClip normalVideoClip;
-
+        private bool _isPlaying;
         private int _viewCount;
-        private Coroutine _animationCoroutine;
+        private Coroutine _Coroutine;
+        private int _normalSummonId = default;
 
         protected override void Awake()
         {
@@ -38,13 +49,22 @@ namespace Nekoyume.UI
                 Close(true);
             };
 
-            videoPlayer.loopPointReached += OnVideoEnd;
         }
 
         public void Show(int groupId, List<Equipment> resultList, bool ignoreShowAnimation = false)
+        public void Show(
+            SummonSheet.Row summonRow,
+            List<Equipment> resultList,
+            bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
+            if (_normalSummonId == default)
+            {
+                _normalSummonId = Find<Summon>().normalSummonId;
+            }
+
+            var normal = summonRow.GroupId == _normalSummonId;
             var count = resultList.Count;
             var great = resultList.First().Grade == 5;
 
@@ -75,15 +95,20 @@ namespace Nekoyume.UI
                 }
             }
 
-            videoPlayer.clip = great ? greatVideoClip : normalVideoClip;
-            videoPlayer.gameObject.SetActive(true);
-            videoPlayer.Play();
+            if (_Coroutine != null)
+            {
+                StopCoroutine(_Coroutine);
+                _Coroutine = null;
+            }
+
+            _Coroutine = StartCoroutine(PlayResult(normal, great));
 
             // For Test
             drawButtonText.text = $"Summon\n{count} times";
             drawButton.interactable = true;
             drawButton.onClick.RemoveAllListeners();
             drawButton.onClick.AddListener(() =>
+            var drawButton = normal ? normalDrawButton : goldenDrawButton;
             {
                 drawButton.interactable = false;
                 Find<Summon>().AuraSummonAction(groupId, count);
@@ -91,22 +116,35 @@ namespace Nekoyume.UI
             closeButton.interactable = true;
         }
 
-        private void OnVideoEnd(VideoPlayer source)
+        private IEnumerator PlayResult(bool normal, bool great)
         {
+            _isPlaying = false;
+            var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
+
+            videoPlayer.clip = currentVideoClip.summoning;
+            videoPlayer.gameObject.SetActive(true);
+            videoPlayer.Play();
+
+            yield return new WaitUntil(() => videoPlayer.isPlaying);
+            yield return new WaitUntil(() => !videoPlayer.isPlaying);
+
+            if (great && currentVideoClip.great)
+            {
+                videoPlayer.clip = currentVideoClip.great;
+            }
+            else
+            {
+                videoPlayer.clip = currentVideoClip.result;
+            }
+
+            videoPlayer.Play();
+
+            yield return new WaitUntil(() => videoPlayer.isPlaying);
+            yield return new WaitUntil(() => !videoPlayer.isPlaying);
+
             videoPlayer.Stop();
             videoPlayer.gameObject.SetActive(false);
 
-            if (_animationCoroutine != null)
-            {
-                StopCoroutine(_animationCoroutine);
-                _animationCoroutine = null;
-            }
-
-            _animationCoroutine = StartCoroutine(CoShowWithAnimation());
-        }
-
-        private IEnumerator CoShowWithAnimation()
-        {
             yield return null;
             for (var i = 0; i < _viewCount; i++)
             {

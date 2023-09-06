@@ -32,9 +32,10 @@ namespace Nekoyume.UI
         }
 
         [SerializeField] private CostIconDataScriptableObject costIconData;
-        [SerializeField] private int[] summonIds;
         [SerializeField] private Button closeButton;
         [SerializeField] private DrawItems[] drawItems;
+        public int normalSummonId;
+        public int goldenSummonId;
 
         public const int SummonGroup = 2;
         private AuraSummonSheet.Row[] _summonRows;
@@ -77,8 +78,8 @@ namespace Nekoyume.UI
             {
                 _isInitialized = true;
 
-                var auraSummonSheet = Game.Game.instance.TableSheets.AuraSummonSheet;
-                _summonRows = summonIds.Select(id => auraSummonSheet[id]).ToArray();
+                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
+                _summonRows = new[] { summonSheet[normalSummonId], summonSheet[goldenSummonId] };
 
                 Subscribe();
             }
@@ -145,15 +146,15 @@ namespace Nekoyume.UI
             LoadingHelper.Summon.Value = false;
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
 
-            var groupId = eval.Action.GroupId;
+            var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateEquipment(groupId, summonCount, random);
-            Find<SummonResultPopup>().Show(groupId, resultList);
+            var resultList = SimulateEquipment(summonRow, summonCount, random);
+            Find<SummonResultPopup>().Show(summonRow, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
-            int groupId,
+            SummonSheet.Row summonRow,
             int summonCount,
             IRandom random)
         {
@@ -161,8 +162,6 @@ namespace Nekoyume.UI
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var skillSheet = tableSheets.SkillSheet;
             var dummyAgentState = new AgentState(new Address());
-
-            var summonRow = tableSheets.AuraSummonSheet[groupId];
 
             var resultList = new List<Equipment>();
             for (int i = 0; i < summonCount; i++)

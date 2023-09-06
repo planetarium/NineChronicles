@@ -9680,7 +9680,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -20030,6 +20030,15 @@ MonoBehaviour:
   closeButton: {fileID: 4563047736126088796}
   drawButton: {fileID: 1068312601813100582}
   drawButtonText: {fileID: 8106524534050090556}
+  videoPlayer: {fileID: 2774891704748942382}
+  normalVideoClip:
+    summoning: {fileID: 32900000, guid: bf00c456b8804464ebedb688b60ca073, type: 3}
+    result: {fileID: 32900000, guid: 18c7c0b448961de4b901eec00a0eb837, type: 3}
+    great: {fileID: 0}
+  goldenVideoClip:
+    summoning: {fileID: 32900000, guid: 4ad3d73608f78834d8f5d6faa1b1452f, type: 3}
+    result: {fileID: 32900000, guid: 72d1885618363c942ad7580bf08236a9, type: 3}
+    great: {fileID: 0}
   summonItemViews:
   - {fileID: 3038227469596484099}
   - {fileID: 7230728661007714891}
@@ -20041,9 +20050,6 @@ MonoBehaviour:
   - {fileID: 3749306757646117269}
   - {fileID: 4716985702225141680}
   - {fileID: 6086234365124343765}
-  videoPlayer: {fileID: 2774891704748942382}
-  greatVideoClip: {fileID: 32900000, guid: 6a0f631264b7042abbc5e0bcbeaf75d9, type: 3}
-  normalVideoClip: {fileID: 32900000, guid: 7d1411bad0fb1cb4f89625c74a919e0b, type: 3}
 --- !u!1 &6311559565432692500
 GameObject:
   m_ObjectHideFlags: 0
