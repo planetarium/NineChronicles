@@ -83,10 +83,19 @@ namespace Nekoyume.UI
                     google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
                 }
 
-                if (google.State is not (GoogleSigninBehaviour.SignInState.Signed or
+                if (google.State.Value is not (GoogleSigninBehaviour.SignInState.Signed or
                     GoogleSigninBehaviour.SignInState.Waiting))
                 {
                     google.OnSignIn();
+                    startButtonContainer.SetActive(false);
+                    google.State
+                        .SkipLatestValueOnSubscribe()
+                        .First()
+                        .Subscribe(state =>
+                        {
+                            startButtonContainer.SetActive(
+                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                        });
                 }
             });
             // signinButton.onClick.AddListener(() =>

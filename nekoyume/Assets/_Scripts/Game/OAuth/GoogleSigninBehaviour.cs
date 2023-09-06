@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Google;
 using Nekoyume.UI;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,7 +20,7 @@ namespace Nekoyume.Game.OAuth
             Waiting
         }
 
-        public SignInState State { get; private set; } = SignInState.NotSigned;
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
 
         private const string WebClientId =
             "340841465287-nuft8giaq0q2ci7utp4pi7fag191qc6s.apps.googleusercontent.com";
@@ -39,10 +40,16 @@ namespace Nekoyume.Game.OAuth
         {
             GoogleSignIn.Configuration = _configuration;
             Debug.Log("Calling SignIn");
-            State = SignInState.Waiting;
+            State.Value = SignInState.Waiting;
             GoogleSignIn.DefaultInstance.SignIn()
                 .ContinueWith(OnAuthenticationFinished);
-            StartCoroutine(CoSignInGoogle());
+            State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
+            {
+                if (state is SignInState.Signed)
+                {
+                    StartCoroutine(CoSendGoogleIdToken(_idToken));
+                }
+            });
         }
 
         private void OnSignInSilently()
@@ -84,23 +91,14 @@ namespace Nekoyume.Game.OAuth
             else if (task.IsCanceled)
             {
                 Debug.Log("Canceled");
-                State = SignInState.Canceled;
+                State.Value = SignInState.Canceled;
             }
             else
             {
-                State = SignInState.Signed;
                 var res = task.Result;
                 Debug.Log("Welcome: " + res.UserId + "!" + $"\ntoken: {res.IdToken}");
                 _idToken = res.IdToken;
-            }
-        }
-
-        private IEnumerator CoSignInGoogle()
-        {
-            yield return new WaitUntil(() => State is SignInState.Signed or SignInState.Canceled);
-            if (State == SignInState.Signed)
-            {
-                StartCoroutine(CoSendGoogleIdToken(_idToken));
+                State.Value = SignInState.Signed;
             }
         }
 
