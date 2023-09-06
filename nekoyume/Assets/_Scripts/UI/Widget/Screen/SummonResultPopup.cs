@@ -2,15 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Module;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class SummonResultPopup : PopupWidget
     {
         [Serializable]
@@ -22,8 +25,8 @@ namespace Nekoyume.UI
         }
 
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button drawButton;
-        [SerializeField] private TextMeshProUGUI drawButtonText;
+        [SerializeField] private SimpleCostButton normalDrawButton;
+        [SerializeField] private SimpleCostButton goldenDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private ResultVideoClip normalVideoClip;
@@ -49,9 +52,13 @@ namespace Nekoyume.UI
                 Close(true);
             };
 
+            LoadingHelper.Summon.Subscribe(value =>
+            {
+                normalDrawButton.Loading = value;
+                goldenDrawButton.Loading = value;
+            }).AddTo(gameObject);
         }
 
-        public void Show(int groupId, List<Equipment> resultList, bool ignoreShowAnimation = false)
         public void Show(
             SummonSheet.Row summonRow,
             List<Equipment> resultList,
@@ -103,16 +110,17 @@ namespace Nekoyume.UI
 
             _Coroutine = StartCoroutine(PlayResult(normal, great));
 
-            // For Test
-            drawButtonText.text = $"Summon\n{count} times";
-            drawButton.interactable = true;
-            drawButton.onClick.RemoveAllListeners();
-            drawButton.onClick.AddListener(() =>
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
+            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
+            drawButton.SetCost(
+                (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount * count);
+            drawButton.OnSubmitSubject.Subscribe(_ =>
             {
-                drawButton.interactable = false;
-                Find<Summon>().AuraSummonAction(groupId, count);
-            });
+                Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
+            }).AddTo(gameObject);
+            normalDrawButton.gameObject.SetActive(normal);
+            goldenDrawButton.gameObject.SetActive(!normal);
+
             closeButton.interactable = true;
         }
 
