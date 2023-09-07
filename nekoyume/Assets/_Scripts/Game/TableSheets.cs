@@ -7,6 +7,7 @@ using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.GrandFinale;
 using Nekoyume.TableData.Pet;
+using Nekoyume.TableData.Stake;
 
 namespace Nekoyume.Game
 {
@@ -14,16 +15,21 @@ namespace Nekoyume.Game
     {
         public static TableSheets Instance => Game.instance.TableSheets;
 
-        public TableSheets(IDictionary<string, string> sheets)
+        public TableSheets(IDictionary<string, string> sheets, bool ignoreFailedGetProperty = false)
         {
             var type = typeof(TableSheets);
-            foreach (var pair in sheets)
+            foreach (var (key, value) in sheets)
             {
-                var sheetPropertyInfo = type.GetProperty(pair.Key);
+                var sheetPropertyInfo = type.GetProperty(key);
                 if (sheetPropertyInfo is null)
                 {
+                    if (ignoreFailedGetProperty)
+                    {
+                        continue;
+                    }
+
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
-                    sb.Append($" / ({pair.Key}, csv)");
+                    sb.Append($" / ({key}, csv)");
                     sb.Append(" / failed to get property");
                     throw new Exception(sb.ToString());
                 }
@@ -33,14 +39,14 @@ namespace Nekoyume.Game
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
-                    sb.Append($" / ({pair.Key}, csv)");
+                    sb.Append($" / ({key}, csv)");
                     sb.Append($" / failed to cast to {nameof(ISheet)}");
                     throw new Exception(sb.ToString());
                 }
 
-                if (pair.Value is not null)
+                if (value is not null)
                 {
-                    iSheet.Set(pair.Value);
+                    iSheet.Set(value);
                 }
 
                 sheetPropertyInfo.SetValue(this, sheetObject);
@@ -163,6 +169,8 @@ namespace Nekoyume.Game
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
 
         public ArenaSheet ArenaSheet { get; private set; }
+
+        public StakePolicySheet StakePolicySheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
 
