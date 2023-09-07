@@ -15,6 +15,7 @@ namespace Nekoyume.UI.Module
         [Space]
         [SerializeField] private Animator animator;
         [SerializeField] private TouchHandler touchHandler;
+        [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private GameObject grade5Effect;
         [SerializeField] private GameObject grade4Effect;
 
@@ -27,7 +28,7 @@ namespace Nekoyume.UI.Module
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
         private static readonly int AnimatorHashHide = Animator.StringToHash("Normal");
 
-        public void SetData(ItemBase itemBase, bool showDetail = false)
+        public void SetData(ItemBase itemBase, bool hideWithAlpha = false, bool showDetail = false)
         {
             base.SetData(itemBase);
 
@@ -44,6 +45,11 @@ namespace Nekoyume.UI.Module
                 tooltip.Show(itemBase, string.Empty, false, null);
             }).AddTo(_disposables);
 
+            if (hideWithAlpha)
+            {
+                canvasGroup.alpha = 0;
+            }
+
             grade5Effect.SetActive(equipment.Grade == 5);
             grade4Effect.SetActive(equipment.Grade == 4);
 
@@ -59,7 +65,7 @@ namespace Nekoyume.UI.Module
 
         public void ShowWithAnimation()
         {
-            Show();
+            canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
         }
     }

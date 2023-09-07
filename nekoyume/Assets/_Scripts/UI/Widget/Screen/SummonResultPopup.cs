@@ -34,10 +34,9 @@ namespace Nekoyume.UI
 
         [SerializeField] private SummonItemView[] summonItemViews;
 
-        private bool _isPlaying;
-        private int _viewCount;
-        private Coroutine _Coroutine;
         private int _normalSummonId = default;
+        private Coroutine _coroutine;
+        private readonly WaitForSeconds _waitAnimation = new WaitForSeconds(0.05f);
 
         protected override void Awake()
         {
@@ -83,32 +82,31 @@ namespace Nekoyume.UI
             }
             Debug.LogError(sb.ToString());
 
-            _viewCount = Mathf.Min(count, summonItemViews.Length);
-
             var firstView = summonItemViews.First();
             var firstResult = resultList.First();
-            firstView.SetData(firstResult, count == 1);
+            firstView.SetData(firstResult, true, count == 1);
 
             for (var i = 1; i < summonItemViews.Length; i++)
             {
                 var view = summonItemViews[i];
                 if (i < count)
                 {
-                    view.SetData(resultList[i]);
+                    view.SetData(resultList[i], true);
+                    view.Show();
                 }
                 else
                 {
-                    view.gameObject.SetActive(false);
+                    view.Hide();
                 }
             }
 
-            if (_Coroutine != null)
+            if (_coroutine != null)
             {
-                StopCoroutine(_Coroutine);
-                _Coroutine = null;
+                StopCoroutine(_coroutine);
+                _coroutine = null;
             }
 
-            _Coroutine = StartCoroutine(PlayResult(normal, great));
+            _coroutine = StartCoroutine(PlayResult(normal, great));
 
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
@@ -126,7 +124,6 @@ namespace Nekoyume.UI
 
         private IEnumerator PlayResult(bool normal, bool great)
         {
-            _isPlaying = false;
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
 
             videoPlayer.clip = currentVideoClip.summoning;
@@ -154,11 +151,10 @@ namespace Nekoyume.UI
             videoPlayer.gameObject.SetActive(false);
 
             yield return null;
-            for (var i = 0; i < _viewCount; i++)
+            foreach (var view in summonItemViews.Where(v => v.gameObject.activeSelf))
             {
-                var view = summonItemViews[i];
                 view.ShowWithAnimation();
-                yield return new WaitForSeconds(0.05f);
+                yield return _waitAnimation;
             }
         }
     }

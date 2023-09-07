@@ -5068,6 +5068,7 @@ GameObject:
   - component: {fileID: 2132912527656166809}
   - component: {fileID: 1797049770047718727}
   - component: {fileID: 615026439650885536}
+  - component: {fileID: 4201367411927262499}
   m_Layer: 5
   m_Name: SummonItemView
   m_TagString: Untagged
@@ -5146,11 +5147,24 @@ MonoBehaviour:
   gradeHsv: {fileID: 7172440194635937498}
   animator: {fileID: 2132912527656166809}
   touchHandler: {fileID: 1797049770047718727}
+  canvasGroup: {fileID: 4201367411927262499}
   grade5Effect: {fileID: 3406299633818737873}
   grade4Effect: {fileID: 8261827014740876137}
   optionTag: {fileID: 2904076921628000424}
   nameText: {fileID: 5158019513782421692}
   infoText: {fileID: 683180116980494255}
+--- !u!225 &4201367411927262499
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471576002313933860}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1838707776905037990
 GameObject:
   m_ObjectHideFlags: 0
