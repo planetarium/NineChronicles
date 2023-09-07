@@ -1,13 +1,11 @@
 Shader "Custom/AdditiveAlphaBlend" {
 Properties {
-
 	_MainTex ("MainTex", 2D) = "white" {}
-	_Adjust ("Adjust Factor", Float) = 1.0
 }
 
 Category {
 	Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" "PreviewType"="Plane" "CanUseSpriteAtlas"="True"  }
-	Blend One OneMinusSrcColor
+	Blend One OneMinusSrcAlpha
 	ColorMask RGB
 	Cull Off Lighting Off ZWrite Off
 	ZTest [unity_GUIZTestMode]
@@ -48,14 +46,10 @@ Category {
 
 				return v;
 			}
-			float _Adjust;
 			
 			fixed4 frag (v2f IN) : SV_Target
 			{
-				//return (IN.color * (1-IN.color.a* _Adjust))* tex2D(_MainTex, IN.texcoord) * IN.color.a;
-				//return IN.color * tex2D(_MainTex, IN.texcoord)* _Adjust;
-				return tex2D(_MainTex, IN.texcoord) + (tex2D(_MainTex, IN.texcoord) * tex2D(_MainTex, IN.texcoord).a * _Adjust);
-				//return tex2D(_MainTex, IN.texcoord).a;
+				return tex2D(_MainTex, IN.texcoord);
 			}
 			ENDCG 
 		}
