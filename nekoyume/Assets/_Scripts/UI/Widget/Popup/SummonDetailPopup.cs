@@ -60,14 +60,14 @@ namespace Nekoyume.UI
                 };
             }).OrderByDescending(model => model.EquipmentRow.Grade);
 
-            scroll.OnClick.Subscribe(PreviewAura).AddTo(_disposables);
+            scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
             scroll.UpdateData(models, true);
 
             titleText.text = summonRow.GetLocalizedName();
             base.Show();
         }
 
-        private void PreviewAura(SummonDetailCell.Model model)
+        private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
 
