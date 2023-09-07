@@ -25,6 +25,7 @@ namespace Nekoyume.UI
         }
 
         [SerializeField] private Button closeButton;
+        [SerializeField] private Animator animator;
         [SerializeField] private SimpleCostButton normalDrawButton;
         [SerializeField] private SimpleCostButton goldenDrawButton;
 
@@ -36,7 +37,8 @@ namespace Nekoyume.UI
 
         private int _normalSummonId = default;
         private Coroutine _coroutine;
-        private readonly WaitForSeconds _waitAnimation = new WaitForSeconds(0.05f);
+        private readonly WaitForSeconds _waitAnimation = new(0.05f);
+        private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
 
         protected override void Awake()
         {
@@ -151,6 +153,7 @@ namespace Nekoyume.UI
             videoPlayer.gameObject.SetActive(false);
 
             yield return null;
+            animator.SetTrigger(AnimatorHashShow);
             foreach (var view in summonItemViews.Where(v => v.gameObject.activeSelf))
             {
                 view.ShowWithAnimation();
