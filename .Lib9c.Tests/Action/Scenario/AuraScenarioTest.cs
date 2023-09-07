@@ -104,6 +104,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Equipments = new List<Guid>
                 {
                     _aura.ItemId,
+                    _aura.ItemId,
                 },
                 Costumes = new List<Guid>(),
                 Foods = new List<Guid>(),
@@ -111,9 +112,23 @@ namespace Lib9c.Tests.Action.Scenario
                 RuneInfos = new List<RuneSlotInfo>(),
             };
 
-            var nextState = has.Execute(new ActionContext
+            Assert.Throws<DuplicateEquipmentException>(() => has.Execute(new ActionContext
             {
                 BlockIndex = 2,
+                PreviousState = _initialState,
+                Random = new TestRandom(),
+                Signer = _agentAddress,
+            }));
+
+            has.Equipments = new List<Guid>
+            {
+                _aura.ItemId,
+            };
+
+            // equip aura because auraIgnoreSheet is empty
+            var nextState = has.Execute(new ActionContext
+            {
+                BlockIndex = 3,
                 PreviousState = _initialState,
                 Random = new TestRandom(),
                 Signer = _agentAddress,
