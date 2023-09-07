@@ -327,7 +327,7 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            var isNew = MailBox.Count(mail => mail.New && mail.requiredBlockIndex <= blockIndex) > 1;
             allButton.HasNotification.Value = isNew;
             receiveAllContainer.SetActive(isNew);
             Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
@@ -748,10 +748,6 @@ namespace Nekoyume.UI
 
         [Obsolete]
         public void Read(SellerMail sellerMail)
-        {
-        }
-
-        public void Read(SummonMail summonMail)
         {
         }
     }
