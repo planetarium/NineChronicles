@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +58,8 @@ namespace Nekoyume.Game.Entrance
 
                     var armor = equipments.OfType<Armor>().FirstOrDefault();
                     var weapon = equipments.OfType<Weapon>().FirstOrDefault();
-                    player = PlayerFactory.Create(avatarState, costumes, armor, weapon).GetComponent<Player>();
+                    var aura = equipments.OfType<Aura>().FirstOrDefault();
+                    player = PlayerFactory.Create(avatarState, costumes, armor, weapon, aura).GetComponent<Player>();
                     player.SpineController.Appear();
                     active = true;
                 }

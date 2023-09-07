@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -42,18 +42,52 @@ namespace Nekoyume.Helper
             return data.Title;
         }
 
+        public static GameObject GetAuraPrefab(int id, int level)
+        {
+            if (level < 0)
+                return null;
+
+            var datas = Get<AuraScriptableObject>().data;
+
+            var auras = datas.FirstOrDefault(x => x.id == id);
+            if(auras != null)
+            {
+                var index = AuraLevelToIndex(level);
+                if (index > auras.prefab.Count)
+                    return null;
+
+                return auras.prefab[index];
+            }
+
+            return null;
+        }
+
+        private static int AuraLevelToIndex(int level)
+        {
+            if (level < 2)
+                return 0;
+
+            if (level < 5)
+                return 1;
+
+            return 2;
+        }
+
         public static GameObject GetAuraWeaponPrefab(int id, int level)
         {
             var datas = Get<WeaponAuraScriptableObject>().data;
 
             var auras = datas.FirstOrDefault(x => x.id == id);
-            if (auras != null)
+            if (auras == null)
+                return null;
+
+            if(auras.prefab.Count == 1)
             {
-                var index = WeaponLevelToIndex(level);
-                return index > -1 ? auras.prefab[index] : null;
+                return auras.prefab[0];
             }
 
-            return null;
+            var index = WeaponLevelToIndex(level);
+            return index > -1 ? auras.prefab[index] : null;
         }
 
         private static int WeaponLevelToIndex(int level)
