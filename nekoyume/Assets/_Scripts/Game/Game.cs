@@ -337,9 +337,6 @@ namespace Nekoyume.Game
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-#if UNITY_ANDROID
-            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
-#endif
 
             GL.Clear(true, true, Color.black);
             var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
