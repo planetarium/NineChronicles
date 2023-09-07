@@ -129,6 +129,7 @@ namespace Nekoyume
             public const int Belt = 1;
             public const int Necklace = 1;
             public const int Ring = 2;
+            public const int Aura = 1;
         }
     }
 }

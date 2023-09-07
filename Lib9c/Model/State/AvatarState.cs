@@ -672,6 +672,7 @@ namespace Nekoyume.Model.State
                                 : int.MaxValue;
                         break;
                     case ItemSubType.Aura:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Aura;
                         requiredLevel = 1;
                         break;
                     default:
