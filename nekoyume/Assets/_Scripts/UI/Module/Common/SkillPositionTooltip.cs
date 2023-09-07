@@ -8,6 +8,8 @@ using System.Linq;
 using UnityEngine.UI;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
+using System;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module.Common
 {
@@ -53,9 +55,10 @@ namespace Nekoyume.UI.Module.Common
             titleText.text = skillRow.GetLocalizedName();
 
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
+
             if (L10nManager.ContainsKey(key))
             {
-                contentText.text = L10nManager.Localize(key);
+                SetSkillDescription(key, skillRow, optionRow.SkillDamageMin);
             }
             else
             {
@@ -92,6 +95,41 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
+        private void SetSkillDescription(string key, SkillSheet.Row skillRow, int skillValue)
+        {
+            var sheets = TableSheets.Instance;
+            List<string> arg = new List<string>();
+            var buffList = sheets.SkillBuffSheet[skillRow.Id].BuffIds;
+            if (buffList.Count == 2)
+            {
+                var buff = sheets.StatBuffSheet[buffList[0]];
+                var deBuff = sheets.StatBuffSheet[buffList[1]];
+                arg.Add(buff.Chance.ToString());
+                arg.Add(buff.Duration.ToString());
+                arg.Add((buff.Value + skillValue).ToString());
+                arg.Add(deBuff.Duration.ToString());
+                arg.Add(deBuff.Value.ToString());
+
+                var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
+                buffIconImage.overrideSprite = buffIcon;
+                buffStatTypeText.text = buff.StatType.GetAcronym();
+
+                var deBuffIcon = BuffHelper.GetStatBuffIcon(deBuff.StatType, true);
+                debuffIconImage.overrideSprite = deBuffIcon;
+                debuffStatTypeText.text = deBuff.StatType.GetAcronym();
+
+                buffObject.SetActive(true);
+                debuffObject.SetActive(true);
+            }
+            else
+            {
+                buffObject.SetActive(false);
+                debuffObject.SetActive(false);
+            }
+
+            contentText.text = L10nManager.Localize(key, arg.ToArray());
+        }
+
         public void Show(Skill skill)
         {
             Show(skill.SkillRow,
@@ -116,7 +154,7 @@ namespace Nekoyume.UI.Module.Common
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
             if (L10nManager.ContainsKey(key))
             {
-                contentText.text = L10nManager.Localize(key);
+                SetSkillDescription(key, skillRow, powerMin);
             }
             else
             {
