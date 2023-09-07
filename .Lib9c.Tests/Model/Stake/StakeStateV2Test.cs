@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Model.Stake
         [Theory]
         [InlineData(0, 0)]
         [InlineData(long.MaxValue, long.MaxValue)]
-        public void Constructor_Default(long startedBlockIndex, long receivedBlockIndex)
+        public void Constructor(long startedBlockIndex, long receivedBlockIndex)
         {
             var contract = new Contract(
                 Contract.StakeRegularFixedRewardSheetPrefix,
@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Model.Stake
         [InlineData(0, 0)]
         [InlineData(long.MaxValue, null)]
         [InlineData(long.MaxValue, long.MaxValue)]
-        public void Constructor_StakeState(long startedBlockIndex, long? receivedBlockIndex)
+        public void Constructor_With_StakeState(long startedBlockIndex, long? receivedBlockIndex)
         {
             var stakeState = new StakeState(
                 new PrivateKey().ToAddress(),
@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Model.Stake
         }
 
         [Fact]
-        public void Constructor_StakeState_Throw_ArgumentNullException()
+        public void Constructor_With_StakeState_Throw_ArgumentNullException()
         {
             var stakeState = new StakeState(new PrivateKey().ToAddress(), 0);
             var contract = new Contract(

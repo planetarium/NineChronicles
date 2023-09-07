@@ -21,7 +21,9 @@ namespace Nekoyume.Model.Stake
         public long LockupInterval { get; }
 
         public Contract(StakePolicySheet stakePolicySheet) : this(
-            stakePolicySheet.StakeRegularFixedRewardSheetValue,
+            stakePolicySheet?.StakeRegularFixedRewardSheetValue ?? throw new ArgumentNullException(
+                nameof(stakePolicySheet),
+                $"{nameof(stakePolicySheet)} is null"),
             stakePolicySheet.StakeRegularRewardSheetValue,
             stakePolicySheet.RewardIntervalValue,
             stakePolicySheet.LockupIntervalValue)
