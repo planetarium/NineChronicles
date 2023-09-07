@@ -166,7 +166,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowMobile()
         {
-            yield return null;
+            yield return new WaitUntil(() => Game.Game.instance.PortalConnect != null);
 
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)

@@ -24,7 +24,7 @@ namespace Nekoyume.Game.OAuth
         public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
 
         private const string WebClientId =
-            "340841465287-nuft8giaq0q2ci7utp4pi7fag191qc6s.apps.googleusercontent.com";
+            "449111430622-hu1uin72e3n3727rmab7e9sslbvnimrr.apps.googleusercontent.com";
 
         private readonly GoogleSignInConfiguration _configuration = new()
         {
@@ -122,10 +122,15 @@ namespace Nekoyume.Game.OAuth
 
             if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
             {
-                var addrString =
-                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(request.downloadHandler
-                        .text).address;
-                Address? address = string.IsNullOrEmpty(addrString) ? null : new Address(addrString);
+                var accessTokenResult =
+                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
+                        request.downloadHandler.text);
+                Address? address = null;
+                if (!string.IsNullOrEmpty(accessTokenResult.address))
+                {
+                    address = new Address(accessTokenResult.address);
+                }
+
                 Widget.Find<LoginSystem>().Show(address);
             }
         }
