@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -40,6 +41,9 @@ namespace Nekoyume.UI
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
+        [SerializeField]
+        private Button googleSignInButton;
+
         private int _guideIndex = 0;
         private const int GuideCount = 3;
 
@@ -72,19 +76,41 @@ namespace Nekoyume.UI
                     StartCoroutine(CoSocialLogin());
                 }
             }).AddTo(gameObject);
-            // signinButton.onClick.AddListener(() =>
-            // {
-            //     Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
-            //     qrCodeGuideBackground.Show();
-            //     qrCodeGuideContainer.SetActive(true);
-            //     foreach (var image in qrCodeGuideImages)
-            //     {
-            //         image.SetActive(false);
-            //     }
-            //
-            //     _guideIndex = 0;
-            //     ShowQrCodeGuide();
-            // });
+            googleSignInButton.onClick.AddListener(() =>
+            {
+                if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+                {
+                    google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+                }
+
+                if (google.State.Value is not (GoogleSigninBehaviour.SignInState.Signed or
+                    GoogleSigninBehaviour.SignInState.Waiting))
+                {
+                    google.OnSignIn();
+                    startButtonContainer.SetActive(false);
+                    google.State
+                        .SkipLatestValueOnSubscribe()
+                        .First()
+                        .Subscribe(state =>
+                        {
+                            startButtonContainer.SetActive(
+                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                        });
+                }
+            });
+            signinButton.onClick.AddListener(() =>
+            {
+                Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+                qrCodeGuideBackground.Show();
+                qrCodeGuideContainer.SetActive(true);
+                foreach (var image in qrCodeGuideImages)
+                {
+                    image.SetActive(false);
+                }
+
+                _guideIndex = 0;
+                ShowQrCodeGuide();
+            });
             qrCodeGuideNextButton.onClick.AddListener(() =>
             {
                 _guideIndex++;
@@ -95,6 +121,7 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
+            googleSignInButton.interactable = true;
             GetGuestPrivateKey();
         }
 
@@ -139,7 +166,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowMobile()
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitUntil(() => Game.Game.instance.PortalConnect != null);
 
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)

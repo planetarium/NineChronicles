@@ -1,10 +1,12 @@
 <dependencies>
   <packages>
+    <package>com.google.android.gms:play-services-auth:16+</package>
     <package>com.google.android.gms:play-services-base:18.2.0</package>
     <package>com.google.firebase:firebase-analytics:21.3.0</package>
     <package>com.google.firebase:firebase-analytics-unity:11.3.0</package>
     <package>com.google.firebase:firebase-app-unity:11.3.0</package>
     <package>com.google.firebase:firebase-common:20.3.3</package>
+    <package>com.google.signin:google-signin-support:1.0.4</package>
   </packages>
   <files>
     <file>Assets/Plugins/Android/androidx.annotation.annotation-1.5.0.jar</file>
@@ -36,6 +38,9 @@
     <file>Assets/Plugins/Android/androidx.versionedparcelable.versionedparcelable-1.1.0.aar</file>
     <file>Assets/Plugins/Android/androidx.viewpager.viewpager-1.0.0.aar</file>
     <file>Assets/Plugins/Android/com.google.android.gms.play-services-ads-identifier-18.0.0.aar</file>
+    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-16.0.1.aar</file>
+    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-api-phone-16.0.0.aar</file>
+    <file>Assets/Plugins/Android/com.google.android.gms.play-services-auth-base-16.0.0.aar</file>
     <file>Assets/Plugins/Android/com.google.android.gms.play-services-base-18.2.0.aar</file>
     <file>Assets/Plugins/Android/com.google.android.gms.play-services-basement-18.1.0.aar</file>
     <file>Assets/Plugins/Android/com.google.android.gms.play-services-measurement-21.3.0.aar</file>
@@ -57,6 +62,7 @@
     <file>Assets/Plugins/Android/com.google.firebase.firebase-installations-interop-17.0.1.aar</file>
     <file>Assets/Plugins/Android/com.google.firebase.firebase-measurement-connector-19.0.0.aar</file>
     <file>Assets/Plugins/Android/com.google.guava.listenablefuture-1.0.jar</file>
+    <file>Assets/Plugins/Android/com.google.signin.google-signin-support-1.0.4.aar</file>
     <file>Assets/Plugins/Android/javax.inject.javax.inject-1.jar</file>
     <file>Assets/Plugins/Android/org.jetbrains.annotations-13.0.jar</file>
     <file>Assets/Plugins/Android/org.jetbrains.kotlin.kotlin-stdlib-1.7.10.jar</file>
