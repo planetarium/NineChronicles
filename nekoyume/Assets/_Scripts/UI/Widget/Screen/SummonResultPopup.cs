@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -126,6 +127,10 @@ namespace Nekoyume.UI
 
         private IEnumerator PlayResult(bool normal, bool great)
         {
+            var audioController = AudioController.instance;
+            var currentMusic = audioController.CurrentPlayingMusicName;
+            audioController.StopAll(0.5f);
+
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
 
             videoPlayer.clip = currentVideoClip.summoning;
@@ -159,6 +164,9 @@ namespace Nekoyume.UI
                 view.ShowWithAnimation();
                 yield return _waitAnimation;
             }
+
+            yield return new WaitForSeconds(1f);
+            audioController.PlayMusic(currentMusic);
         }
     }
 }
