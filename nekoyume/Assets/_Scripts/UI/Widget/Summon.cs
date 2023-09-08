@@ -41,6 +41,7 @@ namespace Nekoyume.UI
         public int goldenSummonId;
 
         public const int SummonGroup = 2;
+        private static readonly int[] Counts = { 1, 10 };
         private SummonSheet.Row[] _summonRows;
         private bool _isInitialized;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -271,10 +272,31 @@ namespace Nekoyume.UI
 
         private static void GoToMarket()
         {
-            // Todo : close summon or result popup
+            Find<Summon>().Close(true);
+            Find<SummonResultPopup>().Close(true);
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             Find<MobileShop>().Show();
+        }
+
+        public static bool HasNotification
+        {
+            get
+            {
+                var result = false;
+                var summonSheet = Game.Game.instance.TableSheets.SummonSheet;
+                foreach (var summonRow in summonSheet)
+                {
+                    foreach (var count in Counts)
+                    {
+                        var costType = (CostType)summonRow.CostMaterial;
+                        var cost = summonRow.CostMaterialCount * count;
+                        result |= SimpleCostButton.CheckCostOfType(costType, cost);
+                    }
+                }
+
+                return result;
+            }
         }
     }
 }

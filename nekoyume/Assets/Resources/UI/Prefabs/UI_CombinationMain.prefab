@@ -280,6 +280,7 @@ MonoBehaviour:
   closeButton: {fileID: 3174719986751943182}
   craftNotificationImage: {fileID: 6274492409712002948}
   runeNotificationImage: {fileID: 889186927360354802}
+  summonNotificationImage: {fileID: 3672704464163336236}
   speechBubble: {fileID: 6080656401470243660}
 --- !u!225 &3856260509446582021
 CanvasGroup:
@@ -6661,7 +6662,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
