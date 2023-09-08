@@ -103,10 +103,10 @@ namespace Nekoyume
             PlayerPrefs.SetInt(VolumeMusicIsMutedKey, isVolumeMusicMuted ? 1 : 0);
             PlayerPrefs.SetInt(VolumeSfxIsMutedKey, isVolumeSfxMuted ? 1 : 0);
 
-            PlayerPrefs.SetInt(PushEnabledKey, isPushEnabled ? 1 : 0); 
-            PlayerPrefs.SetInt(PushNightTimeEnabledKey, isNightTimePushEnabled ? 1 : 0); 
-            PlayerPrefs.SetInt(PushDailyRewardEnabledKey, isRewardPushEnabled ? 1 : 0); 
-            PlayerPrefs.SetInt(PushWorkshopEnabledKey, isWorkshopPushEnabled ? 1 : 0); 
+            PlayerPrefs.SetInt(PushEnabledKey, isPushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushNightTimeEnabledKey, isNightTimePushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushDailyRewardEnabledKey, isRewardPushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushWorkshopEnabledKey, isWorkshopPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushArenaEnabledKey, isArenaPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushWorldbossEnabledKey, isWorldbossPushEnabled ? 1 : 0);
         }
@@ -120,7 +120,9 @@ namespace Nekoyume
 
         private void SetResolution()
         {
+#if !(UNITY_ANDROID || UNITY_IOS)
             Screen.SetResolution(Resolutions[resolutionIndex].Width, Resolutions[resolutionIndex].Height, !isWindowed);
+#endif
         }
     }
 }

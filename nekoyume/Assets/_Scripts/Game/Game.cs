@@ -1458,21 +1458,5 @@ namespace Nekoyume.Game
         {
             Debug.Log(_commandLineOptions.ToString());
         }
-
-#if UNITY_ANDROID
-        void Update()
-        {
-            if (Platform.IsMobilePlatform())
-            {
-                int width = Screen.resolutions[0].width;
-                int height = Screen.resolutions[0].height;
-                if (Screen.currentResolution.width != height || Screen.currentResolution.height != width)
-                {
-                    Debug.LogWarning($"fix Resolution to w={width} h={height}");
-                    Screen.SetResolution(height, width, true);
-                }
-            }
-        }
-#endif
     }
 }
