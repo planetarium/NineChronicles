@@ -248,8 +248,8 @@
         <member name="M:Libplanet.Blockchain.BlockChain.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
+        <member name="M:Libplanet.Blockchain.BlockChain.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetTxExecution(Libplanet.Types.Blocks.BlockHash,Libplanet.Types.Tx.TxId)">
             <summary>
@@ -773,10 +773,10 @@
         <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStateRoot(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <summary>
             Returns the state root associated with <see cref="T:Libplanet.Types.Blocks.BlockHash"/>
             <paramref name="offset"/>.
@@ -798,6 +798,9 @@
                 </description></item>
             </list>
             </exception>
+            <remarks>
+            An <see cref="T:Libplanet.Store.Trie.ITrie"/> returned by this method is read-only.
+            </remarks>
         </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
