@@ -53,10 +53,7 @@ namespace Nekoyume.Helper
             if(auras != null)
             {
                 var index = AuraLevelToIndex(level);
-                if (index > auras.prefab.Count)
-                    return null;
-
-                return auras.prefab[index];
+                return auras.prefab[Mathf.Clamp(index, 0, auras.prefab.Count - 1)];
             }
 
             return null;
