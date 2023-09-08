@@ -30,7 +30,6 @@ namespace Nekoyume.UI
         public class AccessTokenResult : RequestResult
         {
             public string accessToken;
-            public string address;
         }
 
         [Serializable]
@@ -47,8 +46,7 @@ namespace Nekoyume.UI
         private string accessToken;
         private string txId;
 
-        public readonly string PortalUrl;
-        public const string GoogleAuthEndpoint = "/api/auth/login/google";
+        private readonly string portalUrl;
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
@@ -57,7 +55,7 @@ namespace Nekoyume.UI
 
         public PortalConnect(string url)
         {
-            PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
+            portalUrl = url ?? throw new ArgumentNullException(nameof(url));
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
@@ -72,7 +70,7 @@ namespace Nekoyume.UI
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
-            Application.OpenURL($"{PortalUrl}/mobile-signin?clientSecret={clientSecret}");
+            Application.OpenURL($"{portalUrl}/mobile-signin?clientSecret={clientSecret}");
             Analyzer.Instance.Track("Unity/Portal/1");
         }
 
@@ -154,7 +152,7 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Portal/3");
 
-            var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            var url = $"{portalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
             var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
 
@@ -184,7 +182,7 @@ namespace Nekoyume.UI
 
         private async void AccessToken()
         {
-            var url = $"{PortalUrl}{AccessTokenEndpoint}";
+            var url = $"{portalUrl}{AccessTokenEndpoint}";
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -202,11 +200,6 @@ namespace Nekoyume.UI
                 Debug.Log(e.Text);
             }
 
-            HandleAccessTokenResult(request);
-        }
-
-        public bool HandleAccessTokenResult(UnityWebRequest request)
-        {
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -214,22 +207,23 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
-                    return true;
                 }
-
-                Debug.LogError($"AccessToken Deserialize Error: {json}");
-                ShowRequestErrorPopup(data);
-                return false;
+                else
+                {
+                    Debug.LogError($"AccessToken Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
             }
-
-            Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
-            ShowRequestErrorPopup(request.result, request.error);
-            return false;
+            else
+            {
+                Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(request.result, request.error);
+            }
         }
 
         public IEnumerator RequestPledge(Address address)
         {
-            var url = $"{PortalUrl}{RequestPledgeEndpoint}";
+            var url = $"{portalUrl}{RequestPledgeEndpoint}";
             var os = string.Empty;
 #if UNITY_ANDROID
             os = "android";

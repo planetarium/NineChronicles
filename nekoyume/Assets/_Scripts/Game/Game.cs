@@ -266,7 +266,6 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
 #if ENABLE_FIREBASE
@@ -326,6 +325,9 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
+#if UNITY_ANDROID
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
+#endif
 
             // Initialize Agent
             var agentInitialized = false;

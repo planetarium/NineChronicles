@@ -1,7 +1,3 @@
-# Version 1.2.177 - Aug 14, 2023
-* iOS Resolver - Added `/opt/homebrew/bin` to Cocoapod executable search path.
-  Fixes #627
-
 # Version 1.2.176 - Apr 27, 2023
 * Android Resolver - Added two Android Resolver settings to determine whether
   EDM4U injects custom local Maven repo path as a relative path or full path.
