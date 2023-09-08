@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Model
                 List<string> arg = new List<string>();
                 var buff = sheets.StatBuffSheet[buffList[0]];
                 var deBuff = sheets.StatBuffSheet[buffList[1]];
-                arg.Add(buff.Chance.ToString());
+                arg.Add(chanceText);
                 arg.Add(buff.Duration.ToString());
                 arg.Add(valueText);
                 arg.Add(deBuff.Duration.ToString());
