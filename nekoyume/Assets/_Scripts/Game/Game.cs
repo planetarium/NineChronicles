@@ -387,8 +387,14 @@ namespace Nekoyume.Game
             StartCoroutine(InitializeIAP());
 #endif
             yield return StartCoroutine(InitializeWithAgent());
-            yield return createSecondWidgetCoroutine;
-            var initializeSecondWidgetsCoroutine = StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
+
+            IEnumerator CoInitializeSecondWidget()
+            {
+                yield return createSecondWidgetCoroutine;
+                yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
+            }
+
+            var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
             yield return StartCoroutine(CoCheckPledge());
 
 #if UNITY_EDITOR_WIN
