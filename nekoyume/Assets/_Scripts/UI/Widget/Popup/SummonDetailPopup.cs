@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -58,8 +61,9 @@ namespace Nekoyume.UI
                     Options = equipmentItemSubRecipeSheet[recipeRow.SubRecipeIds[0]].Options,
                     Ratio = pair.Item2 / ratioSum,
                 };
-            }).OrderByDescending(model => model.EquipmentRow.Grade);
+            }).OrderBy(model => model.Ratio);
 
+            _disposables.DisposeAllAndClear();
             scroll.OnClick.Subscribe(PreviewDetail).AddTo(_disposables);
             scroll.UpdateData(models, true);
 
@@ -70,6 +74,7 @@ namespace Nekoyume.UI
         private void PreviewDetail(SummonDetailCell.Model model)
         {
             // CharacterView
+            SetCharacter(model.EquipmentRow);
 
             // MainStatText
             var mainStatText = mainStatTexts[0];
@@ -80,6 +85,27 @@ namespace Nekoyume.UI
 
             // OptionView
             recipeOptionView.SetOptions(model.Options, false);
+        }
+
+        private static void SetCharacter(EquipmentItemSheet.Row equipmentRow)
+        {
+            var game = Game.Game.instance;
+
+            var maxLevel = game.TableSheets.EnhancementCostSheetV3.Values
+                .Where(row =>
+                    row.ItemSubType == equipmentRow.ItemSubType &&
+                    row.Grade == equipmentRow.Grade)
+                .Max(row => row.Level);
+            var resultItem = (Equipment)ItemFactory.CreateItemUsable(
+                    equipmentRow, Guid.NewGuid(), 0L, maxLevel);
+
+            var (equipments, costumes) = game.States.GetEquippedItems(BattleType.Adventure);
+            var sameType = equipments.FirstOrDefault(e => e.ItemSubType == equipmentRow.ItemSubType);
+            equipments.Remove(sameType);
+            equipments.Add(resultItem);
+
+            var avatarState = game.States.CurrentAvatarState;
+            game.Lobby.FriendCharacter.Set(avatarState, costumes, equipments);
         }
     }
 }
