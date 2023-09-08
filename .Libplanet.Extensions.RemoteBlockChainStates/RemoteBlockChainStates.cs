@@ -39,7 +39,7 @@ namespace Libplanet.Extensions.RemoteBlockChainStates
             return new RemoteBlockState(_explorerEndpoint, offset).GetValidatorSet();
         }
 
-        public IBlockState GetBlockState(BlockHash? offset)
+        public IAccountState GetAccountState(BlockHash? offset)
         {
             return new RemoteBlockState(_explorerEndpoint, offset);
         }

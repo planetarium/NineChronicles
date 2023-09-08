@@ -8,6 +8,7 @@ using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
+using Libplanet.Store.Trie;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Consensus;
@@ -87,6 +88,8 @@ namespace Nekoyume.Action
             {
                 _delta = delta;
             }
+
+            public ITrie Trie => throw new NotSupportedException();
 
             public IAccountDelta Delta => _delta;
 

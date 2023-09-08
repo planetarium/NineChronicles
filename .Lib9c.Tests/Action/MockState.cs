@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
+    using Libplanet.Store.Trie;
     using Libplanet.Types.Assets;
     using Libplanet.Types.Consensus;
 
@@ -78,6 +79,8 @@ namespace Lib9c.Tests.Action
         }
 
         public static MockState Empty => _empty;
+
+        public ITrie Trie => throw new NotSupportedException();
 
         public IImmutableDictionary<Address, IValue> States => _states;
 
