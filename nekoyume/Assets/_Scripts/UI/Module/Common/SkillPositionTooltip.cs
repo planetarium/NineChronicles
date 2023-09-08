@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module.Common
 
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, optionRow.SkillDamageMin);
+                SetSkillDescription(key, skillRow, optionRow.SkillDamageMin, optionRow.SkillChanceMin);
             }
             else
             {
@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Module.Common
             gameObject.SetActive(true);
         }
 
-        private void SetSkillDescription(string key, SkillSheet.Row skillRow, int skillValue)
+        private void SetSkillDescription(string key, SkillSheet.Row skillRow, int skillValue, int skillChance)
         {
             var sheets = TableSheets.Instance;
             List<string> arg = new List<string>();
@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Module.Common
             {
                 var buff = sheets.StatBuffSheet[buffList[0]];
                 var deBuff = sheets.StatBuffSheet[buffList[1]];
-                arg.Add(buff.Chance.ToString());
+                arg.Add(skillChance.ToString());
                 arg.Add(buff.Duration.ToString());
                 arg.Add((buff.Value + skillValue).ToString());
                 arg.Add(deBuff.Duration.ToString());
@@ -154,7 +154,7 @@ namespace Nekoyume.UI.Module.Common
             var key = $"SKILL_DESCRIPTION_{skillRow.Id}";
             if (L10nManager.ContainsKey(key))
             {
-                SetSkillDescription(key, skillRow, powerMin);
+                SetSkillDescription(key, skillRow, powerMin, chanceMin);
             }
             else
             {
