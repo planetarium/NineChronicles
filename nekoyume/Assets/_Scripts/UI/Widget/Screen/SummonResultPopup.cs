@@ -39,6 +39,7 @@ namespace Nekoyume.UI
         private int _normalSummonId = default;
         private Coroutine _coroutine;
         private readonly WaitForSeconds _waitAnimation = new(0.05f);
+        private readonly List<IDisposable> _disposables = new();
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
 
         protected override void Awake()
@@ -54,11 +55,7 @@ namespace Nekoyume.UI
                 Close(true);
             };
 
-            LoadingHelper.Summon.Subscribe(value =>
-            {
-                normalDrawButton.Loading = value;
-                goldenDrawButton.Loading = value;
-            }).AddTo(gameObject);
+            Summon.ButtonSubscribe(new[] { normalDrawButton, goldenDrawButton }, gameObject);
         }
 
         public void Show(
@@ -113,12 +110,8 @@ namespace Nekoyume.UI
 
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
-            drawButton.SetCost(
-                (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount * count);
-            drawButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
-            }).AddTo(gameObject);
+            Summon.ButtonSubscribe(drawButton, summonRow, count, _disposables);
+
             normalDrawButton.gameObject.SetActive(normal);
             goldenDrawButton.gameObject.SetActive(!normal);
 
