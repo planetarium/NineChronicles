@@ -137,7 +137,7 @@ namespace Nekoyume.UI
             // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
-            StartCoroutine(CoShowMobile());
+            ShowMobile();
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
@@ -164,10 +164,8 @@ namespace Nekoyume.UI
             ShowQrCodeGuide();
         }
 
-        private IEnumerator CoShowMobile()
+        private void ShowMobile()
         {
-            yield return new WaitUntil(() => Game.Game.instance.PortalConnect != null);
-
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)
             // {
@@ -184,13 +182,9 @@ namespace Nekoyume.UI
             //     videoSkipButton.gameObject.SetActive(true);
             // }
             // else
-            {
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-            }
-
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
-            // signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
         }
 
         private void OnVideoEnd()
