@@ -487,7 +487,6 @@ namespace Nekoyume.Game
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
                 {
-                    Analyzer.Instance.Track("Unity/RPC/OnRetryStarted");
                     Debug.Log($"[Game]RPCAgent OnRetryStarted. {rpcAgent.Address.ToHex()}");
                     OnRPCAgentRetryStarted(agent);
                 })
@@ -497,7 +496,6 @@ namespace Nekoyume.Game
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
                 {
-                    Analyzer.Instance.Track("Unity/RPC/OnRetryEnded");
                     Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
                     OnRPCAgentRetryEnded(agent);
                 })
@@ -526,7 +524,6 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnDisconnected. {rpcAgent.Address.ToHex()}");
-                    Analyzer.Instance.Track("Unity/RPC/OnDisconnected");
                     QuitWithAgentConnectionError(agent);
                 })
                 .AddTo(gameObject);
