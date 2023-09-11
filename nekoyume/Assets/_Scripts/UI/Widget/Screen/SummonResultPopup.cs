@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Helper;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData.Summon;
@@ -25,6 +25,7 @@ namespace Nekoyume.UI
         }
 
         [SerializeField] private Button closeButton;
+        [SerializeField] private Animator animator;
         [SerializeField] private SimpleCostButton normalDrawButton;
         [SerializeField] private SimpleCostButton goldenDrawButton;
 
@@ -34,10 +35,11 @@ namespace Nekoyume.UI
 
         [SerializeField] private SummonItemView[] summonItemViews;
 
-        private bool _isPlaying;
-        private int _viewCount;
-        private Coroutine _Coroutine;
         private int _normalSummonId = default;
+        private Coroutine _coroutine;
+        private readonly WaitForSeconds _waitAnimation = new(0.05f);
+        private readonly List<IDisposable> _disposables = new();
+        private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
 
         protected override void Awake()
         {
@@ -52,11 +54,7 @@ namespace Nekoyume.UI
                 Close(true);
             };
 
-            LoadingHelper.Summon.Subscribe(value =>
-            {
-                normalDrawButton.Loading = value;
-                goldenDrawButton.Loading = value;
-            }).AddTo(gameObject);
+            Summon.ButtonSubscribe(new[] { normalDrawButton, goldenDrawButton }, gameObject);
         }
 
         public void Show(
@@ -83,41 +81,37 @@ namespace Nekoyume.UI
             }
             Debug.LogError(sb.ToString());
 
-            _viewCount = Mathf.Min(count, summonItemViews.Length);
-
             var firstView = summonItemViews.First();
             var firstResult = resultList.First();
-            firstView.SetData(firstResult, count == 1);
+            firstView.SetData(firstResult, true, count == 1);
 
             for (var i = 1; i < summonItemViews.Length; i++)
             {
                 var view = summonItemViews[i];
                 if (i < count)
                 {
-                    view.SetData(resultList[i]);
+                    view.SetData(resultList[i], true);
+                    view.Show();
                 }
                 else
                 {
-                    view.gameObject.SetActive(false);
+                    view.Hide();
                 }
             }
 
-            if (_Coroutine != null)
+            if (_coroutine != null)
             {
-                StopCoroutine(_Coroutine);
-                _Coroutine = null;
+                StopCoroutine(_coroutine);
+                _coroutine = null;
             }
 
-            _Coroutine = StartCoroutine(PlayResult(normal, great));
+            _coroutine = StartCoroutine(PlayResult(normal, great));
 
+            _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
-            drawButton.SetCost(
-                (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount * count);
-            drawButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
-            }).AddTo(gameObject);
+            Summon.ButtonSubscribe(drawButton, summonRow, count, _disposables);
+
             normalDrawButton.gameObject.SetActive(normal);
             goldenDrawButton.gameObject.SetActive(!normal);
 
@@ -126,7 +120,10 @@ namespace Nekoyume.UI
 
         private IEnumerator PlayResult(bool normal, bool great)
         {
-            _isPlaying = false;
+            var audioController = AudioController.instance;
+            var currentMusic = audioController.CurrentPlayingMusicName;
+            audioController.StopAll(0.5f);
+
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
 
             videoPlayer.clip = currentVideoClip.summoning;
@@ -154,12 +151,15 @@ namespace Nekoyume.UI
             videoPlayer.gameObject.SetActive(false);
 
             yield return null;
-            for (var i = 0; i < _viewCount; i++)
+            animator.SetTrigger(AnimatorHashShow);
+            foreach (var view in summonItemViews.Where(v => v.gameObject.activeSelf))
             {
-                var view = summonItemViews[i];
                 view.ShowWithAnimation();
-                yield return new WaitForSeconds(0.05f);
+                yield return _waitAnimation;
             }
+
+            yield return new WaitForSeconds(1f);
+            audioController.PlayMusic(currentMusic);
         }
     }
 }
