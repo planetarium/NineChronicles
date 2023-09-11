@@ -53,7 +53,7 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close();
+                Close(true);
             });
             CloseWidget = () =>
             {
