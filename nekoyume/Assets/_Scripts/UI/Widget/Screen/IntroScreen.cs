@@ -78,6 +78,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             googleSignInButton.onClick.AddListener(() =>
             {
+                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
                 if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
                 {
                     google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
@@ -237,6 +238,7 @@ namespace Nekoyume.UI
             guestButton.gameObject.SetActive(true);
             guestButton.onClick.AddListener(() =>
             {
+                Analyzer.Instance.Track("Unity/Intro/Guest/Click");
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
                 Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);

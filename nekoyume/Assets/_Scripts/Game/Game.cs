@@ -353,6 +353,7 @@ namespace Nekoyume.Game
                 )
             );
             yield return new WaitUntil(() => agentInitialized);
+            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
@@ -387,6 +388,7 @@ namespace Nekoyume.Game
             StartCoroutine(InitializeIAP());
 #endif
             yield return StartCoroutine(InitializeWithAgent());
+            Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
             IEnumerator CoInitializeSecondWidget()
             {
@@ -411,6 +413,7 @@ namespace Nekoyume.Game
             StartCoroutine(CoInitDccConnecting());
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
             yield return initializeSecondWidgetsCoroutine;
+            Analyzer.Instance.Track("Unity/Intro/Start/SecondWidgetCompleted");
             // Initialize Stage
             Stage.Initialize();
             Arena.Initialize();
@@ -423,6 +426,8 @@ namespace Nekoyume.Game
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ProgressCompleted);
             ShowNext(agentInitializeSucceed);
+            Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
+
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
         }
@@ -482,6 +487,7 @@ namespace Nekoyume.Game
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
                 {
+                    Analyzer.Instance.Track("Unity/RPC/OnRetryStarted");
                     Debug.Log($"[Game]RPCAgent OnRetryStarted. {rpcAgent.Address.ToHex()}");
                     OnRPCAgentRetryStarted(agent);
                 })
@@ -491,6 +497,7 @@ namespace Nekoyume.Game
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
                 {
+                    Analyzer.Instance.Track("Unity/RPC/OnRetryEnded");
                     Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
                     OnRPCAgentRetryEnded(agent);
                 })
@@ -519,6 +526,7 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnDisconnected. {rpcAgent.Address.ToHex()}");
+                    Analyzer.Instance.Track("Unity/RPC/OnDisconnected");
                     QuitWithAgentConnectionError(agent);
                 })
                 .AddTo(gameObject);
@@ -707,9 +715,11 @@ namespace Nekoyume.Game
 
                     while (!States.PledgeRequested)
                     {
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
                         yield return portalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
                     }
                 }
 
@@ -719,6 +729,7 @@ namespace Nekoyume.Game
 
                     while (!States.PledgeApproved)
                     {
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
                         var patronAddress = States.PatronAddress!.Value;
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
