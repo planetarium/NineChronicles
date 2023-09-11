@@ -3,17 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 
 namespace Nekoyume.UI.Module
 {
-    public class ShopDynamicGridLayoutView : MonoBehaviour
+    public class IAPShopDynamicGridLayoutView : MonoBehaviour
     {
         [SerializeField]
-        float space;
+        private float space;
+
+        [SerializeField]
+        private IAPShopProductCellView cellViewOrigin;
+
+        private List<IAPShopProductCellView> _childProductList = new List<IAPShopProductCellView>();
+        private Dictionary<string, IAPShopProductCellView> _childProductDic = new Dictionary<string, IAPShopProductCellView>();
 
         public void OnEnable()
         {
             Refresh();
+        }
+
+        public void SetSortOrder()
+        {
+
+        }
+
+        public void AddProduct(ProductSchema productData)
+        {
+            if(!_childProductDic.TryGetValue(productData.GoogleSku, out var product))
+            {
+                product = Instantiate(cellViewOrigin, transform);
+                _childProductList.Add(product);
+                _childProductDic.Add(productData.GoogleSku, product);
+            }
+            product.SetData(productData);
         }
 
         public void Refresh()
@@ -34,6 +57,7 @@ namespace Nekoyume.UI.Module
                 children[i].anchorMax = new Vector2(0, 1);
 
                 children[i].SetSiblingIndex(i);
+
                 children[i].localPosition = lastPos;
                 if (lastPos.x + children[i].rect.width + space > rectTrans.rect.width ||
                     lastPos.x + children[i].rect.width + space + children[Mathf.Min((i + 1), (children.Count - 1))].rect.width + space > rectTrans.rect.width)
