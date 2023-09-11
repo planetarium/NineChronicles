@@ -68,13 +68,6 @@ namespace Nekoyume.Action
 #endif
 
             var sheet = states.GetState(sheetAddress);
-            if (sheet is not null &&
-                StakePolicySheet.SheetPrefixRules.Any(tuple => TableName.StartsWith(tuple.value)))
-            {
-                var msg = $"{TableName} already exists.";
-                throw new ArgumentException(nameof(TableName), msg);
-            }
-
             var value = sheet is null ? string.Empty : sheet.ToDotnetString();
 
             Log.Verbose(
