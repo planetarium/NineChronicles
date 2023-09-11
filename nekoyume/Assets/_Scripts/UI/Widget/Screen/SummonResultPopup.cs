@@ -107,6 +107,7 @@ namespace Nekoyume.UI
 
             _coroutine = StartCoroutine(PlayResult(normal, great));
 
+            _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
             drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
             Summon.ButtonSubscribe(drawButton, summonRow, count, _disposables);
