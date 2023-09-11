@@ -209,6 +209,7 @@ namespace Nekoyume.UI
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
                     loginSystem.Show(_keyStorePath, _privateKey);
+                    Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
                 });
             }
             else
