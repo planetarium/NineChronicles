@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private GameObject grade5Effect;
         [SerializeField] private GameObject grade4Effect;
+        [SerializeField] private GameObject gradeEffect;
 
         [SerializeField] private ItemOptionTag optionTag;
 
@@ -52,6 +53,7 @@ namespace Nekoyume.UI.Module
 
             grade5Effect.SetActive(equipment.Grade == 5);
             grade4Effect.SetActive(equipment.Grade == 4);
+            gradeEffect.SetActive(false);
 
             optionTag.Set(equipment);
 
@@ -67,6 +69,11 @@ namespace Nekoyume.UI.Module
         {
             canvasGroup.alpha = 1;
             animator.SetTrigger(AnimatorHashShow);
+
+            if (grade4Effect.activeSelf || grade5Effect.activeSelf)
+            {
+                gradeEffect.SetActive(true);
+            }
         }
     }
 }
