@@ -1,11 +1,13 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using Bencodex.Types;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Stake;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Serilog;
@@ -242,6 +244,26 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0, stakeState.ReceivedBlockIndex);
             Assert.Equal(_currency * 100, states.GetBalance(stakeState.address, _currency));
             Assert.Equal(_currency * 0, states.GetBalance(_signerAddress, _currency));
+        }
+
+        [Fact]
+        public void RestrictForStakeStateV2()
+        {
+            var action = new Stake2(50);
+            Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
+            {
+                PreviousState = _initialState.SetState(
+                    StakeState.DeriveAddress(_signerAddress),
+                    new StakeStateV2(
+                        new Contract(
+                            "StakeRegularFixedRewardSheet_V1",
+                            "StakeRegularRewardSheet_V1",
+                            50400,
+                            201600),
+                        0).Serialize()),
+                Signer = _signerAddress,
+                BlockIndex = 0,
+            }));
         }
 
         [Fact]
