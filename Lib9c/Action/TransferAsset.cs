@@ -13,6 +13,7 @@ using Lib9c;
 using Lib9c.Abstractions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.Stake;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -117,11 +118,82 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
-            if (state.TryGetStakeStateV2(Recipient, out _))
+            if (state.TryGetState(Recipient, out IValue serializedStakeState))
             {
-                throw new ArgumentException(
-                    "You can't send assets to StakeState.",
-                    nameof(Recipient));
+                bool isStakeStateOrMonsterCollectionState;
+                if (serializedStakeState is Dictionary dictionary)
+                {
+                    try
+                    {
+                        _ = new StakeState(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+
+                    try
+                    {
+                        _ = new MonsterCollectionState0(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+
+                    try
+                    {
+                        _ = new MonsterCollectionState(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+                }
+
+                if (serializedStakeState is List serializedStakeStateV2)
+                {
+                    try
+                    {
+                        _ = new StakeStateV2(serializedStakeStateV2);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+                }
             }
 
             var ended = DateTimeOffset.UtcNow;
