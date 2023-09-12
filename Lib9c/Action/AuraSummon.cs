@@ -67,6 +67,39 @@ namespace Nekoyume.Action
             SummonCount = plainValue[SummonCountKey].ToInteger();
         }
 
+        public static IEnumerable<int> PickRecipe(SummonSheet.Row summonRow, int summonCount, IRandom random)
+        {
+            var result = new List<int>();
+            for (var i = 0; i < summonCount; i++)
+            {
+                var recipeValue = random.Next(1, summonRow.CumulativeRecipe6Ratio + 1);
+                if (recipeValue <= summonRow.CumulativeRecipe1Ratio)
+                {
+                    result.Add(summonRow.Recipes[0].Item1);
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe2Ratio)
+                {
+                    result.Add(summonRow.Recipes[1].Item1);
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe3Ratio)
+                {
+                    result.Add(summonRow.Recipes[2].Item1);
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe4Ratio)
+                {
+                    result.Add(summonRow.Recipes[3].Item1);
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe5Ratio)
+                {
+                    result.Add(summonRow.Recipes[4].Item1);
+                }
+
+                result.Add(summonRow.Recipes[5].Item1);
+            }
+
+            return result;
+        }
+
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
@@ -156,10 +189,10 @@ namespace Nekoyume.Action
                 SummonCount += 1;
             }
 
-            for (var i = 0; i < SummonCount; i++)
-            {
-                var recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, context.Random);
+            var summonResult = PickRecipe(summonRow, SummonCount, context.Random);
 
+            foreach (var recipeId in summonResult)
+            {
                 // Validate RecipeId
                 var recipeRow = recipeSheet.OrderedList.FirstOrDefault(r => r.Id == recipeId);
                 if (recipeRow is null)
