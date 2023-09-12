@@ -7,14 +7,13 @@ namespace Nekoyume.UI.Module
 {
     public class IAPShopProductCellView : MonoBehaviour
     {
-        public RectTransform recT;
-
+        private RectTransform _rect;
         private ProductSchema _data;
 
         public void SetData(ProductSchema data)
         {
             _data = data;
-            recT = GetComponent<RectTransform>();
+            _rect = GetComponent<RectTransform>();
         }
     }
 }
