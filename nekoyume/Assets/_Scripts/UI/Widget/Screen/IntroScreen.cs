@@ -78,6 +78,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             googleSignInButton.onClick.AddListener(() =>
             {
+                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
                 if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
                 {
                     google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
@@ -137,7 +138,7 @@ namespace Nekoyume.UI
             // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
-            StartCoroutine(CoShowMobile());
+            ShowMobile();
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
@@ -164,10 +165,8 @@ namespace Nekoyume.UI
             ShowQrCodeGuide();
         }
 
-        private IEnumerator CoShowMobile()
+        private void ShowMobile()
         {
-            yield return new WaitUntil(() => Game.Game.instance.PortalConnect != null);
-
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)
             // {
@@ -184,13 +183,10 @@ namespace Nekoyume.UI
             //     videoSkipButton.gameObject.SetActive(true);
             // }
             // else
-            {
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-            }
-
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
-            // signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
+            signinButton.gameObject.SetActive(true);
         }
 
         private void OnVideoEnd()
@@ -214,6 +210,7 @@ namespace Nekoyume.UI
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
                     loginSystem.Show(_keyStorePath, _privateKey);
+                    Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
                 });
             }
             else
@@ -243,6 +240,7 @@ namespace Nekoyume.UI
             guestButton.gameObject.SetActive(true);
             guestButton.onClick.AddListener(() =>
             {
+                Analyzer.Instance.Track("Unity/Intro/Guest/Click");
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
                 Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
