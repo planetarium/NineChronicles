@@ -2092,7 +2092,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.8566551}
+  m_AnchoredPosition: {x: 0, y: 3.8566513}
   m_SizeDelta: {x: -20, y: 6.466675}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1178626773141949844
@@ -8368,6 +8368,7 @@ GameObject:
   - component: {fileID: 3355135985904493532}
   - component: {fileID: 3338884054848303514}
   - component: {fileID: 7395001133432336842}
+  - component: {fileID: 1921084363183074134}
   m_Layer: 5
   m_Name: ShopListCell
   m_TagString: Untagged
@@ -8439,6 +8440,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1921084363183074134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8708533758951858530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ccd37d0ac46344885baa57b41a6f84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recT: {fileID: 3355135985904493532}
 --- !u!1 &9162058662933925732
 GameObject:
   m_ObjectHideFlags: 0
