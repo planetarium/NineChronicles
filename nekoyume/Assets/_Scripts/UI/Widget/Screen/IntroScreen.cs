@@ -165,7 +165,7 @@ namespace Nekoyume.UI
             ShowQrCodeGuide();
         }
 
-        private void ShowMobile()
+        public void ShowMobile()
         {
             // PlayerPrefs FirstPlay
             // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)
