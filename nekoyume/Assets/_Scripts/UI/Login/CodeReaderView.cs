@@ -43,6 +43,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoRequestPermission(Action<Result> onSuccess = null)
         {
+            rawCamImage.gameObject.SetActive(false);
 #if UNITY_ANDROID
             if (!UnityEngine.Android.Permission
                     .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera))
@@ -55,6 +56,7 @@ namespace Nekoyume.UI
                 .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera);
 #endif
             yield return null;
+            rawCamImage.gameObject.SetActive(true);
             _camTexture.Play();
             _disposable = Observable.EveryUpdate().Where(_ => _camTexture.isPlaying).Subscribe(_ =>
             {
