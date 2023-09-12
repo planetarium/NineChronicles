@@ -186,12 +186,17 @@ namespace Lib9c.Tests.Action.Summon
                     Random = random,
                 });
 
+                var equipments = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
+                    .ToList();
+                Assert.Equal(expectedEquipmentId.Length, equipments.Count);
+
                 var checkedEquipments = new List<Guid>();
                 foreach (var equipmentId in expectedEquipmentId)
                 {
-                    var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory
-                        .Equipments.First(e =>
-                            e.Id == equipmentId && !checkedEquipments.Contains(e.ItemId));
+                    var resultEquipment = equipments.First(e =>
+                        e.Id == equipmentId && !checkedEquipments.Contains(e.ItemId)
+                    );
+
                     checkedEquipments.Add(resultEquipment.ItemId);
                     Assert.NotNull(resultEquipment);
                     Assert.Equal(1, resultEquipment.RequiredBlockIndex);
