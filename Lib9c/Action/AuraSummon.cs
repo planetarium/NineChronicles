@@ -150,6 +150,11 @@ namespace Nekoyume.Action
                 );
             }
 
+            // Ten plus one for summon
+            if (SummonCount == 10)
+            {
+                SummonCount += 1;
+            }
 
             for (var i = 0; i < SummonCount; i++)
             {
