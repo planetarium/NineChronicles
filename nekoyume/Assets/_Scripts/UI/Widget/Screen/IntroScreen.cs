@@ -186,6 +186,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
+            signinButton.gameObject.SetActive(true);
         }
 
         private void OnVideoEnd()
