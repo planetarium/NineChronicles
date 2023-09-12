@@ -19,20 +19,22 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/636
-    /// Updated at https://github.com/planetarium/lib9c/pull/1718
+    /// Updated at https://github.com/planetarium/lib9c/pull/2143
     /// </summary>
     [Serializable]
     [ActionType(TypeIdentifier)]
-    public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class TransferAsset4 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
         public const string TypeIdentifier = "transfer_asset4";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200080ObsoleteIndex;
 
-        public TransferAsset()
+        public TransferAsset4()
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
+        public TransferAsset4(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
         {
             Sender = sender;
             Recipient = recipient;
@@ -42,7 +44,7 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        protected TransferAsset(SerializationInfo info, StreamingContext context)
+        protected TransferAsset4(SerializationInfo info, StreamingContext context)
         {
             var rawBytes = (byte[])info.GetValue("serialized", typeof(byte[]));
             Dictionary pv = (Dictionary) new Codec().Decode(rawBytes);
