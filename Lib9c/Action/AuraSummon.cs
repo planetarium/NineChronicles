@@ -10,7 +10,6 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action.Exceptions;
 using Nekoyume.Extensions;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -67,6 +66,114 @@ namespace Nekoyume.Action
             SummonCount = plainValue[SummonCountKey].ToInteger();
         }
 
+        public static IEnumerable<(int, Equipment)> SimulateSummon(
+            string addressesHex,
+            AgentState agentState,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSheet equipmentItemSheet,
+            EquipmentItemSubRecipeSheetV2 equipmentItemSubRecipeSheetV2,
+            EquipmentItemOptionSheet optionSheet,
+            SkillSheet skillSheet,
+            SummonSheet.Row summonRow,
+            int summonCount,
+            IRandom random,
+            long blockIndex
+        )
+        {
+            // Ten plus one
+            if (summonCount == 10)
+            {
+                summonCount += 1;
+            }
+
+            var result = new List<(int, Equipment)>();
+            int recipeId;
+            for (var i = 0; i < summonCount; i++)
+            {
+                var recipeValue = random.Next(1, summonRow.CumulativeRecipe6Ratio + 1);
+                if (recipeValue <= summonRow.CumulativeRecipe1Ratio)
+                {
+                    recipeId = summonRow.Recipes[0].Item1;
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe2Ratio)
+                {
+                    recipeId = summonRow.Recipes[1].Item1;
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe3Ratio)
+                {
+                    recipeId = summonRow.Recipes[2].Item1;
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe4Ratio)
+                {
+                    recipeId = summonRow.Recipes[3].Item1;
+                }
+                else if (recipeValue <= summonRow.CumulativeRecipe5Ratio)
+                {
+                    recipeId = summonRow.Recipes[4].Item1;
+                }
+                else
+                {
+                    recipeId = summonRow.Recipes[5].Item1;
+                }
+
+                // Validate RecipeId
+                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(r => r.Id == recipeId);
+                if (recipeRow is null)
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(EquipmentItemRecipeSheet),
+                        recipeId);
+                }
+
+                // Validate Recipe ResultEquipmentId
+                if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId,
+                        out var equipmentRow))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(equipmentItemSheet),
+                        recipeRow.ResultEquipmentId);
+                }
+
+                // Validate subRecipeId
+                if (recipeRow.SubRecipeIds.Count == 0)
+                {
+                    throw new InvalidRecipeIdException(
+                        $"Recipe {recipeId} does not have any subRecipe.");
+                }
+
+                var subRecipeId = recipeRow.SubRecipeIds[0];
+                if (!equipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId, out var subRecipeRow))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(EquipmentItemSubRecipeSheetV2),
+                        subRecipeId
+                    );
+                }
+
+                // Create Equipment
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                    equipmentRow,
+                    random.GenerateRandomGuid(),
+                    blockIndex
+                );
+
+                AddAndUnlockOption(
+                    agentState,
+                    equipment,
+                    random,
+                    subRecipeRow,
+                    optionSheet,
+                    skillSheet
+                );
+                result.Add((recipeId, equipment));
+            }
+
+            return result;
+        }
+
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
@@ -109,14 +216,9 @@ namespace Nekoyume.Action
                 typeof(SkillSheet),
             });
 
-            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
-            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
-            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
-            var skillSheet = sheets.GetSheet<SkillSheet>();
-
             var summonSheet = sheets.GetSheet<SummonSheet>();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+
             var summonRow = summonSheet.OrderedList.FirstOrDefault(row => row.GroupId == GroupId);
             if (summonRow is null)
             {
@@ -150,65 +252,19 @@ namespace Nekoyume.Action
                 );
             }
 
+            var summonResult = SimulateSummon(
+                addressesHex, agentState,
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                summonRow, SummonCount,
+                context.Random, context.BlockIndex
+            );
 
-            for (var i = 0; i < SummonCount; i++)
+            foreach (var (recipeId, equipment) in summonResult)
             {
-                var recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, context.Random);
-
-                // Validate RecipeId
-                var recipeRow = recipeSheet.OrderedList.FirstOrDefault(r => r.Id == recipeId);
-                if (recipeRow is null)
-                {
-                    throw new SheetRowNotFoundException(
-                        addressesHex,
-                        nameof(EquipmentItemRecipeSheet),
-                        recipeId);
-                }
-
-                // Validate Recipe ResultEquipmentId
-                if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId,
-                        out var equipmentRow))
-                {
-                    throw new SheetRowNotFoundException(
-                        addressesHex,
-                        nameof(equipmentItemSheet),
-                        recipeRow.ResultEquipmentId);
-                }
-
-                // Validate subRecipeId
-                if (recipeRow.SubRecipeIds.Count == 0)
-                {
-                    throw new InvalidRecipeIdException(
-                        $"Recipe {recipeId} does not have any subRecipe.");
-                }
-
-                var subRecipeId = recipeRow.SubRecipeIds[0];
-                if (!equipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId, out var subRecipeRow))
-                {
-                    throw new SheetRowNotFoundException(
-                        addressesHex,
-                        nameof(EquipmentItemSubRecipeSheetV2),
-                        subRecipeId
-                    );
-                }
-
-
-                // Create Equipment
-                var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                    equipmentRow,
-                    context.Random.GenerateRandomGuid(),
-                    context.BlockIndex
-                );
-
-                AddAndUnlockOption(
-                    agentState,
-                    equipment,
-                    context.Random,
-                    subRecipeRow,
-                    optionSheet,
-                    skillSheet
-                );
-
                 // Add or update equipment
                 avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
                 avatarState.UpdateFromCombination(equipment);
