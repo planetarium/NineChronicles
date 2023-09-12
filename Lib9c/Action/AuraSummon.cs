@@ -10,7 +10,6 @@ using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Action.Exceptions;
 using Nekoyume.Extensions;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -67,30 +66,27 @@ namespace Nekoyume.Action
             SummonCount = plainValue[SummonCountKey].ToInteger();
         }
 
-        public static IEnumerable<Equipment> SimulateSummon(
-            IActionContext context, string addressesHex,
-            AgentState agentState, AvatarState avatarState,
-            Dictionary<Type, (Address, ISheet)> sheets,
+        public static IEnumerable<(int, Equipment)> SimulateSummon(
+            string addressesHex,
+            AgentState agentState,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSheet equipmentItemSheet,
+            EquipmentItemSubRecipeSheetV2 equipmentItemSubRecipeSheetV2,
+            EquipmentItemOptionSheet optionSheet,
+            SkillSheet skillSheet,
             SummonSheet.Row summonRow,
-            int summonCount
+            int summonCount,
+            IRandom random,
+            long blockIndex
         )
         {
-            // Setup
-            var random = context.Random;
-            var recipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
-            var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
-            var optionSheet = sheets.GetSheet<EquipmentItemOptionSheet>();
-            var skillSheet = sheets.GetSheet<SkillSheet>();
-
             // Ten plus one
             if (summonCount == 10)
             {
                 summonCount += 1;
             }
 
-            var result = new List<Equipment>();
+            var result = new List<(int, Equipment)>();
             int recipeId;
             for (var i = 0; i < summonCount; i++)
             {
@@ -160,23 +156,19 @@ namespace Nekoyume.Action
                 // Create Equipment
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow,
-                    context.Random.GenerateRandomGuid(),
-                    context.BlockIndex
+                    random.GenerateRandomGuid(),
+                    blockIndex
                 );
 
                 AddAndUnlockOption(
                     agentState,
                     equipment,
-                    context.Random,
+                    random,
                     subRecipeRow,
                     optionSheet,
                     skillSheet
                 );
-
-                // Add or update equipment
-                avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
-                avatarState.UpdateFromCombination(equipment);
-                avatarState.UpdateQuestRewards(materialSheet);
+                result.Add((recipeId, equipment));
             }
 
             return result;
@@ -260,7 +252,24 @@ namespace Nekoyume.Action
                 );
             }
 
-            var summonResult = SimulateSummon(context, addressesHex, agentState, avatarState, sheets, summonRow, SummonCount);
+            var summonResult = SimulateSummon(
+                addressesHex, agentState,
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                summonRow, SummonCount,
+                context.Random, context.BlockIndex
+            );
+
+            foreach (var (recipeId, equipment) in summonResult)
+            {
+                // Add or update equipment
+                avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
+                avatarState.UpdateFromCombination(equipment);
+                avatarState.UpdateQuestRewards(materialSheet);
+            }
 
             Log.Debug(
                 $"{addressesHex} AuraSummon Exec. finished: {DateTimeOffset.UtcNow - started} Elapsed");
