@@ -98,6 +98,14 @@ namespace Nekoyume.UI
                     ButtonSubscribe(items.draw10Button, summonRow, 10, _disposables);
                 }
             }
+            else
+            {
+                foreach (var drawItem in drawItems)
+                {
+                    drawItem.draw1Button.UpdateObjects();
+                    drawItem.draw10Button.UpdateObjects();
+                }
+            }
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
