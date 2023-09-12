@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
         public void Constructor_ThrowsMemoLengthOverflowException()
         {
             Assert.Throws<MemoLengthOverflowException>(() =>
-                new TransferAsset(_sender, _recipient, _currency * 100, new string(' ', 100)));
+                new TransferAsset0(_sender, _recipient, _currency * 100, new string(' ', 100)));
         }
 
         [Fact]
