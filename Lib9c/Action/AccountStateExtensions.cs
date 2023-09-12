@@ -961,6 +961,14 @@ namespace Nekoyume.Action
             return false;
         }
 
+        public static FungibleAssetValue GetStakedAmount(
+            this IAccountState state,
+            Address agentAddr)
+        {
+            var goldCurrency = state.GetGoldCurrency();
+            return state.GetBalance(StakeState.DeriveAddress(agentAddr), goldCurrency);
+        }
+
         public static bool TryGetStakeStateV2(
             this IAccountState state,
             Address agentAddr,
