@@ -139,8 +139,10 @@ namespace Nekoyume.UI
             audioController.StopAll(0.5f);
 
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
-
+            
             videoPlayer.clip = currentVideoClip.summoning;
+            videoPlayer.Prepare();
+
             videoPlayer.gameObject.SetActive(true);
             videoPlayer.Play();
 
@@ -155,6 +157,7 @@ namespace Nekoyume.UI
             {
                 videoPlayer.clip = currentVideoClip.result;
             }
+            videoPlayer.Prepare();
 
             videoPlayer.Play();
 
