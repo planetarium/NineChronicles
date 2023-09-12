@@ -2,12 +2,26 @@ import { useQueries } from "@tanstack/react-query";
 import axios from "axios";
 import { useMemo } from "react";
 
-interface Block { index: number }
+interface GraphQLTipIndexResponse {
+  data: {
+    chainQuery: {
+      blockQuery: {
+        block: {
+          index: number,
+        }
+      }
+    }
+  }
+};
 interface Action { id: string, obsoleteAt: number }
 
 const fetchLatestBlock = async () => {
-  const response = await axios.get<Block>(`${import.meta.env.VITE_API_PATH}/api/blocks/latest`);
-  return response.data;
+  const response = await axios.post<GraphQLTipIndexResponse>(`${import.meta.env.VITE_API_PATH}/graphql`, {
+    query: `query { chainQuery { blockQuery { block(index: -1) { index } } } }`,
+    variables: {},
+    operationName: null,
+  });
+  return response.data.data.chainQuery.blockQuery.block;
 };
 
 const fetchActions = async () => {
