@@ -375,9 +375,9 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<SummonResultPopup>());
+            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
 
             // tooltip
