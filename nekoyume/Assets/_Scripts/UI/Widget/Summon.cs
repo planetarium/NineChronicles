@@ -137,7 +137,7 @@ namespace Nekoyume.UI
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
-            Find<SummonResultPopup>().Show(summonRow, resultList);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
