@@ -136,47 +136,33 @@ namespace Nekoyume.UI
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateEquipment(summonRow, summonCount, random);
+            var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
             Find<SummonResultPopup>().Show(summonRow, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex)
         {
             var tableSheets = Game.Game.instance.TableSheets;
-            var optionSheet = tableSheets.EquipmentItemOptionSheet;
-            var skillSheet = tableSheets.SkillSheet;
             var dummyAgentState = new AgentState(new Address());
-
-            var resultList = new List<Equipment>();
-            for (int i = 0; i < summonCount; i++)
-            {
-                var recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, random);
-
-                var recipeRow = tableSheets.EquipmentItemRecipeSheet[recipeId];
-                var subRecipeRow = tableSheets.EquipmentItemSubRecipeSheetV2[recipeRow.SubRecipeIds[0]];
-                var equipmentRow = tableSheets.EquipmentItemSheet[recipeRow.ResultEquipmentId];
-
-                var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                    equipmentRow,
-                    random.GenerateRandomGuid(),
-                    0
-                );
-
-                AuraSummon.AddAndUnlockOption(
-                    dummyAgentState,
-                    equipment,
-                    random,
-                    subRecipeRow,
-                    optionSheet,
-                    skillSheet);
-
-                resultList.Add(equipment);
-            }
-
-            return resultList.OrderByDescending(row => row.Grade).ToList();
+            return AuraSummon.SimulateSummon(
+                string.Empty,
+                dummyAgentState,
+                tableSheets.EquipmentItemRecipeSheet,
+                tableSheets.EquipmentItemSheet,
+                tableSheets.EquipmentItemSubRecipeSheetV2,
+                tableSheets.EquipmentItemOptionSheet,
+                tableSheets.SkillSheet,
+                summonRow,
+                summonCount,
+                random,
+                blockIndex)
+                .Select(tuple => tuple.Item2)
+                .OrderByDescending(row => row.Grade)
+                .ToList();
         }
 
         private void SetMaterialAssets(Inventory inventory)
