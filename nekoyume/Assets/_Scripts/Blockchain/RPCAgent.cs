@@ -26,6 +26,7 @@ using Nekoyume.Extensions;
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -422,16 +423,22 @@ namespace Nekoyume.Blockchain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
 
-                if (await GetStateAsync(
-                        StakeState.DeriveAddress(States.Instance.AgentState.address))
-                    is Dictionary stakeDict)
+                var stakeAddr = StakeStateV2.DeriveAddress(States.Instance.AgentState.address);
+                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
                 {
-                    var stakingState = new StakeState(stakeDict);
+                    if (!StakeStateUtilsForClient.TryMigrate(
+                            serializedStakeState,
+                            States.Instance.GameConfigState,
+                            out var stakeStateV2))
+                    {
+                        States.Instance.SetStakeState(null, null, 0);
+                    }
+
                     var balance = new FungibleAssetValue(goldCurrency);
                     var level = 0;
                     try
                     {
-                        balance = await GetBalanceAsync(stakingState.address, goldCurrency);
+                        balance = await GetBalanceAsync(stakeAddr, goldCurrency);
                         level = Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(Address, balance);
                     }
@@ -440,8 +447,9 @@ namespace Nekoyume.Blockchain
                         // ignored
                     }
 
-                    States.Instance.SetStakeState(stakingState,
-                        new GoldBalanceState(stakingState.address, balance),
+                    States.Instance.SetStakeState(
+                        stakeStateV2,
+                        new GoldBalanceState(stakeAddr, balance),
                         level);
                 }
 

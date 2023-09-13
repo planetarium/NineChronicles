@@ -2252,10 +2252,13 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (state, level, balance) = GetStakeState(eval);
+            var (addr, state, level, deposit) = GetStakeState(eval);
             if (state != null)
             {
-                UpdateStakeState(state, new GoldBalanceState(state.address, balance), level);
+                States.Instance.SetStakeState(
+                    state.Value,
+                    new GoldBalanceState(addr, deposit),
+                    level);
             }
 
             UpdateAgentStateAsync(eval).Forget();

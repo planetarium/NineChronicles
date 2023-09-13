@@ -30,16 +30,22 @@ namespace Nekoyume.UI
         [SerializeField] private SimpleCostButton goldenDrawButton;
 
         [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private Button skipButton;
         [SerializeField] private ResultVideoClip normalVideoClip;
         [SerializeField] private ResultVideoClip goldenVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
 
-        private int _normalSummonId = default;
+        private int _normalSummonId;
+        private bool _isGreat;
         private Coroutine _coroutine;
-        private readonly WaitForSeconds _waitAnimation = new(0.05f);
+        private string _previousMusicName;
         private readonly List<IDisposable> _disposables = new();
+        private static readonly WaitForSeconds ItemViewAnimInterval = new(0.1f);
+        private static readonly WaitForSeconds DefaultAnimInterval = new(1f);
+        private static readonly int AnimatorHashHide = Animator.StringToHash("Hide");
         private static readonly int AnimatorHashShow = Animator.StringToHash("Show");
+        private static readonly int AnimatorHashShowButton = Animator.StringToHash("ShowButton");
 
         protected override void Awake()
         {
@@ -47,12 +53,24 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close();
+                Close(true);
             });
             CloseWidget = () =>
             {
                 Close(true);
             };
+            skipButton.onClick.AddListener(() =>
+            {
+                if (_coroutine != null)
+                {
+                    StopCoroutine(_coroutine);
+                    _coroutine = null;
+                }
+
+                videoPlayer.Stop();
+                videoPlayer.gameObject.SetActive(false);
+                StartCoroutine(PlayResultAnimation(_isGreat));
+            });
 
             Summon.ButtonSubscribe(new[] { normalDrawButton, goldenDrawButton }, gameObject);
         }
@@ -64,6 +82,8 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
+            animator.SetTrigger(AnimatorHashHide);
+
             if (_normalSummonId == default)
             {
                 _normalSummonId = Find<Summon>().normalSummonId;
@@ -72,14 +92,6 @@ namespace Nekoyume.UI
             var normal = summonRow.GroupId == _normalSummonId;
             var count = resultList.Count;
             var great = resultList.First().Grade == 5;
-
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"[{nameof(SummonResultPopup)}] Summon Sorted Result");
-            foreach (var item in resultList)
-            {
-                sb.AppendLine($"{item.GetLocalizedName()} {item.Grade}");
-            }
-            Debug.LogError(sb.ToString());
 
             var firstView = summonItemViews.First();
             var firstResult = resultList.First();
@@ -105,7 +117,7 @@ namespace Nekoyume.UI
                 _coroutine = null;
             }
 
-            _coroutine = StartCoroutine(PlayResult(normal, great));
+            _coroutine = StartCoroutine(PlayVideo(normal, great));
 
             _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
@@ -116,17 +128,21 @@ namespace Nekoyume.UI
             goldenDrawButton.gameObject.SetActive(!normal);
 
             closeButton.interactable = true;
+            skipButton.interactable = true;
         }
 
-        private IEnumerator PlayResult(bool normal, bool great)
+        private IEnumerator PlayVideo(bool normal, bool great)
         {
+            _isGreat = great;
             var audioController = AudioController.instance;
-            var currentMusic = audioController.CurrentPlayingMusicName;
+            _previousMusicName = audioController.CurrentPlayingMusicName;
             audioController.StopAll(0.5f);
 
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
-
+            
             videoPlayer.clip = currentVideoClip.summoning;
+            videoPlayer.Prepare();
+
             videoPlayer.gameObject.SetActive(true);
             videoPlayer.Play();
 
@@ -141,6 +157,7 @@ namespace Nekoyume.UI
             {
                 videoPlayer.clip = currentVideoClip.result;
             }
+            videoPlayer.Prepare();
 
             videoPlayer.Play();
 
@@ -150,16 +167,35 @@ namespace Nekoyume.UI
             videoPlayer.Stop();
             videoPlayer.gameObject.SetActive(false);
 
+            yield return PlayResultAnimation(great);
+        }
+
+        private IEnumerator PlayResultAnimation(bool great)
+        {
+            var audioController = AudioController.instance;
+
             yield return null;
+            audioController.PlaySfx(AudioController.SfxCode.Win);
             animator.SetTrigger(AnimatorHashShow);
+
+            yield return DefaultAnimInterval;
+            audioController.PlaySfx(AudioController.SfxCode.Success);
             foreach (var view in summonItemViews.Where(v => v.gameObject.activeSelf))
             {
                 view.ShowWithAnimation();
-                yield return _waitAnimation;
+                AudioController.PlaySelect();
+                yield return ItemViewAnimInterval;
             }
 
-            yield return new WaitForSeconds(1f);
-            audioController.PlayMusic(currentMusic);
+            yield return DefaultAnimInterval;
+            if (great)
+            {
+                audioController.PlaySfx(AudioController.SfxCode.RewardItem);
+            }
+
+            yield return null;
+            audioController.PlayMusic(_previousMusicName);
+            animator.SetTrigger(AnimatorHashShowButton);
         }
     }
 }
