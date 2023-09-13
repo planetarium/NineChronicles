@@ -2252,16 +2252,8 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (addr, state, level, deposit) = GetStakeState(eval);
-            if (state != null)
-            {
-                States.Instance.SetStakeState(
-                    state.Value,
-                    new GoldBalanceState(addr, deposit),
-                    level);
-            }
-
             UpdateAgentStateAsync(eval).Forget();
+            UpdateStakeStateAsync(eval).Forget();
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
@@ -2277,6 +2269,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
+            UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 

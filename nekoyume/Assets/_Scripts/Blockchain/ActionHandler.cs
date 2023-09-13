@@ -106,49 +106,23 @@ namespace Nekoyume.Blockchain
             return evaluation.OutputState.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
-            ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                agentAddress,
-                States.Instance.AgentState.MonsterCollectionRound
-            );
-            if (!(evaluation.OutputState.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict))
-            {
-                return (null, 0, new FungibleAssetValue());
-            }
-
-            try
-            {
-                var balance =
-                    evaluation.OutputState.GetBalance(monsterCollectionAddress, GoldCurrency);
-                var level =
-                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
-                        agentAddress, balance);
-                return (new MonsterCollectionState(mcDict), level, balance);
-            }
-            catch (Exception)
-            {
-                return (null, 0, new FungibleAssetValue());
-            }
-        }
-
-        protected (Address addr, StakeStateV2? state, int level, FungibleAssetValue deposit)
-            GetStakeState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
+        // NOTE: The deposit in returned tuple is get from the IAgent not evaluation.OutputState.
+        protected async UniTask<(Address addr, StakeStateV2? state, int level, FungibleAssetValue deposit)>
+            GetStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddr = States.Instance.AgentState.address;
             var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
-            if (!evaluation.OutputState.TryGetStakeStateV2(stakeAddr, out var stakeStateV2))
+            if (!evaluation.OutputState.TryGetStakeStateV2(agentAddr, out var stakeStateV2))
             {
                 return (stakeAddr, null, 0, new FungibleAssetValue());
             }
 
             try
             {
-                var balance = evaluation.OutputState.GetBalance(
-                    stakeAddr,
-                    GoldCurrency);
+                var agent = Game.Game.instance.Agent;
+                var balance = agent is null
+                    ? GoldCurrency * 0
+                    : await Game.Game.instance.Agent.GetBalanceAsync(stakeAddr, GoldCurrency);
                 var level = TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                     agentAddr,
                     balance);
@@ -329,6 +303,15 @@ namespace Nekoyume.Blockchain
                     0);
                 States.Instance.SetCrystalBalance(crystal);
             }
+        }
+
+        protected async UniTaskVoid UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var (addr, state, level, deposit) = await GetStakeStateAsync(evaluation);
+            States.Instance.SetStakeState(
+                state,
+                new GoldBalanceState(addr, deposit),
+                level);
         }
 
         private static UniTask UpdateAvatarState(AvatarState avatarState, int index) =>
