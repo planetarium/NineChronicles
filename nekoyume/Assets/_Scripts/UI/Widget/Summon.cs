@@ -147,19 +147,16 @@ namespace Nekoyume.UI
             long blockIndex)
         {
             var tableSheets = Game.Game.instance.TableSheets;
+            var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
             var dummyAgentState = new AgentState(new Address());
             return AuraSummon.SimulateSummon(
-                string.Empty,
-                dummyAgentState,
-                tableSheets.EquipmentItemRecipeSheet,
-                tableSheets.EquipmentItemSheet,
-                tableSheets.EquipmentItemSubRecipeSheetV2,
-                tableSheets.EquipmentItemOptionSheet,
-                tableSheets.SkillSheet,
-                summonRow,
-                summonCount,
-                random,
-                blockIndex)
+                    addressHex, dummyAgentState,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    tableSheets.SkillSheet,
+                    summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
                 .OrderByDescending(row => row.Grade)
                 .ToList();
