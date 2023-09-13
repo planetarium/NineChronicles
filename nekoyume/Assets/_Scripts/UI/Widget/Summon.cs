@@ -140,6 +140,11 @@ namespace Nekoyume.UI
         {
             LoadingHelper.Summon.Value = null;
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            foreach (var drawItem in drawItems)
+            {
+                drawItem.draw1Button.UpdateObjects();
+                drawItem.draw10Button.UpdateObjects();
+            }
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
