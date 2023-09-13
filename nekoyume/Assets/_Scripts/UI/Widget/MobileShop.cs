@@ -11,30 +11,20 @@ namespace Nekoyume.UI
     public class MobileShop : Widget
     {
         [SerializeField]
-        private IAPShopView view;
+        private Toggle originCategoryTab;
 
         [SerializeField]
-        private InAppProductTab originProductTab;
+        private IAPShopProductCellView originProductCellView;
 
         [SerializeField]
         private UnityEngine.UI.ToggleGroup tabToggleGroup;
 
-        private readonly Dictionary<string, InAppProductTab> _productTabDictionary = new();
-        private bool _productInitialized;
-        private string _selectedProductId;
-        private readonly Dictionary<string, Sprite> _productImageDictionary = new();
-
         protected override void Awake()
         {
             base.Awake();
-            foreach (var sprite in Resources.LoadAll<Sprite>("UI/Textures/00_Shop"))
-            {
-                _productImageDictionary.Add(
-                    sprite.name.Remove(0, 4),
-                    sprite);
-            }
+            //doto initialize product and objejct
 
-            view.PurchaseButton.onClick.AddListener(() =>
+            /*view.PurchaseButton.onClick.AddListener(() =>
             {
                 Debug.LogError($"Purchase: {_selectedProductId}");
                 Analyzer.Instance.Track(
@@ -42,7 +32,7 @@ namespace Nekoyume.UI
                     ("product-id", _selectedProductId));
                 PurchaseButtonLoadingStart();
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
-            });
+            });*/
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -56,25 +46,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void UpdateView()
-        {
-            OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
-        }
-
-        public void PurchaseButtonLoadingStart()
-        {
-            view.PurchaseButton.interactable = false;
-            view.PurchaseButtonDissableGroupObj.SetActive(false);
-            view.PurchaseButtonLoadingObj.Show("");
-        }
-
-        public void PurchaseButtonLoadingEnd()
-        {
-            view.PurchaseButton.interactable = true;
-            view.PurchaseButtonDissableGroupObj.SetActive(true);
-            view.PurchaseButtonLoadingObj.Close();
-        }
-
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<DataLoadingScreen>();
@@ -83,7 +54,10 @@ namespace Nekoyume.UI
             var products = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
 
-            if (!_productInitialized && products != null)
+
+            //foreach
+
+            /*if (!_productInitialized && products != null)
             {
                 foreach (var product in products.OrderBy(p => p.DisplayOrder))
                 {
@@ -102,9 +76,9 @@ namespace Nekoyume.UI
                 }
 
                 _productInitialized = true;
-            }
+            }*/
 
-            if (products != null)
+            /*if (products != null)
             {
                 foreach (var product in products.Where(p => !p.Active))
                 {
@@ -113,10 +87,10 @@ namespace Nekoyume.UI
                         tab.gameObject.SetActive(false);
                     }
                 }
-            }
+            }*/
 
             base.Show(ignoreShowAnimation);
-            InAppProductTab firstTab = null;
+/*            InAppProductTab firstTab = null;
             foreach (var tab in _productTabDictionary.Values.OrderBy(tab => tab.DisplayOrder))
             {
                 if (products?.Any(p => p.GoogleSku == tab.ProductId && !p.Active) ?? false)
@@ -138,7 +112,7 @@ namespace Nekoyume.UI
                 firstTab.Toggle.offObject.SetActive(false);
                 firstTab.Toggle.SetIsOnWithoutNotify(true);
                 RefreshToggleValue(true, firstTab, products);
-            }
+            }*/
 
             loading.Close();
         }
@@ -155,19 +129,9 @@ namespace Nekoyume.UI
             };
         }
 
-        private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
+        private void RefreshToggleValue(bool isOn, IReadOnlyList<NineChronicles.ExternalServices.IAPService.Runtime.Models.ProductSchema> products)
         {
-            PurchaseButtonLoadingEnd();
-
-            var products = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
-
-            RefreshToggleValue(isOn, tab, products);
-        }
-
-        private void RefreshToggleValue(bool isOn, InAppProductTab tab, IReadOnlyList<NineChronicles.ExternalServices.IAPService.Runtime.Models.ProductSchema> products)
-        {
-            if (isOn)
+/*            if (isOn)
             {
                 Analyzer.Instance.Track(
                     "Unity/Shop/IAP/Tab/Click",
@@ -211,7 +175,7 @@ namespace Nekoyume.UI
                     ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
                     : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
                 view.BuyLimitMessageText.text = L10nManager.Localize(messageKey);
-            }
+            }*/
         }
     }
 }
