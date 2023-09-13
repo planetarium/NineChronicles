@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Bencodex.Types;
+﻿using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
 
 namespace Nekoyume
 {
@@ -28,6 +25,24 @@ namespace Nekoyume
             }
 
             return GameConfig.DefaultAvatarArmorId;
+        }
+
+        public static int GetMaterialCount(this Inventory inventory, int id)
+        {
+            if (inventory is null)
+            {
+                return 0;
+            }
+
+            var materialSheet = TableSheets.Instance.MaterialItemSheet;
+            if (!materialSheet.TryGetValue(id, out var row))
+            {
+                return 0;
+            }
+
+            return inventory.TryGetFungibleItems(row.ItemId, out var items)
+                ? items.Sum(x => x.count)
+                : 0;
         }
     }
 }

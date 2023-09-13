@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI conditionalText = null;
 
         [SerializeField]
-        private GameObject disabledObject = null;
+        protected GameObject disabledObject = null;
 
         [SerializeField]
         private TextMeshProUGUI disabledText = null;
@@ -53,20 +53,7 @@ namespace Nekoyume.UI.Module
 
         public readonly Subject<Unit> OnSubmitSubject = new Subject<Unit>();
 
-        private IObservable<Unit> _onClickDisabledSubject = null;
-
-        public IObservable<Unit> OnClickDisabledSubject
-        {
-            get
-            {
-                if (_onClickDisabledSubject is null)
-                {
-                    _onClickDisabledSubject = disabledButton.OnClickAsObservable();
-                }
-
-                return _onClickDisabledSubject;
-            }
-        }
+        public readonly Subject<Unit> OnClickDisabledSubject = new Subject<Unit>();
 
         public bool IsSubmittable => _interactable && CurrentState.Value == State.Normal;
 
@@ -113,6 +100,7 @@ namespace Nekoyume.UI.Module
         protected virtual void Awake()
         {
             button.onClick.AddListener(OnClickButton);
+            disabledButton.onClick.AddListener(() => OnClickDisabledSubject.OnNext(Unit.Default));
         }
 
         protected virtual bool CheckCondition()
@@ -160,7 +148,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetState(State state)
+        public virtual void SetState(State state)
         {
             CurrentState.Value = state;
             switch (state)

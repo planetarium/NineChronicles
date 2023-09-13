@@ -18,6 +18,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stake;
 using Nekoyume.UI;
 using Event = Nekoyume.Game.Event;
 
@@ -37,7 +38,7 @@ namespace Nekoyume.State
 
         public GoldBalanceState StakedBalanceState { get; private set; }
 
-        public StakeState StakeState { get; private set; }
+        public StakeStateV2? StakeStateV2 { get; private set; }
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
@@ -441,18 +442,11 @@ namespace Nekoyume.State
         }
 
         public void SetStakeState(
-            StakeState stakeState,
+            StakeStateV2? stakeStateV2,
             GoldBalanceState stakedBalanceState,
             int stakingLevel)
         {
-            if (stakeState is null)
-            {
-                Debug.LogWarning(
-                    $"[{nameof(States)}.{nameof(SetStakeState)}] {nameof(stakeState)} is null.");
-                return;
-            }
-
-            StakeState = stakeState;
+            StakeStateV2 = stakeStateV2;
             StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
             StakingLevelSubject.OnNextLevel(stakingLevel);

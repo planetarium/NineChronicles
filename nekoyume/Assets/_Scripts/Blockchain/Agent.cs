@@ -30,6 +30,7 @@ using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
@@ -434,29 +435,33 @@ namespace Nekoyume.Blockchain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-                if (await GetStateAsync(
-                        StakeState.DeriveAddress(States.Instance.AgentState.address))
-                    is Dictionary stakeDict)
+                var stakeAddr = StakeStateV2.DeriveAddress(States.Instance.AgentState.address);
+                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
                 {
-                    var stakingState = new StakeState(stakeDict);
+                    if (!StakeStateUtilsForClient.TryMigrate(
+                            serializedStakeState,
+                            States.Instance.GameConfigState,
+                            out var stakeStateV2))
+                    {
+                        States.Instance.SetStakeState(null, null, 0);
+                    }
+
                     var balance = new FungibleAssetValue(goldCurrency);
                     var level = 0;
                     try
                     {
-                        balance = await GetBalanceAsync(stakingState.address,
-                            goldCurrency);
+                        balance = await GetBalanceAsync(stakeAddr, goldCurrency);
                         level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                            .FindLevelByStakedAmount(
-                                Address,
-                                balance);
+                            .FindLevelByStakedAmount(Address, balance);
                     }
                     catch
                     {
                         // ignored
                     }
 
-                    States.Instance.SetStakeState(stakingState,
-                        new GoldBalanceState(stakingState.address, balance),
+                    States.Instance.SetStakeState(
+                        stakeStateV2,
+                        new GoldBalanceState(stakeAddr, balance),
                         level);
                 }
 

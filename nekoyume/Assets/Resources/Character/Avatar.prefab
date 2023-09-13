@@ -1177,6 +1177,7 @@ Transform:
   - {fileID: 2453831653186862764}
   - {fileID: 3400321378049406220}
   - {fileID: 3682082936581954672}
+  - {fileID: 6263581969078309630}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1219,6 +1220,7 @@ MonoBehaviour:
   fullCostumeCollider: {fileID: 6409176533594281649}
   avatarScriptableObject: {fileID: 11400000, guid: 10e7ddf6d9a7480409852da377274e52,
     type: 2}
+  auraPos: {fileID: 6135717749656281458}
 --- !u!95 &879758914734038294
 Animator:
   serializedVersion: 4
@@ -1660,3 +1662,34 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.8915408, y: 3.6790125, z: 0}
   m_Center: {x: 0.016429186, y: 1.595495, z: 0}
+--- !u!1 &6135717749656281458
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6263581969078309630}
+  m_Layer: 0
+  m_Name: auraPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6263581969078309630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6135717749656281458}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1.6}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2453831653966912630}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -329,9 +329,9 @@ namespace Nekoyume.UI
                 = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             combinationExclamationMark.SetActive(
-                btnCombination.IsUnlocked
-                && (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                    Craft.SharedModel.HasNotification));
+                (btnCombination.IsUnlocked &&
+                 (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                  Craft.SharedModel.HasNotification)) || Summon.HasNotification);
             shopExclamationMark.SetActive(
                 btnShop.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);

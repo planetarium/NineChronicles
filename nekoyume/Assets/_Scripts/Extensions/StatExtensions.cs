@@ -30,7 +30,7 @@ namespace Nekoyume
             var statMax = ValueToString(optionRow.StatType, optionRow.StatMax);
 
             var description = $"{optionRow.StatType} {statMin}~{statMax}";
-            if (showRatio)
+            if (showRatio && ratio < 100)
             {
                 description += $" ({ratio:0%})";
             }

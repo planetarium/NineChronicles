@@ -46,35 +46,66 @@ namespace Nekoyume.UI.Model
         public void Set(string skillName, SkillType skillType, int skillId, int coolDown, string chanceText, string valueText)
         {
             titleText.text = skillName;
+
             var sheets = TableSheets.Instance;
-            switch (skillType)
+
+            var key = $"SKILL_DESCRIPTION_{skillId}";
+            var buffList = sheets.SkillBuffSheet[skillId].BuffIds;
+            if (L10nManager.ContainsKey(key) && buffList.Count == 2)
             {
-                case SkillType.Attack:
-                    buffObject.SetActive(false);
-                    debuffObject.SetActive(false);
-                    contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_ATTACK", chanceText, valueText);
-                    break;
-                case SkillType.Heal:
-                    buffObject.SetActive(false);
-                    debuffObject.SetActive(false);
-                    contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_HEAL", chanceText, valueText);
-                    break;
-                case SkillType.Buff:
-                    buffObject.SetActive(true);
-                    debuffObject.SetActive(false);
-                    var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
-                    buffStatTypeText.text = buffRow.StatType.GetAcronym();
-                    buffIconImage.overrideSprite = BuffHelper.GetStatBuffIcon(buffRow.StatType, false);
-                    contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATBUFF", chanceText, buffRow.StatType, valueText);
-                    break;
-                case SkillType.Debuff:
-                    buffObject.SetActive(false);
-                    debuffObject.SetActive(true);
-                    var debuffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
-                    debuffStatTypeText.text = debuffRow.StatType.GetAcronym();
-                    debuffIconImage.overrideSprite = BuffHelper.GetStatBuffIcon(debuffRow.StatType, true);
-                    contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF", chanceText, debuffRow.StatType, valueText);
-                    break;
+                List<string> arg = new List<string>();
+                var buff = sheets.StatBuffSheet[buffList[0]];
+                var deBuff = sheets.StatBuffSheet[buffList[1]];
+                arg.Add(chanceText);
+                arg.Add(buff.Duration.ToString());
+                arg.Add(valueText);
+                arg.Add(deBuff.Duration.ToString());
+                arg.Add(deBuff.Value.ToString());
+
+                var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
+                buffIconImage.overrideSprite = buffIcon;
+                buffStatTypeText.text = buff.StatType.GetAcronym();
+
+                var deBuffIcon = BuffHelper.GetStatBuffIcon(deBuff.StatType, true);
+                debuffIconImage.overrideSprite = deBuffIcon;
+                debuffStatTypeText.text = deBuff.StatType.GetAcronym();
+
+                buffObject.SetActive(true);
+                debuffObject.SetActive(true);
+
+                contentText.text = L10nManager.Localize(key, arg.ToArray());
+            }
+            else
+            {
+                switch (skillType)
+                {
+                    case SkillType.Attack:
+                        buffObject.SetActive(false);
+                        debuffObject.SetActive(false);
+                        contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_ATTACK", chanceText, valueText);
+                        break;
+                    case SkillType.Heal:
+                        buffObject.SetActive(false);
+                        debuffObject.SetActive(false);
+                        contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_HEAL", chanceText, valueText);
+                        break;
+                    case SkillType.Buff:
+                        buffObject.SetActive(true);
+                        debuffObject.SetActive(false);
+                        var buffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
+                        buffStatTypeText.text = buffRow.StatType.GetAcronym();
+                        buffIconImage.overrideSprite = BuffHelper.GetStatBuffIcon(buffRow.StatType, false);
+                        contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATBUFF", chanceText, buffRow.StatType, valueText);
+                        break;
+                    case SkillType.Debuff:
+                        buffObject.SetActive(false);
+                        debuffObject.SetActive(true);
+                        var debuffRow = sheets.StatBuffSheet[sheets.SkillBuffSheet[skillId].BuffIds.First()];
+                        debuffStatTypeText.text = debuffRow.StatType.GetAcronym();
+                        debuffIconImage.overrideSprite = BuffHelper.GetStatBuffIcon(debuffRow.StatType, true);
+                        contentText.text = L10nManager.Localize("SKILL_DESCRIPTION_STATDEBUFF", chanceText, debuffRow.StatType, valueText);
+                        break;
+                }
             }
             cooldownText.text = $"{L10nManager.Localize("UI_COOLDOWN")}: {coolDown}";
         }

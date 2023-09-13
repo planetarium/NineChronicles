@@ -35,6 +35,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -140,6 +141,7 @@ namespace Nekoyume.Blockchain
             Grinding();
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
+            AuraSummon();
 
             // Market
             RegisterProduct();
@@ -603,6 +605,15 @@ namespace Nekoyume.Blockchain
                                          $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
                     }
                 })
+                .AddTo(_disposables);
+        }
+
+        private void AuraSummon()
+        {
+            _actionRenderer.EveryRender<AuraSummon>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
         }
 
@@ -1155,6 +1166,29 @@ namespace Nekoyume.Blockchain
                 Widget.Find<CombinationSlotsPopup>()
                     .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+        }
+
+        private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            Widget.Find<Summon>().OnActionRender(eval);
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
@@ -2218,10 +2252,13 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (state, level, balance) = GetStakeState(eval);
+            var (addr, state, level, deposit) = GetStakeState(eval);
             if (state != null)
             {
-                UpdateStakeState(state, new GoldBalanceState(state.address, balance), level);
+                States.Instance.SetStakeState(
+                    state.Value,
+                    new GoldBalanceState(addr, deposit),
+                    level);
             }
 
             UpdateAgentStateAsync(eval).Forget();
@@ -2463,8 +2500,8 @@ namespace Nekoyume.Blockchain
         }
 
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
-            IAccountStateDelta prevStates,
-            IAccountStateDelta outputStates,
+            IAccount prevStates,
+            IAccount outputStates,
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {
