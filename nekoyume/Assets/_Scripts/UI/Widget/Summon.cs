@@ -103,7 +103,7 @@ namespace Nekoyume.UI
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
 
-        private void AuraSummonAction(int groupId, int drawCount)
+        private void AuraSummonAction(int groupId, int summonCount)
         {
             // Check material enough
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             var summonRow = tableSheets.SummonSheet[groupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
 
-            var totalCost = summonRow.CostMaterialCount * drawCount;
+            var totalCost = summonRow.CostMaterialCount * summonCount;
             var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
                 ? items.Sum(x => x.count)
                 : 0;
@@ -123,7 +123,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ActionManager.Instance.AuraSummon(groupId, drawCount).Subscribe();
+            ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
@@ -220,11 +220,11 @@ namespace Nekoyume.UI
         }
 
         public static void ButtonSubscribe(
-            SimpleCostButton button, SummonSheet.Row summonRow, int count,
+            SimpleCostButton button, SummonSheet.Row summonRow, int summonCount,
             List<IDisposable> disposables)
         {
             var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount * count;
+            var cost = summonRow.CostMaterialCount * summonCount;
 
             button.SetCost(costType, cost);
             button.OnClickSubject.Subscribe(state =>
@@ -232,7 +232,7 @@ namespace Nekoyume.UI
                 switch (state)
                 {
                     case ConditionalButton.State.Normal:
-                        Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
+                        Find<Summon>().AuraSummonAction(summonRow.GroupId, summonCount);
                         break;
                     case ConditionalButton.State.Conditional:
 #if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
