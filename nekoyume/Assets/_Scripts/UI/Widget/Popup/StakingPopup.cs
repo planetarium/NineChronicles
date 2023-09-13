@@ -205,9 +205,9 @@ namespace Nekoyume.UI
             var regularSheet = sheets.StakeRegularRewardSheet;
             var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
             var stakeStateV2 = States.Instance.StakeStateV2;
-            var rewardBlockInterval = stakeStateV2.HasValue
-                ? (int)stakeStateV2.Value.Contract.RewardInterval
-                : (int)StakeState.RewardInterval;
+            var rewardBlockInterval = stakeStateV2 is null
+                ? (int)StakeState.RewardInterval
+                : (int)stakeStateV2.Value.Contract.RewardInterval;
 
             if (!TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange))
             {
