@@ -106,34 +106,6 @@ namespace Nekoyume.Blockchain
             return evaluation.OutputState.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
-            ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                agentAddress,
-                States.Instance.AgentState.MonsterCollectionRound
-            );
-            if (!(evaluation.OutputState.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict))
-            {
-                return (null, 0, new FungibleAssetValue());
-            }
-
-            try
-            {
-                var balance =
-                    evaluation.OutputState.GetBalance(monsterCollectionAddress, GoldCurrency);
-                var level =
-                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
-                        agentAddress, balance);
-                return (new MonsterCollectionState(mcDict), level, balance);
-            }
-            catch (Exception)
-            {
-                return (null, 0, new FungibleAssetValue());
-            }
-        }
-
         protected (Address addr, StakeStateV2? state, int level, FungibleAssetValue deposit)
             GetStakeState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
