@@ -6,6 +6,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -75,7 +76,6 @@ namespace Nekoyume.UI
         private const string ActionPointBuffFormat = "{0} <color=#1FFF00>{1}% DC</color>";
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
-        private const int RewardBlockInterval = 50400;
 
         protected override void Awake()
         {
@@ -204,12 +204,17 @@ namespace Nekoyume.UI
             var sheets = TableSheets.Instance;
             var regularSheet = sheets.StakeRegularRewardSheet;
             var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
+            var stakeStateV2 = States.Instance.StakeStateV2;
+            var rewardBlockInterval = stakeStateV2 is null
+                ? (int)StakeState.RewardInterval
+                : (int)stakeStateV2.Value.Contract.RewardInterval;
 
-            if (!TryGetWaitedBlockIndex(blockIndex, out var waitedBlockRange))
+            if (!TryGetWaitedBlockIndex(blockIndex, rewardBlockInterval, out var waitedBlockRange))
             {
                 return;
             }
-            var rewardCount = (int)waitedBlockRange / RewardBlockInterval;
+
+            var rewardCount = (int)waitedBlockRange / rewardBlockInterval;
 
             if (regularSheet.TryGetValue(level, out var regular)
                 && regularFixedSheet.TryGetValue(level, out var regularFixed))
@@ -257,7 +262,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                var remainingBlock = RewardBlockInterval - waitedBlockRange;
+                var remainingBlock = rewardBlockInterval - waitedBlockRange;
                 remainingBlockText.text = string.Format(
                     RemainingBlockFormat,
                     remainingBlock.ToString("N0"),
@@ -268,21 +273,24 @@ namespace Nekoyume.UI
             }
         }
 
-        private bool TryGetWaitedBlockIndex(long blockIndex, out long waitedBlockRange)
+        private static bool TryGetWaitedBlockIndex(
+            long blockIndex,
+            int rewardBlockInterval,
+            out long waitedBlockRange)
         {
-            var stakeState = States.Instance.StakeState;
-            if (stakeState == null)
+            var stakeState = States.Instance.StakeStateV2;
+            if (stakeState is null)
             {
                 waitedBlockRange = 0;
                 return false;
             }
 
-            var started = stakeState.StartedBlockIndex;
-            var received = stakeState.ReceivedBlockIndex;
+            var started = stakeState.Value.StartedBlockIndex;
+            var received = stakeState.Value.ReceivedBlockIndex;
             if (received > 0)
             {
                 waitedBlockRange = blockIndex - received;
-                waitedBlockRange += (received - started) % RewardBlockInterval;
+                waitedBlockRange += (received - started) % rewardBlockInterval;
             }
             else
             {

@@ -522,7 +522,11 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/2");
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
-                SetState(States.CreateAccount);
+                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitAgent);
+                CreateProtectedPrivateKey(_privateKey);
+                Login = _privateKey is not null;
+                Close();
+                return;
             }
 
             base.Show();

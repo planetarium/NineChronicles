@@ -48,6 +48,7 @@ namespace Nekoyume.Game.OAuth
             {
                 if (state is SignInState.Signed)
                 {
+                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
                     StartCoroutine(CoSendGoogleIdToken(_idToken));
                 }
             });
@@ -105,6 +106,9 @@ namespace Nekoyume.Game.OAuth
 
         private IEnumerator CoSendGoogleIdToken(string idToken)
         {
+            yield return new WaitUntil(() => Game.instance.PortalConnect != null);
+            Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
+
             var body = new JsonObject {{"idToken", idToken}};
             var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
             var request =
@@ -122,6 +126,7 @@ namespace Nekoyume.Game.OAuth
 
             if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
             {
+                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
                 var accessTokenResult =
                     JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
                         request.downloadHandler.text);

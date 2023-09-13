@@ -174,6 +174,7 @@ namespace Nekoyume.Game.Character
                 if (fullCostume is not null)
                 {
                     UpdateFullCostume(fullCostume);
+                    UpdateAura(aura);
                 }
                 else
                 {

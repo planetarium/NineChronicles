@@ -98,12 +98,20 @@ namespace Nekoyume.UI
                     ButtonSubscribe(items.draw10Button, summonRow, 10, _disposables);
                 }
             }
+            else
+            {
+                foreach (var drawItem in drawItems)
+                {
+                    drawItem.draw1Button.UpdateObjects();
+                    drawItem.draw10Button.UpdateObjects();
+                }
+            }
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
 
-        private void AuraSummonAction(int groupId, int drawCount)
+        private void AuraSummonAction(int groupId, int summonCount)
         {
             // Check material enough
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -111,7 +119,7 @@ namespace Nekoyume.UI
             var summonRow = tableSheets.SummonSheet[groupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
 
-            var totalCost = summonRow.CostMaterialCount * drawCount;
+            var totalCost = summonRow.CostMaterialCount * summonCount;
             var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
                 ? items.Sum(x => x.count)
                 : 0;
@@ -123,7 +131,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ActionManager.Instance.AuraSummon(groupId, drawCount).Subscribe();
+            ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
         }
@@ -132,51 +140,39 @@ namespace Nekoyume.UI
         {
             LoadingHelper.Summon.Value = null;
             SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            foreach (var drawItem in drawItems)
+            {
+                drawItem.draw1Button.UpdateObjects();
+                drawItem.draw10Button.UpdateObjects();
+            }
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
-            var resultList = SimulateEquipment(summonRow, summonCount, random);
-            Find<SummonResultPopup>().Show(summonRow, resultList);
+            var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
             SummonSheet.Row summonRow,
             int summonCount,
-            IRandom random)
+            IRandom random,
+            long blockIndex)
         {
             var tableSheets = Game.Game.instance.TableSheets;
-            var optionSheet = tableSheets.EquipmentItemOptionSheet;
-            var skillSheet = tableSheets.SkillSheet;
+            var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
             var dummyAgentState = new AgentState(new Address());
-
-            var resultList = new List<Equipment>();
-            for (int i = 0; i < summonCount; i++)
-            {
-                var recipeId = SummonHelper.PickAuraSummonRecipe(summonRow, random);
-
-                var recipeRow = tableSheets.EquipmentItemRecipeSheet[recipeId];
-                var subRecipeRow = tableSheets.EquipmentItemSubRecipeSheetV2[recipeRow.SubRecipeIds[0]];
-                var equipmentRow = tableSheets.EquipmentItemSheet[recipeRow.ResultEquipmentId];
-
-                var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                    equipmentRow,
-                    random.GenerateRandomGuid(),
-                    0
-                );
-
-                AuraSummon.AddAndUnlockOption(
-                    dummyAgentState,
-                    equipment,
-                    random,
-                    subRecipeRow,
-                    optionSheet,
-                    skillSheet);
-
-                resultList.Add(equipment);
-            }
-
-            return resultList.OrderByDescending(row => row.Grade).ToList();
+            return AuraSummon.SimulateSummon(
+                    addressHex, dummyAgentState,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    tableSheets.SkillSheet,
+                    summonRow, summonCount, random, blockIndex)
+                .Select(tuple => tuple.Item2)
+                .OrderByDescending(row => row.Grade)
+                .ToList();
         }
 
         private void SetMaterialAssets(Inventory inventory)
@@ -237,11 +233,11 @@ namespace Nekoyume.UI
         }
 
         public static void ButtonSubscribe(
-            SimpleCostButton button, SummonSheet.Row summonRow, int count,
+            SimpleCostButton button, SummonSheet.Row summonRow, int summonCount,
             List<IDisposable> disposables)
         {
             var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount * count;
+            var cost = summonRow.CostMaterialCount * summonCount;
 
             button.SetCost(costType, cost);
             button.OnClickSubject.Subscribe(state =>
@@ -249,7 +245,7 @@ namespace Nekoyume.UI
                 switch (state)
                 {
                     case ConditionalButton.State.Normal:
-                        Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
+                        Find<Summon>().AuraSummonAction(summonRow.GroupId, summonCount);
                         break;
                     case ConditionalButton.State.Conditional:
 #if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR

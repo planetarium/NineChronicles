@@ -26,6 +26,7 @@ using Nekoyume.Extensions;
 using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -103,12 +104,14 @@ namespace Nekoyume.Blockchain
 
         private readonly BlockHashCache _blockHashCache = new(100);
 
-        public IEnumerator Initialize(
-            CommandLineOptions options,
-            PrivateKey privateKey,
-            Action<bool> callback)
+        /// <summary>
+        /// Initialize without private key.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public IEnumerator InitializeWithoutPrivateKey(
+            CommandLineOptions options)
         {
-            PrivateKey = privateKey;
             _channel = new Grpc.Core.Channel(
                 options.RpcServerHost,
                 options.RpcServerPort,
@@ -130,31 +133,84 @@ namespace Nekoyume.Blockchain
             {
                 new ClientFilter()
             }).WithCancellationToken(_channel.ShutdownToken);
-            var getTipTask = Task.Run(async () => await _service.GetTip());
-            yield return new WaitUntil(() => getTipTask.IsCompleted);
-            OnRenderBlock(null, getTipTask.Result);
-            yield return null;
 
             // Android Mono only support arm7(32bit) backend in unity engine.
-            bool architecture_is_32bit = ! Environment.Is64BitProcess;
-            bool is_Android = Application.platform == RuntimePlatform.Android;
-            if (is_Android && architecture_is_32bit)
+            // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+            // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+            // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+            var task = Task.Run(async () =>
             {
-                // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
-                // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
-                // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
-                // So I can only use normal ImportBlock() function when build in Android Mono backend :(
-                _genesis = BlockManager.ImportBlock(null);
-            }
-            else
-            {
-                var task = Task.Run(async () =>
+                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
+
+        public IEnumerator Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback)
+        {
+            PrivateKey = privateKey;
+            _channel ??= new Grpc.Core.Channel(
+                options.RpcServerHost,
+                options.RpcServerPort,
+                ChannelCredentials.Insecure,
+                new[]
                 {
-                    _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
-                });
-                yield return new WaitUntil(() => task.IsCompleted);
+                    new ChannelOption("grpc.max_receive_message_length", -1)
+                }
+            );
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
+            if (_hub == null)
+            {
+                var connect = StreamingHubClient
+                    .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
+                        _channel,
+                        this)
+                    .AsCoroutine();
+                yield return connect;
+                _hub = connect.Result;
             }
 
+            _service ??= MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
+            {
+                new ClientFilter()
+            }).WithCancellationToken(_channel.ShutdownToken);
+
+            IEnumerator GetTip()
+            {
+                var getTipTask = Task.Run(async () => await _service.GetTip());
+                yield return new WaitUntil(() => getTipTask.IsCompleted);
+                OnRenderBlock(null, getTipTask.Result);
+            }
+
+            var getTipCoroutine = StartCoroutine(GetTip());
+
+            if (_genesis == null)
+            {
+                // Android Mono only support arm7(32bit) backend in unity engine.
+                bool architecture_is_32bit = ! Environment.Is64BitProcess;
+                bool is_Android = Application.platform == RuntimePlatform.Android;
+                if (is_Android && architecture_is_32bit)
+                {
+                    // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+                    // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+                    // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+                    // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+                    _genesis = BlockManager.ImportBlock(null);
+                }
+                else
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
+            }
+
+            yield return getTipCoroutine;
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
@@ -406,10 +462,10 @@ namespace Nekoyume.Blockchain
             // 에이전트의 상태를 한 번 동기화 한다.
             Task currencyTask = Task.Run(async () =>
             {
-                var state = await GetStateAsync(GoldCurrencyState.Address);
                 var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)state
+                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
                 ).Currency;
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Dictionary agentDict
@@ -422,29 +478,6 @@ namespace Nekoyume.Blockchain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
 
-                if (await GetStateAsync(
-                        StakeState.DeriveAddress(States.Instance.AgentState.address))
-                    is Dictionary stakeDict)
-                {
-                    var stakingState = new StakeState(stakeDict);
-                    var balance = new FungibleAssetValue(goldCurrency);
-                    var level = 0;
-                    try
-                    {
-                        balance = await GetBalanceAsync(stakingState.address, goldCurrency);
-                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                            .FindLevelByStakedAmount(Address, balance);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-
-                    States.Instance.SetStakeState(stakingState,
-                        new GoldBalanceState(stakingState.address, balance),
-                        level);
-                }
-
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
@@ -454,9 +487,40 @@ namespace Nekoyume.Blockchain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+                // NOTE: Initialize staking states after setting GameConfigState.
+                var stakeAddr = StakeStateV2.DeriveAddress(Address);
+                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
+                {
+                    if (!StakeStateUtilsForClient.TryMigrate(
+                            serializedStakeState,
+                            States.Instance.GameConfigState,
+                            out var stakeStateV2))
+                    {
+                        States.Instance.SetStakeState(null, null, 0);
+                    }
+                    else
+                    {
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        try
+                        {
+                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
+                            level = Game.TableSheets.Instance.StakeRegularRewardSheet
+                                .FindLevelByStakedAmount(Address, balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
 
-                var agentAddress = States.Instance.AgentState.address;
+                        States.Instance.SetStakeState(
+                            stakeStateV2,
+                            new GoldBalanceState(stakeAddr, balance),
+                            level);
+                    }
+                }
+
+                var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;

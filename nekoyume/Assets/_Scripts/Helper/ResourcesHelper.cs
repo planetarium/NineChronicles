@@ -10,9 +10,8 @@ namespace Nekoyume.Helper
     {
         private static readonly List<ScriptableObject> Resources = new List<ScriptableObject>();
 
-        public static IEnumerator CoInitialize()
+        public static void Initialize()
         {
-            yield return null;
             var resources = UnityEngine.Resources.LoadAll<ScriptableObject>("ScriptableObject/");
             Resources.AddRange(resources);
         }
