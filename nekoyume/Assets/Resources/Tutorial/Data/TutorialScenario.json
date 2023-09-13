@@ -574,7 +574,7 @@
         "emojiType": 2,
         "guideType": 1,
         "arrowPositionOffset": { "x": -50, "y": 0 },
-        "targetSizeOffset": { "x": -20, "y": 0 },
+        "targetSizeOffset": { "x": 25, "y": 20 },
         "targetPositionOffset": { "x": -20, "y": 0 },
         "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
         "scriptKey": "TUTORIAL_02_027",
