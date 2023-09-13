@@ -111,7 +111,7 @@ namespace Nekoyume.Blockchain
         {
             var agentAddr = States.Instance.AgentState.address;
             var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
-            if (!evaluation.OutputState.TryGetStakeStateV2(stakeAddr, out var stakeStateV2))
+            if (!evaluation.OutputState.TryGetStakeStateV2(agentAddr, out var stakeStateV2))
             {
                 return (stakeAddr, null, 0, new FungibleAssetValue());
             }
