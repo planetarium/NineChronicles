@@ -104,12 +104,14 @@ namespace Nekoyume.Blockchain
 
         private readonly BlockHashCache _blockHashCache = new(100);
 
-        public IEnumerator Initialize(
-            CommandLineOptions options,
-            PrivateKey privateKey,
-            Action<bool> callback)
+        /// <summary>
+        /// Initialize without private key.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public IEnumerator InitializeWithoutPrivateKey(
+            CommandLineOptions options)
         {
-            PrivateKey = privateKey;
             _channel = new Grpc.Core.Channel(
                 options.RpcServerHost,
                 options.RpcServerPort,
@@ -131,31 +133,84 @@ namespace Nekoyume.Blockchain
             {
                 new ClientFilter()
             }).WithCancellationToken(_channel.ShutdownToken);
-            var getTipTask = Task.Run(async () => await _service.GetTip());
-            yield return new WaitUntil(() => getTipTask.IsCompleted);
-            OnRenderBlock(null, getTipTask.Result);
-            yield return null;
 
             // Android Mono only support arm7(32bit) backend in unity engine.
-            bool architecture_is_32bit = ! Environment.Is64BitProcess;
-            bool is_Android = Application.platform == RuntimePlatform.Android;
-            if (is_Android && architecture_is_32bit)
+            // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+            // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+            // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+            var task = Task.Run(async () =>
             {
-                // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
-                // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
-                // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
-                // So I can only use normal ImportBlock() function when build in Android Mono backend :(
-                _genesis = BlockManager.ImportBlock(null);
-            }
-            else
-            {
-                var task = Task.Run(async () =>
+                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
+
+        public IEnumerator Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback)
+        {
+            PrivateKey = privateKey;
+            _channel ??= new Grpc.Core.Channel(
+                options.RpcServerHost,
+                options.RpcServerPort,
+                ChannelCredentials.Insecure,
+                new[]
                 {
-                    _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
-                });
-                yield return new WaitUntil(() => task.IsCompleted);
+                    new ChannelOption("grpc.max_receive_message_length", -1)
+                }
+            );
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
+            if (_hub == null)
+            {
+                var connect = StreamingHubClient
+                    .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
+                        _channel,
+                        this)
+                    .AsCoroutine();
+                yield return connect;
+                _hub = connect.Result;
             }
 
+            _service ??= MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
+            {
+                new ClientFilter()
+            }).WithCancellationToken(_channel.ShutdownToken);
+
+            IEnumerator GetTip()
+            {
+                var getTipTask = Task.Run(async () => await _service.GetTip());
+                yield return new WaitUntil(() => getTipTask.IsCompleted);
+                OnRenderBlock(null, getTipTask.Result);
+            }
+
+            var getTipCoroutine = StartCoroutine(GetTip());
+
+            if (_genesis == null)
+            {
+                // Android Mono only support arm7(32bit) backend in unity engine.
+                bool architecture_is_32bit = ! Environment.Is64BitProcess;
+                bool is_Android = Application.platform == RuntimePlatform.Android;
+                if (is_Android && architecture_is_32bit)
+                {
+                    // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+                    // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+                    // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+                    // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+                    _genesis = BlockManager.ImportBlock(null);
+                }
+                else
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+                    });
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
+            }
+
+            yield return getTipCoroutine;
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
@@ -423,7 +478,7 @@ namespace Nekoyume.Blockchain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
 
-                var stakeAddr = StakeStateV2.DeriveAddress(States.Instance.AgentState.address);
+                var stakeAddr = StakeStateV2.DeriveAddress(Address);
                 if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
                 {
                     if (!StakeStateUtilsForClient.TryMigrate(
@@ -464,7 +519,7 @@ namespace Nekoyume.Blockchain
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
-                var agentAddress = States.Instance.AgentState.address;
+                var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;
