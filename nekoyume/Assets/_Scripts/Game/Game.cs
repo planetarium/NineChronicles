@@ -41,9 +41,11 @@ using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
+#endif
+#if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
 #if ENABLE_FIREBASE
@@ -57,6 +59,7 @@ namespace Nekoyume.Game
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
     using UniRx;
+    using RocksDbSharp;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
@@ -219,7 +222,7 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -266,6 +269,8 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
+#endif
+#if UNITY_ANDROID || UNITY_IOS
             portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
@@ -327,16 +332,20 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
 
+            Debug.Log("game 1 ");
+
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
 
             GL.Clear(true, true, Color.black);
+            Debug.Log("game 11 ");
 
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
                     {
+                        Debug.Log("game 2 ");
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
@@ -344,7 +353,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
-
+            Debug.Log("game 3 ");
             yield return new WaitUntil(() => agentInitialized);
 
             // NOTE: Create ActionManager after Agent initialized.
@@ -696,7 +705,7 @@ namespace Nekoyume.Game
                 }
             }
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
                 if (!States.PledgeRequested)
@@ -998,6 +1007,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
+            Debug.Log("cologin 1 ");
             if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
@@ -1020,6 +1030,8 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            Debug.Log("cologin 2 ");
+
             if (_commandLineOptions.TestEnd)
             {
                 var w = Widget.Find<ConfirmPopup>();
@@ -1041,29 +1053,38 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            Debug.Log("cologin 3 ");
+
             var settings = Widget.Find<SettingPopup>();
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
             var loginPopup = Widget.Find<LoginSystem>();
 
+            Debug.Log("cologin 4 ");
+
             if (Application.isBatchMode)
             {
+                Debug.Log("cologin 5 ");
                 loginPopup.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
             }
             else
             {
+                Debug.Log("cologin 6 ");
                 if (loginPopup.CheckLocalPassphrase())
                 {
+                    Debug.Log("cologin 66 ");
                     Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
                 }
                 else
                 {
+                    Debug.Log("cologin 666 ");
                     var intro = Widget.Find<IntroScreen>();
                     intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
                 }
                 yield return new WaitUntil(() => loginPopup.Login);
             }
+            Debug.Log("cologin 7 ");
 
             yield return Agent.Initialize(
                 _commandLineOptions,
@@ -1452,7 +1473,7 @@ namespace Nekoyume.Game
             Debug.Log(_commandLineOptions.ToString());
         }
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
         void Update()
         {
             if (Platform.IsMobilePlatform())

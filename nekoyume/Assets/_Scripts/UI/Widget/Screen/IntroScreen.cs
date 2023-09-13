@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
@@ -166,6 +166,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowMobile()
         {
+            Debug.Log("CoShowMobile 1");
             yield return new WaitUntil(() => Game.Game.instance.PortalConnect != null);
 
             // PlayerPrefs FirstPlay
@@ -188,6 +189,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             }
 
+            Debug.Log("CoShowMobile 2");
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
             // signinButton.gameObject.SetActive(!Find<LoginSystem>().KeyStore.List().Any());
