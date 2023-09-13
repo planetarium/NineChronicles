@@ -2253,7 +2253,7 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Information);
 
             UpdateAgentStateAsync(eval).Forget();
-            UpdateStakeState(eval);
+            UpdateStakeStateAsync(eval).Forget();
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
@@ -2269,7 +2269,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateStakeState(eval);
+            UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
