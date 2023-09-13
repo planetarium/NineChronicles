@@ -303,6 +303,15 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        protected void UpdateStakeState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var (addr, state, level, deposit) = GetStakeState(evaluation);
+            States.Instance.SetStakeState(
+                state,
+                new GoldBalanceState(addr, deposit),
+                level);
+        }
+
         private static UniTask UpdateAvatarState(AvatarState avatarState, int index) =>
             States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
 
