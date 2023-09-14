@@ -80,6 +80,14 @@ namespace Lib9c.Tests.Action
             _stakePolicySheet = initialStatesWithAvatarStateV2.GetSheet<StakePolicySheet>();
         }
 
+        // NOTE: object[] {
+        //     long startedBlockIndex,
+        //     long? receivedBlockIndex,
+        //     long stakedBalance,
+        //     long blockIndex,
+        //     (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+        //     (int itemSheetId, int count)[] expectedItems)
+        // }
         public static IEnumerable<object[]>
             GetMemberData_Execute_Success_With_StakePolicySheetFixtureV1()
         {
@@ -200,6 +208,13 @@ namespace Lib9c.Tests.Action
             };
         }
 
+        // NOTE: object[] {
+        //     long startedBlockIndex,
+        //     long? receivedBlockIndex,
+        //     long stakedBalance,
+        //     long blockIndex,
+        //     (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+        //     (int itemSheetId, int count)[] expectedItems)
         public static IEnumerable<object[]>
             GetMemberData_Execute_Success_With_StakePolicySheetFixtureV2()
         {
@@ -651,11 +666,7 @@ namespace Lib9c.Tests.Action
             long startedBlockIndex,
             long? receivedBlockIndex)
         {
-            var contract = new Contract(
-                stakePolicySheet.StakeRegularFixedRewardSheetValue,
-                stakePolicySheet.StakeRegularRewardSheetValue,
-                stakePolicySheet.RewardIntervalValue,
-                stakePolicySheet.LockupIntervalValue);
+            var contract = new Contract(stakePolicySheet);
             return receivedBlockIndex is null
                 ? new StakeStateV2(contract, startedBlockIndex)
                 : new StakeStateV2(contract, startedBlockIndex, receivedBlockIndex.Value);
