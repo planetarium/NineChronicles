@@ -8254,7 +8254,7 @@ MonoBehaviour:
   findPassphraseGroup: {fileID: 1416671077510191240}
   findPassphraseField: {fileID: 4193853567108113317}
   findPrivateKeyWarning: {fileID: 6748109604479199539}
-  submitButton: {fileID: 0}
+  submitButton: {fileID: 1773907351063232158}
   findPassphraseButton: {fileID: 1408186267810140111}
   backToLoginButton: {fileID: 7441353160012381959}
   setPasswordLaterButton: {fileID: 3481958158045243323}
@@ -10240,6 +10240,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1773907351063232158 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5718414708290026654, guid: 5423cf792096944a3884ee1f4b0d4183,
+    type: 3}
+  m_PrefabInstance: {fileID: 6324686339697345024}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &2573892926507304883 stripped
