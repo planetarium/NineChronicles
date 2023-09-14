@@ -18,7 +18,7 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
         };
 
         private string _host =
-            "https://hihq3f4id5.execute-api.ap-northeast-2.amazonaws.com/development";
+            "https://6s8m89vay4.execute-api.ap-northeast-2.amazonaws.com/development";
 
         private Store _store = Store.Test;
 
@@ -71,10 +71,11 @@ namespace NineChronicles.ExternalServices.IAPService.Editor
 
         private async Task GetProductsAsync()
         {
-            var productResponse = await _iapService.GetProductsAsync(Addresses.Admin);
-            _productsText = productResponse is null
+            var categoryResponse = await _iapService.GetProductsAsync(Addresses.Admin);
+            Debug.Log(Addresses.Admin);
+            _productsText = categoryResponse is null
                 ? "null"
-                : JsonSerializer.Serialize(productResponse, JsonSerializerOptions);
+                : JsonSerializer.Serialize(categoryResponse, JsonSerializerOptions);
         }
 
         private async Task PurchaseStatusAsync()

@@ -4,11 +4,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
 {
     public class ProductSchema
     {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
+        [JsonPropertyName("order")]
+        public int Order { get; set; }
+
         [JsonPropertyName("google_sku")]
         public string GoogleSku { get; set; }
-
-        [JsonPropertyName("product_type")]
-        public ProductType ProductType { get; set; }
 
         [JsonPropertyName("daily_limit")]
         public int? DailyLimit { get; set; }
@@ -16,11 +19,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("weekly_limit")]
         public int? WeeklyLimit { get; set; }
 
+        [JsonPropertyName("account_limit")]
+        public int? AccountLimit { get; set; }
+
         [JsonPropertyName("purchase_count")]
         public int PurchaseCount { get; set; }
-
-        [JsonPropertyName("display_order")]
-        public int DisplayOrder { get; set; }
 
         [JsonPropertyName("active")]
         public bool Active { get; set; }
@@ -33,8 +36,5 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
 
         [JsonPropertyName("fungible_item_list")]
         public FungibleItemSchema[] FungibleItemList { get; set; }
-
-        [JsonPropertyName("price_list")]
-        public PriceSchema[] PriceList { get; set; }
     }
 }

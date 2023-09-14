@@ -90,7 +90,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         //     //request to purchase to IAPService if there are missing receipts.
         // }
 
-        public async Task<IReadOnlyList<ProductSchema>?> GetProductsAsync(Address agentAddr)
+        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr)
         {
             if (!IsInitialized)
             {
@@ -129,7 +129,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
             try
             {
-                return JsonSerializer.Deserialize<ProductSchema[]>(
+                return JsonSerializer.Deserialize<CategorySchema[]>(
                     content!,
                     IAPServiceClient.JsonSerializerOptions)!;
                 // NOTE: Enable this code if you want to use cache.
