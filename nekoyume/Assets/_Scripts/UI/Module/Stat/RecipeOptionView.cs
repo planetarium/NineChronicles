@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
                         ? skillRow.GetLocalizedName()
                         : string.Empty;
                     var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    skillName += ratio < 100 ? $" ({normalizedRatio:0%})" : string.Empty;
+                    skillName += ratio < 10000 ? $" ({normalizedRatio:0%})" : string.Empty;
                     skillView.optionText.text = skillName;
                     skillView.percentageSlider.value = (float)normalizedRatio;
                     skillView.sliderFillImage.color = isPremium ? PremiumColor : BaseColor;
