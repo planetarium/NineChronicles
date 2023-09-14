@@ -54,6 +54,7 @@ namespace Nekoyume.UI
             var products = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
 
+            
 
             //foreach
 
