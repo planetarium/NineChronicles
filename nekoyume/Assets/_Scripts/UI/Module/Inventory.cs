@@ -775,6 +775,8 @@ namespace Nekoyume.UI.Module
             yield return null;
             yield return new WaitForEndOfFrame();
             UpdateEquipped();
+            var bestItems = GetUsableBestEquipments();
+            UpdateEquipmentNotification(bestItems);
         }
 
         public void UpdateEquipped()

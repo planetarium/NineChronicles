@@ -31,6 +31,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
@@ -496,17 +497,32 @@ namespace Nekoyume.Blockchain
                             States.Instance.GameConfigState,
                             out var stakeStateV2))
                     {
-                        States.Instance.SetStakeState(null, null, 0);
+                        States.Instance.SetStakeState(null, null, 0, null, null);
                     }
                     else
                     {
                         var balance = new FungibleAssetValue(goldCurrency);
                         var level = 0;
+                        var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                        var stakeRegularRewardSheet = new StakeRegularRewardSheet();
                         try
                         {
                             balance = await GetBalanceAsync(stakeAddr, goldCurrency);
-                            level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                                .FindLevelByStakedAmount(Address, balance);
+                            var sheetAddrArr = new[]
+                            {
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                            };
+                            var sheetStates = await GetStateBulkAsync(sheetAddrArr);
+                            stakeRegularFixedRewardSheet.Set(
+                                sheetStates[sheetAddrArr[0]].ToDotnetString());
+                            stakeRegularRewardSheet.Set(
+                                sheetStates[sheetAddrArr[1]].ToDotnetString());
+                            level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                                Address,
+                                balance);
                         }
                         catch
                         {
@@ -516,7 +532,9 @@ namespace Nekoyume.Blockchain
                         States.Instance.SetStakeState(
                             stakeStateV2,
                             new GoldBalanceState(stakeAddr, balance),
-                            level);
+                            level,
+                            stakeRegularFixedRewardSheet,
+                            stakeRegularRewardSheet);
                     }
                 }
 
