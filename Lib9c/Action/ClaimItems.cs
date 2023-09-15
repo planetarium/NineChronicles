@@ -95,7 +95,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
 
                 states = states
-                    .TransferAsset(context, context.Signer, Addresses.ClaimItem, fungibleAssetValue)
+                    .BurnAsset(context, context.Signer, fungibleAssetValue)
                     .SetState(avatarState.address, avatarState.Serialize());
             }
 
