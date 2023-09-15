@@ -779,7 +779,7 @@ namespace Nekoyume.Blockchain
                 game.CachedStateAddresses[address] = false;
                 if (!game.CachedStates.ContainsKey(address))
                 {
-                    game.CachedStates.Add(address, new Null());
+                    game.CachedStates.Add(address, Null.Value);
                 }
             }
 
@@ -797,7 +797,9 @@ namespace Nekoyume.Blockchain
             return blockIndex.HasValue
                 ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
                     ? outBlockHash
-                    : await Game.Game.instance.ApiClient.GetBlockHashAsync(blockIndex.Value)
+                    : _codec.Decode(await _service.GetBlockHash(blockIndex.Value)) is { } rawBlockHash
+                        ? new BlockHash(rawBlockHash)
+                        : (BlockHash?)null
                 : BlockTipHash;
         }
     }
