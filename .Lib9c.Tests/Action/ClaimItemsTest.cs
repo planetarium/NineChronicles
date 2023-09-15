@@ -17,9 +17,7 @@ namespace Lib9c.Tests.Action
     public class ClaimItemsTest
     {
         private readonly IAccount _initialState;
-        private readonly TableSheets _tableSheets;
         private readonly Address _signerAddress;
-        private readonly Address _recipientAddress;
         private readonly Address _recipientAvatarAddress;
         private readonly List<Currency> _currencies;
 
@@ -41,33 +39,33 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            _tableSheets = new TableSheets(sheets);
-            _itemIds = _tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
+            var tableSheets = new TableSheets(sheets);
+            _itemIds = tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
             _currencies = _itemIds.Select(id => Currency.Legacy($"it_{id}", 0, minters: null)).ToList();
 
             _signerAddress = new PrivateKey().ToAddress();
-            _recipientAddress = new PrivateKey().ToAddress();
-            var recipientAgentState = new AgentState(_recipientAddress);
-            _recipientAvatarAddress = _recipientAddress.Derive("avatar");
+            var recipientAddress = new PrivateKey().ToAddress();
+            var recipientAgentState = new AgentState(recipientAddress);
+            _recipientAvatarAddress = recipientAddress.Derive("avatar");
             var rankingMapAddress = new PrivateKey().ToAddress();
             var recipientAvatarState = new AvatarState(
                 _recipientAvatarAddress,
-                _recipientAddress,
+                recipientAddress,
                 0,
-                _tableSheets.GetAvatarSheets(),
+                tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
                     0,
-                    _tableSheets.WorldSheet,
+                    tableSheets.WorldSheet,
                     GameConfig.RequireClearedStageLevel.ActionsInShop),
             };
             recipientAgentState.avatarAddresses[0] = _recipientAvatarAddress;
 
             var context = new ActionContext();
             _initialState = _initialState
-                .SetState(_recipientAddress, recipientAgentState.Serialize())
+                .SetState(recipientAddress, recipientAgentState.Serialize())
                 .SetState(_recipientAvatarAddress, recipientAvatarState.Serialize())
                 .MintAsset(context, _signerAddress, _currencies[0] * 1)
                 .MintAsset(context, _signerAddress, _currencies[1] * 1)
