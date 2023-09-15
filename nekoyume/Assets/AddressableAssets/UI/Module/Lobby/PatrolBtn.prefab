@@ -464,7 +464,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 27
-  l10nKey: 
+  l10nKey: UI_PATROL_REWARD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -919,7 +919,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 27
-  l10nKey: 
+  l10nKey: UI_PATROL_REWARD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -1022,6 +1022,7 @@ GameObject:
   - component: {fileID: 3331478993148939148}
   - component: {fileID: 1490375834063041160}
   - component: {fileID: 7303821826608427635}
+  - component: {fileID: 6068821011712354128}
   m_Layer: 5
   m_Name: PatrolBtn
   m_TagString: Untagged
@@ -1036,7 +1037,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7228520635994709221}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1105,7 +1106,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Nekoyume.UI.Menu, Nekoyume
-        m_MethodName: WorldBossClick
+        m_MethodName: PatrolRewardClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1162,6 +1163,27 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6068821011712354128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7228520635994709221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf3d237655b345838089e4a90cff4c99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: UI_PATROL_REWARD
+  type: 8
+  speechBubble: {fileID: 0}
+  lockObjects: []
+  unlockObjects: []
+  hoverScaleTweener: {fileID: 1490375834063041160}
+  notification: {fileID: 8101677455451108857}
+  rewardIcon: {fileID: 1118509144454639835}
+  patrolRewardData: {fileID: 11400000, guid: e718cafc25a7b2f4392845c64d218de1, type: 2}
 --- !u!1 &7711250401232687763
 GameObject:
   m_ObjectHideFlags: 0
@@ -1628,6 +1650,12 @@ PrefabInstance:
 --- !u!224 &6251105771227479573 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3502085939140762763, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
+    type: 3}
+  m_PrefabInstance: {fileID: 7375078761672762014}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8101677455451108857 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
     type: 3}
   m_PrefabInstance: {fileID: 7375078761672762014}
   m_PrefabAsset: {fileID: 0}
