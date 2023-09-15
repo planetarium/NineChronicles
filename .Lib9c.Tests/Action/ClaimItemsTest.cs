@@ -13,7 +13,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ClaimItemTest
+    public class ClaimItemsTest
     {
         private readonly IAccount _initialState;
         private readonly TableSheets _tableSheets;
@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
 
         private readonly int _itemId;
 
-        public ClaimItemTest(ITestOutputHelper outputHelper)
+        public ClaimItemsTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throws_ArgumentException_TickerInvalid()
         {
             var currency = Currencies.Crystal;
-            var action = new ClaimItem(_recipientAvatarAddress, currency * 1);
+            var action = new ClaimItems(_recipientAvatarAddress, currency * 1);
             Assert.Throws<ArgumentException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenNotEnoughBalance()
         {
-            var action = new ClaimItem(_recipientAvatarAddress, _currency * 2);
+            var action = new ClaimItems(_recipientAvatarAddress, _currency * 2);
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
 
             var differentItemId = _tableSheets.ItemSheet.Values.First().Id;
             var differentCurrency = Currency.Legacy($"it_{differentItemId}", 0, minters: null);
-            action = new ClaimItem(_recipientAddress, differentCurrency * 1);
+            action = new ClaimItems(_recipientAddress, differentCurrency * 1);
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var fungibleAssetValue = new FungibleAssetValue(_currency, 1, 0);
-            var action = new ClaimItem(_recipientAvatarAddress, fungibleAssetValue);
+            var action = new ClaimItems(_recipientAvatarAddress, fungibleAssetValue);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = _initialState,

@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 
 namespace Nekoyume.Action
 {
-    public interface IClaimItem
+    public interface IClaimItems
     {
         Address AvatarAddress { get; }
-        FungibleAssetValue Amount { get; }
+        IEnumerable<FungibleAssetValue> Amounts { get; }
     }
 }
