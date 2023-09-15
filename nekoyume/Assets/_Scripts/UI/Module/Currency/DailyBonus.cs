@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
 
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.DailyRewardInterval);
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.DailyRewardInterval ?? 0f);
             if (States.Instance.CurrentAvatarState is not null)
             {
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);

@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
             if (!syncWithAvatarState)
                 return;
 
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.ActionPointMax ?? 0);
             if (States.Instance.CurrentAvatarState is not null)
             {
                 SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
