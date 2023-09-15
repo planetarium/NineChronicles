@@ -44,6 +44,8 @@ namespace Nekoyume.Action
 
         public override IAccount Execute(IActionContext context)
         {
+            context.UseGas(1);
+
             var states = context.PreviousState;
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
