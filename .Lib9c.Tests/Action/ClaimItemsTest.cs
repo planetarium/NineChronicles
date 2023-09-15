@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -20,9 +21,9 @@ namespace Lib9c.Tests.Action
         private readonly Address _signerAddress;
         private readonly Address _recipientAddress;
         private readonly Address _recipientAvatarAddress;
-        private readonly Currency _currency;
+        private readonly List<Currency> _currencies;
 
-        private readonly int _itemId;
+        private readonly List<int> _itemIds;
 
         public ClaimItemsTest(ITestOutputHelper outputHelper)
         {
@@ -41,8 +42,8 @@ namespace Lib9c.Tests.Action
             }
 
             _tableSheets = new TableSheets(sheets);
-            _itemId = _tableSheets.CostumeItemSheet.Values.First().Id;
-            _currency = Currency.Legacy($"it_{_itemId}", 0, minters: null);
+            _itemIds = _tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
+            _currencies = _itemIds.Select(id => Currency.Legacy($"it_{id}", 0, minters: null)).ToList();
 
             _signerAddress = new PrivateKey().ToAddress();
             _recipientAddress = new PrivateKey().ToAddress();
@@ -68,14 +69,16 @@ namespace Lib9c.Tests.Action
             _initialState = _initialState
                 .SetState(_recipientAddress, recipientAgentState.Serialize())
                 .SetState(_recipientAvatarAddress, recipientAvatarState.Serialize())
-                .MintAsset(context, _signerAddress, _currency * 1);
+                .MintAsset(context, _signerAddress, _currencies[0] * 1)
+                .MintAsset(context, _signerAddress, _currencies[1] * 1)
+                .MintAsset(context, _signerAddress, _currencies[2] * 1);
         }
 
         [Fact]
         public void Execute_Throws_ArgumentException_TickerInvalid()
         {
             var currency = Currencies.Crystal;
-            var action = new ClaimItems(_recipientAvatarAddress, currency * 1);
+            var action = new ClaimItems(_recipientAvatarAddress, new[] { currency * 1 });
             Assert.Throws<ArgumentException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -89,19 +92,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenNotEnoughBalance()
         {
-            var action = new ClaimItems(_recipientAvatarAddress, _currency * 2);
-            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
-                action.Execute(new ActionContext
-                {
-                    PreviousState = _initialState,
-                    Signer = _signerAddress,
-                    BlockIndex = 100,
-                    Random = new TestRandom(),
-                }));
-
-            var differentItemId = _tableSheets.ItemSheet.Values.First().Id;
-            var differentCurrency = Currency.Legacy($"it_{differentItemId}", 0, minters: null);
-            action = new ClaimItems(_recipientAddress, differentCurrency * 1);
+            var currency = _currencies.First();
+            var action = new ClaimItems(_recipientAvatarAddress, new[] { currency * 2 });
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -115,8 +107,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var fungibleAssetValue = new FungibleAssetValue(_currency, 1, 0);
-            var action = new ClaimItems(_recipientAvatarAddress, fungibleAssetValue);
+            var fungibleAssetValues = _currencies.Select(currency => currency * 1);
+            var action = new ClaimItems(_recipientAvatarAddress, fungibleAssetValues);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = _initialState,
@@ -126,10 +118,13 @@ namespace Lib9c.Tests.Action
             });
 
             var avatarState = states.GetAvatarState(_recipientAvatarAddress);
-            Assert.Equal(_currency * 0, states.GetBalance(_signerAddress, _currency));
-            Assert.Equal(
-                1,
-                avatarState.inventory.Items.First(x => x.item.Id == _itemId).count);
+            foreach (var i in Enumerable.Range(0, 3))
+            {
+                Assert.Equal(_currencies[i] * 0, states.GetBalance(_signerAddress, _currencies[i]));
+                Assert.Equal(
+                    1,
+                    avatarState.inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
+            }
         }
     }
 }
