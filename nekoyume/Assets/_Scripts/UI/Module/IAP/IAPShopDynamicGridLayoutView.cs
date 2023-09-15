@@ -60,13 +60,13 @@ namespace Nekoyume.UI.Module
                     lastPos.x += children[i].rect.width + space;
                 }
 
-                if ((lastPos.y - children[i].rect.height) < minHeight)
+                if ((lastPos.y - children[i].rect.height) < minHeight && i + 1 < transform.childCount)
                 {
                     minHeight = (lastPos.y - children[i].rect.height);
                 }
             }
 
-            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight));
+            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight) + 10);
         }
 
         private static int Compare(RectTransform lhs, RectTransform rhs)
