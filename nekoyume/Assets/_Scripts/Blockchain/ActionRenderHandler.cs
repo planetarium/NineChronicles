@@ -1065,30 +1065,57 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
                     .Forget();
-                LocalLayerModifier.AddItem(
+
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
+                }
+
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(
                             tradableId,
                             out ItemUsable materialItem))
                     {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1);
+                        if(itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1);
+                        }
                     }
                 }
 
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1);
+                }
+
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
