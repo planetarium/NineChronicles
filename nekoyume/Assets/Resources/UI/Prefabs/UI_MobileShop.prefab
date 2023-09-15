@@ -227,8 +227,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -2.5, y: 0}
-  m_SizeDelta: {x: -25, y: -30}
+  m_AnchoredPosition: {x: -0.00048828125, y: 0}
+  m_SizeDelta: {x: -25, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8530178730811668002
 CanvasRenderer:
@@ -328,7 +328,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -30, y: 0}
-  m_SizeDelta: {x: 20, y: -30}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2233315062978411869
 CanvasRenderer:
@@ -410,9 +410,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6113021123441700787}
   m_HandleRect: {fileID: 7440800650224879723}
-  m_Direction: 3
+  m_Direction: 2
   m_Value: 1
-  m_Size: 0.726442
+  m_Size: 0.45161638
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -552,11 +552,11 @@ RectTransform:
   m_Father: {fileID: 4714206702648190800}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5.5, y: -280.05}
-  m_SizeDelta: {x: -11, y: 560.1}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 5.5, y: 0}
+  m_SizeDelta: {x: -11, y: 1129.1}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &9165816350546481068
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -578,7 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: eaa0a5276e896a242b9c8a2732d179a1, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -607,9 +607,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7966ea1daa8998409b4f7cad395833b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space: 10
-  cellViewOrigin: {fileID: 1921084363183074134, guid: 27f51573bdff3f944a5714ee1c85fb91,
-    type: 3}
+  space: 7
 --- !u!1 &5213722239405748246
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,7 +619,7 @@ GameObject:
   - component: {fileID: 4843465505027103809}
   - component: {fileID: 1323492877010397791}
   - component: {fileID: 1488592768342495356}
-  - component: {fileID: 1804609585172244407}
+  - component: {fileID: 7601214716287326473}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -646,10 +644,10 @@ RectTransform:
   m_Father: {fileID: 7620432441771652986}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.027851852}
+  m_AnchorMax: {x: 1, y: 0.9721482}
+  m_AnchoredPosition: {x: 0, y: -0.000015258789}
+  m_SizeDelta: {x: 0, y: -0.000015258789}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1323492877010397791
 CanvasRenderer:
@@ -689,7 +687,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1804609585172244407
+--- !u!114 &7601214716287326473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -698,23 +696,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 5213722239405748246}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f0e995f494626a4f878eedbded37c8d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewport: {fileID: 4714206702648190800}
-  scrollDirection: 0
-  movementType: 1
-  elasticity: 0.2
-  scrollSensitivity: 20
-  inertia: 1
-  decelerationRate: 0.03
-  snap:
-    Enable: 0
-    VelocityThreshold: 0.5
-    Duration: 0.3
-    Easing: 24
-  draggable: 1
-  scrollbar: {fileID: 3945926404015693112}
+  m_Content: {fileID: 9184329829093658162}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 1
+  m_Elasticity: 0.2
+  m_Inertia: 1
+  m_DecelerationRate: 0.03
+  m_ScrollSensitivity: 1
+  m_Viewport: {fileID: 4843465505027103809}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 3945926404015693112}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5573764563879486466
 GameObject:
   m_ObjectHideFlags: 0

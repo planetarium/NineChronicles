@@ -131,19 +131,19 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-#if UNITY_ANDROID
+/*#if UNITY_ANDROID
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
             StartCoroutine(CoShowMobile());
-#else
+#else*/
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-#endif
+//#endif
         }
 
         public void Show()
