@@ -12,31 +12,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private float space;
 
-        [SerializeField]
-        private IAPShopProductCellView cellViewOrigin;
-
-        private List<IAPShopProductCellView> _childProductList = new List<IAPShopProductCellView>();
-        private Dictionary<string, IAPShopProductCellView> _childProductDic = new Dictionary<string, IAPShopProductCellView>();
-
         public void OnEnable()
         {
             Refresh();
-        }
-
-        public void SetSortOrder()
-        {
-
-        }
-
-        public void AddProduct(ProductSchema productData)
-        {
-            if(!_childProductDic.TryGetValue(productData.GoogleSku, out var product))
-            {
-                product = Instantiate(cellViewOrigin, transform);
-                _childProductList.Add(product);
-                _childProductDic.Add(productData.GoogleSku, product);
-            }
-            product.SetData(productData);
         }
 
         public void Refresh()
@@ -44,8 +22,14 @@ namespace Nekoyume.UI.Module
             var rectTrans = GetComponent<RectTransform>();
             rectTrans.pivot = new Vector2(0, 1);
 
-            var children = GetComponentsInChildren<RectTransform>(false).ToList();
-            children.Remove(rectTrans);
+            
+            List<RectTransform> children = new List<RectTransform>();
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                if(transform.GetChild(i).gameObject.activeSelf)
+                    children.Add(transform.GetChild(i).GetComponent<RectTransform>());
+            }
             children.Sort(Compare);
 
             Vector2 lastPos = new Vector2(space, -space);
@@ -82,7 +66,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight) + space);
+            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight));
         }
 
         private static int Compare(RectTransform lhs, RectTransform rhs)
