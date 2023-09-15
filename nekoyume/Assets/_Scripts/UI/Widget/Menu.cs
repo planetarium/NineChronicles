@@ -156,7 +156,7 @@ namespace Nekoyume.UI
                     button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
-            StakingLevelSubject.Level
+            StakingSubject.Level
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);

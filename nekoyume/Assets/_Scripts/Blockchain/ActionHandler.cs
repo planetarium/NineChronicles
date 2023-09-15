@@ -16,6 +16,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
@@ -107,30 +108,59 @@ namespace Nekoyume.Blockchain
         }
 
         // NOTE: The deposit in returned tuple is get from the IAgent not evaluation.OutputState.
-        protected async UniTask<(Address addr, StakeStateV2? state, int level, FungibleAssetValue deposit)>
+        protected async UniTask<(
+            Address stakeAddr,
+            StakeStateV2? stakeStateV2,
+            FungibleAssetValue deposit,
+            int stakingLevel,
+            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
+            StakeRegularRewardSheet stakeRegularRewardSheet)>
             GetStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddr = States.Instance.AgentState.address;
             var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
             if (!evaluation.OutputState.TryGetStakeStateV2(agentAddr, out var stakeStateV2))
             {
-                return (stakeAddr, null, 0, new FungibleAssetValue());
+                return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
             }
 
             try
             {
                 var agent = Game.Game.instance.Agent;
-                var balance = agent is null
-                    ? GoldCurrency * 0
-                    : await Game.Game.instance.Agent.GetBalanceAsync(stakeAddr, GoldCurrency);
-                var level = TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                if (agent is null)
+                {
+                    return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
+                }
+
+                var balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
+                var sheetAddrArr = new[]
+                {
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                    Addresses.GetSheetAddress(
+                        stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                };
+                var sheetStates = await agent.GetStateBulkAsync(sheetAddrArr);
+                var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                stakeRegularFixedRewardSheet.Set(
+                    sheetStates[sheetAddrArr[0]].ToDotnetString());
+                var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                stakeRegularRewardSheet.Set(
+                    sheetStates[sheetAddrArr[1]].ToDotnetString());
+                var level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
                     agentAddr,
                     balance);
-                return (stakeAddr, stakeStateV2, level, balance);
+                return (
+                    stakeAddr,
+                    stakeStateV2,
+                    balance,
+                    level,
+                    stakeRegularFixedRewardSheet,
+                    stakeRegularRewardSheet);
             }
             catch (Exception)
             {
-                return (stakeAddr, null, 0, new FungibleAssetValue());
+                return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
             }
         }
 
@@ -307,11 +337,20 @@ namespace Nekoyume.Blockchain
 
         protected async UniTaskVoid UpdateStakeStateAsync<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var (addr, state, level, deposit) = await GetStakeStateAsync(evaluation);
+            var (
+                    stakeAddr,
+                    stakeStateV2,
+                    deposit,
+                    stakingLevel,
+                    stakeRegularFixedRewardSheet,
+                    stakeRegularRewardSheet) =
+                await GetStakeStateAsync(evaluation);
             States.Instance.SetStakeState(
-                state,
-                new GoldBalanceState(addr, deposit),
-                level);
+                stakeStateV2,
+                new GoldBalanceState(stakeAddr, deposit),
+                stakingLevel,
+                stakeRegularFixedRewardSheet,
+                stakeRegularRewardSheet);
         }
 
         private static UniTask UpdateAvatarState(AvatarState avatarState, int index) =>

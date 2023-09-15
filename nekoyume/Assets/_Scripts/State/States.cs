@@ -19,6 +19,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stake;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Event = Nekoyume.Game.Event;
 
@@ -36,9 +37,13 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
+        // NOTE: Staking Properties
         public GoldBalanceState StakedBalanceState { get; private set; }
-
         public StakeStateV2? StakeStateV2 { get; private set; }
+        public int StakingLevel { get; private set; }
+        public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
+        public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+        // ~: Staking Properties
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
@@ -66,8 +71,6 @@ namespace Nekoyume.State
 
         public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
-
-        public int StakingLevel { get; private set; }
 
         public GrandFinaleStates GrandFinaleStates { get; } = new();
 
@@ -444,12 +447,20 @@ namespace Nekoyume.State
         public void SetStakeState(
             StakeStateV2? stakeStateV2,
             GoldBalanceState stakedBalanceState,
-            int stakingLevel)
+            int stakingLevel,
+            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
+            StakeRegularRewardSheet stakeRegularRewardSheet)
         {
             StakeStateV2 = stakeStateV2;
             StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
-            StakingLevelSubject.OnNextLevel(stakingLevel);
+            StakeRegularFixedRewardSheet = stakeRegularFixedRewardSheet;
+            StakeRegularRewardSheet = stakeRegularRewardSheet;
+            StakingSubject.OnNextStakeStateV2(StakeStateV2);
+            StakingSubject.OnNextStakedNCG(StakedBalanceState.Gold);
+            StakingSubject.OnNextLevel(StakingLevel);
+            StakingSubject.OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet);
+            StakingSubject.OnNextStakeRegularRewardSheet(StakeRegularRewardSheet);
         }
 
         public void SetCrystalRandomSkillState(CrystalRandomSkillState skillState)

@@ -77,6 +77,8 @@ namespace Nekoyume.UI
         private const string BuffBenefitRateFormat = "{0} <color=#1FFF00>+{1}%</color>";
         private const string RemainingBlockFormat = "<Style=G5>{0}({1})";
 
+        private bool _benefitListViewsInitialized;
+
         protected override void Awake()
         {
             base.Awake();
@@ -131,6 +133,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
+            SetBenefitsListViews();
             var level = States.Instance.StakingLevel;
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -156,11 +159,12 @@ namespace Nekoyume.UI
 
         private void OnDepositEdited(BigInteger deposit)
         {
-            var level = States.Instance.StakingLevel;
-            if (level < 1) return;
-
-            var sheets = TableSheets.Instance;
-            var regularSheet = sheets.StakeRegularRewardSheet;
+            var states = States.Instance;
+            var level = states.StakingLevel;
+            if (states.StakeStateV2 is null || level < 1)
+            {
+                return;
+            }
 
             levelIconImage.sprite = stakeIconData.GetIcon(level, IconType.Small);
             for (var i = 0; i < levelImages.Length; i++)
@@ -168,6 +172,7 @@ namespace Nekoyume.UI
                 levelImages[i].enabled = i < level;
             }
 
+            var regularSheet = states.StakeRegularRewardSheet;
             if (regularSheet.TryGetValue(level, out var regular))
             {
                 var nextRequired = regularSheet.TryGetValue(level + 1, out var nextLevel)
@@ -198,13 +203,12 @@ namespace Nekoyume.UI
 
         private void OnBlockUpdated(long blockIndex)
         {
-            var level = States.Instance.StakingLevel;
-            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
-
-            var sheets = TableSheets.Instance;
-            var regularSheet = sheets.StakeRegularRewardSheet;
-            var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
-            var stakeStateV2 = States.Instance.StakeStateV2;
+            var states = States.Instance;
+            var level = states.StakingLevel;
+            var deposit = states.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var regularSheet = states.StakeRegularRewardSheet;
+            var regularFixedSheet = states.StakeRegularFixedRewardSheet;
+            var stakeStateV2 = states.StakeStateV2;
             var rewardBlockInterval = stakeStateV2 is null
                 ? (int)StakeState.RewardInterval
                 : (int)stakeStateV2.Value.Contract.RewardInterval;
@@ -219,7 +223,7 @@ namespace Nekoyume.UI
             if (regularSheet.TryGetValue(level, out var regular)
                 && regularFixedSheet.TryGetValue(level, out var regularFixed))
             {
-                var materialSheet = sheets.MaterialItemSheet;
+                var materialSheet = TableSheets.Instance.MaterialItemSheet;
                 for (var i = 0; i < interestBenefitsViews.Length; i++)
                 {
                     var result = GetReward(regular, regularFixed, (long)deposit, i);
@@ -302,12 +306,22 @@ namespace Nekoyume.UI
 
         private void SetBenefitsListViews()
         {
-            var sheets = TableSheets.Instance;
-            var regularSheet = sheets.StakeRegularRewardSheet;
-            var regularFixedSheet = sheets.StakeRegularFixedRewardSheet;
-            var stakingMultiplierSheet = sheets.CrystalMonsterCollectionMultiplierSheet;
+            if (_benefitListViewsInitialized)
+            {
+                return;
+            }
 
-            for (int level = 1; level <= 7; level++)
+            var states = States.Instance;
+            var regularSheet = states.StakeRegularRewardSheet;
+            var regularFixedSheet = states.StakeRegularFixedRewardSheet;
+            if (regularSheet is null || regularFixedSheet is null)
+            {
+                return;
+            }
+
+            var stakingMultiplierSheet =
+                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet;
+            for (var level = 1; level <= 7; level++)
             {
                 var model = new StakingBenefitsListView.Model();
 
@@ -315,7 +329,7 @@ namespace Nekoyume.UI
                     && regularFixedSheet.TryGetValue(level, out var regularFixed))
                 {
                     model.RequiredDeposit = regular.RequiredGold;
-                    model.HourGlassInterest = GetReward(regular, regularFixed,regular.RequiredGold, 0);
+                    model.HourGlassInterest = GetReward(regular, regularFixed, regular.RequiredGold, 0);
                     model.ApPotionInterest = GetReward(regular, regularFixed, regular.RequiredGold, 1);
                     model.RuneInterest = GetReward(regular, regularFixed, regular.RequiredGold, 2);
 
@@ -334,6 +348,8 @@ namespace Nekoyume.UI
                 benefitsListViews[level].Set(level, model);
                 _cachedModel[level] = model;
             }
+
+            _benefitListViewsInitialized = true;
         }
 
         private static long GetReward(
