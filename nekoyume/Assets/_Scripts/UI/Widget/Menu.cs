@@ -68,6 +68,9 @@ namespace Nekoyume.UI
         private MainMenu btnDcc;
 
         [SerializeField]
+        private MainMenu btnPatrolReward;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField]
@@ -151,6 +154,7 @@ namespace Nekoyume.UI
                     btnStaking.GetComponent<Button>(),
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
+                    btnPatrolReward.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -560,6 +564,16 @@ namespace Nekoyume.UI
             Close(true);
             Find<DccMain>().Show();
 #endif
+        }
+
+        public void PatrolRewardClick()
+        {
+            if(!btnPatrolReward.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<PatrolRewardPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
