@@ -35,6 +35,7 @@ jobs:
           do
             dotnet nuget push ./$project/.bin/Lib9c.*.nupkg \
               --api-key "$NUGET_API_KEY" \
+              --skip-duplicate \
               --source https://api.nuget.org/v3/index.json
           done
         fi
