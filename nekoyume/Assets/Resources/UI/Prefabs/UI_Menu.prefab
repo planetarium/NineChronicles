@@ -665,7 +665,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 175.79993, y: 7}
+  m_AnchoredPosition: {x: 175.79993, y: 7.0000305}
   m_SizeDelta: {x: 372, y: 186}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &553648111287134730
@@ -4048,8 +4048,6 @@ MonoBehaviour:
     rectTransform: {fileID: 4229272892398452896}
   - type: 9
     rectTransform: {fileID: 2688362243490165820}
-  - type: 8
-    rectTransform: {fileID: 5103955469027019880}
   tutorialActions: 01000000020000000e000000
   btnQuest: {fileID: 553648111353541289}
   btnCombination: {fileID: 553648110939848765}
@@ -5404,7 +5402,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -30}
+  m_AnchoredPosition: {x: 0, y: -30.00003}
   m_SizeDelta: {x: 1136, y: 640}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &7516376331037903436
@@ -11352,12 +11350,6 @@ RectTransform:
 --- !u!224 &4229272892398452896 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4737184190477951322, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
-    type: 3}
-  m_PrefabInstance: {fileID: 8866671384757117434}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &5103955469027019880 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4456411683305631122, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
     type: 3}
   m_PrefabInstance: {fileID: 8866671384757117434}
   m_PrefabAsset: {fileID: 0}
