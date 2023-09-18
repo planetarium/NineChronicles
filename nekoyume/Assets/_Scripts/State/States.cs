@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Lib9c;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -448,19 +449,32 @@ namespace Nekoyume.State
             StakeStateV2? stakeStateV2,
             GoldBalanceState stakedBalanceState,
             int stakingLevel,
-            StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
-            StakeRegularRewardSheet stakeRegularRewardSheet)
+            [CanBeNull] StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
+            [CanBeNull] StakeRegularRewardSheet stakeRegularRewardSheet)
         {
-            StakeStateV2 = stakeStateV2;
             StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
+            StakeStateV2 = stakeStateV2;
             StakeRegularFixedRewardSheet = stakeRegularFixedRewardSheet;
             StakeRegularRewardSheet = stakeRegularRewardSheet;
-            StakingSubject.OnNextStakeStateV2(StakeStateV2);
-            StakingSubject.OnNextStakedNCG(StakedBalanceState.Gold);
+
             StakingSubject.OnNextLevel(StakingLevel);
-            StakingSubject.OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet);
-            StakingSubject.OnNextStakeRegularRewardSheet(StakeRegularRewardSheet);
+            if (StakeStateV2.HasValue)
+            {
+                StakingSubject.OnNextStakeStateV2(StakeStateV2);
+            }
+
+            if (StakedBalanceState is not null)
+            {
+                StakingSubject.OnNextStakedNCG(StakedBalanceState.Gold);
+            }
+
+            if (StakeRegularRewardSheet is not null &&
+                StakeRegularFixedRewardSheet is not null)
+            {
+                StakingSubject.OnNextStakeRegularFixedRewardSheet(StakeRegularFixedRewardSheet);
+                StakingSubject.OnNextStakeRegularRewardSheet(StakeRegularRewardSheet);
+            }
         }
 
         public void SetCrystalRandomSkillState(CrystalRandomSkillState skillState)
