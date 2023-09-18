@@ -112,7 +112,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -135,24 +135,11 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7912064536852444751}
   toggleTransition: 1
-  graphic: {fileID: 0}
+  graphic: {fileID: 7912064536852444751}
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 82320430492465076, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
-          type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
   offObject: {fileID: 7165636404695676403}
   onObject: {fileID: 5320493229520518180}
@@ -172,6 +159,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd0fdb4232ab3f94aa1b73ca16176579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  icons:
+  - {fileID: 1406995766695069330}
+  - {fileID: 7208416068486802271}
+  tabNames:
+  - {fileID: 2071863699386114947}
+  - {fileID: 4228115332339421335}
 --- !u!1 &643099295007590571
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +338,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 16
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -405,7 +398,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 2
-  l10nKey: UI_EQUIPMENTS
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -648,7 +641,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_EQUIPMENTS
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

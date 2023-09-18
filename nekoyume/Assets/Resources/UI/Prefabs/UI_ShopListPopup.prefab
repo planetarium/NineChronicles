@@ -1127,7 +1127,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -203.5, y: 23.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1999777664928581735
@@ -1173,8 +1173,14 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   productBgImage: {fileID: 3419549275866677382}
-  discountObj: {fileID: 0}
+  discountObjs:
+  - {fileID: 1090012773697106638}
+  - {fileID: 2397307468967210564}
+  - {fileID: 4018343403799632499}
   discountText: {fileID: 2740932404496682064}
+  preDiscountPrice:
+  - {fileID: 8736454139394055214}
+  - {fileID: 8514806661795561059}
   iapRewards:
   - {fileID: 9151265537934833544}
   - {fileID: 603383833796354578}
@@ -1183,6 +1189,9 @@ MonoBehaviour:
   buyLimitText: {fileID: 8237101456191382276}
   buyButton: {fileID: 2528280640096718775}
   closeButton: {fileID: 3093391251066596574}
+  priceTexts:
+  - {fileID: 8276103810052036051}
+  - {fileID: 3026302571706640802}
 --- !u!1 &2116327650037459572
 GameObject:
   m_ObjectHideFlags: 0
