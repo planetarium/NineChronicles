@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight) + 10);
+            rectTrans.sizeDelta = new Vector2(rectTrans.sizeDelta.x, Mathf.Abs(minHeight) + space);
         }
 
         private static int Compare(RectTransform lhs, RectTransform rhs)
