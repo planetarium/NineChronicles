@@ -74,9 +74,9 @@ namespace Nekoyume.UI.Module
             iconImage.SetNativeSize();
         }
 
-        public void SetData(ItemSheet.Row itemRow, System.Action onClick = null)
+        public void SetData(MaterialItemSheet.Row itemRow, System.Action onClick = null)
         {
-            var material = new Nekoyume.Model.Item.Material(itemRow as MaterialItemSheet.Row);
+            var material = new Nekoyume.Model.Item.Material(itemRow);
             SetData(material, onClick);
         }
 
@@ -111,6 +111,21 @@ namespace Nekoyume.UI.Module
             gradeImage.overrideSprite = data.GradeBackground;
             iconImage.enabled = true;
             iconImage.overrideSprite = fav.GetIconSprite();
+            iconImage.SetNativeSize();
+        }
+
+        public void SetData(EquipmentItemSheet.Row itemRow, System.Action onClick = null)
+        {
+            var data = itemViewData.GetItemViewData(itemRow.Grade);
+            gradeImage.overrideSprite = data.GradeBackground;
+
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
+
+            iconImage.enabled = true;
+            iconImage.overrideSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             iconImage.SetNativeSize();
         }
 

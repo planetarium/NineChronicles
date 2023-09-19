@@ -46,6 +46,7 @@ namespace Nekoyume.UI.Module
             CurrencyOnly,
             RuneStone,
             Mileage,
+            Summon,
         }
 
         [Serializable]
@@ -87,6 +88,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private MaterialAsset[] materialAssets;
 
         [SerializeField]
         private GameObject mileage;
@@ -139,6 +143,7 @@ namespace Nekoyume.UI.Module
         public ArenaTickets ArenaTickets => arenaTickets;
         public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
         public WorldBossTickets WorldBossTickets => worldBossTickets;
+        public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -323,6 +328,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Mileage:
                     SetActiveAssets(isNcgActive:true, isMileageActive:true);
                     break;
+                case AssetVisibleState.Summon:
+                    SetActiveAssets(isNcgActive:true, isMaterialActiveCount: Summon.SummonGroup);
+                    break;
             }
         }
 
@@ -335,7 +343,8 @@ namespace Nekoyume.UI.Module
             bool isEventDungeonTicketsActive = false,
             bool isEventWorldBossTicketsActive = false,
             bool isRuneStoneActive = false,
-            bool isMileageActive = false)
+            bool isMileageActive = false,
+            int isMaterialActiveCount = 0)
         {
             ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
@@ -347,6 +356,10 @@ namespace Nekoyume.UI.Module
             worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
             runeStone.gameObject.SetActive(isRuneStoneActive);
             mileage.gameObject.SetActive(isMileageActive);
+            for (var i = 0; i < materialAssets.Length; i++)
+            {
+                materialAssets[i].gameObject.SetActive(i < isMaterialActiveCount);
+            }
         }
 
         private void SubscribeBlockIndex(long blockIndex)

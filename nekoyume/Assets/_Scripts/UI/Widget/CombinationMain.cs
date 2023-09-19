@@ -10,6 +10,9 @@ namespace Nekoyume.UI
     public class CombinationMain : Widget
     {
         [SerializeField]
+        private Button summonButton;
+
+        [SerializeField]
         private Button combineButton;
 
         [SerializeField]
@@ -31,11 +34,21 @@ namespace Nekoyume.UI
         private Image runeNotificationImage;
 
         [SerializeField]
+        private Image summonNotificationImage;
+
+        [SerializeField]
         private SpeechBubble speechBubble;
 
         protected override void Awake()
         {
             base.Awake();
+
+            summonButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<Summon>().Show();
+                AudioController.PlayClick();
+            });
 
             combineButton.onClick.AddListener(() =>
             {
@@ -112,9 +125,11 @@ namespace Nekoyume.UI
                 if (runeItem.HasNotification)
                 {
                     runeNotificationImage.enabled = true;
-                    return;
+                    break;
                 }
             }
+
+            summonNotificationImage.enabled = Summon.HasNotification;
         }
     }
 }

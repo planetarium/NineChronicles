@@ -137,7 +137,7 @@ UI_TIPS_2,Check the elemental types of your equipment. The element you're wearin
 UI_CREATE_CHARACTER,NEW CHARACTER,캐릭터 생성,NOVO PERSONAGEM,キャラクター作成,NUEVO PERSONAJE,ตัวละครใหม่,KARAKTER BARU,,新角色,新角色,BAGONG KARAKTER
 UI_DELETE_CHARACTER,DELETE CHARACTER,캐릭터 삭제,DELETAR PERSONAGEM,キャラクター削除,BORRAR PERSONAJE,ลบตัวละคร,HAPUS KARAKTER,,删除角色,刪除角色,TANGGALIN ANG KARAKTER
 UI_CREATE_CHARACTER_CONFIRM,CREATE,생성하기,CRIAR,作成する,CREAR,สร้าง,BUAT,,创建,創造,GUMAWA
-UI_GAME_START,GAME START,게임 시작,START GAME,ゲーム開始,INICIAR EL JUEGO,เริ่มเกม,MULAI GAME,,游戏开始,遊戲開始,SIMULAN ANG LARO
+UI_GAME_START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START
 UI_HAIR,Hair,헤어,Cabelo,髪,Cabello,ผม,Rambut,,头发,頭髮,Buhok
 UI_LENS,Eyes,눈,Olhos,目,Ojos,ตา,Mata,,眼睛,眼睛,Mata
 UI_EAR,Ears,귀,Orelha,耳,Orejas,หู,Telinga,,耳朵,耳朵,Tainga
@@ -472,6 +472,7 @@ UI_ARMOR,Armor,방어구,Armadura,アーマー,Armadura,เกราะ,Baju zir
 UI_BELT,Belt,벨트,Cinto,ベルト,Cinturón,เข็มขัด,sabuk,,皮带,腰帶,Sinturon
 UI_NECKLACE,Necklace,목걸이,Colar,ネックレス,Collar,สร้อยคอ,kalung,,项链,項鍊,Kuwintas
 UI_RING,Ring,반지,Anel,リング,Anillo,แหวน,cincin,,戒指,戒指,Singsing
+UI_AURA,Aura,,,,,,,,,,
 UI_COST_BLOCK,It will take {0} blocks to complete crafting.,{0} 블록 정도 후에 완성 될꺼야.,São necessários {0} blocos para concluir a criação.,製作完了まであと {0} ブロック,Se necesitarán {0} bloques para completar la fabricación.,ใช้เวลาในการสร้าง {0} บล็อก,Diperlukan {0} blocks untuk menyelesaikan pembuatan.,,将需要{0}个区块来完成手工制作。,需要{0}區塊才能完成製作。,Nangangailan ng {0} blocks para makumpleto ang paglikha.
 UI_REDEEM_CODE,Redeem Code,코드 사용,Resgate de código,コードを使用,Canjear Código,แลกรหัสหรือบัตรของขวัญ,Redeem Code,,兑换代码,兌換碼,Kunin ang Code
 UI_REDEEM_CODE_PLACEHOLDER,Input Code,코드 입력,Coloque Código,コードを入力,Escribir el Código,ใส่รหัส,Masukkan Code,,输入代码,輸入代碼,Ilagay ang Code
@@ -1158,3 +1159,15 @@ UI_LOADING_GAME_START_9,Connecting with the cosmic cat God the Grrreat...,,,,,,,
 UI_LOADING_GAME_START_10,Your adventure is about to begin...,,,,,,,,,,
 UI_SET_PASSWORD_TITLE,Set your password and keep your game data safe.,,,,,,,,,,
 UI_SET_PASSWORD_COMPLETE,Password setting is complete!,,,,,,,,,,
+UI_SUMMON,Summon,,,,,,,,,,
+UI_SUMMON_RESULT,Summon Result,,,,,,,,,,
+UI_MORE,More,,,,,,,,,,
+UI_DRAW_1,Summon 1,소환 1,Invocar 1,召喚1,Invocar 1,เรียก 1,SUMPER 1,Призыв 1,召唤1,召喚1,Tumawag 1
+UI_DRAW_10,Summon 11,소환 11,Invocar 11,召喚11,Invocar 11,เรียก 11,Panggil 11,Призыв 11,召唤11,召喚11,Tumawag 11
+UI_DRAW_AGAIN_FORMAT,Summon {0},소환 {0},Invocar {0},召喚{0},Invocar {0},เรียก {0},Summon {0},Призыв {0},召唤{0},召喚{0},Tawag {0}
+UI_SUMMON_DETAIL_DESC,Select a list to see a preview.,미리보기를 보려면 목록을 선택합니다.,Selecione uma lista para ver uma visualização.,リストを選択してプレビューを表示します。,Seleccione una lista para ver una vista previa.,เลือกรายการเพื่อดูตัวอย่าง,Pilih daftar untuk melihat pratinjau.,"Выберите список, чтобы увидеть предварительный просмотр.",选择一个列表以查看预览。,選擇一個列表以查看預覽。,Pumili ng isang listahan upang makita ang isang preview.
+UI_SUMMON_DETAIL_LIST_TITLE,Probability of appearance,출현확률,Probabilidade de aparência,外観の確率,Probabilidad de apariencia,ความน่าจะเป็นของลักษณะที่ปรากฏ,Probabilitas penampilan,Вероятность внешнего вида,外观的概率,外觀的概率,Posibilidad ng hitsura
+SUMMON_NAME_10001,Coming Soon,커밍순,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon
+SUMMON_NAME_10002,Beast Aura,야수 아우라,Aura de besta,ビーストオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura binatang buas,Зверь Аура,野兽光环,野獸光環,Hayop aura
+UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,召喚に必要な資料が不足しています。必要な材料の購入に進みますか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?
+UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,

@@ -182,7 +182,7 @@ namespace Nekoyume.UI
                     p.definition.id == tab.ProductId);
 
                 _selectedProductId = tab.ProductId;
-                view.PriceTexts.ForEach(text => text.text = storeProduct.metadata.localizedPriceString);
+                view.PriceTexts.ForEach(text => text.text = $"{storeProduct.metadata.isoCurrencyCode} {storeProduct.metadata.localizedPrice}");
                 view.ProductImage.sprite =
                     _productImageDictionary[GetProductImageNameFromProductId(tab.ProductId)];
                 view.PurchaseButton.interactable = product.Buyable;

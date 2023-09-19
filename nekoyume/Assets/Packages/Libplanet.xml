@@ -248,8 +248,8 @@
         <member name="M:Libplanet.Blockchain.BlockChain.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
+        <member name="M:Libplanet.Blockchain.BlockChain.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})" />
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain.GetTxExecution(Libplanet.Types.Blocks.BlockHash,Libplanet.Types.Tx.TxId)">
             <summary>
@@ -773,10 +773,10 @@
         <member name="M:Libplanet.Blockchain.BlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetValidatorSet(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
-            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetBlockState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+            <inheritdoc cref="M:Libplanet.Action.State.IBlockChainStates.GetAccountState(System.Nullable{Libplanet.Types.Blocks.BlockHash})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChainStates.GetStateRoot(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blockchain.BlockChainStates.GetTrie(System.Nullable{Libplanet.Types.Blocks.BlockHash})">
             <summary>
             Returns the state root associated with <see cref="T:Libplanet.Types.Blocks.BlockHash"/>
             <paramref name="offset"/>.
@@ -798,6 +798,9 @@
                 </description></item>
             </list>
             </exception>
+            <remarks>
+            An <see cref="T:Libplanet.Store.Trie.ITrie"/> returned by this method is read-only.
+            </remarks>
         </member>
         <member name="T:Libplanet.Blockchain.BlockLocator">
             <summary>
@@ -1285,7 +1288,7 @@
         <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.ActionRenderer">
             <summary>
             A callback function to be invoked together with
-            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>.
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.ActionErrorRenderer">
@@ -1300,9 +1303,9 @@
             <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderBlockEnd(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
@@ -1372,9 +1375,9 @@
         <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderBlockEnd(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
@@ -1420,8 +1423,8 @@
             Empties the render event <see cref="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.Records"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>
@@ -1483,7 +1486,7 @@
             Represents a succeeded action render/unrender event.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess.#ctor(System.Int64,System.String,Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta,System.Boolean)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord.ActionSuccess.#ctor(System.Int64,System.String,Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount,System.Boolean)">
             <summary>
             Creates a succeeded action render/unrender event record.
             </summary>
@@ -1589,9 +1592,9 @@
         <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderBlock(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
@@ -1610,7 +1613,7 @@
             <list type="number">
             <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer.RenderBlock(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)"/> (one time)
             </description></item>
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
             &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/> (zero or more
             times)</description>
             </item>
@@ -1621,7 +1624,7 @@
             <remarks>Although <see cref="T:Libplanet.Types.Tx.Transaction"/>s affect the states in
             the <see cref="T:Libplanet.Store.IStateStore"/> all or nothing at all (i.e., atomically),
             <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/> receives all action-related events
-            (<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>) <em>immediately</em>
+            (<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)"/>) <em>immediately</em>
             without buffering, which means actions are rendered <em>even before</em> whether there are
             any actions throwing an exception in the same transaction is determined.  In other words,
             for <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer"/>s, it is not guaranteed that actions in a transaction
@@ -1631,7 +1634,7 @@
             <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer"/>.</para>
             </remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
             <summary>
             Does things that should be done right after an <paramref name="action"/>
             is executed and applied to the blockchain.
@@ -1660,7 +1663,7 @@
         <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <summary>
             Does the similar things to <see cref=
-            "M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>, except that this method
+            "M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>, except that this method
             is invoked when <paramref name="action"/> has terminated with an exception.
             </summary>
             <param name="action">An action which threw an exception during execution.</param>
@@ -1751,9 +1754,9 @@
         <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderBlockEnd(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderBlockEnd(Libplanet.Types.Blocks.Block,Libplanet.Types.Blocks.Block)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)">
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)">
             <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccountStateDelta)"/>
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer.RenderAction(Bencodex.Types.IValue,Libplanet.Action.IActionContext,Libplanet.Action.State.IAccount)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer.RenderActionError(Bencodex.Types.IValue,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
