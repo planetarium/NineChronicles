@@ -132,7 +132,7 @@ namespace Nekoyume.Game.Character
 
         public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP)
         {
-            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, updateCurrentHP);
+            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, model.aura, updateCurrentHP);
         }
 
         public void Set(
@@ -141,6 +141,7 @@ namespace Nekoyume.Game.Character
             IEnumerable<Costume> costumes,
             Armor armor,
             Weapon weapon,
+            Aura aura,
             bool updateCurrentHP)
         {
             InitStats(model);
@@ -156,6 +157,7 @@ namespace Nekoyume.Game.Character
                 costumes.ToList(),
                 armor,
                 weapon,
+                aura,
                 model.earIndex,
                 model.lensIndex,
                 model.hairIndex,

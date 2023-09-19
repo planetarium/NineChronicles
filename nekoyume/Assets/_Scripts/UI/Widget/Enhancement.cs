@@ -17,6 +17,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI
 {
@@ -127,6 +128,7 @@ namespace Nekoyume.UI
         private float _sliderAnchorPoint = 0;
         private int _levelAnchorPoint = 0;
         private Coroutine _sliderEffectCor;
+        private UnityEngine.UI.Extensions.Scroller _matarialsScroller;
 
         protected override void Awake()
         {
@@ -138,6 +140,8 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+
+            _matarialsScroller = enhancementSelectedMaterialItemScroll.GetComponent<UnityEngine.UI.Extensions.Scroller>();
 
             upgradeButton.OnSubmitSubject
                 .Subscribe(_ => OnSubmit())
@@ -156,6 +160,8 @@ namespace Nekoyume.UI
         {
             Clear();
             enhancementInventory.Set(UpdateInformation, enhancementSelectedMaterialItemScroll);
+            if (_matarialsScroller != null)
+                _matarialsScroller.Position = 0;
             base.Show(ignoreShowAnimation);
         }
 
@@ -205,24 +211,7 @@ namespace Nekoyume.UI
         //Used for migrating and showing equipment before update
         private long GetItemExp(Equipment equipment)
         {
-            if (equipment.Exp != 0)
-                return equipment.Exp;
-
-            if(equipment.level != 0 && ItemEnhancement.TryGetRow(equipment, _costSheet, out var baseItemCostRow))
-                return baseItemCostRow.Exp;
-
-            if(Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(equipment.Id, out var equipmentSheetRow))
-            {
-                if(equipmentSheetRow.Exp == null)
-                {
-                    Debug.LogError($"[Enhancement] {equipment.Id} EquipmentSheetRow Exp is Null");
-                    return 0; 
-                }
-                return equipmentSheetRow.Exp.Value;
-            }
-
-            Debug.LogError($"[Enhancement] can't find {equipment.Id} EquipmentSheetRow");
-            return 0;
+            return equipment.GetRealExp(Game.Game.instance.TableSheets.EquipmentItemSheet, _costSheet);
         }
 
         private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
@@ -407,7 +396,12 @@ namespace Nekoyume.UI
 
         private int UpgradeStat(int baseStat, int upgradeStat)
         {
-            return Nekoyume.Battle.CPHelper.DecimalToInt(Math.Max(1.0m, baseStat * upgradeStat.NormalizeFromTenThousandths()));
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
+            if(result > 0)
+            {
+                result = Math.Max(1.0m, result);
+            }
+            return (int)result;
         }
 
         private void UpdateInformation(EnhancementInventoryItem baseModel,
@@ -420,7 +414,7 @@ namespace Nekoyume.UI
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
                 animator.Play(HashToRegisterBase);
-                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, true);
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, _matarialsScroller?.Position != 0);
                 closeButton.interactable = true;
                 ClearInformation();
 
@@ -445,12 +439,17 @@ namespace Nekoyume.UI
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
                 if (materialModels.Count != 0)
                 {
-                    enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1]);
+                    if(materialModels.Count > 5 || _matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1], 0);
+                    
                     animator.Play(HashToPostRegisterMaterial);
                     noneContainer.SetActive(false);
                 }
                 else
                 {
+                    if(_matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.RawJumpto(0, 0);
+
                     noneContainer.SetActive(true);
                 }
 
@@ -535,7 +534,7 @@ namespace Nekoyume.UI
 
                 if (equipment.level != targetRow.Level)
                 {
-                    for (int i = 1; i < targetRangeRows.Count; i++)
+                    for (int i = 1; i < targetRangeRows.Count - 1; i++)
                     {
                         baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
                         baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);

@@ -576,13 +576,25 @@ namespace Nekoyume.UI
                         States.Instance.AgentState.address,
                         result.CRYSTAL.MajorUnit);
                 }
+                
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        false);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1,
+                        false);
+                }
 
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1,
-                    false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
                     false);
                 var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);

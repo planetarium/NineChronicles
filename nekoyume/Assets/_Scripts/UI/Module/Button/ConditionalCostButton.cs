@@ -139,33 +139,17 @@ namespace Nekoyume.UI.Module
                 switch (type)
                 {
                     case CostType.NCG:
-                        if (States.Instance.GoldBalanceState.Gold.MajorUnit < cost)
-                        {
-                            return CostType.NCG;
-                        }
-                        break;
                     case CostType.Crystal:
-                        if (States.Instance.CrystalBalance.MajorUnit < cost)
-                        {
-                            return CostType.Crystal;
-                        }
-                        break;
                     case CostType.ActionPoint:
-                        if (States.Instance.CurrentAvatarState.actionPoint < cost)
-                        {
-                            return CostType.ActionPoint;
-                        }
-                        break;
                     case CostType.Hourglass:
-                        var inventory = States.Instance.CurrentAvatarState.inventory;
-                        var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                        if (count < cost)
-                        {
-                            return CostType.Hourglass;
-                        }
                         break;
                     default:
-                        break;
+                        return CostType.None;
+                }
+
+                if (!CheckCostOfType(type, cost))
+                {
+                    return type;
                 }
             }
 
@@ -190,6 +174,11 @@ namespace Nekoyume.UI.Module
                     return RxProps.ArenaTicketsProgress.Value.currentTickets >= cost;
                 case CostType.EventDungeonTicket:
                     return RxProps.EventDungeonTicketProgress.Value.currentTickets >= cost;
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                    inventory = States.Instance.CurrentAvatarState.inventory;
+                    var materialCount = inventory.GetMaterialCount((int)type);
+                    return materialCount >= cost;
                 default:
                     return true;
             }
