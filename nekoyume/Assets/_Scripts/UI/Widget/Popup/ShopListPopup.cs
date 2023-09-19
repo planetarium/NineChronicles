@@ -46,6 +46,12 @@ namespace Nekoyume.UI
         
             closeButton.onClick.AddListener(() => { Close(); });
             CloseWidget = () => Close();
+            buyButton.onClick.AddListener(() =>
+            {
+                Debug.Log($"Purchase: {_data.GoogleSku}");
+                Analyzer.Instance.Track("Unity/Shop/IAP/PurchaseButton/Click",("product-id", _data.GoogleSku));
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.GoogleSku);
+            });
         }
 
         public void Show(ProductSchema data, UnityEngine.Purchasing.Product puchasingData,bool ignoreShowAnimation = false)

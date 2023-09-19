@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UniRx;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Module
 {
@@ -47,21 +49,29 @@ namespace Nekoyume.UI.Module
                 if (_data == null || !_data.Buyable)
                     return;
 
+                Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.GoogleSku));
                 Widget.Find<ShopListPopup>().Show(_data, _puchasingData);
             });
+
+            L10nManager.OnLanguageChange.Subscribe(_ =>
+            {
+                RefreshLocalized();
+            }).AddTo(gameObject);
+        }
+
+        private void RefreshLocalized()
+        {
+            productName.text = L10nManager.Localize(_data.Name);
         }
 
         public void SetData(ProductSchema data, bool isRecommended)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
-
-            productName.text = data.Name;
-
-
             var isDiscount = false;
-
             _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == data.GoogleSku);
+
+            RefreshLocalized();
 
             foreach (var item in price)
             {
