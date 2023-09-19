@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI[] tabNames;
 
-        private string _name;
+        private string _nameKey;
 
         private void Awake()
         {
@@ -27,9 +27,9 @@ namespace Nekoyume.UI.Module
             }).AddTo(gameObject);
         }
 
-        public void SetData(string name, Sprite icon = null)
+        public void SetData(string nameKey, Sprite icon = null)
         {
-            _name = name;
+            _nameKey = nameKey;
             RefreshLocalized();
 
             foreach (var item in icons)
@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var item in tabNames)
             {
-                item.text = L10nManager.Localize(_name);
+                item.text = L10nManager.Localize(_nameKey);
             }
         }
     }

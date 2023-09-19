@@ -22,14 +22,23 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("account_limit")]
         public int? AccountLimit { get; set; }
 
-        [JsonPropertyName("purchase_count")]
-        public int PurchaseCount { get; set; }
-
         [JsonPropertyName("active")]
         public bool Active { get; set; }
 
         [JsonPropertyName("buyable")]
         public bool Buyable { get; set; }
+
+        [JsonPropertyName("purchase_count")]
+        public int PurchaseCount { get; set; }
+
+        [JsonPropertyName("size")]
+        public string Size { get; set; }
+
+        [JsonPropertyName("discount")]
+        public int Discount { get; set; }
+
+        [JsonPropertyName("l10n_key")]
+        public string L10n_Key { get; set; }
 
         [JsonPropertyName("fav_list")]
         public FungibleAssetValueSchema[] FavList { get; set; }
