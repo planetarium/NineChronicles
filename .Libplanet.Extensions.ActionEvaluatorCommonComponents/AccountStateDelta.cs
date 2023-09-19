@@ -123,6 +123,10 @@ public class AccountStateDelta : IAccount
 
     public IAccountDelta Delta => _delta;
 
+    public ITrie Trie
+    {
+        get;
+    }
     public IValue? GetState(Address address) =>
         _states.ContainsKey(address)
             ? _states[address]

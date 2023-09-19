@@ -29,7 +29,7 @@ namespace Lib9c.Formatters
                 throw new InvalidOperationException();
             }
 
-            return HashDigest<SHA256>.DeriveFrom(bytes);
+            return new HashDigest<SHA256>(bytes);
         }
     }
 }

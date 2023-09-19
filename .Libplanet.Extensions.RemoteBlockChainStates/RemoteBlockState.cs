@@ -26,6 +26,11 @@ public class RemoteBlockState : IAccountState
         BlockHash = blockHash;
     }
 
+    public ITrie Trie
+    {
+        get => throw new NotSupportedException();
+    }
+
     public IValue? GetState(Address address) =>
         GetStates(new[] { address }).First();
 

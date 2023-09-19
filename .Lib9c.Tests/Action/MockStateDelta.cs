@@ -54,6 +54,11 @@ namespace Lib9c.Tests.Action
         public IImmutableDictionary<(Address, Currency), BigInteger> TotalUpdatedFungibles
             { get; private set; }
 
+        public ITrie Trie
+        {
+            get => new MerkleTrie(new MemoryKeyValueStore());
+        }
+
         /// <inheritdoc/>
         [Pure]
         public IValue? GetState(Address address)
