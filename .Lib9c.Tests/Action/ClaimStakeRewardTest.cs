@@ -1,15 +1,19 @@
-#nullable enable
-
 namespace Lib9c.Tests.Action
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV.Stake;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
+    using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Helper;
+    using Nekoyume.Model.Stake;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData.Stake;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -17,22 +21,15 @@ namespace Lib9c.Tests.Action
     public class ClaimStakeRewardTest
     {
         private const string AgentAddressHex = "0x0000000001000000000100000000010000000001";
+        private const int AvatarIndex = 0;
+        private static readonly Address AgentAddr = new Address(AgentAddressHex);
 
-        // VALUE: 6_692_400L
-        // - receive v1 reward * 1
-        // - receive v2(w/o currency) reward * 4
-        // - receive v2(w/ currency) reward * 14
-        // - receive v3 reward * n
-        private const long BlockIndexForTest =
-            StakeState.StakeRewardSheetV3Index -
-            ((StakeState.StakeRewardSheetV3Index - StakeState.StakeRewardSheetV2Index) / StakeState.RewardInterval + 1) *
-            StakeState.RewardInterval;
+        private static readonly Address AvatarAddr =
+            Addresses.GetAvatarAddress(AgentAddr, AvatarIndex);
 
-        private readonly Address _agentAddr = new Address(AgentAddressHex);
-        private readonly Address _avatarAddr;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV1;
-        private readonly IAccountStateDelta _initialStatesWithAvatarStateV2;
+        private readonly IAccount[] _initialStates;
         private readonly Currency _ncg;
+        private readonly StakePolicySheet _stakePolicySheet;
 
         public ClaimStakeRewardTest(ITestOutputHelper outputHelper)
         {
@@ -40,463 +37,681 @@ namespace Lib9c.Tests.Action
                 .MinimumLevel.Verbose()
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
+            var sheetsOverride = new Dictionary<string, string>
+            {
+                {
+                    "StakeRegularFixedRewardSheet_V1",
+                    StakeRegularFixedRewardSheetFixtures.V1
+                },
+                {
+                    "StakeRegularFixedRewardSheet_V2",
+                    StakeRegularFixedRewardSheetFixtures.V2
+                },
+                {
+                    "StakeRegularRewardSheet_V1",
+                    StakeRegularRewardSheetFixtures.V1
+                },
+                {
+                    "StakeRegularRewardSheet_V2",
+                    StakeRegularRewardSheetFixtures.V2
+                },
+                {
+                    nameof(StakePolicySheet),
+                    StakePolicySheetFixtures.V2
+                },
+            };
+            IAccount initialStatesWithAvatarStateV1;
+            IAccount initialStatesWithAvatarStateV2;
             (
                 _,
                 _,
-                _avatarAddr,
-                _initialStatesWithAvatarStateV1,
-                _initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates(
-                agentAddr: _agentAddr);
-            _ncg = _initialStatesWithAvatarStateV1.GetGoldCurrency();
+                _,
+                initialStatesWithAvatarStateV1,
+                initialStatesWithAvatarStateV2) = InitializeUtil.InitializeStates(
+                agentAddr: AgentAddr,
+                avatarIndex: AvatarIndex,
+                sheetsOverride: sheetsOverride);
+            _initialStates = new[]
+            {
+                initialStatesWithAvatarStateV1,
+                initialStatesWithAvatarStateV2,
+            };
+            _ncg = initialStatesWithAvatarStateV2.GetGoldCurrency();
+            _stakePolicySheet = initialStatesWithAvatarStateV2.GetSheet<StakePolicySheet>();
+        }
+
+        public static IEnumerable<object[]>
+            GetMemberData_Execute_Success_With_StakePolicySheetFixtureV1()
+        {
+            // NOTE:
+            // - minimum required_gold of StakeRegularRewardSheetFixtures.V1 is 50.
+            // - RewardInterval of StakePolicySheetFixtures.V1 is 50,400.
+
+            // NOTE: staking level 1
+            yield return new object[]
+            {
+                0, null, 50, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 5),
+                    (500_000, 1),
+                },
+            };
+
+            // NOTE: staking level 2
+            yield return new object[]
+            {
+                0, null, 500, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 62),
+                    (500_000, 2),
+                },
+            };
+
+            // NOTE: staking level 3
+            yield return new object[]
+            {
+                0, null, 5000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 1000),
+                    (500_000, 2 + 6),
+                },
+            };
+
+            // NOTE: staking level 4
+            yield return new object[]
+            {
+                0, null, 50_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 8),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 10_000),
+                    (500_000, 2 + 62),
+                },
+            };
+
+            // NOTE: staking level 5
+            yield return new object[]
+            {
+                0, null, 500_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 83),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 100_000),
+                    (500_000, 2 + 625),
+                },
+            };
+
+            // NOTE: staking level 6
+            yield return new object[]
+            {
+                0, null, 5_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 833),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 1_000_000),
+                    (500_000, 2 + 6_250),
+                },
+            };
+
+            // NOTE: staking level 7
+            yield return new object[]
+            {
+                0, null, 10_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 1_666),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 2_000_000),
+                    (500_000, 2 + 12_500),
+                },
+            };
+        }
+
+        public static IEnumerable<object[]>
+            GetMemberData_Execute_Success_With_StakePolicySheetFixtureV2()
+        {
+            // NOTE:
+            // - minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+            // - RewardInterval of StakePolicySheetFixtures.V2 is 50,400.
+
+            // NOTE: staking level 1
+            yield return new object[]
+            {
+                0, null, 50, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 5),
+                    (500_000, 1),
+                },
+            };
+
+            // NOTE: staking level 2
+            yield return new object[]
+            {
+                0, null, 500, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 125),
+                    (500_000, 2),
+                },
+            };
+
+            // NOTE: staking level 3
+            yield return new object[]
+            {
+                0, null, 5000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 0),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 2500),
+                    (500_000, 2 + 12),
+                },
+            };
+
+            // NOTE: staking level 4
+            yield return new object[]
+            {
+                0, null, 50_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 8),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 25_000),
+                    (500_000, 2 + 125),
+                },
+            };
+
+            // NOTE: staking level 5
+            yield return new object[]
+            {
+                0, null, 500_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 83),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 250_000),
+                    (500_000, 2 + 1_250),
+                },
+            };
+
+            // NOTE: staking level 6
+            yield return new object[]
+            {
+                0, null, 5_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 0),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 833),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 2_500_000),
+                    (500_000, 2 + 12_500),
+                },
+            };
+
+            // NOTE: staking level 7
+            yield return new object[]
+            {
+                0, null, 10_000_000, 50_400,
+                new (Address balanceAddr, FungibleAssetValue fav)[]
+                {
+                    (AgentAddr, Currencies.Garage * 100_000),
+                    (AvatarAddr, Currencies.GetRune("RUNE_GOLDENLEAF") * 1_666),
+                },
+                new (int itemSheetId, int count)[]
+                {
+                    (400_000, 5_000_000),
+                    (500_000, 2 + 250_00),
+                    (600_201, 200_000),
+                    (800_201, 200_000),
+                },
+            };
         }
 
         [Fact]
-        public void Serialization()
+        public void Constructor()
         {
-            var action = new ClaimStakeReward(_avatarAddr);
-            var deserialized = new ClaimStakeReward();
-            deserialized.LoadPlainValue(action.PlainValue);
-            Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
+            var action = new ClaimStakeReward(AvatarAddr);
+            Assert.Equal(AvatarAddr, action.AvatarAddress);
+        }
+
+        [Fact]
+        public void Serde()
+        {
+            var action = new ClaimStakeReward(AvatarAddr);
+            var ser = action.PlainValue;
+            var des = new ClaimStakeReward();
+            des.LoadPlainValue(action.PlainValue);
+            Assert.Equal(action.AvatarAddress, des.AvatarAddress);
+            Assert.Equal(ser, des.PlainValue);
+        }
+
+        [Fact]
+        public void Execute_Throw_FailedLoadStateException_When_Staking_State_Null()
+        {
+            foreach (var initialState in _initialStates)
+            {
+                Assert.Throws<FailedLoadStateException>(() =>
+                    Execute(
+                        initialState,
+                        AgentAddr,
+                        AvatarAddr,
+                        0));
+
+                var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+                var previousState = initialState.SetState(stakeAddr, Null.Value);
+                Assert.Throws<FailedLoadStateException>(() =>
+                    Execute(
+                        previousState,
+                        AgentAddr,
+                        AvatarAddr,
+                        0));
+            }
         }
 
         [Theory]
-        [InlineData(
-            ClaimStakeReward2.ObsoletedIndex,
-            100L,
-            null,
-            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
-            40,
-            4,
-            0,
-            null,
-            null,
-            0L
-        )]
-        [InlineData(
-            ClaimStakeReward2.ObsoletedIndex,
-            6000L,
-            null,
-            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
-            4800,
-            36,
-            4,
-            null,
-            null,
-            0L
-        )]
-        // Calculate rune start from hard fork index
-        [InlineData(
-            0L,
-            6000L,
-            0L,
-            ClaimStakeReward2.ObsoletedIndex + StakeState.LockupInterval,
-            136800,
-            1026,
-            3,
-            null,
-            null,
-            0L
-        )]
-        // Stake reward v2
-        // Stake before v2, prev. receive v1, receive v1 & v2
-        [InlineData(
-            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval * 2,
-            50L,
-            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV2Index + 1,
-            5,
-            1,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // Stake before v2, prev. receive v2, receive v2
-        [InlineData(
-            StakeState.StakeRewardSheetV2Index - StakeState.RewardInterval,
-            50L,
-            StakeState.StakeRewardSheetV2Index,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
-            5,
-            1,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // Stake after v2, no prev. receive, receive v2
-        [InlineData(
-            StakeState.StakeRewardSheetV2Index,
-            6000L,
-            null,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
-            3000,
-            17,
-            1,
-            null,
-            null,
-            0L
-        )]
-        // stake after v2, prev. receive v2, receive v2
-        [InlineData(
-            StakeState.StakeRewardSheetV2Index,
-            50L,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval * 2,
-            5,
-            1,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before currency as reward, non prev.
-        // receive v2(w/o currency) * 2, receive v2(w/ currency). check GARAGE.
-        [InlineData(
-            StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
-            10_000_000L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval,
-            15_000_000,
-            75_006,
-            4_998,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
-        )]
-        // stake before currency as reward, prev.
-        // receive v2(w/o currency), receive v2(w/ currency). check GARAGE.
-        [InlineData(
-            StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval * 2,
-            10_000_000L,
-            StakeState.CurrencyAsRewardStartIndex - StakeState.RewardInterval,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval,
-            10_000_000,
-            50_004,
-            3_332,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
-        )]
-        // stake before v3(crystal), non prev. receive v2. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - 1,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index - 1 + StakeState.RewardInterval,
-            125,
-            2,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            0L
-        )]
-        // stake after v3(crystal), non prev. receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            125,
-            2,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            5_000L
-        )]
-        // stake before v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
-            10_000_000L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            35_000_000,
-            175_006,
-            11_665,
-            AgentAddressHex,
-            "CRYSTAL",
-            1_000_000_000L
-        )]
-        // stake before v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval * 2,
-            10_000_000L,
-            StakeState.StakeRewardSheetV3Index - StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            30_000_000,
-            150_004,
-            9_999,
-            AgentAddressHex,
-            "CRYSTAL",
-            1_000_000_000L
-        )]
-        // stake after v3(crystal), non prev. receive v2 * 2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            10_000_000L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
-            75_000_000,
-            375_006,
-            24_999,
-            AgentAddressHex,
-            "CRYSTAL",
-            3_000_000_000L
-        )]
-        // stake after v3(crystal), prev. receive v2, receive v3. check CRYSTAL.
-        [InlineData(
-            StakeState.StakeRewardSheetV3Index,
-            10_000_000L,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 3,
-            50_000_000,
-            250_004,
-            16_666,
-            AgentAddressHex,
-            "CRYSTAL",
-            2_000_000_000L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            BlockIndexForTest + StakeState.RewardInterval,
-            62,
-            2,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, do not receive v2(w/o currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval - 1,
-            62,
-            2,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV2Index + StakeState.RewardInterval * 2 - 1,
-            187,
-            4,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, do not receive v2(w/ currency).
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval - 1,
-            562,
-            10,
-            0,
-            null,
-            null,
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency).
-        // check GARAGE is 0 when stake 500.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval * 2 - 1,
-            687,
-            12,
-            0,
-            AgentAddressHex,
-            "GARAGE",
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency).
-        // check GARAGE is 100,000 when stake 10,000,000.
-        [InlineData(
-            BlockIndexForTest,
-            10_000_000L,
-            null,
-            StakeState.CurrencyAsRewardStartIndex + StakeState.RewardInterval * 2 - 1,
-            27_000_000,
-            137_512,
-            9_996,
-            AgentAddressHex,
-            "GARAGE",
-            100_000L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency) * ???, no receive v3.
-        // check CRYSTAL is 0.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval - 1,
-            2_312,
-            38,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            0L
-        )]
-        // stake before v2(w/o currency), non prev.
-        // receive v1, receive v2(w/o currency) * 3, receive v2(w/ currency) * ???, receive v3.
-        // check CRYSTAL is ???.
-        [InlineData(
-            BlockIndexForTest,
-            500L,
-            null,
-            StakeState.StakeRewardSheetV3Index + StakeState.RewardInterval * 2 - 1,
-            2_437,
-            40,
-            0,
-            AgentAddressHex,
-            "CRYSTAL",
-            5_000L
-        )]
-        public void Execute_Success(
+        [InlineData(0, null, 0)]
+        [InlineData(0, null, StakeState.RewardInterval - 1)]
+        [InlineData(0, StakeState.RewardInterval - 2, StakeState.RewardInterval - 1)]
+        [InlineData(0, StakeState.RewardInterval, StakeState.RewardInterval + 1)]
+        [InlineData(0, StakeState.RewardInterval, StakeState.RewardInterval * 2 - 1)]
+        [InlineData(0, StakeState.RewardInterval * 2 - 2, StakeState.RewardInterval * 2 - 1)]
+        [InlineData(0, StakeState.RewardInterval * 2, StakeState.RewardInterval * 2 + 1)]
+        public void Execute_Throw_RequiredBlockIndexException_With_StakeState(
             long startedBlockIndex,
-            long stakeAmount,
-            long? previousRewardReceiveIndex,
-            long blockIndex,
-            int expectedHourglass,
-            int expectedApStone,
-            int expectedRune,
-            string expectedCurrencyAddrHex,
-            string expectedCurrencyTicker,
-            long expectedCurrencyAmount)
+            long? receivedBlockIndex,
+            long blockIndex)
         {
-            Execute(
-                _initialStatesWithAvatarStateV1,
-                _agentAddr,
-                _avatarAddr,
-                startedBlockIndex,
-                stakeAmount,
-                previousRewardReceiveIndex,
-                blockIndex,
-                expectedHourglass,
-                expectedApStone,
-                expectedRune,
-                expectedCurrencyAddrHex,
-                expectedCurrencyTicker,
-                expectedCurrencyAmount);
-
-            Execute(
-                _initialStatesWithAvatarStateV2,
-                _agentAddr,
-                _avatarAddr,
-                startedBlockIndex,
-                stakeAmount,
-                previousRewardReceiveIndex,
-                blockIndex,
-                expectedHourglass,
-                expectedApStone,
-                expectedRune,
-                expectedCurrencyAddrHex,
-                expectedCurrencyTicker,
-                expectedCurrencyAmount);
-        }
-
-        private void Execute(
-            IAccountStateDelta prevState,
-            Address agentAddr,
-            Address avatarAddr,
-            long startedBlockIndex,
-            long stakeAmount,
-            long? previousRewardReceiveIndex,
-            long blockIndex,
-            int expectedHourglass,
-            int expectedApStone,
-            int expectedRune,
-            string expectedCurrencyAddrHex,
-            string expectedCurrencyTicker,
-            long expectedCurrencyAmount)
-        {
-            var context = new ActionContext();
-            var stakeStateAddr = StakeState.DeriveAddress(agentAddr);
-            var initialStakeState = new StakeState(stakeStateAddr, startedBlockIndex);
-            if (!(previousRewardReceiveIndex is null))
+            var stakeAddr = StakeState.DeriveAddress(AgentAddr);
+            var stakeState = new StakeState(stakeAddr, startedBlockIndex);
+            if (receivedBlockIndex is not null)
             {
-                initialStakeState.Claim((long)previousRewardReceiveIndex);
+                stakeState.Claim((long)receivedBlockIndex);
             }
 
-            prevState = prevState
-                .SetState(stakeStateAddr, initialStakeState.Serialize())
-                .MintAsset(context, stakeStateAddr, _ncg * stakeAmount);
+            foreach (var initialState in _initialStates)
+            {
+                var prevState = initialState
+                    // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 50)
+                    .SetState(stakeAddr, stakeState.Serialize());
+                Assert.Throws<RequiredBlockIndexException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
 
+        [Theory]
+        // NOTE: RewardInterval of StakePolicySheetFixtures.V2 is 50,400.
+        [InlineData(0, null, 0)]
+        [InlineData(0, null, 50_400 - 1)]
+        [InlineData(0, 50_400 - 1, 50_400 - 1)]
+        [InlineData(0, 50_400, 50_400 + 1)]
+        [InlineData(0, 50_400, 50_400 * 2 - 1)]
+        [InlineData(0, 50_400 * 2 - 2, 50_400 * 2 - 1)]
+        [InlineData(0, 50_400 * 2, 50_400 * 2 + 1)]
+        public void Execute_Throw_RequiredBlockIndexException_With_StakeStateV2(
+            long startedBlockIndex,
+            long? receivedBlockIndex,
+            long blockIndex)
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(
+                _stakePolicySheet,
+                startedBlockIndex,
+                receivedBlockIndex);
+            foreach (var initialState in _initialStates)
+            {
+                var prevState = initialState
+                    // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 50)
+                    .SetState(stakeAddr, stakeStateV2.Serialize());
+                Assert.Throws<RequiredBlockIndexException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
+
+        [Fact]
+        public void Execute_Throw_FailedLoadStateException_When_Sheet_Null()
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(_stakePolicySheet, 0, null);
+            var blockIndex = stakeStateV2.StartedBlockIndex + stakeStateV2.Contract.RewardInterval;
+            foreach (var initialState in _initialStates)
+            {
+                var prevState = initialState
+                    // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 50)
+                    .SetState(stakeAddr, stakeStateV2.Serialize());
+                // NOTE: Set StakeRegularFixedRewardSheetTable to Null
+                var sheetAddr = Addresses.GetSheetAddress(
+                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName);
+                prevState = prevState.SetState(sheetAddr, Null.Value);
+                Assert.Throws<FailedLoadStateException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+
+                prevState = initialState
+                    // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 50)
+                    .SetState(stakeAddr, stakeStateV2.Serialize());
+                // NOTE: Set StakeRegularRewardSheetTableName to Null
+                sheetAddr = Addresses.GetSheetAddress(
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName);
+                prevState = prevState.SetState(sheetAddr, Null.Value);
+                Assert.Throws<FailedLoadStateException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
+
+        [Theory]
+        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+        [InlineData(49)]
+        [InlineData(0)]
+        public void Execute_Throw_InsufficientBalanceException(long stakedBalance)
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(_stakePolicySheet, 0, null);
+            var blockIndex = stakeStateV2.StartedBlockIndex + stakeStateV2.Contract.RewardInterval;
+            foreach (var initialState in _initialStates)
+            {
+                var previousState = initialState.SetState(stakeAddr, stakeStateV2.Serialize());
+                previousState = stakedBalance > 0
+                    ? previousState.MintAsset(
+                        new ActionContext(),
+                        stakeAddr,
+                        _ncg * stakedBalance)
+                    : previousState;
+                Assert.Throws<InsufficientBalanceException>(() =>
+                    Execute(
+                        previousState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
+
+        [Fact]
+        public void Execute_Throw_ArgumentNullException_When_Reward_CurrencyTicker_Null()
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(_stakePolicySheet, 0, null);
+            var blockIndex = stakeStateV2.StartedBlockIndex + stakeStateV2.Contract.RewardInterval;
+            foreach (var initialState in _initialStates)
+            {
+                var prevState = initialState
+                    // NOTE: required_gold to receive Currency
+                    // of StakeRegularRewardSheetFixtures.V2 is 10,000,000.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 10_000_000)
+                    .SetState(stakeAddr, stakeStateV2.Serialize());
+                // NOTE: Set CurrencyTicker to string.Empty.
+                var sheetAddr = Addresses.GetSheetAddress(
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName);
+                var sheetValue = prevState.GetSheetCsv(sheetAddr);
+                sheetValue = string.Join('\n', sheetValue.Split('\n')
+                    .Select(line => string.Join(',', line.Split(',')
+                        .Select((column, index) => index == 5
+                            ? string.Empty
+                            : column))));
+                prevState = prevState.SetState(sheetAddr, sheetValue.Serialize());
+                Assert.Throws<ArgumentNullException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
+
+        [Fact]
+        public void
+            Execute_Throw_ArgumentNullException_When_Reward_CurrencyTicker_New_CurrencyDecimalPlaces_Null()
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(_stakePolicySheet, 0, null);
+            var blockIndex = stakeStateV2.StartedBlockIndex + stakeStateV2.Contract.RewardInterval;
+            foreach (var initialState in _initialStates)
+            {
+                var prevState = initialState
+                    // NOTE: required_gold to receive Currency
+                    // of StakeRegularRewardSheetFixtures.V2 is 10,000,000.
+                    .MintAsset(new ActionContext(), stakeAddr, _ncg * 10_000_000)
+                    .SetState(stakeAddr, stakeStateV2.Serialize());
+                // NOTE: Set CurrencyTicker to string.Empty.
+                var sheetAddr = Addresses.GetSheetAddress(
+                    stakeStateV2.Contract.StakeRegularRewardSheetTableName);
+                var sheetValue = prevState.GetSheetCsv(sheetAddr);
+                sheetValue = string.Join('\n', sheetValue.Split('\n')
+                    .Select(line => string.Join(',', line.Split(',')
+                        .Select((column, index) =>
+                        {
+                            return index switch
+                            {
+                                5 => "NEW_TICKER",
+                                6 => string.Empty,
+                                _ => column,
+                            };
+                        }))));
+                prevState = prevState.SetState(sheetAddr, sheetValue.Serialize());
+                Assert.Throws<ArgumentNullException>(() =>
+                    Execute(
+                        prevState,
+                        AgentAddr,
+                        AvatarAddr,
+                        blockIndex));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMemberData_Execute_Success_With_StakePolicySheetFixtureV1))]
+        public void Execute_Success_With_StakeState(
+            long startedBlockIndex,
+            long? receivedBlockIndex,
+            long stakedBalance,
+            long blockIndex,
+            (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+            (int itemSheetId, int count)[] expectedItems)
+        {
+            var stakeAddr = StakeState.DeriveAddress(AgentAddr);
+            var stakeState = new StakeState(stakeAddr, startedBlockIndex);
+            if (receivedBlockIndex is not null)
+            {
+                stakeState.Claim((long)receivedBlockIndex);
+            }
+
+            foreach (var initialState in _initialStates)
+            {
+                var previousState = stakedBalance > 0
+                    ? initialState.MintAsset(
+                        new ActionContext(),
+                        stakeAddr,
+                        _ncg * stakedBalance)
+                    : initialState;
+                previousState = previousState.SetState(stakeAddr, stakeState.Serialize());
+                var nextState = Execute(
+                    previousState,
+                    AgentAddr,
+                    AvatarAddr,
+                    blockIndex);
+                Expect(
+                    nextState,
+                    expectedBalances,
+                    AvatarAddr.Derive("inventory"),
+                    expectedItems);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMemberData_Execute_Success_With_StakePolicySheetFixtureV2))]
+        public void Execute_Success_With_StakeStateV2(
+            long startedBlockIndex,
+            long? receivedBlockIndex,
+            long stakedBalance,
+            long blockIndex,
+            (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+            (int itemSheetId, int count)[] expectedItems)
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(AgentAddr);
+            var stakeStateV2 = PrepareStakeStateV2(
+                _stakePolicySheet,
+                startedBlockIndex,
+                receivedBlockIndex);
+            foreach (var initialState in _initialStates)
+            {
+                var previousState = stakedBalance > 0
+                    ? initialState.MintAsset(
+                        new ActionContext(),
+                        stakeAddr,
+                        _ncg * stakedBalance)
+                    : initialState;
+                previousState = previousState.SetState(stakeAddr, stakeStateV2.Serialize());
+                var nextState = Execute(
+                    previousState,
+                    AgentAddr,
+                    AvatarAddr,
+                    blockIndex);
+                Expect(
+                    nextState,
+                    expectedBalances,
+                    AvatarAddr.Derive("inventory"),
+                    expectedItems);
+            }
+        }
+
+        private static StakeStateV2 PrepareStakeStateV2(
+            StakePolicySheet stakePolicySheet,
+            long startedBlockIndex,
+            long? receivedBlockIndex)
+        {
+            var contract = new Contract(
+                stakePolicySheet.StakeRegularFixedRewardSheetValue,
+                stakePolicySheet.StakeRegularRewardSheetValue,
+                stakePolicySheet.RewardIntervalValue,
+                stakePolicySheet.LockupIntervalValue);
+            return receivedBlockIndex is null
+                ? new StakeStateV2(contract, startedBlockIndex)
+                : new StakeStateV2(contract, startedBlockIndex, receivedBlockIndex.Value);
+        }
+
+        private static IAccount Execute(
+            IAccount prevState,
+            Address agentAddr,
+            Address avatarAddr,
+            long blockIndex)
+        {
+            var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
+            var ncg = prevState.GetGoldCurrency();
+            var prevBalance = prevState.GetBalance(agentAddr, ncg);
+            var prevStakedBalance = prevState.GetBalance(stakeAddr, ncg);
             var action = new ClaimStakeReward(avatarAddr);
-            var states = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousState = prevState,
                 Signer = agentAddr,
                 BlockIndex = blockIndex,
             });
+            var nextBalance = nextState.GetBalance(agentAddr, ncg);
+            Assert.Equal(prevBalance, nextBalance);
+            var nextStakedBalance = nextState.GetBalance(stakeAddr, ncg);
+            Assert.Equal(prevStakedBalance, nextStakedBalance);
+            Assert.True(nextState.TryGetStakeStateV2(agentAddr, out var stakeStateV2));
+            Assert.Equal(blockIndex, stakeStateV2.ReceivedBlockIndex);
+            Assert.True(stakeStateV2.ClaimedBlockIndex <= blockIndex);
+            Assert.True(stakeStateV2.ClaimableBlockIndex > blockIndex);
 
-            var avatarState = states.GetAvatarStateV2(avatarAddr);
-            if (expectedHourglass > 0)
-            {
-                Assert.Equal(
-                    expectedHourglass,
-                    avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            }
-            else
-            {
-                Assert.DoesNotContain(avatarState.inventory.Items, x => x.item.Id == 400000);
-            }
+            return nextState;
+        }
 
-            if (expectedApStone > 0)
+        private static void Expect(
+            IAccountState state,
+            (Address balanceAddr, FungibleAssetValue fav)[] expectedBalances,
+            Address inventoryAddr,
+            (int itemSheetId, int count)[] expectedItems)
+        {
+            if (expectedBalances is not null)
             {
-                Assert.Equal(
-                    expectedApStone,
-                    avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
-            }
-            else
-            {
-                Assert.DoesNotContain(avatarState.inventory.Items, x => x.item.Id == 500000);
-            }
-
-            if (expectedRune > 0)
-            {
-                Assert.Equal(
-                    expectedRune * RuneHelper.StakeRune,
-                    states.GetBalance(avatarAddr, RuneHelper.StakeRune));
-            }
-            else
-            {
-                Assert.Equal(
-                    0 * RuneHelper.StakeRune,
-                    states.GetBalance(avatarAddr, RuneHelper.StakeRune));
+                foreach (var (balanceAddr, fav) in expectedBalances)
+                {
+                    Assert.Equal(fav, state.GetBalance(balanceAddr, fav.Currency));
+                }
             }
 
-            if (!string.IsNullOrEmpty(expectedCurrencyAddrHex))
+            if (expectedItems is not null)
             {
-                var addr = new Address(expectedCurrencyAddrHex);
-                var currency = Currencies.GetMinterlessCurrency(expectedCurrencyTicker);
-                Assert.Equal(
-                    expectedCurrencyAmount * currency,
-                    states.GetBalance(addr, currency));
+                var inventory = state.GetInventory(inventoryAddr);
+                foreach (var (itemSheetId, count) in expectedItems)
+                {
+                    Assert.Equal(count, inventory.Items.First(e => e.item.Id == itemSheetId).count);
+                }
             }
-
-            Assert.True(states.TryGetStakeState(agentAddr, out StakeState stakeState));
-            Assert.Equal(blockIndex, stakeState.ReceivedBlockIndex);
         }
     }
 }

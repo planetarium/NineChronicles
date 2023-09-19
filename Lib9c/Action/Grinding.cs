@@ -20,11 +20,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("grinding")]
+    [ActionType("grinding2")]
     public class Grinding : GameAction, IGrindingV1
     {
         public const int CostAp = 5;
-        public const int Limit = 10;
+        public const int Limit = 50;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public bool ChargeAp;
@@ -33,11 +33,11 @@ namespace Nekoyume.Action
         List<Guid> IGrindingV1.EquipmentsIds => EquipmentIds;
         bool IGrindingV1.ChargeAp => ChargeAp;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
-            IAccountStateDelta states = ctx.PreviousState;
+            IAccount states = ctx.PreviousState;
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
@@ -86,17 +86,11 @@ namespace Nekoyume.Action
             });
 
             Currency currency = states.GetGoldCurrency();
-            FungibleAssetValue stakedAmount = 0 * currency;
-            if (states.TryGetStakeState(context.Signer, out StakeState stakeState))
+            FungibleAssetValue stakedAmount = states.GetStakedAmount(context.Signer);
+            if (stakedAmount == currency * 0 &&
+                states.TryGetState(monsterCollectionAddress, out Dictionary _))
             {
-                 stakedAmount = states.GetBalance(stakeState.address, currency);
-            }
-            else
-            {
-                if (states.TryGetState(monsterCollectionAddress, out Dictionary _))
-                {
-                    stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
-                }
+                stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
             }
 
             if (avatarState.actionPoint < CostAp)

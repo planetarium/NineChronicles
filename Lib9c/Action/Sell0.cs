@@ -41,7 +41,7 @@ namespace Nekoyume.Action
             price = plainValue["price"].ToFungibleAssetValue();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -123,7 +123,7 @@ namespace Nekoyume.Action
                 sellerAvatarAddress,
                 productId,
                 price,
-                nonFungibleItem);
+                (ITradableItem)nonFungibleItem);
 
             IValue shopItemSerialized = shopItem.Serialize();
             IKey productIdSerialized = (IKey)productId.Serialize();

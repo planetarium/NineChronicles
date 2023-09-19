@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
         private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public CombinationConsumable7Test()
         {

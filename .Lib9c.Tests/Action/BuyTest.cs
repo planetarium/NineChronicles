@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _orderId;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public BuyTest(ITestOutputHelper outputHelper)
         {
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         0);
-                    tradableItem = itemUsable;
+                    tradableItem = (ITradableItem)itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                 }
                 else if (orderData.ItemType == ItemType.Costume)
@@ -617,7 +617,7 @@ namespace Lib9c.Tests.Action
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
                 PreviousState = _initialState,

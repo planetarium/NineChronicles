@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet.Action.State;
@@ -8,13 +9,14 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Stake;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
     public class PatchTableSheetTest
     {
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public PatchTableSheetTest(ITestOutputHelper outputHelper)
         {
@@ -86,7 +88,9 @@ namespace Lib9c.Tests.Action
             const string tableName = "TestTable";
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize())
-                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+                .SetState(
+                    Addresses.TableSheet.Derive(tableName),
+                    Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {
@@ -129,7 +133,9 @@ namespace Lib9c.Tests.Action
             const string tableName = "TestTable";
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize())
-                .SetState(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+                .SetState(
+                    Addresses.TableSheet.Derive(tableName),
+                    Dictionary.Empty.Add(tableName, "Initial"));
             var state = new MockStateDelta(initStates);
             var action = new PatchTableSheet()
             {

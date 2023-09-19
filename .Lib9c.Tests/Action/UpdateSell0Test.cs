@@ -28,7 +28,7 @@
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public UpdateSell0Test(ITestOutputHelper outputHelper)
         {
@@ -127,7 +127,7 @@
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         requiredBlockIndex);
-                    tradableItem = itemUsable;
+                    tradableItem = (ITradableItem)itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                     break;
                 }

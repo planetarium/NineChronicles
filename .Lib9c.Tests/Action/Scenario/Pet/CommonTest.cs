@@ -21,8 +21,8 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         private readonly Address _avatarAddr;
         private readonly Address _recipeAddr;
         private readonly Address _worldInfoAddr;
-        private readonly IAccountStateDelta _initialStateV1;
-        private readonly IAccountStateDelta _initialStateV2;
+        private readonly IAccount _initialStateV1;
+        private readonly IAccount _initialStateV2;
 
         public CommonTest()
         {

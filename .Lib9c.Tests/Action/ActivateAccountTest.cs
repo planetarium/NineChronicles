@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext()
+                IAccount nextState = action.Execute(new ActionContext()
                 {
                     PreviousState = state,
                     Signer = default,
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
             Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = new MockStateDelta(),
                 Signer = default,

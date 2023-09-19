@@ -194,7 +194,7 @@ namespace Nekoyume.Action
             purchaseInfos = plainValue[PurchaseInfosKey].ToList(StateExtensions.ToPurchaseInfo);
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -378,7 +378,7 @@ namespace Nekoyume.Action
                 int count = 1;
                 if (!(shopItem.ItemUsable is null))
                 {
-                    tradableItem = shopItem.ItemUsable;
+                    tradableItem = (ITradableItem)shopItem.ItemUsable;
                 }
                 else if (!(shopItem.Costume is null))
                 {

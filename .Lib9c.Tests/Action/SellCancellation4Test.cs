@@ -16,7 +16,7 @@
 
     public class SellCancellation4Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
@@ -82,14 +82,14 @@
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             shopState.Register(new ShopItem(
                 _agentAddress,
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                consumable));
+                (ITradableItem)consumable));
 
             shopState.Register(new ShopItem(
                 _agentAddress,

@@ -24,7 +24,7 @@
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public BuyMultipleTest(ITestOutputHelper outputHelper)
         {
@@ -275,7 +275,7 @@
                     shopItemId,
                     new FungibleAssetValue(_goldCurrencyState.Currency, product.Price, 0),
                     product.RequiredBlockIndex,
-                    nonFungibleItem);
+                    (ITradableItem)nonFungibleItem);
                 shopState.Register(shopItem);
 
                 if (product.Buy)
@@ -307,7 +307,7 @@
                     .SetState(avatarState.address, avatarState.Serialize());
             }
 
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
 
             var buyerGold = previousStates.GetBalance(_buyerAgentAddress, goldCurrency);
             var priceSumData = productDatas
@@ -504,7 +504,7 @@
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 1, 0),
                 100,
-                equipment));
+                (ITradableItem)equipment));
 
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
@@ -560,7 +560,7 @@
             var sellerAgentAddress = new PrivateKey().ToAddress();
             var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
 
-            IAccountStateDelta previousStates = _initialState;
+            IAccount previousStates = _initialState;
             var shopState = previousStates.GetShopState();
 
             var productId = Guid.NewGuid();
@@ -574,7 +574,7 @@
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 10,
-                equipment));
+                (ITradableItem)equipment));
 
             previousStates = previousStates
                 .SetState(Addresses.Shop, shopState.Serialize());

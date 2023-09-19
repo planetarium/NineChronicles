@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action
                 },
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = state,
                 Signer = admin,

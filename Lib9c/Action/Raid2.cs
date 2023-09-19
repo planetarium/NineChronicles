@@ -39,10 +39,10 @@ namespace Nekoyume.Action
         IEnumerable<Guid> IRaidV1.FoodIds => FoodIds;
         bool IRaidV1.PayNcg => PayNcg;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             if (context.Rehearsal)
             {
                 return states;

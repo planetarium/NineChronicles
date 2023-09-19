@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
             var patron = new PrivateKey().ToAddress();
             var agent = new PrivateKey().ToAddress();
             var context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta()
+            IAccount states = new MockStateDelta()
                 .SetState(agent.GetPledgeAddress(), List.Empty.Add(patron.Serialize()).Add(true.Serialize()));
             var mead = Currencies.Mead;
             if (balance > 0)
@@ -52,7 +52,7 @@ namespace Lib9c.Tests.Action
             Address patron = new PrivateKey().ToAddress();
             Address agent = new PrivateKey().ToAddress();
             List contract = List.Empty.Add(patron.Serialize()).Add(true.Serialize());
-            IAccountStateDelta states = new MockStateDelta().SetState(agent.GetPledgeAddress(), contract);
+            IAccount states = new MockStateDelta().SetState(agent.GetPledgeAddress(), contract);
 
             var action = new EndPledge
             {

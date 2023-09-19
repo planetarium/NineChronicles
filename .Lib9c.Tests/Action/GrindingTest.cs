@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatarState;
         private readonly Currency _crystalCurrency;
         private readonly Currency _ncgCurrency;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public GrindingTest()
         {
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 10, 1, null)]
         // Invalid equipment count.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 0, typeof(InvalidItemCountException))]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 11, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 51, typeof(InvalidItemCountException))]
         // AgentState not exist.
         [InlineData(false, true, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // AvatarState not exist.

@@ -17,8 +17,8 @@ namespace Lib9c.Tests.Util
             TableSheets tableSheets,
             Address agentAddr,
             Address avatarAddr,
-            IAccountStateDelta initialStatesWithAvatarStateV1,
-            IAccountStateDelta initialStatesWithAvatarStateV2
+            IAccount initialStatesWithAvatarStateV1,
+            IAccount initialStatesWithAvatarStateV2
             ) InitializeStates(
                 Address? adminAddr = null,
                 Address? agentAddr = null,
@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Util
 
             var tuple = InitializeTableSheets(states, isDevEx, sheetsOverride);
             states = tuple.states;
-            var tableSheets = new TableSheets(tuple.sheets);
+            var tableSheets = new TableSheets(tuple.sheets, ignoreFailedGetProperty: true);
             var gameConfigState = new GameConfigState(tuple.sheets[nameof(GameConfigSheet)]);
             states = states.SetState(gameConfigState.address, gameConfigState.Serialize());
 
@@ -84,9 +84,9 @@ namespace Lib9c.Tests.Util
                 initialStatesWithAvatarStateV2);
         }
 
-        private static (IAccountStateDelta states, Dictionary<string, string> sheets)
+        private static (IAccount states, Dictionary<string, string> sheets)
             InitializeTableSheets(
-                IAccountStateDelta states,
+                IAccount states,
                 bool isDevEx = false,
                 Dictionary<string, string> sheetsOverride = null)
         {

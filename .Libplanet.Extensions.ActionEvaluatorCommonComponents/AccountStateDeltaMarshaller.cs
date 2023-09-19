@@ -8,12 +8,12 @@ public static class AccountStateDeltaMarshaller
 {
     private static readonly Codec Codec = new Codec();
 
-    public static byte[] Serialize(this IAccountStateDelta value)
+    public static byte[] Serialize(this IAccount value)
     {
         return Codec.Encode(Marshal(value));
     }
 
-    public static IEnumerable<Dictionary> Marshal(IEnumerable<IAccountStateDelta> stateDeltas)
+    public static IEnumerable<Dictionary> Marshal(IEnumerable<IAccount> stateDeltas)
     {
         foreach (var stateDelta in stateDeltas)
         {
@@ -22,7 +22,7 @@ public static class AccountStateDeltaMarshaller
         }
     }
 
-    public static Dictionary Marshal(IAccountStateDelta stateDelta)
+    public static Dictionary Marshal(IAccount stateDelta)
     {
         var state = new Dictionary(stateDelta.Delta.States.Select(
             kv => new KeyValuePair<IKey, IValue>(

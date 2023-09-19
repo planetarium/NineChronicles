@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
         public void Constructor_ThrowsMemoLengthOverflowException()
         {
             Assert.Throws<MemoLengthOverflowException>(() =>
-                new TransferAsset(_sender, _recipient, _currency * 100, new string(' ', 100)));
+                new TransferAsset0(_sender, _recipient, _currency * 100, new string(' ', 100)));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Action
                 recipient: _recipient,
                 amount: _currency * 100
             );
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = prevState,
                 Signer = _sender,
@@ -232,7 +232,7 @@ namespace Lib9c.Tests.Action
                 amount: _currency * 100
             );
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = new MockStateDelta(),
                 Signer = default,

@@ -29,7 +29,7 @@
         private readonly Currency _currency;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Sell7Test(ITestOutputHelper outputHelper)
         {
@@ -104,7 +104,7 @@
             switch (itemType)
             {
                 case ItemType.Consumable:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.ConsumableItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -115,7 +115,7 @@
                         Guid.NewGuid());
                     break;
                 case ItemType.Equipment:
-                    tradableItem = ItemFactory.CreateItemUsable(
+                    tradableItem = (ITradableItem)ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
                         Guid.NewGuid(),
                         0);
@@ -414,7 +414,7 @@
             shardedShopState.Add(order.Digest2(avatarState, _tableSheets.CostumeStatSheet), 1);
             Assert.Single(shardedShopState.OrderDigestList);
 
-            IAccountStateDelta previousStates = _initialState
+            IAccount previousStates = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(shardedShopAddress, shardedShopState.Serialize());
 

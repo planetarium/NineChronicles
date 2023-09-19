@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
 
     public class EventConsumableItemCraftsTest
     {
-        private readonly IAccountStateDelta _initialStates;
+        private readonly IAccount _initialStates;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
         }
 
         private void Execute(
-            IAccountStateDelta previousStates,
+            IAccount previousStates,
             int eventScheduleId,
             int eventConsumableItemRecipeId,
             int slotIndex,

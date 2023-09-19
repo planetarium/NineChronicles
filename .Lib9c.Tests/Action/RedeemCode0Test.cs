@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress
             );
 
-            IAccountStateDelta nextState = redeemCode.Execute(new ActionContext()
+            IAccount nextState = redeemCode.Execute(new ActionContext()
             {
                 BlockIndex = 1,
                 Miner = default,
@@ -121,7 +121,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress
             );
 
-            IAccountStateDelta nextState = redeemCode.Execute(new ActionContext()
+            IAccount nextState = redeemCode.Execute(new ActionContext()
             {
                 BlockIndex = 1,
                 Miner = default,

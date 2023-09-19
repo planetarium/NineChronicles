@@ -31,7 +31,7 @@
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _orderId;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy8Test(ITestOutputHelper outputHelper)
         {
@@ -207,7 +207,7 @@
                         _tableSheets.EquipmentItemSheet.First,
                         itemId,
                         0);
-                    tradableItem = itemUsable;
+                    tradableItem = (ITradableItem)itemUsable;
                     itemSubType = itemUsable.ItemSubType;
                 }
                 else if (orderData.ItemType == ItemType.Costume)
@@ -528,7 +528,7 @@
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
                 PreviousState = _initialState,

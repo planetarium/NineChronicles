@@ -24,7 +24,7 @@ namespace Nekoyume.Action
     [ActionObsolete(ActionObsoleteConfig.V200030ObsoleteIndex)]
     public class MigrationLegacyShop : GameAction, IMigrationLegacyShopV1
     {
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatar4;
         private readonly Currency _crystal;
         private readonly Currency _ncg;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public BattleArena2Test(ITestOutputHelper outputHelper)
         {
@@ -194,7 +194,7 @@ namespace Lib9c.Tests.Action
             return (equipments, costumes);
         }
 
-        public IAccountStateDelta JoinArena(IActionContext context, Address signer, Address avatarAddress, long blockIndex, int championshipId, int round, IRandom random)
+        public IAccount JoinArena(IActionContext context, Address signer, Address avatarAddress, long blockIndex, int championshipId, int round, IRandom random)
         {
             var preCurrency = 1000 * _crystal;
             _state = _state.MintAsset(context, signer, preCurrency);

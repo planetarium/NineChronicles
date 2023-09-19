@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
                     .SetState(pendingActivation.address, pendingActivation.Serialize()));
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = state,
                 Signer = default,
@@ -48,7 +48,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = new MockStateDelta(),
                 Signer = default,
@@ -151,7 +151,7 @@ namespace Lib9c.Tests.Action
                     .SetState(pendingActivation.address, pendingActivation.Serialize()));
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            IAccount nextState = action.Execute(new ActionContext()
             {
                 PreviousState = state,
                 Signer = default,

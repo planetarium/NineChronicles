@@ -42,7 +42,7 @@ namespace Nekoyume.Action
             price = plainValue["price"].ToFungibleAssetValue();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -117,7 +117,7 @@ namespace Nekoyume.Action
                     sellerAvatarAddress,
                     productId,
                     price,
-                    equipment);
+                    (ITradableItem)equipment);
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {

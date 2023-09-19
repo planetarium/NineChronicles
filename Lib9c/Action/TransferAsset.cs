@@ -13,20 +13,21 @@ using Lib9c;
 using Lib9c.Abstractions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.Stake;
 using Serilog;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/636
-    /// Updated at https://github.com/planetarium/lib9c/pull/1718
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2143
+    /// Updated at https://github.com/planetarium/lib9c/pull/2143
     /// </summary>
     [Serializable]
     [ActionType(TypeIdentifier)]
     public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
-        public const string TypeIdentifier = "transfer_asset4";
+        public const string TypeIdentifier = "transfer_asset5";
 
         public TransferAsset()
         {
@@ -82,7 +83,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(4);
             Address signer = context.Signer;
@@ -94,7 +95,7 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset4 exec started", addressesHex);
+            Log.Debug("{AddressesHex}TransferAsset5 exec started", addressesHex);
             if (Sender != signer)
             {
                 throw new InvalidTransferSignerException(signer, Sender, Recipient);
@@ -117,8 +118,86 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
+            if (state.TryGetState(Recipient, out IValue serializedStakeState))
+            {
+                bool isStakeStateOrMonsterCollectionState;
+                if (serializedStakeState is Dictionary dictionary)
+                {
+                    try
+                    {
+                        _ = new StakeState(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+
+                    try
+                    {
+                        _ = new MonsterCollectionState0(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+
+                    try
+                    {
+                        _ = new MonsterCollectionState(dictionary);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+                }
+
+                if (serializedStakeState is List serializedStakeStateV2)
+                {
+                    try
+                    {
+                        _ = new StakeStateV2(serializedStakeStateV2);
+                        isStakeStateOrMonsterCollectionState = true;
+                    }
+                    catch (Exception)
+                    {
+                        isStakeStateOrMonsterCollectionState = false;
+                    }
+
+                    if (isStakeStateOrMonsterCollectionState)
+                    {
+                        throw new ArgumentException(
+                            "You can't send assets to staking state.",
+                            nameof(Recipient));
+                    }
+                }
+            }
+
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset4 Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}TransferAsset5 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 

@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _slotAddress;
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
 
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
         )
         {
             var context = new ActionContext();
-            IAccountStateDelta state = _initialState;
+            IAccount state = _initialState;
             if (unlockIdsExist)
             {
                 var unlockIds = List.Empty.Add(1.Serialize());
@@ -385,7 +385,7 @@ namespace Lib9c.Tests.Action
             int recipeId)
         {
             var context = new ActionContext();
-            IAccountStateDelta state = _initialState;
+            IAccount state = _initialState;
             var unlockIds = List.Empty.Add(1.Serialize());
             for (int i = 2; i < recipeId + 1; i++)
             {

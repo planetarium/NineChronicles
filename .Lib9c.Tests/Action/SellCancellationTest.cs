@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
 
     public class SellCancellationTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                tradableItem = itemUsable;
+                tradableItem = (ITradableItem)itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
             else if (itemType == ItemType.Costume)
@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action
             avatarState.mailBox.Add(expirationMail);
 
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
-            IAccountStateDelta prevState = _initialState;
+            IAccount prevState = _initialState;
 
             if (inventoryCount > 1)
             {
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
                 ),
             };
 
-            IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            IAccount prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new SellCancellation
             {
@@ -421,7 +421,7 @@ namespace Lib9c.Tests.Action
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
             orderDigestList.Add(orderDigest);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(orderDigestList.Address, orderDigestList.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
@@ -464,7 +464,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                itemUsable.TradableId,
+                itemUsable.ItemId,
                 0,
                 itemUsable.ItemSubType,
                 1
@@ -474,7 +474,7 @@ namespace Lib9c.Tests.Action
                 order.StartedBlockIndex,
                 order.ExpiredBlockIndex,
                 orderId,
-                itemUsable.TradableId,
+                itemUsable.ItemId,
                 order.Price,
                 0,
                 0,
@@ -485,7 +485,7 @@ namespace Lib9c.Tests.Action
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
             orderDigestList.Add(orderDigest);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(orderDigestList.Address, orderDigestList.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
@@ -495,7 +495,7 @@ namespace Lib9c.Tests.Action
                 orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemUsable.ItemSubType,
-                tradableId = itemUsable.TradableId,
+                tradableId = itemUsable.ItemId,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
@@ -590,7 +590,7 @@ namespace Lib9c.Tests.Action
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                tradableItem = itemUsable;
+                tradableItem = (ITradableItem)itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
             else if (itemType == ItemType.Costume)
@@ -643,7 +643,7 @@ namespace Lib9c.Tests.Action
             avatarState.mailBox.Add(expirationMail);
 
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
-            IAccountStateDelta prevState = _initialState;
+            IAccount prevState = _initialState;
 
             if (inventoryCount > 1)
             {

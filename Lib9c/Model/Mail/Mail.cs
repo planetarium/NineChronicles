@@ -14,6 +14,7 @@ namespace Nekoyume.Model.Mail
         Auction,
         System,
         Grinding,
+        Summon,
     }
     [Serializable]
     public abstract class Mail : IState

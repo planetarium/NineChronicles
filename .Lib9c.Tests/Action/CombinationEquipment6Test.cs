@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly AvatarState _avatarState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public CombinationEquipment6Test(ITestOutputHelper outputHelper)
         {

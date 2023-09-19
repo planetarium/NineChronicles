@@ -123,7 +123,7 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             CheckObsolete(ObsoleteBlockIndex, context);
             context.UseGas(1);
@@ -250,9 +250,9 @@ namespace Nekoyume.Action
                     avatarState.inventory.Serialize());
         }
 
-        private IAccountStateDelta ProcessReward(
+        private IAccount ProcessReward(
             IActionContext context,
-            IAccountStateDelta states,
+            IAccount states,
             ref AvatarState avatarState,
             ItemSheet itemSheet,
             FungibleAssetValue stakedAmount,

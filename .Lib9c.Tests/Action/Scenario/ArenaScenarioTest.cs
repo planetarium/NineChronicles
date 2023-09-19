@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly Currency _ncg;
         private TableSheets _tableSheets;
         private Dictionary<string, string> _sheets;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public ArenaScenarioTest(ITestOutputHelper outputHelper)
         {
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action.Scenario
             return (equipments, costumes);
         }
 
-        public IAccountStateDelta JoinArena(
+        public IAccount JoinArena(
             IActionContext context,
             IRandom random,
             Address signer,
@@ -122,7 +122,7 @@ namespace Lib9c.Tests.Action.Scenario
             return _state;
         }
 
-        public IAccountStateDelta BattleArena(
+        public IAccount BattleArena(
             IRandom random,
             Address signer,
             Address myAvatarAddress,

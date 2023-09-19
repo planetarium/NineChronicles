@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public ItemEnhancementTest()
         {
@@ -364,6 +364,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(preItemUsable.ItemId, slotResult.preItemUsable.ItemId);
             Assert.Equal(preItemUsable.ItemId, resultEquipment.ItemId);
+            Assert.Equal(expectedCost, slotResult.gold);
         }
     }
 }

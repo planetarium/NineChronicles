@@ -13,7 +13,7 @@ namespace Lib9c.Tests.Action
     public class ClaimRaidRewardTest
     {
         private readonly TableSheets _tableSheets;
-        private readonly IAccountStateDelta _state;
+        private readonly IAccount _state;
 
         public ClaimRaidRewardTest()
         {
@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Action
                 HighScore = highScore,
                 LatestRewardRank = latestRank,
             };
-            IAccountStateDelta state = _state.SetState(raiderAddress, raiderState.Serialize());
+            IAccount state = _state.SetState(raiderAddress, raiderState.Serialize());
             var randomSeed = 0;
 
             var rows = _tableSheets.WorldBossRankRewardSheet.Values

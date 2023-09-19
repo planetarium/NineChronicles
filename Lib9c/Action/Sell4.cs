@@ -49,7 +49,7 @@ namespace Nekoyume.Action
             itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -130,7 +130,7 @@ namespace Nekoyume.Action
             }
             nonFungibleItem.RequiredBlockIndex = expiredBlockIndex;
 
-            ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
+            ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, (ITradableItem)nonFungibleItem);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             if (!states.TryGetState(shardedShopAddress, out Bencodex.Types.Dictionary shopStateDict))
             {

@@ -28,8 +28,8 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         private readonly Address _inventoryAddr;
         private readonly Address _worldInfoAddr;
         private readonly Address _recipeIdsAddr;
-        private readonly IAccountStateDelta _initialStateV1;
-        private readonly IAccountStateDelta _initialStateV2;
+        private readonly IAccount _initialStateV1;
+        private readonly IAccount _initialStateV2;
         private readonly TableSheets _tableSheets;
         private readonly int _hourglassItemId;
         private int? _petId;

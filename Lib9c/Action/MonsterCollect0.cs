@@ -24,10 +24,10 @@ namespace Nekoyume.Action
         int IMonsterCollectV1.Level => level;
         int IMonsterCollectV1.CollectionRound => collectionRound;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            IAccountStateDelta states = context.PreviousState;
+            IAccount states = context.PreviousState;
             Address monsterCollectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
             if (context.Rehearsal)
             {

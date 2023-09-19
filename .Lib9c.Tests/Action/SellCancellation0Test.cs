@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
 
     public class SellCancellation0Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())

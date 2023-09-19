@@ -26,7 +26,7 @@
         private readonly Currency _currency;
         private readonly AvatarState _avatarState;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Sell4Test(ITestOutputHelper outputHelper)
         {
@@ -135,7 +135,7 @@
                     productId,
                     new FungibleAssetValue(currencyState, 100, 0),
                     blockIndex,
-                    nonFungibleItem);
+                    (ITradableItem)nonFungibleItem);
                 ShardedShopState shardedShopState =
                     new ShardedShopState(shopAddress);
                 shardedShopState.Register(si);

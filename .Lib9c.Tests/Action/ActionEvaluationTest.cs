@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private readonly Address _signer;
         private readonly Address _sender;
-        private readonly IAccountStateDelta _states;
+        private readonly IAccount _states;
 
         public ActionEvaluationTest()
         {

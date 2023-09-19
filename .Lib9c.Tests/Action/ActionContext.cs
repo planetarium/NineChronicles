@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
 
         public bool Rehearsal { get; set; }
 
-        public IAccountStateDelta PreviousState { get; set; }
+        public IAccount PreviousState { get; set; }
 
         public IRandom Random { get; set; }
 

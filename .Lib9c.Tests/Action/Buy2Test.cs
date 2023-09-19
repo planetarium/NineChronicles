@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy2Test(ITestOutputHelper outputHelper)
         {
@@ -98,7 +98,7 @@ namespace Lib9c.Tests.Action
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             var result = new CombinationConsumable5.ResultModel()
             {

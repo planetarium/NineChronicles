@@ -22,7 +22,7 @@ namespace Lib9c.DevExtensions.Action
         public Address AvatarAddress { get; set; }
         public List<FaucetRuneInfo> FaucetRuneInfos { get; set; }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)

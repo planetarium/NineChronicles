@@ -96,7 +96,7 @@ namespace Nekoyume.Action
             ApStoneCount = plainValue["apStoneCount"].ToInteger();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             if (context.Rehearsal)
@@ -111,8 +111,8 @@ namespace Nekoyume.Action
                 context.Random);
         }
 
-        public IAccountStateDelta Execute(
-            IAccountStateDelta states,
+        public IAccount Execute(
+            IAccount states,
             Address signer,
             long blockIndex,
             IRandom random)
@@ -195,11 +195,12 @@ namespace Nekoyume.Action
             sw.Restart();
             var stakingLevel = 0;
             StakeActionPointCoefficientSheet actionPointCoefficientSheet = null;
-            if (states.TryGetStakeState(signer, out var stakeState) &&
+
+            var goldCurrency = states.GetGoldCurrency();
+            var stakedAmount = states.GetStakedAmount(signer);
+            if (stakedAmount > goldCurrency * 0 &&
                 sheets.TryGetSheet(out actionPointCoefficientSheet))
             {
-                var currency = states.GetGoldCurrency();
-                var stakedAmount = states.GetBalance(stakeState.address, currency);
                 stakingLevel = actionPointCoefficientSheet.FindLevelByStakedAmount(signer, stakedAmount);
             }
 

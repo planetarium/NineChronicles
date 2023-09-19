@@ -23,7 +23,7 @@
 
     public class SellCancellation7Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly GoldCurrencyState _goldCurrencyState;
@@ -110,7 +110,7 @@
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                tradableItem = itemUsable;
+                tradableItem = (ITradableItem)itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
             else if (itemType == ItemType.Costume)
@@ -163,7 +163,7 @@
             avatarState.mailBox.Add(expirationMail);
 
             var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
-            IAccountStateDelta prevState = _initialState;
+            IAccount prevState = _initialState;
 
             if (inventoryCount > 1)
             {
@@ -298,7 +298,7 @@
                 ),
             };
 
-            IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            IAccount prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new SellCancellation7
             {
@@ -369,7 +369,7 @@
                 1
             );
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
@@ -411,7 +411,7 @@
                 avatarAddress,
                 orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                itemUsable.TradableId,
+                itemUsable.ItemId,
                 0,
                 itemUsable.ItemSubType,
                 1
@@ -421,7 +421,7 @@
                 order.StartedBlockIndex,
                 order.ExpiredBlockIndex,
                 orderId,
-                itemUsable.TradableId,
+                itemUsable.ItemId,
                 order.Price,
                 0,
                 0,
@@ -430,7 +430,7 @@
             );
             shopState.Add(orderDigest, 0);
 
-            IAccountStateDelta prevState = _initialState
+            IAccount prevState = _initialState
                 .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
@@ -439,7 +439,7 @@
                 orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemUsable.ItemSubType,
-                tradableId = itemUsable.TradableId,
+                tradableId = itemUsable.ItemId,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()

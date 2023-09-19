@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 
         Address IDailyRewardV1.AvatarAddress => avatarAddress;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

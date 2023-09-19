@@ -66,7 +66,7 @@ namespace Nekoyume.Action
             name = (Text) plainValue["name"];
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200040ObsoleteIndex, context);

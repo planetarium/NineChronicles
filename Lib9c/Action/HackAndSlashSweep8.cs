@@ -75,7 +75,7 @@ namespace Nekoyume.Action
             stageId = plainValue["stageId"].ToInteger();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;
@@ -288,10 +288,10 @@ namespace Nekoyume.Action
             // burn ap
             avatarState.actionPoint -= actionPoint;
             var costAp = sheets.GetSheet<StageSheet>()[stageId].CostAP;
-            if (states.TryGetStakeState(context.Signer, out var stakeState))
+            var goldCurrency = states.GetGoldCurrency();
+            var stakedAmount = states.GetStakedAmount(context.Signer);
+            if (stakedAmount > goldCurrency * 0)
             {
-                var currency = states.GetGoldCurrency();
-                var stakedAmount = states.GetBalance(stakeState.address, currency);
                 var actionPointCoefficientSheet =
                     sheets.GetSheet<StakeActionPointCoefficientSheet>();
                 var stakingLevel =

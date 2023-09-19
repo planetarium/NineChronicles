@@ -38,7 +38,7 @@ namespace Nekoyume.Action
         Address IItemEnhancementV2.AvatarAddress => avatarAddress;
         int IItemEnhancementV2.SlotIndex => slotIndex;
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;

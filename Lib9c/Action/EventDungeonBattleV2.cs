@@ -109,7 +109,7 @@ namespace Nekoyume.Action
             BuyTicketIfNeeded = list[7].ToBoolean();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             var states = context.PreviousState;

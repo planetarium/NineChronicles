@@ -73,6 +73,7 @@ namespace Nekoyume
             public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 8;
             public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 13;
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 46;
+            public const int CharacterEquipmentSlotAura = 1;
 
             #endregion
 
@@ -129,6 +130,7 @@ namespace Nekoyume
             public const int Belt = 1;
             public const int Necklace = 1;
             public const int Ring = 2;
+            public const int Aura = 1;
         }
     }
 }

@@ -24,7 +24,7 @@
         private readonly Address _signer;
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
-        private IAccountStateDelta _state;
+        private IAccount _state;
 
         public ClaimMonsterCollectionReward2Test(ITestOutputHelper outputHelper)
         {
@@ -112,7 +112,7 @@
             }
             else
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext
+                IAccount nextState = action.Execute(new ActionContext
                 {
                     PreviousState = _state,
                     Signer = _signer,
@@ -208,7 +208,7 @@
                 avatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            IAccount nextState = action.Execute(new ActionContext
                 {
                     PreviousState = new MockStateDelta(),
                     Signer = _signer,

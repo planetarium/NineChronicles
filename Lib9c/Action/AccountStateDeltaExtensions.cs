@@ -19,8 +19,8 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
-        public static IAccountStateDelta MarkBalanceChanged(
-            this IAccountStateDelta states,
+        public static IAccount MarkBalanceChanged(
+            this IAccount states,
             IActionContext context,
             Currency currency,
             params Address[] accounts
@@ -44,8 +44,8 @@ namespace Nekoyume.Action
         }
 
 
-        public static IAccountStateDelta SetWorldBossKillReward(
-            this IAccountStateDelta states,
+        public static IAccount SetWorldBossKillReward(
+            this IAccount states,
             IActionContext context,
             Address rewardInfoAddress,
             WorldBossKillRewardRecord rewardRecord,
@@ -96,8 +96,8 @@ namespace Nekoyume.Action
         }
 
 #nullable enable
-        public static IAccountStateDelta SetCouponWallet(
-            this IAccountStateDelta states,
+        public static IAccount SetCouponWallet(
+            this IAccount states,
             Address agentAddress,
             IImmutableDictionary<Guid, Coupon> couponWallet,
             bool rehearsal = false)
@@ -115,8 +115,8 @@ namespace Nekoyume.Action
         }
 #nullable disable
 
-        public static IAccountStateDelta Mead(
-            this IAccountStateDelta states, IActionContext context, Address signer, BigInteger rawValue)
+        public static IAccount Mead(
+            this IAccount states, IActionContext context, Address signer, BigInteger rawValue)
         {
             while (true)
             {

@@ -27,7 +27,7 @@
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
-        private IAccountStateDelta _initialState;
+        private IAccount _initialState;
 
         public Buy4Test(ITestOutputHelper outputHelper)
         {
@@ -110,14 +110,14 @@
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
-                consumable));
+                (ITradableItem)consumable));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,

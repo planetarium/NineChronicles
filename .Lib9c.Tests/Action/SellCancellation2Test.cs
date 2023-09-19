@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
 
     public class SellCancellation2Test
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
-                equipment));
+                (ITradableItem)equipment));
 
             var result = new CombinationConsumable5.ResultModel()
             {

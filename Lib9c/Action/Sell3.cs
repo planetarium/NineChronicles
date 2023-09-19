@@ -42,7 +42,7 @@ namespace Nekoyume.Action
             price = plainValue["price"].ToFungibleAssetValue();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
@@ -113,7 +113,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.RemoveNonFungibleItem(itemId);
                 return itemUsable is null
                     ? new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, costume)
-                    : new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, itemUsable);
+                    : new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, (ITradableItem)itemUsable);
             }
 
             // Select an item to sell from the inventory and adjust the quantity.

@@ -47,7 +47,7 @@ public class CustomActionsDeserializableValidatorTest
             AvatarAddress = new Address(((Binary)((Dictionary)plainValue)["a"]).ByteArray);
         }
 
-        public IAccountStateDelta Execute(IActionContext context)
+        public IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             return context.PreviousState;

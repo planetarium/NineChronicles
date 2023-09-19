@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
             Currency mead = Currencies.Mead;
             Address patron = new PrivateKey().ToAddress();
             var context = new ActionContext();
-            IAccountStateDelta states = new MockStateDelta().MintAsset(context, patron, 2 * mead);
+            IAccount states = new MockStateDelta().MintAsset(context, patron, 2 * mead);
             var address = new PrivateKey().ToAddress();
             var action = new RequestPledge
             {
@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action
             Address patron = new PrivateKey().ToAddress();
             var address = new PrivateKey().ToAddress();
             Address contractAddress = address.GetPledgeAddress();
-            IAccountStateDelta states = new MockStateDelta().SetState(contractAddress, List.Empty);
+            IAccount states = new MockStateDelta().SetState(contractAddress, List.Empty);
             var action = new RequestPledge
             {
                 AgentAddress = address,

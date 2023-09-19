@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action.Scenario
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccount _initialState;
 
         public SellAndCancellationAndSellTest(ITestOutputHelper outputHelper)
         {

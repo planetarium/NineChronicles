@@ -39,7 +39,7 @@ namespace Nekoyume.Action
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
         }
 
-        public override IAccountStateDelta Execute(IActionContext context)
+        public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
             IActionContext ctx = context;
