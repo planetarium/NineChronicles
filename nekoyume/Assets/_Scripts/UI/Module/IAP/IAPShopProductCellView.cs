@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Module
 
         private void RefreshLocalized()
         {
-            productName.text = L10nManager.Localize(_data.Name);
+            productName.text = L10nManager.Localize(_data.L10n_Key);
         }
 
         public void SetData(ProductSchema data, bool isRecommended)
@@ -72,6 +72,18 @@ namespace Nekoyume.UI.Module
             _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == data.GoogleSku);
 
             RefreshLocalized();
+
+            switch (_data.Size)
+            {
+                case "1x1":
+                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 230);
+                    break;
+                case "1x2":
+                    _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467);// add spacing size
+                    break;
+                default:
+                    break;
+            }
 
             foreach (var item in price)
             {
