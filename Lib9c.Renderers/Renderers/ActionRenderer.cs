@@ -1,13 +1,13 @@
 using System;
-using Libplanet.Crypto;
+using System.Security.Cryptography;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Types.Blocks;
-using Libplanet.Action.State;
 using Nekoyume.Action;
 using Serilog;
 using Bencodex.Types;
+using Libplanet.Common;
 using Nekoyume.Action.Loader;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -33,7 +33,7 @@ namespace Lib9c.Renderers
             _actionLoader = new NCActionLoader();
         }
 
-        public void RenderAction(IValue action, IActionContext context, IAccount nextStates) =>
+        public void RenderAction(IValue action, IActionRenderContext context, HashDigest<SHA256> nextState) =>
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = context.BlockAction
@@ -42,16 +42,12 @@ namespace Lib9c.Renderers
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 TxId = context.TxId,
-                OutputState = nextStates,
+                OutputState = nextState,
                 PreviousState = context.PreviousState,
                 RandomSeed = context.Random.Seed
             });
 
-        public void RenderActionError(
-            IValue action,
-            IActionContext context,
-            Exception exception
-        )
+        public void RenderActionError(IValue action, IActionRenderContext context, Exception exception)
         {
             Log.Error(exception, "{action} execution failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
@@ -87,23 +83,6 @@ namespace Lib9c.Renderers
                 .Select(eval => new ActionEvaluation<T>
                 {
                     Action = (T)eval.Action,
-                    Signer = eval.Signer,
-                    BlockIndex = eval.BlockIndex,
-                    TxId = eval.TxId,
-                    OutputState = eval.OutputState,
-                    Exception = eval.Exception,
-                    PreviousState = eval.PreviousState,
-                    RandomSeed = eval.RandomSeed,
-                    Extra = eval.Extra,
-                });
-
-        public IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress) =>
-            ActionRenderSubject
-                .AsObservable()
-                .Where(eval => eval.OutputState.Delta.UpdatedAddresses.Contains(updatedAddress))
-                .Select(eval => new ActionEvaluation<ActionBase>
-                {
-                    Action = eval.Action,
                     Signer = eval.Signer,
                     BlockIndex = eval.BlockIndex,
                     TxId = eval.TxId,

@@ -99,9 +99,9 @@ namespace Lib9c.Tests.Action
                 action,
                 _signer,
                 1234,
-                _states,
+                _states.Trie.Hash,
                 null,
-                _states,
+                _states.Trie.Hash,
                 0,
                 new Dictionary<string, IValue>()
             );
@@ -110,9 +110,8 @@ namespace Lib9c.Tests.Action
             var deserialized = MessagePackSerializer.Deserialize<NCActionEvaluation>(b);
             Assert.Equal(evaluation.Signer, deserialized.Signer);
             Assert.Equal(evaluation.BlockIndex, deserialized.BlockIndex);
-            var dict = (Dictionary)deserialized.OutputState.GetState(default)!;
-            Assert.Equal("value", (Text)dict["key"]);
-            Assert.Equal(_currency * 10000, deserialized.OutputState.GetBalance(_signer, _currency));
+            Assert.Equal(_states.Trie.Hash, deserialized.OutputState);
+            Assert.Equal(_states.Trie.Hash, deserialized.PreviousState);
             if (actionType == typeof(RewardGold))
             {
                 Assert.Null(deserialized.Action);

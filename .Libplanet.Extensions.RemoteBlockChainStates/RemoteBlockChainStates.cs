@@ -1,5 +1,7 @@
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
@@ -43,5 +45,8 @@ namespace Libplanet.Extensions.RemoteBlockChainStates
         {
             return new RemoteBlockState(_explorerEndpoint, offset);
         }
+
+        public IAccountState GetAccountState(HashDigest<SHA256>? hash) =>
+            throw new NotImplementedException();
     }
 }
