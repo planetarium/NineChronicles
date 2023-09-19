@@ -590,6 +590,7 @@ GameObject:
   - component: {fileID: 2186308280738512533}
   - component: {fileID: 5281652266919706646}
   - component: {fileID: 396789783110569539}
+  - component: {fileID: 4765690723286356992}
   m_Layer: 0
   m_Name: item_DialogBox_Small
   m_TagString: Untagged
@@ -701,6 +702,26 @@ MonoBehaviour:
     icon: {fileID: 5865394473402628765}
   - type: 2
     icon: {fileID: 9038031577187252682}
+--- !u!95 &4765690723286356992
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5014381817903050789}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5b356b1c24ca4424fb72a645b792d88b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5865394473402628765
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,7 +807,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7383803105284342409}
-  - component: {fileID: 8360270942960798085}
   m_Layer: 0
   m_Name: DialogBox
   m_TagString: Untagged
@@ -817,18 +837,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 540, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!225 &8360270942960798085
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6944899620862224210}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &7494334638603295700
 GameObject:
   m_ObjectHideFlags: 0
