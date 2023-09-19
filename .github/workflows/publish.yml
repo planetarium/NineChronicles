@@ -31,9 +31,13 @@ jobs:
       if: github.event_name != 'pull_request'
       run: |
         if [[ "$NUGET_API_KEY" != "" ]]; then
-          dotnet nuget push ./Lib9c/.bin/Lib9c.*.nupkg \
-            --api-key "$NUGET_API_KEY" \
-            --source https://api.nuget.org/v3/index.json
+          for project in Lib9c Lib9c.Abstractions
+          do
+            dotnet nuget push ./$project/.bin/Lib9c.*.nupkg \
+              --api-key "$NUGET_API_KEY" \
+              --skip-duplicate \
+              --source https://api.nuget.org/v3/index.json
+          done
         fi
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
