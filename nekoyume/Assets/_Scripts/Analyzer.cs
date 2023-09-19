@@ -83,6 +83,11 @@ namespace Nekoyume
 
         public static void SetAgentAddress(string? addressString = null)
         {
+            if (addressString is not null)
+            {
+                Mixpanel.Identify(addressString);
+            }
+
             addressString ??= "none";
 
             Mixpanel.Register("AgentAddress", addressString);
