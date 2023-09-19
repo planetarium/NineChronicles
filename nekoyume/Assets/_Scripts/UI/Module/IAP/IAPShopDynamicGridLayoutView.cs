@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
                     lastPos.x += children[i].rect.width + space;
                 }
 
-                if ((lastPos.y - children[i].rect.height) < minHeight && i + 1 < transform.childCount)
+                if ((lastPos.y - children[i].rect.height) < minHeight && i + 1 < children.Count)
                 {
                     minHeight = (lastPos.y - children[i].rect.height);
                 }

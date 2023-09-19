@@ -67,7 +67,7 @@ namespace Nekoyume.UI
                     foreach (var category in renderCategory)
                     {
                         var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
-                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.Name);
+                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key);
 
                         categoryTabObj.onObject.SetActive(false);
                         categoryTabObj.offObject.SetActive(true);
