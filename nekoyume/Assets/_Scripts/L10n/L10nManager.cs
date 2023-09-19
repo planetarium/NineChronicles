@@ -6,10 +6,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Nekoyume.L10n
 {
@@ -32,6 +35,9 @@ namespace Nekoyume.L10n
             new Dictionary<string, string>();
 
         public static State CurrentState { get; private set; } = State.None;
+
+        private static Dictionary<string, Dictionary<LanguageType, string>> _additionalDic = new Dictionary<string, Dictionary<LanguageType, string>>();
+        private static Dictionary<string, bool> _initializedURLs = new Dictionary<string, bool>();
 
         #region Language
 
@@ -404,6 +410,11 @@ namespace Nekoyume.L10n
             }
             catch (Exception e)
             {
+                if (GetAdditionalLocalizedString(key, out var localized))
+                {
+                    text = localized;
+                    return true;
+                }
                 Debug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
                 text = $"!{key}!";
                 return false;
@@ -517,6 +528,69 @@ namespace Nekoyume.L10n
             }
 
             material = default;
+            return false;
+        }
+
+        public static async UniTask AdditionalL10nTableDownload(string url)
+        {
+            if(_initializedURLs.TryGetValue(url, out bool initialized))
+            {
+                return;
+            }
+
+            var www = UnityWebRequest.Get(url);
+            await www.SendWebRequest();
+
+            if(www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Failed!!!");
+            }
+            using var streamReader = new StreamReader(new MemoryStream(www.downloadHandler.data), System.Text.Encoding.Default);
+            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                PrepareHeaderForMatch = args => args.Header.ToLower(),
+            };
+            using var csvReader = new CsvReader(streamReader, csvConfig);
+            var records = csvReader.GetRecords<L10nCsvModel>();
+            foreach (var item in records)
+            {
+                Dictionary<LanguageType, string> l10nKeyValue = new Dictionary<LanguageType, string>();
+                foreach (var lang in (LanguageType[])Enum.GetValues(typeof(LanguageType)))
+                {
+                    var value = (string)typeof(L10nCsvModel)
+                                .GetProperty(lang.ToString())?
+                                .GetValue(item);
+
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        value = item.English;
+                    }
+                    l10nKeyValue.Add(lang, value);
+                }
+                _additionalDic.TryAdd(item.Key, l10nKeyValue);
+            }
+
+            _initializedURLs.Add(url, true);
+        }
+
+        private static bool GetAdditionalLocalizedString(string key, out string text)
+        {
+            if(_additionalDic.TryGetValue(key, out var L10n))
+            {
+                if(L10n.TryGetValue(CurrentLanguage, out var localized))
+                {
+                    text = localized;
+                    return true;
+                }
+                else
+                {
+                    text = string.Empty;
+                    Debug.LogError($"_additionalDic can't find value: {key} {CurrentLanguage}");
+                    return false;
+                }
+            }
+            text = string.Empty;
+            Debug.LogError($"_additionalDic can't find key: {key}");
             return false;
         }
     }
