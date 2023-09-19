@@ -74,6 +74,8 @@ namespace Nekoyume.Helper
 
         private bool ingameDebugConsole;
 
+        private string _patrolRewardServiceHost;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -424,6 +426,17 @@ namespace Nekoyume.Helper
             set
             {
                 ingameDebugConsole = value;
+                Empty = false;
+            }
+        }
+
+        [Option("patrol-reward-service-host", Required = false, HelpText = "patrol reward service host")]
+        public string PatrolRewardServiceHost
+        {
+            get => _patrolRewardServiceHost;
+            set
+            {
+                _patrolRewardServiceHost = value;
                 Empty = false;
             }
         }
