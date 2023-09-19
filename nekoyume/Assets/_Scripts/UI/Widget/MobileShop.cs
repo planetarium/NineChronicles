@@ -35,17 +35,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            //doto initialize product and objejct
-
-            /*view.PurchaseButton.onClick.AddListener(() =>
-            {
-                Debug.LogError($"Purchase: {_selectedProductId}");
-                Analyzer.Instance.Track(
-                    "Unity/Shop/IAP/PurchaseButton/Click",
-                    ("product-id", _selectedProductId));
-                PurchaseButtonLoadingStart();
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
-            });*/
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -63,6 +52,9 @@ namespace Nekoyume.UI
         {
             var loading = Find<DataLoadingScreen>();
             loading.Show();
+
+            await L10nManager.AdditionalL10nTableDownload("https://dhyrkl3xgx6tk.cloudfront.net/shop/l10n/category.csv");
+            await L10nManager.AdditionalL10nTableDownload("https://dhyrkl3xgx6tk.cloudfront.net/shop/l10n/product.csv");
 
             var categorySchemas = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address);
