@@ -1065,30 +1065,57 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
                     .Forget();
-                LocalLayerModifier.AddItem(
+
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
+                }
+
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(
                             tradableId,
                             out ItemUsable materialItem))
                     {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1);
+                        if(itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1);
+                        }
                     }
                 }
 
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1);
+                }
+
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
@@ -2252,16 +2279,8 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (addr, state, level, deposit) = GetStakeState(eval);
-            if (state != null)
-            {
-                States.Instance.SetStakeState(
-                    state.Value,
-                    new GoldBalanceState(addr, deposit),
-                    level);
-            }
-
             UpdateAgentStateAsync(eval).Forget();
+            UpdateStakeStateAsync(eval).Forget();
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
@@ -2277,6 +2296,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
+            UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 

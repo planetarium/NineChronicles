@@ -13,7 +13,6 @@ using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
     public class SummonResultPopup : PopupWidget
     {
         [Serializable]
@@ -35,6 +34,7 @@ namespace Nekoyume.UI
         [SerializeField] private ResultVideoClip goldenVideoClip;
 
         [SerializeField] private SummonItemView[] summonItemViews;
+        [SerializeField] private SummonItemView singleSummonItemView;
 
         private int _normalSummonId;
         private bool _isGreat;
@@ -77,6 +77,7 @@ namespace Nekoyume.UI
 
         public void Show(
             SummonSheet.Row summonRow,
+            int summonCount,
             List<Equipment> resultList,
             bool ignoreShowAnimation = false)
         {
@@ -90,17 +91,24 @@ namespace Nekoyume.UI
             }
 
             var normal = summonRow.GroupId == _normalSummonId;
-            var count = resultList.Count;
+            var bonus = summonCount == 10 ? 1 : 0;
             var great = resultList.First().Grade == 5;
 
-            var firstView = summonItemViews.First();
-            var firstResult = resultList.First();
-            firstView.SetData(firstResult, true, count == 1);
+            var single = summonCount == 1;
+            if (single)
+            {
+                singleSummonItemView.SetData(resultList.First(), true, true);
+                singleSummonItemView.Show();
+            }
+            else
+            {
+                singleSummonItemView.Hide();
+            }
 
-            for (var i = 1; i < summonItemViews.Length; i++)
+            for (var i = 0; i < summonItemViews.Length; i++)
             {
                 var view = summonItemViews[i];
-                if (i < count)
+                if (!single && i < resultList.Count)
                 {
                     view.SetData(resultList[i], true);
                     view.Show();
@@ -121,8 +129,8 @@ namespace Nekoyume.UI
 
             _disposables.DisposeAllAndClear();
             var drawButton = normal ? normalDrawButton : goldenDrawButton;
-            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", count);
-            Summon.ButtonSubscribe(drawButton, summonRow, count, _disposables);
+            drawButton.Text = L10nManager.Localize("UI_DRAW_AGAIN_FORMAT", summonCount + bonus);
+            Summon.ButtonSubscribe(drawButton, summonRow, summonCount, _disposables);
 
             normalDrawButton.gameObject.SetActive(normal);
             goldenDrawButton.gameObject.SetActive(!normal);
@@ -139,10 +147,9 @@ namespace Nekoyume.UI
             audioController.StopAll(0.5f);
 
             var currentVideoClip = normal ? normalVideoClip : goldenVideoClip;
-            
-            videoPlayer.clip = currentVideoClip.summoning;
-            videoPlayer.Prepare();
 
+            videoPlayer.clip = currentVideoClip.summoning;
+            videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
             videoPlayer.gameObject.SetActive(true);
             videoPlayer.Play();
 
@@ -157,7 +164,6 @@ namespace Nekoyume.UI
             {
                 videoPlayer.clip = currentVideoClip.result;
             }
-            videoPlayer.Prepare();
 
             videoPlayer.Play();
 
@@ -180,7 +186,10 @@ namespace Nekoyume.UI
 
             yield return DefaultAnimInterval;
             audioController.PlaySfx(AudioController.SfxCode.Success);
-            foreach (var view in summonItemViews.Where(v => v.gameObject.activeSelf))
+            var viewsToAnimate = summonItemViews
+                .Concat(new[] { singleSummonItemView })
+                .Where(v => v.gameObject.activeSelf);
+            foreach (var view in viewsToAnimate)
             {
                 view.ShowWithAnimation();
                 AudioController.PlaySelect();

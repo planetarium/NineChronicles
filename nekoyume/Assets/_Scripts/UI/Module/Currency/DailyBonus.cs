@@ -63,10 +63,10 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
 
             GameConfigStateSubject.GameConfigState
+                .ObserveOnMainThread()
                 .Subscribe(state => sliderAnimator.SetMaxValue(state.DailyRewardInterval))
                 .AddTo(gameObject);
         }
@@ -75,7 +75,8 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
 
-            if (!(States.Instance.CurrentAvatarState is null))
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.DailyRewardInterval ?? 0f);
+            if (States.Instance.CurrentAvatarState is not null)
             {
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
                 SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);

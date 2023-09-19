@@ -5479,9 +5479,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7728987327114350820}
   m_HandleRect: {fileID: 6255262587218610752}
-  m_Direction: 3
-  m_Value: 1
-  m_Size: 0.726442
+  m_Direction: 2
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5855,7 +5855,7 @@ GameObject:
   - component: {fileID: 1188514048233867520}
   - component: {fileID: 1862035577529741177}
   - component: {fileID: 7406428356398922761}
-  - component: {fileID: 5100022501393638327}
+  - component: {fileID: 6682862343542111943}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -5924,7 +5924,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5100022501393638327
+--- !u!114 &6682862343542111943
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5933,23 +5933,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 2786892300375123153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f0e995f494626a4f878eedbded37c8d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewport: {fileID: 7074485213738406441}
-  scrollDirection: 0
-  movementType: 1
-  elasticity: 0.2
-  scrollSensitivity: 20
-  inertia: 1
-  decelerationRate: 0.03
-  snap:
-    Enable: 0
-    VelocityThreshold: 0.5
-    Duration: 0.3
-    Easing: 24
-  draggable: 1
-  scrollbar: {fileID: 2130456538331074397}
+  m_Content: {fileID: 2642608342339477375}
+  m_Horizontal: 0
+  m_Vertical: 1
+  m_MovementType: 1
+  m_Elasticity: 0.1
+  m_Inertia: 1
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 20
+  m_Viewport: {fileID: 7074485213738406441}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 2130456538331074397}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2795751671733511255
 GameObject:
   m_ObjectHideFlags: 0

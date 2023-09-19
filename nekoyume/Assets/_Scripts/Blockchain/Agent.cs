@@ -34,6 +34,7 @@ using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
@@ -425,8 +426,11 @@ namespace Nekoyume.Blockchain
             PreloadEndedAsync += async () =>
             {
                 // 에이전트의 상태를 한 번 동기화 한다.
-                Currency goldCurrency =
-                    new GoldCurrencyState((Dictionary)await GetStateAsync(GoldCurrencyState.Address)).Currency;
+                var goldCurrency = new GoldCurrencyState(
+                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
+                ).Currency;
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+
                 await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
@@ -435,6 +439,17 @@ namespace Nekoyume.Blockchain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
+
+                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                {
+                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
+                }
+                else
+                {
+                    throw new FailedToInstantiateStateException<GameConfigState>();
+                }
+
+                // NOTE: Initialize staking states after setting GameConfigState.
                 var stakeAddr = StakeStateV2.DeriveAddress(States.Instance.AgentState.address);
                 if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
                 {
@@ -443,36 +458,45 @@ namespace Nekoyume.Blockchain
                             States.Instance.GameConfigState,
                             out var stakeStateV2))
                     {
-                        States.Instance.SetStakeState(null, null, 0);
+                        States.Instance.SetStakeState(null, null, 0, null, null);
                     }
-
-                    var balance = new FungibleAssetValue(goldCurrency);
-                    var level = 0;
-                    try
+                    else
                     {
-                        balance = await GetBalanceAsync(stakeAddr, goldCurrency);
-                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                            .FindLevelByStakedAmount(Address, balance);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                        var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                        try
+                        {
+                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
+                            var sheetAddrArr = new[]
+                            {
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                            };
+                            var sheetStates = await GetStateBulkAsync(sheetAddrArr);
+                            stakeRegularFixedRewardSheet.Set(
+                                sheetStates[sheetAddrArr[0]].ToDotnetString());
+                            stakeRegularRewardSheet.Set(
+                                sheetStates[sheetAddrArr[1]].ToDotnetString());
+                            level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                                Address,
+                                balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
 
-                    States.Instance.SetStakeState(
-                        stakeStateV2,
-                        new GoldBalanceState(stakeAddr, balance),
-                        level);
-                }
-
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
-                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
-                {
-                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
-                }
-                else
-                {
-                    throw new FailedToInstantiateStateException<GameConfigState>();
+                        States.Instance.SetStakeState(
+                            stakeStateV2,
+                            new GoldBalanceState(stakeAddr, balance),
+                            level,
+                            stakeRegularFixedRewardSheet,
+                            stakeRegularRewardSheet);
+                    }
                 }
 
                 var agentAddress = States.Instance.AgentState.address;

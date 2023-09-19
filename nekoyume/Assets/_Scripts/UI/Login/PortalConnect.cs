@@ -155,7 +155,8 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
-            var request = UnityWebRequest.Get(url);
+            var form = new WWWForm();
+            var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
 
             await request.SendWebRequest();

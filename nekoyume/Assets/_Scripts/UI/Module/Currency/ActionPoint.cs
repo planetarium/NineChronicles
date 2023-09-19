@@ -52,10 +52,10 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
-            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
             sliderAnimator.SetValue(0f, false);
 
             GameConfigStateSubject.GameConfigState
+                .ObserveOnMainThread()
                 .Subscribe(state => sliderAnimator.SetMaxValue(state.ActionPointMax))
                 .AddTo(gameObject);
 
@@ -86,7 +86,8 @@ namespace Nekoyume.UI.Module
             if (!syncWithAvatarState)
                 return;
 
-            if (!(States.Instance.CurrentAvatarState is null))
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState?.ActionPointMax ?? 0);
+            if (States.Instance.CurrentAvatarState is not null)
             {
                 SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
             }
