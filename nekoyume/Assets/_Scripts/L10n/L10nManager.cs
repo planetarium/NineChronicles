@@ -362,11 +362,14 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    throw new L10nAlreadyContainsKeyException(
-                                        $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                                    Debug.LogError($"L10n duplication Key  key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                                    dictionary[key] = value;
+                                }
+                                else
+                                {
+                                    dictionary.Add(key, value);
                                 }
 
-                                dictionary.Add(key, value);
                                 recordsIndex++;
                             }
                         }
