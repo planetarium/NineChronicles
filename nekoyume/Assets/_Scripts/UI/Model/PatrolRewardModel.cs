@@ -48,6 +48,11 @@ namespace Nekoyume.UI.Model.Patrol
         public TimeSpan RewardInterval { get; set; }
     }
 
+    public class ClaimResponse
+    {
+        public string Claim { get; set; }
+    }
+
     public class TimespanConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

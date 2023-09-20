@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Model.Patrol
             await LoadAvatarInfo(serviceClient, avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
-        public void ClaimReward()
+        public async void ClaimReward()
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
@@ -69,9 +69,11 @@ namespace Nekoyume.UI.Model.Patrol
             }
 
             // Todo : ClaimReward
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            await ClaimReward(serviceClient, avatarAddress.ToHex(), agentAddress.ToHex());
 
-            // LoadAvatarInfo();
-            LastRewardTime.Value = DateTime.Now;
+            LoadAvatarInfo();
         }
 
         private async Task LoadAvatarInfo(
@@ -135,5 +137,21 @@ namespace Nekoyume.UI.Model.Patrol
             RewardModels.Value = response.Policy.Rewards;
         }
 
+        private async Task ClaimReward(
+            NineChroniclesAPIClient apiClient, string avatarAddress, string agentAddress)
+        {
+            var query = $@"mutation {{
+                claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
+            }}";
+
+            var response = await apiClient.GetObjectAsync<ClaimResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
+                return;
+            }
+
+            Debug.Log($"Claimed tx : {response.Claim}");
+        }
     }
 }
