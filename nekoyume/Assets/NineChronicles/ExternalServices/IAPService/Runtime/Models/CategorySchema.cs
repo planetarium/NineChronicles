@@ -16,6 +16,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("l10n_key")]
         public string L10n_Key { get; set; }
 
+        [JsonPropertyName("path")]
+        public string Path { get; set; }
+
         [JsonPropertyName("product_list")]
         public ProductSchema[] ProductList { get; set; }
     }
