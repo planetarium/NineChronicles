@@ -47,7 +47,7 @@ namespace Nekoyume.UI
             base.Awake();
         
             closeButton.onClick.AddListener(() => {
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Close", ("product-id", _data.GoogleSku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.GoogleSku));
                 Close();
             });
             CloseWidget = () => Close();
