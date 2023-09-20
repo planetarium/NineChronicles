@@ -348,7 +348,7 @@ namespace Nekoyume.Game
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
-                        Analyzer.SetUniqueId(Agent.Address.ToString());
+                        Analyzer.SetAgentAddress(Agent.Address.ToString());
                     }
                 )
             );
