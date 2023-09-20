@@ -97,154 +97,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
-        [InlineData(50)]
-        [InlineData(long.MaxValue)]
-        public void Execute_Success_When_Staking_State_Null(long amount)
-        {
-            var previousState = _initialState.MintAsset(
-                new ActionContext { Signer = Addresses.Admin },
-                _agentAddr,
-                _ncg * amount);
-            Execute(
-                0,
-                previousState,
-                new TestRandom(),
-                _agentAddr,
-                amount);
-        }
-
-        [Theory]
-        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
-        [InlineData(0, 50, 50)]
-        [InlineData(0, long.MaxValue, long.MaxValue)]
-        public void Execute_Success_When_Exist_StakeState(
-            long previousStartedBlockIndex,
-            long previousAmount,
-            long amount)
-        {
-            var stakeStateAddr = StakeState.DeriveAddress(_agentAddr);
-            var stakeState = new StakeState(
-                address: stakeStateAddr,
-                startedBlockIndex: previousStartedBlockIndex);
-            var previousState = _initialState
-                .MintAsset(
-                    new ActionContext { Signer = Addresses.Admin },
-                    _agentAddr,
-                    _ncg * Math.Max(previousAmount, amount))
-                .TransferAsset(
-                    new ActionContext { Signer = _agentAddr },
-                    _agentAddr,
-                    stakeStateAddr,
-                    _ncg * previousAmount)
-                .SetState(stakeStateAddr, stakeState.Serialize());
-            Execute(
-                0,
-                previousState,
-                new TestRandom(),
-                _agentAddr,
-                amount);
-        }
-
-        [Theory]
-        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
-        [InlineData(50, 50)]
-        [InlineData(long.MaxValue, long.MaxValue)]
-        public void Execute_Success_When_Exist_StakeStateV2(long previousAmount, long nextAmount)
-        {
-            var stakeStateAddr = StakeStateV2.DeriveAddress(_agentAddr);
-            var contract = new Contract(
-                _stakePolicySheet.StakeRegularFixedRewardSheetValue,
-                _stakePolicySheet.StakeRegularRewardSheetValue,
-                _stakePolicySheet.RewardIntervalValue,
-                _stakePolicySheet.LockupIntervalValue);
-            var stakeStateV2 = new StakeStateV2(
-                contract: contract,
-                startedBlockIndex: 0);
-            var previousState = _initialState
-                .MintAsset(
-                    new ActionContext { Signer = Addresses.Admin },
-                    _agentAddr,
-                    _ncg * Math.Max(previousAmount, nextAmount))
-                .TransferAsset(
-                    new ActionContext { Signer = _agentAddr },
-                    _agentAddr,
-                    stakeStateAddr,
-                    _ncg * previousAmount)
-                .SetState(stakeStateAddr, stakeStateV2.Serialize());
-            Execute(
-                0,
-                previousState,
-                new TestRandom(),
-                _agentAddr,
-                nextAmount);
-        }
-
-        [Theory]
-        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
-        [InlineData(0, 50, StakeState.LockupInterval)]
-        [InlineData(0, 50, StakeState.LockupInterval + 1)]
-        public void Execute_Success_When_Withdraw_With_StakeState(
-            long previousStartedBlockIndex,
-            long previousAmount,
-            long blockIndex)
-        {
-            var stakeStateAddr = StakeState.DeriveAddress(_agentAddr);
-            var stakeState = new StakeState(
-                address: stakeStateAddr,
-                startedBlockIndex: previousStartedBlockIndex);
-            Assert.True(stakeState.IsCancellable(blockIndex));
-            stakeState.Claim(blockIndex);
-            Assert.False(stakeState.IsClaimable(blockIndex));
-            var previousState = _initialState
-                .MintAsset(
-                    new ActionContext { Signer = Addresses.Admin },
-                    stakeStateAddr,
-                    _ncg * previousAmount)
-                .SetState(stakeStateAddr, stakeState.Serialize());
-            Execute(
-                blockIndex,
-                previousState,
-                new TestRandom(),
-                _agentAddr,
-                0);
-        }
-
-        [Theory]
-        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
-        // NOTE: LockupInterval of StakePolicySheetFixtures.V2 is 201,600.
-        [InlineData(0, 50, 201_600)]
-        [InlineData(0, 50, 201_600 + 1)]
-        public void Execute_Success_When_Withdraw_With_StakeStateV2(
-            long previousStartedBlockIndex,
-            long previousAmount,
-            long blockIndex)
-        {
-            var stakeStateAddr = StakeStateV2.DeriveAddress(_agentAddr);
-            var contract = new Contract(
-                _stakePolicySheet.StakeRegularFixedRewardSheetValue,
-                _stakePolicySheet.StakeRegularRewardSheetValue,
-                _stakePolicySheet.RewardIntervalValue,
-                _stakePolicySheet.LockupIntervalValue);
-            var stakeStateV2 = new StakeStateV2(
-                contract: contract,
-                startedBlockIndex: previousStartedBlockIndex,
-                receivedBlockIndex: blockIndex);
-            var previousState = _initialState
-                .MintAsset(
-                    new ActionContext { Signer = Addresses.Admin },
-                    stakeStateAddr,
-                    _ncg * previousAmount)
-                .SetState(stakeStateAddr, stakeStateV2.Serialize());
-            Execute(
-                blockIndex,
-                previousState,
-                new TestRandom(),
-                _agentAddr,
-                0);
-        }
-
-        [Theory]
         [InlineData(0)]
         [InlineData(9)] // NOTE: 9 is just a random number.
         public void Execute_Throw_MonsterCollectionExistingException(
@@ -414,13 +266,8 @@ namespace Lib9c.Tests.Action
             long blockIndex)
         {
             var stakeStateAddr = StakeStateV2.DeriveAddress(_agentAddr);
-            var contract = new Contract(
-                _stakePolicySheet.StakeRegularFixedRewardSheetValue,
-                _stakePolicySheet.StakeRegularRewardSheetValue,
-                _stakePolicySheet.RewardIntervalValue,
-                _stakePolicySheet.LockupIntervalValue);
             var stakeStateV2 = new StakeStateV2(
-                contract: contract,
+                contract: new Contract(_stakePolicySheet),
                 startedBlockIndex: previousStartedBlockIndex);
             var previousState = _initialState
                 .MintAsset(
@@ -473,6 +320,157 @@ namespace Lib9c.Tests.Action
                     new TestRandom(),
                     _agentAddr,
                     reducedAmount));
+        }
+
+        [Theory]
+        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+        // NOTE: LockupInterval of StakePolicySheetFixtures.V2 is 201,600.
+        [InlineData(0, 50 + 1, 201_600 - 1, 50)]
+        [InlineData(
+            long.MaxValue - 201_600,
+            50 + 1,
+            long.MaxValue - 1,
+            50)]
+        public void
+            Execute_Throw_RequiredBlockIndexException_Via_Reduced_Amount_When_Locked_Up_With_StakeStateV2(
+                long previousStartedBlockIndex,
+                long previousAmount,
+                long blockIndex,
+                long reducedAmount)
+        {
+            var stakeStateAddr = StakeStateV2.DeriveAddress(_agentAddr);
+            var stakeStateV2 = new StakeStateV2(
+                contract: new Contract(_stakePolicySheet),
+                startedBlockIndex: previousStartedBlockIndex,
+                receivedBlockIndex: blockIndex);
+            var previousState = _initialState
+                .MintAsset(
+                    new ActionContext { Signer = Addresses.Admin },
+                    stakeStateAddr,
+                    _ncg * previousAmount)
+                .SetState(stakeStateAddr, stakeStateV2.Serialize());
+            Assert.Throws<RequiredBlockIndexException>(() =>
+                Execute(
+                    blockIndex,
+                    previousState,
+                    new TestRandom(),
+                    _agentAddr,
+                    reducedAmount));
+        }
+
+        [Theory]
+        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+        [InlineData(50)]
+        [InlineData(long.MaxValue)]
+        public void Execute_Success_When_Staking_State_Null(long amount)
+        {
+            var previousState = _initialState.MintAsset(
+                new ActionContext { Signer = Addresses.Admin },
+                _agentAddr,
+                _ncg * amount);
+            Execute(
+                0,
+                previousState,
+                new TestRandom(),
+                _agentAddr,
+                amount);
+        }
+
+        [Theory]
+        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+        // NOTE: non claimable, locked up, same amount.
+        [InlineData(0, 50, 0, 50)]
+        [InlineData(0, 50, StakeState.LockupInterval - 1, 50)]
+        [InlineData(0, long.MaxValue, 0, long.MaxValue)]
+        [InlineData(0, long.MaxValue, StakeState.LockupInterval - 1, long.MaxValue)]
+        // NOTE: non claimable, locked up, increased amount.
+        [InlineData(0, 50, 0, 500)]
+        [InlineData(0, 50, StakeState.LockupInterval - 1, 500)]
+        // NOTE: non claimable, unlocked, same amount.
+        [InlineData(0, 50, StakeState.LockupInterval, 50)]
+        [InlineData(0, long.MaxValue, StakeState.LockupInterval, long.MaxValue)]
+        // NOTE: non claimable, unlocked, increased amount.
+        [InlineData(0, 50, StakeState.LockupInterval, 500)]
+        // NOTE: non claimable, unlocked, decreased amount.
+        [InlineData(0, 50, StakeState.LockupInterval, 0)]
+        [InlineData(0, long.MaxValue, StakeState.LockupInterval, 50)]
+        public void Execute_Success_When_Exist_StakeState(
+            long previousStartedBlockIndex,
+            long previousAmount,
+            long blockIndex,
+            long amount)
+        {
+            var stakeStateAddr = StakeState.DeriveAddress(_agentAddr);
+            var stakeState = new StakeState(
+                address: stakeStateAddr,
+                startedBlockIndex: previousStartedBlockIndex);
+            stakeState.Claim(blockIndex);
+            var previousState = _initialState
+                .MintAsset(
+                    new ActionContext(),
+                    _agentAddr,
+                    _ncg * Math.Max(previousAmount, amount))
+                .TransferAsset(
+                    new ActionContext(),
+                    _agentAddr,
+                    stakeStateAddr,
+                    _ncg * previousAmount)
+                .SetState(stakeStateAddr, stakeState.Serialize());
+            Execute(
+                blockIndex,
+                previousState,
+                new TestRandom(),
+                _agentAddr,
+                amount);
+        }
+
+        [Theory]
+        // NOTE: minimum required_gold of StakeRegularRewardSheetFixtures.V2 is 50.
+        // NOTE: LockupInterval of StakePolicySheetFixtures.V2 is 201,600.
+        // NOTE: non claimable, locked up, same amount.
+        [InlineData(0, 50, 0, 50)]
+        [InlineData(0, 50, 201_599, 50)]
+        [InlineData(0, long.MaxValue, 0, long.MaxValue)]
+        [InlineData(0, long.MaxValue, 201_599, long.MaxValue)]
+        // NOTE: non claimable, locked up, increased amount.
+        [InlineData(0, 50, 0, 500)]
+        [InlineData(0, 50, 201_599, 500)]
+        // NOTE: non claimable, unlocked, same amount.
+        [InlineData(0, 50, 201_600, 50)]
+        [InlineData(0, long.MaxValue, 201_600, long.MaxValue)]
+        // NOTE: non claimable, unlocked, increased amount.
+        [InlineData(0, 50, 201_600, 500)]
+        // NOTE: non claimable, unlocked, decreased amount.
+        [InlineData(0, 50, 201_600, 0)]
+        [InlineData(0, long.MaxValue, StakeState.LockupInterval, 50)]
+        public void Execute_Success_When_Exist_StakeStateV2(
+            long previousStartedBlockIndex,
+            long previousAmount,
+            long blockIndex,
+            long amount)
+        {
+            var stakeStateAddr = StakeStateV2.DeriveAddress(_agentAddr);
+            var stakeStateV2 = new StakeStateV2(
+                contract: new Contract(_stakePolicySheet),
+                startedBlockIndex: previousStartedBlockIndex,
+                receivedBlockIndex: blockIndex);
+            var previousState = _initialState
+                .MintAsset(
+                    new ActionContext(),
+                    _agentAddr,
+                    _ncg * Math.Max(previousAmount, amount))
+                .TransferAsset(
+                    new ActionContext(),
+                    _agentAddr,
+                    stakeStateAddr,
+                    _ncg * previousAmount)
+                .SetState(stakeStateAddr, stakeStateV2.Serialize());
+            Execute(
+                blockIndex,
+                previousState,
+                new TestRandom(),
+                _agentAddr,
+                amount);
         }
 
         private IAccount Execute(
