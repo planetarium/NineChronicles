@@ -69,11 +69,8 @@ namespace Nekoyume
                 clientHash,
                 targetNetwork,
                 rpcServerHost);
-            FirebaseAnalytics.SetUserId(SystemInfo.deviceUniqueIdentifier);
 #endif
-            Mixpanel.Identify(SystemInfo.deviceUniqueIdentifier);
             SetAgentAddress(uniqueId);
-
             UpdateAvatarAddress();
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
