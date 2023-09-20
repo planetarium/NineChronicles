@@ -120,9 +120,9 @@ namespace Nekoyume.UI
         // rewardModels
         private void OnChangeRewardModels(List<PatrolRewardModel> rewardModels)
         {
-            foreach (var bonusRewardView in rewardViews)
+            foreach (var rewardView in rewardViews)
             {
-                bonusRewardView.rewardPerTime.container.SetActive(false);
+                rewardView.rewardPerTime.container.SetActive(false);
             }
 
             foreach (var reward in rewardModels)
@@ -171,9 +171,9 @@ namespace Nekoyume.UI
 
         private void OnChangeRewards(Dictionary<PatrolRewardType, int> rewards)
         {
-            foreach (var bonusRewardView in rewardViews)
+            foreach (var rewardView in rewardViews)
             {
-                bonusRewardView.cumulativeReward.container.SetActive(false);
+                rewardView.cumulativeReward.container.SetActive(false);
             }
 
             foreach (var (rewardType, value) in rewards)
