@@ -92,6 +92,11 @@ namespace Nekoyume
             Mixpanel.People.Name = addressString;
             // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
 #if ENABLE_FIREBASE
+            if (addressString is not null)
+            {
+                FirebaseAnalytics.SetUserId(addressString);
+            }
+
             FirebaseAnalytics.SetUserProperty("AgentAddress", addressString);
 #endif
         }
