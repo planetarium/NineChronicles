@@ -66,6 +66,25 @@ namespace Nekoyume.UI.Module
         public async UniTask RefreshLocalized()
         {
             productName.text = L10nManager.Localize(_data.L10n_Key);
+
+            buyLimitDescription.gameObject.SetActive(false);
+            if (_data.AccountLimit != null)
+            {
+                buyLimitDescription.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit);
+            }
+
+            if (_data.WeeklyLimit != null)
+            {
+                buyLimitDescription.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit);
+            }
+            if (_data.DailyLimit != null)
+            {
+                buyLimitDescription.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit);
+            }
+
             await DownLoadImage();
         }
 
@@ -118,6 +137,7 @@ namespace Nekoyume.UI.Module
             }
 
             /*buyButton.interactable = _data.Buyable;*/
+
 
             recommended.SetActive(isRecommended);
             /*            if (isOn)
