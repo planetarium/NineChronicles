@@ -22,26 +22,11 @@ namespace Nekoyume.UI
         }
 
         [Serializable]
-        private class BonusRewardView : RewardView
-        {
-            public GameObject[] unlockObjects;
-            public GameObject[] lockObjects;
-        }
-
-        [Serializable]
         private class RewardData
         {
             public CostType costType;
             public RewardView cumulativeReward;
             public RewardView rewardPerTime;
-        }
-
-        [Serializable]
-        private class BonusRewardData
-        {
-            public CostType costType;
-            public BonusRewardView cumulativeReward;
-            public BonusRewardView rewardPerTime;
         }
 
         [Serializable]
@@ -58,13 +43,6 @@ namespace Nekoyume.UI
         [SerializeField] private Image patrolTimeGauge;
         [SerializeField] private ConditionalButton receiveButton;
 
-        [SerializeField] private BonusRewardData[] bonusRewardViews;
-        [SerializeField] private Image patrolTimeBonusGauge;
-        [SerializeField] private GameObject bonusGaugeLockObject;
-        [SerializeField] private Button bonusUnlockButton;
-        [SerializeField] private TextMeshProUGUI bonusCostText;
-
-        private const bool BonusReward = false;
         private static readonly TimeSpan MaxTime = new(24, 0, 0);
         private static readonly TimeSpan MinTime = new(0, 10, 0);
         private readonly List<IDisposable> _disposables = new();
@@ -255,78 +233,6 @@ namespace Nekoyume.UI
 
             Close();
             // PatrolRewardMenu.DailyRewardAnimation
-        }
-
-        private void SetBonusData(Dictionary<CostType, int> bonusRewardPerTime, TimeSpan patrolTime, bool bonusLocked)
-        {
-            foreach (var bonusRewardView in bonusRewardViews)
-            {
-                bonusRewardView.rewardPerTime.container.SetActive(false);
-                bonusRewardView.cumulativeReward.container.SetActive(false);
-            }
-
-            if (!BonusReward)
-            {
-                patrolTimeBonusGauge.gameObject.SetActive(false);
-                bonusUnlockButton.gameObject.SetActive(false);
-                return;
-            }
-
-            // rewardPerTime
-            foreach (var (costType, value) in bonusRewardPerTime)
-            {
-                var view = bonusRewardViews.FirstOrDefault(view => view.costType == costType);
-                if (view == null)
-                {
-                    continue;
-                }
-
-                var unit = UnitTable[costType];
-
-                var unitText = unit.TotalHours > 1 ? $"{unit.TotalHours}h" : $"{unit.TotalMinutes}m";
-                view.rewardPerTime.container.SetActive(true);
-                view.rewardPerTime.text.text = $"{value}/{unitText}";
-            }
-
-            // rewardPerTime, patrol time
-            foreach (var (costType, value) in bonusRewardPerTime)
-            {
-                var view = bonusRewardViews.FirstOrDefault(view => view.costType == costType);
-                if (view == null)
-                {
-                    continue;
-                }
-
-                var unit = UnitTable[costType];
-
-                var patrolTime2 = patrolTime > MaxTime ? MaxTime : patrolTime;
-                var point = (int)(patrolTime2 / unit);
-                view.cumulativeReward.container.SetActive(true);
-                view.cumulativeReward.text.text = $"{value * point}";
-            }
-
-            // patrol time
-            patrolTimeBonusGauge.fillAmount = (float)(patrolTime / MaxTime);
-
-            // bonus locked
-            foreach (var bonusRewardView in bonusRewardViews)
-            {
-                Array.ForEach(bonusRewardView.rewardPerTime.lockObjects,
-                    o => o.SetActive(bonusLocked));
-                Array.ForEach(bonusRewardView.rewardPerTime.unlockObjects,
-                    o => o.SetActive(!bonusLocked));
-                Array.ForEach(bonusRewardView.cumulativeReward.lockObjects,
-                    o => o.SetActive(bonusLocked));
-                Array.ForEach(bonusRewardView.cumulativeReward.unlockObjects,
-                    o => o.SetActive(!bonusLocked));
-            }
-
-            bonusGaugeLockObject.SetActive(bonusLocked);
-            bonusUnlockButton.gameObject.SetActive(bonusLocked);
-            if (bonusLocked)
-            {
-                bonusCostText.text = ""; // Todo : Fill this
-            }
         }
     }
 }
