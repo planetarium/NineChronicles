@@ -40,6 +40,15 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("l10n_key")]
         public string L10n_Key { get; set; }
 
+        [JsonPropertyName("path")]
+        public string Path { get; set; }
+
+        [JsonPropertyName("bg_path")]
+        public string BgPath { get; set; }
+
+        [JsonPropertyName("popup_path_key")]
+        public string PopupPathKey { get; set; }
+
         [JsonPropertyName("fav_list")]
         public FungibleAssetValueSchema[] FavList { get; set; }
 

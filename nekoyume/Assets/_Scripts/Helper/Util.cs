@@ -24,6 +24,7 @@ using ZXing;
 using ZXing.QrCode;
 using Inventory = Nekoyume.Model.Item.Inventory;
 using FormatException = System.FormatException;
+using UnityEngine.Networking;
 
 namespace Nekoyume.Helper
 {
@@ -32,6 +33,8 @@ namespace Nekoyume.Helper
         public const int VisibleEnhancementEffectLevel = 10;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
+        private static readonly Vector2 Pivot = new(0.5f, 0.5f);
+        private static Dictionary<string, Sprite> CachedDownloadTextures = new Dictionary<string, Sprite>();
 
         public static async Task<Order> GetOrder(Guid orderId)
         {
@@ -516,6 +519,53 @@ namespace Nekoyume.Helper
             encoded.SetPixels32(res);
 
             return encoded;
+        }
+
+        public static async UniTask<Sprite> DownloadTexture(string url)
+        {
+            if (CachedDownloadTextures.TryGetValue(url, out var cachedTexture))
+            {
+                return cachedTexture;
+            }
+
+            var www = UnityWebRequestTexture.GetTexture(url);
+            try
+            {
+                await www.SendWebRequest();
+            }
+            catch
+            {
+                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                {
+                    return cachedTexture;
+                }
+                Debug.LogError($"[DownloadTexture] {url}");
+                return null;
+            }
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                {
+                    return cachedTexture;
+                }
+                Debug.LogError($"[Util.DownloadTexture]{www.error}");
+                return null;
+            }
+
+            if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+            {
+                return cachedTexture;
+            }
+
+            var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            var result = Sprite.Create(
+                    myTexture,
+                    new Rect(0, 0, myTexture.width, myTexture.height),
+                    Pivot);
+            CachedDownloadTextures.Add(url, result);
+
+            return result;
         }
     }
 }

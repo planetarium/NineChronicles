@@ -256,6 +256,50 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             }
         }
 
+        public async Task<L10NSchema?> L10NAsync()
+        {
+            if (!IsInitialized)
+            {
+                Debug.LogWarning("IAPServiceManager is not initialized.");
+                return null;
+            }
+
+            var (code, error, mediaType, content) = await _client.L10NAsync();
+            if (code != HttpStatusCode.OK ||
+                !string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(
+                    $"L10N failed: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (mediaType != "application/json")
+            {
+                Debug.LogError(
+                    $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                Debug.LogError(
+                    $"Content is empty: {code}, {error}, {mediaType}, {content}");
+                return null;
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<L10NSchema?>(
+                    content!,
+                    IAPServiceClient.JsonSerializerOptions)!;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         private void UnregisterAndCache(ReceiptDetailSchema result)
         {
             // NOTE: Enable this code if you want to use poller.
