@@ -198,6 +198,24 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        protected static void UpdateCurrentAvatarInventory<T>(ActionEvaluation<T> eval)
+            where T : ActionBase
+        {
+            var states = States.Instance;
+            if (states.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var avatarAddr = states.CurrentAvatarState.address;
+            var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
+            var inventory = eval.OutputState.GetInventory(inventoryAddr);
+            var avatarState = states.CurrentAvatarState;
+            avatarState.inventory = inventory;
+            avatarState = LocalLayer.Instance.ModifyInventoryOnly(avatarState);
+            ReactiveAvatarState.UpdateInventory(avatarState.inventory);
+        }
+
         protected static void UpdateGameConfigState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
             if (evaluation.Action is not PatchTableSheet
