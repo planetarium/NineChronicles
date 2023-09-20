@@ -69,6 +69,12 @@ namespace Nekoyume.UI
                     var categorySchemas = await Game.Game.instance.IAPServiceManager
                         .GetProductsAsync(States.Instance.AgentState.address);
 
+                    if(categorySchemas.Count == 0)
+                    {
+                        ShowFailed();
+                        return;
+                    }
+
                     var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
                     foreach (var category in renderCategory)
                     {
@@ -116,14 +122,7 @@ namespace Nekoyume.UI
             catch (Exception e)
             {
                 Debug.LogError(e.Message);
-                loading.Close();
-                base.Show(ignoreShowAnimation);
-                Close();
-                Widget.Find<IconAndButtonSystem>().Show(
-                    "UI_ERROR",
-                    "UI_ERROR",
-                    "UI_OK",
-                    true);
+                ShowFailed();
                 return;
             }
 
@@ -138,6 +137,18 @@ namespace Nekoyume.UI
             }
 
             loading.Close();
+
+            void ShowFailed()
+            {
+                loading.Close();
+                base.Show(ignoreShowAnimation);
+                Close();
+                Widget.Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "ERROR_NO_ENTRY_SHOP",
+                    "UI_OK",
+                    true);
+            }
         }
 
         private void RefreshGridByCategory(string categoryName)
