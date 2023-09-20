@@ -89,6 +89,8 @@ namespace Nekoyume.Game.OAuth
                 {
                     Debug.Log("Got Unexpected Exception?!?" + task.Exception);
                 }
+
+                State.Value = SignInState.Canceled;
             }
             else if (task.IsCanceled)
             {
