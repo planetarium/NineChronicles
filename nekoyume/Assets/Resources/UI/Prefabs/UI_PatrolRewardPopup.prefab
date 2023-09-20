@@ -9622,28 +9622,28 @@ MonoBehaviour:
   tutorialActions: 
   closeButton: {fileID: 4235199995268386533}
   rewardViews:
-  - costType: 4
+  - rewardType: 0
     cumulativeReward:
       container: {fileID: 5544385584220164435}
       text: {fileID: 8722450153346242495}
     rewardPerTime:
       container: {fileID: 3054287669519595827}
       text: {fileID: 3799313865113001445}
-  - costType: 2
+  - rewardType: 1
     cumulativeReward:
       container: {fileID: 7169766031393995574}
       text: {fileID: 7300757663897800431}
     rewardPerTime:
       container: {fileID: 4870598158221992227}
       text: {fileID: 1829142020145883379}
-  - costType: 800201
+  - rewardType: 3
     cumulativeReward:
       container: {fileID: 3668181364395969780}
       text: {fileID: 7835482936739241006}
     rewardPerTime:
       container: {fileID: 3469853620311651828}
       text: {fileID: 2521502172570499718}
-  - costType: 600201
+  - rewardType: 2
     cumulativeReward:
       container: {fileID: 7032792931028124825}
       text: {fileID: 209233258875042024}
@@ -9654,7 +9654,7 @@ MonoBehaviour:
   patrolTimeGauge: {fileID: 3088565068093844524}
   receiveButton: {fileID: 2149946373715962268}
   bonusRewardViews:
-  - costType: 600201
+  - rewardType: 0
     cumulativeReward:
       container: {fileID: 2002252355235324918}
       text: {fileID: 5027518284946541491}
@@ -9674,7 +9674,7 @@ MonoBehaviour:
   bonusGaugeLockObject: {fileID: 7006241476267648817}
   bonusUnlockButton: {fileID: 3008073034902834003}
   bonusCostText: {fileID: 8133840620030048427}
-  levelForTest: 5
+  menuLevelForTest: 0
   patrolTimeForTest:
     hour: 1
     minute: 0

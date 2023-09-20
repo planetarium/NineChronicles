@@ -26,16 +26,28 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void OnEnable()
         {
-            var rewardLevel = 0; // Todo : Fill this
-            var canGetReward = true; // Todo : Fill this
+            if (!Widget.TryFind<PatrolRewardPopup>(out var popup))
+            {
+                return;
+            }
 
-            SetLevel(rewardLevel, canGetReward);
+            if (!popup.SharedModel.Initialized)
+            {
+                popup.SharedModel.Initialize();
+            }
+
+            var ticks = (popup.SharedModel.CreatedTime - DateTime.Now)
+                .Ticks % TimeSpan.TicksPerDay / (TimeSpan.TicksPerHour * 6);
+            var rewardLevel = new TimeSpan(ticks).Hours;
+            var canGetReward = popup.Notification;
+            notification.SetActive(canGetReward);
+
+            SetLevel(rewardLevel);
         }
 
-        public void SetLevel(int rewardLevel, bool canGetReward)
+        public void SetLevel(int rewardLevel)
         {
             rewardIcon.sprite = patrolRewardData.GetIcon(rewardLevel);
-            notification.SetActive(canGetReward);
             effect00.SetActive(rewardLevel < 3);
             effect03.SetActive(rewardLevel >= 3);
         }
