@@ -98,6 +98,12 @@ namespace Nekoyume.Action
             // Stake if it doesn't exist yet.
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
+                if (states.TryGetStakeStateV2(context.Signer, out _))
+                {
+                    throw new InvalidOperationException(
+                        $"{context.Signer} has already staked as versions above 2.");
+                }
+
                 stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
                 return states
                     .SetState(

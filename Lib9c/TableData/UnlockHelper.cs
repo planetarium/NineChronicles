@@ -36,6 +36,10 @@ namespace Nekoyume
                     availableSlots.Add((ItemSubType.Ring, 1));
                 }
             }
+            if (level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura)
+            {
+                availableSlots.Add((ItemSubType.Aura, 1));
+            }
 
             return availableSlots;
         }
