@@ -178,6 +178,9 @@ namespace Nekoyume.Blockchain
             // GARAGE
             UnloadFromMyGarages();
 
+            // Claim Items
+            ClaimItems();
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
             ManipulateState();
@@ -608,6 +611,28 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="ClaimItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void ClaimItems()
+        {
+            _actionRenderer.EveryRender<ClaimItems>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    if (eval.Exception is not null)
+                    {
+                        Debug.Log(eval.Exception.Message);
+                        return;
+                    }
+
+                    UpdateCurrentAvatarInventory(eval);
+                })
                 .AddTo(_disposables);
         }
 
