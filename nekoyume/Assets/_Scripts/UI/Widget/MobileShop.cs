@@ -147,7 +147,8 @@ namespace Nekoyume.UI
                     "UI_ERROR",
                     "ERROR_NO_ENTRY_SHOP",
                     "UI_OK",
-                    true);
+                    true,
+                    IconAndButtonSystem.SystemType.Information);
             }
         }
 
