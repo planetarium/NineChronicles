@@ -4,7 +4,9 @@ using TMPro;
 using Nekoyume.UI.Module;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Nekoyume.Helper;
+using Cysharp.Threading.Tasks;
 using System.Numerics;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -44,22 +46,32 @@ namespace Nekoyume.UI
         {
             base.Awake();
         
-            closeButton.onClick.AddListener(() => { Close(); });
+            closeButton.onClick.AddListener(() => {
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Close", ("product-id", _data.GoogleSku));
+                Close();
+            });
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
                 Debug.Log($"Purchase: {_data.GoogleSku}");
-                Analyzer.Instance.Track("Unity/Shop/IAP/PurchaseButton/Click",("product-id", _data.GoogleSku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.GoogleSku));
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.GoogleSku);
             });
         }
 
-        public void Show(ProductSchema data, UnityEngine.Purchasing.Product puchasingData,bool ignoreShowAnimation = false)
+        private async UniTask DownloadTexture()
+        {
+            productBgImage.sprite = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(_data.PopupPathKey)}");
+        }
+
+        public async UniTask Show(ProductSchema data, UnityEngine.Purchasing.Product puchasingData,bool ignoreShowAnimation = false)
         {
             _data = data;
             _puchasingData = puchasingData;
 
-            var isDiscount = false;
+            var isDiscount = _data.Discount > 0;
+
+            await DownloadTexture();
 
             foreach (var item in priceTexts)
             {
@@ -110,11 +122,7 @@ namespace Nekoyume.UI
 
             if (isDiscount)
             {
-
-            }
-            else
-            {
-
+                discountText.text = _data.Discount.ToString();
             }
 
             base.Show(ignoreShowAnimation);

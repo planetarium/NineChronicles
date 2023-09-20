@@ -7,6 +7,8 @@ using TMPro;
 using System.Linq;
 using UniRx;
 using Nekoyume.L10n;
+using Cysharp.Threading.Tasks;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI.Module
 {
@@ -38,6 +40,8 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image backgroundImage;
+        [SerializeField]
+        private Image productImage;
 
         private RectTransform _rect;
         private ProductSchema _data;
@@ -46,32 +50,39 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             buyButton.onClick.AddListener(()=> {
-                if (_data == null || !_data.Buyable)
-                    return;
+                /*if (_data == null || !_data.Buyable)
+                    return;*/
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.GoogleSku));
-                Widget.Find<ShopListPopup>().Show(_data, _puchasingData);
+                Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
             });
 
             L10nManager.OnLanguageChange.Subscribe(_ =>
             {
-                RefreshLocalized();
+                RefreshLocalized().Forget();
             }).AddTo(gameObject);
         }
 
-        private void RefreshLocalized()
+        public async UniTask RefreshLocalized()
         {
             productName.text = L10nManager.Localize(_data.L10n_Key);
+            await DownLoadImage();
+        }
+
+        private async UniTask DownLoadImage()
+        {
+            var bgImage = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.BgPath}");
+            var iconImage = await Util.DownloadTexture($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{_data.Path}");
+            backgroundImage.sprite = bgImage;
+            productImage.sprite = iconImage;
         }
 
         public void SetData(ProductSchema data, bool isRecommended)
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
-            var isDiscount = false;
+            var isDiscount = _data.Discount > 0;
             _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == data.GoogleSku);
-
-            RefreshLocalized();
 
             switch (_data.Size)
             {
@@ -94,18 +105,19 @@ namespace Nekoyume.UI.Module
             {
                 item.SetActive(isDiscount);
             }
-            //discount
+        
             if (isDiscount)
             {
-                //discount.text = $"{data.DIscount}%";
                 foreach (var item in preDiscountPrice)
                 {
-                    //item.text = 
+                    var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100-_data.Discount)));
+                    var origin = _puchasingData.metadata.localizedPriceString.Replace(_puchasingData.metadata.localizedPrice.ToString(), $"{originPrice:N3}");
+                    item.text = origin;
                 }
+                discount.text = $"{_data.Discount}%";
             }
 
-
-            buyButton.interactable = data.Buyable;
+            /*buyButton.interactable = _data.Buyable;*/
 
             recommended.SetActive(isRecommended);
             /*            if (isOn)

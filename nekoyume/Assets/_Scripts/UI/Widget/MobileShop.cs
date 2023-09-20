@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -6,6 +7,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -32,6 +34,8 @@ namespace Nekoyume.UI
 
         private const string _recommendedString = "Recommended";
 
+        public static L10NSchema MOBILE_L10N_SCHEMA;
+
         protected override void Awake()
         {
             base.Awake();
@@ -53,21 +57,25 @@ namespace Nekoyume.UI
             var loading = Find<DataLoadingScreen>();
             loading.Show();
 
-            await L10nManager.AdditionalL10nTableDownload("https://dhyrkl3xgx6tk.cloudfront.net/shop/l10n/category.csv");
-            await L10nManager.AdditionalL10nTableDownload("https://dhyrkl3xgx6tk.cloudfront.net/shop/l10n/product.csv");
-
-            var categorySchemas = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
-
             try
             {
                 if (!_isInitailizedObj)
                 {
+                    MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+
+                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
+                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
+
+                    var categorySchemas = await Game.Game.instance.IAPServiceManager
+                        .GetProductsAsync(States.Instance.AgentState.address);
+
                     var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
                     foreach (var category in renderCategory)
                     {
                         var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
-                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key);
+
+                        var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key, iconSprite);
 
                         categoryTabObj.onObject.SetActive(false);
                         categoryTabObj.offObject.SetActive(true);
@@ -90,6 +98,7 @@ namespace Nekoyume.UI
                             {
                                 productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
                                 productObj.SetData(product, category.Name == _recommendedString);
+                                await productObj.RefreshLocalized();
                                 _allProductObjs.Add(product.GoogleSku, productObj);
                             }
                             iapProductCellObjs.Add(productObj);
@@ -101,22 +110,33 @@ namespace Nekoyume.UI
                         if (category.Name == _recommendedString)
                             _recommendedToggle = categoryTabObj;
                     }
+                    _isInitailizedObj = true;
                 }
             }
-            catch
+            catch (Exception e)
             {
+                Debug.LogError(e.Message);
                 loading.Close();
+                base.Show(ignoreShowAnimation);
+                Close();
+                Widget.Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "UI_ERROR",
+                    "UI_OK",
+                    true);
+                return;
             }
 
             base.Show(ignoreShowAnimation);
 
-            _recommendedToggle.isOn = true;
-            _recommendedToggle.onObject.SetActive(true);
-            _recommendedToggle.offObject.SetActive(true);
-            RefreshGridByCategory(_recommendedString);
+            if(_recommendedToggle != null)
+            {
+                _recommendedToggle.isOn = true;
+                _recommendedToggle.onObject.SetActive(true);
+                _recommendedToggle.offObject.SetActive(true);
+                RefreshGridByCategory(_recommendedString);
+            }
 
-
-            _isInitailizedObj = true;
             loading.Close();
         }
 
