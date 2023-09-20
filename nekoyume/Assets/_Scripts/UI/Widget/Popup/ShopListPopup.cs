@@ -123,6 +123,12 @@ namespace Nekoyume.UI
             if (isDiscount)
             {
                 discountText.text = _data.Discount.ToString();
+                foreach (var item in preDiscountPrice)
+                {
+                    var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
+                    var origin = _puchasingData.metadata.localizedPriceString.Replace(_puchasingData.metadata.localizedPrice.ToString(), $"{originPrice:N3}");
+                    item.text = origin;
+                }
             }
 
             base.Show(ignoreShowAnimation);

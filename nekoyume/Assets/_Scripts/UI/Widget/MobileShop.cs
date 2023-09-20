@@ -71,8 +71,15 @@ namespace Nekoyume.UI
 
                     if(categorySchemas.Count == 0)
                     {
-                        ShowFailed();
-                        return;
+                        loading.Close();
+                        base.Show(ignoreShowAnimation);
+                        Close();
+                        Widget.Find<IconAndButtonSystem>().Show(
+                            "UI_ERROR",
+                            "NOTIFICATION_NO_ENTRY_SHOP",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information);
                     }
 
                     var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
@@ -122,7 +129,14 @@ namespace Nekoyume.UI
             catch (Exception e)
             {
                 Debug.LogError(e.Message);
-                ShowFailed();
+                loading.Close();
+                base.Show(ignoreShowAnimation);
+                Close();
+                Widget.Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "ERROR_NO_ENTRY_SHOP",
+                    "UI_OK",
+                    true);
                 return;
             }
 
@@ -137,19 +151,6 @@ namespace Nekoyume.UI
             }
 
             loading.Close();
-
-            void ShowFailed()
-            {
-                loading.Close();
-                base.Show(ignoreShowAnimation);
-                Close();
-                Widget.Find<IconAndButtonSystem>().Show(
-                    "UI_ERROR",
-                    "ERROR_NO_ENTRY_SHOP",
-                    "UI_OK",
-                    true,
-                    IconAndButtonSystem.SystemType.Information);
-            }
         }
 
         private void RefreshGridByCategory(string categoryName)
