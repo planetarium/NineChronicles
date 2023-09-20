@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action.Scenario
 
     /// <summary>
     /// This class is used for testing the stake and claim scenario with patching table sheets.
-    /// This class consider only AvatarStateV2 not AvatarState.
+    /// This class considers only AvatarStateV2 not AvatarState.
     /// </summary>
     public class StakeAndClaimScenarioTest
     {

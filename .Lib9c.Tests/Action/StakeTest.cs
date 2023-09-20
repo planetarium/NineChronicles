@@ -332,7 +332,7 @@ namespace Lib9c.Tests.Action
             long.MaxValue - 1,
             50)]
         public void
-            Execute_Throw_RequiredBlockIndexException_Via_Reduced_Amount_When_Lucked_Up_With_StakeStateV2(
+            Execute_Throw_RequiredBlockIndexException_Via_Reduced_Amount_When_Locked_Up_With_StakeStateV2(
                 long previousStartedBlockIndex,
                 long previousAmount,
                 long blockIndex,
