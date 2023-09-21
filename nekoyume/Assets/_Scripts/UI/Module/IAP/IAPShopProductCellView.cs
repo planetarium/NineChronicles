@@ -135,8 +135,54 @@ namespace Nekoyume.UI.Module
                 }
                 discount.text = $"{_data.Discount}%";
             }
-            /*buyButton.interactable = _data.Buyable;*/
+            buyButton.interactable = _data.Buyable;
             recommended.SetActive(isRecommended);
+        }
+
+        public void LocalPurchaseSucces()
+        {
+            _data.PurchaseCount++;
+        }
+
+        public bool IsBuyable()
+        {
+            if(_data.AccountLimit != null)
+            {
+                if(_data.PurchaseCount < _data.AccountLimit.Value)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            if (_data.DailyLimit != null)
+            {
+                if (_data.PurchaseCount < _data.DailyLimit.Value)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            if (_data.WeeklyLimit != null)
+            {
+                if (_data.PurchaseCount < _data.WeeklyLimit.Value)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

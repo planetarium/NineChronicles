@@ -34,6 +34,8 @@ namespace Nekoyume.UI
 
         private const string _recommendedString = "Recommended";
 
+        private string _lastSelectedCategory;
+
         public static L10NSchema MOBILE_L10N_SCHEMA;
 
         protected override void Awake()
@@ -101,6 +103,7 @@ namespace Nekoyume.UI
 
                             AudioController.PlayClick();
                             RefreshGridByCategory(category.Name);
+                            _lastSelectedCategory = category.Name;
                         });
 
                         var productList = category.ProductList?.Where(p => p.Active).OrderBy(p => p.Order);
@@ -148,9 +151,23 @@ namespace Nekoyume.UI
                 _recommendedToggle.onObject.SetActive(true);
                 _recommendedToggle.offObject.SetActive(true);
                 RefreshGridByCategory(_recommendedString);
+                _lastSelectedCategory = _recommendedString;
             }
 
             loading.Close();
+        }
+
+        public void RefreshGrid()
+        {
+            RefreshGridByCategory(_lastSelectedCategory);
+        }
+
+        public void PurchaseComplete(string productId)
+        {
+            if(_allProductObjs.TryGetValue(productId, out var cell))
+            {
+                cell.LocalPurchaseSucces();
+            }
         }
 
         private void RefreshGridByCategory(string categoryName)
@@ -162,7 +179,8 @@ namespace Nekoyume.UI
             }
             foreach (var item in _allProductObjByCategory[categoryName])
             {
-                item.gameObject.SetActive(true);
+                if(item.IsBuyable())
+                    item.gameObject.SetActive(true);
             }
             iAPShopDynamicGridLayout.Refresh();
         }
