@@ -86,8 +86,7 @@ namespace Nekoyume.UI
             var level = Game.Game.instance.States.CurrentAvatarState.level;
             if (SharedModel.NextLevel <= level)
             {
-                // PatrolReward.LoadPolicyInfo
-                SharedModel.LoadPolicyInfo(level);
+                SharedModel.LoadPolicyInfo();
             }
         }
 
