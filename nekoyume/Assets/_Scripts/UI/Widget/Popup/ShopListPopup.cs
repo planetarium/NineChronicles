@@ -37,7 +37,13 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
+        private GameObject buttonDisableObj;
+
+        [SerializeField]
         private GameObject loadIndicator;
+
+        [SerializeField]
+        private GameObject buttonActiveEffectObj;
 
         [SerializeField]
         private TextMeshProUGUI[] priceTexts;
@@ -61,14 +67,18 @@ namespace Nekoyume.UI
                 Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.GoogleSku);
 
                 buyButton.interactable = false;
+                buttonDisableObj.SetActive(true);
                 loadIndicator.SetActive(true);
+                buttonActiveEffectObj.SetActive(false);
             });
         }
 
         public void PurchaseButtonLoadingEnd()
         {
             buyButton.interactable = true;
+            buttonDisableObj.SetActive(false);
             loadIndicator.SetActive(false);
+            buttonActiveEffectObj.SetActive(true);
         }
 
         private async UniTask DownloadTexture()
@@ -145,6 +155,8 @@ namespace Nekoyume.UI
 
             loadIndicator.SetActive(false);
             buyButton.interactable = true;
+            buttonDisableObj.SetActive(false);
+            buttonActiveEffectObj.SetActive(true);
 
             buyLimitObj.SetActive(false);
             if (_data.AccountLimit != null)

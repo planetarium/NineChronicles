@@ -37,6 +37,8 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Button buyButton;
+        [SerializeField]
+        private GameObject disabledBuyButton;
 
         [SerializeField]
         private Image backgroundImage;
@@ -136,6 +138,7 @@ namespace Nekoyume.UI.Module
                 discount.text = $"{_data.Discount}%";
             }
             buyButton.interactable = _data.Buyable;
+            disabledBuyButton.SetActive(!buyButton.interactable);
             recommended.SetActive(isRecommended);
         }
 
