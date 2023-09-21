@@ -446,6 +446,11 @@ namespace Nekoyume.Game
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == 3) is {} tutorialModel)
+            {
+                Widget.Find<Tutorial>().PlaySmallGuide(tutorialModel.Id);
+            }
+
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
