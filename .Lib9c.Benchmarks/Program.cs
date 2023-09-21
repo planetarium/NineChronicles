@@ -60,7 +60,7 @@ namespace Lib9c.Benchmarks
 
             Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
-            var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
+            var policySource = new BlockPolicySource();
             IBlockPolicy policy =
                 policySource.GetPolicy(
                     maxTransactionsBytesPolicy: null,

@@ -4,6 +4,7 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Lib9c.Renderers;
     using Lib9c.Tests.TestHelper;
     using Libplanet.Action;
     using Libplanet.Blockchain;
@@ -243,11 +244,11 @@ namespace Lib9c.Tests
 
         private BlockChain MakeChainWithStagePolicy(NCStagePolicy stagePolicy)
         {
-            BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
+            BlockPolicySource blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy();
             BlockChain chain =
                 BlockChainHelper.MakeBlockChain(
-                    blockRenderers: new[] { blockPolicySource.BlockRenderer },
+                    blockRenderers: new[] { new BlockRenderer() },
                     policy: policy,
                     stagePolicy: stagePolicy);
             return chain;

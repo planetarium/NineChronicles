@@ -96,7 +96,7 @@ namespace Nekoyume
             {
                 actions.AddRange(actionBases);
             }
-            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
+            var blockAction = new BlockPolicySource().GetPolicy().BlockAction;
             var actionLoader = new NCActionLoader();
             var actionEvaluator = new ActionEvaluator(
                 _ => blockAction,
