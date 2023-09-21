@@ -1499,6 +1499,7 @@ MonoBehaviour:
   effect00: {fileID: 1983477442309052996}
   effect03: {fileID: 2388468595926630255}
   dimmedObjects: {fileID: 3389439062666089608}
+  animationSprite: {fileID: 21300000, guid: e5a596d4170859048b329028f01cc8eb, type: 3}
 --- !u!1 &7711250401232687763
 GameObject:
   m_ObjectHideFlags: 0
@@ -2016,12 +2017,12 @@ PrefabInstance:
     - target: {fileID: 1480399953335427932, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4681619970566438773, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
@@ -2071,17 +2072,17 @@ PrefabInstance:
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 4804230841145495767, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
@@ -2146,12 +2147,12 @@ PrefabInstance:
     - target: {fileID: 7937736088600402549, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8114319135286425651, guid: 8588ed37f97d0364a8a8b90bf428c3e0,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8588ed37f97d0364a8a8b90bf428c3e0, type: 3}
@@ -2348,7 +2349,7 @@ PrefabInstance:
     - target: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3131441457089952479, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
         type: 3}
