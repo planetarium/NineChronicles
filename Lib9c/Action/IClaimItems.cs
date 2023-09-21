@@ -6,7 +6,7 @@ namespace Nekoyume.Action
 {
     public interface IClaimItems
     {
-        Address AvatarAddress { get; }
+        IEnumerable<Address> AvatarAddresses { get; }
         IEnumerable<FungibleAssetValue> Amounts { get; }
     }
 }

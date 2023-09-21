@@ -20,26 +20,26 @@ namespace Nekoyume.Action
     {
         private const string ActionTypeText = "claim_item";
 
-        public Address AvatarAddress { get; private set; }
+        public IEnumerable<Address> AvatarAddresses { get; private set; }
         public IEnumerable<FungibleAssetValue> Amounts { get; private set; }
 
         public ClaimItems() {}
 
-        public ClaimItems(Address avatarAddress, IEnumerable<FungibleAssetValue> amounts)
+        public ClaimItems(IEnumerable<Address> avatarAddresses, IEnumerable<FungibleAssetValue> amounts)
         {
-            AvatarAddress = avatarAddress;
+            AvatarAddresses = avatarAddresses;
             Amounts = amounts;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             ImmutableDictionary<string, IValue>.Empty
-                .Add(AvatarAddressKey, AvatarAddress.Serialize())
+                .Add(AvatarAddressKey, new List(AvatarAddresses.Select(x => x.Serialize())))
                 .Add(AmountKey, new List(Amounts.Select(x => x.Serialize())));
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            AvatarAddress = plainValue[AvatarAddressKey].ToAddress();
+            AvatarAddresses = ((List)plainValue[AvatarAddressKey]).Select(x => x.ToAddress());
             Amounts = ((List)plainValue[AmountKey]).Select(x => x.ToFungibleAssetValue());
         }
 
@@ -48,19 +48,20 @@ namespace Nekoyume.Action
             context.UseGas(1);
 
             var states = context.PreviousState;
-            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
-
-            var avatarState = states.GetAvatarState(AvatarAddress);
-            if (avatarState is null)
-            {
-                throw new FailedLoadStateException(
-                    ActionTypeText,
-                    addressesHex,
-                    typeof(AvatarState),
-                    AvatarAddress);
-            }
-
             var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
+
+            var inventories = AvatarAddresses.Select(address =>
+            {
+                var addressHex = GetSignerAndOtherAddressesHex(context, address);
+                var inventory = states.GetInventory(address.Derive(LegacyInventoryKey));
+                if (inventory is null)
+                {
+                    throw new FailedLoadStateException(ActionTypeText, addressHex, typeof(AvatarState), address);
+                }
+
+                return inventory;
+            })
+                .ToList();
 
             foreach (var fungibleAssetValue in Amounts)
             {
@@ -94,11 +95,19 @@ namespace Nekoyume.Action
                     var itemRow => ItemFactory.CreateItem(itemRow, context.Random)
                 };
 
-                avatarState.inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
-                states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
+                foreach (var inventory in inventories)
+                {
+                    inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                }
+                states = states.BurnAsset(context, context.Signer, fungibleAssetValue * inventories.Count);
             }
 
-            return states.SetState(avatarState.address, avatarState.Serialize());
+            foreach (var (avatarAddress, i) in AvatarAddresses.Select((x, i) => (x, i)))
+            {
+                states = states.SetState(avatarAddress.Derive(LegacyInventoryKey), inventories[i].Serialize());
+            }
+
+            return states;
         }
     }
 }
