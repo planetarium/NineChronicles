@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using CsvHelper;
 using UnityEngine;
 
@@ -19,6 +20,8 @@ namespace Nekoyume.UI
         }
 
         private readonly Dictionary<int, BattleTutorialModel> _modelDict = new();
+
+        #region Initializing
 
         public BattleTutorialController()
         {
@@ -47,7 +50,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                if (!csvReader.TryGetField<string>(3, out var l10nKey))
+                if (!csvReader.TryGetField<string>(3, out var l10NKey))
                 {
                     Debug.LogWarning("l10nKey column is not found.");
                     continue;
@@ -63,7 +66,7 @@ namespace Nekoyume.UI
                     Id = id,
                     Stage = stage,
                     ClearedWave = wave,
-                    L10NKey = l10nKey,
+                    L10NKey = l10NKey,
                     NextId = nextId
                 });
             }
@@ -75,6 +78,8 @@ namespace Nekoyume.UI
             }
         }
 
+        #endregion
+
         public BattleTutorialModel GetBattleTutorialModel(int id)
         {
             return _modelDict[id];
@@ -83,6 +88,11 @@ namespace Nekoyume.UI
         public bool TryGetBattleTutorialModel(int id, out BattleTutorialModel model)
         {
             return _modelDict.TryGetValue(id, out model);
+        }
+
+        public List<BattleTutorialModel> GetModelListByStage(int stageId)
+        {
+            return _modelDict.Values.Where(model => model.Stage == stageId).ToList();
         }
     }
 }
