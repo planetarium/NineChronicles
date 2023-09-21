@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.Game.Controller;
+using Nekoyume.GraphQL;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model.Patrol;
 using Nekoyume.UI.Module;
@@ -37,11 +39,12 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI gaugeUnitText2;
         [SerializeField] private ConditionalButton receiveButton;
 
+        public readonly PatrolReward PatrolReward = new();
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
         private readonly List<IDisposable> _disposables = new();
-        public readonly PatrolReward PatrolReward = new();
 
         private bool _initialized;
+        private bool _claiming;
 
         protected override void Awake()
         {
@@ -57,12 +60,15 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
+            if (_claiming)
+            {
+                return;
+            }
 
-            ShowAsync();
+            ShowAsync(ignoreShowAnimation);
         }
 
-        private async void ShowAsync()
+        private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             if (!PatrolReward.Initialized)
             {
@@ -83,11 +89,8 @@ namespace Nekoyume.UI
                 gaugeUnitText2.text = GetTimeString(PatrolReward.Interval);
             }
 
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
-
-            // OnChangeTime(PatrolReward.PatrolTime.Value);
+            OnChangeTime(PatrolReward.PatrolTime.Value);
+            base.Show(ignoreShowAnimation);
         }
 
         private void Init()
@@ -129,7 +132,7 @@ namespace Nekoyume.UI
             var remainTime = PatrolReward.Interval - patrolTimeWithOutSeconds;
             var canReceive = remainTime <= TimeSpan.Zero;
 
-            receiveButton.Interactable = canReceive;
+            receiveButton.Interactable = canReceive && !_claiming;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME", GetTimeString(remainTime));
@@ -199,14 +202,36 @@ namespace Nekoyume.UI
 
         private async void ClaimRewardAsync()
         {
+            _claiming = true;
+            receiveButton.Interactable = !_claiming;
+
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
-            await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
-            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+            var txId = await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
 
-            Debug.LogError("Claim End");
             Close();
+
+            while (true)
+            {
+                var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
+                if (txResultResponse is null)
+                {
+                    Debug.LogError($"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
+                    break;
+                }
+
+                var txStatus = txResultResponse.transaction.transactionResult.txStatus;
+                if (txStatus == TxResultQuery.TxStatus.SUCCESS)
+                {
+                    break;
+                }
+
+                await Task.Delay(3000);
+            }
+            _claiming = false;
+
             Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
+            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
     }
 }

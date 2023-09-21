@@ -17,17 +17,8 @@ namespace Nekoyume.UI.Model.Patrol
         public TimeSpan Interval { get; private set; }
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
-        private IObservable<long> Timer => Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1));
-
-        public IReadOnlyReactiveProperty<TimeSpan> PatrolTime => Timer
-            .CombineLatest(LastRewardTime, (_, lastReward) =>
-            {
-                var timeSpan = DateTime.Now - lastReward;
-                return timeSpan > Interval ? Interval : timeSpan;
-            })
-            .ToReactiveProperty();
-
-        public IObservable<bool> CanClaim => PatrolTime.Select(time => time > Interval);
+        public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+        public IObservable<bool> CanClaim => PatrolTime?.Select(time => time >= Interval);
 
         public async Task Initialize()
         {
@@ -37,6 +28,14 @@ namespace Nekoyume.UI.Model.Patrol
 
             await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
             await LoadPolicyInfo(level);
+
+            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                .CombineLatest(LastRewardTime, (_, lastReward) =>
+                {
+                    var timeSpan = DateTime.Now - lastReward;
+                    return timeSpan > Interval ? Interval : timeSpan;
+                })
+                .ToReactiveProperty();
 
             Initialized = true;
         }
@@ -63,6 +62,12 @@ namespace Nekoyume.UI.Model.Patrol
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(AvatarResponse)}");
+                return;
+            }
+
+            if (response.Avatar is null)
+            {
+                await PutAvatar(avatarAddress, agentAddress);
                 return;
             }
 
@@ -112,12 +117,12 @@ namespace Nekoyume.UI.Model.Patrol
             RewardModels.Value = response.Policy.Rewards;
         }
 
-        public async Task ClaimReward(string avatarAddress, string agentAddress)
+        public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
-                return;
+                return null;
             }
 
             var query = $@"mutation {{
@@ -128,10 +133,40 @@ namespace Nekoyume.UI.Model.Patrol
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
+                return null;
+            }
+
+            return response.Claim;
+        }
+
+        private async Task PutAvatar(string avatarAddress, string agentAddress)
+        {
+            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            if (!serviceClient.IsInitialized)
+            {
                 return;
             }
 
-            Debug.LogError($"Claimed tx : {response.Claim}");
+            var query = $@"mutation {{
+                putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
+                    avatarAddress
+                    agentAddress
+                    createdAt
+                    lastClaimedAt
+                    level
+                }}
+            }}";
+
+            var response = await serviceClient.GetObjectAsync<PutAvatarResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse)}");
+                return;
+            }
+
+            AvatarLevel = response.PutAvatar.Level;
+            var lastClaimedAt = response.PutAvatar.LastClaimedAt ?? response.PutAvatar.CreatedAt;
+            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
         }
     }
 }

@@ -53,6 +53,11 @@ namespace Nekoyume.UI.Model.Patrol
         public string Claim { get; set; }
     }
 
+    public class PutAvatarResponse
+    {
+        public AvatarModel PutAvatar { get; set; }
+    }
+
     public class TimespanConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
