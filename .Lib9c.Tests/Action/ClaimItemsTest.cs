@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
 
             var tableSheets = new TableSheets(sheets);
             _itemIds = tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
-            _currencies = _itemIds.Select(id => Currency.Legacy($"it_{id}", 0, minters: null)).ToList();
+            _currencies = _itemIds.Select(id => Currency.Legacy($"IT_{id}", 0, minters: null)).ToList();
 
             _signerAddress = new PrivateKey().ToAddress();
             var recipientAddress = new PrivateKey().ToAddress();

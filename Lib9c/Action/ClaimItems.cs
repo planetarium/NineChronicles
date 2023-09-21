@@ -64,8 +64,8 @@ namespace Nekoyume.Action
             foreach (var fungibleAssetValue in Amounts)
             {
                 var ticker = fungibleAssetValue.Currency.Ticker;
-                if (!ticker.StartsWith("it_") ||
-                    !int.TryParse(ticker.Replace("it_", string.Empty), out var itemId))
+                if (!ticker.StartsWith("IT_") ||
+                    !int.TryParse(ticker.Replace("IT_", string.Empty), out var itemId))
                 {
                     throw new ArgumentException($"Format of Amount currency's ticker is invalid");
                 }
