@@ -99,6 +99,7 @@ namespace Nekoyume.Action
                 {
                     inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
                 }
+
                 states = states.BurnAsset(context, context.Signer, fungibleAssetValue * inventories.Count);
             }
 
