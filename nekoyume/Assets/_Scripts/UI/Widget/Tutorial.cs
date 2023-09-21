@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -142,12 +141,6 @@ namespace Nekoyume.UI
             {
                 item.Item.Stop(() => PlayEnd(callback));
             }
-        }
-
-        // Invoke from TutorialController.PlayAction()
-        public void TutorialActionShowSmallGuide()
-        {
-            Debug.Log("[Tutorial] TutorialActionShowSmallGuide");
         }
 
         private void RunStopwatch()
