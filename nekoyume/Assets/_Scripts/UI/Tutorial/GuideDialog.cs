@@ -32,6 +32,36 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
+        public void Show(BattleTutorialController.BattleTutorialModel model,
+            System.Action callback = null)
+        {
+            gameObject.SetActive(true);
+            canvasGroup.alpha = 1;
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            var msg = L10nManager.Localize(model.L10NKey);
+            textTyper.TypeText(string.Empty);
+            textTyper.TypeText(msg);
+            _coroutine = StartCoroutine(PlaySmallDialog(model.NextId != 0, callback));
+        }
+
+        private IEnumerator PlaySmallDialog(bool hasNext, System.Action callback)
+        {
+            yield return new WaitWhile(() => textTyper.IsTyping);
+            yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+            if (!hasNext)
+            {
+                Stop(callback);
+            }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)

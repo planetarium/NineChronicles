@@ -158,6 +158,7 @@ namespace Nekoyume.UI
                 case WidgetType.Tooltip:
                 case WidgetType.Screen:
                 case WidgetType.System:
+                case WidgetType.TutorialMask:
                 case WidgetType.Development:
                     Pool.Add(type, new PoolElementModel
                     {
@@ -167,7 +168,6 @@ namespace Nekoyume.UI
                     break;
                 case WidgetType.Hud:
                 case WidgetType.Animation:
-                case WidgetType.TutorialMask:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

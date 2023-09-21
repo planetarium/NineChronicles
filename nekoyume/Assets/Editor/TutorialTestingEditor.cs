@@ -1,4 +1,5 @@
 ﻿using Nekoyume.Game;
+using Nekoyume.UI;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,6 +28,20 @@ namespace Editor
                 {
                     Game.instance.Stage.TutorialController.Play(id);
                     Debug.Log($"Show tutorial: {id}");
+                }
+                else
+                {
+                    Debug.Log($"{_tutorialIdInput} is not number. plz input id of tutorial by number.");
+                }
+            }
+
+            if (GUILayout.Button("Show Small Guide"))
+            {
+                Debug.Log("Trying to show small guide...");
+                if (int.TryParse(_tutorialIdInput, out var id))
+                {
+                    Widget.Find<Tutorial>().PlaySmallGuide(id);
+                    Debug.Log($"Show Small Guide: {id}");
                 }
                 else
                 {
