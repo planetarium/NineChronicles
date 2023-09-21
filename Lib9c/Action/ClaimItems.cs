@@ -49,19 +49,15 @@ namespace Nekoyume.Action
 
             var states = context.PreviousState;
             var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
+            var inventoryAddresses =
+                AvatarAddresses.Select(avatarAddress => avatarAddress.Derive(LegacyInventoryKey)).ToList();
 
-            var inventories = AvatarAddresses.Select(address =>
+            var inventories = inventoryAddresses.Select(inventoryAddress =>
             {
-                var addressHex = GetSignerAndOtherAddressesHex(context, address);
-                var inventory = states.GetInventory(address.Derive(LegacyInventoryKey));
-                if (inventory is null)
-                {
-                    throw new FailedLoadStateException(ActionTypeText, addressHex, typeof(AvatarState), address);
-                }
-
-                return inventory;
-            })
-                .ToList();
+                var addressHex = GetSignerAndOtherAddressesHex(context, inventoryAddress);
+                return states.GetInventory(inventoryAddress)
+                    ?? throw new FailedLoadStateException(ActionTypeText, addressHex, typeof(AvatarState), inventoryAddress);
+            }).ToList();
 
             foreach (var fungibleAssetValue in Amounts)
             {
@@ -103,9 +99,9 @@ namespace Nekoyume.Action
                 states = states.BurnAsset(context, context.Signer, fungibleAssetValue * inventories.Count);
             }
 
-            foreach (var (avatarAddress, i) in AvatarAddresses.Select((x, i) => (x, i)))
+            foreach (var (inventoryAddress, i) in inventoryAddresses.Select((x, i) => (x, i)))
             {
-                states = states.SetState(avatarAddress.Derive(LegacyInventoryKey), inventories[i].Serialize());
+                states = states.SetState(inventoryAddress, inventories[i].Serialize());
             }
 
             return states;
