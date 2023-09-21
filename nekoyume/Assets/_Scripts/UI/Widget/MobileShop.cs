@@ -166,17 +166,5 @@ namespace Nekoyume.UI
             }
             iAPShopDynamicGridLayout.Refresh();
         }
-
-        private static string GetProductImageNameFromProductId(string productId)
-        {
-            return (productId.StartsWith("g_")
-                ? productId.Remove(0, 2)
-                : productId) + L10nManager.CurrentLanguage switch
-            {
-                LanguageType.Portuguese => "_PT",
-                LanguageType.ChineseSimplified => "_ZH-CN",
-                _ => "_EN"
-            };
-        }
     }
 }
