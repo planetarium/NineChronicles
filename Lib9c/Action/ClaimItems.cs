@@ -56,7 +56,7 @@ namespace Nekoyume.Action
             {
                 var addressHex = GetSignerAndOtherAddressesHex(context, inventoryAddress);
                 return states.GetInventory(inventoryAddress)
-                    ?? throw new FailedLoadStateException(ActionTypeText, addressHex, typeof(AvatarState), inventoryAddress);
+                    ?? throw new FailedLoadStateException(ActionTypeText, addressHex, typeof(Inventory), inventoryAddress);
             }).ToList();
 
             foreach (var fungibleAssetValue in Amounts)
