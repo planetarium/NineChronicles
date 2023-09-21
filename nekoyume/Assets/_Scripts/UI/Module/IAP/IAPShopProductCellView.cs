@@ -117,7 +117,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in price)
             {
-                item.text = _puchasingData.metadata.localizedPriceString;
+                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice}";
             }
 
             foreach (var item in discountObjs)
@@ -130,61 +130,13 @@ namespace Nekoyume.UI.Module
                 foreach (var item in preDiscountPrice)
                 {
                     var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100-_data.Discount)));
-                    var origin = _puchasingData.metadata.localizedPriceString.Replace(_puchasingData.metadata.localizedPrice.ToString(), $"{originPrice:N3}");
+                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N3}";
                     item.text = origin;
                 }
                 discount.text = $"{_data.Discount}%";
             }
-
             /*buyButton.interactable = _data.Buyable;*/
-
-
             recommended.SetActive(isRecommended);
-            /*            if (isOn)
-            {
-                Analyzer.Instance.Track(
-                    "Unity/Shop/IAP/Tab/Click",
-                    ("product-id", tab.ProductId));
-                var product = products?.FirstOrDefault(p => p.GoogleSku == tab.ProductId);
-                if (product is null)
-                {
-                    return;
-                }
-
-                var storeProduct = Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
-                    p.definition.id == tab.ProductId);
-
-                _selectedProductId = tab.ProductId;
-                view.PriceTexts.ForEach(text => text.text = storeProduct.metadata.localizedPriceString);
-                view.ProductImage.sprite =
-                    _productImageDictionary[GetProductImageNameFromProductId(tab.ProductId)];
-                view.PurchaseButton.interactable = product.Buyable;
-                var limit = product.DailyLimit ?? product.WeeklyLimit;
-                view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
-                if (limit.HasValue)
-                {
-                    var remain = limit - product.PurchaseCount;
-                    view.BuyLimitCountText.ForEach(text => text.text = $"{remain}/{limit}");
-                }
-
-                view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
-                foreach (var fungibleItemSchema in product.FungibleItemList)
-                {
-                    var rewardView =
-                        view.RewardViews.First(v => !v.gameObject.activeSelf);
-                    rewardView.RewardName.text =
-                        L10nManager.LocalizeItemName(fungibleItemSchema.SheetItemId);
-                    rewardView.RewardImage.sprite =
-                        SpriteHelper.GetItemIcon(fungibleItemSchema.SheetItemId);
-                    rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
-                    rewardView.gameObject.SetActive(true);
-                }
-
-                var messageKey = product.DailyLimit.HasValue
-                    ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
-                    : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
-                view.BuyLimitMessageText.text = L10nManager.Localize(messageKey);
-            }*/
         }
     }
 }
