@@ -67,22 +67,22 @@ namespace Nekoyume.UI.Module
         {
             productName.text = L10nManager.Localize(_data.L10n_Key);
 
-            buyLimitDescription.gameObject.SetActive(false);
+            buyLimitDescription.transform.parent.gameObject.SetActive(false);
             if (_data.AccountLimit != null)
             {
-                buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit);
+                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit.Value) + $" ({_data.AccountLimit.Value - _data.PurchaseCount}/{_data.AccountLimit.Value})"; ;
             }
 
             if (_data.WeeklyLimit != null)
             {
-                buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit);
+                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value) + $" ({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})"; ;
             }
             if (_data.DailyLimit != null)
             {
-                buyLimitDescription.gameObject.SetActive(true);
-                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit);
+                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})"; ;
             }
 
             await DownLoadImage();
