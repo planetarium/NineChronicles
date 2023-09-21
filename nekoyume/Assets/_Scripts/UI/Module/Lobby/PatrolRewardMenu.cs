@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.UI.Model.Patrol;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,12 +36,17 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
-            if (!popup.SharedModel.Initialized)
+            SetData(popup.PatrolReward);
+        }
+
+        private async void SetData(PatrolReward patrolReward)
+        {
+            if (!patrolReward.Initialized)
             {
-                popup.SharedModel.Initialize();
+                await patrolReward.Initialize();
             }
 
-            popup.SharedModel.CanClaim.Subscribe(SetCanClaim).AddTo(_disposables);
+            patrolReward.CanClaim.Subscribe(SetCanClaim).AddTo(_disposables);
         }
 
         private void SetCanClaim(bool canClaim)
