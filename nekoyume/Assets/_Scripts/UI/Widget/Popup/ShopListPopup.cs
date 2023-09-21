@@ -131,6 +131,24 @@ namespace Nekoyume.UI
                 }
             }
 
+            buyLimitObj.SetActive(false);
+            if (_data.AccountLimit != null)
+            {
+                buyLimitObj.SetActive(true);
+                buyLimitText.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit.Value) + $" ({_data.AccountLimit.Value - _data.PurchaseCount}/{_data.AccountLimit.Value})";
+            }
+
+            if (_data.WeeklyLimit != null)
+            {
+                buyLimitObj.SetActive(true);
+                buyLimitText.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value) + $" ({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})";
+            }
+            if (_data.DailyLimit != null)
+            {
+                buyLimitObj.SetActive(true);
+                buyLimitText.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})";
+            }
+
             base.Show(ignoreShowAnimation);
         }
     }
