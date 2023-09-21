@@ -46,6 +46,22 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(PlaySmallDialog(callback));
         }
 
+        public void Show(BattleTutorialController.BattleTutorialModel model,
+            System.Action callback = null)
+        {
+            gameObject.SetActive(true);
+            canvasGroup.alpha = 1;
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            var msg = L10nManager.Localize(model.L10NKey);
+            textTyper.TypeText(string.Empty);
+            textTyper.TypeText(msg);
+            _coroutine = StartCoroutine(PlaySmallDialog(callback));
+        }
+
         private IEnumerator PlaySmallDialog(System.Action callback)
         {
             yield return new WaitWhile(() => textTyper.IsTyping);

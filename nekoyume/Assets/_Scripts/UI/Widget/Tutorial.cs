@@ -39,8 +39,15 @@ namespace Nekoyume.UI
         private bool _isPlaying;
         private IDisposable _onClickDispose = null;
         private IDisposable _onClickWithSkipDispose = null;
+        private BattleTutorialController _tutorialController;
 
         public Button NextButton => button;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            _tutorialController = new BattleTutorialController();
+        }
 
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
         {
@@ -93,13 +100,15 @@ namespace Nekoyume.UI
 
         public void PlaySmallGuide(int id)
         {
-            Show();
-            var script = L10nManager.Localize($"TUTORIAL_{id}");
-            guideDialog.Show(script, () =>
+            if (_tutorialController.TryGetBattleTutorialModel(id, out var model))
             {
-                guideDialog.gameObject.SetActive(false);
-                Close(true);
-            });
+                Show();
+                guideDialog.Show(model, () =>
+                {
+                    guideDialog.gameObject.SetActive(false);
+                    Close(true);
+                });
+            }
         }
 
         public void Stop(System.Action callback = null)
