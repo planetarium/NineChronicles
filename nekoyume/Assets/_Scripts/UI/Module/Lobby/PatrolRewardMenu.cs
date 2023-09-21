@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Lobby
 {
+    using UniRx;
     public class PatrolRewardMenu : MainMenu
     {
         [SerializeField]
@@ -22,6 +23,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject effect03;
 
+        [SerializeField]
+        private GameObject dimmedObjects;
+
         private readonly List<IDisposable> _disposables = new();
 
         private void OnEnable()
@@ -36,20 +40,14 @@ namespace Nekoyume.UI.Module.Lobby
                 popup.SharedModel.Initialize();
             }
 
-            var ticks = (popup.SharedModel.CreatedTime - DateTime.Now)
-                .Ticks % TimeSpan.TicksPerDay / (TimeSpan.TicksPerHour * 6);
-            var rewardLevel = new TimeSpan(ticks).Hours;
-            var canGetReward = popup.Notification;
-            notification.SetActive(canGetReward);
-
-            SetLevel(rewardLevel);
+            popup.SharedModel.CanClaim.Subscribe(SetCanClaim).AddTo(_disposables);
         }
 
-        public void SetLevel(int rewardLevel)
+        private void SetCanClaim(bool canClaim)
         {
-            rewardIcon.sprite = patrolRewardData.GetIcon(rewardLevel);
-            effect00.SetActive(rewardLevel < 3);
-            effect03.SetActive(rewardLevel >= 3);
+            notification.SetActive(canClaim);
+            effect03.SetActive(canClaim);
+            dimmedObjects.SetActive(!canClaim);
         }
 
         public void DailyRewardAnimation()
