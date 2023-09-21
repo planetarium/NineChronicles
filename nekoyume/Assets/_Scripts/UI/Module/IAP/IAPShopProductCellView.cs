@@ -45,6 +45,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image productImage;
 
+        [SerializeField]
+        private VerticalLayoutGroup bottomLayout;
+        [SerializeField]
+        private LayoutElement bottomButtonLayoutElement;
+
         private RectTransform _rect;
         private ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
@@ -69,21 +74,21 @@ namespace Nekoyume.UI.Module
         {
             productName.text = L10nManager.Localize(_data.L10n_Key);
 
-            buyLimitDescription.transform.parent.gameObject.SetActive(false);
+            buyLimitDescription.gameObject.SetActive(false);
             if (_data.AccountLimit != null)
             {
-                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.gameObject.SetActive(true);
                 buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_AccountLimit", _data.AccountLimit.Value) + $" ({_data.AccountLimit.Value - _data.PurchaseCount}/{_data.AccountLimit.Value})"; ;
             }
 
             if (_data.WeeklyLimit != null)
             {
-                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.gameObject.SetActive(true);
                 buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value) + $" ({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})"; ;
             }
             if (_data.DailyLimit != null)
             {
-                buyLimitDescription.transform.parent.gameObject.SetActive(true);
+                buyLimitDescription.gameObject.SetActive(true);
                 buyLimitDescription.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})"; ;
             }
 
@@ -109,9 +114,13 @@ namespace Nekoyume.UI.Module
             {
                 case "1x1":
                     _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 230);
+                    bottomButtonLayoutElement.minHeight = 65;
+                    bottomLayout.spacing = 0;
                     break;
                 case "1x2":
                     _rect.sizeDelta = new Vector2(_rect.sizeDelta.x, 467);// add spacing size
+                    bottomButtonLayoutElement.minHeight = 75;
+                    bottomLayout.spacing = 3;
                     break;
                 default:
                     break;
