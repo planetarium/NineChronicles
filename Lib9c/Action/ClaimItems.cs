@@ -18,7 +18,7 @@ namespace Nekoyume.Action
 {
     public class ClaimItems : GameAction, IClaimItems
     {
-        private const string ActionTypeText = "claim_item";
+        private const string ActionTypeText = "claim_items";
 
         public IEnumerable<Address> AvatarAddresses { get; private set; }
         public IEnumerable<FungibleAssetValue> Amounts { get; private set; }
