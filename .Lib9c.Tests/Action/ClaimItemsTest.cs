@@ -18,9 +18,9 @@ namespace Lib9c.Tests.Action
     {
         private readonly IAccount _initialState;
         private readonly Address _signerAddress;
-        private readonly Address _recipientAvatarAddress;
-        private readonly List<Currency> _currencies;
 
+        private readonly TableSheets _tableSheets;
+        private readonly List<Currency> _currencies;
         private readonly List<int> _itemIds;
 
         public ClaimItemsTest(ITestOutputHelper outputHelper)
@@ -39,48 +39,30 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            var tableSheets = new TableSheets(sheets);
-            _itemIds = tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
+            _tableSheets = new TableSheets(sheets);
+            _itemIds = _tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
             _currencies = _itemIds.Select(id => Currency.Legacy($"IT_{id}", 0, minters: null)).ToList();
 
             _signerAddress = new PrivateKey().ToAddress();
-            var recipientAddress = new PrivateKey().ToAddress();
-            var recipientAgentState = new AgentState(recipientAddress);
-            _recipientAvatarAddress = recipientAddress.Derive("avatar");
-            var rankingMapAddress = new PrivateKey().ToAddress();
-            var recipientAvatarState = new AvatarState(
-                _recipientAvatarAddress,
-                recipientAddress,
-                0,
-                tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress)
-            {
-                worldInformation = new WorldInformation(
-                    0,
-                    tableSheets.WorldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop),
-            };
-            recipientAgentState.avatarAddresses[0] = _recipientAvatarAddress;
 
             var context = new ActionContext();
             _initialState = _initialState
-                .SetState(recipientAddress, recipientAgentState.Serialize())
-                .SetState(_recipientAvatarAddress, recipientAvatarState.Serialize())
-                .MintAsset(context, _signerAddress, _currencies[0] * 1)
-                .MintAsset(context, _signerAddress, _currencies[1] * 1)
-                .MintAsset(context, _signerAddress, _currencies[2] * 1);
+                .MintAsset(context, _signerAddress, _currencies[0] * 5)
+                .MintAsset(context, _signerAddress, _currencies[1] * 5)
+                .MintAsset(context, _signerAddress, _currencies[2] * 5);
         }
 
         [Fact]
         public void Execute_Throws_ArgumentException_TickerInvalid()
         {
+            var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
+
             var currency = Currencies.Crystal;
-            var action = new ClaimItems(_recipientAvatarAddress, new[] { currency * 1 });
+            var action = new ClaimItems(new[] { recipientAvatarAddress }, new[] { currency * 1 });
             Assert.Throws<ArgumentException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousState = _initialState,
+                    PreviousState = state,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                     Random = new TestRandom(),
@@ -90,12 +72,14 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenNotEnoughBalance()
         {
+            var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
+
             var currency = _currencies.First();
-            var action = new ClaimItems(_recipientAvatarAddress, new[] { currency * 2 });
+            var action = new ClaimItems(new[] { recipientAvatarAddress }, new[] { currency * 6 });
             Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
                 action.Execute(new ActionContext
                 {
-                    PreviousState = _initialState,
+                    PreviousState = state,
                     Signer = _signerAddress,
                     BlockIndex = 100,
                     Random = new TestRandom(),
@@ -105,24 +89,91 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
+            var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
+
             var fungibleAssetValues = _currencies.Select(currency => currency * 1);
-            var action = new ClaimItems(_recipientAvatarAddress, fungibleAssetValues);
+            var action = new ClaimItems(new[] { recipientAvatarAddress }, fungibleAssetValues);
             var states = action.Execute(new ActionContext
             {
-                PreviousState = _initialState,
+                PreviousState = state,
                 Signer = _signerAddress,
                 BlockIndex = 0,
                 Random = new TestRandom(),
             });
 
-            var avatarState = states.GetAvatarState(_recipientAvatarAddress);
+            var inventory = states.GetInventory(recipientAvatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
             foreach (var i in Enumerable.Range(0, 3))
             {
-                Assert.Equal(_currencies[i] * 0, states.GetBalance(_signerAddress, _currencies[i]));
+                Assert.Equal(_currencies[i] * 4, states.GetBalance(_signerAddress, _currencies[i]));
                 Assert.Equal(
                     1,
-                    avatarState.inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
+                    inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
             }
+        }
+
+        [Fact]
+        public void Execute_WithMultipleRecipients()
+        {
+            var state = GenerateAvatar(_initialState, out var recipientAvatarAddress1);
+            state = GenerateAvatar(state, out var recipientAvatarAddress2);
+            state = GenerateAvatar(state, out var recipientAvatarAddress3);
+
+            var recipientAvatarAddresses = new[]
+            {
+                recipientAvatarAddress1, recipientAvatarAddress2, recipientAvatarAddress3,
+            };
+            var fungibleAssetValues = _currencies.Select(currency => currency * 1);
+            var action = new ClaimItems(recipientAvatarAddresses, fungibleAssetValues);
+            var states = action.Execute(new ActionContext
+            {
+                PreviousState = state,
+                Signer = _signerAddress,
+                BlockIndex = 0,
+                Random = new TestRandom(),
+            });
+
+            foreach (var avatarAddress in recipientAvatarAddresses)
+            {
+                var inventory = states.GetInventory(avatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
+                foreach (var i in Enumerable.Range(0, 3))
+                {
+                    Assert.Equal(_currencies[i] * 2, states.GetBalance(_signerAddress, _currencies[i]));
+                    Assert.Equal(
+                        1,
+                        inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
+                }
+            }
+        }
+
+        private IAccount GenerateAvatar(IAccount state, out Address avatarAddress)
+        {
+            var address = new PrivateKey().ToAddress();
+            var agentState = new AgentState(address);
+            avatarAddress = address.Derive("avatar");
+            var rankingMapAddress = new PrivateKey().ToAddress();
+            var avatarState = new AvatarState(
+                avatarAddress,
+                address,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                rankingMapAddress)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    _tableSheets.WorldSheet,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop),
+            };
+            agentState.avatarAddresses[0] = avatarAddress;
+
+            state = state
+                .SetState(address, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(
+                    avatarAddress.Derive(SerializeKeys.LegacyInventoryKey),
+                    avatarState.inventory.Serialize());
+
+            return state;
         }
     }
 }
