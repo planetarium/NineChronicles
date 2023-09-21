@@ -76,7 +76,7 @@ namespace Nekoyume.Action
                 }
 
                 var balance = states.GetBalance(context.Signer, fungibleAssetValue.Currency);
-                if (balance < fungibleAssetValue)
+                if (balance < fungibleAssetValue * inventories.Count)
                 {
                     throw new NotEnoughFungibleAssetValueException(
                         context.Signer.ToHex(),
