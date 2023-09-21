@@ -75,14 +75,7 @@ namespace Nekoyume.Action
                         "DecimalPlaces of fungibleAssetValue for claimItems are not 0");
                 }
 
-                var balance = states.GetBalance(context.Signer, fungibleAssetValue.Currency);
-                if (balance < fungibleAssetValue * inventories.Count)
-                {
-                    throw new NotEnoughFungibleAssetValueException(
-                        context.Signer.ToHex(),
-                        fungibleAssetValue.RawValue,
-                        balance);
-                }
+                states = states.BurnAsset(context, context.Signer, fungibleAssetValue * inventories.Count);
 
                 var item = itemSheet[itemId] switch
                 {
@@ -95,8 +88,6 @@ namespace Nekoyume.Action
                 {
                     inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
                 }
-
-                states = states.BurnAsset(context, context.Signer, fungibleAssetValue * inventories.Count);
             }
 
             foreach (var (inventoryAddress, i) in inventoryAddresses.Select((x, i) => (x, i)))
