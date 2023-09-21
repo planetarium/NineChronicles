@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -94,13 +95,10 @@ namespace Nekoyume.Action
                 };
 
                 avatarState.inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
-
-                states = states
-                    .BurnAsset(context, context.Signer, fungibleAssetValue)
-                    .SetState(avatarState.address, avatarState.Serialize());
+                states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
             }
 
-            return states;
+            return states.SetState(avatarState.address, avatarState.Serialize());
         }
     }
 }
