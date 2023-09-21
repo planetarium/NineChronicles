@@ -32,6 +32,27 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
+        public void Show(string text, System.Action callback = null)
+        {
+            gameObject.SetActive(true);
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            canvasGroup.alpha = 1;
+            textTyper.TypeText(string.Empty);
+            textTyper.TypeText(text);
+            _coroutine = StartCoroutine(PlaySmallDialog(callback));
+        }
+
+        private IEnumerator PlaySmallDialog(System.Action callback)
+        {
+            yield return new WaitWhile(() => textTyper.IsTyping);
+            yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+            Stop(callback);
+        }
+
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
