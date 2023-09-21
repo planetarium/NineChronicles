@@ -37,7 +37,7 @@ namespace Nekoyume.UI
 
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
         private readonly List<IDisposable> _disposables = new();
-        public readonly PatrolReward SharedModel = new();
+        public readonly PatrolReward PatrolReward = new();
 
         private bool _initialized;
 
@@ -57,9 +57,14 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
 
-            if (!SharedModel.Initialized)
+            ShowAsync();
+        }
+
+        private async void ShowAsync()
+        {
+            if (!PatrolReward.Initialized)
             {
-                SharedModel.Initialize();
+                await PatrolReward.Initialize();
             }
 
             if (!_initialized)
@@ -67,31 +72,31 @@ namespace Nekoyume.UI
                 Init();
             }
 
-            OnChangeTime();
-
             var level = Game.Game.instance.States.CurrentAvatarState.level;
-            if (SharedModel.NextLevel <= level)
+            if (PatrolReward.NextLevel <= level)
             {
-                SharedModel.LoadPolicyInfo();
+                await PatrolReward.LoadPolicyInfo(level);
             }
+
+            OnChangeTime(PatrolReward.PatrolTime.Value);
         }
 
         private void Init()
         {
             _disposables.DisposeAllAndClear();
 
-            SharedModel.RewardModels
+            PatrolReward.RewardModels
                 .Subscribe(OnChangeRewardModels)
                 .AddTo(_disposables);
 
-            SharedModel.PatrolTime
+            PatrolReward.PatrolTime
                 .Where(_ => gameObject.activeSelf)
                 .Subscribe(OnChangeTime)
                 .AddTo(_disposables);
 
             receiveButton.OnSubmitSubject
-                .Where(_ => SharedModel.Initialized)
-                .Subscribe(_ => ClaimReward(_rewards))
+                .Where(_ => PatrolReward.Initialized)
+                .Subscribe(_ => ClaimRewardAsync(_rewards))
                 .AddTo(_disposables);
 
             _initialized = true;
@@ -108,11 +113,11 @@ namespace Nekoyume.UI
         {
             patrolTimeText.text =
                 L10nManager.Localize("UI_PATROL_TIME_FORMAT", GetTimeString(patrolTime));
-            patrolTimeGauge.fillAmount = (float)(patrolTime / SharedModel.Interval);
+            patrolTimeGauge.fillAmount = (float)(patrolTime / PatrolReward.Interval);
 
             var patrolTimeWithOutSeconds =
                 new TimeSpan(patrolTime.Ticks / TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
-            var remainTime = SharedModel.Interval - patrolTimeWithOutSeconds;
+            var remainTime = PatrolReward.Interval - patrolTimeWithOutSeconds;
             var canReceive = remainTime <= TimeSpan.Zero;
 
             receiveButton.Interactable = canReceive;
@@ -183,16 +188,21 @@ namespace Nekoyume.UI
             };
         }
 
-        private void ClaimReward(Dictionary<PatrolRewardType, int> rewards)
+        private async void ClaimRewardAsync(Dictionary<PatrolRewardType, int> rewards)
         {
             foreach (var reward in rewards)
             {
-                Debug.Log($"Reward : {reward.Key} x{reward.Value}");
+                Debug.LogError($"Reward : {reward.Key} x{reward.Value}");
             }
 
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
+            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+
+            Debug.LogError("Claim Start");
             Close();
             // PatrolRewardMenu.DailyRewardAnimation
-            SharedModel.ClaimReward();
         }
     }
 }

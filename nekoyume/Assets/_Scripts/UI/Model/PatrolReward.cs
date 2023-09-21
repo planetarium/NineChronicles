@@ -29,8 +29,7 @@ namespace Nekoyume.UI.Model.Patrol
 
         public IObservable<bool> CanClaim => PatrolTime.Select(time => time > Interval);
 
-
-        public async void Initialize()
+        public async Task Initialize()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
@@ -42,32 +41,7 @@ namespace Nekoyume.UI.Model.Patrol
             Initialized = true;
         }
 
-        public async void LoadPolicyInfo()
-        {
-            var level = Game.Game.instance.States.CurrentAvatarState.level;
-            if (NextLevel <= level)
-            {
-                await LoadPolicyInfo(level);
-            }
-        }
-
-        public async void LoadAvatarInfo()
-        {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
-        }
-
-        public async void ClaimReward()
-        {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            await ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
-
-            LoadAvatarInfo();
-        }
-
-        private async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
+        public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
@@ -97,7 +71,7 @@ namespace Nekoyume.UI.Model.Patrol
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
         }
 
-        private async Task LoadPolicyInfo(int level, bool free = true)
+        public async Task LoadPolicyInfo(int level, bool free = true)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
@@ -138,7 +112,7 @@ namespace Nekoyume.UI.Model.Patrol
             RewardModels.Value = response.Policy.Rewards;
         }
 
-        private async Task ClaimReward(string avatarAddress, string agentAddress)
+        public async Task ClaimReward(string avatarAddress, string agentAddress)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
@@ -157,7 +131,7 @@ namespace Nekoyume.UI.Model.Patrol
                 return;
             }
 
-            Debug.Log($"Claimed tx : {response.Claim}");
+            Debug.LogError($"Claimed tx : {response.Claim}");
         }
     }
 }
