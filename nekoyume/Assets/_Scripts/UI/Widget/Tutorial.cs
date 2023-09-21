@@ -49,6 +49,12 @@ namespace Nekoyume.UI
             TutorialController = new BattleTutorialController();
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            guideDialog.gameObject.SetActive(false);
+        }
+
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
         {
             if(!(_onClickDispose is null))
@@ -107,7 +113,6 @@ namespace Nekoyume.UI
                 {
                     if (model.NextId == 0)
                     {
-                        guideDialog.gameObject.SetActive(false);
                         Close(true);
                     }
                     else
