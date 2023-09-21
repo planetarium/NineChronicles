@@ -100,14 +100,27 @@ namespace Nekoyume.UI
 
         public void PlaySmallGuide(int id)
         {
-            if (_tutorialController.TryGetBattleTutorialModel(id, out var model))
+            void ShowGuideDialog(BattleTutorialController.BattleTutorialModel model)
             {
                 Show();
                 guideDialog.Show(model, () =>
                 {
-                    guideDialog.gameObject.SetActive(false);
-                    Close(true);
+                    if (model.NextId == 0)
+                    {
+                        guideDialog.gameObject.SetActive(false);
+                        Close(true);
+                    }
+                    else
+                    {
+                        ShowGuideDialog(_tutorialController.GetBattleTutorialModel(model.NextId));
+                    }
                 });
+            }
+
+            if (_tutorialController.TryGetBattleTutorialModel(id, out var model))
+            {
+                guideDialog.gameObject.SetActive(false);
+                ShowGuideDialog(model);
             }
         }
 

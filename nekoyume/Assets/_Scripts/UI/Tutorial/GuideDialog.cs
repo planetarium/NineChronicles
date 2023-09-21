@@ -32,20 +32,6 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
-        public void Show(string text, System.Action callback = null)
-        {
-            gameObject.SetActive(true);
-            if (_coroutine != null)
-            {
-                StopCoroutine(_coroutine);
-            }
-
-            canvasGroup.alpha = 1;
-            textTyper.TypeText(string.Empty);
-            textTyper.TypeText(text);
-            _coroutine = StartCoroutine(PlaySmallDialog(callback));
-        }
-
         public void Show(BattleTutorialController.BattleTutorialModel model,
             System.Action callback = null)
         {
@@ -59,14 +45,21 @@ namespace Nekoyume.UI
             var msg = L10nManager.Localize(model.L10NKey);
             textTyper.TypeText(string.Empty);
             textTyper.TypeText(msg);
-            _coroutine = StartCoroutine(PlaySmallDialog(callback));
+            _coroutine = StartCoroutine(PlaySmallDialog(model.NextId != 0, callback));
         }
 
-        private IEnumerator PlaySmallDialog(System.Action callback)
+        private IEnumerator PlaySmallDialog(bool hasNext, System.Action callback)
         {
             yield return new WaitWhile(() => textTyper.IsTyping);
             yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-            Stop(callback);
+            if (!hasNext)
+            {
+                Stop(callback);
+            }
+            else
+            {
+                callback?.Invoke();
+            }
         }
 
         public override void Play<T>(T data, System.Action callback)
