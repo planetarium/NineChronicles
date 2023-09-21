@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,6 +46,12 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             TutorialController = new BattleTutorialController();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            guideDialog.gameObject.SetActive(false);
         }
 
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
@@ -107,7 +112,6 @@ namespace Nekoyume.UI
                 {
                     if (model.NextId == 0)
                     {
-                        guideDialog.gameObject.SetActive(false);
                         Close(true);
                     }
                     else
@@ -137,12 +141,6 @@ namespace Nekoyume.UI
             {
                 item.Item.Stop(() => PlayEnd(callback));
             }
-        }
-
-        // Invoke from TutorialController.PlayAction()
-        public void TutorialActionShowSmallGuide()
-        {
-            Debug.Log("[Tutorial] TutorialActionShowSmallGuide");
         }
 
         private void RunStopwatch()
