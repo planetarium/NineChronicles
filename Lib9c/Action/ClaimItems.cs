@@ -70,6 +70,13 @@ namespace Nekoyume.Action
                     throw new ArgumentException($"Format of Amount currency's ticker is invalid");
                 }
 
+                var decimalPlaces = fungibleAssetValue.Currency.DecimalPlaces;
+                if (decimalPlaces != 0)
+                {
+                    throw new ArgumentException(
+                        "DecimalPlaces of fungibleAssetValue for claimItems are not 0");
+                }
+
                 var balance = states.GetBalance(context.Signer, fungibleAssetValue.Currency);
                 if (balance < fungibleAssetValue)
                 {
