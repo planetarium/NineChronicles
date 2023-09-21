@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Nekoyume.GraphQL;
 using UniRx;
 using UnityEngine;
 
@@ -20,65 +19,49 @@ namespace Nekoyume.UI.Model.Patrol
 
         public async void Initialize()
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
-            {
-                return;
-            }
-
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
 
-            await LoadAvatarInfo(serviceClient, avatarAddress.ToHex(), agentAddress.ToHex());
-            await LoadPolicyInfo(serviceClient, level);
+            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+            await LoadPolicyInfo(level);
 
             Initialized = true;
         }
 
-        public async void LoadPolicyInfo(int level)
+        public async void LoadPolicyInfo()
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
+            var level = Game.Game.instance.States.CurrentAvatarState.level;
+            if (NextLevel <= level)
             {
-                return;
+                await LoadPolicyInfo(level);
             }
-
-            await LoadPolicyInfo(serviceClient, level);
         }
 
         public async void LoadAvatarInfo()
         {
-            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
-            if (!serviceClient.IsInitialized)
-            {
-                return;
-            }
-
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
-            await LoadAvatarInfo(serviceClient, avatarAddress.ToHex(), agentAddress.ToHex());
+            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
 
         public async void ClaimReward()
         {
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            await ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
+
+            LoadAvatarInfo();
+        }
+
+        private async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
+        {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)
             {
                 return;
             }
 
-            // Todo : ClaimReward
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            await ClaimReward(serviceClient, avatarAddress.ToHex(), agentAddress.ToHex());
-
-            LoadAvatarInfo();
-        }
-
-        private async Task LoadAvatarInfo(
-            NineChroniclesAPIClient apiClient, string avatarAddress, string agentAddress)
-        {
             var query = $@"query {{
                 avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
                     avatarAddress
@@ -89,7 +72,7 @@ namespace Nekoyume.UI.Model.Patrol
                 }}
             }}";
 
-            var response = await apiClient.GetObjectAsync<AvatarResponse>(query);
+            var response = await serviceClient.GetObjectAsync<AvatarResponse>(query);
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(AvatarResponse)}");
@@ -102,9 +85,14 @@ namespace Nekoyume.UI.Model.Patrol
             CreatedTime = DateTime.Parse(response.Avatar.CreatedAt);
         }
 
-        private async Task LoadPolicyInfo(
-            NineChroniclesAPIClient apiClient, int level, bool free = true)
+        private async Task LoadPolicyInfo(int level, bool free = true)
         {
+            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            if (!serviceClient.IsInitialized)
+            {
+                return;
+            }
+
             var query = $@"query {{
                 policy(level: {level}, free: true) {{
                     activate
@@ -126,7 +114,7 @@ namespace Nekoyume.UI.Model.Patrol
                 }}
             }}";
 
-            var response = await apiClient.GetObjectAsync<PolicyResponse>(query);
+            var response = await serviceClient.GetObjectAsync<PolicyResponse>(query);
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(PolicyResponse)}");
@@ -137,14 +125,19 @@ namespace Nekoyume.UI.Model.Patrol
             RewardModels.Value = response.Policy.Rewards;
         }
 
-        private async Task ClaimReward(
-            NineChroniclesAPIClient apiClient, string avatarAddress, string agentAddress)
+        private async Task ClaimReward(string avatarAddress, string agentAddress)
         {
+            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            if (!serviceClient.IsInitialized)
+            {
+                return;
+            }
+
             var query = $@"mutation {{
                 claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
             }}";
 
-            var response = await apiClient.GetObjectAsync<ClaimResponse>(query);
+            var response = await serviceClient.GetObjectAsync<ClaimResponse>(query);
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(ClaimResponse)}");
