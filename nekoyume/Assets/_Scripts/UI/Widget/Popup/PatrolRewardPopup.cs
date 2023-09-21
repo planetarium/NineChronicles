@@ -33,6 +33,8 @@ namespace Nekoyume.UI
         [SerializeField] private RewardData[] rewardViews;
         [SerializeField] private TextMeshProUGUI patrolTimeText;
         [SerializeField] private Image patrolTimeGauge;
+        [SerializeField] private TextMeshProUGUI gaugeUnitText1;
+        [SerializeField] private TextMeshProUGUI gaugeUnitText2;
         [SerializeField] private ConditionalButton receiveButton;
 
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
@@ -76,9 +78,16 @@ namespace Nekoyume.UI
             if (PatrolReward.NextLevel <= level)
             {
                 await PatrolReward.LoadPolicyInfo(level);
+
+                gaugeUnitText1.text = GetTimeString(PatrolReward.Interval / 2);
+                gaugeUnitText2.text = GetTimeString(PatrolReward.Interval);
             }
 
-            OnChangeTime(PatrolReward.PatrolTime.Value);
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+
+            // OnChangeTime(PatrolReward.PatrolTime.Value);
         }
 
         private void Init()
@@ -96,7 +105,7 @@ namespace Nekoyume.UI
 
             receiveButton.OnSubmitSubject
                 .Where(_ => PatrolReward.Initialized)
-                .Subscribe(_ => ClaimRewardAsync(_rewards))
+                .Subscribe(_ => ClaimRewardAsync())
                 .AddTo(_disposables);
 
             _initialized = true;
@@ -188,21 +197,16 @@ namespace Nekoyume.UI
             };
         }
 
-        private async void ClaimRewardAsync(Dictionary<PatrolRewardType, int> rewards)
+        private async void ClaimRewardAsync()
         {
-            foreach (var reward in rewards)
-            {
-                Debug.LogError($"Reward : {reward.Key} x{reward.Value}");
-            }
-
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
             await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
             await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
 
-            Debug.LogError("Claim Start");
+            Debug.LogError("Claim End");
             Close();
-            // PatrolRewardMenu.DailyRewardAnimation
+            Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
         }
     }
 }

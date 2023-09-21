@@ -27,6 +27,9 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject dimmedObjects;
 
+        [SerializeField]
+        private Sprite animationSprite;
+
         private readonly List<IDisposable> _disposables = new();
 
         private void OnEnable()
@@ -56,9 +59,22 @@ namespace Nekoyume.UI.Module.Lobby
             dimmedObjects.SetActive(!canClaim);
         }
 
-        public void DailyRewardAnimation()
+        public void ClaimRewardAnimation()
         {
-            // Todo
+            var target = Widget.Find<HeaderMenuStatic>()
+                .GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
+            var targetPosition = target ? target.position : Vector3.zero;
+
+            ItemMoveAnimation.Show(
+                animationSprite,
+                rewardIcon.transform.position,
+                targetPosition,
+                Vector2.one * 1.5f,
+                false,
+                false,
+                1f,
+                0,
+                ItemMoveAnimation.EndPoint.Inventory);
         }
 
         private void OnDisable()
