@@ -35,22 +35,8 @@ namespace Nekoyume.UI
         [SerializeField] private Image patrolTimeGauge;
         [SerializeField] private ConditionalButton receiveButton;
 
-        private static readonly TimeSpan MaxTime = new(24, 0, 0);
-        private static readonly TimeSpan MinTime = new(0, 10, 0);
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
         private readonly List<IDisposable> _disposables = new();
-
-        private TimeSpan PatrolTime
-        {
-            get
-            {
-                var patrolTime = DateTime.Now - SharedModel.LastRewardTime.Value;
-                return patrolTime > MaxTime ? MaxTime : patrolTime;
-            }
-        }
-
-        public bool Notification => PatrolTime >= MinTime;
-
         public readonly PatrolReward SharedModel = new();
 
         private bool _initialized;
@@ -81,7 +67,7 @@ namespace Nekoyume.UI
                 Init();
             }
 
-            OnChangeTime(PatrolTime);
+            OnChangeTime();
 
             var level = Game.Game.instance.States.CurrentAvatarState.level;
             if (SharedModel.NextLevel <= level)
@@ -98,14 +84,9 @@ namespace Nekoyume.UI
                 .Subscribe(OnChangeRewardModels)
                 .AddTo(_disposables);
 
-            SharedModel.LastRewardTime
-                .Subscribe(_ => OnChangeTime(PatrolTime))
-                .AddTo(_disposables);
-
-            Observable
-                .Timer(TimeSpan.FromMinutes(0), TimeSpan.FromMinutes(1))
-                .Where(_ => gameObject.activeSelf && SharedModel.Initialized)
-                .Subscribe(_ => OnChangeTime(PatrolTime))
+            SharedModel.PatrolTime
+                .Where(_ => gameObject.activeSelf)
+                .Subscribe(OnChangeTime)
                 .AddTo(_disposables);
 
             receiveButton.OnSubmitSubject
@@ -119,53 +100,34 @@ namespace Nekoyume.UI
         // rewardModels
         private void OnChangeRewardModels(List<PatrolRewardModel> rewardModels)
         {
-            foreach (var rewardView in rewardViews)
-            {
-                rewardView.rewardPerTime.container.SetActive(false);
-            }
-
-            foreach (var reward in rewardModels)
-            {
-                var rewardType = GetRewardType(reward);
-                var view = rewardViews.FirstOrDefault(view => view.rewardType == rewardType);
-                if (view == null)
-                {
-                    continue;
-                }
-
-                var interval = reward.RewardInterval;
-                var intervalText = interval.TotalHours > 1
-                    ? $"{interval.TotalHours}h"
-                    : $"{interval.TotalMinutes}m";
-                view.rewardPerTime.container.SetActive(true);
-                view.rewardPerTime.text.text = $"{reward.PerInterval}/{intervalText}";
-            }
-
-            SetRewards(rewardModels, PatrolTime);
+            SetRewards(rewardModels);
         }
 
         // time
         private void OnChangeTime(TimeSpan patrolTime)
         {
-            var hourText = patrolTime.TotalHours >= 1
-                ? $"{(int)patrolTime.TotalHours}h "
-                : string.Empty;
-            var minuteText = patrolTime.TotalHours < 1 || patrolTime.Minutes >= 1
-                ? $"{patrolTime.Minutes}m"
-                : string.Empty;
-            patrolTimeText.text = L10nManager.Localize(
-                "UI_PATROL_TIME_FORMAT", $"{hourText}{minuteText}");
-            patrolTimeGauge.fillAmount = (float)(patrolTime / MaxTime);
+            patrolTimeText.text =
+                L10nManager.Localize("UI_PATROL_TIME_FORMAT", GetTimeString(patrolTime));
+            patrolTimeGauge.fillAmount = (float)(patrolTime / SharedModel.Interval);
 
-            var ticksWithoutSeconds = patrolTime.Ticks / TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute;
-            var remainTime = MinTime - new TimeSpan(ticksWithoutSeconds);
+            var patrolTimeWithOutSeconds =
+                new TimeSpan(patrolTime.Ticks / TimeSpan.TicksPerMinute * TimeSpan.TicksPerMinute);
+            var remainTime = SharedModel.Interval - patrolTimeWithOutSeconds;
             var canReceive = remainTime <= TimeSpan.Zero;
+
             receiveButton.Interactable = canReceive;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
-                : L10nManager.Localize("UI_REMAINING_TIME", $"{remainTime.Minutes}m");
+                : L10nManager.Localize("UI_REMAINING_TIME", GetTimeString(remainTime));
+        }
 
-            SetRewards(SharedModel.RewardModels.Value, patrolTime);
+        private static string GetTimeString(TimeSpan time)
+        {
+            var hourExist = time.TotalHours >= 1;
+            var minuteExist = time.Minutes >= 1;
+            var hourText = hourExist ? $"{(int)time.TotalHours}h " : string.Empty;
+            var minuteText = minuteExist || !hourExist ? $"{time.Minutes}m" : string.Empty;
+            return $"{hourText}{minuteText}";
         }
 
         private void OnChangeRewards(Dictionary<PatrolRewardType, int> rewards)
@@ -188,14 +150,14 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetRewards(List<PatrolRewardModel> rewardModels, TimeSpan patrolTime)
+        private void SetRewards(List<PatrolRewardModel> rewardModels)
         {
             _rewards.Clear();
 
             foreach (var reward in rewardModels)
             {
                 var rewardType = GetRewardType(reward);
-                _rewards[rewardType] = reward.PerInterval * (int)(patrolTime / reward.RewardInterval);
+                _rewards[rewardType] = reward.PerInterval;
             }
 
             OnChangeRewards(_rewards);

@@ -11,11 +11,24 @@ namespace Nekoyume.UI.Model.Patrol
         public bool Initialized { get; private set; } = false;
 
         private int AvatarLevel { get; set; }
-        public readonly ReactiveProperty<DateTime> LastRewardTime = new();
-        public DateTime CreatedTime { get; private set; }
+        private readonly ReactiveProperty<DateTime> LastRewardTime = new();
 
         public int NextLevel { get; private set; }
+        public TimeSpan Interval { get; private set; }
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
+
+        private IObservable<long> Timer => Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1));
+
+        public IReadOnlyReactiveProperty<TimeSpan> PatrolTime => Timer
+            .CombineLatest(LastRewardTime, (_, lastReward) =>
+            {
+                var timeSpan = DateTime.Now - lastReward;
+                return timeSpan > Interval ? Interval : timeSpan;
+            })
+            .ToReactiveProperty();
+
+        public IObservable<bool> CanClaim => PatrolTime.Select(time => time > Interval);
+
 
         public async void Initialize()
         {
@@ -82,7 +95,6 @@ namespace Nekoyume.UI.Model.Patrol
             AvatarLevel = response.Avatar.Level;
             var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
-            CreatedTime = DateTime.Parse(response.Avatar.CreatedAt);
         }
 
         private async Task LoadPolicyInfo(int level, bool free = true)
@@ -122,6 +134,7 @@ namespace Nekoyume.UI.Model.Patrol
             }
 
             NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+            Interval = response.Policy.MinimumRequiredInterval;
             RewardModels.Value = response.Policy.Rewards;
         }
 
