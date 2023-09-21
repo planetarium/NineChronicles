@@ -98,7 +98,7 @@ namespace Nekoyume.UI
             guideDialog.Show(script, () =>
             {
                 guideDialog.gameObject.SetActive(false);
-                Close();
+                Close(true);
             });
         }
 
