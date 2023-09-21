@@ -59,13 +59,7 @@ namespace Nekoyume.Action
                     AvatarAddress);
             }
 
-            var itemSheet = states.GetSheets(sheetTypes: new[]
-            {
-                typeof(ConsumableItemSheet),
-                typeof(CostumeItemSheet),
-                typeof(EquipmentItemSheet),
-                typeof(MaterialItemSheet),
-            }).GetItemSheet();
+            var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
 
             foreach (var fungibleAssetValue in Amounts)
             {
