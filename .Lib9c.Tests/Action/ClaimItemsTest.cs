@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
 
             var currency = _currencies.First();
             var action = new ClaimItems(new[] { recipientAvatarAddress }, new[] { currency * 6 });
-            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
+            Assert.Throws<InsufficientBalanceException>(() =>
                 action.Execute(new ActionContext
                 {
                     PreviousState = state,
