@@ -17,6 +17,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    [ActionType(ActionTypeText)]
     public class ClaimItems : GameAction, IClaimItems
     {
         private const string ActionTypeText = "claim_items";
