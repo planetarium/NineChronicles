@@ -25,8 +25,7 @@ namespace Nekoyume.UI.Model.Patrol
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
 
-            await LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
-            await LoadPolicyInfo(level);
+            await InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
 
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
                 .CombineLatest(LastRewardTime, (_, lastReward) =>
@@ -37,6 +36,64 @@ namespace Nekoyume.UI.Model.Patrol
                 .ToReactiveProperty();
 
             Initialized = true;
+        }
+
+        private async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
+        {
+            var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
+            if (!serviceClient.IsInitialized)
+            {
+                return;
+            }
+
+            var query =
+$@"query {{
+    avatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
+        avatarAddress
+        agentAddress
+        createdAt
+        lastClaimedAt
+        level
+    }}
+    policy(level: {level}, free: true) {{
+        activate
+        minimumLevel
+        maxLevel
+        minimumRequiredInterval
+        rewards {{
+            ... on FungibleAssetValueRewardModel {{
+                currency
+                perInterval
+                rewardInterval
+            }}
+            ... on FungibleItemRewardModel {{
+                itemId
+                perInterval
+                rewardInterval
+            }}
+        }}
+    }}
+}}";
+
+            var response = await serviceClient.GetObjectAsync<InitializeResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(InitializeResponse)}");
+                return;
+            }
+
+            if (response.Avatar is null)
+            {
+                await PutAvatar(avatarAddress, agentAddress);
+                return;
+            }
+
+            AvatarLevel = response.Avatar.Level;
+            var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
+            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+            Interval = response.Policy.MinimumRequiredInterval;
+            RewardModels.Value = response.Policy.Rewards;
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
@@ -83,26 +140,27 @@ namespace Nekoyume.UI.Model.Patrol
                 return;
             }
 
-            var query = $@"query {{
-                policy(level: {level}, free: true) {{
-                    activate
-                    minimumLevel
-                    maxLevel
-                    minimumRequiredInterval
-                    rewards {{
-                        ... on FungibleAssetValueRewardModel {{
-                            currency
-                            perInterval
-                            rewardInterval
-                        }}
-                        ... on FungibleItemRewardModel {{
-                            itemId
-                            perInterval
-                            rewardInterval
-                        }}
-                    }}
-                }}
-            }}";
+            var query =
+$@"query {{
+    policy(level: {level}, free: true) {{
+        activate
+        minimumLevel
+        maxLevel
+        minimumRequiredInterval
+        rewards {{
+            ... on FungibleAssetValueRewardModel {{
+                currency
+                perInterval
+                rewardInterval
+            }}
+            ... on FungibleItemRewardModel {{
+                itemId
+                perInterval
+                rewardInterval
+            }}
+        }}
+    }}
+}}";
 
             var response = await serviceClient.GetObjectAsync<PolicyResponse>(query);
             if (response is null)
@@ -124,9 +182,10 @@ namespace Nekoyume.UI.Model.Patrol
                 return null;
             }
 
-            var query = $@"mutation {{
-                claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
-            }}";
+            var query =
+$@"mutation {{
+    claim(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"")
+}}";
 
             var response = await serviceClient.GetObjectAsync<ClaimResponse>(query);
             if (response is null)
@@ -146,15 +205,16 @@ namespace Nekoyume.UI.Model.Patrol
                 return;
             }
 
-            var query = $@"mutation {{
-                putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
-                    avatarAddress
-                    agentAddress
-                    createdAt
-                    lastClaimedAt
-                    level
-                }}
-            }}";
+            var query =
+$@"mutation {{
+    putAvatar(avatarAddress: ""{avatarAddress}"", agentAddress: ""{agentAddress}"") {{
+        avatarAddress
+        agentAddress
+        createdAt
+        lastClaimedAt
+        level
+    }}
+}}";
 
             var response = await serviceClient.GetObjectAsync<PutAvatarResponse>(query);
             if (response is null)
