@@ -118,7 +118,16 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
-            if (state.TryGetState(Recipient, out IValue serializedStakeState))
+            CheckRecipientIsStake(state, Recipient);
+
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}TransferAsset5 Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            return state.TransferAsset(context, Sender, Recipient, Amount);
+        }
+
+        public static void CheckRecipientIsStake(IAccount state, Address recipient)
+        {
+            if (state.TryGetState(recipient, out IValue serializedStakeState))
             {
                 bool isStakeStateOrMonsterCollectionState;
                 if (serializedStakeState is Dictionary dictionary)
@@ -137,7 +146,7 @@ namespace Nekoyume.Action
                     {
                         throw new ArgumentException(
                             "You can't send assets to staking state.",
-                            nameof(Recipient));
+                            nameof(recipient));
                     }
 
                     try
@@ -154,7 +163,7 @@ namespace Nekoyume.Action
                     {
                         throw new ArgumentException(
                             "You can't send assets to staking state.",
-                            nameof(Recipient));
+                            nameof(recipient));
                     }
 
                     try
@@ -171,7 +180,7 @@ namespace Nekoyume.Action
                     {
                         throw new ArgumentException(
                             "You can't send assets to staking state.",
-                            nameof(Recipient));
+                            nameof(recipient));
                     }
                 }
 
@@ -191,14 +200,10 @@ namespace Nekoyume.Action
                     {
                         throw new ArgumentException(
                             "You can't send assets to staking state.",
-                            nameof(Recipient));
+                            nameof(recipient));
                     }
                 }
             }
-
-            var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset5 Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)
