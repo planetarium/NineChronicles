@@ -1171,6 +1171,9 @@ SUMMON_NAME_10001,Coming Soon,커밍순,Coming Soon,Coming Soon,Coming Soon,Comi
 SUMMON_NAME_10002,Beast Aura,야수 아우라,Aura de besta,ビーストオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura binatang buas,Зверь Аура,野兽光环,野獸光環,Hayop aura
 UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,召喚に必要な資料が不足しています。必要な材料の購入に進みますか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?
 UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,
+MOBILE_SHOP_PRODUCT_DailyLimit,{0} per day,매일 {0} 번 구매 가능,{0} por dia,,,,,,每天限购{0}次,,
+MOBILE_SHOP_PRODUCT_WeeklyLimit,{0} per week,매 주 {0}번 구매 가능,{0} por semana,,,,,,每周限购{0}次,,
+MOBILE_SHOP_PRODUCT_AccountLimit,{0} per accout,계정 당 {0}번 구매 가능,{0} com uma conta,,,,,,每个账户限购{0}次,,
 UI_PATROL_REWARD,Patrol Reward,,,,,,,,,,
 UI_PATROL_REWARD_DESC,"THE HIGHER YOUR LEVEL, THE HIGHER YOUR REWARDS!",,,,,,,,,,
 UI_PATROL_TIME_FORMAT,Patrol Time <Style=Clock> {0},,,,,,,,,,
