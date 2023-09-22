@@ -53,6 +53,21 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Serialize()
+        {
+            GenerateAvatar(_initialState, out var avatarAddress);
+
+            var action = new ClaimItems(
+                new[] { avatarAddress },
+                new[] { _currencies.First() * 1 });
+            var deserialized = new ClaimItems();
+            deserialized.LoadPlainValue(action.PlainValue);
+
+            Assert.Equal(action.AvatarAddresses.First(), deserialized.AvatarAddresses.First());
+            Assert.Equal(action.Amounts.First(), deserialized.Amounts.First());
+        }
+
+        [Fact]
         public void Execute_Throws_ArgumentException_TickerInvalid()
         {
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
