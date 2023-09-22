@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     [ActionType(TypeIdentifier)]
     public class TransferAssets : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
-        public const string TypeIdentifier = "transfer_assets2";
+        public const string TypeIdentifier = "transfer_assets3";
         public const int RecipientsCapacity = 100;
         private const int MemoMaxLength = 80;
 
@@ -160,6 +160,7 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
+            TransferAsset.CheckRecipientIsStake(state, recipient);
             return state.TransferAsset(context, Sender, recipient, amount);
         }
     }

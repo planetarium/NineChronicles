@@ -14,7 +14,9 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model;
+    using Nekoyume.Model.Stake;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class TransferAssetsTest
@@ -271,7 +273,7 @@ namespace Lib9c.Tests.Action
 
             var recipients = (List)values["recipients"];
             var info = (List)recipients[0];
-            Assert.Equal((Text)"transfer_assets2", plainValue["type_id"]);
+            Assert.Equal((Text)"transfer_assets3", plainValue["type_id"]);
             Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, info[0].ToAddress());
             Assert.Equal(_currency * 100, info[1].ToFungibleAssetValue());
@@ -396,6 +398,81 @@ namespace Lib9c.Tests.Action
                 Signer = _sender,
                 Rehearsal = false,
                 BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_ArgumentException()
+        {
+            var baseState = new MockStateDelta(
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000));
+            var action = new TransferAssets(
+                sender: _sender,
+                new List<(Address, FungibleAssetValue)>
+                {
+                    (StakeState.DeriveAddress(_recipient), _currency * 100),
+                    (_recipient2, _currency * 100),
+                }
+            );
+            // 스테이킹 주소에 송금하려고 하면 실패합니다.
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new StakeState(StakeState.DeriveAddress(_recipient), 0).SerializeV2()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new StakeStateV2(
+                            new Contract(
+                                "StakeRegularFixedRewardSheet_V1",
+                                "StakeRegularRewardSheet_V1",
+                                50400,
+                                201600),
+                            0).Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new MonsterCollectionState(
+                                MonsterCollectionState.DeriveAddress(_sender, 0),
+                                1,
+                                0)
+                            .Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            var monsterCollectionRewardSheet = new MonsterCollectionRewardSheet();
+            monsterCollectionRewardSheet.Set(
+                "level,required_gold,reward_id\n1,500,1\n2,1800,2\n3,7200,3\n4,54000,4\n5,270000,5\n6,480000,6\n7,1500000,7\n");
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new MonsterCollectionState0(
+                                MonsterCollectionState.DeriveAddress(_sender, 0),
+                                1,
+                                0,
+                                monsterCollectionRewardSheet)
+                            .Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
             }));
         }
     }
