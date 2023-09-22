@@ -58,8 +58,8 @@ namespace Lib9c.Tests.Action
             GenerateAvatar(_initialState, out var avatarAddress);
 
             var action = new ClaimItems(
-                new[] { avatarAddress },
-                new[] { _currencies.First() * 1 });
+                new List<Address> { avatarAddress },
+                new List<FungibleAssetValue> { _currencies.First() * 1 });
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = Currencies.Crystal;
-            var action = new ClaimItems(new[] { recipientAvatarAddress }, new[] { currency * 1 });
+            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, new List<FungibleAssetValue> { currency * 1 });
             Assert.Throws<ArgumentException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = _currencies.First();
-            var action = new ClaimItems(new[] { recipientAvatarAddress }, new[] { currency * 6 });
+            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, new List<FungibleAssetValue> { currency * 6 });
             Assert.Throws<InsufficientBalanceException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -106,8 +106,8 @@ namespace Lib9c.Tests.Action
         {
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
-            var fungibleAssetValues = _currencies.Select(currency => currency * 1);
-            var action = new ClaimItems(new[] { recipientAvatarAddress }, fungibleAssetValues);
+            var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
+            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, fungibleAssetValues);
             var states = action.Execute(new ActionContext
             {
                 PreviousState = state,
@@ -133,11 +133,11 @@ namespace Lib9c.Tests.Action
             state = GenerateAvatar(state, out var recipientAvatarAddress2);
             state = GenerateAvatar(state, out var recipientAvatarAddress3);
 
-            var recipientAvatarAddresses = new[]
+            var recipientAvatarAddresses = new List<Address>
             {
                 recipientAvatarAddress1, recipientAvatarAddress2, recipientAvatarAddress3,
             };
-            var fungibleAssetValues = _currencies.Select(currency => currency * 1);
+            var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
             var action = new ClaimItems(recipientAvatarAddresses, fungibleAssetValues);
             var states = action.Execute(new ActionContext
             {

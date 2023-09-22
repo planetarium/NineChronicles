@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -22,15 +20,14 @@ namespace Nekoyume.Action
     {
         private const string ActionTypeText = "claim_items";
 
-        public IEnumerable<Address> AvatarAddresses { get; private set; }
-        public IEnumerable<FungibleAssetValue> Amounts { get; private set; }
+        public List<Address> AvatarAddresses { get; private set; }
+        public List<FungibleAssetValue> Amounts { get; private set; }
 
         public ClaimItems()
         {
         }
 
-        public ClaimItems(IEnumerable<Address> avatarAddresses,
-            IEnumerable<FungibleAssetValue> amounts)
+        public ClaimItems(List<Address> avatarAddresses, List<FungibleAssetValue> amounts)
         {
             AvatarAddresses = avatarAddresses;
             Amounts = amounts;
@@ -44,8 +41,8 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            AvatarAddresses = ((List)plainValue[AvatarAddressKey]).Select(x => x.ToAddress());
-            Amounts = ((List)plainValue[AmountKey]).Select(x => x.ToFungibleAssetValue());
+            AvatarAddresses = ((List)plainValue[AvatarAddressKey]).Select(x => x.ToAddress()).ToList();
+            Amounts = ((List)plainValue[AmountKey]).Select(x => x.ToFungibleAssetValue()).ToList();
         }
 
         public override IAccount Execute(IActionContext context)
@@ -85,7 +82,7 @@ namespace Nekoyume.Action
                 }
 
                 states = states.BurnAsset(context, context.Signer,
-                    fungibleAssetValue * AvatarAddresses.Count());
+                    fungibleAssetValue * AvatarAddresses.Count);
             }
 
             return states;
