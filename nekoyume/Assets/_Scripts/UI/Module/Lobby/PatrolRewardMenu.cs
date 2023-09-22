@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.UI.Model.Patrol;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +51,15 @@ namespace Nekoyume.UI.Module.Lobby
             }
 
             patrolReward.CanClaim.Subscribe(SetCanClaim).AddTo(_disposables);
+
+            this.UpdateAsObservable()  // For Test
+                .Where(_ => Input.GetKeyDown(KeyCode.W))
+                .Subscribe(x =>
+                {
+                    var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+                    var agentAddress = Game.Game.instance.States.AgentState.address;
+                    patrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
+                });
         }
 
         private void SetCanClaim(bool canClaim)
