@@ -46,26 +46,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             return response;
         }
 
-        private static async Task<TxResultResponse> QueryTxResultAsync(string txId)
-        {
-            var rpcClient = Game.Game.instance.RpcClient;
-            if (!rpcClient.IsInitialized)
-            {
-                return null;
-            }
-
-            var query = @$"query {{
-                transaction {{
-                    transactionResult(txId: ""{txId}"") {{
-                            txStatus
-                        }}
-                }}
-            }}";
-
-            var response = await rpcClient.GetObjectAsync<TxResultResponse>(query);
-            return response;
-        }
-
         public static IEnumerator CoGetSeasonRewards(
             int raidId,
             Address avatarAddress,
