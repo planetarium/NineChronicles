@@ -16,6 +16,7 @@ using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
+using Libplanet.Blockchain.Renderers;
 using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
@@ -91,9 +92,9 @@ namespace Nekoyume.Blockchain
 
         public BlockPolicySource BlockPolicySource { get; private set; }
 
-        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+        public BlockRenderer BlockRenderer => new BlockRenderer();
 
-        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
+        public ActionRenderer ActionRenderer => new ActionRenderer();
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
 
@@ -139,7 +140,7 @@ namespace Nekoyume.Blockchain
             string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
-            BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
+            BlockPolicySource = new BlockPolicySource();
 
             var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath());
             if (genesisBlock is null)
@@ -177,7 +178,7 @@ namespace Nekoyume.Blockchain
                         _stateStore,
                         genesisBlock,
                         actionEvaluator,
-                        renderers: BlockPolicySource.GetRenderers());
+                        renderers: new IRenderer[]{ BlockRenderer, ActionRenderer });
                 }
                 else
                 {
@@ -189,7 +190,7 @@ namespace Nekoyume.Blockchain
                         genesisBlock,
                         blockChainStates,
                         actionEvaluator,
-                        renderers: BlockPolicySource.GetRenderers());
+                        renderers: new IRenderer[]{ BlockRenderer, ActionRenderer });
                 }
             }
             catch (InvalidGenesisBlockException)
