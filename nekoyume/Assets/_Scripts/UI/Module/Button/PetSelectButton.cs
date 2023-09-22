@@ -1,6 +1,4 @@
-using Mono.Cecil;
 using Nekoyume.Game;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using System.Collections.Generic;
 using TMPro;

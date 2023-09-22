@@ -799,14 +799,31 @@ namespace Nekoyume.Blockchain
             LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.ItemId,
-                baseEquipment.RequiredBlockIndex, 1);
+
+            if (baseEquipment.ItemSubType == ItemSubType.Aura)
+            {
+                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, baseEquipment.ItemId);
+            }
+            else
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.ItemId,
+                    baseEquipment.RequiredBlockIndex, 1);
+            }
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             foreach (var materialEquip in materialEquipments)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
+                if (materialEquip.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, materialEquip.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, materialEquip.ItemId,
                     materialEquip.RequiredBlockIndex, 1);
+                }
                 LocalLayerModifier.SetItemEquip(avatarAddress, materialEquip.NonFungibleId, false);
             }
 
@@ -1177,11 +1194,21 @@ namespace Nekoyume.Blockchain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
             {
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    equipment.ItemId,
-                    equipment.RequiredBlockIndex,
-                    1);
+                if (equipment.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(
+                        avatarAddress,
+                        equipment.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        equipment.ItemId,
+                        equipment.RequiredBlockIndex,
+                        1);
+                }
             });
 
             if (chargeAp)
@@ -1488,6 +1515,44 @@ namespace Nekoyume.Blockchain
                 .DoOnError(e =>
                 {
 
+                });
+        }
+
+        public IObservable<ActionEvaluation<AuraSummon>> AuraSummon(int groupId, int summonCount)
+        {
+            // analytics
+            var sentryTx = Analyzer.Instance.Track(
+                "",
+                new Dictionary<string, Value>()
+                {
+                }, true);
+
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            // check material enough
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[groupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * summonCount;
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, count);
+
+            var action = new AuraSummon
+            {
+                AvatarAddress = avatarAddress,
+                GroupId = groupId,
+                SummonCount = summonCount,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<AuraSummon>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 

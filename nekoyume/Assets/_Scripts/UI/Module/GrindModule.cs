@@ -227,7 +227,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
                 .AddTo(_disposables);
 
-            StakingLevelSubject.Level
+            StakingSubject.Level
                 .Subscribe(UpdateStakingBonusObject)
                 .AddTo(_disposables);
 

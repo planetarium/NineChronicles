@@ -35,6 +35,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -140,6 +141,7 @@ namespace Nekoyume.Blockchain
             Grinding();
             EventConsumableItemCrafts();
             EventMaterialItemCrafts();
+            AuraSummon();
 
             // Market
             RegisterProduct();
@@ -606,6 +608,15 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void AuraSummon()
+        {
+            _actionRenderer.EveryRender<AuraSummon>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
@@ -1054,30 +1065,57 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
                     .Forget();
-                LocalLayerModifier.AddItem(
+
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
+                }
+
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(
                             tradableId,
                             out ItemUsable materialItem))
                     {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1);
+                        if(itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1);
+                        }
                     }
                 }
 
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1);
+                }
+
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
@@ -1155,6 +1193,29 @@ namespace Nekoyume.Blockchain
                 Widget.Find<CombinationSlotsPopup>()
                     .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+        }
+
+        private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = eval.Action;
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var summonRow = tableSheets.SummonSheet[action.GroupId];
+            var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
+            var count = summonRow.CostMaterialCount * action.SummonCount;
+            LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            Widget.Find<Summon>().OnActionRender(eval);
         }
 
         private async void ResponseRegisterProductAsync(ActionEvaluation<RegisterProduct> eval)
@@ -2218,13 +2279,8 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (state, level, balance) = GetStakeState(eval);
-            if (state != null)
-            {
-                UpdateStakeState(state, new GoldBalanceState(state.address, balance), level);
-            }
-
             UpdateAgentStateAsync(eval).Forget();
+            UpdateStakeStateAsync(eval).Forget();
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
@@ -2240,6 +2296,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
+            UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
@@ -2463,8 +2520,8 @@ namespace Nekoyume.Blockchain
         }
 
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
-            IAccountStateDelta prevStates,
-            IAccountStateDelta outputStates,
+            IAccount prevStates,
+            IAccount outputStates,
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {

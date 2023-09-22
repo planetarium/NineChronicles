@@ -2168,10 +2168,7 @@ MonoBehaviour:
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 0}
     recipeTabs: []
-  optionViews: []
-  skillViews: []
-  optionIcons: []
-  greatSuccessRateText: {fileID: 0}
+  optionView: {fileID: 0}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -2185,7 +2182,6 @@ MonoBehaviour:
   materialSelectButton: {fileID: 0}
   requiredNormalItemIcons: []
   requiredNormalItemImage: {fileID: 0}
-  skillTooltip: {fileID: 0}
 --- !u!1 &970630322251228951
 GameObject:
   m_ObjectHideFlags: 0
@@ -20395,10 +20391,7 @@ MonoBehaviour:
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 0}
     recipeTabs: []
-  optionViews: []
-  skillViews: []
-  optionIcons: []
-  greatSuccessRateText: {fileID: 0}
+  optionView: {fileID: 0}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -20412,7 +20405,6 @@ MonoBehaviour:
   materialSelectButton: {fileID: 0}
   requiredNormalItemIcons: []
   requiredNormalItemImage: {fileID: 0}
-  skillTooltip: {fileID: 0}
 --- !u!1 &4358616410042315447
 GameObject:
   m_ObjectHideFlags: 0
@@ -21224,10 +21216,7 @@ MonoBehaviour:
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 0}
     recipeTabs: []
-  optionViews: []
-  skillViews: []
-  optionIcons: []
-  greatSuccessRateText: {fileID: 0}
+  optionView: {fileID: 0}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -21245,7 +21234,6 @@ MonoBehaviour:
   - arenaType: 2
     sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   requiredNormalItemImage: {fileID: 1826237154276505661}
-  skillTooltip: {fileID: 0}
 --- !u!1 &4599119496811703790
 GameObject:
   m_ObjectHideFlags: 0
@@ -24397,10 +24385,7 @@ MonoBehaviour:
   legendaryRecipeTabGroup:
     toggleGroup: {fileID: 0}
     recipeTabs: []
-  optionViews: []
-  skillViews: []
-  optionIcons: []
-  greatSuccessRateText: {fileID: 1987277583450491673}
+  optionView: {fileID: 0}
   hammerPointView:
     parentObject: {fileID: 0}
     nowPoint: {fileID: 0}
@@ -24418,7 +24403,6 @@ MonoBehaviour:
   - arenaType: 2
     sprite: {fileID: 21300000, guid: 8fb8d7d5f798b46aba22e35060379282, type: 3}
   requiredNormalItemImage: {fileID: 462700179430271477}
-  skillTooltip: {fileID: 0}
 --- !u!1 &5336785920713056361
 GameObject:
   m_ObjectHideFlags: 0
@@ -42427,6 +42411,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8104095116720758637, guid: 9fca7ee6230131a4696b74efa4577486,
+        type: 3}
+      propertyPath: skillTooltip
+      value: 
+      objectReference: {fileID: 8162298410185345507}
     - target: {fileID: 8142868498089024392, guid: 9fca7ee6230131a4696b74efa4577486,
         type: 3}
       propertyPath: m_IsActive
