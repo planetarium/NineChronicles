@@ -221,8 +221,8 @@ namespace Nekoyume.UI
                     Debug.LogError(
                         $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
                     OneLineSystem.Push(
-                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
-                        NotificationCell.NotificationType.Notification);
+                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
                     break;
                 }
 
@@ -232,6 +232,8 @@ namespace Nekoyume.UI
                     OneLineSystem.Push(
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
                         NotificationCell.NotificationType.Notification);
+
+                    Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
                     break;
                 }
 
@@ -243,18 +245,7 @@ namespace Nekoyume.UI
                     break;
                 }
 
-                if (txStatus == TxResultQuery.TxStatus.INVALID)
-                {
-                    OneLineSystem.Push(
-                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
-                        NotificationCell.NotificationType.Alert);
-                    break;
-                }
-
-                if (txStatus == TxResultQuery.TxStatus.STAGING)
-                {
-                    await Task.Delay(3000);
-                }
+                await Task.Delay(3000);
             }
 
             Claiming.Value = false;
