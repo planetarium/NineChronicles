@@ -79,6 +79,7 @@ namespace Nekoyume.Game
         private Vector3 _playerPosition;
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
+        private List<BattleTutorialController.BattleTutorialModel> _tutorialModels = new();
 
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
@@ -372,6 +373,7 @@ namespace Nekoyume.Game
             stageId = log.stageId;
             waveCount = log.waveCount;
             newlyClearedStage = log.newlyCleared;
+            _tutorialModels.Clear();
 
             string bgmName = null;
             switch (StageType)
@@ -429,6 +431,10 @@ namespace Nekoyume.Game
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
+            if (!SelectedPlayer.Model.worldInformation.IsStageCleared(stageId))
+            {
+                _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
+            }
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -440,6 +446,11 @@ namespace Nekoyume.Game
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == 3) is {} tutorialModel)
+            {
+                Widget.Find<Tutorial>().PlaySmallGuide(tutorialModel.Id);
+            }
+
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
@@ -473,6 +484,7 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<UI.Battle>().Close();
+            Widget.Find<Tutorial>().Close(true);
 
             if (newlyClearedStage)
             {
@@ -1057,6 +1069,11 @@ namespace Nekoyume.Game
             }
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
+
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == this.waveNumber - 1) is { } model)
+            {
+                Widget.Find<Tutorial>().PlaySmallGuide(model.Id);
+            }
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));

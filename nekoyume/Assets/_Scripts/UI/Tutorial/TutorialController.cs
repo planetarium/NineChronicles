@@ -77,7 +77,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Play(int id)
+        public void Play(int id)
         {
             if (!_tutorial.isActiveAndEnabled)
             {
