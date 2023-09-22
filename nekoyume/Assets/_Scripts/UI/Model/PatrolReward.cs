@@ -1,3 +1,4 @@
+using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace Nekoyume.UI.Model.Patrol
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
+
+        private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
 
         public async Task Initialize()
         {
@@ -172,6 +175,8 @@ $@"query {{
             NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
             Interval = response.Policy.MinimumRequiredInterval;
             RewardModels.Value = response.Policy.Rewards;
+
+            SetPushNotification();
         }
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
@@ -226,6 +231,21 @@ $@"mutation {{
             AvatarLevel = response.PutAvatar.Level;
             var lastClaimedAt = response.PutAvatar.LastClaimedAt ?? response.PutAvatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+        }
+
+        private void SetPushNotification()
+        {
+            var prevPushIdentifier = PlayerPrefs.GetString(PatrolRewardPushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(prevPushIdentifier))
+            {
+                PushNotifier.CancelReservation(prevPushIdentifier);
+                PlayerPrefs.DeleteKey(PatrolRewardPushIdentifierKey);
+            }
+
+            var completeTime = (LastRewardTime.Value + Interval) - DateTime.Now;
+
+            var pushIdentifier = PushNotifier.Push(L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"), completeTime, PushNotifier.PushType.Reward);
+            PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
         }
     }
 }
