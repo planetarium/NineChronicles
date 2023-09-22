@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.UI.Model.Patrol;
+using Nekoyume.L10n;
+using TMPro;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,15 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject dimmedObjects;
 
         [SerializeField]
+        private GameObject patrollingObject;
+
+        [SerializeField]
+        private GameObject claimingObject;
+
+        [SerializeField]
+        private TextMeshProUGUI dimmedText;
+
+        [SerializeField]
         private Sprite animationSprite;
 
         private readonly List<IDisposable> _disposables = new();
@@ -40,17 +50,34 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
-            SetData(popup.PatrolReward);
+            SetData(popup);
         }
 
-        private async void SetData(PatrolReward patrolReward)
+        private async void SetData(PatrolRewardPopup popup)
         {
+            var patrolReward = popup.PatrolReward;
             if (!patrolReward.Initialized)
             {
                 await patrolReward.Initialize();
             }
 
-            patrolReward.CanClaim.Subscribe(SetCanClaim).AddTo(_disposables);
+            patrolReward.PatrolTime
+                .Select(time => time < patrolReward.Interval)
+                .Where(_ => !popup.Claiming.Value)
+                .Subscribe(patrolling => SetCanClaim(patrolling, false))
+                .AddTo(_disposables);
+
+            popup.Claiming.Subscribe(value =>
+            {
+                if (value)
+                {
+                    SetCanClaim(false, true);
+                }
+                else
+                {
+                    ClaimRewardAnimation();
+                }
+            }).AddTo(_disposables);
 
             this.UpdateAsObservable()  // For Test
                 .Where(_ => Input.GetKeyDown(KeyCode.W))
@@ -62,14 +89,20 @@ namespace Nekoyume.UI.Module.Lobby
                 });
         }
 
-        private void SetCanClaim(bool canClaim)
+        private void SetCanClaim(bool patrolling, bool claiming)
         {
+            var canClaim = !(patrolling || claiming);
             notification.SetActive(canClaim);
             effect03.SetActive(canClaim);
             dimmedObjects.SetActive(!canClaim);
+
+            patrollingObject.SetActive(patrolling);
+            claimingObject.SetActive(claiming);
+            var messageKey = claiming ? "UI_CLAIMING_REWARD" : "UI_PATROLLING";
+            dimmedText.text = L10nManager.Localize(messageKey);
         }
 
-        public void ClaimRewardAnimation()
+        private void ClaimRewardAnimation()
         {
             var target = Widget.Find<HeaderMenuStatic>()
                 .GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);

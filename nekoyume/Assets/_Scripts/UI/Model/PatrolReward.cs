@@ -18,7 +18,6 @@ namespace Nekoyume.UI.Model.Patrol
         public readonly ReactiveProperty<List<PatrolRewardModel>> RewardModels = new();
 
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
-        public IObservable<bool> CanClaim => PatrolTime?.Select(time => time >= Interval);
 
         public async Task Initialize()
         {

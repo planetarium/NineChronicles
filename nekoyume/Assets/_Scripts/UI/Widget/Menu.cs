@@ -120,8 +120,6 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesAtShow = new();
         private GameObject _cachedCharacterTitle;
 
-        public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu) btnPatrolReward;
-
         protected override void Awake()
         {
             base.Awake();
