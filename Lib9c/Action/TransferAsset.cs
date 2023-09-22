@@ -118,14 +118,14 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
-            CheckRecipientIsStake(state, Recipient);
+            ThrowIfStakeState(state, Recipient);
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset5 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(context, Sender, Recipient, Amount);
         }
 
-        public static void CheckRecipientIsStake(IAccount state, Address recipient)
+        public static void ThrowIfStakeState(IAccount state, Address recipient)
         {
             if (state.TryGetState(recipient, out IValue serializedStakeState))
             {

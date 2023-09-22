@@ -160,7 +160,7 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
-            TransferAsset.CheckRecipientIsStake(state, recipient);
+            TransferAsset.ThrowIfStakeState(state, recipient);
             return state.TransferAsset(context, Sender, recipient, amount);
         }
     }
