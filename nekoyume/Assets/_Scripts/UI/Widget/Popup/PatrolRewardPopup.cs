@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Model.Patrol;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,11 +42,11 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton receiveButton;
 
         public readonly PatrolReward PatrolReward = new();
+        public readonly ReactiveProperty<bool> Claiming = new(false);
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
         private readonly List<IDisposable> _disposables = new();
 
         private bool _initialized;
-        private bool _claiming;
 
         protected override void Awake()
         {
@@ -60,7 +62,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (_claiming)
+            if (Claiming.Value)
             {
                 return;
             }
@@ -111,6 +113,9 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ClaimRewardAsync())
                 .AddTo(_disposables);
 
+            Claiming.Where(claiming => claiming)
+                .Subscribe(_ => receiveButton.Interactable = false);
+
             _initialized = true;
         }
 
@@ -132,7 +137,7 @@ namespace Nekoyume.UI
             var remainTime = PatrolReward.Interval - patrolTimeWithOutSeconds;
             var canReceive = remainTime <= TimeSpan.Zero;
 
-            receiveButton.Interactable = canReceive && !_claiming;
+            receiveButton.Interactable = canReceive && !Claiming.Value;
             receiveButton.Text = canReceive
                 ? L10nManager.Localize("UI_GET_REWARD")
                 : L10nManager.Localize("UI_REMAINING_TIME", GetTimeString(remainTime));
@@ -202,15 +207,12 @@ namespace Nekoyume.UI
 
         private async void ClaimRewardAsync()
         {
-            _claiming = true;
-            receiveButton.Interactable = !_claiming;
+            Claiming.Value = true;
+            Close();
 
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var txId = await PatrolReward.ClaimReward(avatarAddress.ToHex(), agentAddress.ToHex());
-
-            Close();
-
             while (true)
             {
                 var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
@@ -228,9 +230,12 @@ namespace Nekoyume.UI
 
                 await Task.Delay(3000);
             }
-            _claiming = false;
 
-            Find<Menu>().PatrolRewardMenu.ClaimRewardAnimation();
+            Claiming.Value = false;
+            OneLineSystem.Push(
+                MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                NotificationCell.NotificationType.Notification);
+
             await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
     }
