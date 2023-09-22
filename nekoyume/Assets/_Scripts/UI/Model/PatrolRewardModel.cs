@@ -5,6 +5,12 @@ using Newtonsoft.Json;
 
 namespace Nekoyume.UI.Model.Patrol
 {
+    public class InitializeResponse
+    {
+        public AvatarModel Avatar { get; set; }
+        public PolicyModel Policy { get; set; }
+    }
+
     public class AvatarResponse
     {
         public AvatarModel Avatar { get; set; }
