@@ -57,8 +57,8 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             buyButton.onClick.AddListener(()=> {
-                /*if (_data == null || !_data.Buyable)
-                    return;*/
+                if (_data == null || !_data.Buyable)
+                    return;
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.GoogleSku));
                 Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
