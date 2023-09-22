@@ -6410,6 +6410,7 @@ GameObject:
   - component: {fileID: 5509902905553958617}
   - component: {fileID: 5509902905553958630}
   - component: {fileID: 5509902905553958631}
+  - component: {fileID: 656496237571409550}
   m_Layer: 5
   m_Name: Mask
   m_TagString: Untagged
@@ -6491,6 +6492,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!320 &656496237571409550
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5509902905553958629}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: a2161944c543f0d4b9952c8806404b46, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 1
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: 480445438635061268, guid: a2161944c543f0d4b9952c8806404b46, type: 2}
+    value: {fileID: 3494450548643713060}
+  - key: {fileID: 9074253320390305975, guid: a2161944c543f0d4b9952c8806404b46, type: 2}
+    value: {fileID: 0}
+  m_ExposedReferences:
+    m_References:
+    - 16ffe3af3b14a49d2bafd48405dfad3b: {fileID: 4451261526693119744}
+    - 8374ff4d582464c9c82f01fb46d84a78: {fileID: 4451261526693119744}
 --- !u!1 &5544385584220164435
 GameObject:
   m_ObjectHideFlags: 0
@@ -10436,6 +10460,12 @@ PrefabInstance:
 --- !u!224 &3313078371051162654 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3972512583488410508, guid: fe976a251725226468ee7636b4163cdb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1935237342823473042}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4451261526693119744 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2818504438052313234, guid: fe976a251725226468ee7636b4163cdb,
     type: 3}
   m_PrefabInstance: {fileID: 1935237342823473042}
   m_PrefabAsset: {fileID: 0}
