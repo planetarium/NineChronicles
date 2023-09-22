@@ -1,6 +1,7 @@
 using IngameDebugConsole;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using Nekoyume.UI;
 
 namespace Nekoyume.Game.Util
 {
@@ -34,6 +35,14 @@ namespace Nekoyume.Game.Util
 
             DebugLogConsole.AddCommand("clo","show current commandline option", ()=>{
                 Game.instance.ShowCLO();
+            });
+
+            DebugLogConsole.AddCommand("patrol-avatar", "Sync patrol reward avatar info", () =>
+            {
+                var avatarAddress = Game.instance.States.CurrentAvatarState.address;
+                var agentAddress = Game.instance.States.AgentState.address;
+                var patrolReward = Widget.Find<PatrolRewardPopup>().PatrolReward;
+                patrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
             });
         }
     }
