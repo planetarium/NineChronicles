@@ -218,24 +218,46 @@ namespace Nekoyume.UI
                 var txResultResponse = await TxResultQuery.QueryTxResultAsync(txId);
                 if (txResultResponse is null)
                 {
-                    Debug.LogError($"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
+                    Debug.LogError(
+                        $"Failed getting response : {nameof(TxResultQuery.TxResultResponse)}");
+                    OneLineSystem.Push(
+                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                        NotificationCell.NotificationType.Notification);
                     break;
                 }
 
                 var txStatus = txResultResponse.transaction.transactionResult.txStatus;
                 if (txStatus == TxResultQuery.TxStatus.SUCCESS)
                 {
+                    OneLineSystem.Push(
+                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
+                        NotificationCell.NotificationType.Notification);
                     break;
                 }
 
-                await Task.Delay(3000);
+                if (txStatus == TxResultQuery.TxStatus.FAILURE)
+                {
+                    OneLineSystem.Push(
+                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                if (txStatus == TxResultQuery.TxStatus.INVALID)
+                {
+                    OneLineSystem.Push(
+                        MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
+                        NotificationCell.NotificationType.Alert);
+                    break;
+                }
+
+                if (txStatus == TxResultQuery.TxStatus.STAGING)
+                {
+                    await Task.Delay(3000);
+                }
             }
 
             Claiming.Value = false;
-            OneLineSystem.Push(
-                MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
-                NotificationCell.NotificationType.Notification);
-
             await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
     }
