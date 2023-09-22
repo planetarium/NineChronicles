@@ -21,6 +21,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(TypeIdentifier)]
+    [ActionObsolete(ActionObsoleteConfig.V200090ObsoleteIndex)]
     public class TransferAssets2 : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
         public const string TypeIdentifier = "transfer_assets2";
@@ -83,6 +84,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             var state = context.PreviousState;
+            CheckObsolete(ActionObsoleteConfig.V200090ObsoleteIndex, context);
             if (context.Rehearsal)
             {
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
