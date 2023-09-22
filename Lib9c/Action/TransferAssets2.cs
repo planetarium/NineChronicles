@@ -21,17 +21,18 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType(TypeIdentifier)]
-    public class TransferAssets : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
+    [ActionObsolete(ActionObsoleteConfig.V200090ObsoleteIndex)]
+    public class TransferAssets2 : ActionBase, ISerializable, ITransferAssets, ITransferAssetsV1
     {
-        public const string TypeIdentifier = "transfer_assets3";
+        public const string TypeIdentifier = "transfer_assets2";
         public const int RecipientsCapacity = 100;
         private const int MemoMaxLength = 80;
 
-        public TransferAssets()
+        public TransferAssets2()
         {
         }
 
-        public TransferAssets(Address sender, List<(Address, FungibleAssetValue)> recipients, string memo = null)
+        public TransferAssets2(Address sender, List<(Address, FungibleAssetValue)> recipients, string memo = null)
         {
             Sender = sender;
             Recipients = recipients;
@@ -40,7 +41,7 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        protected TransferAssets(SerializationInfo info, StreamingContext context)
+        protected TransferAssets2(SerializationInfo info, StreamingContext context)
         {
             var rawBytes = (byte[])info.GetValue("serialized", typeof(byte[]));
             Dictionary pv = (Dictionary) new Codec().Decode(rawBytes);
@@ -83,6 +84,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             var state = context.PreviousState;
+            CheckObsolete(ActionObsoleteConfig.V200090ObsoleteIndex, context);
             if (context.Rehearsal)
             {
                 return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
@@ -160,7 +162,6 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, blockIndex, Sender);
-            TransferAsset.ThrowIfStakeState(state, recipient);
             return state.TransferAsset(context, Sender, recipient, amount);
         }
     }
