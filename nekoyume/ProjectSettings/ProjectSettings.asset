@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 60.0.0
+  bundleVersion: 50.3.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -159,7 +159,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.planetariumlabs.ninechroniclesmobile
     Standalone: com.Planetarium.NineChronicles
-    iPhone: com.Planetarium.9c
+    iPhone: com.planetariumlabs.ninechroniclesmobile
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -578,7 +578,7 @@ PlayerSettings:
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 1
-  cameraUsageDescription: 
+  cameraUsageDescription: Camera usage description
   locationUsageDescription: 
   microphoneUsageDescription: 
   bluetoothUsageDescription: 

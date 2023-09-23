@@ -453,6 +453,10 @@ namespace Editor
                 new[] { unityFrameworkTargetGuid, pbxProject.GetUnityMainTargetGuid() },
                 "ENABLE_BITCODE",
                 "NO");
+            
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
+            // libz.tbd for grpc ios build
+            pbxProject.AddFrameworkToProject(targetGuid, "libz.tbd", false);
 
             // Remove static frameworks at "UnityFramework".
             foreach (var framework in new []{"rocksdb.framework", "secp256k1.framework"})
@@ -470,6 +474,7 @@ namespace Editor
         private static void PreProcessBuildForIOS()
         {
             string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
+            identifier = "com.planetariumlabs.ninechroniclesmobile";
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
             PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;
