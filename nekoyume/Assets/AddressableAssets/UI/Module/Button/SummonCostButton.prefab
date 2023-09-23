@@ -1538,6 +1538,7 @@ GameObject:
   - component: {fileID: 2408168389107633910}
   - component: {fileID: 9193701150393071323}
   - component: {fileID: 5505308040733488322}
+  - component: {fileID: 6995214810285878348}
   m_Layer: 5
   m_Name: SummonCostButton
   m_TagString: Untagged
@@ -1601,7 +1602,6 @@ MonoBehaviour:
   effectOverlay: {fileID: 2411075758313387843}
   conditionInfoKey: 
   costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
-  showCostAlert: 0
   costObjects:
   - parent: {fileID: 7524158368093465997}
     icon: {fileID: 8379702075323595927}
@@ -1613,6 +1613,7 @@ MonoBehaviour:
     icon: {fileID: 1757806525386228008}
     text: {fileID: 7442111063600376759}
   loadingObject: {fileID: 8006387935073826350}
+  loadingButton: {fileID: 4104883553702241852}
 --- !u!114 &9193701150393071323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1677,6 +1678,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6995214810285878348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5962861162959861539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &6523001261774388886
 GameObject:
   m_ObjectHideFlags: 0

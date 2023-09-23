@@ -268,17 +268,17 @@ namespace Nekoyume.UI
             }
         }
 
-        private bool TryGetWaitedBlockIndex(long blockIndex, out long waitedBlockRange)
+        private static bool TryGetWaitedBlockIndex(long blockIndex, out long waitedBlockRange)
         {
-            var stakeState = States.Instance.StakeState;
-            if (stakeState == null)
+            var stakeState = States.Instance.StakeStateV2;
+            if (stakeState is null)
             {
                 waitedBlockRange = 0;
                 return false;
             }
 
-            var started = stakeState.StartedBlockIndex;
-            var received = stakeState.ReceivedBlockIndex;
+            var started = stakeState.Value.StartedBlockIndex;
+            var received = stakeState.Value.ReceivedBlockIndex;
             if (received > 0)
             {
                 waitedBlockRange = blockIndex - received;

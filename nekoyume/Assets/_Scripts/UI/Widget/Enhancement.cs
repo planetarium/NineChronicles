@@ -17,6 +17,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI
 {
@@ -127,6 +128,7 @@ namespace Nekoyume.UI
         private float _sliderAnchorPoint = 0;
         private int _levelAnchorPoint = 0;
         private Coroutine _sliderEffectCor;
+        private UnityEngine.UI.Extensions.Scroller _matarialsScroller;
 
         protected override void Awake()
         {
@@ -138,6 +140,8 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+
+            _matarialsScroller = enhancementSelectedMaterialItemScroll.GetComponent<UnityEngine.UI.Extensions.Scroller>();
 
             upgradeButton.OnSubmitSubject
                 .Subscribe(_ => OnSubmit())
@@ -156,6 +160,8 @@ namespace Nekoyume.UI
         {
             Clear();
             enhancementInventory.Set(UpdateInformation, enhancementSelectedMaterialItemScroll);
+            if (_matarialsScroller != null)
+                _matarialsScroller.Position = 0;
             base.Show(ignoreShowAnimation);
         }
 
@@ -408,7 +414,7 @@ namespace Nekoyume.UI
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
                 animator.Play(HashToRegisterBase);
-                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, true);
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, _matarialsScroller?.Position != 0);
                 closeButton.interactable = true;
                 ClearInformation();
 
@@ -433,12 +439,17 @@ namespace Nekoyume.UI
                 enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
                 if (materialModels.Count != 0)
                 {
-                    enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1]);
+                    if(materialModels.Count > 5 || _matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1], 0);
+                    
                     animator.Play(HashToPostRegisterMaterial);
                     noneContainer.SetActive(false);
                 }
                 else
                 {
+                    if(_matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.RawJumpto(0, 0);
+
                     noneContainer.SetActive(true);
                 }
 

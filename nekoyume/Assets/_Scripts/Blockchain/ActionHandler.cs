@@ -13,6 +13,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -133,31 +134,29 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
-            ActionEvaluation<T> evaluation)
-            where T : ActionBase
+        protected (Address addr, StakeStateV2? state, int level, FungibleAssetValue deposit)
+            GetStakeState<T>(ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var agentAddress = States.Instance.AgentState.address;
-            var stakeAddress = StakeState.DeriveAddress(agentAddress);
-            if (!(evaluation.OutputState.GetState(stakeAddress) is Bencodex.Types.Dictionary serialized))
+            var agentAddr = States.Instance.AgentState.address;
+            var stakeAddr = StakeStateV2.DeriveAddress(agentAddr);
+            if (!evaluation.OutputState.TryGetStakeStateV2(stakeAddr, out var stakeStateV2))
             {
-                return (null, 0, new FungibleAssetValue());
+                return (stakeAddr, null, 0, new FungibleAssetValue());
             }
 
             try
             {
-                var state = new StakeState(serialized);
                 var balance = evaluation.OutputState.GetBalance(
-                    state.address,
+                    stakeAddr,
                     GoldCurrency);
                 var level = TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
-                    agentAddress,
+                    agentAddr,
                     balance);
-                return (state, level, balance);
+                return (stakeAddr, stakeStateV2, level, balance);
             }
             catch (Exception)
             {
-                return (null, 0, new FungibleAssetValue());
+                return (stakeAddr, null, 0, new FungibleAssetValue());
             }
         }
 
@@ -262,17 +261,6 @@ namespace Nekoyume.Blockchain
         {
             var state = evaluation.OutputState.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
-        }
-
-        protected static void UpdateStakeState(
-            StakeState state,
-            GoldBalanceState stakedBalanceState,
-            int level)
-        {
-            if (state is { })
-            {
-                States.Instance.SetStakeState(state, stakedBalanceState, level);
-            }
         }
 
         protected static void UpdateCrystalRandomSkillState<T>(

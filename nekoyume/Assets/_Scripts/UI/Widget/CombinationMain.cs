@@ -34,6 +34,9 @@ namespace Nekoyume.UI
         private Image runeNotificationImage;
 
         [SerializeField]
+        private Image summonNotificationImage;
+
+        [SerializeField]
         private SpeechBubble speechBubble;
 
         protected override void Awake()
@@ -122,9 +125,11 @@ namespace Nekoyume.UI
                 if (runeItem.HasNotification)
                 {
                     runeNotificationImage.enabled = true;
-                    return;
+                    break;
                 }
             }
+
+            summonNotificationImage.enabled = Summon.HasNotification;
         }
     }
 }

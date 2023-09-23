@@ -10,9 +10,8 @@ namespace Nekoyume.Helper
     {
         private static readonly List<ScriptableObject> Resources = new List<ScriptableObject>();
 
-        public static IEnumerator CoInitialize()
+        public static void Initialize()
         {
-            yield return null;
             var resources = UnityEngine.Resources.LoadAll<ScriptableObject>("ScriptableObject/");
             Resources.AddRange(resources);
         }
@@ -53,10 +52,7 @@ namespace Nekoyume.Helper
             if(auras != null)
             {
                 var index = AuraLevelToIndex(level);
-                if (index > auras.prefab.Count)
-                    return null;
-
-                return auras.prefab[index];
+                return auras.prefab[Mathf.Clamp(index, 0, auras.prefab.Count - 1)];
             }
 
             return null;

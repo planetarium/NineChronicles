@@ -1,13 +1,11 @@
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,13 +25,13 @@ namespace Nekoyume.UI.Module
         private CostIconDataScriptableObject costIconData;
 
         [SerializeField]
-        private bool showCostAlert = true;
-
-        [SerializeField]
         private List<CostObject> costObjects;
 
         [SerializeField]
         private GameObject loadingObject;
+
+        [SerializeField]
+        private Button loadingButton;
 
         private CostType _type;
         private long _cost;
@@ -43,16 +41,12 @@ namespace Nekoyume.UI.Module
             set => loadingObject.SetActive(value);
         }
 
-        public bool TryGetCost(CostType type, out long cost)
-        {
-            if(_type != type)
-            {
-                cost = 0;
-                return false;
-            }
+        public (CostType type, long cost) GetCostParam => (_type, _cost);
 
-            cost = _cost;
-            return true;
+        protected override void Awake()
+        {
+            base.Awake();
+            loadingButton.onClick.AddListener(() => OnClickDisabledSubject.OnNext(Unit.Default));
         }
 
         public void SetCost(CostType type, long cost)
@@ -80,11 +74,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var costEnough = CheckCostOfType(_type, _cost);
             foreach (var costObject in costObjects)
             {
                 costObject.icon.sprite = costIconData.GetIcon(_type);
                 costObject.text.text = _cost.ToString();
-                costObject.text.color = CheckCostOfType(_type, _cost) ?
+                costObject.text.color = costEnough ?
                     Palette.GetColor(ColorType.ButtonEnabled) :
                     Palette.GetColor(ColorType.TextDenial);
             }
@@ -124,30 +119,10 @@ namespace Nekoyume.UI.Module
             return CheckCostOfType(_type, _cost) && base.CheckCondition();
         }
 
-        protected override void OnClickButton()
+        public override void SetState(State state)
         {
-            base.OnClickButton();
-
-            if (!showCostAlert)
-            {
-                return;
-            }
-
-            if (CheckCostOfType(_type, _cost)) return;
-
-            var messageKey = _type switch
-            {
-                CostType.NCG => "UI_NOT_ENOUGH_NCG",
-                CostType.Crystal => "UI_NOT_ENOUGH_CRYSTAL",
-                CostType.ActionPoint => "ERROR_ACTION_POINT",
-                CostType.Hourglass => "UI_NOT_ENOUGH_HOURGLASS",
-                _ => string.Empty,
-            };
-
-            OneLineSystem.Push(
-                MailType.System,
-                L10nManager.Localize(messageKey),
-                NotificationCell.NotificationType.Alert);
+            base.SetState(state);
+            disabledObject.SetActive(CurrentState.Value == State.Disabled);
         }
     }
 }

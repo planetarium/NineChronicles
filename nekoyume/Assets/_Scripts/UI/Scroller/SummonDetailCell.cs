@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Scroller
             view.SetData(itemData.EquipmentRow);
             nameText.text = itemData.EquipmentRow.GetLocalizedName(true, false);
             infoText.text = itemData.EquipmentRow.GetLocalizedInformation();
-            percentText.text = itemData.Ratio.ToString("P0");
+            percentText.text = itemData.Ratio.ToString("0.####%");
 
             _disposables.DisposeAllAndClear();
             Context.OnClick.Subscribe(row =>
