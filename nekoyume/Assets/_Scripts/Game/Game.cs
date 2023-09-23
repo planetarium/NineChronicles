@@ -41,9 +41,11 @@ using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
+#endif
+#if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
 #if ENABLE_FIREBASE
@@ -220,7 +222,7 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -264,6 +266,8 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
+#endif
+#if UNITY_ANDROID || UNITY_IOS
             portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
@@ -339,7 +343,7 @@ namespace Nekoyume.Game
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
 
             GL.Clear(true, true, Color.black);
-            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
+            // var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -392,7 +396,7 @@ namespace Nekoyume.Game
 
             IEnumerator CoInitializeSecondWidget()
             {
-                yield return createSecondWidgetCoroutine;
+                // yield return createSecondWidgetCoroutine;
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
             }
 
@@ -703,7 +707,7 @@ namespace Nekoyume.Game
                 }
             }
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
                 if (!States.PledgeRequested)

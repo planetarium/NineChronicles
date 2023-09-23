@@ -44,6 +44,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button googleSignInButton;
 
+        [SerializeField]
+        private Button appleSignInButton;
+
         private int _guideIndex = 0;
         private const int GuideCount = 3;
 
@@ -99,6 +102,28 @@ namespace Nekoyume.UI
                         });
                 }
             });
+            appleSignInButton.onClick.AddListener(() =>
+            {
+                if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+                {
+                    google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+                }
+
+                if (google.State.Value is not (GoogleSigninBehaviour.SignInState.Signed or
+                    GoogleSigninBehaviour.SignInState.Waiting))
+                {
+                    google.OnSignIn();
+                    startButtonContainer.SetActive(false);
+                    google.State
+                        .SkipLatestValueOnSubscribe()
+                        .First()
+                        .Subscribe(state =>
+                        {
+                            startButtonContainer.SetActive(
+                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                        });
+                }
+            });
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -123,6 +148,7 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
             googleSignInButton.interactable = true;
+            appleSignInButton.interactable = true;
             GetGuestPrivateKey();
         }
 
@@ -132,7 +158,7 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
