@@ -58,7 +58,7 @@ namespace Lib9c.Tests.Action
             var states = GenerateAvatar(_initialState, out var avatarAddress1);
             GenerateAvatar(states, out var avatarAddress2);
 
-            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
                 {
                     (avatarAddress1, new List<FungibleAssetValue> { _currencies[0] * 1, _currencies[1] * 1 }),
                     (avatarAddress2, new List<FungibleAssetValue> { _currencies[0] * 1 }),
@@ -86,7 +86,7 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = Currencies.Crystal;
-            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
             {
                 (recipientAvatarAddress, new List<FungibleAssetValue> { currency * 1 }),
             });
@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = _currencies.First();
-            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
             {
                 (recipientAvatarAddress, new List<FungibleAssetValue> { currency * 6 }),
             });
@@ -126,7 +126,7 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
-            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
             {
                 (recipientAvatarAddress, fungibleAssetValues),
             });
@@ -160,7 +160,7 @@ namespace Lib9c.Tests.Action
             };
             var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
 
-            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
             {
                 (recipientAvatarAddress1, fungibleAssetValues.Take(2).ToList()),
                 (recipientAvatarAddress2, fungibleAssetValues),

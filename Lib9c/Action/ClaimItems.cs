@@ -20,24 +20,24 @@ namespace Nekoyume.Action
     {
         private const string ActionTypeText = "claim_items";
 
-        public List<(Address address, List<FungibleAssetValue> fungibleAssetValues)> ClaimData { get; private set; }
+        public IReadOnlyList<(Address address, IReadOnlyList<FungibleAssetValue> fungibleAssetValues)> ClaimData { get; private set; }
 
         public ClaimItems()
         {
         }
 
-        public ClaimItems(List<(Address, List<FungibleAssetValue>)> claimData)
+        public ClaimItems(IReadOnlyList<(Address, IReadOnlyList<FungibleAssetValue>)> claimData)
         {
             ClaimData = claimData;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             ImmutableDictionary<string, IValue>.Empty
-                .Add(ClaimDataKey, ClaimData.Select(x =>
+                .Add(ClaimDataKey, ClaimData.Select(tuple =>
                 {
-                    var serializedFungibleAsetValues = x.fungibleAssetValues.Select(x => x.Serialize()).Serialize();
+                    var serializedFungibleAssetValues = tuple.fungibleAssetValues.Select(x => x.Serialize()).Serialize();
 
-                    return (x.address, serialized: serializedFungibleAsetValues);
+                    return (tuple.address, serialized: serializedFungibleAssetValues);
                 }).Serialize());
 
         protected override void LoadPlainValueInternal(
@@ -46,7 +46,9 @@ namespace Nekoyume.Action
             ClaimData = plainValue[ClaimDataKey].ToStateList()
                 .Select((tuple =>
                 {
-                    return (tuple.Item1, tuple.Item2.ToList((x => x.ToFungibleAssetValue())));
+                    return (
+                        tuple.Item1,
+                        tuple.Item2.ToList((x => x.ToFungibleAssetValue())) as IReadOnlyList<FungibleAssetValue>);
                 })).ToList();
         }
 
