@@ -66,18 +66,14 @@ namespace Lib9c.Tests.Action
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
-            Assert.Equal(action.ClaimData[0].address, deserialized.ClaimData[0].address);
-            Assert.Equal(
-                action.ClaimData[0].fungibleAssetValues[0].Currency.Ticker,
-                deserialized.ClaimData[0].fungibleAssetValues[0].Currency.Ticker);
-            Assert.Equal(
-                action.ClaimData[0].fungibleAssetValues[1].Currency.Ticker,
-                deserialized.ClaimData[0].fungibleAssetValues[1].Currency.Ticker);
+            var orderedClaimData = action.ClaimData.OrderBy(x => x.address).ToList();
 
-            Assert.Equal(action.ClaimData[1].address, deserialized.ClaimData[1].address);
-            Assert.Equal(
-                action.ClaimData[1].fungibleAssetValues[0].Currency.Ticker,
-                deserialized.ClaimData[1].fungibleAssetValues[0].Currency.Ticker);
+            foreach (var i in Enumerable.Range(0, 2))
+            {
+                Assert.Equal(orderedClaimData[i].address, deserialized.ClaimData[i].address);
+                Assert.True(orderedClaimData[i].fungibleAssetValues
+                    .SequenceEqual(deserialized.ClaimData[i].fungibleAssetValues));
+            }
         }
 
         [Fact]
