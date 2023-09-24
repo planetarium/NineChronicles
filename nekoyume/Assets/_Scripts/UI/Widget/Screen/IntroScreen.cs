@@ -53,8 +53,8 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
 
-        private const string GuestPrivateKeyUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
+        private const string GuestPrivateKeyUrlTemplate =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk-{0}-{1}";
         protected override void Awake()
         {
             base.Awake();
@@ -250,9 +250,27 @@ namespace Nekoyume.UI
         private async void GetGuestPrivateKey()
         {
             string pk;
+            // We don't use Application.platform since want to check guest login
+            // even in UnityEditor.
+            // FIXME: Move these codes to more proper place to reuse.
+#if UNITY_ANDROID
+                RuntimePlatform platform = RuntimePlatform.Android;
+#elif UNITY_IOS
+                RuntimePlatform platform = RuntimePlatform.IPhonePlayer;
+#else
+                RuntimePlatform platform = Application.platform;
+#endif
+            // See also https://github.com/planetarium/NineChronicles.LiveAssets
+            string pkUrl = string.Format(
+                GuestPrivateKeyUrlTemplate,
+                platform,
+                Application.version
+            );
+            Debug.Log($"Trying to fetch guest private key from {pkUrl}");
+
             try
             {
-                var request = UnityWebRequest.Get(GuestPrivateKeyUrl);
+                var request = UnityWebRequest.Get(pkUrl);
                 await request.SendWebRequest();
                 pk = request.downloadHandler.text.Trim();
                 ByteUtil.ParseHex(pk);
