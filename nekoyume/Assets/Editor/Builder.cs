@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+using AppleAuth.Editor;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -441,6 +442,28 @@ namespace Editor
             if (buildTarget != BuildTarget.iOS)
             {
                 return;
+            }
+            
+            if (buildTarget == BuildTarget.iOS || buildTarget == BuildTarget.tvOS)
+            {
+                #if UNITY_XCODE_EXTENSIONS_AVAILABLE
+                    var projectPath = PBXProject.GetPBXProjectPath(buildPath);
+                    #if UNITY_2019_3_OR_NEWER
+                        var project = new PBXProject();
+                        project.ReadFromString(System.IO.File.ReadAllText(projectPath));
+                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", null, project.GetUnityMainTargetGuid());
+                        manager.AddSignInWithAppleWithCompatibility(project.GetUnityFrameworkTargetGuid());
+                        manager.WriteToFile();
+                    #else
+                        var manager = new ProjectCapabilityManager(projectPath, "Entitlements.entitlements", PBXProject.GetUnityTargetName());
+                        manager.AddSignInWithAppleWithCompatibility();
+                        manager.WriteToFile();
+                    #endif
+                #endif
+            }
+            else if (buildTarget == BuildTarget.StandaloneOSX)
+            {
+                AppleAuthMacosPostprocessorHelper.FixManagerBundleIdentifier(buildTarget, buildPath);
             }
 
             var pbxProjectPath = Path.Combine(buildPath, "Unity-iPhone.xcodeproj/project.pbxproj");

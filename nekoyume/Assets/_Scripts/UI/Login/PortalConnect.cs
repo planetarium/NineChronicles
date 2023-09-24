@@ -49,6 +49,7 @@ namespace Nekoyume.UI
 
         public readonly string PortalUrl;
         public const string GoogleAuthEndpoint = "/api/auth/login/google";
+        public const string AppleAuthEndpoint = "/api/auth/login/apple";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";

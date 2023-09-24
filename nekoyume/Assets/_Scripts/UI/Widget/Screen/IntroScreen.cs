@@ -104,23 +104,25 @@ namespace Nekoyume.UI
             });
             appleSignInButton.onClick.AddListener(() =>
             {
-                if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
                 {
-                    google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+                    apple = Game.Game.instance.gameObject.AddComponent<AppleSigninBehaviour>();
+                    apple.Initialize();
                 }
 
-                if (google.State.Value is not (GoogleSigninBehaviour.SignInState.Signed or
-                    GoogleSigninBehaviour.SignInState.Waiting))
+                if (apple.State.Value is not (AppleSigninBehaviour.SignInState.Signed or
+                    AppleSigninBehaviour.SignInState.Waiting))
                 {
-                    google.OnSignIn();
+                    apple.SignInWithApple();
                     startButtonContainer.SetActive(false);
-                    google.State
+                    apple.State
                         .SkipLatestValueOnSubscribe()
                         .First()
                         .Subscribe(state =>
                         {
                             startButtonContainer.SetActive(
-                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                                state is AppleSigninBehaviour.SignInState.Canceled);
                         });
                 }
             });
