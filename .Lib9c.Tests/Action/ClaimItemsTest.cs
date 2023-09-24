@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
 
             _tableSheets = new TableSheets(sheets);
             _itemIds = _tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
-            _currencies = _itemIds.Select(id => Currency.Legacy($"IT_{id}", 0, minters: null)).ToList();
+            _currencies = _itemIds.Select(id => Currency.Legacy($"Item_T_{id}", 0, minters: null)).ToList();
 
             _signerAddress = new PrivateKey().ToAddress();
 
@@ -55,16 +55,29 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Serialize()
         {
-            GenerateAvatar(_initialState, out var avatarAddress);
+            var states = GenerateAvatar(_initialState, out var avatarAddress1);
+            GenerateAvatar(states, out var avatarAddress2);
 
-            var action = new ClaimItems(
-                new List<Address> { avatarAddress },
-                new List<FungibleAssetValue> { _currencies.First() * 1 });
+            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+                {
+                    (avatarAddress1, new List<FungibleAssetValue> { _currencies[0] * 1, _currencies[1] * 1 }),
+                    (avatarAddress2, new List<FungibleAssetValue> { _currencies[0] * 1 }),
+                });
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
-            Assert.Equal(action.AvatarAddresses.First(), deserialized.AvatarAddresses.First());
-            Assert.Equal(action.Amounts.First(), deserialized.Amounts.First());
+            Assert.Equal(action.ClaimData[0].address, deserialized.ClaimData[0].address);
+            Assert.Equal(
+                action.ClaimData[0].fungibleAssetValues[0].Currency.Ticker,
+                deserialized.ClaimData[0].fungibleAssetValues[0].Currency.Ticker);
+            Assert.Equal(
+                action.ClaimData[0].fungibleAssetValues[1].Currency.Ticker,
+                deserialized.ClaimData[0].fungibleAssetValues[1].Currency.Ticker);
+
+            Assert.Equal(action.ClaimData[1].address, deserialized.ClaimData[1].address);
+            Assert.Equal(
+                action.ClaimData[1].fungibleAssetValues[0].Currency.Ticker,
+                deserialized.ClaimData[1].fungibleAssetValues[0].Currency.Ticker);
         }
 
         [Fact]
@@ -73,7 +86,10 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = Currencies.Crystal;
-            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, new List<FungibleAssetValue> { currency * 1 });
+            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            {
+                (recipientAvatarAddress, new List<FungibleAssetValue> { currency * 1 }),
+            });
             Assert.Throws<ArgumentException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -90,7 +106,10 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var currency = _currencies.First();
-            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, new List<FungibleAssetValue> { currency * 6 });
+            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            {
+                (recipientAvatarAddress, new List<FungibleAssetValue> { currency * 6 }),
+            });
             Assert.Throws<InsufficientBalanceException>(() =>
                 action.Execute(new ActionContext
                 {
@@ -107,7 +126,10 @@ namespace Lib9c.Tests.Action
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress);
 
             var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
-            var action = new ClaimItems(new List<Address> { recipientAvatarAddress }, fungibleAssetValues);
+            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            {
+                (recipientAvatarAddress, fungibleAssetValues),
+            });
             var states = action.Execute(new ActionContext
             {
                 PreviousState = state,
@@ -131,14 +153,19 @@ namespace Lib9c.Tests.Action
         {
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress1);
             state = GenerateAvatar(state, out var recipientAvatarAddress2);
-            state = GenerateAvatar(state, out var recipientAvatarAddress3);
 
             var recipientAvatarAddresses = new List<Address>
             {
-                recipientAvatarAddress1, recipientAvatarAddress2, recipientAvatarAddress3,
+                recipientAvatarAddress1, recipientAvatarAddress2,
             };
             var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
-            var action = new ClaimItems(recipientAvatarAddresses, fungibleAssetValues);
+
+            var action = new ClaimItems(new List<(Address, List<FungibleAssetValue>)>
+            {
+                (recipientAvatarAddress1, fungibleAssetValues.Take(2).ToList()),
+                (recipientAvatarAddress2, fungibleAssetValues),
+            });
+
             var states = action.Execute(new ActionContext
             {
                 PreviousState = state,
@@ -147,17 +174,18 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             });
 
-            foreach (var avatarAddress in recipientAvatarAddresses)
-            {
-                var inventory = states.GetInventory(avatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
-                foreach (var i in Enumerable.Range(0, 3))
-                {
-                    Assert.Equal(_currencies[i] * 2, states.GetBalance(_signerAddress, _currencies[i]));
-                    Assert.Equal(
-                        1,
-                        inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
-                }
-            }
+            Assert.Equal(states.GetBalance(_signerAddress, _currencies[0]), _currencies[0] * 3);
+            Assert.Equal(states.GetBalance(_signerAddress, _currencies[1]), _currencies[1] * 3);
+            Assert.Equal(states.GetBalance(_signerAddress, _currencies[2]), _currencies[2] * 4);
+
+            var inventory1 = states.GetInventory(recipientAvatarAddress1.Derive(SerializeKeys.LegacyInventoryKey));
+            Assert.Equal(1, inventory1.Items.First(x => x.item.Id == _itemIds[0]).count);
+            Assert.Equal(1, inventory1.Items.First(x => x.item.Id == _itemIds[1]).count);
+
+            var inventory2 = states.GetInventory(recipientAvatarAddress2.Derive(SerializeKeys.LegacyInventoryKey));
+            Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[0]).count);
+            Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[1]).count);
+            Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[2]).count);
         }
 
         private IAccount GenerateAvatar(IAccount state, out Address avatarAddress)
