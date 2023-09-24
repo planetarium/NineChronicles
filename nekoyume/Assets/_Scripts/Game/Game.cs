@@ -45,6 +45,7 @@ using Random = UnityEngine.Random;
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 #endif
+
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
@@ -63,39 +64,28 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField]
-        private Stage stage;
+        [SerializeField] private Stage stage;
 
-        [SerializeField]
-        private Arena arena;
+        [SerializeField] private Arena arena;
 
-        [SerializeField]
-        private RaidStage raidStage;
+        [SerializeField] private RaidStage raidStage;
 
-        [SerializeField]
-        private Lobby lobby;
+        [SerializeField] private Lobby lobby;
 
-        [SerializeField]
-        private bool useSystemLanguage = true;
+        [SerializeField] private bool useSystemLanguage = true;
 
-        [SerializeField]
-        private bool useLocalHeadless;
+        [SerializeField] private bool useLocalHeadless;
 
-        [SerializeField]
-        private bool useLocalMarketService;
+        [SerializeField] private bool useLocalMarketService;
 
-        [SerializeField]
-        private string marketDbConnectionString =
+        [SerializeField] private string marketDbConnectionString =
             "Host=localhost;Username=postgres;Database=market";
 
-        [SerializeField]
-        private LanguageTypeReactiveProperty languageType;
+        [SerializeField] private LanguageTypeReactiveProperty languageType;
 
-        [SerializeField]
-        private Prologue prologue;
+        [SerializeField] private Prologue prologue;
 
-        [SerializeField]
-        private GameObject debugConsolePrefab;
+        [SerializeField] private GameObject debugConsolePrefab;
 
         public States States { get; private set; }
 
@@ -184,14 +174,15 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Awake() invoked");
             Application.runInBackground = true;
 #if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
-            string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
-            //Load dynamic library of rocksdb
-            string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
-            Native.LoadLibrary(RocksdbLibPath);
+            // DevCra - iOS Build
+            //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
+            ////Load dynamic library of rocksdb
+            //string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
+            //Native.LoadLibrary(RocksdbLibPath);
 
-            //Set the path of secp256k1's dynamic library
-            string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
-            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
+            ////Set the path of secp256k1's dynamic library
+            //string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
+            //Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
 #elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
             string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
             Native.LoadLibrary(rocksdbLibPath);
@@ -214,7 +205,8 @@ namespace Nekoyume.Game
 #if UNITY_ANDROID
             // Load CommandLineOptions at Start() after init
 #elif UNITY_IOS
-            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
+            _commandLineOptions =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
@@ -319,7 +311,9 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager.Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language)).ToYieldInstruction();
+            yield return L10nManager
+                .Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
             // Initialize MainCanvas first
@@ -343,7 +337,8 @@ namespace Nekoyume.Game
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
 
             GL.Clear(true, true, Color.black);
-            // var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
+            var createSecondWidgetCoroutine =
+                StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -383,7 +378,8 @@ namespace Nekoyume.Game
             IEnumerator InitializeIAP()
             {
                 Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                IAPServiceManager =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
@@ -396,7 +392,7 @@ namespace Nekoyume.Game
 
             IEnumerator CoInitializeSecondWidget()
             {
-                // yield return createSecondWidgetCoroutine;
+                yield return createSecondWidgetCoroutine;
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
             }
 
@@ -457,7 +453,8 @@ namespace Nekoyume.Game
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
                 UnityEngine.Debug.unityLogger.logEnabled = true;
-                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
+                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj =
+                    Instantiate(debugConsolePrefab);
                 Util.IngameDebugConsoleCommands.Initailize();
             }
             else
@@ -469,9 +466,10 @@ namespace Nekoyume.Game
 
             if (_commandLineOptions.RpcClient)
             {
-                _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
-                    ? _commandLineOptions.RpcServerHost
-                    : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+                _commandLineOptions.RpcServerHost =
+                    !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
+                        ? _commandLineOptions.RpcServerHost
+                        : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
             }
 
             Debug.Log("[Game] CommandLineOptions loaded");
@@ -1076,6 +1074,7 @@ namespace Nekoyume.Game
                     var intro = Widget.Find<IntroScreen>();
                     intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
                 }
+
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
