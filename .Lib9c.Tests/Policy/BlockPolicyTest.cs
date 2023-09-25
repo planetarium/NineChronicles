@@ -6,6 +6,7 @@ namespace Lib9c.Tests
     using System.Linq;
     using System.Numerics;
     using Bencodex.Types;
+    using Lib9c.Renderers;
     using Libplanet.Action;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
@@ -45,7 +46,7 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
 
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
             IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
@@ -67,7 +68,7 @@ namespace Lib9c.Tests
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: new NCActionLoader()
                 ),
-                renderers: new[] { blockPolicySource.BlockRenderer }
+                renderers: new[] { new BlockRenderer() }
             );
             Transaction txByStranger =
                 Transaction.Create(
@@ -136,7 +137,7 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             var actionTypeLoader = new NCActionLoader();
             IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
             IStagePolicy stagePolicy = new VolatileStagePolicy();
@@ -177,7 +178,7 @@ namespace Lib9c.Tests
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: new NCActionLoader()
                 ),
-                renderers: new[] { blockPolicySource.BlockRenderer }
+                renderers: new[] { new BlockRenderer() }
             );
             Assert.Equal(1 * Currencies.Mead, blockChain.GetBalance(adminAddress, Currencies.Mead));
             Assert.Equal(1 * Currencies.Mead, blockChain.GetBalance(MeadConfig.PatronAddress, Currencies.Mead));
@@ -243,7 +244,7 @@ namespace Lib9c.Tests
             var adminAddress = adminPrivateKey.ToAddress();
             var nonValidator = new PrivateKey();
 
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(null, null, null, null);
             IStagePolicy stagePolicy = new VolatileStagePolicy();
             Block genesis = MakeGenesisBlock(
@@ -265,7 +266,7 @@ namespace Lib9c.Tests
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: new NCActionLoader()
                 ),
-                renderers: new[] { blockPolicySource.BlockRenderer }
+                renderers: new[] { new BlockRenderer() }
             );
             blockChain.MakeTransaction(
                 adminPrivateKey,
@@ -288,7 +289,7 @@ namespace Lib9c.Tests
                 new byte[] { 0x00, 0x01 }
             );
 
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
@@ -319,7 +320,7 @@ namespace Lib9c.Tests
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: actionLoader
                 ),
-                renderers: new[] { blockPolicySource.BlockRenderer }
+                renderers: new[] { new BlockRenderer() }
             );
 
             var unloadableAction = blockChain.MakeTransaction(
@@ -340,7 +341,7 @@ namespace Lib9c.Tests
                 new byte[] { 0x00, 0x01 }
             );
 
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
@@ -372,7 +373,7 @@ namespace Lib9c.Tests
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: new NCActionLoader()
                 ),
-                renderers: new[] { blockPolicySource.BlockRenderer }
+                renderers: new[] { new BlockRenderer() }
             );
 
             blockChain.MakeTransaction(
@@ -392,7 +393,7 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
@@ -491,7 +492,7 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
-            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockPolicySource = new BlockPolicySource();
             IBlockPolicy policy = blockPolicySource.GetPolicy(
                 maxTransactionsBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,

@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
@@ -13,7 +14,9 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model;
+    using Nekoyume.Model.Stake;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class TransferAssetTest
@@ -236,7 +239,7 @@ namespace Lib9c.Tests.Action
             Dictionary plainValue = (Dictionary)action.PlainValue;
             Dictionary values = (Dictionary)plainValue["values"];
 
-            Assert.Equal((Text)"transfer_asset4", plainValue["type_id"]);
+            Assert.Equal((Text)"transfer_asset5", plainValue["type_id"]);
             Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, values["recipient"].ToAddress());
             Assert.Equal(_currency * 100, values["amount"].ToFungibleAssetValue());
@@ -263,7 +266,7 @@ namespace Lib9c.Tests.Action
             }
 
             var plainValue = Dictionary.Empty
-                .Add("type_id", "transfer_asset3")
+                .Add("type_id", "transfer_asset5")
                 .Add("values", new Dictionary(pairs));
             var action = new TransferAsset();
             action.LoadPlainValue(plainValue);
@@ -302,7 +305,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new TransferAsset();
             var plainValue = Dictionary.Empty
-                .Add("type_id", "transfer_asset3")
+                .Add("type_id", "transfer_asset5")
                 .Add("values", new Dictionary(new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
@@ -312,6 +315,78 @@ namespace Lib9c.Tests.Action
                 }));
 
             Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
+        }
+
+        [Fact]
+        public void Execute_Throw_ArgumentException()
+        {
+            var baseState = new MockStateDelta(
+                MockState.Empty
+                    .SetBalance(_sender, _currency * 1000));
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: StakeState.DeriveAddress(_recipient),
+                amount: _currency * 100
+            );
+            // 스테이킹 주소에 송금하려고 하면 실패합니다.
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new StakeState(StakeState.DeriveAddress(_recipient), 0).SerializeV2()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new StakeStateV2(
+                            new Contract(
+                                "StakeRegularFixedRewardSheet_V1",
+                                "StakeRegularRewardSheet_V1",
+                                50400,
+                                201600),
+                            0).Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new MonsterCollectionState(
+                                MonsterCollectionState.DeriveAddress(_sender, 0),
+                                1,
+                                0)
+                            .Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
+            var monsterCollectionRewardSheet = new MonsterCollectionRewardSheet();
+            monsterCollectionRewardSheet.Set(
+                "level,required_gold,reward_id\n1,500,1\n2,1800,2\n3,7200,3\n4,54000,4\n5,270000,5\n6,480000,6\n7,1500000,7\n");
+            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
+            {
+                PreviousState = baseState
+                    .SetState(
+                        StakeState.DeriveAddress(_recipient),
+                        new MonsterCollectionState0(
+                                MonsterCollectionState.DeriveAddress(_sender, 0),
+                                1,
+                                0,
+                                monsterCollectionRewardSheet)
+                            .Serialize()),
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            }));
         }
 
         [Theory]

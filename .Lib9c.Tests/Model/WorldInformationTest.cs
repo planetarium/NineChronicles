@@ -35,6 +35,7 @@ namespace Lib9c.Tests.Model
         [Theory]
         [InlineData(1, 1)]
         [InlineData(2, 99)]
+        [InlineData(7, 316)]
         public void TryGetLastClearedStageId(int worldId, int stageId)
         {
             var wi = new WorldInformation(0, _tableSheets.WorldSheet, stageId - 1);

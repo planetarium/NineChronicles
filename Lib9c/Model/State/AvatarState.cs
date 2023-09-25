@@ -673,7 +673,8 @@ namespace Nekoyume.Model.State
                         break;
                     case ItemSubType.Aura:
                         isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Aura;
-                        requiredLevel = 1;
+                        requiredLevel = isSlotEnough ?
+                            GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura : int.MaxValue;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"{equipment.ItemSubType} / invalid equipment type");

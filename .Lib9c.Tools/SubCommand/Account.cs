@@ -70,7 +70,7 @@ namespace Lib9c.Tools.SubCommand
                     .Select(txId => store.GetTransaction(new TxId(txId.ToArray())))
                     .SelectMany(tx => tx.Actions is { } ca
                         ? ca.Select(a => actionLoader.LoadAction(digest.Index, a))
-                            .SelectMany(a => a is TransferAsset t
+                            .SelectMany(a => a is ITransferAsset t
                                 ? new[] { t.Sender, t.Recipient }
                                 : a is InitializeStates i &&
                                     i.GoldDistributions is Bencodex.Types.List l

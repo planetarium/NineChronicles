@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action.Summon
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using Libplanet.Action.State;
@@ -85,6 +86,44 @@ namespace Lib9c.Tests.Action.Summon
         // success second group
         [InlineData(10002, 1, 600202, 2, 1, new[] { 10620001 }, null)]
         [InlineData(10002, 2, 600202, 4, 4, new[] { 10630001, 10640001 }, null)]
+        // Nine plus zero
+        [InlineData(
+            10001,
+            9,
+            600201,
+            18,
+            0,
+            new[] { 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10630000, 10630000, 10630000 },
+            null
+        )]
+        [InlineData(
+            10002,
+            9,
+            600202,
+            18,
+            0,
+            new[] { 10620001, 10620001, 10620001, 10620001, 10630001, 10630001, 10630001, 10640001, 10640001 },
+            null
+        )]
+        // Ten plus one
+        [InlineData(
+            10001,
+            10,
+            600201,
+            20,
+            0,
+            new[] { 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10630000, 10630000, 10630000, 10630000 },
+            null
+        )]
+        [InlineData(
+            10002,
+            10,
+            600202,
+            20,
+            0,
+            new[] { 10620001, 10620001, 10620001, 10620001, 10630001, 10630001, 10630001, 10630001, 10640001, 10640001, 10640001 },
+            null
+        )]
         // fail by invalid group
         [InlineData(100003, 1, null, 0, 0, new int[] { }, typeof(RowNotInTableException))]
         // fail by not enough material
@@ -147,16 +186,25 @@ namespace Lib9c.Tests.Action.Summon
                     Random = random,
                 });
 
+                var equipments = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
+                    .ToList();
+                Assert.Equal(expectedEquipmentId.Length, equipments.Count);
+
+                var checkedEquipments = new List<Guid>();
                 foreach (var equipmentId in expectedEquipmentId)
                 {
-                    var resultEquipment = nextState.GetAvatarStateV2(_avatarAddress).inventory
-                        .Equipments.FirstOrDefault(e => e.Id == equipmentId);
+                    var resultEquipment = equipments.First(e =>
+                        e.Id == equipmentId && !checkedEquipments.Contains(e.ItemId)
+                    );
+
+                    checkedEquipments.Add(resultEquipment.ItemId);
                     Assert.NotNull(resultEquipment);
                     Assert.Equal(1, resultEquipment.RequiredBlockIndex);
                     Assert.True(resultEquipment.optionCountFromCombination > 0);
                 }
 
-                nextState.GetAvatarStateV2(_avatarAddress).inventory.TryGetItem((int)materialId!, out var resultMaterial);
+                nextState.GetAvatarStateV2(_avatarAddress).inventory
+                    .TryGetItem((int)materialId!, out var resultMaterial);
                 Assert.Equal(0, resultMaterial?.count ?? 0);
             }
             else

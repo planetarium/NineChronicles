@@ -86,17 +86,10 @@ namespace Nekoyume.Action
             });
 
             Currency currency = states.GetGoldCurrency();
-            FungibleAssetValue stakedAmount = 0 * currency;
-            if (states.TryGetStakeState(context.Signer, out StakeState stakeState))
+            FungibleAssetValue stakedAmount = states.GetStakedAmount(context.Signer);
+            if (stakedAmount == currency * 0 && states.TryGetState(monsterCollectionAddress, out Dictionary _))
             {
-                 stakedAmount = states.GetBalance(stakeState.address, currency);
-            }
-            else
-            {
-                if (states.TryGetState(monsterCollectionAddress, out Dictionary _))
-                {
-                    stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
-                }
+                stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
             }
 
             if (avatarState.actionPoint < CostAp)

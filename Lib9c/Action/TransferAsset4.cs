@@ -13,27 +13,28 @@ using Lib9c;
 using Lib9c.Abstractions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
-using Nekoyume.Model.Stake;
 using Serilog;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2143
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/636
     /// Updated at https://github.com/planetarium/lib9c/pull/2143
     /// </summary>
     [Serializable]
     [ActionType(TypeIdentifier)]
-    public class TransferAsset : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
+    [ActionObsolete(ObsoleteBlockIndex)]
+    public class TransferAsset4 : ActionBase, ISerializable, ITransferAsset, ITransferAssetV1
     {
         private const int MemoMaxLength = 80;
-        public const string TypeIdentifier = "transfer_asset5";
+        public const string TypeIdentifier = "transfer_asset4";
+        public const long ObsoleteBlockIndex = ActionObsoleteConfig.V200080ObsoleteIndex;
 
-        public TransferAsset()
+        public TransferAsset4()
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
+        public TransferAsset4(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
         {
             Sender = sender;
             Recipient = recipient;
@@ -43,7 +44,7 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        protected TransferAsset(SerializationInfo info, StreamingContext context)
+        protected TransferAsset4(SerializationInfo info, StreamingContext context)
         {
             var rawBytes = (byte[])info.GetValue("serialized", typeof(byte[]));
             Dictionary pv = (Dictionary) new Codec().Decode(rawBytes);
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset5 exec started", addressesHex);
+            Log.Debug("{AddressesHex}TransferAsset4 exec started", addressesHex);
             if (Sender != signer)
             {
                 throw new InvalidTransferSignerException(signer, Sender, Recipient);
@@ -118,92 +119,9 @@ namespace Nekoyume.Action
             }
 
             TransferAsset3.CheckCrystalSender(currency, context.BlockIndex, Sender);
-            ThrowIfStakeState(state, Recipient);
-
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}TransferAsset5 Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}TransferAsset4 Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return state.TransferAsset(context, Sender, Recipient, Amount);
-        }
-
-        public static void ThrowIfStakeState(IAccount state, Address recipient)
-        {
-            if (state.TryGetState(recipient, out IValue serializedStakeState))
-            {
-                bool isStakeStateOrMonsterCollectionState;
-                if (serializedStakeState is Dictionary dictionary)
-                {
-                    try
-                    {
-                        _ = new StakeState(dictionary);
-                        isStakeStateOrMonsterCollectionState = true;
-                    }
-                    catch (Exception)
-                    {
-                        isStakeStateOrMonsterCollectionState = false;
-                    }
-
-                    if (isStakeStateOrMonsterCollectionState)
-                    {
-                        throw new ArgumentException(
-                            "You can't send assets to staking state.",
-                            nameof(recipient));
-                    }
-
-                    try
-                    {
-                        _ = new MonsterCollectionState0(dictionary);
-                        isStakeStateOrMonsterCollectionState = true;
-                    }
-                    catch (Exception)
-                    {
-                        isStakeStateOrMonsterCollectionState = false;
-                    }
-
-                    if (isStakeStateOrMonsterCollectionState)
-                    {
-                        throw new ArgumentException(
-                            "You can't send assets to staking state.",
-                            nameof(recipient));
-                    }
-
-                    try
-                    {
-                        _ = new MonsterCollectionState(dictionary);
-                        isStakeStateOrMonsterCollectionState = true;
-                    }
-                    catch (Exception)
-                    {
-                        isStakeStateOrMonsterCollectionState = false;
-                    }
-
-                    if (isStakeStateOrMonsterCollectionState)
-                    {
-                        throw new ArgumentException(
-                            "You can't send assets to staking state.",
-                            nameof(recipient));
-                    }
-                }
-
-                if (serializedStakeState is List serializedStakeStateV2)
-                {
-                    try
-                    {
-                        _ = new StakeStateV2(serializedStakeStateV2);
-                        isStakeStateOrMonsterCollectionState = true;
-                    }
-                    catch (Exception)
-                    {
-                        isStakeStateOrMonsterCollectionState = false;
-                    }
-
-                    if (isStakeStateOrMonsterCollectionState)
-                    {
-                        throw new ArgumentException(
-                            "You can't send assets to staking state.",
-                            nameof(recipient));
-                    }
-                }
-            }
         }
 
         public override void LoadPlainValue(IValue plainValue)

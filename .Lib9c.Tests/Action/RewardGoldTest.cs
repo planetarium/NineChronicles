@@ -8,10 +8,12 @@ namespace Lib9c.Tests.Action
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
+    using Lib9c.Renderers;
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
+    using Libplanet.Blockchain.Renderers;
     using Libplanet.Crypto;
     using Libplanet.Store;
     using Libplanet.Store.Trie;
@@ -479,7 +481,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public async Task Genesis_StateRootHash(bool mainnet)
         {
-            BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
+            BlockPolicySource blockPolicySource = new BlockPolicySource();
             NCStagePolicy stagePolicy = new NCStagePolicy(default, 2);
             IBlockPolicy policy = blockPolicySource.GetPolicy();
             Block genesis;
@@ -553,7 +555,7 @@ namespace Lib9c.Tests.Action
                     blockChainStates: new BlockChainStates(store, stateStore),
                     actionTypeLoader: new NCActionLoader()
                 ),
-                renderers: blockPolicySource.GetRenderers()
+                renderers: new IRenderer[] { new ActionRenderer(), new BlockRenderer() }
             );
             Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);
         }
