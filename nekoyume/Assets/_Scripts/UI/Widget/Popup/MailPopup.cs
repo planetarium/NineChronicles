@@ -327,7 +327,7 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            var isNew = MailBox.Count(mail => mail.New && mail.requiredBlockIndex <= blockIndex) > 1;
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
             allButton.HasNotification.Value = isNew;
             receiveAllContainer.SetActive(isNew);
             Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
