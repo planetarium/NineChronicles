@@ -429,7 +429,6 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
-            Debug.Log("test 1");
             AnalyzeCache.Reset();
 
             if (_capturedImage != null)
@@ -439,17 +438,14 @@ namespace Nekoyume.UI
 
             if (Platform.IsMobilePlatform())
             {
-            Debug.Log("test 2");
                 string dataPath = Platform.GetPersistentDataPath("keystore");
                 KeyStore = path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
             }
             else
             {
-            Debug.Log("test 22");
                 KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             }
 
-            Debug.Log("test 3 " + privateKeyString);
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
             if (!string.IsNullOrEmpty(_privateKeyString) || Application.isBatchMode)
@@ -478,7 +474,6 @@ namespace Nekoyume.UI
                 // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
                 SetImage(KeyStore.List().First().Item2.Address);
             }
-            Debug.Log("test 5 ");
 
             switch (State.Value)
             {
@@ -509,7 +504,6 @@ namespace Nekoyume.UI
                     break;
             }
 #endif
-            Debug.Log("test 6 ");
             base.Show();
         }
 
