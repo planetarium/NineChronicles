@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Module
 
         private bool CanGrind => _selectedItemsForGrind.Any();
 
-        public void Show(bool reverseInventoryOrder = true)
+        public void Show(bool reverseInventoryOrder = false)
         {
             gameObject.SetActive(true);
             if (animator)
