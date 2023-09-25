@@ -3,7 +3,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -24,12 +23,10 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Spine.Unity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Model.EnumType;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -44,6 +41,8 @@ namespace Nekoyume.Game
 
     public class Stage : MonoBehaviour, IStage
     {
+        public const float DefaultAnimationTimeScaleWeight = 1f;
+        public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
         public ObjectPool objectPool;
@@ -93,6 +92,7 @@ namespace Nekoyume.Game
         public bool IsExitReserved { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int PlayCount { get; set; }
+        public float AnimationTimeScaleWeight { get; set; } = DefaultAnimationTimeScaleWeight;
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -137,6 +137,20 @@ namespace Nekoyume.Game
             SkillController = new SkillController(objectPool);
             BuffController = new BuffController(objectPool);
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
+        }
+
+        public void UpdateTimeScale()
+        {
+            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            {
+                var isEnemy = character is Character.Enemy;
+                character.Animator.TimeScale = isEnemy
+                    ? Character.CharacterBase.AnimatorTimeScale * AnimationTimeScaleWeight
+                    : AnimationTimeScaleWeight;
+                character.RunSpeed = isEnemy
+                    ? -1 * AnimationTimeScaleWeight
+                    : character.CharacterModel.RunSpeed * AnimationTimeScaleWeight;
+            }
         }
 
         private void OnStageStart(BattleLog log)
@@ -413,6 +427,7 @@ namespace Nekoyume.Game
                 StageType = StageType,
             };
 
+            AnimationTimeScaleWeight = DefaultAnimationTimeScaleWeight;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
@@ -706,15 +721,11 @@ namespace Nekoyume.Game
                     var sheet = TableSheets.Instance.EventDungeonStageSheet;
                     if (sheet is null)
                     {
-                        apCost = 0;
                         turnLimit = 0;
 
                         break;
                     }
 
-                    apCost = sheet.OrderedList
-                        .FirstOrDefault(row => row.Id == stageId)?
-                        .CostAP ?? 0;
                     turnLimit = sheet.TryGetValue(stageId, out var eventDungeonStageRow)
                         ? eventDungeonStageRow.TurnLimit
                         : 0;
@@ -729,8 +740,7 @@ namespace Nekoyume.Game
                 StageType,
                 stageId,
                 IsExitReserved,
-                isTutorial,
-                apCost * PlayCount);
+                isTutorial);
             status.ShowBattleTimer(turnLimit);
 
             if (AvatarState is not null && !ActionRenderHandler.Instance.Pending)

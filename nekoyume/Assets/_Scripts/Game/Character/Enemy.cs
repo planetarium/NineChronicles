@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new EnemyAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = AnimatorTimeScale;
+            Animator.TimeScale = AnimatorTimeScale * Game.instance.Stage.AnimationTimeScaleWeight;
 
             TargetTag = Tag.Player;
         }

@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Character
 
         public Pet Pet => appearance.Pet;
 
-        protected override float RunSpeedDefault => CharacterModel.RunSpeed;
+        protected override float RunSpeedDefault => CharacterModel.RunSpeed * Game.instance.Stage.AnimationTimeScaleWeight;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
@@ -58,7 +58,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = 1;
+            Animator.TimeScale = Game.instance.Stage.AnimationTimeScaleWeight;
 
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
