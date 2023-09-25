@@ -491,6 +491,25 @@ namespace Editor
 
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
+
+            // set plist path
+            var plistPath = Path.Combine(buildPath, "info.plist");
+
+            // read plist
+            Dictionary<string, object> dict;
+            dict = (Dictionary<string, object>)Plist.readPlist(plistPath);
+        
+            // update plist
+            dict["CFBundleURLTypes"] = new List<object> {
+                new Dictionary<string, object> {
+                    { "CFBundleURLSchemes", new List<object> {
+                        "com.googleusercontent.apps.449111430622-li181gdfir0mv33g0hdjcnjth6jv9r6b",
+                    } }
+                }
+            };
+        
+            // write plist
+            Plist.writeXml(dict, plistPath);
         }
 #endif
 
