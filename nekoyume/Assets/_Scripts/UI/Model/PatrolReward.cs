@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Model.Patrol
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
         private Address _currentAvatarAddress;
-        private readonly List<IDisposable> _disposables = new();
+        private bool _initialized;
 
         public async Task Initialize()
         {
@@ -33,19 +33,21 @@ namespace Nekoyume.UI.Model.Patrol
 
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
-
             await InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
-
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
-                {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
-                })
-                .ToReactiveProperty();
-            _disposables.DisposeAllAndClear();
-            LastRewardTime.Subscribe(_ => SetPushNotification()).AddTo(_disposables);
             _currentAvatarAddress = avatarAddress;
+
+            if (!_initialized)
+            {
+                PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                    .CombineLatest(LastRewardTime, (_, lastReward) =>
+                    {
+                        var timeSpan = DateTime.Now - lastReward;
+                        return timeSpan > Interval ? Interval : timeSpan;
+                    })
+                    .ToReactiveProperty();
+                LastRewardTime.Subscribe(_ => SetPushNotification());
+                _initialized = true;
+            }
         }
 
         private async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
