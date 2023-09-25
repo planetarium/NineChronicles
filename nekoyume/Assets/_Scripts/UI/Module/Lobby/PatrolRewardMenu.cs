@@ -56,10 +56,8 @@ namespace Nekoyume.UI.Module.Lobby
         private async void SetData(PatrolRewardPopup popup)
         {
             var patrolReward = popup.PatrolReward;
-            if (!patrolReward.Initialized)
-            {
-                await patrolReward.Initialize();
-            }
+
+            await patrolReward.Initialize();
 
             patrolReward.PatrolTime
                 .Select(time => time < patrolReward.Interval)

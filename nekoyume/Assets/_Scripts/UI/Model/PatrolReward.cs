@@ -2,6 +2,7 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Libplanet.Crypto;
 using UniRx;
 using UnityEngine;
 
@@ -9,8 +10,6 @@ namespace Nekoyume.UI.Model.Patrol
 {
     public class PatrolReward
     {
-        public bool Initialized { get; private set; } = false;
-
         private int AvatarLevel { get; set; }
         private readonly ReactiveProperty<DateTime> LastRewardTime = new();
 
@@ -21,10 +20,16 @@ namespace Nekoyume.UI.Model.Patrol
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
+        private Address _currentAvatarAddress;
 
         public async Task Initialize()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (_currentAvatarAddress.Equals(avatarAddress))
+            {
+                return;
+            }
+
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
 
@@ -37,8 +42,7 @@ namespace Nekoyume.UI.Model.Patrol
                     return timeSpan > Interval ? Interval : timeSpan;
                 })
                 .ToReactiveProperty();
-
-            Initialized = true;
+            _currentAvatarAddress = avatarAddress;
         }
 
         private async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
