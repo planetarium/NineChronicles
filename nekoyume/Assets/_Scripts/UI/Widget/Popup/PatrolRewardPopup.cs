@@ -72,10 +72,7 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            if (!PatrolReward.Initialized)
-            {
-                await PatrolReward.Initialize();
-            }
+            await PatrolReward.Initialize();
 
             if (!_initialized)
             {
@@ -109,7 +106,6 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
 
             receiveButton.OnSubmitSubject
-                .Where(_ => PatrolReward.Initialized)
                 .Subscribe(_ => ClaimRewardAsync())
                 .AddTo(_disposables);
 
