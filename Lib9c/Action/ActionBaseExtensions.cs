@@ -117,11 +117,6 @@ namespace Nekoyume.Action
                 throw new NotSupportedException();
             }
 
-            public ITrie Trie
-            {
-                get => throw new NotSupportedException();
-            }
-
             public IValue GetState(Address address)
             {
                 throw new NotSupportedException();

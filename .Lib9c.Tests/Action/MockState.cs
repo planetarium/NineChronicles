@@ -90,11 +90,6 @@ namespace Lib9c.Tests.Action
 
         public ValidatorSet ValidatorSet => _validatorSet;
 
-        public ITrie Trie
-        {
-            get => throw new NotSupportedException();
-        }
-
         public IValue? GetState(Address address) => _states.TryGetValue(address, out IValue? value)
             ? value
             : null;
