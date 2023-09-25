@@ -101,6 +101,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             return await ProcessResponseAsync(res);
         }
 
+        public async
+            Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
+            L10NAsync()
+        {
+            using var res = await _client.GetAsync(_endpoints.L10N);
+            return await ProcessResponseAsync(res);
+        }
+
         private static async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
             ProcessResponseAsync(HttpResponseMessage res)

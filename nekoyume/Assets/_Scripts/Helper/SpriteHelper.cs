@@ -100,29 +100,26 @@ namespace Nekoyume.Helper
 
         public static Sprite GetMailIcon(MailType mailType)
         {
-            Sprite result = null;
+            var fileName = string.Empty;
             switch (mailType)
             {
                 case MailType.Workshop:
-                    result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_workshop"));
+                    fileName = "icon_mail_workshop";
                     break;
                 case MailType.Auction:
-                    result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_auction"));
+                    fileName = "icon_mail_auction";
                     break;
                 case MailType.System:
-                    result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_system"));
+                    fileName = "icon_mail_system";
                     break;
                 case MailType.Grinding:
-                    result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_grind"));
+                    fileName = "icon_mail_grind";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
 
+            var result = Resources.Load<Sprite>(string.Format(MailIconPathFormat, fileName));
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
         }
 

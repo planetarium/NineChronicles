@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -11,38 +15,32 @@ namespace Nekoyume.UI
     public class MobileShop : Widget
     {
         [SerializeField]
-        private IAPShopView view;
+        private Toggle originCategoryTab;
 
         [SerializeField]
-        private InAppProductTab originProductTab;
+        private IAPShopProductCellView originProductCellView;
 
         [SerializeField]
         private UnityEngine.UI.ToggleGroup tabToggleGroup;
 
-        private readonly Dictionary<string, InAppProductTab> _productTabDictionary = new();
-        private bool _productInitialized;
-        private string _selectedProductId;
-        private readonly Dictionary<string, Sprite> _productImageDictionary = new();
+        [SerializeField]
+        private IAPShopDynamicGridLayoutView iAPShopDynamicGridLayout;
+
+        private bool _isInitailizedObj;
+        private Dictionary<string, IAPShopProductCellView> _allProductObjs = new Dictionary<string, IAPShopProductCellView>();
+        private Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory = new Dictionary<string, List<IAPShopProductCellView>>();
+
+        private Toggle _recommendedToggle;
+
+        private const string _recommendedString = "Recommended";
+
+        private string _lastSelectedCategory;
+
+        public static L10NSchema MOBILE_L10N_SCHEMA;
 
         protected override void Awake()
         {
             base.Awake();
-            foreach (var sprite in Resources.LoadAll<Sprite>("UI/Textures/00_Shop"))
-            {
-                _productImageDictionary.Add(
-                    sprite.name.Remove(0, 4),
-                    sprite);
-            }
-
-            view.PurchaseButton.onClick.AddListener(() =>
-            {
-                Debug.LogError($"Purchase: {_selectedProductId}");
-                Analyzer.Instance.Track(
-                    "Unity/Shop/IAP/PurchaseButton/Click",
-                    ("product-id", _selectedProductId));
-                PurchaseButtonLoadingStart();
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_selectedProductId);
-            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -56,162 +54,135 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void UpdateView()
-        {
-            OnToggleValueChanged(true, _productTabDictionary[_selectedProductId]);
-        }
-
-        public void PurchaseButtonLoadingStart()
-        {
-            view.PurchaseButton.interactable = false;
-            view.PurchaseButtonDissableGroupObj.SetActive(false);
-            view.PurchaseButtonLoadingObj.Show("");
-        }
-
-        public void PurchaseButtonLoadingEnd()
-        {
-            view.PurchaseButton.interactable = true;
-            view.PurchaseButtonDissableGroupObj.SetActive(true);
-            view.PurchaseButtonLoadingObj.Close();
-        }
-
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<DataLoadingScreen>();
             loading.Show();
 
-            var products = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
-
-            if (!_productInitialized && products != null)
+            try
             {
-                foreach (var product in products.OrderBy(p => p.DisplayOrder))
+                if (!_isInitailizedObj)
                 {
-                    var tab = Instantiate(originProductTab, tabToggleGroup.transform);
-                    var storeProduct = Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
-                        p.definition.id == product.GoogleSku);
-                    tab.Set(storeProduct, product.DisplayOrder);
-                    var tabToggle = tab.Toggle;
-                    tabToggle.isOn = false;
-                    tabToggle.onObject.SetActive(false);
-                    tabToggle.offObject.SetActive(true);
-                    tabToggle.group = tabToggleGroup;
+                    MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
 
-                    tabToggle.onValueChanged.AddListener(isOn => OnToggleValueChanged(isOn, tab));
-                    _productTabDictionary.Add(product.GoogleSku, tab);
-                }
+                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
+                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
 
-                _productInitialized = true;
-            }
+                    var categorySchemas = await Game.Game.instance.IAPServiceManager
+                        .GetProductsAsync(States.Instance.AgentState.address);
 
-            if (products != null)
-            {
-                foreach (var product in products.Where(p => !p.Active))
-                {
-                    if (_productTabDictionary.TryGetValue(product.GoogleSku, out var tab))
+                    if(categorySchemas.Count == 0)
                     {
-                        tab.gameObject.SetActive(false);
+                        loading.Close();
+                        base.Show(ignoreShowAnimation);
+                        Close();
+                        Widget.Find<IconAndButtonSystem>().Show(
+                            "UI_ERROR",
+                            "NOTIFICATION_NO_ENTRY_SHOP",
+                            "UI_OK",
+                            true,
+                            IconAndButtonSystem.SystemType.Information);
                     }
+
+                    var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
+                    foreach (var category in renderCategory)
+                    {
+                        var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
+
+                        var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key, iconSprite);
+
+                        categoryTabObj.onObject.SetActive(false);
+                        categoryTabObj.offObject.SetActive(true);
+                        categoryTabObj.group = tabToggleGroup;
+                        tabToggleGroup.RegisterToggle(categoryTabObj);
+                        categoryTabObj.onValueChanged.AddListener((isOn) =>
+                        {
+                            if (!isOn)
+                                return;
+
+                            AudioController.PlayClick();
+                            RefreshGridByCategory(category.Name);
+                            _lastSelectedCategory = category.Name;
+                        });
+
+                        var productList = category.ProductList?.Where(p => p.Active).OrderBy(p => p.Order);
+                        var iapProductCellObjs = new List<IAPShopProductCellView>();
+                        foreach (var product in productList)
+                        {
+                            if (!_allProductObjs.TryGetValue(product.GoogleSku, out var productObj))
+                            {
+                                productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
+                                productObj.SetData(product, category.Name == _recommendedString);
+                                await productObj.RefreshLocalized();
+                                _allProductObjs.Add(product.GoogleSku, productObj);
+                            }
+                            iapProductCellObjs.Add(productObj);
+                        }
+                        _allProductObjByCategory.Add(category.Name, iapProductCellObjs);
+
+                        categoryTabObj.interactable = true;
+
+                        if (category.Name == _recommendedString)
+                            _recommendedToggle = categoryTabObj;
+                    }
+                    _isInitailizedObj = true;
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+                loading.Close();
+                base.Show(ignoreShowAnimation);
+                Close();
+                Widget.Find<IconAndButtonSystem>().Show(
+                    "UI_ERROR",
+                    "ERROR_NO_ENTRY_SHOP",
+                    "UI_OK",
+                    true);
+                return;
             }
 
             base.Show(ignoreShowAnimation);
-            InAppProductTab firstTab = null;
-            foreach (var tab in _productTabDictionary.Values.OrderBy(tab => tab.DisplayOrder))
-            {
-                if (products?.Any(p => p.GoogleSku == tab.ProductId && !p.Active) ?? false)
-                {
-                    tab.gameObject.SetActive(false);
-                    continue;
-                }
 
-                firstTab ??= tab;
-                tab.Toggle.onObject.SetActive(false);
-                tab.Toggle.offObject.SetActive(true);
-                tab.Toggle.SetIsOnWithoutNotify(false);
-                RefreshToggleValue(false, tab, products);
-            }
-
-            if (firstTab != null)
+            if(_recommendedToggle != null)
             {
-                firstTab.Toggle.onObject.SetActive(true);
-                firstTab.Toggle.offObject.SetActive(false);
-                firstTab.Toggle.SetIsOnWithoutNotify(true);
-                RefreshToggleValue(true, firstTab, products);
+                _recommendedToggle.isOn = true;
+                _recommendedToggle.onObject.SetActive(true);
+                _recommendedToggle.offObject.SetActive(true);
+                RefreshGridByCategory(_recommendedString);
+                _lastSelectedCategory = _recommendedString;
             }
 
             loading.Close();
         }
 
-        private static string GetProductImageNameFromProductId(string productId)
+        public void RefreshGrid()
         {
-            return (productId.StartsWith("g_")
-                ? productId.Remove(0, 2)
-                : productId) + L10nManager.CurrentLanguage switch
-            {
-                LanguageType.Portuguese => "_PT",
-                LanguageType.ChineseSimplified => "_ZH-CN",
-                _ => "_EN"
-            };
+            RefreshGridByCategory(_lastSelectedCategory);
         }
 
-        private async void OnToggleValueChanged(bool isOn, InAppProductTab tab)
+        public void PurchaseComplete(string productId)
         {
-            PurchaseButtonLoadingEnd();
-
-            var products = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
-
-            RefreshToggleValue(isOn, tab, products);
-        }
-
-        private void RefreshToggleValue(bool isOn, InAppProductTab tab, IReadOnlyList<NineChronicles.ExternalServices.IAPService.Runtime.Models.ProductSchema> products)
-        {
-            if (isOn)
+            if(_allProductObjs.TryGetValue(productId, out var cell))
             {
-                Analyzer.Instance.Track(
-                    "Unity/Shop/IAP/Tab/Click",
-                    ("product-id", tab.ProductId));
-                var product = products?.FirstOrDefault(p => p.GoogleSku == tab.ProductId);
-                if (product is null)
-                {
-                    return;
-                }
-
-                var storeProduct = Game.Game.instance.IAPStoreManager.IAPProducts.First(p =>
-                    p.definition.id == tab.ProductId);
-
-                _selectedProductId = tab.ProductId;
-                view.PriceTexts.ForEach(text => text.text = $"{storeProduct.metadata.isoCurrencyCode} {storeProduct.metadata.localizedPrice}");
-                view.ProductImage.sprite =
-                    _productImageDictionary[GetProductImageNameFromProductId(tab.ProductId)];
-                view.PurchaseButton.interactable = product.Buyable;
-                var limit = product.DailyLimit ?? product.WeeklyLimit;
-                view.LimitCountObjects.ForEach(obj => obj.SetActive(limit.HasValue));
-                if (limit.HasValue)
-                {
-                    var remain = limit - product.PurchaseCount;
-                    view.BuyLimitCountText.ForEach(text => text.text = $"{remain}/{limit}");
-                }
-
-                view.RewardViews.ForEach(v => v.gameObject.SetActive(false));
-                foreach (var fungibleItemSchema in product.FungibleItemList)
-                {
-                    var rewardView =
-                        view.RewardViews.First(v => !v.gameObject.activeSelf);
-                    rewardView.RewardName.text =
-                        L10nManager.LocalizeItemName(fungibleItemSchema.SheetItemId);
-                    rewardView.RewardImage.sprite =
-                        SpriteHelper.GetItemIcon(fungibleItemSchema.SheetItemId);
-                    rewardView.RewardCount.text = $"x{fungibleItemSchema.Amount}";
-                    rewardView.gameObject.SetActive(true);
-                }
-
-                var messageKey = product.DailyLimit.HasValue
-                    ? "UI_MS_BUT_LIMIT_MESSAGE_DAY"
-                    : "UI_MS_BUT_LIMIT_MESSAGE_WEEK";
-                view.BuyLimitMessageText.text = L10nManager.Localize(messageKey);
+                cell.LocalPurchaseSucces();
             }
+        }
+
+        private void RefreshGridByCategory(string categoryName)
+        {
+            Analyzer.Instance.Track("Unity/Shop/IAP/Tab/Click",("category-name", categoryName));
+            foreach (var item in _allProductObjs)
+            {
+                item.Value.gameObject.SetActive(false);
+            }
+            foreach (var item in _allProductObjByCategory[categoryName])
+            {
+                if(item.IsBuyable())
+                    item.gameObject.SetActive(true);
+            }
+            iAPShopDynamicGridLayout.Refresh();
         }
     }
 }

@@ -29,37 +29,6 @@ namespace Nekoyume.UI.Model
     }
 
     [Serializable]
-    public class TxResultResponse
-    {
-        public Transaction transaction;
-    }
-
-    [Serializable]
-    public class Transaction
-    {
-        public TransactionResult transactionResult;
-    }
-
-    [Serializable]
-    public class TransactionResult
-    {
-        public TxStatus txStatus;
-    }
-
-    public class GoldBalanceResponse
-    {
-        public string balance;
-    }
-
-    [Serializable]
-    public enum TxStatus {
-        INVALID,
-        STAGING,
-        SUCCESS,
-        FAILURE,
-    }
-
-    [Serializable]
     public class SeasonRewardRecord
     {
         public string agentAddress;
