@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Libplanet.Crypto;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model.Patrol
 {
+    using UniRx;
     public class PatrolReward
     {
         private int AvatarLevel { get; set; }
@@ -21,6 +21,7 @@ namespace Nekoyume.UI.Model.Patrol
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
         private Address _currentAvatarAddress;
+        private readonly List<IDisposable> _disposables = new();
 
         public async Task Initialize()
         {
@@ -42,6 +43,8 @@ namespace Nekoyume.UI.Model.Patrol
                     return timeSpan > Interval ? Interval : timeSpan;
                 })
                 .ToReactiveProperty();
+            _disposables.DisposeAllAndClear();
+            LastRewardTime.Subscribe(_ => SetPushNotification()).AddTo(_disposables);
             _currentAvatarAddress = avatarAddress;
         }
 
@@ -196,8 +199,6 @@ $@"query {{
                 Interval = response.Policy.MinimumRequiredInterval;
                 RewardModels.Value = response.Policy.Rewards;
             }
-
-            SetPushNotification();
         }
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
@@ -269,7 +270,7 @@ $@"mutation {{
                 PlayerPrefs.DeleteKey(PatrolRewardPushIdentifierKey);
             }
 
-            var completeTime = (LastRewardTime.Value + Interval) - DateTime.Now;
+            var completeTime = LastRewardTime.Value + Interval - DateTime.Now;
 
             var pushIdentifier = PushNotifier.Push(L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"), completeTime, PushNotifier.PushType.Reward);
             PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
