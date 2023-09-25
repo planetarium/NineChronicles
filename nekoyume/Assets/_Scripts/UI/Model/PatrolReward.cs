@@ -2,15 +2,14 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UniRx;
+using Libplanet.Crypto;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model.Patrol
 {
+    using UniRx;
     public class PatrolReward
     {
-        public bool Initialized { get; private set; } = false;
-
         private int AvatarLevel { get; set; }
         private readonly ReactiveProperty<DateTime> LastRewardTime = new();
 
@@ -21,24 +20,34 @@ namespace Nekoyume.UI.Model.Patrol
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
+        private Address _currentAvatarAddress;
+        private bool _initialized;
 
         public async Task Initialize()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (_currentAvatarAddress.Equals(avatarAddress))
+            {
+                return;
+            }
+
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
-
             await InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
+            _currentAvatarAddress = avatarAddress;
 
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
-                {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
-                })
-                .ToReactiveProperty();
-
-            Initialized = true;
+            if (!_initialized)
+            {
+                PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                    .CombineLatest(LastRewardTime, (_, lastReward) =>
+                    {
+                        var timeSpan = DateTime.Now - lastReward;
+                        return timeSpan > Interval ? Interval : timeSpan;
+                    })
+                    .ToReactiveProperty();
+                LastRewardTime.Subscribe(_ => SetPushNotification());
+                _initialized = true;
+            }
         }
 
         private async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
@@ -88,15 +97,24 @@ $@"query {{
             if (response.Avatar is null)
             {
                 await PutAvatar(avatarAddress, agentAddress);
-                return;
+            }
+            else
+            {
+                AvatarLevel = response.Avatar.Level;
+                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
+                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
             }
 
-            AvatarLevel = response.Avatar.Level;
-            var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
-            NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-            Interval = response.Policy.MinimumRequiredInterval;
-            RewardModels.Value = response.Policy.Rewards;
+            if (response.Policy is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+            }
+            else
+            {
+                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+                Interval = response.Policy.MinimumRequiredInterval;
+                RewardModels.Value = response.Policy.Rewards;
+            }
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
@@ -127,12 +145,13 @@ $@"query {{
             if (response.Avatar is null)
             {
                 await PutAvatar(avatarAddress, agentAddress);
-                return;
             }
-
-            AvatarLevel = response.Avatar.Level;
-            var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            else
+            {
+                AvatarLevel = response.Avatar.Level;
+                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
+                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            }
         }
 
         public async Task LoadPolicyInfo(int level, bool free = true)
@@ -172,11 +191,16 @@ $@"query {{
                 return;
             }
 
-            NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-            Interval = response.Policy.MinimumRequiredInterval;
-            RewardModels.Value = response.Policy.Rewards;
-
-            SetPushNotification();
+            if (response.Policy is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+            }
+            else
+            {
+                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+                Interval = response.Policy.MinimumRequiredInterval;
+                RewardModels.Value = response.Policy.Rewards;
+            }
         }
 
         public async Task<string> ClaimReward(string avatarAddress, string agentAddress)
@@ -228,6 +252,12 @@ $@"mutation {{
                 return;
             }
 
+            if (response.PutAvatar is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse.PutAvatar)}");
+                return;
+            }
+
             AvatarLevel = response.PutAvatar.Level;
             var lastClaimedAt = response.PutAvatar.LastClaimedAt ?? response.PutAvatar.CreatedAt;
             LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
@@ -242,7 +272,7 @@ $@"mutation {{
                 PlayerPrefs.DeleteKey(PatrolRewardPushIdentifierKey);
             }
 
-            var completeTime = (LastRewardTime.Value + Interval) - DateTime.Now;
+            var completeTime = LastRewardTime.Value + Interval - DateTime.Now;
 
             var pushIdentifier = PushNotifier.Push(L10nManager.Localize("PUSH_PATROL_REWARD_COMPLETE_CONTENT"), completeTime, PushNotifier.PushType.Reward);
             PlayerPrefs.SetString(PatrolRewardPushIdentifierKey, pushIdentifier);
