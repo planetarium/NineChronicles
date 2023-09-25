@@ -63,12 +63,9 @@ namespace Nekoyume.Blockchain
 
         private DateTimeOffset _lastTipChangedAt;
 
-        // Rendering logs will be recorded in NineChronicles.Standalone
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+        public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
-        public BlockRenderer BlockRenderer => new BlockRenderer();
-
-        public ActionRenderer ActionRenderer => new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 

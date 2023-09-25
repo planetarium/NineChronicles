@@ -90,11 +90,9 @@ namespace Nekoyume.Blockchain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        public BlockPolicySource BlockPolicySource { get; private set; }
+        public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
-        public BlockRenderer BlockRenderer => new BlockRenderer();
-
-        public ActionRenderer ActionRenderer => new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
 
@@ -140,8 +138,6 @@ namespace Nekoyume.Blockchain
             string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
-            BlockPolicySource = new BlockPolicySource();
-
             var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath());
             if (genesisBlock is null)
             {
@@ -151,7 +147,6 @@ namespace Nekoyume.Blockchain
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
 
-            var policy = BlockPolicySource.GetPolicy();
             _stagePolicy = new VolatileStagePolicy();
             PrivateKey = privateKey;
 
@@ -164,6 +159,7 @@ namespace Nekoyume.Blockchain
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 var actionLoader = new NCActionLoader();
                 var blockChainStates = new BlockChainStates(store, _stateStore);
+                var policy = new BlockPolicySource().GetPolicy();
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
                     blockChainStates,
