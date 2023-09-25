@@ -147,7 +147,8 @@ namespace Nekoyume.UI
                     btnCombination.GetComponent<Button>(),
                     btnQuest.GetComponent<Button>(),
                     btnRanking.GetComponent<Button>(),
-                    btnShop.GetComponent<Button>(),
+                    // DevCra - Temporarily disabled until iOS IAP implementation
+                    // btnShop.GetComponent<Button>(),
                     btnStaking.GetComponent<Button>(),
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
