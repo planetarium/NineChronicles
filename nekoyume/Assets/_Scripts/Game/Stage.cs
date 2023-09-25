@@ -147,9 +147,12 @@ namespace Nekoyume.Game
                 character.Animator.TimeScale = isEnemy
                     ? Character.CharacterBase.AnimatorTimeScale * AnimationTimeScaleWeight
                     : AnimationTimeScaleWeight;
-                character.RunSpeed = isEnemy
-                    ? -1 * AnimationTimeScaleWeight
-                    : character.CharacterModel.RunSpeed * AnimationTimeScaleWeight;
+                if (character.RunSpeed != 0f)
+                {
+                    character.RunSpeed = isEnemy
+                        ? -1 * AnimationTimeScaleWeight
+                        : character.CharacterModel.RunSpeed * AnimationTimeScaleWeight;
+                }
             }
         }
 
