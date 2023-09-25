@@ -73,6 +73,7 @@ namespace Nekoyume.UI
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             await PatrolReward.Initialize();
+            SetIntervalText(PatrolReward.Interval);
 
             if (!_initialized)
             {
@@ -84,8 +85,7 @@ namespace Nekoyume.UI
             {
                 await PatrolReward.LoadPolicyInfo(level);
 
-                gaugeUnitText1.text = GetTimeString(PatrolReward.Interval / 2);
-                gaugeUnitText2.text = GetTimeString(PatrolReward.Interval);
+                SetIntervalText(PatrolReward.Interval);
             }
 
             OnChangeTime(PatrolReward.PatrolTime.Value);
@@ -146,6 +146,12 @@ namespace Nekoyume.UI
             var hourText = hourExist ? $"{(int)time.TotalHours}h " : string.Empty;
             var minuteText = minuteExist || !hourExist ? $"{time.Minutes}m" : string.Empty;
             return $"{hourText}{minuteText}";
+        }
+
+        private void SetIntervalText(TimeSpan interval)
+        {
+            gaugeUnitText1.text = GetTimeString(interval / 2);
+            gaugeUnitText2.text = GetTimeString(interval);
         }
 
         private void OnChangeRewards(Dictionary<PatrolRewardType, int> rewards)
