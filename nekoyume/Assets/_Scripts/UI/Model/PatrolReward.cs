@@ -88,15 +88,24 @@ $@"query {{
             if (response.Avatar is null)
             {
                 await PutAvatar(avatarAddress, agentAddress);
-                return;
+            }
+            else
+            {
+                AvatarLevel = response.Avatar.Level;
+                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
+                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
             }
 
-            AvatarLevel = response.Avatar.Level;
-            var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
-            NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-            Interval = response.Policy.MinimumRequiredInterval;
-            RewardModels.Value = response.Policy.Rewards;
+            if (response.Policy is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+            }
+            else
+            {
+                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+                Interval = response.Policy.MinimumRequiredInterval;
+                RewardModels.Value = response.Policy.Rewards;
+            }
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)
@@ -127,12 +136,13 @@ $@"query {{
             if (response.Avatar is null)
             {
                 await PutAvatar(avatarAddress, agentAddress);
-                return;
             }
-
-            AvatarLevel = response.Avatar.Level;
-            var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
-            LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            else
+            {
+                AvatarLevel = response.Avatar.Level;
+                var lastClaimedAt = response.Avatar.LastClaimedAt ?? response.Avatar.CreatedAt;
+                LastRewardTime.Value = DateTime.Parse(lastClaimedAt);
+            }
         }
 
         public async Task LoadPolicyInfo(int level, bool free = true)
@@ -172,9 +182,16 @@ $@"query {{
                 return;
             }
 
-            NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
-            Interval = response.Policy.MinimumRequiredInterval;
-            RewardModels.Value = response.Policy.Rewards;
+            if (response.Policy is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PolicyResponse.Policy)}");
+            }
+            else
+            {
+                NextLevel = response.Policy.MaxLevel ?? int.MaxValue;
+                Interval = response.Policy.MinimumRequiredInterval;
+                RewardModels.Value = response.Policy.Rewards;
+            }
 
             SetPushNotification();
         }
@@ -225,6 +242,12 @@ $@"mutation {{
             if (response is null)
             {
                 Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse)}");
+                return;
+            }
+
+            if (response.PutAvatar is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(PutAvatarResponse.PutAvatar)}");
                 return;
             }
 
