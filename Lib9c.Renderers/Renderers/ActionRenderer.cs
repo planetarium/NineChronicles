@@ -33,7 +33,7 @@ namespace Lib9c.Renderers
             _actionLoader = new NCActionLoader();
         }
 
-        public void RenderAction(IValue action, IActionRenderContext context, HashDigest<SHA256> nextState) =>
+        public void RenderAction(IValue action, ICommittedActionContext context, HashDigest<SHA256> nextState) =>
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = context.BlockAction
@@ -47,7 +47,7 @@ namespace Lib9c.Renderers
                 RandomSeed = context.Random.Seed
             });
 
-        public void RenderActionError(IValue action, IActionRenderContext context, Exception exception)
+        public void RenderActionError(IValue action, ICommittedActionContext context, Exception exception)
         {
             Log.Error(exception, "{action} execution failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
