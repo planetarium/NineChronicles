@@ -87,7 +87,10 @@ namespace Nekoyume.UI
 
             accelerationToggleLockButton.onClick.AddListener(() =>
             {
-                OneLineSystem.Push(MailType.System, "asdf", NotificationCell.NotificationType.Information);
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_ACCEL_UNLOCK_CONDITION"),
+                    NotificationCell.NotificationType.Information);
             });
 
             Game.Event.OnGetItem.AddListener(_ =>
