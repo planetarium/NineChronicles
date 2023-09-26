@@ -10,6 +10,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -28,7 +30,7 @@ namespace Nekoyume.UI
         private GameObject accelerationToggleParent;
 
         [SerializeField]
-        private GameObject accelerationToggleLockObject;
+        private Button accelerationToggleLockButton;
 
         [SerializeField]
         private Toggle accelerationToggle;
@@ -81,6 +83,11 @@ namespace Nekoyume.UI
                     ? Stage.AcceleratedAnimationTimeScaleWeight
                     : Stage.DefaultAnimationTimeScaleWeight;
                 stage.UpdateTimeScale();
+            });
+
+            accelerationToggleLockButton.onClick.AddListener(() =>
+            {
+                OneLineSystem.Push(MailType.System, "asdf", NotificationCell.NotificationType.Information);
             });
 
             Game.Event.OnGetItem.AddListener(_ =>
@@ -163,7 +170,7 @@ namespace Nekoyume.UI
             var canAccel =
                 States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
                     RequiredStageForAccelButton);
-            accelerationToggleLockObject.SetActive(!canAccel);
+            accelerationToggleLockButton.gameObject.SetActive(!canAccel);
             accelerationToggleParent.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = false;
