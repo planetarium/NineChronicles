@@ -97,7 +97,7 @@ namespace Nekoyume.UI
 
             foreach (var item in priceTexts)
             {
-                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice}";
+                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
             }
 
             int iapRewardIndex = 0;
@@ -148,7 +148,7 @@ namespace Nekoyume.UI
                 foreach (var item in preDiscountPrice)
                 {
                     var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
-                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N3}";
+                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N2}";
                     item.text = origin;
                 }
             }
