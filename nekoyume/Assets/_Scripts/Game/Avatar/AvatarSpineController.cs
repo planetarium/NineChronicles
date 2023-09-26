@@ -30,13 +30,19 @@ namespace Nekoyume.Game.Avatar
         [SerializeField]
         private AvatarScriptableObject avatarScriptableObject;
 
+        [SerializeField]
+        private GameObject auraPos;
+
         private Shader _shader;
         private Spine.Animation _targetAnimation;
         private Sequence _doFadeSequence;
         private GameObject _cachedWeaponVFX;
+        private GameObject _cachedAuraVFX;
         private readonly List<Tweener> _fadeTweener = new();
         private bool _isActiveFullCostume;
         private readonly Dictionary<AvatarPartsType, SkeletonAnimation> _parts = new();
+        private GameObject _prevAuraObj;
+        private GameObject _prevWeaponObj;
 
         public BoxCollider Collider => _isActiveFullCostume ? fullCostumeCollider : bodyCollider;
 
@@ -219,6 +225,13 @@ namespace Nekoyume.Game.Avatar
             skeletonAnimation.Skeleton.SetSlotsToSetupPose();
             SetVisibleBodyParts(AvatarPartsType.body_back, true);
             SetVisibleBodyParts(AvatarPartsType.body_front, false);
+
+            if(_prevWeaponObj == weaponVFXPrefab)
+            {
+                return;
+            }
+            _prevWeaponObj = weaponVFXPrefab;
+
             Destroy(_cachedWeaponVFX);
 
             if (weaponVFXPrefab is null)
@@ -235,6 +248,29 @@ namespace Nekoyume.Game.Avatar
             boneFollower.SkeletonRenderer = skeletonAnimation;
             boneFollower.SetBone(boneName);
             _cachedWeaponVFX = parent;
+        }
+
+        public void UpdateAura(GameObject auraVFXPrefab = null)
+        {
+            if (_prevAuraObj == auraVFXPrefab)
+            {
+                return;
+            }
+            _prevAuraObj = auraVFXPrefab;
+
+            Destroy(_cachedAuraVFX);
+
+            if(auraVFXPrefab is null)
+            {
+                auraPos.SetActive(false);
+                return;
+            }
+
+            auraPos.SetActive(true);
+            var vfx = Instantiate(auraVFXPrefab, auraPos.transform);
+            vfx.transform.localPosition = Vector3.zero;
+
+            _cachedAuraVFX = vfx;
         }
 
         public void UpdateFullCostume(int index, bool isDcc)

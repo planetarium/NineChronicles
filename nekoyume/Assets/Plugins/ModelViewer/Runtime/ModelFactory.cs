@@ -230,7 +230,7 @@ namespace ModelViewer.Runtime
                     itemUsable = itemUsable,
                     materialItemIdList = new[] { Guid.NewGuid() },
                     actionPoint = 0,
-                    enhancementResult = ItemEnhancement.EnhancementResult.GreatSuccess,
+                    enhancementResult = ItemEnhancement.EnhancementResult.Success,
                     gold = 0,
                     CRYSTAL = new FungibleAssetValue(
                         Currency.Legacy("CRYSTAL", 18, minters: null),

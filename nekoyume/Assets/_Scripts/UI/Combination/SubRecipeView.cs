@@ -1,5 +1,4 @@
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.Helper;
@@ -12,7 +11,6 @@ using Nekoyume.State;
 using System.Numerics;
 using Coffee.UIEffects;
 using Libplanet.Types.Assets;
-using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
@@ -56,25 +54,6 @@ namespace Nekoyume.UI
 
             public ToggleGroup toggleGroup;
             public List<RecipeTab> recipeTabs;
-        }
-
-        [Serializable]
-        private struct OptionView
-        {
-            public GameObject ParentObject;
-            public TextMeshProUGUI OptionText;
-            public Slider PercentageSlider;
-            public Image SliderFillImage;
-        }
-
-        [Serializable]
-        private struct SkillView
-        {
-            public GameObject ParentObject;
-            public TextMeshProUGUI OptionText;
-            public Slider PercentageSlider;
-            public Image SliderFillImage;
-            public Button TooltipButton;
         }
 
         [Serializable]
@@ -128,19 +107,13 @@ namespace Nekoyume.UI
         private RecipeTabGroup normalRecipeTabGroup;
 
         [SerializeField]
+        private GameObject premiumCraftableIcon;
+
+        [SerializeField]
         private RecipeTabGroup legendaryRecipeTabGroup;
 
         [SerializeField]
-        private List<OptionView> optionViews;
-
-        [SerializeField]
-        private List<SkillView> skillViews;
-
-        [SerializeField]
-        private List<GameObject> optionIcons;
-
-        [SerializeField]
-        private TextMeshProUGUI greatSuccessRateText;
+        private RecipeOptionView optionView;
 
         [SerializeField]
         private HammerPointView hammerPointView;
@@ -157,9 +130,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image requiredNormalItemImage;
 
-        [SerializeField]
-        private SkillPositionTooltip skillTooltip;
-
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
         private SheetRow<int> _recipeRow;
@@ -170,12 +140,9 @@ namespace Nekoyume.UI
         private const string StatTextFormat = "{0} {1}";
         private const int PremiumRecipeIndex = 1;
         private const int MimisbrunnrRecipeIndex = 2;
-        private static readonly Color BaseColor = ColorHelper.HexToColorRGB("3E2524");
-        private static readonly Color PremiumColor = ColorHelper.HexToColorRGB("602F44");
         private IDisposable _disposableForOnDisable;
 
         private bool _canSuperCraft;
-        private EquipmentItemOptionSheet.Row _skillOptionRow;
         private HammerPointState _hammerPointState;
 
         public static string[] DefaultTabNames = new string[]{ "A", "B", "C" };
@@ -331,6 +298,11 @@ namespace Nekoyume.UI
                                 }
                             }
                         }
+                        else
+                        {
+                            var craftable = CheckCraftableSubRecipe(equipmentRow, PremiumRecipeIndex);
+                            premiumCraftableIcon.gameObject.SetActive(craftable);
+                        }
 
                         var recipeGroup = isNormalRecipe ? normalRecipeTabGroup : legendaryRecipeTabGroup;
                         if (recipeGroup.recipeTabs.Any())
@@ -440,17 +412,6 @@ namespace Nekoyume.UI
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
             var eventMaterialRow = _recipeRow as EventMaterialItemRecipeSheet.Row;
-            foreach (var optionView in optionViews)
-            {
-                optionView.ParentObject.SetActive(false);
-            }
-
-            foreach (var skillView in skillViews)
-            {
-                skillView.ParentObject.SetActive(false);
-            }
-
-            optionIcons.ForEach(obj => obj.SetActive(false));
             if (equipmentRow != null)
             {
                 var isUnlocked = Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key)
@@ -463,8 +424,6 @@ namespace Nekoyume.UI
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
 
-                var greatSuccessRate = 0m;
-
                 // Add base material
                 materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
 
@@ -476,9 +435,6 @@ namespace Nekoyume.UI
                     var options = subRecipe.Options;
 
                     blockIndex += subRecipe.RequiredBlockIndex;
-                    greatSuccessRate = options
-                        .Select(x => x.Ratio.NormalizeFromTenThousandths())
-                        .Aggregate((a, b) => a * b);
 
                     var isEventEquipment = Util.IsEventEquipmentRecipe(recipeId);
                     if (!isEventEquipment)
@@ -487,7 +443,7 @@ namespace Nekoyume.UI
                                         equipmentRow.GetResultEquipmentItemRow().Grade < 5;
 
                         Array.ForEach(bgHsvModifiers, modifier => modifier.enabled = isPremium);
-                        SetOptions(options, isPremium);
+                        optionView.SetOptions(options, isPremium);
 
                         var isMimisbrunnrSubRecipe = index == MimisbrunnrRecipeIndex &&
                                                      (subRecipe.IsMimisbrunnrSubRecipe ?? true);
@@ -502,7 +458,6 @@ namespace Nekoyume.UI
                             var max = TableSheets.Instance.CrystalHammerPointSheet[recipeId].MaxPoint;
                             var increasePoint = subRecipe.RewardHammerPoint ?? 1;
                             var increasedPoint = Math.Min(_hammerPointState.HammerPoint + increasePoint, max);
-                            var optionSheet = TableSheets.Instance.EquipmentItemOptionSheet;
                             _canSuperCraft = _hammerPointState.HammerPoint == max;
                             hammerPointView.nowPoint.maxValue = max;
                             hammerPointView.hammerPointText.text = $"{_hammerPointState.HammerPoint}/{max}";
@@ -511,15 +466,10 @@ namespace Nekoyume.UI
                             hammerPointView.increasePointImage.fillAmount = increasedPoint / (float)max;
                             hammerPointView.notEnoughHammerPointObject.SetActive(!_canSuperCraft);
                             hammerPointView.enoughHammerPointObject.SetActive(_canSuperCraft);
-                            _skillOptionRow = options
-                                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
-                                .FirstOrDefault(tuple => tuple.option.SkillId != 0).option;
                         }
 
                         var sheet = TableSheets.Instance.ItemRequirementSheet;
-                        var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
-
-                        if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                        if (!sheet.TryGetValue(equipmentRow.ResultEquipmentId, out var row))
                         {
                             levelText.enabled = false;
                         }
@@ -554,11 +504,6 @@ namespace Nekoyume.UI
                 {
                     requiredItemRecipeView.SetData(baseMaterialInfo, null, true, !isUnlocked);
                 }
-
-                greatSuccessRateText.text = greatSuccessRate == 0m
-                    ? "-"
-                    : L10nManager.Localize("UI_COMBINATION_GREAT_SUCCESS_RATE_FORMAT",
-                        greatSuccessRate.ToString("0.0%"));
             }
             else if (consumableRow != null)
             {
@@ -569,9 +514,7 @@ namespace Nekoyume.UI
                 recipeId = consumableRow.Id;
 
                 var sheet = TableSheets.Instance.ItemRequirementSheet;
-                var resultItemRow = consumableRow.GetResultConsumableItemRow();
-
-                if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                if (!sheet.TryGetValue(consumableRow.ResultConsumableItemId, out var row))
                 {
                     levelText.enabled = false;
                 }
@@ -631,7 +574,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
+        private static Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
         {
             var replacedMaterialMap = new Dictionary<int, int>();
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -753,67 +696,6 @@ namespace Nekoyume.UI
             materialSelectButton.gameObject.SetActive(true);
         }
 
-        private void SetOptions(
-            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos, bool isPremium)
-        {
-            var tableSheets = TableSheets.Instance;
-            var optionSheet = tableSheets.EquipmentItemOptionSheet;
-            var skillSheet = tableSheets.SkillSheet;
-            var options = optionInfos
-                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
-                .ToList();
-
-            var statOptions = optionInfos
-                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
-                .Where(x => x.option.StatType != StatType.NONE)
-                .ToList();
-
-            var skillOptions = optionInfos
-                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
-                .Except(statOptions)
-                .ToList();
-
-            var siblingIndex = 1;  // 0 is for the main option
-            foreach (var (ratio, option) in options)
-            {
-                if (option.StatType != StatType.NONE)
-                {
-                    var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    optionView.OptionText.text = option.OptionRowToString(normalizedRatio, siblingIndex != 1);
-                    optionView.PercentageSlider.value = (float) normalizedRatio;
-                    optionView.SliderFillImage.color = isPremium ? PremiumColor : BaseColor;
-                    optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
-                    optionView.ParentObject.SetActive(true);
-                    optionIcons[siblingIndex - 1].SetActive(true);
-                }
-                else
-                {
-                    var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    var skillName = skillSheet.TryGetValue(option.SkillId, out var skillRow)
-                        ? skillRow.GetLocalizedName()
-                        : string.Empty;
-                    var normalizedRatio = ratio.NormalizeFromTenThousandths();
-                    skillView.OptionText.text = $"{skillName} ({normalizedRatio:0%})";
-                    skillView.PercentageSlider.value = (float) normalizedRatio;
-                    skillView.SliderFillImage.color = isPremium ? PremiumColor : BaseColor;
-                    skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
-                    skillView.ParentObject.SetActive(true);
-                    skillView.TooltipButton.onClick.RemoveAllListeners();
-                    skillView.TooltipButton.onClick.AddListener(() =>
-                    {
-                        var skillRow = TableSheets.Instance.SkillSheet[option.SkillId];
-                        var rect = skillView.TooltipButton.GetComponent<RectTransform>();
-                        skillTooltip.transform.position = rect.GetWorldPositionOfPivot(PivotPresetType.MiddleLeft);
-                        skillTooltip.Show(skillRow, option);
-                    });
-                    optionIcons.Last().SetActive(true);
-                }
-
-                ++siblingIndex;
-            }
-        }
-
         public void CombineCurrentRecipe()
         {
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
@@ -898,6 +780,64 @@ namespace Nekoyume.UI
 
             errorMessage = null;
             return true;
+        }
+
+        private static bool CheckCraftableSubRecipe(
+            EquipmentItemRecipeSheet.Row equipmentRow, int index)
+        {
+            var subRecipeIds = equipmentRow.SubRecipeIds;
+            if (subRecipeIds == null || !subRecipeIds.Any())
+            {
+                return false;
+            }
+
+            var subRecipe = TableSheets.Instance.EquipmentItemSubRecipeSheetV2[subRecipeIds[index]];
+            var isUnlocked = Craft.SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id) ||
+                             TableSheets.Instance.EquipmentItemRecipeSheet[equipmentRow.Id].CRYSTAL == 0;
+            if (!isUnlocked)
+            {
+                return false;
+            }
+
+            var slots = Widget.Find<CombinationSlotsPopup>();
+            var isSlotEnough = slots.TryGetEmptyCombinationSlot(out var _);
+            if (!isSlotEnough)
+            {
+                return false;
+            }
+
+            var materialMap = new Dictionary<int, int>();
+            materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
+            foreach (var material in subRecipe.Materials)
+            {
+                materialMap.Add(material.Id, material.Count);
+            }
+
+            var replacedMaterials = GetReplacedMaterials(materialMap);
+            var sheet = TableSheets.Instance.CrystalMaterialCostSheet;
+            var costCrystal = 0 * CrystalCalculator.CRYSTAL;
+            var replaceableMaterials = true;
+            foreach (var pair in replacedMaterials)
+            {
+                try
+                {
+                    costCrystal +=
+                        CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                }
+                catch (ArgumentException)
+                {
+                    replaceableMaterials = false;
+                    continue;
+                }
+            }
+
+            var costNCG = equipmentRow.RequiredGold + subRecipe.RequiredGold;
+            var isCostEnough =
+                States.Instance.GoldBalanceState.Gold.MajorUnit >= costNCG &&
+                States.Instance.CrystalBalance.MajorUnit >= costCrystal.MajorUnit &&
+                replaceableMaterials;
+
+            return isCostEnough;
         }
     }
 }

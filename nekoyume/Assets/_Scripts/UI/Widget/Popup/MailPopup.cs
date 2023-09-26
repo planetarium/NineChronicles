@@ -231,7 +231,7 @@ namespace Nekoyume.UI
                         mailRewards.Add(new MailReward(cItem, 1));
                         LocalLayerModifier.AddItem(
                             avatarAddress,
-                            cItem.TradableId,
+                            cItem.ItemId,
                             cItem.RequiredBlockIndex,
                             1,
                             false);
@@ -245,7 +245,7 @@ namespace Nekoyume.UI
                         mailRewards.Add(new MailReward(eItem, 1));
                         LocalLayerModifier.AddItem(
                             avatarAddress,
-                            eItem.TradableId,
+                            eItem.ItemId,
                             eItem.RequiredBlockIndex,
                             1,
                             false);
@@ -327,7 +327,7 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+            var isNew = MailBox.Count(mail => mail.New && mail.requiredBlockIndex <= blockIndex) > 1;
             allButton.HasNotification.Value = isNew;
             receiveAllContainer.SetActive(isNew);
             Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
@@ -383,7 +383,7 @@ namespace Nekoyume.UI
             {
                 LocalLayerModifier.AddItem(
                     avatarAddress,
-                    itemUsable.TradableId,
+                    itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1,
                     false);
@@ -576,13 +576,25 @@ namespace Nekoyume.UI
                         States.Instance.AgentState.address,
                         result.CRYSTAL.MajorUnit);
                 }
+                
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        false);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1,
+                        false);
+                }
 
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.TradableId,
-                    itemUsable.RequiredBlockIndex,
-                    1,
-                    false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
                     false);
                 var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);

@@ -12,13 +12,14 @@ namespace Nekoyume.UI
         public TextMeshProUGUI content;
         public TextMeshProUGUI labelOK;
         public GameObject titleBorder;
-        public AlertDelegate CloseCallback { get; set; }
+        public AlertDelegate SubmitCallback { get; set; }
 
         protected override void Awake()
         {
             base.Awake();
 
-            SubmitWidget = () => Close();
+            SubmitWidget = () => SubmitCallback?.Invoke();
+            SubmitCallback = () => Close();
         }
 
         public virtual void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
@@ -57,9 +58,13 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
             base.Close(ignoreCloseAnimation);
+        }
+
+        public void OnClickButton()
+        {
+            SubmitWidget?.Invoke();
         }
     }
 }

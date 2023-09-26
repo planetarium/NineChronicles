@@ -30,7 +30,7 @@ namespace Nekoyume
             var statMax = ValueToString(optionRow.StatType, optionRow.StatMax);
 
             var description = $"{optionRow.StatType} {statMin}~{statMax}";
-            if (showRatio)
+            if (showRatio && ratio < 100)
             {
                 description += $" ({ratio:0%})";
             }
@@ -62,6 +62,29 @@ namespace Nekoyume
                     return isSigned
                         ? (value / 100m).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
                         : (value / 100m).ToString("0.##", CultureInfo.InvariantCulture);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
+        }
+
+        public static string ValueToShortString(this StatType statType, int value)
+        {
+            switch (statType)
+            {
+                case StatType.HP:
+                case StatType.ATK:
+                case StatType.DEF:
+                case StatType.HIT:
+                case StatType.DRV:
+                case StatType.ArmorPenetration:
+                case StatType.Thorn:
+                    return value.ToCurrencyNotation();
+                case StatType.CRI:
+                    return $"{value:0.#\\%}";
+                case StatType.SPD:
+                case StatType.DRR:
+                case StatType.CDMG:
+                    return ((int)(value / 100m)).ToCurrencyNotation();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }

@@ -87,7 +87,7 @@ nekoyume/compose/results
 # Genesis Block
 /nekoyume/Assets/StreamingAssets/genesis-block*
 /nekoyume/Assets/StreamingAssets/genesis-block-dev*
-
+!/nekoyume/Assets/StreamingAssets/genesis-block-9c-main
 # Shared project
 shared/bin/*
 
@@ -113,3 +113,7 @@ nekoyume/Assets/StreamingAssets/9c_dev*
 # Keystores
 *.keystore
 *.keystore.meta
+
+# fastlane
+**/fastlane/google-fastlane.json
+**/fastlane/report.xml

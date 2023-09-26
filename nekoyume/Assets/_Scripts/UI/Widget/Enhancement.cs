@@ -17,11 +17,13 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI
 {
     using Nekoyume.EnumType;
     using Nekoyume.UI.Module.Common;
+    using System.Linq;
     using UniRx;
 
     public class Enhancement : Widget
@@ -33,19 +35,13 @@ namespace Nekoyume.UI
         private ConditionalCostButton upgradeButton;
 
         [SerializeField]
+        private ConditionalButton removeAllButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
         private UpgradeEquipmentSlot baseSlot;
-
-        [SerializeField]
-        private UpgradeEquipmentSlot materialSlot;
-
-        [SerializeField]
-        private TextMeshProUGUI successRatioText;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredBlockIndexText;
 
         [SerializeField]
         private TextMeshProUGUI itemNameText;
@@ -66,7 +62,7 @@ namespace Nekoyume.UI
         private List<EnhancementOptionView> statViews;
 
         [SerializeField]
-        private List<EnhancementOptionView> skillViews;
+        private List<EnhancementSkillOptionView> skillViews;
 
         [SerializeField]
         private TextMeshProUGUI levelText;
@@ -81,7 +77,33 @@ namespace Nekoyume.UI
         private Animator animator;
 
         [SerializeField]
-        private SkillPositionTooltip skillTooltip;
+        private PositionTooltip statTooltip;
+
+        [SerializeField]
+        private Slider expSlider;
+
+        [SerializeField]
+        private float minimumSliderEffectExtraDuration = 1f;
+
+        [SerializeField]
+        private AnimationCurve sliderEffectCurve;
+
+        [SerializeField]
+        private TextMeshProUGUI sliderPercentText;
+
+        [SerializeField]
+        private TextMeshProUGUI levelStateText;
+
+        [SerializeField]
+        private EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll;
+
+        [SerializeField]
+        private TimeBlock requierdBlockTimeViewr;
+
+        [SerializeField]
+        private TextMeshProUGUI currentEquipmentCP;
+        [SerializeField]
+        private TextMeshProUGUI nextEquipmentCP;
 
         private static readonly int HashToRegisterBase =
             Animator.StringToHash("RegisterBase");
@@ -99,9 +121,14 @@ namespace Nekoyume.UI
             Animator.StringToHash("Close");
 
 
-        private EnhancementCostSheetV2 _costSheet;
+        private EnhancementCostSheetV3 _costSheet;
         private BigInteger _costNcg = 0;
         private string _errorMessage;
+        private IOrderedEnumerable<KeyValuePair<int, EnhancementCostSheetV3.Row>> _decendingbyExpCostSheet;
+        private float _sliderAnchorPoint = 0;
+        private int _levelAnchorPoint = 0;
+        private Coroutine _sliderEffectCor;
+        private UnityEngine.UI.Extensions.Scroller _matarialsScroller;
 
         protected override void Awake()
         {
@@ -114,20 +141,27 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            _matarialsScroller = enhancementSelectedMaterialItemScroll.GetComponent<UnityEngine.UI.Extensions.Scroller>();
+
             upgradeButton.OnSubmitSubject
                 .Subscribe(_ => OnSubmit())
                 .AddTo(gameObject);
 
-            _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
+            _decendingbyExpCostSheet = _costSheet.OrderByDescending(r => r.Value.Exp);
 
-            baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
-            materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
+            baseSlot.AddRemoveButtonAction(() => enhancementInventory.DeselectItem(true));
+            removeAllButton.OnSubmitSubject
+                .Subscribe(_ => enhancementInventory.DeselectItem(false))
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             Clear();
-            enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
+            enhancementInventory.Set(UpdateInformation, enhancementSelectedMaterialItemScroll);
+            if (_matarialsScroller != null)
+                _matarialsScroller.Position = 0;
             base.Show(ignoreShowAnimation);
         }
 
@@ -151,22 +185,12 @@ namespace Nekoyume.UI
             Find<CombinationMain>().Show();
         }
 
-        private void ShowItemTooltip(EnhancementInventoryItem model, RectTransform target)
-        {
-            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model, enhancementInventory.GetSubmitText(),
-                !model.Disabled.Value,
-                () => enhancementInventory.SelectItem(),
-                () => enhancementInventory.ClearSelectedItem(),
-                () => NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
-                    NotificationCell.NotificationType.Alert));
-        }
-
         private void OnSubmit()
         {
-            var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
-            if (!IsInteractableButton(baseItem, materialItem))
+            var (baseItem, materialItems) = enhancementInventory.GetSelectedModels();
+
+            //Equip Upgragd ToDO
+            if (!IsInteractableButton(baseItem, materialItems))
             {
                 NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
@@ -181,11 +205,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-            EnhancementAction(baseItem, materialItem);
+            EnhancementAction(baseItem, materialItems);
         }
 
-        private void EnhancementAction(Equipment baseItem, Equipment materialItem)
+        //Used for migrating and showing equipment before update
+        private long GetItemExp(Equipment equipment)
+        {
+            return equipment.GetRealExp(Game.Game.instance.TableSheets.EquipmentItemSheet, _costSheet);
+        }
+
+        private void EnhancementAction(Equipment baseItem, List<Equipment> materialItems)
         {
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
@@ -193,24 +222,54 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
-            if (ItemEnhancement.TryGetRow(baseItem, sheet, out var row))
-            {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                slots.SetCaching(avatarAddress, slotIndex, true, row.SuccessRequiredBlockIndex,
-                    itemUsable: baseItem);
-            }
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV3;
+
+            var baseItemExp = GetItemExp(baseItem);
+            var targetExp = baseItemExp + materialItems.Aggregate(0L, (total, m) => total + GetItemExp(m));
+            int requiredBlockIndex = GetBlockIndex(baseItem, sheet, targetExp);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            slots.SetCaching(avatarAddress, slotIndex, true, requiredBlockIndex,
+                itemUsable: baseItem);
 
             NotificationSystem.Push(MailType.Workshop,
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
+                .ItemEnhancement(baseItem, materialItems, slotIndex, _costNcg).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 
-            StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
+            StartCoroutine(CoCombineNPCAnimation(baseItem, requiredBlockIndex, Clear));
+        }
+
+        private int GetBlockIndex(Equipment baseItem, EnhancementCostSheetV3 sheet, long targetExp)
+        {
+            int requiredBlockIndex = 0;
+            try
+            {
+                if (!ItemEnhancement.TryGetRow(baseItem, _costSheet, out var baseItemCostRow))
+                {
+                    baseItemCostRow = new EnhancementCostSheetV3.Row();
+                }
+
+                EnhancementCostSheetV3.Row targetRow;
+                targetRow = _decendingbyExpCostSheet
+                .First(row =>
+                    row.Value.ItemSubType == baseItem.ItemSubType &&
+                    row.Value.Grade == baseItem.Grade &&
+                    row.Value.Exp <= targetExp
+                ).Value;
+
+                requiredBlockIndex = targetRow.RequiredBlockIndex - baseItemCostRow.RequiredBlockIndex;
+            }
+            catch
+            {
+                requiredBlockIndex = 0;
+            }
+
+            return requiredBlockIndex;
         }
 
         private void Clear()
@@ -219,9 +278,9 @@ namespace Nekoyume.UI
             enhancementInventory.DeselectItem(true);
         }
 
-        private bool IsInteractableButton(IItem item, IItem material)
+        private bool IsInteractableButton(IItem item, List<Equipment> materials)
         {
-            if (item is null || material is null)
+            if (item is null || materials.Count == 0)
             {
                 _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
@@ -259,13 +318,69 @@ namespace Nekoyume.UI
             loadingScreen.AnimateNPC(itemBase.ItemType, quote);
         }
 
+        private void SliderGageEffect(Equipment equipment, long targetExp, int targetLevel)
+        {
+            var expTable = _costSheet.Values.
+                            Where((r) =>
+                            r.Grade == equipment.Grade &&
+                            r.ItemSubType == equipment.ItemSubType).Select((r) => r.Exp).ToList();
+            expTable.Insert(0, 0);
+
+            float GetSliderGage(float exp, out long nextExp)
+            {
+                nextExp = 0;
+                for (int i = 0; i < expTable.Count; i++)
+                {
+                    if(expTable[i] > exp)
+                    {
+                        nextExp = expTable[i];
+                        _levelAnchorPoint = i - 1;
+                        return Mathf.InverseLerp(expTable[i-1], expTable[i], exp);
+                    }
+                }
+                nextExp = expTable[expTable.Count - 1];
+                return 1;
+            }
+
+            IEnumerator CoroutineEffect(float duration)
+            {
+                float elapsedTime = 0;
+                float startAnchorPoint = _sliderAnchorPoint;
+                while (elapsedTime <= duration)
+                {
+                    elapsedTime += Time.deltaTime;
+
+                    _sliderAnchorPoint = Mathf.Lerp(startAnchorPoint, targetExp, sliderEffectCurve.Evaluate(elapsedTime / duration));
+                    expSlider.value = GetSliderGage(_sliderAnchorPoint, out var nextExp);
+                    sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{nextExp}";
+                    yield return new WaitForEndOfFrame();
+                }
+                _sliderAnchorPoint = targetExp;
+                expSlider.value = GetSliderGage(_sliderAnchorPoint, out var lastExp);
+                sliderPercentText.text = $"{(int)(expSlider.value * 100)}% {(long)_sliderAnchorPoint}/{lastExp}";
+                yield return 0;
+            }
+
+            if (_sliderEffectCor != null)
+                StopCoroutine(_sliderEffectCor);
+
+            float extraDuration = 0;
+            int levelDiff = Mathf.Abs(_levelAnchorPoint - targetLevel);
+            if (levelDiff > 0)
+            {
+                extraDuration = Mathf.Lerp(minimumSliderEffectExtraDuration, 3f, (float)levelDiff / 20);
+            }
+
+            _sliderEffectCor = StartCoroutine(CoroutineEffect(sliderEffectCurve.keys.Last().time + extraDuration));
+        }
+
         private void ClearInformation()
         {
             itemNameText.text = string.Empty;
             currentLevelText.text = string.Empty;
             nextLevelText.text = string.Empty;
-            successRatioText.text = "0%";
-            requiredBlockIndexText.text = "0";
+
+            levelStateText.text = string.Empty;
 
             mainStatView.gameObject.SetActive(false);
             foreach (var stat in statViews)
@@ -279,17 +394,38 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateInformation(EnhancementInventoryItem baseModel,
-            EnhancementInventoryItem materialModel)
+        private int UpgradeStat(int baseStat, int upgradeStat)
         {
+            var result = baseStat * upgradeStat.NormalizeFromTenThousandths();
+            if(result > 0)
+            {
+                result = Math.Max(1.0m, result);
+            }
+            return (int)result;
+        }
+
+        private void UpdateInformation(EnhancementInventoryItem baseModel,
+            List<EnhancementInventoryItem> materialModels)
+        {
+            _costNcg = 0;
             if (baseModel is null)
             {
                 baseSlot.RemoveMaterial();
-                materialSlot.RemoveMaterial();
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
                 animator.Play(HashToRegisterBase);
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels, _matarialsScroller?.Position != 0);
                 closeButton.interactable = true;
+                ClearInformation();
+
+                if (_sliderEffectCor != null)
+                    StopCoroutine(_sliderEffectCor);
+
+                expSlider.value = 0;
+                _sliderAnchorPoint = 0;
+                _levelAnchorPoint = 0;
+                sliderPercentText.text = "0% 0/0";
+                removeAllButton.Interactable = false;
             }
             else
             {
@@ -300,178 +436,214 @@ namespace Nekoyume.UI
 
                 baseSlot.AddMaterial(baseModel.ItemBase);
 
-                if (materialModel is null)
+                enhancementSelectedMaterialItemScroll.UpdateData(materialModels);
+                if (materialModels.Count != 0)
                 {
-                    if (materialSlot.IsExist)
-                    {
-                        animator.Play(HashToUnregisterMaterial);
-                    }
-
-                    materialSlot.RemoveMaterial();
+                    if(materialModels.Count > 5 || _matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1], 0);
+                    
+                    animator.Play(HashToPostRegisterMaterial);
+                    noneContainer.SetActive(false);
                 }
                 else
                 {
-                    if (!materialSlot.IsExist)
-                    {
-                        animator.Play(HashToPostRegisterMaterial);
-                    }
+                    if(_matarialsScroller?.Position != 0)
+                        enhancementSelectedMaterialItemScroll.RawJumpto(0, 0);
 
-                    materialSlot.AddMaterial(materialModel.ItemBase);
+                    noneContainer.SetActive(true);
                 }
 
                 var equipment = baseModel.ItemBase as Equipment;
-                if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var row))
+                if (!ItemEnhancement.TryGetRow(equipment, _costSheet, out var baseItemCostRow))
                 {
-                    return;
+                    baseItemCostRow = new EnhancementCostSheetV3.Row();
                 }
 
-                noneContainer.SetActive(false);
+                var baseModelExp = GetItemExp(equipment);
+                var targetExp = baseModelExp + materialModels.Aggregate(0L, (total, m) => total + GetItemExp((m.ItemBase as Equipment)));
+
+                EnhancementCostSheetV3.Row targetRow;
+                try
+                {
+                    targetRow = _decendingbyExpCostSheet
+                    .First(row =>
+                        row.Value.ItemSubType == equipment.ItemSubType &&
+                        row.Value.Grade == equipment.Grade &&
+                        row.Value.Exp <= targetExp
+                    ).Value;
+                }
+                catch
+                {
+                    targetRow = baseItemCostRow;
+                }
+
                 itemInformationContainer.SetActive(true);
 
                 ClearInformation();
-                _costNcg = row.Cost;
-                upgradeButton.SetCost(CostType.NCG, (long)row.Cost);
+
+                removeAllButton.Interactable = materialModels.Count >= 2;
+
+                _costNcg = targetRow.Cost - baseItemCostRow.Cost;
+                upgradeButton.SetCost(CostType.NCG, (long)_costNcg);
+
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 
                 itemNameText.text = equipment.GetLocalizedNonColoredName();
                 currentLevelText.text = $"+{equipment.level}";
-                nextLevelText.text = $"+{equipment.level + 1}";
-                successRatioText.text =
-                    ((row.GreatSuccessRatio + row.SuccessRatio).NormalizeFromTenThousandths())
-                    .ToString("0%");
-                requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}";
+                nextLevelText.text = $"+{targetRow.Level}";
 
-                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-                if (!sheet.TryGetValue(equipment.Id, out var requirementRow))
+                var targetRangeRows = _costSheet.Values.
+                    Where((r) =>
+                    r.Grade == equipment.Grade &&
+                    r.ItemSubType == equipment.ItemSubType &&
+                    equipment.level <= r.Level &&
+                    r.Level <= targetRow.Level + 1
+                    ).ToList();
+
+                if (equipment.level == 0)
                 {
-                    levelText.enabled = false;
+                    targetRangeRows.Insert(0, new EnhancementCostSheetV3.Row());
+                }
+
+                if (targetRangeRows.Count < 2)
+                {
+                    Debug.LogError("[Enhancement] Faild Get TargetRangeRows");
                 }
                 else
                 {
-                    levelText.text =
-                        L10nManager.Localize("UI_REQUIRED_LEVEL", requirementRow.Level);
-                    var hasEnoughLevel =
-                        States.Instance.CurrentAvatarState.level >= requirementRow.Level;
-                    levelText.color = hasEnoughLevel
-                        ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
-                        : Palette.GetColor(EnumType.ColorType.TextDenial);
-
-                    levelText.enabled = true;
+                    SliderGageEffect(equipment, targetExp, targetRow.Level);
                 }
+
+                levelStateText.text = $"Lv. {targetRow.Level}/{ItemEnhancement.GetEquipmentMaxLevel(equipment, _costSheet)}";
+
+                //check Current CP
+                currentEquipmentCP.text = Nekoyume.Battle.CPHelper.GetCP(equipment).ToString();
 
                 var itemOptionInfo = new ItemOptionInfo(equipment);
+                var baseStatMin = itemOptionInfo.MainStat.baseValue;
+                var baseStatMax = itemOptionInfo.MainStat.baseValue;
+                var statOptionsMin = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
+                var statOptionsMax = itemOptionInfo.StatOptions.Select((v) => v.value).ToList();
+                var skillChancesMin = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                var skillChancesMax = itemOptionInfo.SkillOptions.Select((v) => v.chance).ToList();
+                var skillPowersMin = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                var skillPowersMax = itemOptionInfo.SkillOptions.Select((v) => v.power).ToList();
+                var skillStatPowerRatioMin = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
+                var skillStatPowerRatioMax = itemOptionInfo.SkillOptions.Select((v) => v.statPowerRatio).ToList();
 
-                if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
+                if (equipment.level != targetRow.Level)
                 {
-                    var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
-                    var mainAdd = (int)Math.Max(1,
-                        (mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
-                    mainStatView.gameObject.SetActive(true);
-                    mainStatView.Set(mainStatType.ToString(),
-                        mainStatType.ValueToString(mainValue),
-                        $"(<size=80%>max</size> +{mainStatType.ValueToString(mainAdd)})");
+                    for (int i = 1; i < targetRangeRows.Count - 1; i++)
+                    {
+                        baseStatMin += UpgradeStat(baseStatMin, targetRangeRows[i].BaseStatGrowthMin);
+                        baseStatMax += UpgradeStat(baseStatMax, targetRangeRows[i].BaseStatGrowthMax);
+
+                        for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
+                        {
+                            statOptionsMin[statIndex] += UpgradeStat(statOptionsMin[statIndex], targetRangeRows[i].ExtraStatGrowthMin);
+                            statOptionsMax[statIndex] += UpgradeStat(statOptionsMax[statIndex], targetRangeRows[i].ExtraStatGrowthMax);
+                        }
+
+                        for (int skillIndex = 0; skillIndex < itemOptionInfo.SkillOptions.Count; skillIndex++)
+                        {
+                            skillChancesMin[skillIndex] += UpgradeStat(skillChancesMin[skillIndex], targetRangeRows[i].ExtraSkillChanceGrowthMin);
+                            skillChancesMax[skillIndex] += UpgradeStat(skillChancesMax[skillIndex], targetRangeRows[i].ExtraSkillChanceGrowthMax);
+
+                            skillPowersMin[skillIndex] += UpgradeStat(skillPowersMin[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMin);
+                            skillPowersMax[skillIndex] += UpgradeStat(skillPowersMax[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMax);
+
+                            skillStatPowerRatioMin[skillIndex] += UpgradeStat(skillStatPowerRatioMin[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMin);
+                            skillStatPowerRatioMax[skillIndex] += UpgradeStat(skillStatPowerRatioMax[skillIndex], targetRangeRows[i].ExtraSkillDamageGrowthMax);
+                        }
+                    }
                 }
 
-                var stats = itemOptionInfo.StatOptions;
-                for (var i = 0; i < stats.Count; i++)
+                decimal nextCp = 0m;
+                nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.MainStat.type, baseStatMax);
+                for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
                 {
-                    statViews[i].gameObject.SetActive(true);
-                    var statType = stats[i].type;
-                    var statValue = stats[i].value;
-                    var count = stats[i].count;
+                    nextCp += Nekoyume.Battle.CPHelper.GetStatCP(itemOptionInfo.StatOptions[statIndex].type, statOptionsMax[statIndex]);
+                }
+                nextCp = nextCp * Nekoyume.Battle.CPHelper.GetSkillsMultiplier(itemOptionInfo.SkillOptions.Count);
+                nextEquipmentCP.text = Nekoyume.Battle.CPHelper.DecimalToInt(nextCp).ToString();
 
-                    if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
+                long requiredBlockIndex = GetBlockIndex(equipment, _costSheet, targetExp);
+                requierdBlockTimeViewr.SetTimeBlock($"{requiredBlockIndex:#,0}", requiredBlockIndex.BlockRangeToTimeSpanString());
+
+                //StatView
+                mainStatView.gameObject.SetActive(true);
+                var statType = itemOptionInfo.MainStat.type;
+                mainStatView.Set(statType.ToString(),
+                    statType.ValueToString(itemOptionInfo.MainStat.baseValue),
+                    $"{statType.ValueToShortString(baseStatMin)} ~ {statType.ValueToShortString(baseStatMax)}");
+                mainStatView.SetDescriptionButton(() =>
+                {
+                    statTooltip.transform.position = mainStatView.DescriptionPosition;
+                    statTooltip.Set("", $"{statType.ValueToString(baseStatMin)} ~ {statType.ValueToString(baseStatMax)}<sprite name=icon_Arrow>");
+                    statTooltip.gameObject.SetActive(true);
+                });
+
+                for (int statIndex = 0; statIndex < itemOptionInfo.StatOptions.Count; statIndex++)
+                {
+                    var optionStatType = itemOptionInfo.StatOptions[statIndex].type;
+                    statViews[statIndex].gameObject.SetActive(true);
+                    statViews[statIndex].Set(optionStatType.ToString(),
+                            optionStatType.ValueToString(itemOptionInfo.StatOptions[statIndex].value),
+                            $"{optionStatType.ValueToShortString(statOptionsMin[statIndex])} ~ {optionStatType.ValueToShortString(statOptionsMax[statIndex])}",
+                            itemOptionInfo.StatOptions[statIndex].count);
+
+                    var tooltipContext = $"{optionStatType.ValueToString(statOptionsMin[statIndex])} ~ {optionStatType.ValueToString(statOptionsMax[statIndex])}<sprite name=icon_Arrow>";
+                    var statView = statViews[statIndex];
+                    statViews[statIndex].SetDescriptionButton(() =>
                     {
-                        statViews[i].Set(statType.ToString(),
-                            statType.ValueToString(statValue),
-                            string.Empty,
-                            count);
-                    }
-                    else
-                    {
-                        var statAdd = Math.Max(1,
-                            (int)(statValue *
-                                  row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
-                        statViews[i].Set(statType.ToString(),
-                            statType.ValueToString(statValue),
-                            $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
-                            count);
-                    }
+                        statTooltip.transform.position = statView.DescriptionPosition;;
+                        statTooltip.Set("", tooltipContext);
+                        statTooltip.gameObject.SetActive(true);
+                    });
                 }
 
-                var skills = itemOptionInfo.SkillOptions;
-                for (var i = 0; i < skills.Count; i++)
+                for (int skillIndex = 0; skillIndex < itemOptionInfo.SkillOptions.Count; skillIndex++)
                 {
-                    skillViews[i].gameObject.SetActive(true);
-                    var skill = skills[i];
-                    var skillName = skill.skillRow.GetLocalizedName();
-                    var power = skill.power;
-                    var chance = skill.chance;
-                    var ratio = skill.statPowerRatio;
-                    var refStatType = skill.refStatType;
-                    var effectString = SkillExtensions.EffectToString(
-                        skill.skillRow.Id,
-                        skill.skillRow.SkillType,
-                        power,
-                        ratio,
-                        refStatType);
-                    var isBuff =
-                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Buff ||
-                        skill.skillRow.SkillType == Nekoyume.Model.Skill.SkillType.Debuff;
-
-                    if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
-                        row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
+                    skillViews[skillIndex].gameObject.SetActive(true);
+                    var skillRow = itemOptionInfo.SkillOptions[skillIndex].skillRow;
+                    var chanceText = $"<color=#FBF0B8>({itemOptionInfo.SkillOptions[skillIndex].chance}% > <color=#E3C32C>{skillChancesMin[skillIndex]}~{skillChancesMax[skillIndex]}%</color><sprite name=icon_Arrow>)</color>";
+                    string valueText = string.Empty;
+                    switch (skillRow.SkillType)
                     {
-                        var view = skillViews[i];
-                        view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
-                            string.Empty,
-                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
-                            string.Empty);
-                        var skillRow = skill.skillRow;
-                        view.SetDescriptionButton(() =>
-                        {
-                            skillTooltip.Show(skillRow, chance, chance, power, power, ratio, ratio, refStatType);
-                            skillTooltip.transform.position = view.DescriptionPosition;
-                        });
-                    }
-                    else
-                    {
-                        var powerAdd = Math.Max(isBuff || power == 0 ? 0 : 1,
-                            (int)(power *
-                                  row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
-                        var ratioAdd = Math.Max(0,
-                            (int)(ratio *
-                                  row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
-                        var chanceAdd = Math.Max(1,
-                            (int)(chance *
-                                  row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
-                        var totalPower = power + powerAdd;
-                        var totalChance = chance + chanceAdd;
-                        var totalRatio = ratio + ratioAdd;
-                        var skillRow = skill.skillRow;
+                        case Nekoyume.Model.Skill.SkillType.Attack:
+                        case Nekoyume.Model.Skill.SkillType.Heal:
+                            valueText = $"<color=#FBF0B8>({itemOptionInfo.SkillOptions[skillIndex].power} > <color=#E3C32C>{skillPowersMin[skillIndex]}~{skillPowersMax[skillIndex]}</color><sprite name=icon_Arrow>)</color>";
+                            break;
+                        case Nekoyume.Model.Skill.SkillType.Buff:
+                        case Nekoyume.Model.Skill.SkillType.Debuff:
+                            var currentEffect = SkillExtensions.EffectToString(
+                                                            skillRow.Id,
+                                                            skillRow.SkillType,
+                                                            itemOptionInfo.SkillOptions[skillIndex].power,
+                                                            itemOptionInfo.SkillOptions[skillIndex].statPowerRatio,
+                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
 
-                        var powerString = SkillExtensions.EffectToString(
-                            skillRow.Id,
-                            skillRow.SkillType,
-                            powerAdd,
-                            ratioAdd,
-                            skill.refStatType);
+                            var targetEffectMin = SkillExtensions.EffectToString(
+                                                            skillRow.Id,
+                                                            skillRow.SkillType,
+                                                            skillPowersMin[skillIndex],
+                                                            skillStatPowerRatioMin[skillIndex],
+                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
 
-                        var view = skillViews[i];
-                        view.Set(skillName,
-                            $"{L10nManager.Localize("UI_SKILL_POWER")} : {effectString}",
-                            $"(<size=80%>max</size> +{powerString})",
-                            $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
-                            $"(<size=80%>max</size> +{chanceAdd}%)");
-                        view.SetDescriptionButton(() =>
-                        {
-                            skillTooltip.Show(
-                                skillRow, totalChance, totalChance, totalPower, totalPower, totalRatio, totalRatio, refStatType);
-                            skillTooltip.transform.position = view.DescriptionPosition;
-                        });
+                            var targetEffectMax = SkillExtensions.EffectToString(
+                                                            skillRow.Id,
+                                                            skillRow.SkillType,
+                                                            skillPowersMax[skillIndex],
+                                                            skillStatPowerRatioMax[skillIndex],
+                                                            itemOptionInfo.SkillOptions[skillIndex].refStatType);
+
+                            valueText = $"<color=#FBF0B8>({currentEffect} > <color=#E3C32C>{targetEffectMin.Replace("%", "")}~{targetEffectMax}</color><sprite name=icon_Arrow>)</color>";
+                            break;
+                        default:
+                            break;
                     }
+                    skillViews[skillIndex].Set(skillRow.GetLocalizedName(), skillRow.SkillType, skillRow.Id, skillRow.Cooldown, chanceText, valueText);
                 }
             }
         }

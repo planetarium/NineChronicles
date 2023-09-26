@@ -112,3 +112,38 @@ jobs:
           path: /tmp/packages
           retention-days: 7
           if-no-files-found: error
+
+  release-to-google-play:
+    name: Release to the Google Play Store
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
+      GOOGLE_PLAY_KEY_FILE_PATH:
+        ${{ format('{0}/fastlane/google-fastlane.json', github.workspace) }}
+      ANDROID_BUILD_FILE_PATH: ${{ format('{0}/build/Android/NineChronicles.aab', github.workspace) }}
+      ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Download Android Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Build-Android
+          path: build
+      - name: unzip artifact for deployment
+        run: |
+          mkdir -p build/Android
+          unzip build/Android.zip -d build/Android
+      - name: Add Authentication
+        run: |
+          echo ${{secrets.GOOGLE_PLAY_KEY_FILE}} | base64 -d > ${{ env.GOOGLE_PLAY_KEY_FILE_PATH }}
+      - name: Set up Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+      - name: Upload to Google Play Internal
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: 'android internal'
+

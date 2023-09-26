@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Character
 
         public Pet Pet => appearance.Pet;
 
-        protected override float RunSpeedDefault => CharacterModel.RunSpeed;
+        protected override float RunSpeedDefault => CharacterModel.RunSpeed * Game.instance.Stage.AnimationTimeScaleWeight;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
@@ -58,7 +58,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = 1;
+            Animator.TimeScale = Game.instance.Stage.AnimationTimeScaleWeight;
 
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
@@ -132,7 +132,7 @@ namespace Nekoyume.Game.Character
 
         public void Set(Address avatarAddress, Model.Player model, bool updateCurrentHP)
         {
-            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, updateCurrentHP);
+            Set(avatarAddress, model, model.Costumes, model.armor, model.weapon, model.aura, updateCurrentHP);
         }
 
         public void Set(
@@ -141,6 +141,7 @@ namespace Nekoyume.Game.Character
             IEnumerable<Costume> costumes,
             Armor armor,
             Weapon weapon,
+            Aura aura,
             bool updateCurrentHP)
         {
             InitStats(model);
@@ -156,6 +157,7 @@ namespace Nekoyume.Game.Character
                 costumes.ToList(),
                 armor,
                 weapon,
+                aura,
                 model.earIndex,
                 model.lensIndex,
                 model.hairIndex,

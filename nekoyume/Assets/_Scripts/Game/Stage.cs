@@ -3,7 +3,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Blockchain;
 using Nekoyume.EnumType;
@@ -24,12 +23,10 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Spine.Unity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Model.EnumType;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -44,6 +41,8 @@ namespace Nekoyume.Game
 
     public class Stage : MonoBehaviour, IStage
     {
+        public const float DefaultAnimationTimeScaleWeight = 1f;
+        public const float AcceleratedAnimationTimeScaleWeight = 1.6f;
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
         public ObjectPool objectPool;
@@ -79,6 +78,7 @@ namespace Nekoyume.Game
         private Vector3 _playerPosition;
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
+        private List<BattleTutorialController.BattleTutorialModel> _tutorialModels = new();
 
         public StageType StageType { get; set; }
         public Player SelectedPlayer { get; set; }
@@ -92,6 +92,7 @@ namespace Nekoyume.Game
         public bool IsExitReserved { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
         public int PlayCount { get; set; }
+        public float AnimationTimeScaleWeight { get; set; } = DefaultAnimationTimeScaleWeight;
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -136,6 +137,23 @@ namespace Nekoyume.Game
             SkillController = new SkillController(objectPool);
             BuffController = new BuffController(objectPool);
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
+        }
+
+        public void UpdateTimeScale()
+        {
+            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            {
+                var isEnemy = character is Character.Enemy;
+                character.Animator.TimeScale = isEnemy
+                    ? Character.CharacterBase.AnimatorTimeScale * AnimationTimeScaleWeight
+                    : AnimationTimeScaleWeight;
+                if (character.RunSpeed != 0f)
+                {
+                    character.RunSpeed = isEnemy
+                        ? -1 * AnimationTimeScaleWeight
+                        : character.CharacterModel.RunSpeed * AnimationTimeScaleWeight;
+                }
+            }
         }
 
         private void OnStageStart(BattleLog log)
@@ -372,6 +390,7 @@ namespace Nekoyume.Game
             stageId = log.stageId;
             waveCount = log.waveCount;
             newlyClearedStage = log.newlyCleared;
+            _tutorialModels.Clear();
 
             string bgmName = null;
             switch (StageType)
@@ -411,6 +430,7 @@ namespace Nekoyume.Game
                 StageType = StageType,
             };
 
+            AnimationTimeScaleWeight = DefaultAnimationTimeScaleWeight;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
@@ -429,6 +449,10 @@ namespace Nekoyume.Game
             _stageRunningPlayer.Pet.Animator.Play(PetAnimation.Type.BattleStart);
             AudioController.instance.PlayMusic(bgmName);
             IsShowHud = true;
+            if (!SelectedPlayer.Model.worldInformation.IsStageCleared(stageId))
+            {
+                _tutorialModels = Widget.Find<Tutorial>().TutorialController.GetModelListByStage(stageId);
+            }
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -440,6 +464,11 @@ namespace Nekoyume.Game
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == 3) is {} tutorialModel)
+            {
+                Widget.Find<Tutorial>().PlaySmallGuide(tutorialModel.Id);
+            }
+
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
             var avatarState = States.Instance.CurrentAvatarState;
 
@@ -473,6 +502,7 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<UI.Battle>().Close();
+            Widget.Find<Tutorial>().Close(true);
 
             if (newlyClearedStage)
             {
@@ -694,15 +724,11 @@ namespace Nekoyume.Game
                     var sheet = TableSheets.Instance.EventDungeonStageSheet;
                     if (sheet is null)
                     {
-                        apCost = 0;
                         turnLimit = 0;
 
                         break;
                     }
 
-                    apCost = sheet.OrderedList
-                        .FirstOrDefault(row => row.Id == stageId)?
-                        .CostAP ?? 0;
                     turnLimit = sheet.TryGetValue(stageId, out var eventDungeonStageRow)
                         ? eventDungeonStageRow.TurnLimit
                         : 0;
@@ -717,8 +743,7 @@ namespace Nekoyume.Game
                 StageType,
                 stageId,
                 IsExitReserved,
-                isTutorial,
-                apCost * PlayCount);
+                isTutorial);
             status.ShowBattleTimer(turnLimit);
 
             if (AvatarState is not null && !ActionRenderHandler.Instance.Pending)
@@ -1057,6 +1082,11 @@ namespace Nekoyume.Game
             }
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
+
+            if (_tutorialModels.FirstOrDefault(model => model.ClearedWave == this.waveNumber - 1) is { } model)
+            {
+                Widget.Find<Tutorial>().PlaySmallGuide(model.Id);
+            }
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));

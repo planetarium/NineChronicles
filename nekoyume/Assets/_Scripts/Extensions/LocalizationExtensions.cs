@@ -20,6 +20,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Summon;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
@@ -102,13 +103,13 @@ namespace Nekoyume
                         case ItemEnhancement.ResultModel result:
                             switch (result.enhancementResult)
                             {
-                                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                /*case ItemEnhancement.EnhancementResult.GreatSuccess:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
-                                    break;
+                                    break;*/
                                 case ItemEnhancement.EnhancementResult.Success:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
-                                case ItemEnhancement.EnhancementResult.Fail:
+                                /*case ItemEnhancement.EnhancementResult.Fail:
                                     if (result.CRYSTAL.MajorUnit > 0)
                                     {
                                         failAndGainCrystal = true;
@@ -119,7 +120,7 @@ namespace Nekoyume
                                         formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
                                     }
 
-                                    break;
+                                    break;*/
                                 default:
                                     Debug.LogError(
                                         $"Unexpected result.enhancementResult: {result.enhancementResult}");
@@ -547,6 +548,27 @@ namespace Nekoyume
             return $"{name}{elemental}";
         }
 
+        public static string GetLocalizedName(this SummonSheet.Row summonRow)
+        {
+            return L10nManager.Localize($"SUMMON_NAME_{summonRow.GroupId}");
+        }
+
+        public static string GetLocalizedInformation(this Equipment equipment)
+        {
+            var grade = equipment.GetGradeText();
+            var subType = equipment.GetSubTypeText();
+            return $"<color=#{GetColorHexByGrade(equipment.Grade)}>{grade}  |  {subType}</color>";
+        }
+
+        public static string GetLocalizedInformation(this EquipmentItemSheet.Row equipmentRow)
+        {
+            var grade = equipmentRow.Grade >= 1 ? equipmentRow.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
+            var subTypeText = GetLocalizedItemSubTypeText(equipmentRow.ItemSubType);
+
+            return $"<color=#{GetColorHexByGrade(grade)}>{gradeText}  |  {subTypeText}</color>";
+        }
+
         public static Color GetElementalTypeColor(this ItemBase item)
         {
             return item.ElementalType switch
@@ -658,6 +680,8 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_NECKLACE");
                 case ItemSubType.Ring:
                     return L10nManager.Localize("UI_RING");
+                case ItemSubType.Aura:
+                    return L10nManager.Localize("UI_AURA");
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.FoodMaterial:
                 case ItemSubType.MonsterPart:

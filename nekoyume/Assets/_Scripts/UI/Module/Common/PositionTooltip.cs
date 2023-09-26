@@ -26,8 +26,11 @@ namespace Nekoyume.UI.Module.Common
 
         public void Set(string title, string content)
         {
-            titleText.text = title;
-            contentText.text = content;
+            if(titleText != null)
+                titleText.text = title;
+
+            if(content != null)
+                contentText.text = content;
         }
     }
 }

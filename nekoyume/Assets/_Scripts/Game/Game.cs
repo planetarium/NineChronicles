@@ -22,6 +22,7 @@ using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -142,6 +143,8 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
+        public PortalConnect PortalConnect => portalConnect;
+
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
@@ -163,7 +166,8 @@ namespace Nekoyume.Game
         private Thread _headlessThread;
         private Thread _marketThread;
 
-        private DeepLinkHandler _deepLinkHandler;
+        private PortalConnect portalConnect;
+        private Coroutine _rpcAgentInitializeCoroutine;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -251,19 +255,16 @@ namespace Nekoyume.Game
 #endif
             Debug.Log("[Game] Start() invoked");
 
-            // Initialize RequestManager and LiveAssetManager
+            // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-            yield return new WaitUntil(() => liveAssetManager.IsInitialized);
-            Debug.Log("[Game] Start() RequestManager & LiveAssetManager initialized");
-
 #if UNITY_ANDROID
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            _deepLinkHandler = new DeepLinkHandler(_commandLineOptions.MeadPledgePortalUrl);
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
 
 #if ENABLE_FIREBASE
@@ -296,6 +297,11 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
+            if (Agent is RPCAgent rpcAgent)
+            {
+                _rpcAgentInitializeCoroutine =
+                    StartCoroutine(rpcAgent.InitializeWithoutPrivateKey(_commandLineOptions));
+            }
 
 #if UNITY_EDITOR
             if (useSystemLanguage)
@@ -312,43 +318,88 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language)).ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
-
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
-            yield return StartCoroutine(ResourcesHelper.CoInitialize());
+            ResourcesHelper.Initialize();
             Debug.Log("[Game] Start() ResourcesHelper initialized");
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
-            yield return null;
+            // Initialize NineChroniclesAPIClient.
+            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
+            {
+                _rpcClient = new NineChroniclesAPIClient(
+                    $"http://{_commandLineOptions.RpcServerHost}/graphql");
+            }
+
+            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+
+            GL.Clear(true, true, Color.black);
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-
-            GL.Clear(true, true, Color.black);
-
-            yield return StartCoroutine(
-                CoLogin(
-                    succeed =>
+            yield return StartCoroutine(CoLogin(succeed =>
                     {
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
-                        Analyzer.SetUniqueId(Agent.Address.ToString());
+                        Analyzer.SetAgentAddress(Agent.Address.ToString());
                     }
                 )
             );
-
             yield return new WaitUntil(() => agentInitialized);
-
+            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
+            IEnumerator InitializeWithAgent()
+            {
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
+                yield return SyncTableSheetsAsync().ToCoroutine();
+                Debug.Log("[Game] Start() TableSheets synchronized");
+                RxProps.Start(Agent, States, TableSheets);
+
+                Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+                {
+                    var petList = States.Instance.PetStates.GetPetStatesAll()
+                        .Where(petState => petState != null)
+                        .Select(petState => petState.PetId)
+                        .ToList();
+                    SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+                }).AddTo(gameObject);
+            }
+
+#if UNITY_ANDROID
+            // Only use on Android or...
+            IEnumerator InitializeIAP()
+            {
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+                Debug.Log("[Game] Start() IAPStoreManager initialize start");
+            }
+
+            StartCoroutine(InitializeIAP());
+#endif
+            yield return StartCoroutine(InitializeWithAgent());
+            Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
+
+            IEnumerator CoInitializeSecondWidget()
+            {
+                yield return createSecondWidgetCoroutine;
+                yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
+            }
+
+            var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
             yield return StartCoroutine(CoCheckPledge());
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR_WIN
             // wait for headless connect.
             if (useLocalMarketService && MarketHelper.CheckPath())
             {
@@ -357,55 +408,26 @@ namespace Nekoyume.Game
                 _marketThread.Start();
             }
 #endif
-
-            yield return SyncTableSheetsAsync().ToCoroutine();
-            Debug.Log("[Game] Start() TableSheets synchronized");
-            RxProps.Start(Agent, States, TableSheets);
-#if UNITY_ANDROID
-            IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-            yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-            IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-            yield return StartCoroutine(new WaitUntil(() => IAPStoreManager.IsInitialized));
-            Debug.Log("[Game] Start() IAPStoreManager initialized");
-#endif
-            // Initialize MainCanvas second
-            yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
-            // Initialize NineChroniclesAPIClient.
-            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
-            {
-                _rpcClient =
-                    new NineChroniclesAPIClient(
-                        $"http://{_commandLineOptions.RpcServerHost}/graphql");
-            }
-
-            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-            // Initialize Rank.SharedModel
-            RankPopup.UpdateSharedModel();
+            // Initialize D:CC NFT data
+            StartCoroutine(CoInitDccAvatar());
+            StartCoroutine(CoInitDccConnecting());
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
+            yield return initializeSecondWidgetsCoroutine;
+            Analyzer.Instance.Track("Unity/Intro/Start/SecondWidgetCompleted");
             // Initialize Stage
             Stage.Initialize();
             Arena.Initialize();
             RaidStage.Initialize();
-            // Initialize D:CC NFT data
-            yield return StartCoroutine(CoInitDccAvatar());
-            yield return StartCoroutine(CoInitDccConnecting());
-
-            Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
-            {
-                var petList = States.Instance.PetStates.GetPetStatesAll()
-                    .Where(petState => petState != null)
-                    .Select(petState => petState.PetId)
-                    .ToList();
-                SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
-            }).AddTo(gameObject);
-
+            // Initialize Rank.SharedModel
+            RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
                 _commandLineOptions.AppProtocolVersion,
                 out var appProtocolVersion);
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
-
+            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ProgressCompleted);
             ShowNext(agentInitializeSucceed);
+            Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
+
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
         }
@@ -529,7 +551,7 @@ namespace Nekoyume.Game
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<IntroScreen>().IsActive() ||
-                Widget.Find<PreloadingScreen>().IsActive() ||
+                Widget.Find<GrayLoadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
                 // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
@@ -670,54 +692,51 @@ namespace Nekoyume.Game
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
+
+                if (!States.PledgeRequested)
+                {
+                    var clickRetry = false;
+                    var popup = Widget.Find<TitleOneButtonSystem>();
+                    popup.Show("Time Out", "Please try again", "Retry", false);
+                    popup.SubmitCallback = () => clickRetry = true;
+                    yield return new WaitUntil(() => clickRetry);
+                }
             }
 
 #if UNITY_ANDROID
-            // Check MeadPledge
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
                 if (!States.PledgeRequested)
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_PLEDGE_IN_PROGRESS", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.RequestPledge);
 
                     while (!States.PledgeRequested)
                     {
-                        _deepLinkHandler.OpenPortal(States.AgentState.address);
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
+                        yield return portalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
-                        if (!States.PledgeRequested)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
                     }
                 }
 
                 if (States.PledgeRequested && !States.PledgeApproved)
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_CHECK_PLEDGE", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ApprovePledge);
 
                     while (!States.PledgeApproved)
                     {
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
                         var patronAddress = States.PatronAddress!.Value;
                         ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
 
                         yield return SetTimeOut(() => States.PledgeApproved);
-                        if (!States.PledgeApproved)
-                        {
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_RETRYING_PLEDGE"),
-                                NotificationCell.NotificationType.Notification);
-                        }
                     }
 
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
-                Widget.Find<GrayLoadingScreen>().Show("UI_CREAT_WORLD", true);
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
             }
 #endif
             yield break;
@@ -795,9 +814,7 @@ namespace Nekoyume.Game
             {
                 IsInitialized = true;
                 Widget.Find<IntroScreen>().Close();
-                Widget.Find<GrayLoadingScreen>().Close();
-                Widget.Find<PreloadingScreen>().Show();
-                StartCoroutine(ClosePreloadingScene(4));
+                EnterNext();
             }
             else
             {
@@ -805,10 +822,62 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator ClosePreloadingScene(float time)
+        private static async void EnterNext()
         {
-            yield return new WaitForSeconds(time);
-            Widget.Find<PreloadingScreen>().Close();
+            if (!GameConfig.IsEditor)
+            {
+                if (States.Instance.AgentState.avatarAddresses.Any() &&
+                    States.Instance.AvatarStates.Any(x => x.Value.level > 49) &&
+                    Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var loadingScreen = Widget.Find<DataLoadingScreen>();
+                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    loadingScreen.Show();
+                    await RxProps.SelectAvatarAsync(slotIndex);
+                    loadingScreen.Close();
+                    Event.OnRoomEnter.Invoke(false);
+                    Event.OnUpdateAddresses.Invoke();
+                }
+                else
+                {
+                    Widget.Find<Synopsis>().Show();
+                }
+            }
+            else
+            {
+                PlayerFactory.Create();
+
+                if (Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
+                {
+                    var avatarState = States.Instance.AvatarStates[slotIndex];
+                    if (avatarState?.inventory == null ||
+                        avatarState.questList == null ||
+                        avatarState.worldInformation == null)
+                    {
+                        EnterLogin();
+                    }
+                    else
+                    {
+                        await RxProps.SelectAvatarAsync(slotIndex);
+                        Event.OnRoomEnter.Invoke(false);
+                        Event.OnUpdateAddresses.Invoke();
+                    }
+                }
+                else
+                {
+                    EnterLogin();
+                }
+            }
+
+            Widget.Find<GrayLoadingScreen>().Close();
+        }
+
+        private static void EnterLogin()
+        {
+            Widget.Find<Login>().Show();
+            Event.OnNestEnter.Invoke();
         }
 
         #endregion
@@ -996,7 +1065,7 @@ namespace Nekoyume.Game
             {
                 if (loginPopup.CheckLocalPassphrase())
                 {
-                    Widget.Find<GrayLoadingScreen>().Show("UI_LOAD_WORLD", true);
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
                 }
                 else
                 {
@@ -1004,6 +1073,11 @@ namespace Nekoyume.Game
                     intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
                 }
                 yield return new WaitUntil(() => loginPopup.Login);
+            }
+
+            if (_rpcAgentInitializeCoroutine != null)
+            {
+                yield return _rpcAgentInitializeCoroutine;
             }
 
             yield return Agent.Initialize(
@@ -1392,21 +1466,5 @@ namespace Nekoyume.Game
         {
             Debug.Log(_commandLineOptions.ToString());
         }
-
-#if UNITY_ANDROID
-        void Update()
-        {
-            if (Platform.IsMobilePlatform())
-            {
-                int width = Screen.resolutions[0].width;
-                int height = Screen.resolutions[0].height;
-                if (Screen.currentResolution.width != height || Screen.currentResolution.height != width)
-                {
-                    Debug.LogWarning($"fix Resolution to w={width} h={height}");
-                    Screen.SetResolution(height, width, true);
-                }
-            }
-        }
-#endif
     }
 }

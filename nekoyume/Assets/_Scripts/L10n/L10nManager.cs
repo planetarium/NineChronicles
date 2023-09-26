@@ -236,7 +236,7 @@ namespace Nekoyume.L10n
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             {
                 WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
                 while (!directory.isDone)
@@ -244,7 +244,7 @@ namespace Nekoyume.L10n
                     // wait for load
                 }
 
-                String[] fileNames = directory.text.Split("\r\n");
+                String[] fileNames = directory.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
                 foreach (String fileName in fileNames)

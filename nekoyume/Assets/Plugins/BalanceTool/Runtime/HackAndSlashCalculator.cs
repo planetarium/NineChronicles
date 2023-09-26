@@ -23,7 +23,7 @@ namespace BalanceTool.Runtime
     public static partial class HackAndSlashCalculator
     {
         public static async UniTask<IEnumerable<PlayData>> CalculateAsync(
-            IAccountStateDelta prevStates,
+            IAccount prevStates,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,
@@ -68,7 +68,7 @@ namespace BalanceTool.Runtime
         }
 
         private static async UniTask<PlayData> ExecuteHackAndSlashAsync(
-            IAccountStateDelta states,
+            IAccount states,
             int? randomSeed,
             long blockIndex,
             Address agentAddr,

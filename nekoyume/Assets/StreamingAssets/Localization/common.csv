@@ -137,7 +137,7 @@ UI_TIPS_2,Check the elemental types of your equipment. The element you're wearin
 UI_CREATE_CHARACTER,NEW CHARACTER,캐릭터 생성,NOVO PERSONAGEM,キャラクター作成,NUEVO PERSONAJE,ตัวละครใหม่,KARAKTER BARU,,新角色,新角色,BAGONG KARAKTER
 UI_DELETE_CHARACTER,DELETE CHARACTER,캐릭터 삭제,DELETAR PERSONAGEM,キャラクター削除,BORRAR PERSONAJE,ลบตัวละคร,HAPUS KARAKTER,,删除角色,刪除角色,TANGGALIN ANG KARAKTER
 UI_CREATE_CHARACTER_CONFIRM,CREATE,생성하기,CRIAR,作成する,CREAR,สร้าง,BUAT,,创建,創造,GUMAWA
-UI_GAME_START,GAME START,게임 시작,START GAME,ゲーム開始,INICIAR EL JUEGO,เริ่มเกม,MULAI GAME,,游戏开始,遊戲開始,SIMULAN ANG LARO
+UI_GAME_START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START
 UI_HAIR,Hair,헤어,Cabelo,髪,Cabello,ผม,Rambut,,头发,頭髮,Buhok
 UI_LENS,Eyes,눈,Olhos,目,Ojos,ตา,Mata,,眼睛,眼睛,Mata
 UI_EAR,Ears,귀,Orelha,耳,Orejas,หู,Telinga,,耳朵,耳朵,Tainga
@@ -352,15 +352,15 @@ alimentado pela comunidade que roda totalmente em blockchain.","ここはコミ�
 全てがブロックチェーン上で実行されています",Este es un mundo de fantasía impulsado por la comunidad que funciona completamente en la blockchain.,มันคือโลกแฟนตาซีบนบล็อคเชน,"Ini adalah dunia fantasi yang diberdayakan
 komunitas yang sepenuhnya berjalan di blockchain.",,这是一个完全在区块链上运行的社区驱动的幻想世界。,這是一個完全在區塊鏈上運行的社區驅動的幻想世界。,Ito ay isang mundo ng pantasiya na pinapagana ng komunidad na ganap na tumatakbo sa blockchain.
 UI_ACCOUNT_PLACEHOLDERS,Click the button below to create your ID,아래 버튼을 눌러 ID를 생성하세요,Clique no botão abaixo para criar seu ID,下のボタンを押して ID を作成して下さい。,Haz clic en el botón de abajo para crear tu ID.,คลิกปุ่มด้านล่างเพื่อสร้าง ID,Klik tombol di bawah ini untuk membuat ID Anda,,单击下面的按钮以创建您的ID,單擊下面的按鈕創建您的 ID,"Pindutin ang ""button"" sa ibaba para makagawa ng ID"
-UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot passphrase?,For<voffset=1>g</voffset>ot passphrase?,Para <voffset=1></voffset>ot senha?,パスワードを忘れましたか？,Olvi<voffset=1>das</voffset>te la frase de contraseña?,For<voffset=1>g</voffset>ot passphrase?,For<voffset=1>g</voffset>ot passphrase?,,忘记密码?,for <voffset = 1> g </voffset> ot密碼？,Para sa<voffset=1>g</voffset>ot passphrase?
+UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot password?,,,,,,,,,,
 UI_LOGIN_BACK_TO_LOGIN,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Voltar ao lo <voffset=1></voffset>gin pa <voffset=1> ge</voffset>,ログインページへ戻る,Regresar <voffset=1>a la</voffset>página de<voffset=1>ingre</voffset>so,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Kembali ke<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,,返回登入页,返回到lo <voffset = 1> g </voffset> in pa <voffset = 1> g </voffset> e,Balik sa lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e
 UI_LOGIN_LOGIN_FAIL,Login Failed,로그인 실패,Falha no Login,ログインに失敗しました,Inicio de sesión fallido,ล็อคอินล้มเหลว,Login gagal,,登录失败,登錄失敗,Nabigo ang pag-login
 UI_LOGIN_LOGIN_CONTENT,Failed to find account,잘못된 비밀번호,Senha Inválida,パスワードが違います,No se encontró la cuenta.,เชื่อมต่อบัญชีล้มเหลว,Passphrase tidak valid,,无效密码,未能找到帳戶,Hindi mahanap ang account.
 UI_LOGIN_FINDPASSPHRASE_FAIL,,계정 찾기 실패,Falha na localização da conta,アカウントが見つかりません,,ไม่พบบัญชี,Akun tidak ditemukan,,查找帐户失败,,
 UI_LOGIN_FINDPASSPHRASE_CONTENT,Private key not found,비밀키를 찾을 수 없음,Chave privada não encontrada,秘密鍵が見つかりません,No se encontró la clave privada,ไม่่พบ Private key,Private key tidak ditemukan,,找不到私钥,找不到私鑰,Hindi mahanap ang pribadong susi
-UI_LOGIN_INPUT_PASSPHRASE,Set passphrase,비밀번호 입력,Defina sua senha,パスワードを設定して下さい,Crea la frase de contraseña que quieras utilizar,ติดตั้ง Passphrase,Atur passphrase anda,,设置密码,設置密碼,Ihanda ang iyong passphrase
-UI_LOGIN_RETYPE_PASSPHRASE,Retype passphrase,비밀번호 재입력,Redigite sua senha,パスワードを再入力して下さい,Vuelve a escribir la frase de contraseña.,ใส่ Passphrase อีกครั้ง,Ketik ulang passphrase anda,,重新输入密码,重新輸入密碼,Ulitin ang passphrase
-UI_LOGIN_LOGIN,Type passphrase,비밀번호,Digite sua senha,パスワード,Escribe tu frase de contraseña,พิมพ์ Passphrase ของคุณ,Masukkan passphrase anda,,输入密码,輸入密碼,Isulat ang iyong passphrase
+UI_LOGIN_INPUT_PASSPHRASE,Set password,,,,,,,,,,
+UI_LOGIN_RETYPE_PASSPHRASE,Retype password,,,,,,,,,,
+UI_LOGIN_LOGIN,Type password,,,,,,,,,,
 UI_LOGIN_ENTER_PRIVATE_KEY,e.g. E3AB97633410A6513TPA3...557B,e.g. E3AB97633410A6513TPA3...557B,exemplo: E3AB97633410A6513TPA3...557B,例）E3AB97633410A6513TPA3...557B,Ejemplo: E3AB97633410A6513TPA3...557B,เช่น E3AB97633410A6513TPA3 ... 557B,e.g. E3AB97633410A6513TPA3...557B,,例如:E3AB97633410A6513TPA3 ... 557B,例如E3AB97633410A6513TPA3 ... 557b,e.g. E3AB97633410A6513TPA3...557B
 UI_LOGIN_ACCOUNT,Your Account,계정,Sua conta,アカウント,Tu cuenta,บัญชีผู้ใช้,Akun Anda,,您的帐户,您的帳戶,Ang iyong Account
 UI_UNLOCK_COMBINATION,"Congratulations! You can now enter the workshop! Go back to the lobby, head into the Workshop and craft something!",조합 개방,"Parabéns!
@@ -426,7 +426,7 @@ UI_MAIN_MENU_QUEST,Stage,스테이지!,Fase!,ステージ！,Escenario!,ด่�
 UI_MAIN_MENU_RANKING,Arena,아레나,Arena,アリーナ,Arena,อารีน่า,Arena,Арена,竞技场,競技場,Arena
 UI_MAIN_MENU_SHOP,Shop,상점,Comprar,ショップ,Tienda,ร้านค้า,Toko,Магазин,店铺,店鋪,Mercado
 UI_MAIN_MENU_STAKING,Staking,스테이킹,,,Staking,ออม,,,,質押,Staking
-UI_GAME_CREATE_PASSWORD,Create Password,비밀번호 생성,Criar Senha,パスワード生成,Crear una Contraseña,สร้างรหัสผ่าน,Buat Kata Sandi,,创建密码,創建密碼,Gumawa ng Password
+UI_GAME_CREATE_PASSWORD,Create Game Account,,,,,,,,,,
 UI_LOGIN_PASSWORD_INFO,"*Use at least 8 characters including letters, numbers, and symbols.","* 문자,숫자,기호를 조합하여 8자 이상을 사용하세요.","* Use pelo menos 8 caracteres com letras , e símbolos.",* 文字、数字、記号を組み合わせて8文字以上で入力して下さい。,"* Utilice al menos 8 caracteres, incluyendo letras, números y símbolos.",* ใช้ตัวอักษรตัวเลขและสัญลักษณ์อย่างน้อย 8 ตัว,"* Gunakan minimal 8 karakter dengan huruf, angka dan simbol.",,*请至少使用由8个字符组成的字母，数字和符号。,*使用至少8個字符，包括字母，數字和符號。,"* Gumamit ng mahigit sa 8 na karakter kasama ang mga titik, numero at simbolo."
 UI_LOGIN_RETYPE_INFO,*Please check your password.,* 암호를 확인해 주세요.,* Favor Verifique sua senha.,* パスワードを確認して下さい。,"* Por favor, verifica tu contraseña.",* โปรดตรวจสอบรหัสผ่าน,* Silakan periksa kata sandi Anda.,,*请检查您的密码。,*請檢查您的密碼。,* Pakiusap tignan ang iyong password.
 UI_LOGIN_INFO,Please check your password again.,암호를 다시 확인하세요.,Favor verifique sua senha e tente novamente.,もう一度パスワードを確認して下さい。,"Por favor, verifica tu contraseña nuevamente.",โปรดตรวจสอบรหัสผ่านอีกครั้ง,Silakan periksa kembali kata sandi Anda.,,请再次检查您的密码。,請再次檢查您的密碼。,Pakiusap tignan ulit ang iyong password.
@@ -462,7 +462,7 @@ UI_LOGIN_FIND_PASSPHRASE_TITLE,Enter your private key,프라이빗 키를 입력
 UI_PROGRESS,In Progress,진행 중,Em andamento,進行中,En progreso,กำลังดำเนินการ,Dalam Pengerjaan,,进行中,進行中,Kasalukuyang ginagawa
 UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR,<color={0}>{1}</color> option is randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.,<color={0}>Opção {1} </color>é selecionada aleatoriamente.,<color={0}>{1}</color> オプションがランダムに選ばれます。,La opción <color={0}>{1}</color> ha sido seleccionada de manera aleatoria.,<color={0}>{1}</color> ตัวเลือกถูกสุ่มเลือก,Opsi <color={0}>{1}</color> dipilih secara acak.,,<color={0}>{1}</color>选项是随机选择的。,<color = {0}> {1} </color>選項是隨機選擇的。,<color={0}>{1}</color> Pipili sa opsyon ng walang katiyakan.
 UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL,<color={0}>{1}</color> options are randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.,<color={0}>Opções {1}</color> são selecionadas aleatoriamente.,<color={0}>{1}</color> オプションがランダムに選ばれます。,Las opciones <color={0}>{1}</color> han sido seleccionadas de manera aleatoria.,<color={0}>{1}</color> ตัวเลือกถูกสุ่มเลือก,Opsi <color={0}>{1}</color> dipilih secara acak.,,<color={0}>{1}</color>选项是随机选择的。,<color = {0}> {1} </color>選項是隨機選擇的。,<color={0}>{1}</color> Pipili sa mga opsyon ng walang katiyakan.
-UI_UNLOCK_CONDITION_STAGE,Clear Stage {0},{0} 스테이지 클리어,Fase Completada {0},{0} ステージクリア,Supera el escenario {0},เคลียร์ด่าน {0},Selesaikan Stage {0},,清除阶段{0},通關{0},Tapusin ang Stage {0}
+UI_UNLOCK_CONDITION_STAGE,Stage {0},,,,,,,,,,
 UI_RAPID_COMBINATION,Open Now,바로 받기,Abrir agora,今すぐ入手する,Abrir,เปิดตอนนี้,Selesaikan sekarang,,立即打开,現在打開,Buksan Ngayon
 UI_COMBINATION_SLOT_CRAFT,Crafting {0},{0} 제작 중,Fabricando {0},{0} 製作中,Fabricando {0},สร้าง {0},Membuat {0},,制作{0},製作{0},Lumikha {0}
 UI_COMBINATION_SLOT_AVAILABLE,Create or upgrade items by clicking slots!,슬롯을 클릭하여 아이템을 만들거나 강화하세요!,Crie ou atualize itens clicando slots!,スロットをクリックしてアイテムを作成またはアップグレードします。,¡Crea o mejora objetos haciendo clic en los espacios disponibles!,สร้างหรืออัพเกรดรายการโดยคลิกที่ช่อง!,Buat atau tingkatkan item dengan mengklik slot!,"Создавайте или обновите элементы, нажав слоты!",单击插槽创建或升级项目！,單擊插槽創建或升級項目！,Lumikha o palakasin ang sandata sa pamamagitin ng pagpindot sa lagayan!
@@ -472,6 +472,7 @@ UI_ARMOR,Armor,방어구,Armadura,アーマー,Armadura,เกราะ,Baju zir
 UI_BELT,Belt,벨트,Cinto,ベルト,Cinturón,เข็มขัด,sabuk,,皮带,腰帶,Sinturon
 UI_NECKLACE,Necklace,목걸이,Colar,ネックレス,Collar,สร้อยคอ,kalung,,项链,項鍊,Kuwintas
 UI_RING,Ring,반지,Anel,リング,Anillo,แหวน,cincin,,戒指,戒指,Singsing
+UI_AURA,Aura,,,,,,,,,,
 UI_COST_BLOCK,It will take {0} blocks to complete crafting.,{0} 블록 정도 후에 완성 될꺼야.,São necessários {0} blocos para concluir a criação.,製作完了まであと {0} ブロック,Se necesitarán {0} bloques para completar la fabricación.,ใช้เวลาในการสร้าง {0} บล็อก,Diperlukan {0} blocks untuk menyelesaikan pembuatan.,,将需要{0}个区块来完成手工制作。,需要{0}區塊才能完成製作。,Nangangailan ng {0} blocks para makumpleto ang paglikha.
 UI_REDEEM_CODE,Redeem Code,코드 사용,Resgate de código,コードを使用,Canjear Código,แลกรหัสหรือบัตรของขวัญ,Redeem Code,,兑换代码,兌換碼,Kunin ang Code
 UI_REDEEM_CODE_PLACEHOLDER,Input Code,코드 입력,Coloque Código,コードを入力,Escribir el Código,ใส่รหัส,Masukkan Code,,输入代码,輸入代碼,Ilagay ang Code
@@ -1105,10 +1106,10 @@ NPC_39_NAME,Riding Warrior,라이딩 전사,Riding Warrior,ライディングウ
 NPC_40_NAME,Soul Dominator,영혼 지배자,Dominador de Soul,魂のドミネーター,Dominador de Almas,ผู้คุมวิญญาณ,Dominator Jiwa,Душевный доминатор,灵魂统治者,靈魂統治者,Tagapagpamahala ng Kaluluwa
 NPC_41_NAME,Jormungandr,요르문간드,Jormungandr,jormungandr,Jormungandr,ยอร์มุงกันเดอร์,Jormungandr,Jormungandr,Jormungandr,耶蒙甘德爾,Jormungandr
 UI_SIGNIN,Sign In,,,,Inicia sesión,เข้าสู่ระบบ,,,,登入,Pumasok
-UI_SIGNIN_BUTTON,Already have an account? Sign in,,,,¿Ya tienes una cuenta? Inicia sesión,มีบัญชีอยู่แล้ว? เข้าสู่ระบบ,,,,已經有帳戶？登入,Mayroon ka na bang account? Pumasok
-INTRO_QR_CODE_GUIDE_0,1) Please run the PC version of the launcher.,,,,"1) Por favor, ejecuta la versión de PC del lanzador del juego.",1) เปิดลอนเชอร์เวอร์ชันพีซี,,,,1) 請運行PC版啟動器。,"1). Pakiusap, paandarin ang bersyon ng launcher sa PC."
-INTRO_QR_CODE_GUIDE_1,2) Click on the account address in the upper left corner of the launcher.,,,,2) Haz clic en la dirección de tu cuenta en la esquina superior izquierda del lanzador.,2) คลิกที่บัญชีตรงมุมซ้ายบนของตัวลอนเชอร์,,,,2) 點擊啟動器左上角的賬戶地址。,2.) Pindutin ang account address sa may bandang kaliwang taas na bahagi ng launcher.
-INTRO_QR_CODE_GUIDE_2,3) Scan the QR code from the PC with your mobile device.,,,,3) Escanea el código QR generado desde la PC con tu dispositivo móvil.,3) สแกนรหัส QR จากพีซีด้วยมือถือของคุณ,,,,3) 使用移動設備從電腦上讀取二維碼。,3.) Basahin ang QR code galing sa PC gamit ang iyong mobile device.
+UI_SIGNIN_BUTTON,Returning PC player?,,,,¿Ya tienes una cuenta? Inicia sesión,มีบัญชีอยู่แล้ว? เข้าสู่ระบบ,,,,已經有帳戶？登入,Mayroon ka na bang account? Pumasok
+INTRO_QR_CODE_GUIDE_0,1) Please login with your address on the PC launcher.,,,,"1) Por favor, ejecuta la versión de PC del lanzador del juego.",1) เปิดลอนเชอร์เวอร์ชันพีซี,,,,1) 請運行PC版啟動器。,"1). Pakiusap, paandarin ang bersyon ng launcher sa PC."
+INTRO_QR_CODE_GUIDE_1,2) Click the account address in the upper left corner of the launcher.,,,,2) Haz clic en la dirección de tu cuenta en la esquina superior izquierda del lanzador.,2) คลิกที่บัญชีตรงมุมซ้ายบนของตัวลอนเชอร์,,,,2) 點擊啟動器左上角的賬戶地址。,2.) Pindutin ang account address sa may bandang kaliwang taas na bahagi ng launcher.
+INTRO_QR_CODE_GUIDE_2,"3) Once the QR code is displayed, please scan it with your phone.",,,,3) Escanea el código QR generado desde la PC con tu dispositivo móvil.,3) สแกนรหัส QR จากพีซีด้วยมือถือของคุณ,,,,3) 使用移動設備從電腦上讀取二維碼。,3.) Basahin ang QR code galing sa PC gamit ang iyong mobile device.
 UI_CREATE_KEYSTORE,Creating Account,,,,,,,,,,
 UI_CHECK_PLEDGE,Checking the pledge,,,,,,,,,,
 UI_PLEDGE_IN_PROGRESS,The pledge is in progress,,,,,,,,,,
@@ -1131,3 +1132,43 @@ UI_INVALID_CREATED_PASSWORD,"The entered password is not in the conditions
 Please use a stronger password.",,,,,,,,,,
 UI_INVALID_RETYPE_PASSWORD,"The entered password is not incorrect
 Please check your password.",,,,,,,,,,
+UI_LOGIN_ON_BROWSER_TITLE,Please login on your browser,,,,,,,,,,
+UI_LOGIN_ON_BROWSER_CONTENT,"To proceed with social logins, we'll redirect you to an external browser.
+Once you complete your signing in, you'll be redirected back to the app automatically.",,,,,,,,,,
+UI_LOGIN_SHOW_CONTENT,"It is a fantasy world on the blockchain.
+
+To start the game, you need
+to create your account.",,,,,,,,,,
+UI_CONNECTED_ADDRESS_CONTENT,"You already have Nine Chronicles Address!
+Please import your keystore file from the PC.",,,,,,,,,,
+UI_IMPORT,Import,,,,,,,,,,
+UI_COMPLETE,Complete,,,,,,,,,,
+UI_CREATE_PASSWORD_NOTI,"Your account has been successfully created,
+but we need to set a password for your private key.
+It will only take a moment.",,,,,,,,,,
+UI_PROCEED,Let's proceed,,,,,,,,,,
+UI_LOADING_GAME_START_1,Preparing your avatar...,,,,,,,,,,
+UI_LOADING_GAME_START_2,Making a covenant with Freya...,,,,,,,,,,
+UI_LOADING_GAME_START_3,The covenant is recorded the list...,,,,,,,,,,
+UI_LOADING_GAME_START_4,Sealing the pact with a magical touch...,,,,,,,,,,
+UI_LOADING_GAME_START_5,Unlocking the gates to the adventure,,,,,,,,,,
+UI_LOADING_GAME_START_6,Laying out the grand tapestry of destiny...,,,,,,,,,,
+UI_LOADING_GAME_START_7,Stocking the inventory with powerful gears...,,,,,,,,,,
+UI_LOADING_GAME_START_8,Painting the world with Freya's will...,,,,,,,,,,
+UI_LOADING_GAME_START_9,Connecting with the cosmic cat God the Grrreat...,,,,,,,,,,
+UI_LOADING_GAME_START_10,Your adventure is about to begin...,,,,,,,,,,
+UI_SET_PASSWORD_TITLE,Set your password and keep your game data safe.,,,,,,,,,,
+UI_SET_PASSWORD_COMPLETE,Password setting is complete!,,,,,,,,,,
+UI_SUMMON,Summon,,,,,,,,,,
+UI_SUMMON_RESULT,Summon Result,,,,,,,,,,
+UI_MORE,More,,,,,,,,,,
+UI_DRAW_1,Summon 1,소환 1,Invocar 1,召喚1,Invocar 1,เรียก 1,SUMPER 1,Призыв 1,召唤1,召喚1,Tumawag 1
+UI_DRAW_10,Summon 11,소환 11,Invocar 11,召喚11,Invocar 11,เรียก 11,Panggil 11,Призыв 11,召唤11,召喚11,Tumawag 11
+UI_DRAW_AGAIN_FORMAT,Summon {0},소환 {0},Invocar {0},召喚{0},Invocar {0},เรียก {0},Summon {0},Призыв {0},召唤{0},召喚{0},Tawag {0}
+UI_SUMMON_DETAIL_DESC,Select a list to see a preview.,미리보기를 보려면 목록을 선택합니다.,Selecione uma lista para ver uma visualização.,リストを選択してプレビューを表示します。,Seleccione una lista para ver una vista previa.,เลือกรายการเพื่อดูตัวอย่าง,Pilih daftar untuk melihat pratinjau.,"Выберите список, чтобы увидеть предварительный просмотр.",选择一个列表以查看预览。,選擇一個列表以查看預覽。,Pumili ng isang listahan upang makita ang isang preview.
+UI_SUMMON_DETAIL_LIST_TITLE,Probability of appearance,출현확률,Probabilidade de aparência,外観の確率,Probabilidad de apariencia,ความน่าจะเป็นของลักษณะที่ปรากฏ,Probabilitas penampilan,Вероятность внешнего вида,外观的概率,外觀的概率,Posibilidad ng hitsura
+SUMMON_NAME_10001,Coming Soon,커밍순,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon
+SUMMON_NAME_10002,Beast Aura,야수 아우라,Aura de besta,ビーストオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura binatang buas,Зверь Аура,野兽光环,野獸光環,Hayop aura
+UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,召喚に必要な資料が不足しています。必要な材料の購入に進みますか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?
+UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,
+UI_ACCEL_UNLOCK_CONDITION,Clear stage 5 first.,,,,,,,,,,

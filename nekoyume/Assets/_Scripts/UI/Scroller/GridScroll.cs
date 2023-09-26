@@ -32,6 +32,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private bool fillWithNullToEmptyCellGroup;
 
+        [SerializeField]
+        private int fillWithNullToMinimumCount = 0;
+
         protected abstract FancyCell<TItemData, TContext> CellTemplate { get; }
 
         protected override void SetupCellTemplate() => Setup<TCellGroup>(CellTemplate);
@@ -95,6 +98,15 @@ namespace Nekoyume.UI.Scroller
 
             var itemsSource = new List<TItemData>(items);
 
+            if(fillWithNullToMinimumCount > itemsSource.Count)
+            {
+                var addCount = math.max(0, fillWithNullToMinimumCount - itemsSource.Count);
+                for (var i = 0; i < addCount; i++)
+                {
+                    itemsSource.Add(null);
+                }
+            }
+
             if (fillWithNullToEmptyViewport)
             {
                 var cellGroupCount = (int) (Scroller.ViewportSize / CellSize);
@@ -148,6 +160,11 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            JumpTo(itemIndex, alignment);
+        }
+
+        public void RawJumpto(int itemIndex, float alignment)
+        {
             JumpTo(itemIndex, alignment);
         }
 

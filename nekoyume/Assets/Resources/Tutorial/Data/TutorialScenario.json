@@ -62,6 +62,7 @@
         "actionType": 0,
         "emojiType": 3,
         "guideType": 1,
+        "targetSizeOffset": { "x": 0, "y": 20 },
         "scriptKey": "TUTORIAL_02_005",
         "fullScreenButton" : true
       }
@@ -574,7 +575,7 @@
         "emojiType": 2,
         "guideType": 1,
         "arrowPositionOffset": { "x": -50, "y": 0 },
-        "targetSizeOffset": { "x": -20, "y": 0 },
+        "targetSizeOffset": { "x": 25, "y": 20 },
         "targetPositionOffset": { "x": -20, "y": 0 },
         "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
         "scriptKey": "TUTORIAL_02_027",

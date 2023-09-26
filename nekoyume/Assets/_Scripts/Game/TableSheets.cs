@@ -7,6 +7,7 @@ using Nekoyume.TableData.Event;
 using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.GrandFinale;
 using Nekoyume.TableData.Pet;
+using Nekoyume.TableData.Summon;
 
 namespace Nekoyume.Game
 {
@@ -138,6 +139,8 @@ namespace Nekoyume.Game
 
         public EnhancementCostSheetV2 EnhancementCostSheetV2 { get; private set; }
 
+        public EnhancementCostSheetV3 EnhancementCostSheetV3 { get; private set; }
+
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; private set; }
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }
@@ -217,6 +220,8 @@ namespace Nekoyume.Game
         public PetSheet PetSheet { get; private set; }
         public PetCostSheet PetCostSheet { get; private set; }
         public PetOptionSheet PetOptionSheet { get; private set; }
+
+        public SummonSheet SummonSheet { get; private set; }
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 

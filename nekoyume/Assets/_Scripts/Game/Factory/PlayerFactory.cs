@@ -52,7 +52,8 @@ namespace Nekoyume.Game.Factory
             AvatarState avatarState,
             IEnumerable<Costume> costumes,
             Armor armor,
-            Weapon weapon)
+            Weapon weapon,
+            Aura aura)
         {
             if (avatarState is null)
             {
@@ -72,7 +73,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<Character.Player>();
             }
 
-            player.Set(avatarState.address, model, costumes, armor, weapon, true);
+            player.Set(avatarState.address, model, costumes, armor, weapon, aura, true);
             return player.gameObject;
         }
     }

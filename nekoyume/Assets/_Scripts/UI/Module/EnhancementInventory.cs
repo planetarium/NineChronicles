@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
@@ -80,11 +80,11 @@ namespace Nekoyume.UI.Module
 
         private EnhancementInventoryItem _selectedModel;
         private EnhancementInventoryItem _baseModel;
-        private EnhancementInventoryItem _materialModel;
+        private List<EnhancementInventoryItem> _materialModels = new List<EnhancementInventoryItem>();
 
         private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
-        private Action<EnhancementInventoryItem, EnhancementInventoryItem> _onUpdateView;
+        private Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> _onUpdateView;
 
         private void Awake()
         {
@@ -137,11 +137,12 @@ namespace Nekoyume.UI.Module
             _selectedItemSubType.Subscribe(_ => UpdateView(true)).AddTo(gameObject);
         }
 
-        public (Equipment, Equipment) GetSelectedModels()
+        public (Equipment, List<Equipment>) GetSelectedModels()
         {
             var baseItem = (Equipment)_baseModel?.ItemBase;
-            var materialItem = (Equipment)_materialModel?.ItemBase;
-            return (baseItem, materialItem);
+            var materialItems = _materialModels.Select((i) => (Equipment)i.ItemBase).ToList();
+
+            return (baseItem, materialItems);
         }
 
         public string GetSubmitText()
@@ -166,9 +167,8 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = _selectedModel;
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
+                _selectedModel.SelectedMaterial.SetValueAndForceNotify(true);
+                _materialModels.Add(_selectedModel);
             }
 
             UpdateView();
@@ -182,35 +182,18 @@ namespace Nekoyume.UI.Module
                 _baseModel = null;
             }
 
-            _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-            _materialModel = null;
+            ClearAllMaterialModels();
 
             UpdateView();
         }
 
-        private void OnClickItem(EnhancementInventoryItem item)
+        private void ClearAllMaterialModels()
         {
-            if (item.Equals(_baseModel)) // 둘다 해제
+            foreach (var model in _materialModels)
             {
-                _baseModel.SelectedBase.SetValueAndForceNotify(false);
-                _baseModel = null;
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
+                model?.SelectedMaterial.SetValueAndForceNotify(false);
             }
-            else if (item.Equals(_materialModel)) // 재료 해제
-            {
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = null;
-            }
-            else
-            {
-                ClearSelectedItem();
-                _selectedModel = item;
-                _selectedModel.Selected.SetValueAndForceNotify(true);
-                _onSelectItem?.Invoke(_selectedModel, tooltipSocket); // Show tooltip popup
-            }
-
-            UpdateView();
+            _materialModels.Clear();
         }
 
         public void Select(ItemSubType itemSubType,Guid itemId)
@@ -239,9 +222,32 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnDoubleClickItem(EnhancementInventoryItem item)
+        private void OnClickItem(EnhancementInventoryItem item)
         {
             ClearSelectedItem();
+
+            if (item.Equals(_baseModel)) // 둘다 해제
+            {
+                _baseModel.SelectedBase.SetValueAndForceNotify(false);
+                _baseModel = null;
+
+                ClearAllMaterialModels();
+
+                UpdateView();
+                return;
+            }
+
+            foreach (var model in _materialModels)
+            {
+                if (item.Equals(model))
+                {
+                    model.SelectedMaterial.SetValueAndForceNotify(false);
+                    _materialModels.Remove(model);
+                    UpdateView();
+                    return;
+                }
+            }
+
 
             if (_baseModel is null)
             {
@@ -255,9 +261,8 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
-                _materialModel = item;
-                _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
+                item.SelectedMaterial.SetValueAndForceNotify(true);
+                _materialModels.Add(item);
             }
 
             UpdateView();
@@ -283,26 +288,14 @@ namespace Nekoyume.UI.Module
 
         private bool IsDisable(EnhancementInventoryItem a, EnhancementInventoryItem b)
         {
-            if (a.ItemBase.ItemSubType != b.ItemBase.ItemSubType)
-            {
-                return true;
-            }
-
-            if (a.ItemBase.Grade != b.ItemBase.Grade)
-            {
-                return true;
-            }
-
-            var ae = (Equipment)a.ItemBase;
-            var be = (Equipment)b.ItemBase;
-            return ae.level != be.level;
+            return a.ItemBase.ItemSubType != b.ItemBase.ItemSubType || _materialModels.Count >= 50;
         }
 
         private void UpdateView(bool jumpToFirst = false)
         {
             var models = GetModels();
             DisableItem(models);
-            _onUpdateView?.Invoke(_baseModel, _materialModel);
+            _onUpdateView?.Invoke(_baseModel, _materialModels);
             scroll.UpdateData(models, jumpToFirst);
         }
 
@@ -352,10 +345,9 @@ namespace Nekoyume.UI.Module
             return usableItems;
         }
 
-        public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
-            Action<EnhancementInventoryItem, EnhancementInventoryItem> onUpdateView)
+        public void Set(Action<EnhancementInventoryItem, List<EnhancementInventoryItem>> onUpdateView,
+            EnhancementSelectedMaterialItemScroll enhancementSelectedMaterialItemScroll)
         {
-            _onSelectItem = onSelectItem;
             _onUpdateView = onUpdateView;
 
             _disposables.DisposeAllAndClear();
@@ -379,11 +371,14 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item);
                 }
 
+                _baseModel = null;
+                _materialModels.Clear();
+
                 UpdateView(resetScrollOnEnable);
             }).AddTo(_disposables);
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
-            scroll.OnDoubleClick.Subscribe(OnDoubleClickItem).AddTo(_disposables);
+            enhancementSelectedMaterialItemScroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
         }
 
         private void AddItem(ItemBase itemBase)
