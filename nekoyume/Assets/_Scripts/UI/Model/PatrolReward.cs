@@ -2,7 +2,6 @@ using Nekoyume.L10n;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Libplanet.Crypto;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model.Patrol
@@ -20,37 +19,27 @@ namespace Nekoyume.UI.Model.Patrol
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        private Address _currentAvatarAddress;
         private bool _initialized;
 
-        public async Task Initialize()
+        public void Initialize()
         {
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            if (_currentAvatarAddress.Equals(avatarAddress))
+            if (_initialized)
             {
                 return;
             }
 
-            var agentAddress = Game.Game.instance.States.AgentState.address;
-            var level = Game.Game.instance.States.CurrentAvatarState.level;
-            await InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
-            _currentAvatarAddress = avatarAddress;
-
-            if (!_initialized)
-            {
-                PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                    .CombineLatest(LastRewardTime, (_, lastReward) =>
-                    {
-                        var timeSpan = DateTime.Now - lastReward;
-                        return timeSpan > Interval ? Interval : timeSpan;
-                    })
-                    .ToReactiveProperty();
-                LastRewardTime.Subscribe(_ => SetPushNotification());
-                _initialized = true;
-            }
+            _initialized = true;
+            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                .CombineLatest(LastRewardTime, (_, lastReward) =>
+                {
+                    var timeSpan = DateTime.Now - lastReward;
+                    return timeSpan > Interval ? Interval : timeSpan;
+                })
+                .ToReactiveProperty();
+            LastRewardTime.Subscribe(_ => SetPushNotification());
         }
 
-        private async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
+        public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
             if (!serviceClient.IsInitialized)

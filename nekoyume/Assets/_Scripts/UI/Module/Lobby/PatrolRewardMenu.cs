@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.L10n;
 using TMPro;
-using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -55,10 +54,9 @@ namespace Nekoyume.UI.Module.Lobby
 
         private async void SetData(PatrolRewardPopup popup)
         {
+            await popup.InitializePatrolReward();
+
             var patrolReward = popup.PatrolReward;
-
-            await patrolReward.Initialize();
-
             patrolReward.PatrolTime
                 .Select(time => time < patrolReward.Interval)
                 .Where(_ => !popup.Claiming.Value)
