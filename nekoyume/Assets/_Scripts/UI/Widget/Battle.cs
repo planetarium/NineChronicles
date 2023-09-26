@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -11,6 +10,8 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -26,7 +27,13 @@ namespace Nekoyume.UI
         private BossStatus bossStatus;
 
         [SerializeField]
-        private Toggle repeatToggle;
+        private GameObject accelerationToggleParent;
+
+        [SerializeField]
+        private Button accelerationToggleLockButton;
+
+        [SerializeField]
+        private Toggle accelerationToggle;
 
         [SerializeField]
         private Toggle exitToggle;
@@ -43,12 +50,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ComboText comboText;
 
-        [SerializeField]
-        private GameObject boostEffectObject;
-
-        [SerializeField]
-        private TMP_Text boostCountText;
-
         private StageType _stageType;
 
         public BossStatus BossStatus => bossStatus;
@@ -56,6 +57,7 @@ namespace Nekoyume.UI
         public StageProgressBar StageProgressBar => stageProgressBar;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 3;
+        public const int RequiredStageForAccelButton = 5;
 
         protected override void Awake()
         {
@@ -72,6 +74,23 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"),
                         NotificationCell.NotificationType.Information);
                 }
+            });
+
+            accelerationToggle.onValueChanged.AddListener(value =>
+            {
+                var stage = Game.Game.instance.Stage;
+                stage.AnimationTimeScaleWeight = value
+                    ? Stage.AcceleratedAnimationTimeScaleWeight
+                    : Stage.DefaultAnimationTimeScaleWeight;
+                stage.UpdateTimeScale();
+            });
+
+            accelerationToggleLockButton.onClick.AddListener(() =>
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_ACCEL_UNLOCK_CONDITION"),
+                    NotificationCell.NotificationType.Information);
             });
 
             Game.Event.OnGetItem.AddListener(_ =>
@@ -91,6 +110,10 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             guidedQuest.Hide(ignoreCloseAnimation);
+            var stage = Game.Game.instance.Stage;
+            stage.AnimationTimeScaleWeight = Stage.DefaultAnimationTimeScaleWeight;
+            stage.UpdateTimeScale();
+            accelerationToggle.gameObject.SetActive(false);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             Find<HeaderMenuStatic>().Close();
             base.Close(ignoreCloseAnimation);
@@ -106,8 +129,7 @@ namespace Nekoyume.UI
             StageType stageType,
             int stageId,
             bool isExitReserved,
-            bool isTutorial,
-            int boostCost)
+            bool isTutorial)
         {
             Find<EventBanner>().Close(true);
             _stageType = stageType;
@@ -144,26 +166,17 @@ namespace Nekoyume.UI
             comboText.Close();
 
             exitToggle.isOn = isExitReserved;
-            switch (_stageType)
-            {
-                case StageType.HackAndSlash:
-                case StageType.Mimisbrunnr:
-                {
-                    var cost = TableSheets.Instance.StageSheet.OrderedList
-                        .First(i => i.Id == stageId)
-                        .CostAP;
-                    boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
-                    break;
-                }
-                case StageType.EventDungeon:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            boostEffectObject.SetActive(false);
             exitToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);
+            accelerationToggle.gameObject.SetActive(true);
+
+            var canAccel =
+                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
+                    RequiredStageForAccelButton);
+            accelerationToggleLockButton.gameObject.SetActive(!canAccel);
+            accelerationToggleParent.SetActive(canAccel);
+            accelerationToggle.interactable = canAccel;
+            accelerationToggle.isOn = false;
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
@@ -227,7 +240,7 @@ namespace Nekoyume.UI
 
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
-            repeatToggle.gameObject.SetActive(false);
+            accelerationToggle.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
