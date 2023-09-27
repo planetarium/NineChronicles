@@ -399,6 +399,7 @@ namespace Nekoyume.UI
 
         public void SkipAll()
         {
+            Analyzer.Instance.Track("Unity/Synopsis Skip");
             skipAll = true;
             Skip();
         }
