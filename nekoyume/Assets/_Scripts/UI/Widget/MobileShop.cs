@@ -26,6 +26,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private IAPShopDynamicGridLayoutView iAPShopDynamicGridLayout;
 
+        [SerializeField]
+        private GameObject loadDataScreen;
+
         private bool _isInitailizedObj;
         private Dictionary<string, IAPShopProductCellView> _allProductObjs = new Dictionary<string, IAPShopProductCellView>();
         private Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory = new Dictionary<string, List<IAPShopProductCellView>>();
@@ -160,6 +163,11 @@ namespace Nekoyume.UI
         public void RefreshGrid()
         {
             RefreshGridByCategory(_lastSelectedCategory);
+        }
+
+        public void SetLoadingDataScreen(bool isLoading)
+        {
+            loadDataScreen.SetActive(isLoading);
         }
 
         public void PurchaseComplete(string productId)

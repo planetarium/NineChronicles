@@ -60,6 +60,7 @@ namespace Nekoyume.UI.Module
                 if (_data == null || !_data.Buyable)
                     return;
 
+                Widget.Find<MobileShop>().SetLoadingDataScreen(true);
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.GoogleSku));
                 Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
             });
