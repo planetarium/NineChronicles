@@ -72,10 +72,11 @@ namespace Lib9c.DevExtensions.Action
         {
             context.UseGas(1);
             var sellData = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
+            var random = context.GetRandom();
             var addedItemInfos = sellData.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(
-                    context.Random.GenerateRandomGuid(),
-                    context.Random.GenerateRandomGuid()))
+                    random.GenerateRandomGuid(),
+                    random.GenerateRandomGuid()))
                 .ToList();
 
             var agentAddress = _privateKey.PublicKey.ToAddress();
@@ -174,7 +175,7 @@ namespace Lib9c.DevExtensions.Action
                     skillSheet,
                     materialItemSheet,
                     consumableItemSheet,
-                    context.Random,
+                    random,
                     sellData.Items[i], addedItemInfos[i], avatarState);
             }
 
