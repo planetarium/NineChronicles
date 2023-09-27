@@ -179,7 +179,7 @@ namespace Nekoyume.UI
                 buyLimitObj.SetActive(true);
                 buyLimitText.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})";
             }
-
+            Widget.Find<MobileShop>().SetLoadingDataScreen(false);
             base.Show(ignoreShowAnimation);
         }
     }
