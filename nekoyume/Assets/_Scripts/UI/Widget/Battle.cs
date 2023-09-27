@@ -235,13 +235,13 @@ namespace Nekoyume.UI
                 stageText.text =
                     $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
                 stageText.gameObject.SetActive(true);
+                accelerationToggleLockButton.gameObject.SetActive(true);
                 stageProgressBar.Show();
             }
 
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             accelerationToggle.gameObject.SetActive(false);
-            accelerationToggleLockButton.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
