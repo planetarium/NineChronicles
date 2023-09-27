@@ -1159,9 +1159,9 @@ UI_LOADING_GAME_START_9,Connecting with the cosmic cat God the Grrreat...,,,,,,,
 UI_LOADING_GAME_START_10,Your adventure is about to begin...,,,,,,,,,,
 UI_SET_PASSWORD_TITLE,Set your password and keep your game data safe.,,,,,,,,,,
 UI_SET_PASSWORD_COMPLETE,Password setting is complete!,,,,,,,,,,
-UI_SUMMON,Summon,,,,,,,,,,
-UI_SUMMON_RESULT,Summon Result,,,,,,,,,,
-UI_MORE,More,,,,,,,,,,
+UI_SUMMON,Summon,소환,Invocar,召喚,Convocar,เรียก,Memanggil,Вызов,召唤,召喚,Tumawag
+UI_SUMMON_RESULT,Summon Result,소환결과,Resultado de convocação,結果を召喚します,Resultado de invocación,เรียกผลลัพธ์,SUMMON Hasil,Призыв результат,召唤结果,召喚結果,Tumawag na resulta
+UI_MORE,More,자세히,Mais,もっと,Más,มากกว่า,Lagi,Более,更多的,更多的,Higit pa
 UI_DRAW_1,Summon 1,소환 1,Invocar 1,召喚1,Invocar 1,เรียก 1,SUMPER 1,Призыв 1,召唤1,召喚1,Tumawag 1
 UI_DRAW_10,Summon 11,소환 11,Invocar 11,召喚11,Invocar 11,เรียก 11,Panggil 11,Призыв 11,召唤11,召喚11,Tumawag 11
 UI_DRAW_AGAIN_FORMAT,Summon {0},소환 {0},Invocar {0},召喚{0},Invocar {0},เรียก {0},Summon {0},Призыв {0},召唤{0},召喚{0},Tawag {0}
@@ -1169,6 +1169,7 @@ UI_SUMMON_DETAIL_DESC,Select a list to see a preview.,미리보기를 보려면 
 UI_SUMMON_DETAIL_LIST_TITLE,Probability of appearance,출현확률,Probabilidade de aparência,外観の確率,Probabilidad de apariencia,ความน่าจะเป็นของลักษณะที่ปรากฏ,Probabilitas penampilan,Вероятность внешнего вида,外观的概率,外觀的概率,Posibilidad ng hitsura
 SUMMON_NAME_10001,Nimble Aura,날렵한 아우라,Aura ágil,機敏なオーラ,Aura ágil,ออร่าว่องไว,Aura gesit,Протекающая аура,灵活的光环,靈活的光環,Nimble aura
 SUMMON_NAME_10002,Beast Aura,야수 아우라,Aura de besta,ビーストオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura binatang buas,Зверь Аура,野兽光环,野獸光環,Hayop aura
+UI_ACCEL_UNLOCK_CONDITION,Clear stage 5 first.,스테이지5 클리어 시 오픈,Estágio 5 claro primeiro.,最初にステージ5をクリアします。,Etapa transparente 5 primero.,Clear Stage 5 ก่อน,Bersihkan tahap 5 pertama.,Четкая стадия 5 первой.,首先清除阶段5。,首先清除階段5。,I -clear ang Stage 5.
 UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,召喚に必要な資料が不足しています。必要な材料の購入に進みますか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?
 UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,
 MOBILE_SHOP_PRODUCT_DailyLimit,{0} per day,매일 {0} 번 구매 가능,{0} por dia,,,,,,每天限购{0}次,,
