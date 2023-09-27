@@ -130,6 +130,7 @@ namespace Nekoyume.UI.Module
             {
                 item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
             }
+            Debug.Log($"{_puchasingData.metadata.localizedTitle} : {_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPriceString} {_puchasingData.metadata.localizedPrice}");
 
             foreach (var item in discountObjs)
             {
