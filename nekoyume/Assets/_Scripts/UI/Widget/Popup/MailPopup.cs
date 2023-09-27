@@ -327,9 +327,9 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            var isNew = MailBox.Count(mail => mail.New && mail.requiredBlockIndex <= blockIndex) > 1;
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
             allButton.HasNotification.Value = isNew;
-            receiveAllContainer.SetActive(isNew);
+            receiveAllContainer.SetActive(MailBox.Any(IsReceivableMail));
             Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
@@ -343,6 +343,20 @@ namespace Nekoyume.UI
             list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
             recent = list?.FirstOrDefault();
             systemButton.HasNotification.Value = recent is { New: true };
+        }
+
+        private bool IsReceivableMail(Mail mail)
+        {
+            return mail.New &&
+                   mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex &&
+                   mail is ProductBuyerMail or
+                       ProductCancelMail or
+                       OrderBuyerMail or
+                       OrderSellerMail or
+                       OrderExpirationMail or
+                       CancelOrderMail or
+                       CombinationMail or
+                       ItemEnhanceMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -576,7 +590,7 @@ namespace Nekoyume.UI
                         States.Instance.AgentState.address,
                         result.CRYSTAL.MajorUnit);
                 }
-                
+
                 if (itemUsable.ItemSubType == ItemSubType.Aura)
                 {
                     //Because aura is a tradable item, local removal fails and an exception is handled.

@@ -114,6 +114,8 @@ namespace MagicOnion.Resolvers
 {
     using global::System;
     using global::MessagePack;
+
+    partial class PreserveAttribute : global::System.Attribute {}
     public class MagicOnionResolver : global::MessagePack.IFormatterResolver
     {
         public static readonly global::MessagePack.IFormatterResolver Instance = new MagicOnionResolver();
@@ -177,6 +179,30 @@ namespace MagicOnion.Resolvers
             }
         }
     }
+    /// <summary>Type hints for Ahead-of-Time compilation.</summary>
+    [MagicOnion.Resolvers.Preserve]
+    internal static class TypeHints
+    {
+        [MagicOnion.Resolvers.Preserve]
+        internal static void Register()
+        {
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>, global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.Int32, global::System.String>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::MessagePack.Nil>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Boolean>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Byte>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Byte[]>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Collections.Generic.Dictionary<global::System.Byte[], global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Int32>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.Int64>();
+            _ = MagicOnionResolver.Instance.GetFormatter<global::System.String>();
+        }
+    }
 }
 #pragma warning restore 168
 #pragma warning restore 219
@@ -214,6 +240,7 @@ namespace Nekoyume.Shared.Services
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetState;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]> GetBalance;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MessagePack.Nil, global::System.Byte[]> GetTip;
+            public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Int64, global::System.Byte[]> GetBlockHash;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean> SetAddressesToSubscribe;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::System.Byte[], global::System.Boolean> IsTransactionStaged;
             public global::MagicOnion.Client.Internal.RawMethodInvoker<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>, global::System.Boolean> ReportException;
@@ -228,6 +255,7 @@ namespace Nekoyume.Shared.Services
                 this.GetState = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetState", serializerProvider);
                 this.GetBalance = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBalance", serializerProvider);
                 this.GetTip = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::MessagePack.Nil, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetTip", serializerProvider);
+                this.GetBlockHash = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_RefType<global::System.Int64, global::System.Byte[]>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "GetBlockHash", serializerProvider);
                 this.SetAddressesToSubscribe = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_ValueType<global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>, global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "SetAddressesToSubscribe", serializerProvider);
                 this.IsTransactionStaged = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_RefType_ValueType<global::System.Byte[], global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "IsTransactionStaged", serializerProvider);
                 this.ReportException = global::MagicOnion.Client.Internal.RawMethodInvoker.Create_ValueType_ValueType<global::MagicOnion.DynamicArgumentTuple<global::System.String, global::System.String>, global::System.Boolean>(global::Grpc.Core.MethodType.Unary, "IBlockChainService", "ReportException", serializerProvider);
@@ -263,6 +291,8 @@ namespace Nekoyume.Shared.Services
             => this.core.GetBalance.InvokeUnary(this, "IBlockChainService/GetBalance", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Byte[], global::System.Byte[]>(addressBytes, currencyBytes, blockHashBytes));
         public global::MagicOnion.UnaryResult<global::System.Byte[]> GetTip()
             => this.core.GetTip.InvokeUnary(this, "IBlockChainService/GetTip", global::MessagePack.Nil.Default);
+        public global::MagicOnion.UnaryResult<global::System.Byte[]> GetBlockHash(global::System.Int64 blockIndex)
+            => this.core.GetBlockHash.InvokeUnary(this, "IBlockChainService/GetBlockHash", blockIndex);
         public global::MagicOnion.UnaryResult<global::System.Boolean> SetAddressesToSubscribe(global::System.Byte[] toByteArray, global::System.Collections.Generic.IEnumerable<global::System.Byte[]> addressesBytes)
             => this.core.SetAddressesToSubscribe.InvokeUnary(this, "IBlockChainService/SetAddressesToSubscribe", new global::MagicOnion.DynamicArgumentTuple<global::System.Byte[], global::System.Collections.Generic.IEnumerable<global::System.Byte[]>>(toByteArray, addressesBytes));
         public global::MagicOnion.UnaryResult<global::System.Boolean> IsTransactionStaged(global::System.Byte[] txidBytes)

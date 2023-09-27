@@ -134,6 +134,8 @@ namespace Nekoyume.Game
 
         public MarketServiceClient MarketServiceClient;
 
+        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
+
         public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
@@ -337,6 +339,8 @@ namespace Nekoyume.Game
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+            PatrolRewardServiceClient =
+                new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             GL.Clear(true, true, Color.black);
             var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
