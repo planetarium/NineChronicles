@@ -164,6 +164,20 @@ namespace Nekoyume.L10n.Editor
             EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(), EditorCoroutineObject);
         }
 
+        public static void GenerateFontAssetFiles(Action callback)
+        {
+            GenerateUnicodeHexRangeFiles();
+
+            EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(callback), EditorCoroutineObject);
+        }
+
+        private static IEnumerator CoGenerateFontAssetFile(Action callback)
+        {
+            yield return CoGenerateFontAssetFile();
+
+            callback();
+        }
+
         private static IEnumerator CoGenerateFontAssetFile()
         {
             var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");

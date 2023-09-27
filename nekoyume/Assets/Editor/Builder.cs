@@ -233,117 +233,123 @@ namespace Editor
             string targetDirName = null,
             bool useDevExtension = false)
         {
-            string[] scenes = { "Assets/_Scenes/Game.unity" };
+            Nekoyume.L10n.Editor.L10nManagerEditor.GenerateFontAssetFiles(()=> { BuildImpl(buildTarget, options, targetDirName, useDevExtension); });
 
-
-            // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
-            var cliOptions = new Dictionary<string, string>();
-            var args = Environment.GetCommandLineArgs();
-            // Extract flags with optional values
-            for (int current = 0, next = 1; current < args.Length; current++, next++)
+            static string BuildImpl(BuildTarget buildTarget, BuildOptions options, string targetDirName, bool useDevExtension)
             {
-                // Parse flag
-                var isFlag = args[current].StartsWith("-");
-                if (!isFlag)
+                string[] scenes = { "Assets/_Scenes/Game.unity" };
+
+                // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
+                var cliOptions = new Dictionary<string, string>();
+                var args = Environment.GetCommandLineArgs();
+                // Extract flags with optional values
+                for (int current = 0, next = 1; current < args.Length; current++, next++)
                 {
-                    continue;
+                    // Parse flag
+                    var isFlag = args[current].StartsWith("-");
+                    if (!isFlag)
+                    {
+                        continue;
+                    }
+
+                    var flag = args[current].TrimStart('-');
+                    // Parse optional value
+                    var flagHasValue = next < args.Length && !args[next].StartsWith("-");
+                    var value = flagHasValue ? args[next].TrimStart('-') : "";
+                    cliOptions.Add(flag, value);
+
+                    if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
+                        !string.IsNullOrEmpty(keystoreName))
+                    {
+                        PlayerSettings.Android.useCustomKeystore = true;
+                        PlayerSettings.Android.keystoreName = keystoreName;
+                    }
+
+                    if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
+                        !string.IsNullOrEmpty(keystorePass))
+                    {
+                        PlayerSettings.Android.keystorePass = keystorePass;
+                    }
+
+                    if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
+                        !string.IsNullOrEmpty(keyaliasName))
+                    {
+                        PlayerSettings.Android.keyaliasName = keyaliasName;
+                    }
+
+                    if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
+                        !string.IsNullOrEmpty(keyaliasPass))
+                    {
+                        PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                    }
+
+                    if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
+                        !string.IsNullOrEmpty(outPath))
+                    {
+                        var aab = outPath.EndsWith(".aab");
+                        EditorUserBuildSettings.buildAppBundle = aab;
+                        PlayerSettings.Android.useAPKExpansionFiles = aab;
+                    }
                 }
 
-                var flag = args[current].TrimStart('-');
-                // Parse optional value
-                var flagHasValue = next < args.Length && !args[next].StartsWith("-");
-                var value = flagHasValue ? args[next].TrimStart('-') : "";
-                cliOptions.Add(flag, value);
+                targetDirName ??= buildTarget.ToString();
+                var locationPathName = Path.Combine(
+                    "../",
+                    BuildBasePath,
+                    targetDirName,
+                    buildTarget switch
+                    {
+                        BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 =>
+                            $"{PlayerName}.exe",
+                        BuildTarget.Android =>
+                            $"{PlayerName}.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
+                        _ => PlayerName,
+                    }
+                );
 
-                if (cliOptions.TryGetValue("androidKeystoreName", out var keystoreName) &&
-                    !string.IsNullOrEmpty(keystoreName))
+                var buildPlayerOptions = new BuildPlayerOptions
                 {
-                    PlayerSettings.Android.useCustomKeystore = true;
-                    PlayerSettings.Android.keystoreName = keystoreName;
+                    scenes = scenes,
+                    locationPathName = locationPathName,
+                    target = buildTarget,
+                    options = EditorUserBuildSettings.development
+                        ? options | BuildOptions.Development | BuildOptions.AllowDebugging
+                        : options,
+                };
+
+                if (buildTarget == BuildTarget.Android)
+                {
+                    // Due to executable size issue, we can't use script debugging for Android at least 2021.3.5f1.
+                    buildPlayerOptions.options &= ~BuildOptions.AllowDebugging;
+                    buildPlayerOptions.options |= BuildOptions.CompressWithLz4HC;
                 }
 
-                if (cliOptions.TryGetValue("androidKeystorePass", out var keystorePass) &&
-                    !string.IsNullOrEmpty(keystorePass))
+                UpdateDefines(useDevExtension);
+
+                var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+                var summary = report.summary;
+
+                switch (summary.result)
                 {
-                    PlayerSettings.Android.keystorePass = keystorePass;
+                    case BuildResult.Succeeded:
+                        Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
+                        UpdateDefines(false);
+
+                        // Copy readme
+                        FileUtil.CopyFileOrDirectory(
+                            Path.Combine("../", "README.md"),
+                            Path.Combine("../", BuildBasePath, targetDirName, "README.md"));
+                        FileUtil.CopyFileOrDirectory(
+                            Path.Combine("../", "OSS Notice.md"),
+                            Path.Combine("../", BuildBasePath, targetDirName, "OSS Notice.md"));
+                        break;
+                    case BuildResult.Failed:
+                        Debug.LogError("Build failed");
+                        UpdateDefines(false);
+                        break;
                 }
 
-                if (cliOptions.TryGetValue("androidKeyaliasName", out var keyaliasName) &&
-                    !string.IsNullOrEmpty(keyaliasName))
-                {
-                    PlayerSettings.Android.keyaliasName = keyaliasName;
-                }
-
-                if (cliOptions.TryGetValue("androidKeyaliasPass", out var keyaliasPass) &&
-                    !string.IsNullOrEmpty(keyaliasPass))
-                {
-                    PlayerSettings.Android.keyaliasPass = keyaliasPass;
-                }
-
-                if (cliOptions.TryGetValue("customBuildPath", out var outPath) &&
-                    !string.IsNullOrEmpty(outPath))
-                {
-                    var aab = outPath.EndsWith(".aab");
-                    EditorUserBuildSettings.buildAppBundle = aab;
-                    PlayerSettings.Android.useAPKExpansionFiles = aab;
-                }
-            }
-
-            targetDirName ??= buildTarget.ToString();
-            var locationPathName = Path.Combine(
-                "../",
-                BuildBasePath,
-                targetDirName,
-                buildTarget switch
-                {
-                    BuildTarget.StandaloneWindows or BuildTarget.StandaloneWindows64 =>
-                        $"{PlayerName}.exe",
-                    BuildTarget.Android =>
-                        $"{PlayerName}.{(EditorUserBuildSettings.buildAppBundle ? "aab" : "apk")}",
-                    _ => PlayerName,
-                }
-            );
-
-            var buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = scenes,
-                locationPathName = locationPathName,
-                target = buildTarget,
-                options = EditorUserBuildSettings.development
-                    ? options | BuildOptions.Development | BuildOptions.AllowDebugging
-                    : options,
-            };
-
-            if (buildTarget == BuildTarget.Android)
-            {
-                // Due to executable size issue, we can't use script debugging for Android at least 2021.3.5f1.
-                buildPlayerOptions.options &= ~BuildOptions.AllowDebugging;
-                buildPlayerOptions.options |= BuildOptions.CompressWithLz4HC;
-            }
-
-            UpdateDefines(useDevExtension);
-
-            var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
-            var summary = report.summary;
-
-            switch (summary.result)
-            {
-                case BuildResult.Succeeded:
-                    Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
-                    UpdateDefines(false);
-
-                    // Copy readme
-                    FileUtil.CopyFileOrDirectory(
-                        Path.Combine("../", "README.md"),
-                        Path.Combine("../", BuildBasePath, targetDirName, "README.md"));
-                    FileUtil.CopyFileOrDirectory(
-                        Path.Combine("../", "OSS Notice.md"),
-                        Path.Combine("../", BuildBasePath, targetDirName, "OSS Notice.md"));
-                    break;
-                case BuildResult.Failed:
-                    Debug.LogError("Build failed");
-                    UpdateDefines(false);
-                    break;
+                return targetDirName;
             }
         }
 
