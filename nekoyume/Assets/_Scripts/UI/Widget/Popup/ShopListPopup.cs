@@ -7,6 +7,7 @@ using Nekoyume.Helper;
 using Cysharp.Threading.Tasks;
 using System.Numerics;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI
 {
@@ -109,7 +110,7 @@ namespace Nekoyume.UI
                     iapRewards[iapRewardIndex].RewardImage.sprite = SpriteHelper.GetFavIcon(_data.FavList[i].Ticker.ToString());
                     iapRewards[iapRewardIndex].RewardCount.text = ((BigInteger)_data.FavList[i].Amount).ToCurrencyNotation();
                     iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(Util.GetTickerGrade(_data.FavList[i].Ticker.ToString()));
-                    iapRewards[i].gameObject.SetActive(true);
+                    iapRewards[iapRewardIndex].SetItemBase(null);
                     iapRewardIndex++;
                 }
             }
@@ -122,19 +123,22 @@ namespace Nekoyume.UI
                     iapRewards[iapRewardIndex].RewardCount.text = $"x{_data.FungibleItemList[i].Amount}";
                     try
                     {
-                        iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(Game.Game.instance.TableSheets.ItemSheet[_data.FungibleItemList[i].SheetItemId].Grade);
+                        var itemSheetData = Game.Game.instance.TableSheets.ItemSheet[_data.FungibleItemList[i].SheetItemId];
+                        iapRewards[iapRewardIndex].RewardGrade.sprite = SpriteHelper.GetItemBackground(itemSheetData.Grade);
+                        var dummyItem = ItemFactory.CreateItem(itemSheetData, new Cheat.DebugRandom());
+                        iapRewards[iapRewardIndex].SetItemBase(dummyItem);
                     }
                     catch
                     {
                         Debug.LogError($"Can't Find Item ID {_data.FungibleItemList[i].SheetItemId} in ItemSheet");
                     }
-                    iapRewards[i].gameObject.SetActive(true);
+                    
                     iapRewardIndex++;
                 }
             }
             for (; iapRewardIndex < iapRewards.Length; iapRewardIndex++)
             {
-                iapRewards[iapRewardIndex].gameObject.SetActive(true);
+                iapRewards[iapRewardIndex].gameObject.SetActive(false);
             }
 
             foreach (var item in discountObjs)
@@ -175,7 +179,7 @@ namespace Nekoyume.UI
                 buyLimitObj.SetActive(true);
                 buyLimitText.text = L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value) + $" ({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})";
             }
-
+            Widget.Find<MobileShop>().SetLoadingDataScreen(false);
             base.Show(ignoreShowAnimation);
         }
     }
