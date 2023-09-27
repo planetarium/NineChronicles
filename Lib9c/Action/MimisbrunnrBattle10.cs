@@ -303,8 +303,9 @@ namespace Nekoyume.Action
                 ? sheets.GetSimulatorSheetsV100291()
                 : sheets.GetSimulatorSheetsV1();
             var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+            var random = context.GetRandom();
             var simulator = new StageSimulatorV2(
-                context.Random,
+                random,
                 avatarState,
                 foods,
                 new List<Skill>(),
@@ -317,7 +318,7 @@ namespace Nekoyume.Action
                 simulatorSheets,
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulatorV2.GetWaveRewards(context.Random, stageRow, materialSheet, playCount));
+                StageSimulatorV2.GetWaveRewards(random, stageRow, materialSheet, playCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",

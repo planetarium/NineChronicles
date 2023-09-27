@@ -106,6 +106,7 @@ namespace Nekoyume.Action
         public static IAccount Register(IActionContext context, IRegisterInfo info, AvatarState avatarState,
             ProductsState productsState, IAccount states)
         {
+            var random = context.GetRandom();
             switch (info)
             {
                 case RegisterInfo registerInfo:
@@ -175,7 +176,7 @@ namespace Nekoyume.Action
                                 throw new ItemDoesNotExistException($"can't find item: {tradableId}");
                             }
 
-                            Guid productId = context.Random.GenerateRandomGuid();
+                            Guid productId = random.GenerateRandomGuid();
                             var product = new ItemProduct
                             {
                                 ProductId = productId,
@@ -197,7 +198,7 @@ namespace Nekoyume.Action
                     break;
                 case AssetInfo assetInfo:
                 {
-                    Guid productId = context.Random.GenerateRandomGuid();
+                    Guid productId = random.GenerateRandomGuid();
                     Address productAddress = Product.DeriveAddress(productId);
                     FungibleAssetValue asset = assetInfo.Asset;
                     var product = new FavProduct

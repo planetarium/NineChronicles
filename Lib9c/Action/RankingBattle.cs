@@ -203,8 +203,9 @@ namespace Nekoyume.Action
             var rankingSheets = sheets.GetRankingSimulatorSheetsV100291();
             var player = new Player(avatarState, rankingSheets);
             PreviousEnemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
+            var random = ctx.GetRandom();
             var simulator = new RankingSimulator(
-                ctx.Random,
+                random,
                 player,
                 PreviousEnemyPlayerDigest,
                 new List<Guid>(),
@@ -224,7 +225,7 @@ namespace Nekoyume.Action
                 simulator.Result,
                 ArenaScoreHelper.GetScoreV4);
             var rewards = RewardSelector.Select(
-                ctx.Random,
+                random,
                 sheets.GetSheet<WeeklyArenaRewardSheet>(),
                 sheets.GetSheet<MaterialItemSheet>(),
                 player.Level,

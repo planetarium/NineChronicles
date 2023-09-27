@@ -230,14 +230,15 @@ namespace Nekoyume.Action
 
             // 조합 결과 획득.
             var requiredBlockIndex = ctx.BlockIndex + recipeRow.RequiredBlockIndex;
-            var itemId = ctx.Random.GenerateRandomGuid();
+            var random = ctx.GetRandom();
+            var itemId = random.GenerateRandomGuid();
             var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
             // 액션 결과
             result.itemUsable = itemUsable;
             var mail = new CombinationMail(
                 result,
                 ctx.BlockIndex,
-                ctx.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 requiredBlockIndex
             );
             result.id = mail.id;

@@ -84,7 +84,8 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIndexException($"{collectionAddress} is not available yet");
             }
 
-            Guid id = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            Guid id = random.GenerateRandomGuid();
             var result = new MonsterCollectionResult(id, avatarAddress, rewards);
             var mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
             avatarState.Update(mail);
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
                 ItemSheet.Row row = itemSheet[rewardInfo.ItemId];
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(row, context.Random);
+                    : ItemFactory.CreateItem(row, random);
                 avatarState.inventory.AddItem(item, rewardInfo.Quantity);
             }
             monsterCollectionState.Claim(context.BlockIndex);

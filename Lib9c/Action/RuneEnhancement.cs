@@ -112,9 +112,10 @@ namespace Nekoyume.Action
             var ncgBalance = states.GetBalance(context.Signer, ncgCurrency);
             var crystalBalance = states.GetBalance(context.Signer, crystalCurrency);
             var runeBalance = states.GetBalance(AvatarAddress, runeCurrency);
+            var random = context.GetRandom();
             if (RuneHelper.TryEnhancement(ncgBalance, crystalBalance, runeBalance,
                     ncgCurrency, crystalCurrency, runeCurrency,
-                    cost, context.Random, TryCount, out var tryCount))
+                    cost, random, TryCount, out var tryCount))
             {
                 runeState.LevelUp();
                 states = states.SetState(runeStateAddress, runeState.Serialize());

@@ -97,7 +97,8 @@ namespace Nekoyume.Action
 
             Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
-            var productId = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            var productId = random.GenerateRandomGuid();
             ShopItem shopItem;
 
             void CheckRequiredBlockIndex(ItemUsable itemUsable)

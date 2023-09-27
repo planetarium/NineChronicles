@@ -65,6 +65,7 @@ namespace Nekoyume.Action
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
             var accumulatedRewards = stakeState.CalculateAccumulatedItemRewardsV1(context.BlockIndex);
+            var random = context.GetRandom();
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
@@ -77,7 +78,7 @@ namespace Nekoyume.Action
                 ItemSheet.Row row = itemSheet[reward.ItemId];
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(row, context.Random);
+                    : ItemFactory.CreateItem(row, random);
                 avatarState.inventory.AddItem(item, (int) quantity * accumulatedRewards);
             }
 
@@ -90,7 +91,7 @@ namespace Nekoyume.Action
                     ItemSheet.Row row = itemSheet[reward.ItemId];
                     ItemBase item = row is MaterialItemSheet.Row materialRow
                         ? ItemFactory.CreateTradableMaterial(materialRow)
-                        : ItemFactory.CreateItem(row, context.Random);
+                        : ItemFactory.CreateItem(row, random);
                     avatarState.inventory.AddItem(item, reward.Count * accumulatedRewards);
                 }
             }

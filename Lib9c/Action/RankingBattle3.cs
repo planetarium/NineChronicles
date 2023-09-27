@@ -164,8 +164,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            var random = ctx.GetRandom();
             var simulator = new RankingSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 enemyAvatarState,
                 consumableIds,

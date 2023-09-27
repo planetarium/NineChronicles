@@ -203,9 +203,10 @@ namespace Nekoyume.Action
             // ~Subtract Required ActionPoint
 
             // Create Consumable
+            var random = context.GetRandom();
             var consumable = (Consumable) ItemFactory.CreateItemUsable(
                 consumableRow,
-                context.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 endBlockIndex
             );
             // ~Create Consumable
@@ -218,7 +219,7 @@ namespace Nekoyume.Action
             // ~Add or Update Consumable
 
             // Update Slot
-            var mailId = context.Random.GenerateRandomGuid();
+            var mailId = random.GenerateRandomGuid();
             var attachmentResult = new CombinationConsumable5.ResultModel
             {
                 id = mailId,

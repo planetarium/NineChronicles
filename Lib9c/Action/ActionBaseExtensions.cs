@@ -57,7 +57,7 @@ namespace Nekoyume.Action
 
             public IAccount PreviousState => new AddressTraceStateDelta();
 
-            public IRandom Random => default;
+            public int RandomSeed => default;
 
             public HashDigest<SHA256>? PreviousStateRootHash => default;
 
@@ -68,7 +68,7 @@ namespace Nekoyume.Action
                 // pass
             }
 
-            public IActionContext GetUnconsumedContext() => null;
+            public IRandom GetRandom() => null;
 
             public long GasUsed() => 0;
 

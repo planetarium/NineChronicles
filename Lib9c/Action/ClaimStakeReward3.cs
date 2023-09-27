@@ -119,6 +119,7 @@ namespace Nekoyume.Action
             var stakedCurrency = stakedAmount.Currency;
 
             // Regular Reward
+            var random = context.GetRandom();
             foreach (var reward in regularReward)
             {
                 switch (reward.Type)
@@ -134,7 +135,7 @@ namespace Nekoyume.Action
                         ItemSheet.Row row = itemSheet[reward.ItemId];
                         ItemBase item = row is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateItem(row, context.Random);
+                            : ItemFactory.CreateItem(row, random);
                         avatarState.inventory.AddItem(item, (int)quantity * itemRewardStep);
                         break;
                     case StakeRegularRewardSheet.StakeRewardType.Rune:
@@ -158,7 +159,7 @@ namespace Nekoyume.Action
                 ItemSheet.Row row = itemSheet[reward.ItemId];
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(row, context.Random);
+                    : ItemFactory.CreateItem(row, random);
                 avatarState.inventory.AddItem(item, reward.Count * itemRewardStep);
             }
 

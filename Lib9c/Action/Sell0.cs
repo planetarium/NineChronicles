@@ -116,7 +116,8 @@ namespace Nekoyume.Action
                 equipment.equipped = false;
             }
 
-            var productId = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            var productId = random.GenerateRandomGuid();
 
             var shopItem = new ShopItem(
                 ctx.Signer,
