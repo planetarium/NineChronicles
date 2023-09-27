@@ -52,6 +52,7 @@ namespace Nekoyume.UI
         {
             base.Close(ignoreCloseAnimation);
             guideDialog.gameObject.SetActive(false);
+            items.ForEach(item => item.Item.gameObject.SetActive(false));
         }
 
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)

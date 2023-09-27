@@ -241,6 +241,7 @@ namespace Nekoyume.UI
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             accelerationToggle.gameObject.SetActive(false);
+            accelerationToggleLockButton.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
