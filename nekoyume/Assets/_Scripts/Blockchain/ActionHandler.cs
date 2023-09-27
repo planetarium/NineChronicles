@@ -16,6 +16,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {
@@ -209,7 +210,7 @@ namespace Nekoyume.Blockchain
 
             var avatarAddr = states.CurrentAvatarState.address;
             var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
-            var inventory = eval.OutputState.GetInventory(inventoryAddr);
+            var inventory = StateGetter.GetInventory(inventoryAddr, eval.OutputState);
             var avatarState = states.CurrentAvatarState;
             avatarState.inventory = inventory;
             avatarState = LocalLayer.Instance.ModifyInventoryOnly(avatarState);
