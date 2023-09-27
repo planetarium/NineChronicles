@@ -22,7 +22,7 @@ namespace Nekoyume.Game.Character
 {
     public abstract class CharacterBase : Character
     {
-        protected const float AnimatorTimeScale = 1.2f;
+        public const float AnimatorTimeScale = 1.2f;
         protected static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(5f);
 
         [SerializeField]

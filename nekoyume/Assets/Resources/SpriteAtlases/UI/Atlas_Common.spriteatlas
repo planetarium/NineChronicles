@@ -191,6 +191,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e5fc96e56a10d7841806464b6daf7207, type: 3}
   - {fileID: 21300000, guid: 8b00ecf5590ff4124a931a3d1066af98, type: 3}
   - {fileID: 21300000, guid: 799eb006e60e04e8489d8430e89485b2, type: 3}
+  - {fileID: 21300000, guid: c150b136096c64c4bbd3e99a2b1989ab, type: 3}
   - {fileID: 21300000, guid: 7bf3e44650dbc904684badbe312edb69, type: 3}
   - {fileID: 21300000, guid: cf59b94684ef45748b7042094e18e557, type: 3}
   - {fileID: 21300000, guid: 77914e46007b1f845ac8ebe9557d241f, type: 3}
@@ -220,6 +221,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 26af9577b2450574d8351fc40e2ad4fe, type: 3}
   - {fileID: 21300000, guid: 9360de77ab975a54fa2677942c24aada, type: 3}
   - {fileID: 21300000, guid: c3ca118786abb3d429d4f756c2fa4123, type: 3}
+  - {fileID: 21300000, guid: c39fe487c306c4a47bc1a9f5373961eb, type: 3}
   - {fileID: 21300000, guid: 93657a87b123b4944a663548895b4636, type: 3}
   - {fileID: 21300000, guid: e68e2297f452742c68fc0695d102d78d, type: 3}
   - {fileID: 21300000, guid: 7c857d97a6fec4f33963889081cb5e1b, type: 3}
@@ -263,6 +265,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 63112dd86b77e412e8005ef6e991a9d0, type: 3}
   - {fileID: 21300000, guid: a1520ed8120a48f4697eddfca35b2ed8, type: 3}
   - {fileID: 21300000, guid: 62c7e1f85f30c8140b07a5ee353c84af, type: 3}
+  - {fileID: 21300000, guid: 40408409483377f44b5858b5c6e0221e, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
   - {fileID: 21300000, guid: d0303f095dc0040ef926d7b4c0481588, type: 3}
@@ -365,6 +368,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90, type: 3}
   - {fileID: 21300000, guid: 2f1dea3d4725a4044be3297e27dc7e74, type: 3}
   - {fileID: 21300000, guid: dc06a94dda47249ac89154c45a7db7f6, type: 3}
+  - {fileID: 21300000, guid: 177d165d6e9867149b5ca7198a393a23, type: 3}
   - {fileID: 21300000, guid: 9900946d0fad7480694b2ff70a563b12, type: 3}
   - {fileID: 21300000, guid: 1470686d8ff164522a4673c95d475e06, type: 3}
   - {fileID: 21300000, guid: c2355b6df45e34543b4adf74f92074c6, type: 3}
@@ -560,6 +564,7 @@ SpriteAtlas:
   - icon_ticket_pvp
   - UI_popup_title_bg_04
   - UI_icon_Quest_type_03
+  - UI_main_icon_Normalpowder
   - UI_arrow_03
   - UI_icon_open_2
   - icon_ticket_summer
@@ -589,6 +594,7 @@ SpriteAtlas:
   - UI_main_icon_star
   - UI_Gradiant_bg_03
   - icon_notice_01_black
+  - UI_NewMenu_Text_Bg
   - icon_combination_02_black
   - UI_check
   - UI_icon_Mainmenu_05
@@ -632,6 +638,7 @@ SpriteAtlas:
   - button_brown_minus
   - Button_Tab_bg_Normal_05
   - Icon_Lock
+  - UI_NewMenu_Text_Bg_2
   - button_page_02_reverse
   - UI_Btn_bg_04
   - Rank_bg_06
@@ -734,6 +741,7 @@ SpriteAtlas:
   - UI_mail_popup_02
   - Common_Tooltipbg2
   - UI_bg_lineGradiant
+  - Icon_DoubleSpeed
   - UI_Btn_bg_02
   - UI_bg_frame_deco_00
   - UI_settingsbar_bg3
