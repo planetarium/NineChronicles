@@ -84,9 +84,11 @@ namespace Nekoyume.Action
                 marketState.AvatarAddresses.Add(AvatarAddress);
                 states = states.SetState(Addresses.Market, marketState.Serialize());
             }
+
+            var random = context.GetRandom();
             foreach (var info in RegisterInfos.OrderBy(r => r.Type).ThenBy(r => r.Price))
             {
-                states = Register(context, info, avatarState, productsState, states);
+                states = Register(context, info, avatarState, productsState, states, random);
             }
 
             states = states
@@ -104,9 +106,8 @@ namespace Nekoyume.Action
         }
 
         public static IAccount Register(IActionContext context, IRegisterInfo info, AvatarState avatarState,
-            ProductsState productsState, IAccount states)
+            ProductsState productsState, IAccount states, IRandom random)
         {
-            var random = context.GetRandom();
             switch (info)
             {
                 case RegisterInfo registerInfo:
