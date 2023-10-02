@@ -46,71 +46,49 @@ namespace Nekoyume.UI
         private const string FirstOpenMimisbrunnrKeyFormat =
             "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
-        [SerializeField]
-        private MainMenu btnQuest;
+        [SerializeField] private MainMenu btnQuest;
 
-        [SerializeField]
-        private MainMenu btnCombination;
+        [SerializeField] private MainMenu btnCombination;
 
-        [SerializeField]
-        private MainMenu btnShop;
+        [SerializeField] private MainMenu btnShop;
 
-        [SerializeField]
-        private MainMenu btnRanking;
+        [SerializeField] private MainMenu btnRanking;
 
-        [SerializeField]
-        private MainMenu btnStaking;
+        [SerializeField] private MainMenu btnStaking;
 
-        [SerializeField]
-        private MainMenu btnWorldBoss;
+        [SerializeField] private MainMenu btnWorldBoss;
 
-        [SerializeField]
-        private MainMenu btnDcc;
+        [SerializeField] private MainMenu btnDcc;
 
-        [SerializeField]
-        private SpeechBubble[] speechBubbles;
+        [SerializeField] private SpeechBubble[] speechBubbles;
 
-        [SerializeField]
-        private GameObject shopExclamationMark;
+        [SerializeField] private GameObject shopExclamationMark;
 
-        [SerializeField]
-        private GameObject combinationExclamationMark;
+        [SerializeField] private GameObject combinationExclamationMark;
 
-        [SerializeField]
-        private GameObject questExclamationMark;
+        [SerializeField] private GameObject questExclamationMark;
 
-        [SerializeField]
-        private GameObject mimisbrunnrExclamationMark;
+        [SerializeField] private GameObject mimisbrunnrExclamationMark;
 
-        [SerializeField]
-        private GameObject eventDungeonExclamationMark;
+        [SerializeField] private GameObject eventDungeonExclamationMark;
 
-        [SerializeField]
-        private TextMeshProUGUI eventDungeonTicketsText;
+        [SerializeField] private TextMeshProUGUI eventDungeonTicketsText;
 
-        [SerializeField]
-        private Image stakingLevelIcon;
+        [SerializeField] private Image stakingLevelIcon;
 
-        [SerializeField]
-        private GuidedQuest guidedQuest;
+        [SerializeField] private GuidedQuest guidedQuest;
 
-        [SerializeField]
-        private Button playerButton;
+        [SerializeField] private Button playerButton;
 
-        [SerializeField]
-        private Button petButton;
+        [SerializeField] private Button petButton;
 
-        [SerializeField]
-        private StakeIconDataScriptableObject stakeIconData;
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
 
-        [SerializeField]
-        private RectTransform player;
+        [SerializeField] private RectTransform player;
 
-        [SerializeField]
-        private RectTransform playerPosition;
+        [SerializeField] private RectTransform playerPosition;
 
-        [SerializeField]
-        private Transform titleSocket;
+        [SerializeField] private Transform titleSocket;
 
         private Coroutine _coLazyClose;
 
@@ -515,12 +493,17 @@ namespace Nekoyume.UI
 
         public void StakingClick()
         {
+#if UNITY_ANDROID || UNITY_IOS
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             if (!btnStaking.IsUnlocked)
             {
                 return;
             }
 
             Find<StakingPopup>().Show();
+#endif
         }
 
         public void WorldBossClick()
@@ -554,7 +537,7 @@ namespace Nekoyume.UI
         public void DccClick()
         {
             AudioController.PlayClick();
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
 #else
