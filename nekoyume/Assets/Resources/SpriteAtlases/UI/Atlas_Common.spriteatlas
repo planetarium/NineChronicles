@@ -191,6 +191,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e5fc96e56a10d7841806464b6daf7207, type: 3}
   - {fileID: 21300000, guid: 8b00ecf5590ff4124a931a3d1066af98, type: 3}
   - {fileID: 21300000, guid: 799eb006e60e04e8489d8430e89485b2, type: 3}
+  - {fileID: 21300000, guid: c150b136096c64c4bbd3e99a2b1989ab, type: 3}
   - {fileID: 21300000, guid: 7bf3e44650dbc904684badbe312edb69, type: 3}
   - {fileID: 21300000, guid: cf59b94684ef45748b7042094e18e557, type: 3}
   - {fileID: 21300000, guid: 77914e46007b1f845ac8ebe9557d241f, type: 3}
@@ -263,6 +264,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 63112dd86b77e412e8005ef6e991a9d0, type: 3}
   - {fileID: 21300000, guid: a1520ed8120a48f4697eddfca35b2ed8, type: 3}
   - {fileID: 21300000, guid: 62c7e1f85f30c8140b07a5ee353c84af, type: 3}
+  - {fileID: 21300000, guid: 40408409483377f44b5858b5c6e0221e, type: 3}
   - {fileID: 21300000, guid: 149516097e93cf24c892072063bcf0a5, type: 3}
   - {fileID: 21300000, guid: b550fb09379c14e9da9213f5e65aff49, type: 3}
   - {fileID: 21300000, guid: d0303f095dc0040ef926d7b4c0481588, type: 3}
@@ -560,6 +562,7 @@ SpriteAtlas:
   - icon_ticket_pvp
   - UI_popup_title_bg_04
   - UI_icon_Quest_type_03
+  - UI_main_icon_Normalpowder
   - UI_arrow_03
   - UI_icon_open_2
   - icon_ticket_summer
@@ -632,6 +635,7 @@ SpriteAtlas:
   - button_brown_minus
   - Button_Tab_bg_Normal_05
   - Icon_Lock
+  - UI_NewMenu_Text_Bg_2
   - button_page_02_reverse
   - UI_Btn_bg_04
   - Rank_bg_06

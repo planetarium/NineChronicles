@@ -50,6 +50,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 919124409b78d204885fe35b80a7e93a, type: 3}
   - {fileID: 21300000, guid: 31dedc50bb4714d4fad1b722aa7bfc4a, type: 3}
   - {fileID: 21300000, guid: 458045e03f73942eeb79242e8d6db1da, type: 3}
   - {fileID: 21300000, guid: 78ed6351595354af58e275117df8043e, type: 3}
@@ -91,6 +92,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c1a996ce58ed7a447a72e1819f80d797, type: 3}
   - {fileID: 21300000, guid: c959c98f71f36534fb07a1d277d75d21, type: 3}
   m_PackedSpriteNamesToIndex:
+  - LoadingGauge_Light
   - UI_Btn_Back_bg
   - UI_icon_login_lock_Login
   - UI_Popup_bg_02_Login
