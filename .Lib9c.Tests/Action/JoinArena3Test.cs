@@ -224,7 +224,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = _random,
+                RandomSeed = _random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });
@@ -302,7 +302,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -357,7 +357,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 100,
             }));
         }
@@ -385,7 +385,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = blockIndex,
             }));
         }
@@ -411,7 +411,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = _random,
+                RandomSeed = _random.Seed,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -420,7 +420,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 2,
             }));
         }
@@ -453,7 +453,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -486,7 +486,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -508,7 +508,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _signer2,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -545,7 +545,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             var action = new JoinArena()
@@ -566,7 +566,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _signer,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

@@ -490,7 +490,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousState = previousState,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 Signer = signer,
             });

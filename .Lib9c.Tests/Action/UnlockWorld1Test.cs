@@ -160,7 +160,7 @@
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.True(nextState.TryGetState(unlockedWorldIdsAddress, out List rawIds));
@@ -178,7 +178,7 @@
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }

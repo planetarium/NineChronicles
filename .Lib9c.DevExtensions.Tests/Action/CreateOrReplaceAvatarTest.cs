@@ -444,7 +444,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             {
                 PreviousState = previousStates,
                 Signer = agentAddr,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

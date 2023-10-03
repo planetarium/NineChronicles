@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var currency = nextState.GetGoldCurrency();
@@ -369,7 +369,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }

@@ -185,13 +185,14 @@
                 .SetState(_worldInformationAddress, worldInformation.Serialize());
 
             var random = new TestRandom(randomSeed);
-            nextState = combinationEquipmentAction.Execute(new ActionContext
+            var ctx = new ActionContext
             {
                 PreviousState = nextState,
                 BlockIndex = 0,
-                Random = random,
                 Signer = _agentAddress,
-            });
+            };
+            ctx.SetRandom(random);
+            nextState = combinationEquipmentAction.Execute(ctx);
 
             var slot0Value = nextState.GetState(_slot0Address);
             Assert.NotNull(slot0Value);
@@ -285,7 +286,7 @@
             {
                 PreviousState = nextState,
                 BlockIndex = GameConfig.RequiredAppraiseBlock,
-                Random = random,
+                RandomSeed = random.Seed,
                 Signer = _agentAddress,
             });
             inventoryValue = nextState.GetState(_inventoryAddress);

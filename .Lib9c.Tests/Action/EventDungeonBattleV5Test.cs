@@ -375,7 +375,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
                 PreviousState = _initialStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.Throws(exception, () =>
@@ -479,7 +479,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

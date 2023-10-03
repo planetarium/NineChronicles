@@ -209,14 +209,14 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialStates,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             });
             Assert.Throws<AlreadyFoughtAvatarException>(() => action.Execute(new ActionContext
             {
                 PreviousState = next,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 2,
             }));
         }
@@ -237,7 +237,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialStates,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialStates,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -277,7 +277,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialStates,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -300,7 +300,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialStates,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = blockIndex,
             }));
         }
@@ -348,7 +348,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousStates,
                     Signer = myAvatar.agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     BlockIndex = row.StartBlockIndex,
                 }));
         }
@@ -426,7 +426,7 @@ namespace Lib9c.Tests.Action
                 Signer = myAgentAddr,
                 BlockIndex = blockIndex,
                 PreviousState = states,
-                Random = new TestRandom(randomSeed),
+                RandomSeed = randomSeed,
             });
             Assert.True(nextStates.TryGetState<Integer>(
                 myAvatarAddr.Derive(

@@ -295,7 +295,7 @@
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var currency = nextState.GetGoldCurrency();
@@ -366,7 +366,7 @@
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }
@@ -474,7 +474,7 @@
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.True(nextState.TryGetState(hammerPointAddress, out List serialized));
@@ -502,7 +502,7 @@
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = _random,
+                        RandomSeed = _random.Seed,
                     });
                 });
             }

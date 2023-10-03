@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousState = nextState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
             Assert.True(hackAndSlash.Result.IsClear);
@@ -137,7 +137,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             {
                 PreviousState = nextState,
                 Signer = AdminState.Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -148,7 +148,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             {
                 PreviousState = nextState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
             Assert.True(hackAndSlash.Result.IsClear);
@@ -227,7 +227,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
                 {
                     PreviousState = nextState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -247,7 +247,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             {
                 PreviousState = nextState,
                 Signer = AdminState.Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -258,7 +258,7 @@ id,world_id,stage_id,world_id_to_unlock,required_crystal
             {
                 PreviousState = nextState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 

@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -277,7 +277,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -340,7 +340,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             }));
 
@@ -369,7 +369,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 })
             );
@@ -409,7 +409,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -438,7 +438,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -469,7 +469,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -501,7 +501,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -541,7 +541,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -572,7 +572,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -618,7 +618,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -650,7 +650,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -695,7 +695,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -741,7 +741,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);
@@ -778,7 +778,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             Assert.Null(action.Result);

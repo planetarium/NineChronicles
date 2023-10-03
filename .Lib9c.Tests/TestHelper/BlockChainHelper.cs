@@ -156,7 +156,7 @@ namespace Lib9c.Tests.TestHelper
             {
                 BlockIndex = 0,
                 PreviousState = initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 

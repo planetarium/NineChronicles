@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = claimBlockIndex,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
             }
             else
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = claimBlockIndex,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
 
                 var nextMonsterCollectionState = new MonsterCollectionState(

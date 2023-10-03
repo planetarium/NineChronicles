@@ -157,13 +157,15 @@ namespace Lib9c.Tests.Action.Scenario
                     },
                 },
             };
-            var nextState = action.Execute(new ActionContext
+
+            var ctx = new ActionContext
             {
                 BlockIndex = 1L,
                 PreviousState = _initialState,
-                Random = random,
                 Signer = _sellerAgentAddress,
-            });
+            };
+            ctx.SetRandom(random);
+            var nextState = action.Execute(ctx);
             var nextAvatarState = nextState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
             Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState.actionPoint);
@@ -231,13 +233,14 @@ namespace Lib9c.Tests.Action.Scenario
                     },
                 },
             };
-            var nextState2 = action2.Execute(new ActionContext
+            ctx = new ActionContext
             {
                 BlockIndex = 2L,
                 PreviousState = nextState,
-                Random = random,
                 Signer = _sellerAgentAddress2,
-            });
+            };
+            ctx.SetRandom(random);
+            var nextState2 = action2.Execute(ctx);
             var nextAvatarState2 = nextState2.GetAvatarStateV2(_sellerAvatarAddress2);
             Assert.Empty(nextAvatarState2.inventory.Items);
             Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState2.actionPoint);
@@ -289,13 +292,14 @@ namespace Lib9c.Tests.Action.Scenario
                 ProductInfos = productInfoList,
             };
 
-            var latestState = action3.Execute(new ActionContext
+            ctx = new ActionContext
             {
                 BlockIndex = 3L,
                 PreviousState = nextState2,
-                Random = random,
                 Signer = _buyerAgentAddress,
-            });
+            };
+            ctx.SetRandom(random);
+            var latestState = action3.Execute(ctx);
 
             var buyerAvatarState = latestState.GetAvatarStateV2(_buyerAvatarAddress);
             var arenaData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(3L);
@@ -392,7 +396,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 1L,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _sellerAgentAddress,
             });
 
@@ -480,7 +484,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2L,
                 PreviousState = nextState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _sellerAgentAddress,
             });
 
@@ -564,7 +568,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 1L,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _sellerAgentAddress,
             });
 
@@ -684,13 +688,14 @@ namespace Lib9c.Tests.Action.Scenario
                     ),
                 },
             };
-            var latestState = action2.Execute(new ActionContext
+            var ctx = new ActionContext
             {
                 BlockIndex = 2L,
                 PreviousState = nextState,
-                Random = random,
                 Signer = _sellerAgentAddress,
-            });
+            };
+            ctx.SetRandom(random);
+            var latestState = action2.Execute(ctx);
 
             var latestAvatarState = latestState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp - ReRegisterProduct.CostAp, latestAvatarState.actionPoint);
@@ -809,7 +814,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2L,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _sellerAgentAddress,
             });
 
@@ -892,7 +897,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 1L,
                 PreviousState = _initialState,
-                Random = random,
+                RandomSeed = random.Seed,
                 Signer = _sellerAgentAddress,
             });
             Guid fungibleProductId = default;
@@ -969,7 +974,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2L,
                 PreviousState = nextState,
-                Random = random,
+                RandomSeed = random.Seed,
                 Signer = _sellerAgentAddress,
             });
             var avatarState = canceledState.GetAvatarStateV2(_sellerAvatarAddress);
@@ -1052,7 +1057,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2L,
                 PreviousState = nextState,
-                Random = random,
+                RandomSeed = random.Seed,
                 Signer = _sellerAgentAddress,
             }));
 
@@ -1067,7 +1072,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 3L,
                 PreviousState = nextState,
-                Random = random,
+                RandomSeed = random.Seed,
                 Signer = _buyerAgentAddress,
             });
 

@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = 1L,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             };
             Assert.Throws<InvalidAddressException>(() => action.Execute(actionContext));
         }
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = prevState,
                 BlockIndex = 1L,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
             Assert.Equal(
                 0 * RuneHelper.StakeRune,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = nexState,
                 BlockIndex = 2L,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 

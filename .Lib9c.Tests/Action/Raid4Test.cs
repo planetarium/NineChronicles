@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex + executeOffset,
                     PreviousState = state,
-                    Random = new TestRandom(randomSeed),
+                    RandomSeed = randomSeed,
                     Rehearsal = false,
                     Signer = _agentAddress,
                 };
@@ -401,7 +401,7 @@ namespace Lib9c.Tests.Action
                         BlockIndex = 1,
                         PreviousState = state,
                         Signer = _agentAddress,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                     });
                 }
 
@@ -409,7 +409,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = blockIndex + executeOffset,
                     PreviousState = state,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                     Signer = _agentAddress,
                 }));
@@ -524,7 +524,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = worldBossRow.StartedBlockIndex + Raid4.RequiredInterval,
                 PreviousState = state,
-                Random = new TestRandom(randomSeed),
+                RandomSeed = randomSeed,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -625,7 +625,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousState = state,
-                Random = new TestRandom(randomSeed),
+                RandomSeed = randomSeed,
                 Rehearsal = false,
                 Signer = _agentAddress,
             };

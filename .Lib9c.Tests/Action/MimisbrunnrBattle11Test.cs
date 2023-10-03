@@ -157,7 +157,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
             });
@@ -232,7 +232,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -351,7 +351,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
             });
         }
@@ -434,7 +434,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, RandomSeed = 0, Rehearsal = false,
                 });
             });
         }
@@ -520,7 +520,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
         }
 
@@ -610,7 +610,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = avatarState.agentAddress,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 }));
             }
         }
@@ -716,7 +716,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });

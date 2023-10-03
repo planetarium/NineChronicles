@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _state,
                 Signer = _signer,
                 BlockIndex = rewardLevel * MonsterCollectionState0.RewardInterval,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             MonsterCollectionState0 nextMonsterCollectionState = new MonsterCollectionState0((Dictionary)nextState.GetState(collectionAddress));
@@ -291,7 +291,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = MonsterCollectionState0.ExpirationIndex,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 })
             );
         }

@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             }));
 
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 3,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             });
 
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 5045201,
                 PreviousState = prevState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             });
             Assert_Player(avatarState, nextState, _avatarAddress, itemSlotStateAddress);
@@ -247,7 +247,7 @@ namespace Lib9c.Tests.Action.Scenario
                     Signer = _agentAddress,
                     PreviousState = prevState,
                     BlockIndex = 2,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
                 var avatarState = prevState.GetAvatarStateV2(avatarAddress);
                 var enemyAvatarState = prevState.GetAvatarStateV2(enemyAvatarAddress);

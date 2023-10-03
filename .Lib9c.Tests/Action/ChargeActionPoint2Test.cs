@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousState = new MockStateDelta(),
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = default,
                 })
             );
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 })
             );

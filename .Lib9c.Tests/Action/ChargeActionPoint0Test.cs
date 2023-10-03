@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 

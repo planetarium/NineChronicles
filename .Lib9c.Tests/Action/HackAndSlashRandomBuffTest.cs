@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = states,
                     Signer = _agentAddress,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.Equal(
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = states,
                         Signer = _agentAddress,
-                        Random = _random,
+                        RandomSeed = _random.Seed,
                     });
                 });
             }
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = states,
                     Signer = _agentAddress,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
                 var newGachaState = new CrystalRandomSkillState(
                     gachaStateAddress,

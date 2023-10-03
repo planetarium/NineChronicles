@@ -297,7 +297,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var currency = nextState.GetGoldCurrency();
@@ -368,7 +368,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }
@@ -476,7 +476,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.True(nextState.TryGetState(hammerPointAddress, out List serialized));
@@ -504,7 +504,7 @@ namespace Lib9c.Tests.Action
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = _random,
+                        RandomSeed = _random.Seed,
                     });
                 });
             }

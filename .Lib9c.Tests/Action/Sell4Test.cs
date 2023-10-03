@@ -161,7 +161,7 @@
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             const long expiredBlockIndex = Sell6.ExpiredBlockIndex + 1;
@@ -274,7 +274,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -303,7 +303,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -332,7 +332,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

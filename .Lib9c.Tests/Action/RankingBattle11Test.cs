@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = RankingBattle11.UpdateTargetBlockIndex,
             });
@@ -339,7 +339,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = RankingBattle11.UpdateTargetBlockIndex - 1,
             });
@@ -394,7 +394,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -438,7 +438,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = signer,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -472,7 +472,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -503,7 +503,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -536,7 +536,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -576,7 +576,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -651,7 +651,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = state,
                         Signer = _agent1Address,
-                        Random = random,
+                        RandomSeed = random.Seed,
                         BlockIndex = 3806324 + 1, // Ranking Battle Action throws NotEnoughAvatarLevelException when BlockIndex is higher than 3806324.
                     }));
                 }
@@ -741,7 +741,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             }));
         }
@@ -777,7 +777,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });

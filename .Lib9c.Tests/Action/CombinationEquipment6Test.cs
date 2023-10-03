@@ -157,7 +157,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
@@ -221,7 +221,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 

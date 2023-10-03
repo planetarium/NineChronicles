@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action.Coupons
                         {
                             PreviousState = state,
                             Rehearsal = false,
-                            Random = random,
+                            RandomSeed = random.Seed,
                             BlockIndex = long.MaxValue,
                             Signer = CouponsFixture.AgentAddress1,
                         }));
@@ -48,7 +48,7 @@ namespace Lib9c.Tests.Action.Coupons
                         {
                             PreviousState = state,
                             Rehearsal = false,
-                            Random = random,
+                            RandomSeed = random.Seed,
                             BlockIndex = 0,
                             Signer = CouponsFixture.AgentAddress2,
                         }));
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Action.Coupons
                         {
                             PreviousState = state,
                             Rehearsal = false,
-                            Random = random,
+                            RandomSeed = random.Seed,
                             BlockIndex = 0,
                             Signer = CouponsFixture.AgentAddress1,
                         })
@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action.Coupons
                         {
                             PreviousState = state,
                             Rehearsal = true,
-                            Random = random,
+                            RandomSeed = random.Seed,
                             BlockIndex = 0,
                             Signer = CouponsFixture.AgentAddress1,
                         })
@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action.Coupons
                     {
                         PreviousState = state,
                         Rehearsal = false,
-                        Random = random,
+                        RandomSeed = random.Seed,
                         BlockIndex = 0,
                         Signer = CouponsFixture.AgentAddress1,
                     });
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action.Coupons
                     {
                         PreviousState = state,
                         Rehearsal = false,
-                        Random = random,
+                        RandomSeed = random.Seed,
                         BlockIndex = 0,
                         Signer = CouponsFixture.AgentAddress1,
                     });

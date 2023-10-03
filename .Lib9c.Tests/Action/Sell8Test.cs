@@ -196,7 +196,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             long expiredBlockIndex = Order.ExpirationInterval + blockIndex;
@@ -344,7 +344,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -375,7 +375,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 11,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -426,7 +426,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
                 PreviousState = previousStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
