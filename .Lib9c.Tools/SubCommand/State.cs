@@ -120,7 +120,7 @@ namespace Lib9c.Tools.SubCommand
                     typeof(ActionBase).Assembly, typeof(ActionBase));
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
-                    new BlockChainStates(store, stateStore),
+                    stateStore,
                     actionLoader);
                 HashDigest<SHA256> stateRootHash = block.Index < 1
                     ? BlockChain.DetermineGenesisStateRootHash(

@@ -86,7 +86,7 @@ namespace Lib9c.DevExtensions
             var actionLoader = new NCDevActionLoader();
             ActionEvaluator actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
-                blockChainStates,
+                stateStore,
                 actionLoader);
 
             BlockChain chain;

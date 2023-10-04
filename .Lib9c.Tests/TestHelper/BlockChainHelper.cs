@@ -46,7 +46,7 @@ namespace Lib9c.Tests.TestHelper
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: blockRenderers);

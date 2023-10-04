@@ -65,7 +65,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { new BlockRenderer() }
@@ -175,7 +175,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { new BlockRenderer() }
@@ -263,7 +263,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { new BlockRenderer() }
@@ -317,7 +317,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: actionLoader
                 ),
                 renderers: new[] { new BlockRenderer() }
@@ -370,7 +370,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: new[] { new BlockRenderer() }
@@ -419,7 +419,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 )
             );
@@ -520,7 +520,7 @@ namespace Lib9c.Tests
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 )
             );
