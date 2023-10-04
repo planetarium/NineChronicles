@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Action
             TotalUpdatedFungibles = ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
         }
 
-        public ITrie Trie => throw new NotSupportedException();
+        public ITrie Trie => new MerkleTrie(new MemoryKeyValueStore());
 
         /// <inheritdoc/>
         public IAccountDelta Delta { get; private set; }
