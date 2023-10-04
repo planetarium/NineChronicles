@@ -456,15 +456,8 @@ namespace Nekoyume.Game
         {
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
-                UnityEngine.Debug.unityLogger.logEnabled = true;
                 Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
                 Util.IngameDebugConsoleCommands.Initailize();
-            }
-            else
-            {
-#if !UNITY_EDITOR
-                UnityEngine.Debug.unityLogger.logEnabled = false;
-#endif
             }
 
             if (_commandLineOptions.RpcClient)
