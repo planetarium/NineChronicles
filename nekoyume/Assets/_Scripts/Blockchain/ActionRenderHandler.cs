@@ -547,13 +547,14 @@ namespace Nekoyume.Blockchain
                                 value.Currency);
                             if (balanceAddr.Equals(agentAddr))
                             {
-                                if (value.Currency.Ticker == "NCG")
+                                if (value.Currency.Equals(GoldCurrency))
                                 {
-                                    AgentStateSubject.OnNextGold(value + gameStates.GoldBalanceState.Gold);
+                                    var goldState = new GoldBalanceState(balanceAddr, balance);
+                                    gameStates.SetGoldBalanceState(goldState);
                                 }
                                 else if (value.Currency.Equals(Currencies.Crystal))
                                 {
-                                    AgentStateSubject.OnNextCrystal(value + gameStates.CrystalBalance);
+                                    gameStates.SetCrystalBalance(balance);
                                 }
                                 else if (value.Currency.Equals(Currencies.Garage))
                                 {
