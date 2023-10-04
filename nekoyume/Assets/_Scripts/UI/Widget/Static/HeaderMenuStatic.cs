@@ -32,6 +32,7 @@ namespace Nekoyume.UI.Module
             Chat,
             Settings,
             Quit,
+            PortalReward,
         }
 
         public enum AssetVisibleState
@@ -117,6 +118,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.CombinationSlots, new ReactiveProperty<bool>(false) },
                 { ToggleType.Mail, new ReactiveProperty<bool>(false) },
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
+                { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
@@ -146,6 +148,8 @@ namespace Nekoyume.UI.Module
         public MaterialAsset[] MaterialAssets => materialAssets;
 
         public override bool CanHandleInputEvent => false;
+
+        private const string PortalRewardNotificationKey = "PORTAL_REWARD_NOTIFICATION";
 
         public override void Initialize()
         {
@@ -475,6 +479,12 @@ namespace Nekoyume.UI.Module
         public void UpdateMailNotification(bool hasNotification)
         {
             _toggleNotifications[ToggleType.Mail].Value = hasNotification;
+        }
+
+        public void UpdatePortalReward(bool hasNotification)
+        {
+            _toggleNotifications[ToggleType.PortalReward].Value = hasNotification;
+            PlayerPrefs.SetInt(PortalRewardNotificationKey, hasNotification ? 1:0);
         }
 
         public void SetActiveAvatarInfo(bool value)

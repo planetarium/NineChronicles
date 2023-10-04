@@ -1,3 +1,5 @@
+using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,8 @@ namespace Nekoyume.Helper
     public static class ResourcesHelper
     {
         private static readonly List<ScriptableObject> Resources = new List<ScriptableObject>();
+
+        private const string PortalRewardNotificationLastStageKey = "PORTAL_REWARD_NOTIFICATION_LAST_STAGE";
 
         public static void Initialize()
         {
@@ -104,6 +108,41 @@ namespace Nekoyume.Helper
             }
 
             return -1;
+        }
+
+        public static void UpdatePortalRewardNotificationByLevelUp(int level)
+        {
+            var datas = Get<PortalRewardScriptalbeObject>().levelData;
+
+            foreach (var noticePoint in datas)
+            {
+                if (noticePoint == level)
+                {
+
+                    Widget.Find<HeaderMenuStatic>().UpdatePortalReward(true);
+                    return;
+                }
+            }
+        }
+
+        public static void UpdatePortalRewardNotificationByClearStage(int stageId)
+        {
+            if (stageId <= PlayerPrefs.GetInt(PortalRewardNotificationLastStageKey, 0))
+            {
+                return;
+            }
+
+            var datas = Get<PortalRewardScriptalbeObject>().stageData;
+
+            foreach (var noticePoint in datas)
+            {
+                if (noticePoint == stageId)
+                {
+                    PlayerPrefs.SetInt(PortalRewardNotificationLastStageKey, stageId);
+                    Widget.Find<HeaderMenuStatic>().UpdatePortalReward(true);
+                    return;
+                }
+            }
         }
     }
 }
