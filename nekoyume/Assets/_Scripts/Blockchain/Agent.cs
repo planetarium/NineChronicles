@@ -39,7 +39,6 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
-using Serilog.Events;
 using UnityEngine;
 using NCTx = Libplanet.Types.Tx.Transaction;
 
@@ -59,8 +58,8 @@ namespace Nekoyume.Blockchain
         public static readonly PrivateKey ProposerKey =
             new ("9f38eca075b9e2611a7e7a27291c081ee3fd570e88edd396bd09f292876f21c0");
 
-        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
+        public Subject<long> BlockIndexSubject { get; } = new();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -70,10 +69,9 @@ namespace Nekoyume.Blockchain
         private const float TxProcessInterval = 3.0f;
         private const string QueuedActionsFileName = "queued_actions.dat";
 
-        private readonly ConcurrentQueue<ActionBase> _queuedActions =
-            new ConcurrentQueue<ActionBase>();
+        private readonly ConcurrentQueue<ActionBase> _queuedActions = new();
 
-        private readonly TransactionMap _transactions = new TransactionMap(20);
+        private readonly TransactionMap _transactions = new(20);
 
         protected BlockChain blocks;
         protected BaseStore store;
@@ -92,14 +90,14 @@ namespace Nekoyume.Blockchain
 
         public BlockPolicySource BlockPolicySource { get; private set; }
 
-        public BlockRenderer BlockRenderer => new BlockRenderer();
+        public BlockRenderer BlockRenderer { get; } = new();
 
-        public ActionRenderer ActionRenderer => new ActionRenderer();
-        public int AppProtocolVersion { get; private set; }
+        public ActionRenderer ActionRenderer { get; } = new();
+
         public BlockHash BlockTipHash => blocks.Tip.Hash;
 
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-            new Subject<(NCTx tx, List<ActionBase> actions)>();
+            new();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 

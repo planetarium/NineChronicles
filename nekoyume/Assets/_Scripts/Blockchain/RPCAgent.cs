@@ -23,7 +23,6 @@ using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stake;
@@ -36,7 +35,6 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Channel = Grpc.Core.Channel;
-using Logger = Serilog.Core.Logger;
 using NCTx = Libplanet.Types.Tx.Transaction;
 
 namespace Nekoyume.Blockchain
@@ -47,9 +45,9 @@ namespace Nekoyume.Blockchain
     {
         private const int RpcConnectionRetryCount = 50;
         private const float TxProcessInterval = 1.0f;
-        private readonly ConcurrentQueue<ActionBase> _queuedActions = new ConcurrentQueue<ActionBase>();
+        private readonly ConcurrentQueue<ActionBase> _queuedActions = new();
 
-        private readonly TransactionMap _transactions = new TransactionMap(20);
+        private readonly TransactionMap _transactions = new(20);
 
         private Channel _channel;
 
@@ -57,22 +55,22 @@ namespace Nekoyume.Blockchain
 
         private IBlockChainService _service;
 
-        private Codec _codec = new Codec();
+        private Codec _codec = new();
 
         private Block _genesis;
 
         private DateTimeOffset _lastTipChangedAt;
 
         // Rendering logs will be recorded in NineChronicles.Standalone
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+        public BlockPolicySource BlockPolicySource { get; } = new();
 
-        public BlockRenderer BlockRenderer => new BlockRenderer();
+        public BlockRenderer BlockRenderer { get; } = new();
 
-        public ActionRenderer ActionRenderer => new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; } = new();
 
-        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+        public Subject<long> BlockIndexSubject { get; } = new();
 
-        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new();
 
         public long BlockIndex { get; private set; }
 
@@ -82,26 +80,26 @@ namespace Nekoyume.Blockchain
 
         public bool Connected { get; private set; }
 
-        public readonly Subject<RPCAgent> OnDisconnected = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnDisconnected = new();
 
-        public readonly Subject<RPCAgent> OnRetryStarted = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnRetryStarted = new();
 
-        public readonly Subject<RPCAgent> OnRetryEnded = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnRetryEnded = new();
 
-        public readonly Subject<RPCAgent> OnPreloadStarted = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnPreloadStarted = new();
 
-        public readonly Subject<RPCAgent> OnPreloadEnded = new Subject<RPCAgent>();
+        public readonly Subject<RPCAgent> OnPreloadEnded = new();
 
-        public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new Subject<(RPCAgent, int)>();
+        public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new();
 
         public BlockHash BlockTipHash { get; private set; }
 
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-                new Subject<(NCTx tx, List<ActionBase> actions)>();
+                new();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private readonly BlockHashCache _blockHashCache = new(100);
 
