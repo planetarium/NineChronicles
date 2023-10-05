@@ -181,35 +181,47 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                switch (toggleInfo.Type)
                 {
-                    var widget = _toggleWidgets[toggleInfo.Type];
-                    if (value)
-                    {
-                        if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
-                            !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                    case ToggleType.PortalReward:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
-                                NotificationCell.NotificationType.UnlockCondition);
-                            toggleInfo.Toggle.isOn = false;
-                            return;
-                        }
+                            Game.instance.PortalConnect.OpenPortalRewardUrl();
+                            UpdatePortalReward(false);
+                        });
+                        break;
+                    default:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var widget = _toggleWidgets[toggleInfo.Type];
+                            if (value)
+                            {
+                                if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                                {
+                                    OneLineSystem.Push(MailType.System,
+                                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                        NotificationCell.NotificationType.UnlockCondition);
+                                    toggleInfo.Toggle.isOn = false;
+                                    return;
+                                }
 
-                        var stage = Game.instance.Stage;
-                        if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
-                        {
-                            widget.Show(() => { toggleInfo.Toggle.isOn = false; });
-                        }
-                    }
-                    else
-                    {
-                        if (widget.isActiveAndEnabled)
-                        {
-                            widget.Close(true);
-                        }
-                    }
-                });
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                }
             }
 
             menuToggleDropdown.onValueChanged.AddListener((value) =>
@@ -277,6 +289,8 @@ namespace Nekoyume.UI.Module
                     item.enabled = false;
                 }).AddTo(gameObject);
             }
+
+            _toggleNotifications[ToggleType.PortalReward].Value = PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) == 0 ? false : true;
         }
 
         protected override void OnEnable()
@@ -551,6 +565,18 @@ namespace Nekoyume.UI.Module
             if (info != null)
             {
                 info.Toggle.isOn = true;
+            }
+        }
+
+        public void UpdatePortalRewardByLevel(int level)
+        {
+            foreach (var noticePoint in ResourcesHelper.GetPortalRewardLevelTable())
+            {
+                if (noticePoint == level)
+                {
+                    UpdatePortalReward(true);
+                    return;
+                }
             }
         }
     }
