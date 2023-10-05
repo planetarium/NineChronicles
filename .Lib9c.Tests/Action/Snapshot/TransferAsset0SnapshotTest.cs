@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action.Snapshot
     using Libplanet.Action.State;
     using Libplanet.Common;
     using Libplanet.Crypto;
+    using Libplanet.Store.Trie;
     using Libplanet.Types.Assets;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -66,6 +67,7 @@ namespace Lib9c.Tests.Action.Snapshot
                 .Verify(outputState)
                 .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
                 .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .IgnoreMembersWithType<ITrie>()
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
                 .UseMethodName($"{nameof(TransferCrystal)}.summary");
             var fungibles = Verifier
@@ -106,6 +108,7 @@ namespace Lib9c.Tests.Action.Snapshot
                 .Verify(outputState)
                 .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
                 .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .IgnoreMembersWithType<ITrie>()
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
                 .UseMethodName($"{nameof(TransferWithMemo)}.summary");
             var fungibles = Verifier

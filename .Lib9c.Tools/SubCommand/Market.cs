@@ -102,7 +102,7 @@ namespace Lib9c.Tools.SubCommand
                     .Reverse()
                     .Where(tx => includeFails ||
                         !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
-                        e is TxSuccess)
+                        !e.Fail)
                     .SelectMany(tx => tx.Actions is { } actions
                         ? actions.Reverse().Select(a => (tx, (ActionBase)actionLoader.LoadAction(block.Index, a)))
                         : Enumerable.Empty<(Transaction, ActionBase)>());
