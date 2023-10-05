@@ -38,7 +38,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
   m_PositionCurves: []
   m_ScaleCurves:
   - curve:
@@ -74,7 +74,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -108,7 +108,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -169,7 +169,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -230,69 +230,13 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
   m_FloatCurves:
   - curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 10
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_fontColor.a
-    path: Text
-    classID: 114
-    script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 10
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_fontColor.a
-    path: toolTip
-    classID: 114
-    script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
         value: 4
         inSlope: 0
         outSlope: 0
@@ -313,7 +257,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_bg
+    path: AnimationContainer/UI_loading_bg
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -341,7 +285,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_black
+    path: AnimationContainer/UI_loading_black
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -369,7 +313,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_catback
+    path: AnimationContainer/UI_loading_catback
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -397,7 +341,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_catback
+    path: AnimationContainer/UI_loading_catback
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -425,7 +369,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -453,7 +397,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -562,7 +506,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -671,7 +615,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -699,7 +643,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_girlback_L
+    path: AnimationContainer/UI_loading_girlback_L
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -727,7 +671,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_girlback_R
+    path: AnimationContainer/UI_loading_girlback_R
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -764,7 +708,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -801,7 +745,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -829,7 +773,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_ornament_L
+    path: AnimationContainer/UI_loading_ornament_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -857,7 +801,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_ornament_L
+    path: AnimationContainer/UI_loading_ornament_L
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -885,7 +829,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_ornament_R
+    path: AnimationContainer/UI_loading_ornament_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -913,7 +857,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_ornament_R
+    path: AnimationContainer/UI_loading_ornament_R
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -950,7 +894,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -963,13 +907,22 @@ AnimationClip:
         outSlope: 0
         tangentMode: 136
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LoadingIndicator
+    path: Dim
     classID: 225
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -981,175 +934,161 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2529995682
+      path: 1093075897
       attribute: 4
       script: {fileID: 0}
       typeID: 4
       customType: 4
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 532368054
+      path: 1806329583
       attribute: 3
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2529995682
+      path: 1093075897
       attribute: 3
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2006094684
+      path: 921162251
       attribute: 3
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2375921215
+      path: 3437817704
       attribute: 3
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2006094684
+      path: 921162251
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2375921215
+      path: 3437817704
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 532368054
+      path: 1806329583
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 532368054
+      path: 1806329583
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2612594937
-      attribute: 4185109675
-      script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-      typeID: 114
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 2582911312
-      attribute: 4185109675
-      script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-      typeID: 114
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 974243948
+      path: 3698015629
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3720032378
+      path: 2894071761
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 564268043
+      path: 3572284701
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 564268043
+      path: 3572284701
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2529995682
+      path: 1093075897
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2529995682
+      path: 1093075897
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2083629666
+      path: 136349243
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2252248833
+      path: 4063214424
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 532368054
+      path: 1806329583
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3933625115
+      path: 2657580866
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3933625115
+      path: 2657580866
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 276391544
+      path: 1684556321
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 276391544
+      path: 1684556321
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2640824734
+      path: 267268357
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
@@ -1182,62 +1121,6 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 10
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_fontColor.a
-    path: Text
-    classID: 114
-    script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 10
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_fontColor.a
-    path: toolTip
-    classID: 114
-    script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
         value: 4
         inSlope: 0
         outSlope: 0
@@ -1258,7 +1141,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_bg
+    path: AnimationContainer/UI_loading_bg
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1286,7 +1169,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_black
+    path: AnimationContainer/UI_loading_black
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1314,7 +1197,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_catback
+    path: AnimationContainer/UI_loading_catback
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1342,7 +1225,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_catback
+    path: AnimationContainer/UI_loading_catback
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1370,7 +1253,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1398,7 +1281,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1426,7 +1309,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1454,7 +1337,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1482,7 +1365,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1591,7 +1474,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1700,7 +1583,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1728,7 +1611,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_girlback_L
+    path: AnimationContainer/UI_loading_girlback_L
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1756,7 +1639,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_girlback_R
+    path: AnimationContainer/UI_loading_girlback_R
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1793,7 +1676,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1830,7 +1713,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1867,7 +1750,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1904,7 +1787,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1941,7 +1824,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -1969,7 +1852,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_ornament_L
+    path: AnimationContainer/UI_loading_ornament_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -1997,7 +1880,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_ornament_L
+    path: AnimationContainer/UI_loading_ornament_L
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -2025,7 +1908,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: UI_loading_ornament_R
+    path: AnimationContainer/UI_loading_ornament_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2053,7 +1936,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: UI_loading_ornament_R
+    path: AnimationContainer/UI_loading_ornament_R
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -2090,7 +1973,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2127,7 +2010,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2164,7 +2047,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2228,7 +2111,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2292,7 +2175,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2356,7 +2239,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: UI_loading_girl_L
+    path: AnimationContainer/UI_loading_girl_L
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2420,7 +2303,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2484,7 +2367,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2548,7 +2431,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: UI_loading_girl_R
+    path: AnimationContainer/UI_loading_girl_R
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2585,7 +2468,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: UI_loading_lens flare
+    path: AnimationContainer/UI_loading_lens flare
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2598,13 +2481,22 @@ AnimationClip:
         outSlope: 0
         tangentMode: 136
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LoadingIndicator
+    path: Dim
     classID: 225
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -2615,7 +2507,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2625,7 +2517,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -2635,7 +2527,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: UI_loading_cat
+    path: AnimationContainer/UI_loading_cat
     classID: 224
     script: {fileID: 0}
   m_HasGenericRootTransform: 0
