@@ -156,6 +156,9 @@ namespace Nekoyume.UI.Module
 
         private const string PortalRewardNotificationKey = "PORTAL_REWARD_NOTIFICATION";
 
+        public const string PortalRewardNotificationCombineKey = "PORTAL_REWARD_NOTIFICATION_COMBINE_ACTION";
+        public const string PortalRewardNotificationTradingKey = "PORTAL_REWARD_NOTIFICATION_TRADING_ACTION";
+
         public override void Initialize()
         {
             base.Initialize();
@@ -578,6 +581,15 @@ namespace Nekoyume.UI.Module
                     return;
                 }
             }
+        }
+
+        public void UpdatePotalRewardOnce(string key)
+        {
+            var count = PlayerPrefs.GetInt(key, 0);
+            if(count == 0) {
+                UpdatePortalReward(true);
+            }
+            PlayerPrefs.SetInt(key, ++count);
         }
     }
 }
