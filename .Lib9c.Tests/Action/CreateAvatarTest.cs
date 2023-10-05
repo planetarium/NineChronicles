@@ -28,10 +28,10 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0L, 600_000)]
-        [InlineData(7_210_000L, 600_000)]
-        [InlineData(7_210_001L, 200_000)]
-        public void Execute(long blockIndex, int expected)
+        [InlineData(0L)]
+        [InlineData(7_210_000L)]
+        [InlineData(7_210_001L)]
+        public void Execute(long blockIndex)
         {
             var action = new CreateAvatar()
             {
@@ -62,6 +62,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = blockIndex,
+                Random = new TestRandom(),
             });
 
             var avatarAddress = _agentAddress.Derive(
@@ -80,7 +81,21 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            Assert.Equal(200_000 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            var avatarItemSheet = nextState.GetSheet<CreateAvatarItemSheet>();
+            foreach (var row in avatarItemSheet.Values)
+            {
+                Assert.True(nextAvatarState.inventory.HasItem(row.ItemId, row.Count));
+            }
+
+            var avatarFavSheet = nextState.GetSheet<CreateAvatarFavSheet>();
+            foreach (var row in avatarFavSheet.Values)
+            {
+                var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
+                    ? _agentAddress
+                    : avatarAddress;
+                Assert.Equal(row.Currency * row.Quantity, nextState.GetBalance(targetAddress, row.Currency));
+            }
         }
 
         [Theory]
@@ -305,6 +320,52 @@ namespace Lib9c.Tests.Action
             Assert.Equal(5, deserialized.lens);
             Assert.Equal(7, deserialized.tail);
             Assert.Equal("test", deserialized.name);
+        }
+
+        [Fact]
+        public void AddItem()
+        {
+            var itemSheet = _tableSheets.ItemSheet;
+            var createAvatarItemSheet = new CreateAvatarItemSheet();
+            createAvatarItemSheet.Set(@"item_id,count
+10112000,2
+10512000,2
+600201,2
+");
+            var avatarState = new AvatarState(default, default, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
+            CreateAvatar.AddItem(itemSheet, createAvatarItemSheet, avatarState, new TestRandom());
+            foreach (var row in createAvatarItemSheet.Values)
+            {
+                Assert.True(avatarState.inventory.HasItem(row.ItemId, row.Count));
+            }
+
+            Assert.Equal(4, avatarState.inventory.Equipments.Count());
+            foreach (var equipment in avatarState.inventory.Equipments)
+            {
+                var equipmentRow = _tableSheets.EquipmentItemSheet[equipment.Id];
+                Assert.Equal(equipmentRow.Stat, equipment.Stat);
+            }
+        }
+
+        [Fact]
+        public void MintAsset()
+        {
+            var createAvatarFavSheet = new CreateAvatarFavSheet();
+            createAvatarFavSheet.Set(@"currency,quantity,target
+CRYSTAL,200000,Agent
+RUNE_GOLDENLEAF,200000,Avatar
+");
+            var avatarAddress = new PrivateKey().ToAddress();
+            var agentAddress = new PrivateKey().ToAddress();
+            var avatarState = new AvatarState(avatarAddress, agentAddress, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
+            var nextState = CreateAvatar.MintAsset(createAvatarFavSheet, avatarState, new MockStateDelta(), new ActionContext());
+            foreach (var row in createAvatarFavSheet.Values)
+            {
+                var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
+                    ? agentAddress
+                    : avatarAddress;
+                Assert.Equal(row.Currency * row.Quantity, nextState.GetBalance(targetAddress, row.Currency));
+            }
         }
     }
 }
