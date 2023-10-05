@@ -17,6 +17,7 @@ using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blockchain.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
@@ -252,6 +253,9 @@ namespace Nekoyume.Blockchain
             return blocks.GetState(address);
         }
 
+        public IValue GetState(Address address, HashDigest<SHA256> stateRootHash) =>
+            blocks.GetAccountState(stateRootHash).GetState(address);
+
         public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
             if (blockIndex.HasValue)
@@ -266,6 +270,12 @@ namespace Nekoyume.Blockchain
         {
             return await Task.Run(() => blocks.GetState(address, blockHash));
         }
+
+        public async Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash) =>
+            await Task.Run(() => blocks.GetAccountState(stateRootHash).GetState(address));
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency, HashDigest<SHA256> stateRootHash) =>
+            await Task.Run(() => blocks.GetAccountState(stateRootHash).GetBalance(address, currency));
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
@@ -292,6 +302,22 @@ namespace Nekoyume.Blockchain
             });
         }
 
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(IEnumerable<Address> addressList, HashDigest<SHA256> stateRootHash) =>
+            await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, AvatarState>();
+                foreach (var address in addressList)
+                {
+                    var result = await States.TryGetAvatarStateAsync(address, stateRootHash);
+                    if (result.exist)
+                    {
+                        dict[address] = result.avatarState;
+                    }
+                }
+
+                return dict;
+            });
+
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             return await Task.Run(async () =>
@@ -306,6 +332,9 @@ namespace Nekoyume.Blockchain
                 return dict;
             });
         }
+
+        public Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList, HashDigest<SHA256> stateRootHash) =>
+            throw new NotImplementedException();
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
             _transactions.TryGetValue(actionId, out txId);

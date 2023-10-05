@@ -3,10 +3,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
@@ -51,8 +53,11 @@ namespace Nekoyume.Blockchain
         void EnqueueAction(ActionBase actionBase);
 
         IValue GetState(Address address);
+        IValue GetState(Address address, HashDigest<SHA256> stateRootHash);
+
         Task<IValue> GetStateAsync(Address address, long? blockIndex = null);
         Task<IValue> GetStateAsync(Address address, BlockHash blockHash);
+        Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash);
 
         void SendException(Exception exc);
 
@@ -72,10 +77,23 @@ namespace Nekoyume.Blockchain
             Currency currency,
             BlockHash blockHash);
 
+        Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            HashDigest<SHA256> stateRootHash);
+
         Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             long? blockIndex = null);
 
+        Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash);
+
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList);
+
+        Task<Dictionary<Address, IValue>> GetStateBulkAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash);
     }
 }

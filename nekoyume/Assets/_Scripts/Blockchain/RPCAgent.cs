@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -12,6 +13,7 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
@@ -23,7 +25,6 @@ using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stake;
@@ -226,6 +227,15 @@ namespace Nekoyume.Blockchain
             return _codec.Decode(raw);
         }
 
+        public IValue GetState(Address address, HashDigest<SHA256> stateRootHash)
+        {
+            var raw = _service.GetStateBySrh(
+                address.ToByteArray(),
+                stateRootHash.ToByteArray()
+            ).ResponseAsync.Result;
+            return _codec.Decode(raw);
+        }
+
         public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
             var game = Game.Game.instance;
@@ -252,6 +262,24 @@ namespace Nekoyume.Blockchain
         public async Task<IValue> GetStateAsync(Address address, BlockHash blockHash)
         {
             var bytes = await _service.GetState(address.ToByteArray(), blockHash.ToByteArray());
+            var decoded = _codec.Decode(bytes);
+            var game = Game.Game.instance;
+            if (game.CachedStateAddresses.ContainsKey(address))
+            {
+                game.CachedStateAddresses[address] = true;
+            }
+
+            if (game.CachedStates.ContainsKey(address))
+            {
+                game.CachedStates.AddOrUpdate(address, decoded);
+            }
+
+            return decoded;
+        }
+
+        public async Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash)
+        {
+            var bytes = await _service.GetStateBySrh(address.ToByteArray(), stateRootHash.ToByteArray());
             var decoded = _codec.Decode(bytes);
             var game = Game.Game.instance;
             if (game.CachedStateAddresses.ContainsKey(address))
@@ -323,6 +351,9 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency, HashDigest<SHA256> stateRootHash) =>
+            throw new NotImplementedException();
+
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             long? blockIndex = null)
@@ -345,11 +376,42 @@ namespace Nekoyume.Blockchain
             return result;
         }
 
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash)
+        {
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesBySrh(
+                addressList.Select(a => a.ToByteArray()),
+                stateRootHash.ToByteArray());
+            var result = new Dictionary<Address, AvatarState>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+            }
+            return result;
+        }
+
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             Dictionary<byte[], byte[]> raw =
                 await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()),
                     BlockTipHash.ToByteArray());
+            var result = new Dictionary<Address, IValue>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+            }
+            return result;
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash)
+        {
+            Dictionary<byte[], byte[]> raw =
+                await _service.GetStateBulk(
+                    addressList.Select(a => a.ToByteArray()),
+                    stateRootHash.ToByteArray());
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
@@ -414,8 +476,8 @@ namespace Nekoyume.Blockchain
                     Debug.Log($"Retry rpc connection. (count: {tuple.retryCount})");
                     var message =
                         L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
-                        RpcConnectionRetryCount - tuple.retryCount + 1,
-                        RpcConnectionRetryCount);
+                            RpcConnectionRetryCount - tuple.retryCount + 1,
+                            RpcConnectionRetryCount);
                     Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
                 })
                 .AddTo(_disposables);
@@ -618,10 +680,10 @@ namespace Nekoyume.Blockchain
                 actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
             }
             Debug.Log("[Transaction]" +
-                      $"\nnonce={nonce}" +
-                      $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                      $"\nHash={_genesis?.Hash}" +
-                      $"\nactionsName={actionsName}");
+                $"\nnonce={nonce}" +
+                $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                $"\nHash={_genesis?.Hash}" +
+                $"\nactionsName={actionsName}");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
