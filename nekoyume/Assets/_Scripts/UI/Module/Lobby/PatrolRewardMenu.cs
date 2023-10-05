@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.L10n;
 using TMPro;
-using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -55,12 +54,9 @@ namespace Nekoyume.UI.Module.Lobby
 
         private async void SetData(PatrolRewardPopup popup)
         {
-            var patrolReward = popup.PatrolReward;
-            if (!patrolReward.Initialized)
-            {
-                await patrolReward.Initialize();
-            }
+            await popup.InitializePatrolReward();
 
+            var patrolReward = popup.PatrolReward;
             patrolReward.PatrolTime
                 .Select(time => time < patrolReward.Interval)
                 .Where(_ => !popup.Claiming.Value)
@@ -74,15 +70,6 @@ namespace Nekoyume.UI.Module.Lobby
                     SetCanClaim(false, true);
                 }
             }).AddTo(_disposables);
-
-            this.UpdateAsObservable()  // For internal Test
-                .Where(_ => Input.GetKeyDown(KeyCode.W))
-                .Subscribe(x =>
-                {
-                    var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-                    var agentAddress = Game.Game.instance.States.AgentState.address;
-                    patrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
-                });
         }
 
         private void SetCanClaim(bool patrolling, bool claiming)

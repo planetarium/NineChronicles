@@ -50,16 +50,21 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private LayoutElement bottomButtonLayoutElement;
 
+        [SerializeField]
+        private GameObject dimObj;
+
         private RectTransform _rect;
         private ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
 
         private void Awake()
         {
-            buyButton.onClick.AddListener(()=> {
+            buyButton.onClick.AddListener(() =>
+            {
                 if (_data == null || !_data.Buyable)
                     return;
 
+                Widget.Find<MobileShop>().SetLoadingDataScreen(true);
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.GoogleSku));
                 Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
             });
@@ -107,8 +112,14 @@ namespace Nekoyume.UI.Module
         {
             _data = data;
             _rect = GetComponent<RectTransform>();
+            Refresh();
+            recommended.SetActive(isRecommended);
+        }
+
+        private void Refresh()
+        {
             var isDiscount = _data.Discount > 0;
-            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == data.GoogleSku);
+            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == _data.GoogleSku);
 
             switch (_data.Size)
             {
@@ -128,63 +139,76 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in price)
             {
-                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice}";
+                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
             }
+            Debug.Log($"{_puchasingData.metadata.localizedTitle} : {_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPriceString} {_puchasingData.metadata.localizedPrice}");
 
             foreach (var item in discountObjs)
             {
                 item.SetActive(isDiscount);
             }
-        
+
             if (isDiscount)
             {
                 foreach (var item in preDiscountPrice)
                 {
-                    var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100-_data.Discount)));
-                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N3}";
+                    var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
+                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N2}";
                     item.text = origin;
                 }
                 discount.text = $"{_data.Discount}%";
             }
+
             buyButton.interactable = _data.Buyable;
+
             disabledBuyButton.SetActive(!buyButton.interactable);
-            recommended.SetActive(isRecommended);
+            RefreshDim();
         }
 
         public void LocalPurchaseSucces()
         {
             _data.PurchaseCount++;
+            Refresh();
+            RefreshLocalized().Forget();
         }
 
-        public bool IsBuyable()
+        private void RefreshDim()
         {
-            if(_data.AccountLimit != null)
-            {
-                if(_data.PurchaseCount < _data.AccountLimit.Value)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
             if (_data.DailyLimit != null)
             {
                 if (_data.PurchaseCount < _data.DailyLimit.Value)
                 {
-                    return true;
+                    dimObj.SetActive(false);
+                    return;
                 }
                 else
                 {
-                    return false;
+                    dimObj.SetActive(true);
+                    return;
                 }
             }
 
             if (_data.WeeklyLimit != null)
             {
                 if (_data.PurchaseCount < _data.WeeklyLimit.Value)
+                {
+                    dimObj.SetActive(false);
+                    return;
+                }
+                else
+                {
+                    dimObj.SetActive(true);
+                    return;
+                }
+            }
+            dimObj.SetActive(false);
+        }
+
+        public bool IsBuyable()
+        {
+            if (_data.AccountLimit != null)
+            {
+                if (_data.PurchaseCount < _data.AccountLimit.Value)
                 {
                     return true;
                 }
