@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -11,15 +11,15 @@ namespace Nekoyume.UI
 {
     public class LoadingScreen : ScreenWidget
     {
-        public LoadingIndicator indicator;
-        public TextMeshProUGUI toolTip;
-        public Button toolTipChangeButton;
+        [SerializeField] private LoadingIndicator indicator;
+        [SerializeField] private TextMeshProUGUI toolTip;
+        [SerializeField] private Button toolTipChangeButton;
+        [SerializeField] private Slider slider;
 
-        public string Message { get; internal set; }
-
-        private List<string> _tips;
-
-        #region Mono
+        private string _defaultMessage;
+        private readonly ReactiveProperty<string> _message = new();
+        private string[] _tips;
+        private Tweener _tweener;
 
         protected override void Awake()
         {
@@ -27,77 +27,74 @@ namespace Nekoyume.UI
 
             if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
-                var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-                indicator.UpdateMessage(message);
-                _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
-
-                var pos = transform.localPosition;
-                pos.z = -5f;
-                transform.localPosition = pos;
-
-                if (ReferenceEquals(indicator, null) ||
-                    ReferenceEquals(toolTip, null))
-                {
-                    throw new SerializeFieldNullException();
-                }
+                LoadL10N();
             }
 
+            var pos = transform.localPosition;
+            pos.z = -5f;
+            transform.localPosition = pos;
+
+            if (ReferenceEquals(indicator, null) || ReferenceEquals(toolTip, null))
+            {
+                throw new SerializeFieldNullException();
+            }
+
+            _message.Subscribe(indicator.Show).AddTo(gameObject);
             if (toolTipChangeButton != null)
             {
                 toolTipChangeButton.onClick.AddListener(SetToolTipText);
             }
 
-            L10nManager.OnLanguageChange
-                .Subscribe(_ =>
-                {
-                    Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-                    _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
-                })
-                .AddTo(gameObject);
+            L10nManager.OnLanguageChange.Subscribe(_ => LoadL10N()).AddTo(gameObject);
         }
 
-        protected override void Update()
-        {
-            if (!string.IsNullOrEmpty(Message) && indicator.text.text != Message)
-            {
-                if (indicator.gameObject.activeSelf)
-                {
-                    indicator.UpdateMessage(Message);
-                }
-                else
-                {
-                    indicator.Show(Message);
-                }
-            }
-        }
-
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(string message = null, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Find<HeaderMenuStatic>().Close();
-        }
 
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            
+            _message.Value = !string.IsNullOrEmpty(message) ? message : _defaultMessage;
+
+            Find<HeaderMenuStatic>().Close();
+
             SetToolTipText();
+            PlaySliderAnimation();
         }
 
         protected override void OnDisable()
         {
-            Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
             base.OnDisable();
+            StopSliderAnimation();
         }
 
-        public void SetToolTipText()
+        private void LoadL10N()
+        {
+            _defaultMessage = $"{L10nManager.Localize("BLOCK_CHAIN_MINING_TX")}...";
+            _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToArray();
+        }
+
+        private void SetToolTipText()
         {
             if (_tips != null)
             {
-                toolTip.text = _tips[Random.Range(0, _tips.Count)];
+                toolTip.text = _tips[Random.Range(0, _tips.Length)];
             }
         }
 
-        #endregion
+        private void PlaySliderAnimation()
+        {
+            StopSliderAnimation();
+
+            slider.value = slider.minValue;
+            _tweener = slider.DOValue(slider.maxValue, Random.Range(1f, 2f)).SetDelay(1f);
+        }
+
+        private void StopSliderAnimation()
+        {
+            if (_tweener is not null && _tweener.IsActive() && _tweener.IsPlaying())
+            {
+                _tweener.Kill();
+                _tweener = null;
+            }
+        }
     }
 }
