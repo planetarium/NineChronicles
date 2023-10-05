@@ -104,6 +104,13 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(ctx, GoldCurrencyMock, signer);
             }
 
+            var itemSheetAddress = Addresses.GetSheetAddress<CreateAvatarItemSheet>();
+            var favSheetAddress = Addresses.GetSheetAddress<CreateAvatarFavSheet>();
+            if (states.GetState(itemSheetAddress) is not null || states.GetState(favSheetAddress) is not null)
+            {
+                throw new ActionObsoletedException(nameof(CreateAvatar9));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))

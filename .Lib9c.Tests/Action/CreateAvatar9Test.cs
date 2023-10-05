@@ -28,10 +28,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0L, 600_000)]
-        [InlineData(7_210_000L, 600_000)]
-        [InlineData(7_210_001L, 200_000)]
-        public void Execute(long blockIndex, int expected)
+        [InlineData(0L, 600_000, true, true)]
+        [InlineData(7_210_000L, 600_000, true, true)]
+        [InlineData(7_210_001L, 200_000, true, true)]
+        [InlineData(7_210_001L, 200_000, false, true)]
+        [InlineData(7_210_001L, 200_000, true, false)]
+        public void Execute(long blockIndex, int expected, bool avatarItemSheetExist, bool avatarFavSheetExist)
         {
             var action = new CreateAvatar9()
             {
@@ -52,35 +54,57 @@ namespace Lib9c.Tests.Action
 
             foreach (var (key, value) in sheets)
             {
+                if (key == nameof(CreateAvatarItemSheet) && !avatarItemSheetExist)
+                {
+                    continue;
+                }
+
+                if (key == nameof(CreateAvatarFavSheet) && !avatarFavSheetExist)
+                {
+                    continue;
+                }
+
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             Assert.Equal(0 * CrystalCalculator.CRYSTAL, state.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
 
-            var nextState = action.Execute(new ActionContext()
+            if (!avatarItemSheetExist && !avatarFavSheetExist)
             {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = blockIndex,
-            });
+                var nextState = action.Execute(new ActionContext()
+                {
+                    PreviousState = state,
+                    Signer = _agentAddress,
+                    BlockIndex = blockIndex,
+                });
 
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    0
-                )
-            );
-            Assert.True(nextState.TryGetAgentAvatarStatesV2(
-                default,
-                avatarAddress,
-                out var agentState,
-                out var nextAvatarState,
-                out _)
-            );
-            Assert.True(agentState.avatarAddresses.Any());
-            Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+                var avatarAddress = _agentAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CreateAvatar2.DeriveFormat,
+                        0
+                    )
+                );
+                Assert.True(nextState.TryGetAgentAvatarStatesV2(
+                    default,
+                    avatarAddress,
+                    out var agentState,
+                    out var nextAvatarState,
+                    out _)
+                );
+                Assert.True(agentState.avatarAddresses.Any());
+                Assert.Equal("test", nextAvatarState.name);
+                Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+            }
+            else
+            {
+                Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousState = state,
+                    Signer = _agentAddress,
+                    BlockIndex = blockIndex,
+                }));
+            }
         }
 
         [Theory]

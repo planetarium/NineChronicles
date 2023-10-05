@@ -242,6 +242,10 @@ namespace Lib9c.Tests
 
         public SummonSheet SummonSheet { get; private set; }
 
+        public CreateAvatarItemSheet CreateAvatarItemSheet { get; set; }
+
+        public CreateAvatarFavSheet CreateAvatarFavSheet { get; set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
