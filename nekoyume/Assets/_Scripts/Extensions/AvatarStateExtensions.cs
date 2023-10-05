@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Action;
+using Nekoyume.Blockchain;
 using Nekoyume.Model;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -19,7 +22,7 @@ namespace Nekoyume
         public static AvatarState UpdateAvatarStateV2(
             this AvatarState avatarState,
             Address address,
-            IAccount states)
+            HashDigest<SHA256> states)
         {
             var addresses = new List<Address>
             {
@@ -32,7 +35,7 @@ namespace Nekoyume
                 LegacyQuestListKey,
             };
             addresses.AddRange(keys.Select(key => address.Derive(key)));
-            var serializedValues = states.GetStates(addresses);
+            var serializedValues = StateGetter.GetStates(addresses, states);
             if (serializedValues.Count == 0)
             {
                 return avatarState;
