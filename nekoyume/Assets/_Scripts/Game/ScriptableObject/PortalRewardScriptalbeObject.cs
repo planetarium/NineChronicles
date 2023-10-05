@@ -12,6 +12,5 @@ namespace Nekoyume
     public class PortalRewardScriptalbeObject : ScriptableObject
     {
         public List<int> levelData;
-        public List<int> stageData;
     }
 }

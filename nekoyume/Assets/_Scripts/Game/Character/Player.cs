@@ -344,7 +344,10 @@ namespace Nekoyume.Game.Character
                 });
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
-                ResourcesHelper.UpdatePortalRewardNotificationByLevelUp(level);
+                for (int interLevel = Level+1; interLevel <= level; interLevel++)
+                {
+                    Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
+                }
                 InitStats(Model);
             }
 
