@@ -13,33 +13,59 @@ namespace Nekoyume.Model.Stake
             Address stakeStateAddr,
             out StakeStateV2 stakeStateV2)
         {
-            var serialized = state.GetState(stakeStateAddr);
-            if (serialized is null or Null)
+            var nullableStateState =
+                Migrate(state.GetState(stakeStateAddr), state.GetGameConfigState());
+            if (nullableStateState is null)
             {
                 stakeStateV2 = default;
                 return false;
+            }
+
+            stakeStateV2 = nullableStateState.Value;
+            return true;
+        }
+
+        public static bool TryMigrate(
+            IValue serialized,
+            GameConfigState gameConfigState,
+            out StakeStateV2 stakeStateV2)
+        {
+            var nullableStateState = Migrate(serialized, gameConfigState);
+            if (nullableStateState is null)
+            {
+                stakeStateV2 = default;
+                return false;
+            }
+
+            stakeStateV2 = nullableStateState.Value;
+            return true;
+        }
+
+        public static StakeStateV2? Migrate(
+            IValue serialized,
+            GameConfigState gameConfigState)
+        {
+            if (serialized is null or Null)
+            {
+                return null;
             }
 
             // NOTE: StakeStateV2 is serialized as Bencodex List.
             if (serialized is List list)
             {
-                stakeStateV2 = new StakeStateV2(list);
-                return true;
+                return new StakeStateV2(list);
             }
 
             // NOTE: StakeState is serialized as Bencodex Dictionary.
             if (serialized is not Dictionary dict)
             {
-                stakeStateV2 = default;
-                return false;
+                return null;
             }
 
             // NOTE: Migration needs GameConfigState.
-            var gameConfigState = state.GetGameConfigState();
             if (gameConfigState is null)
             {
-                stakeStateV2 = default;
-                return false;
+                return null;
             }
 
             // NOTE: Below is the migration logic from StakeState to StakeStateV2.
@@ -92,14 +118,13 @@ namespace Nekoyume.Model.Stake
                 stakeRegularRewardSheetTableName = "StakeRegularRewardSheet_V5";
             }
 
-            stakeStateV2 = new StakeStateV2(
+            return new StakeStateV2(
                 stakeStateV1,
                 new Contract(
                     stakeRegularFixedRewardSheetTableName: stakeRegularFixedRewardSheetTableName,
                     stakeRegularRewardSheetTableName: stakeRegularRewardSheetTableName,
                     rewardInterval: StakeState.RewardInterval,
                     lockupInterval: StakeState.LockupInterval));
-            return true;
         }
     }
 }

@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Model.Stake
 {
     using System;
+    using Bencodex.Types;
     using Lib9c.Tests.Action;
     using Lib9c.Tests.Fixtures.TableCSV;
     using Lib9c.Tests.Fixtures.TableCSV.Stake;
@@ -18,7 +19,13 @@ namespace Lib9c.Tests.Model.Stake
         public void TryMigrate_Throw_NullReferenceException_When_IAccountDelta_Null()
         {
             Assert.Throws<NullReferenceException>(() =>
-                StakeStateUtils.TryMigrate(null, default, out _));
+                StakeStateUtils.TryMigrate((IAccount)null, default, out _));
+        }
+
+        [Fact]
+        public void TryMigrate_Return_False_When_IValue_Null()
+        {
+            Assert.False(StakeStateUtils.TryMigrate((IValue)null, default, out _));
         }
 
         [Fact]
