@@ -13,5 +13,11 @@ StakeRegularFixedRewardSheet,StakeRegularFixedRewardSheet_V2
 StakeRegularRewardSheet,StakeRegularRewardSheet_V2
 RewardInterval,50400
 LockupInterval,201600";
+
+        public const string V3 = @"attr_name,value
+StakeRegularFixedRewardSheet,StakeRegularFixedRewardSheet_V1
+StakeRegularRewardSheet,StakeRegularRewardSheet_V1
+RewardInterval,40
+LockupInterval,150";
     }
 }

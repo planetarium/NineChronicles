@@ -14,12 +14,10 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Helper;
     using Nekoyume.Model;
-    using Nekoyume.Model.Stake;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
 
-    public class TransferAssetsTest
+    public class TransferAssets2Test
     {
         private static readonly Address _sender = new Address(
             new byte[]
@@ -52,7 +50,7 @@ namespace Lib9c.Tests.Action
         public void Constructor_ThrowsMemoLengthOverflowException()
         {
             Assert.Throws<MemoLengthOverflowException>(() =>
-                new TransferAssets(
+                new TransferAssets2(
                     _sender,
                     new List<(Address, FungibleAssetValue)>()
                     {
@@ -72,7 +70,7 @@ namespace Lib9c.Tests.Action
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -102,7 +100,7 @@ namespace Lib9c.Tests.Action
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -134,7 +132,7 @@ namespace Lib9c.Tests.Action
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000));
             // Should not allow TransferAsset with same sender and recipient.
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -165,7 +163,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_recipient, new AgentState(_recipient).Serialize())
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -200,7 +198,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_recipient, new AgentState(_recipient).Serialize())
                     .SetBalance(_sender, currencyBySender * 1000)
                     .SetBalance(_recipient, currencyBySender * 10));
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -226,7 +224,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -259,7 +257,7 @@ namespace Lib9c.Tests.Action
         [InlineData("Nine Chronicles")]
         public void PlainValue(string memo)
         {
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -273,7 +271,7 @@ namespace Lib9c.Tests.Action
 
             var recipients = (List)values["recipients"];
             var info = (List)recipients[0];
-            Assert.Equal((Text)"transfer_assets3", plainValue["type_id"]);
+            Assert.Equal((Text)"transfer_assets2", plainValue["type_id"]);
             Assert.Equal(_sender, values["sender"].ToAddress());
             Assert.Equal(_recipient, info[0].ToAddress());
             Assert.Equal(_currency * 100, info[1].ToFungibleAssetValue());
@@ -301,7 +299,7 @@ namespace Lib9c.Tests.Action
             var plainValue = Dictionary.Empty
                 .Add("type_id", "transfer_assets")
                 .Add("values", new Dictionary(pairs));
-            var action = new TransferAssets();
+            var action = new TransferAssets2();
             action.LoadPlainValue(plainValue);
 
             Assert.Equal(_sender, action.Sender);
@@ -313,7 +311,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
-            var action = new TransferAssets();
+            var action = new TransferAssets2();
             var plainValue = Dictionary.Empty
                 .Add("type_id", "transfer_assets")
                 .Add("values", new Dictionary(new[]
@@ -332,7 +330,7 @@ namespace Lib9c.Tests.Action
         public void SerializeWithDotnetAPI(string memo)
         {
             var formatter = new BinaryFormatter();
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 _sender,
                 new List<(Address, FungibleAssetValue)>
                 {
@@ -345,7 +343,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (TransferAssets)formatter.Deserialize(ms);
+            var deserialized = (TransferAssets2)formatter.Deserialize(ms);
 
             Assert.Equal(_sender, deserialized.Sender);
             Assert.Equal(_recipient, deserialized.Recipients.Single().recipient);
@@ -358,12 +356,12 @@ namespace Lib9c.Tests.Action
         {
             var recipients = new List<(Address, FungibleAssetValue)>();
 
-            for (int i = 0; i < TransferAssets.RecipientsCapacity + 1; i++)
+            for (int i = 0; i < TransferAssets2.RecipientsCapacity + 1; i++)
             {
                 recipients.Add((_recipient, _currency * 100));
             }
 
-            var action = new TransferAssets(_sender, recipients);
+            var action = new TransferAssets2(_sender, recipients);
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 action.Execute(new ActionContext()
@@ -384,7 +382,7 @@ namespace Lib9c.Tests.Action
                 MockState.Empty
                     .SetState(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize())
                     .SetBalance(_sender, crystal * 1000));
-            var action = new TransferAssets(
+            var action = new TransferAssets2(
                 sender: _sender,
                 recipients: new List<(Address, FungibleAssetValue)>
                 {
@@ -398,81 +396,6 @@ namespace Lib9c.Tests.Action
                 Signer = _sender,
                 Rehearsal = false,
                 BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,
-            }));
-        }
-
-        [Fact]
-        public void Execute_Throw_ArgumentException()
-        {
-            var baseState = new MockStateDelta(
-                MockState.Empty
-                    .SetBalance(_sender, _currency * 1000));
-            var action = new TransferAssets(
-                sender: _sender,
-                new List<(Address, FungibleAssetValue)>
-                {
-                    (StakeState.DeriveAddress(_recipient), _currency * 100),
-                    (_recipient2, _currency * 100),
-                }
-            );
-            // 스테이킹 주소에 송금하려고 하면 실패합니다.
-            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
-            {
-                PreviousState = baseState
-                    .SetState(
-                        StakeState.DeriveAddress(_recipient),
-                        new StakeState(StakeState.DeriveAddress(_recipient), 0).SerializeV2()),
-                Signer = _sender,
-                Rehearsal = false,
-                BlockIndex = 1,
-            }));
-            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
-            {
-                PreviousState = baseState
-                    .SetState(
-                        StakeState.DeriveAddress(_recipient),
-                        new StakeStateV2(
-                            new Contract(
-                                "StakeRegularFixedRewardSheet_V1",
-                                "StakeRegularRewardSheet_V1",
-                                50400,
-                                201600),
-                            0).Serialize()),
-                Signer = _sender,
-                Rehearsal = false,
-                BlockIndex = 1,
-            }));
-            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
-            {
-                PreviousState = baseState
-                    .SetState(
-                        StakeState.DeriveAddress(_recipient),
-                        new MonsterCollectionState(
-                                MonsterCollectionState.DeriveAddress(_sender, 0),
-                                1,
-                                0)
-                            .Serialize()),
-                Signer = _sender,
-                Rehearsal = false,
-                BlockIndex = 1,
-            }));
-            var monsterCollectionRewardSheet = new MonsterCollectionRewardSheet();
-            monsterCollectionRewardSheet.Set(
-                "level,required_gold,reward_id\n1,500,1\n2,1800,2\n3,7200,3\n4,54000,4\n5,270000,5\n6,480000,6\n7,1500000,7\n");
-            Assert.Throws<ArgumentException>("recipient", () => action.Execute(new ActionContext()
-            {
-                PreviousState = baseState
-                    .SetState(
-                        StakeState.DeriveAddress(_recipient),
-                        new MonsterCollectionState0(
-                                MonsterCollectionState.DeriveAddress(_sender, 0),
-                                1,
-                                0,
-                                monsterCollectionRewardSheet)
-                            .Serialize()),
-                Signer = _sender,
-                Rehearsal = false,
-                BlockIndex = 1,
             }));
         }
     }

@@ -1,21 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Abstractions;
-using Lib9c.Renderers;
 using Libplanet.Action;
 using Libplanet.Action.Loader;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Blockchain.Renderers;
 using Nekoyume.Action;
 using Nekoyume.Action.Loader;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
-using Serilog;
-using Serilog.Events;
 using Lib9c;
 using Libplanet.Crypto;
 using Libplanet.Types.Blocks;
@@ -41,30 +36,10 @@ namespace Nekoyume.Blockchain.Policy
 
         private readonly IActionLoader _actionLoader;
 
-        // FIXME: Why does BlockPolicySource have renderers?
-        public readonly ActionRenderer ActionRenderer = new ActionRenderer();
-
-        // FIXME: Why does BlockPolicySource have renderers?
-        public readonly BlockRenderer BlockRenderer = new BlockRenderer();
-
-        // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedActionRenderer LoggedActionRenderer;
-
-        // FIXME: Why does BlockPolicySource have renderers?
-        public readonly LoggedRenderer LoggedBlockRenderer;
-
         public BlockPolicySource(
-            ILogger logger,
-            LogEventLevel logEventLevel = LogEventLevel.Verbose,
-            IActionLoader actionLoader = null)
+            IActionLoader? actionLoader = null)
         {
-            _actionLoader ??= new NCActionLoader();
-
-            LoggedActionRenderer =
-                new LoggedActionRenderer(ActionRenderer, logger, logEventLevel);
-
-            LoggedBlockRenderer =
-                new LoggedRenderer(BlockRenderer, logger, logEventLevel);
+            _actionLoader = actionLoader ?? new NCActionLoader();
         }
 
         /// <summary>
@@ -174,9 +149,6 @@ namespace Nekoyume.Blockchain.Policy
                 getMaxTransactionsPerSignerPerBlock: maxTransactionsPerSignerPerBlockPolicy.Getter);
 #endif
         }
-
-        public IEnumerable<IRenderer> GetRenderers() =>
-            new IRenderer[] { BlockRenderer, LoggedActionRenderer };
 
         internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain blockChain,
