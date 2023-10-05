@@ -246,7 +246,8 @@ namespace Nekoyume.Action
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
 
-            var rewardItems = GetRewardItems(context.Random, playCount, stageRow, materialItemSheet);
+            var random = context.GetRandom();
+            var rewardItems = GetRewardItems(random, playCount, stageRow, materialItemSheet);
             avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();

@@ -182,7 +182,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             const long expiredBlockIndex = Sell6.ExpiredBlockIndex + 1;
@@ -513,7 +513,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             // Check AvatarState and Inventory
@@ -655,7 +655,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -685,7 +685,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 11,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

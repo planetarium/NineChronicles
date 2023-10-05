@@ -252,6 +252,7 @@ namespace Nekoyume.Action
                 );
             }
 
+            var random = context.GetRandom();
             var summonResult = SimulateSummon(
                 addressesHex, agentState,
                 sheets.GetSheet<EquipmentItemRecipeSheet>(),
@@ -260,7 +261,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 sheets.GetSheet<SkillSheet>(),
                 summonRow, SummonCount,
-                context.Random, context.BlockIndex
+                random, context.BlockIndex
             );
 
             foreach (var (recipeId, equipment) in summonResult)

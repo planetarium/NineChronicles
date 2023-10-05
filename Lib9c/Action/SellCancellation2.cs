@@ -116,7 +116,8 @@ namespace Nekoyume.Action
                 shopItem = outUnregisteredItem,
                 itemUsable = outUnregisteredItem.ItemUsable
             };
-            var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+            var random = ctx.GetRandom();
+            var mail = new SellCancelMail(result, ctx.BlockIndex, random.GenerateRandomGuid(), ctx.BlockIndex);
             result.id = mail.id;
 
             avatarState.Update3(mail);

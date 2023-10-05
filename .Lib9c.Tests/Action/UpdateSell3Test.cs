@@ -231,7 +231,7 @@
             {
                 BlockIndex = 101,
                 PreviousState = prevState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });

@@ -184,8 +184,9 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var characterSheet = states.GetSheet<CharacterSheet>();
+            var random = ctx.GetRandom();
             var simulator = new StageSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 foods,
                 worldId,

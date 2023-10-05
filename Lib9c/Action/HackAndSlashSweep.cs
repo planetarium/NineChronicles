@@ -314,8 +314,9 @@ namespace Nekoyume.Action
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
 
+            var random = context.GetRandom();
             var rewardItems = HackAndSlashSweep6.GetRewardItems(
-                context.Random,
+                random,
                 playCount,
                 stageRow,
                 materialItemSheet);

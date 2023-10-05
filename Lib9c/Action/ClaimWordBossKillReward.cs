@@ -60,6 +60,7 @@ namespace Nekoyume.Action
             var rewardRecord = new WorldBossKillRewardRecord((List) states.GetState(worldBossKillRewardRecordAddress));
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             var worldBossState = new WorldBossState((List) states.GetState(worldBossAddress));
+            var random = context.GetRandom();
             return states.SetWorldBossKillReward(
                 context,
                 worldBossKillRewardRecordAddress,
@@ -69,7 +70,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<RuneWeightSheet>(),
                 sheets.GetSheet<WorldBossKillRewardSheet>(),
                 sheets.GetSheet<RuneSheet>(),
-                context.Random,
+                random,
                 AvatarAddress,
                 context.Signer
             );

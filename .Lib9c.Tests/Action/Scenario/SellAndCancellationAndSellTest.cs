@@ -113,7 +113,7 @@ namespace Lib9c.Tests.Action.Scenario
                     Signer = _agentAddress,
                     PreviousState = nextStates,
                     BlockIndex = sellBlockIndex,
-                    Random = random,
+                    RandomSeed = random.Seed,
                     Rehearsal = false,
                 });
                 // TODO: Check state.. inventory, orders..
@@ -141,7 +141,7 @@ namespace Lib9c.Tests.Action.Scenario
                     Signer = _agentAddress,
                     PreviousState = nextStates,
                     BlockIndex = sellBlockIndex + 1L,
-                    Random = random,
+                    RandomSeed = random.Seed,
                     Rehearsal = false,
                 });
                 // TODO: Check state.. inventory, orders..
@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action.Scenario
                 Signer = _agentAddress,
                 PreviousState = nextStates,
                 BlockIndex = sellBlockIndex + 2L,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
             });
 

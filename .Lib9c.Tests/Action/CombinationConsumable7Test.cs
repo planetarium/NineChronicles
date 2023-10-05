@@ -132,7 +132,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);

@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousState = _state,
                 Signer = signer,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = roundData.StartBlockIndex,
             });
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousState = _state,
                 Signer = signer,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

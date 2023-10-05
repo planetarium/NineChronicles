@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     }));
 
             var agent1CouponWallet = state.GetCouponWallet(CouponsFixture.AgentAddress1);
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = true,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
 
             Assert.Equal(
@@ -184,7 +184,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             Assert.Equal(
                 expected.SerializeV2(),
@@ -200,7 +200,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             Assert.Equal(
                 expected.SerializeV2(),
@@ -219,7 +219,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             Assert.Null(
                 state.GetAvatarStateV2(
@@ -239,7 +239,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             Assert.Equal(
                 expected.SerializeV2(),
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             var actual = state.GetAvatarStateV2(agent1Avatar0Address);
             Assert.Equal(
@@ -279,7 +279,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             actual = state.GetAvatarStateV2(agent1Avatar1Address);
             Assert.Equal(0, state.GetAvatarStateV2(agent1Avatar1Address).inventory.Items.Count);
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             actual = state.GetAvatarStateV2(agent1Avatar1Address);
             Assert.Equal(
@@ -316,7 +316,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress2,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             actual = state.GetAvatarStateV2(agent2Avatar0Address);
             Assert.Equal(
@@ -338,7 +338,7 @@ namespace Lib9c.Tests.Action.Coupons
                         PreviousState = state,
                         Rehearsal = false,
                         Signer = CouponsFixture.AgentAddress1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
             actual = state.GetAvatarStateV2(agent1Avatar0Address);
             var aggregateRewardSet = CouponsFixture.RewardSet1.Aggregate(

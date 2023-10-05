@@ -44,7 +44,7 @@ namespace Lib9c.Renderers
                 TxId = context.TxId,
                 OutputState = nextState,
                 PreviousState = context.PreviousState,
-                RandomSeed = context.Random.Seed
+                RandomSeed = context.RandomSeed
             });
 
         public void RenderActionError(IValue action, ICommittedActionContext context, Exception exception)
@@ -61,7 +61,7 @@ namespace Lib9c.Renderers
                 OutputState = context.PreviousState,
                 Exception = exception,
                 PreviousState = context.PreviousState,
-                RandomSeed = context.Random.Seed
+                RandomSeed = context.RandomSeed
             });
         }
 

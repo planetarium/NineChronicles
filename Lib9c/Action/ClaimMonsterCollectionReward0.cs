@@ -75,7 +75,8 @@ namespace Nekoyume.Action
                 }
 
                 List<MonsterCollectionRewardSheet.RewardInfo> rewards = monsterCollectionState.RewardLevelMap[level];
-                Guid id = context.Random.GenerateRandomGuid();
+                var random = context.GetRandom();
+                Guid id = random.GenerateRandomGuid();
                 MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
                 MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
                 avatarState.Update(mail);
@@ -84,7 +85,7 @@ namespace Nekoyume.Action
                     var row = itemSheet[rewardInfo.ItemId];
                     var item = row is MaterialItemSheet.Row materialRow
                         ? ItemFactory.CreateTradableMaterial(materialRow)
-                        : ItemFactory.CreateItem(row, context.Random);
+                        : ItemFactory.CreateItem(row, random);
                     avatarState.inventory.AddItem2(item, rewardInfo.Quantity);
                 }
                 monsterCollectionState.UpdateRewardMap(level, result, context.BlockIndex);

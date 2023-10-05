@@ -19,7 +19,7 @@ public class ActionContext : IActionContext
         int blockProtocolVersion,
         bool rehearsal,
         AccountStateDelta previousState,
-        IRandom random,
+        int randomSeed,
         HashDigest<SHA256>? previousStateRootHash,
         bool blockAction)
     {
@@ -31,7 +31,7 @@ public class ActionContext : IActionContext
         BlockProtocolVersion = blockProtocolVersion;
         Rehearsal = rehearsal;
         PreviousState = previousState;
-        Random = random;
+        RandomSeed = randomSeed;
         PreviousStateRootHash = previousStateRootHash;
         BlockAction = blockAction;
     }
@@ -45,34 +45,15 @@ public class ActionContext : IActionContext
     public bool Rehearsal { get; init; }
     public AccountStateDelta PreviousState { get; init; }
     IAccount IActionContext.PreviousState => PreviousState;
-    public IRandom Random { get; init; }
+    public int RandomSeed { get; init; }
     public HashDigest<SHA256>? PreviousStateRootHash { get; init; }
     public bool BlockAction { get; init; }
 
-    public void PutLog(string log)
-    {
-        throw new NotImplementedException();
-    }
+    public IRandom GetRandom() => new Random(RandomSeed);
 
     public void UseGas(long gas)
     {
         throw new NotImplementedException();
-    }
-
-    public IActionContext GetUnconsumedContext()
-    {
-        return new ActionContext(
-            GenesisHash,
-            Signer,
-            TxId,
-            Miner,
-            BlockIndex,
-            BlockProtocolVersion,
-            Rehearsal,
-            PreviousState,
-            new Random(Random.Seed),
-            PreviousStateRootHash,
-            BlockAction);
     }
 
     public long GasUsed() => 0;

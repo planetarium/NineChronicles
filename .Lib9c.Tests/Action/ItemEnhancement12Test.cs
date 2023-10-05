@@ -276,7 +276,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);

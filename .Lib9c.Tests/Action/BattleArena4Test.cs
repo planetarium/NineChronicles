@@ -212,7 +212,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = signer,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });
@@ -307,7 +307,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });
@@ -415,7 +415,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -437,7 +437,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -459,7 +459,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent4Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -482,7 +482,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -504,7 +504,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 4480001,
             }));
         }
@@ -527,7 +527,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -571,7 +571,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 BlockIndex = 1,
             }));
         }
@@ -621,7 +621,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -672,7 +672,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -720,7 +720,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -779,7 +779,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -838,7 +838,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.Throws<CoolDownBlockException>(() => action.Execute(new ActionContext()
@@ -846,7 +846,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex + 1,
                 PreviousState = newState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -926,7 +926,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _state,
                 Signer = _agent1Address,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

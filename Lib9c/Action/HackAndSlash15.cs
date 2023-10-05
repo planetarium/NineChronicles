@@ -86,10 +86,11 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
+            var random = context.GetRandom();
             return Execute(context.PreviousState,
                 context.Signer,
                 context.BlockIndex,
-                context.Random);
+                random);
         }
 
         public IAccount Execute(IAccount states,

@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                     Signer = agentAddress,
                     PreviousState = state,
-                    Random = new TestRandom(randomSeed),
+                    RandomSeed = randomSeed,
                 });
 
                 var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[10001]);
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                     Signer = default,
                     PreviousState = state,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
             }
         }

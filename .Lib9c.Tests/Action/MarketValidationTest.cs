@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = AgentAddress,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             };
             foreach (var validateMember in validateMembers)
             {
@@ -231,7 +231,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = AgentAddress,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             };
             foreach (var validateMember in validateMembers)
             {

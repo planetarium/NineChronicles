@@ -149,7 +149,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
 
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
@@ -171,7 +171,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = stateV2.GetGameConfigState().RequiredAppraiseBlock,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
 
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);

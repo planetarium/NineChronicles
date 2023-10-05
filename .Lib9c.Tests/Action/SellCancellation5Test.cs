@@ -158,7 +158,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 PreviousState = prevState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = default,
                 })
             );
@@ -256,7 +256,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousState = prevState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _agentAddress,
                 })
             );
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousState = prevState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _agentAddress,
                 })
             );
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousState = prevState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _agentAddress,
                 })
             );

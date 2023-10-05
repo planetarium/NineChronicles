@@ -131,7 +131,7 @@
                     {
                         BlockIndex = 0,
                         PreviousState = previousStates,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });
@@ -161,7 +161,7 @@
                     {
                         BlockIndex = 0,
                         PreviousState = previousStates,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });

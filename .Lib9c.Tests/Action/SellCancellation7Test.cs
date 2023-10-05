@@ -227,7 +227,7 @@
             {
                 BlockIndex = 101,
                 PreviousState = prevState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -280,7 +280,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = default,
                 })
             );
@@ -385,7 +385,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = prevState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _agentAddress,
                 })
             );
@@ -446,7 +446,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = prevState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _agentAddress,
                 })
             );

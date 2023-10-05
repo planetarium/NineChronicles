@@ -304,11 +304,12 @@ namespace Nekoyume.Action
             var preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize());
 
             // Equipment level up & Update
-            var equipmentResult = GetEnhancementResult(row, ctx.Random);
+            var random = ctx.GetRandom();
+            var equipmentResult = GetEnhancementResult(row, random);
             FungibleAssetValue crystal = 0 * CrystalCalculator.CRYSTAL;
             if (equipmentResult != EnhancementResult.Fail)
             {
-                enhancementEquipment.LevelUp(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
+                enhancementEquipment.LevelUp(random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
             else
             {
@@ -361,7 +362,7 @@ namespace Nekoyume.Action
                 CRYSTAL = crystal,
             };
 
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, random.GenerateRandomGuid(), requiredBlockIndex);
             result.id = mail.id;
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);

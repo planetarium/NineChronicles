@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 PreviousState = new MockStateDelta(),
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
@@ -191,7 +191,7 @@ rune_skill_slot_unlock_cost,500";
             {
                 BlockIndex = blockIndex,
                 PreviousState = previousStates,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });

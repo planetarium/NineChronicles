@@ -168,7 +168,7 @@
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -258,7 +258,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -409,7 +409,7 @@
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
             });
         }
@@ -494,7 +494,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, RandomSeed = 0, Rehearsal = false,
                 });
             });
         }
@@ -585,7 +585,7 @@
                 PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             var spawnPlayer = action.Result.FirstOrDefault(e => e is SpawnPlayer);

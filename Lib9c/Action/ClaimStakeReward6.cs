@@ -374,6 +374,7 @@ namespace Nekoyume.Action
             List<StakeRegularRewardSheet.RewardInfo> regularReward)
         {
             // Regular Reward
+            var random = context.GetRandom();
             foreach (var reward in regularReward)
             {
                 var rateFav = FungibleAssetValue.Parse(
@@ -397,7 +398,7 @@ namespace Nekoyume.Action
                         var itemRow = itemSheet[reward.ItemId];
                         var item = itemRow is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateItem(itemRow, context.Random);
+                            : ItemFactory.CreateItem(itemRow, random);
                         var majorUnit = (int)rewardQuantityForSingleStep * itemRewardStep;
                         if (majorUnit < 1)
                         {
@@ -468,7 +469,7 @@ namespace Nekoyume.Action
                 var itemRow = itemSheet[reward.ItemId];
                 var item = itemRow is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(itemRow, context.Random);
+                    : ItemFactory.CreateItem(itemRow, random);
                 avatarState.inventory.AddItem(item, reward.Count * itemRewardStep);
             }
 

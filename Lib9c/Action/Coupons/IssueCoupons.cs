@@ -42,7 +42,7 @@ namespace Nekoyume.Action.Coupons
             CheckPermission(context);
 
             var wallet = states.GetCouponWallet(Recipient);
-            var random = context.Random;
+            var random = context.GetRandom();
             var idBytes = new byte[16];
             var orderedRewards = Rewards.OrderBy(kv => kv.Key, default(RewardSet.Comparer));
             foreach (var (rewardSet, quantity) in orderedRewards)

@@ -334,7 +334,7 @@
             {
                 BlockIndex = 1,
                 PreviousState = previousStates,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
             });
@@ -408,7 +408,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = new MockStateDelta(),
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -427,7 +427,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = new MockStateDelta(),
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -456,7 +456,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -474,7 +474,7 @@
             {
                 BlockIndex = 0,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _buyerAgentAddress,
             });
 
@@ -544,7 +544,7 @@
             {
                 BlockIndex = 0,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _buyerAgentAddress,
             });
 
@@ -598,7 +598,7 @@
             {
                 BlockIndex = 11,
                 PreviousState = previousStates,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _buyerAgentAddress,
             });
 

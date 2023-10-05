@@ -178,13 +178,14 @@ namespace Lib9c.Tests.Action.Summon
             if (expectedExc == null)
             {
                 // Success
-                var nextState = action.Execute(new ActionContext
+                var ctx = new ActionContext
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = random,
-                });
+                };
+                ctx.SetRandom(random);
+                var nextState = action.Execute(ctx);
 
                 var equipments = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
                     .ToList();
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action.Summon
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
                 });
             }

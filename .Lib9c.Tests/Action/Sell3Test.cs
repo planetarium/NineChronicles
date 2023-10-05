@@ -128,14 +128,15 @@
                     sellerAvatarAddress = _avatarAddress,
                 };
 
-                var nextState = sellAction.Execute(new ActionContext
+                var ctx = new ActionContext
                 {
                     BlockIndex = 0,
                     PreviousState = previousStates,
                     Rehearsal = false,
                     Signer = _agentAddress,
-                    Random = random,
-                });
+                };
+                ctx.SetRandom(random);
+                var nextState = sellAction.Execute(ctx);
 
                 productCount++;
 
@@ -241,7 +242,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -269,7 +270,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

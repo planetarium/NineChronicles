@@ -95,7 +95,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             // Check target avatar & agent

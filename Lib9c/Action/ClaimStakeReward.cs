@@ -126,12 +126,13 @@ namespace Nekoyume.Action
                     out _);
 
             // Fixed Reward
+            var random = context.GetRandom();
             foreach (var reward in stakeRegularFixedRewardSheet[stakingLevel].Rewards)
             {
                 var itemRow = itemSheet[reward.ItemId];
                 var item = itemRow is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
-                    : ItemFactory.CreateItem(itemRow, context.Random);
+                    : ItemFactory.CreateItem(itemRow, random);
                 avatarState.inventory.AddItem(item, reward.Count * rewardSteps);
             }
 
@@ -160,7 +161,7 @@ namespace Nekoyume.Action
                         var itemRow = itemSheet[reward.ItemId];
                         var item = itemRow is MaterialItemSheet.Row materialRow
                             ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateItem(itemRow, context.Random);
+                            : ItemFactory.CreateItem(itemRow, random);
                         avatarState.inventory.AddItem(item, majorUnit);
                         break;
                     }
