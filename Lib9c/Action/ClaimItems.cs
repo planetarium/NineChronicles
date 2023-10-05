@@ -57,6 +57,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
 
             var states = context.PreviousState;
+            var random = context.GetRandom();
             var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
 
             foreach (var (avatarAddress, fungibleAssetValues) in ClaimData)
@@ -94,7 +95,7 @@ namespace Nekoyume.Action
                         MaterialItemSheet.Row materialRow => parsedTicker[1] == "T"
                             ? ItemFactory.CreateTradableMaterial(materialRow)
                             : ItemFactory.CreateMaterial(materialRow),
-                        var itemRow => ItemFactory.CreateItem(itemRow, context.Random)
+                        var itemRow => ItemFactory.CreateItem(itemRow, random)
                     };
 
                     inventory.AddItem(item, (int)fungibleAssetValue.RawValue);

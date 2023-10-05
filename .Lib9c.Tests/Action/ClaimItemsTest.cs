@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _signerAddress,
                     BlockIndex = 100,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
         }
 
@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _signerAddress,
                     BlockIndex = 100,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
         }
 
@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = state,
                 Signer = _signerAddress,
                 BlockIndex = 0,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             var inventory = states.GetInventory(recipientAvatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = state,
                 Signer = _signerAddress,
                 BlockIndex = 0,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.Equal(states.GetBalance(_signerAddress, _currencies[0]), _currencies[0] * 3);
