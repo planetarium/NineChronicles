@@ -113,7 +113,8 @@ namespace Nekoyume.Blockchain
 
         public static StakeStateV2? GetStakeStateV2(Address address, HashDigest<SHA256> hash)
         {
-            IValue serialized = Game.Game.instance.Agent.GetState(address, hash);
+            var stakeStateAddr = StakeStateV2.DeriveAddress(address);
+            IValue serialized = Game.Game.instance.Agent.GetState(stakeStateAddr, hash);
             if (serialized is Null)
             {
                 Log.Warning("No stake state ({0})", address.ToHex());
