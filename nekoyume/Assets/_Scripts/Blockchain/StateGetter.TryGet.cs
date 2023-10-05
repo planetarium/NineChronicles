@@ -106,22 +106,5 @@ namespace Nekoyume.Blockchain
                 return false;
             }
         }
-
-        public static bool GetStakeStateV2(
-            Address address,
-            HashDigest<SHA256> hash,
-            out StakeStateV2? stakeStateV2)
-        {
-            try
-            {
-                stakeStateV2 = GetStakeStateV2(address, hash);
-                return true;
-            }
-            catch (Exception)
-            {
-                stakeStateV2 = null;
-                return false;
-            }
-        }
     }
 }
