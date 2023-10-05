@@ -1125,8 +1125,8 @@ UI_ALERT_DELETE_APP,"Please keep in mind that,
 deleting the app or clearing your data will result in permanent account loss.",,,,,,,,,,
 UI_MS_BUT_LIMIT_MESSAGE_DAY,Can be purchased 3 times per day,,,,,,,,,,
 UI_MS_BUT_LIMIT_MESSAGE_WEEK,Can be purchased 3 times per week,,,,,,,,,,
-UI_MS_WITHDRAWN_MESSAGE,"The product is considered used immediately after purchase and cannot be withdrawn.
-(Cancellation is possible when payment is made in the name of a minor without the consent of a legal representative)",,,,,,,,,,
+UI_MS_WITHDRAWN_MESSAGE,"By purchasing this product, you acknowledge and agree to the terms and conditions.
+This item is non-refundable due to its immediate access upon purchase. You may request a refund within 15 days of purchase only if the item has not been consumed.",,,,,,,,,,
 UI_RETRYING_PLEDGE,Retrying pledge...,,,,,,,,,,
 UI_INVALID_CREATED_PASSWORD,"The entered password is not in the conditions
 Please use a stronger password.",,,,,,,,,,
@@ -1167,8 +1167,20 @@ UI_DRAW_10,Summon 11,소환 11,Invocar 11,召喚11,Invocar 11,เรียก 11
 UI_DRAW_AGAIN_FORMAT,Summon {0},소환 {0},Invocar {0},召喚{0},Invocar {0},เรียก {0},Summon {0},Призыв {0},召唤{0},召喚{0},Tawag {0}
 UI_SUMMON_DETAIL_DESC,Select a list to see a preview.,미리보기를 보려면 목록을 선택합니다.,Selecione uma lista para ver uma visualização.,リストを選択してプレビューを表示します。,Seleccione una lista para ver una vista previa.,เลือกรายการเพื่อดูตัวอย่าง,Pilih daftar untuk melihat pratinjau.,"Выберите список, чтобы увидеть предварительный просмотр.",选择一个列表以查看预览。,選擇一個列表以查看預覽。,Pumili ng isang listahan upang makita ang isang preview.
 UI_SUMMON_DETAIL_LIST_TITLE,Probability of appearance,출현확률,Probabilidade de aparência,外観の確率,Probabilidad de apariencia,ความน่าจะเป็นของลักษณะที่ปรากฏ,Probabilitas penampilan,Вероятность внешнего вида,外观的概率,外觀的概率,Posibilidad ng hitsura
-SUMMON_NAME_10001,Coming Soon,커밍순,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon,Coming Soon
+SUMMON_NAME_10001,Nimble Aura,날렵한 아우라,Aura ágil,機敏なオーラ,Aura ágil,ออร่าว่องไว,Aura gesit,Протекающая аура,灵活的光环,靈活的光環,Nimble aura
 SUMMON_NAME_10002,Beast Aura,야수 아우라,Aura de besta,ビーストオーラ,Aura de bestia,รัศมีสัตว์ร้าย,Aura binatang buas,Зверь Аура,野兽光环,野獸光環,Hayop aura
-UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Não vai demorar muito.,それほど長くはかかりません。,No pasará demasiado tiempo.,มันจะไม่นานเกินไป,Itu tidak akan terlalu lama.,Это не будет слишком долго.,不会太长。,不會太長。,Hindi ito masyadong mahaba.
-UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,
 UI_ACCEL_UNLOCK_CONDITION,Clear stage 5 first.,스테이지5 클리어 시 오픈,Estágio 5 claro primeiro.,最初にステージ5をクリアします。,Etapa transparente 5 primero.,Clear Stage 5 ก่อน,Bersihkan tahap 5 pertama.,Четкая стадия 5 первой.,首先清除阶段5。,首先清除階段5。,I -clear ang Stage 5.
+UI_SUMMON_MATERIAL_NOT_ENOUGH,You lack the required material for summon. Would you like to proceed to purchase the required material?,소환에 필요한 재료가 부족합니다. 획득하러 이동하시겠습니까?,Você não tem o material necessário para convocar. Você gostaria de prosseguir para comprar o material necessário?,召喚に必要な資料が不足しています。必要な材料の購入に進みますか？,Te falta el material requerido para la invocación. ¿Le gustaría proceder a comprar el material requerido?,คุณขาดวัสดุที่จำเป็นสำหรับการอัญเชิญ คุณต้องการดำเนินการซื้อวัสดุที่จำเป็นต่อไปหรือไม่?,Anda tidak memiliki materi yang diperlukan untuk dipanggil. Apakah Anda ingin melanjutkan untuk membeli materi yang diperlukan?,Вам не хватает необходимого материала для вызова. Хотите приступить к покупке необходимого материала?,您缺少召唤所需的材料。您想继续购买所需的材料吗？,您缺少召喚所需的材料。您想繼續購買所需的材料嗎？,Kulang ka ng kinakailangang materyal para sa pagtawag. Nais mo bang magpatuloy upang bilhin ang kinakailangang materyal?
+UI_OBSOLETE_DESC,It won't be too long.,,,,,,,,,,
+MOBILE_SHOP_PRODUCT_DailyLimit,{0} per day,매일 {0} 번 구매 가능,{0} por dia,,,,,,每天限购{0}次,,
+MOBILE_SHOP_PRODUCT_WeeklyLimit,{0} per week,매 주 {0}번 구매 가능,{0} por semana,,,,,,每周限购{0}次,,
+MOBILE_SHOP_PRODUCT_AccountLimit,{0} per accout,계정 당 {0}번 구매 가능,{0} com uma conta,,,,,,每个账户限购{0}次,,
+UI_PATROL_REWARD,Patrol Reward,정찰 보상,Recompensa da patrulha,パトロール報酬,Recompensa de patrulla,รางวัลลาดตระเวน,Hadiah patroli,Награда патруля,巡逻奖励,巡邏獎勵,Gantimpala ng Patrol
+UI_PATROL_REWARD_DESC,"THE HIGHER YOUR LEVEL, THE HIGHER YOUR REWARDS!",레벨이 높을수록 높은 보상을 획득합니다! ,"Quanto maior o seu nível, maior será a sua recompensa!",レベルが高いほど、報酬が高くなります！,"¡Cuanto más alto sea su nivel, más altas serán sus recompensas!",ยิ่งระดับของคุณสูงขึ้นเท่าไหร่รางวัลของคุณก็ยิ่งสูงขึ้น!,"Semakin tinggi level Anda, semakin tinggi imbalan Anda!","Чем выше ваш уровень, тем выше ваши награды!",您的水平越高，您的奖励就越高！,您的水平越高，您的獎勵就越高！,"Ang mas mataas na antas ng iyong antas, mas mataas ang iyong mga gantimpala!"
+UI_PATROL_TIME_FORMAT,Patrol Time <Style=Clock> {0},정찰 시간 <Style=Clock> {0},Tempo de patrulha <Style=Clock> {0},パトロール時間 <Style=Clock> {0},Tiempo de patrulla <Style=Clock> {0},เวลาลาดตระเวน <Style=Clock> {0},Waktu patroli <Style=Clock> {0},Время патруля <Style=Clock> {0},巡逻时间 <Style=Clock> {0},巡邏時間 <Style=Clock> {0},Patrol Time <Style=Clock> {0}
+UI_GET_REWARD,Get Reward,보상 획득,Obtenha recompensa,報酬を得てください,Obtener recompensa,ได้รับรางวัล,Mendapat hadiah,Получить вознаграждение,得到奖励,得到獎勵,Kumuha ng gantimpala
+UI_UNLOCK_BONUS,Unlock Bonus,보너스 열기,Desbloquear bônus,ボーナスのロックを解除します,Desbloquear,ปลดล็อกโบนัส,Buka bonus,Разблокировать бонус,解锁奖金,解鎖獎金,I -unlock ang bonus
+UI_PATROL_BONUS,Bonus,보너스,Bônus,ボーナス,Prima,โบนัส,Bonus,Бонус,奖金,獎金,Bonus
+UI_PATROL_REWARD_NONE,We defeated the monsters that invaded the village!,마을에 침입한 괴물들을 물리쳤습니다!,Derrotamos os monstros que invadiram a vila!,私たちは村に侵入したモンスターを倒しました！,¡Derrotó a los monstruos que invadieron el pueblo!,เราเอาชนะสัตว์ประหลาดที่บุกเข้ามาในหมู่บ้าน!,Kami mengalahkan monster yang menyerbu desa!,"Мы победили монстров, которые вторглись в деревню!",我们击败了入侵村庄的怪物！,我們擊敗了入侵村莊的怪物！,Natalo namin ang mga monsters na sumalakay sa nayon!
+UI_PATROLLING,Patrolling...,정찰중..,Patrulhando ...,パトロール...,Patrolling ...,ลาดตระเวน ...,Ronda...,Патрулирование ...,巡逻...,巡邏...,Patrolling ...
+UI_CLAIMING_REWARD,Claiming Reward...,보상 청구 중..,Reivindicação de recompensa ...,報酬を主張...,Reclamando recompensa ...,การเรียกร้องรางวัล ...,Mengklaim hadiah ...,Заявление о награде ...,要求奖励...,要求獎勵...,Nag -aangkin ng gantimpala ...

@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Module.Lobby
         Staking,
         WorldBoss,
         Dcc,
+        PatrolReward,
     }
 
     public class MainMenu : MonoBehaviour
@@ -76,6 +77,7 @@ namespace Nekoyume.UI.Module.Lobby
                 // always allow
                 case MenuType.Staking:
                 case MenuType.Dcc:
+                case MenuType.PatrolReward:
                     _requireStage = 0;
                     break;
                 default:
