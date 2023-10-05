@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine;
 
 namespace Nekoyume
@@ -20,7 +22,14 @@ namespace Nekoyume
             }
 
             var agentAddr = game.Agent.Address;
-            var products = await iapServiceManager.GetProductsAsync(agentAddr);
+
+            var categorys = await iapServiceManager.GetProductsAsync(agentAddr);
+            List<ProductSchema> products = new List<ProductSchema>();
+            foreach (var catagory in categorys)
+            {
+                products.AddRange(catagory.ProductList);
+            }
+
             if (products is null)
             {
                 Debug.Log("products is null.");
@@ -43,7 +52,7 @@ namespace Nekoyume
                     if (!mail.FungibleAssetValues.All(mFavTup =>
                             p.FavList.Any(prodFav =>
                                 prodFav.Ticker.ToString() == mFavTup.value.Currency.Ticker &&
-                                prodFav.Amount == mFavTup.value.MajorUnit)))
+                                prodFav.Amount == (decimal)mFavTup.value.MajorUnit)))
                     {
                         return false;
                     }
