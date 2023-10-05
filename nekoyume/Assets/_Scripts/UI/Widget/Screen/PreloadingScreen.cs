@@ -1,19 +1,19 @@
-using Libplanet;
 using Nekoyume.Game.Factory;
-using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
-using Nekoyume.UI.Module.WorldBoss;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
-    public class PreloadingScreen : LoadingScreen
+    public class PreloadingScreen : ScreenWidget
     {
+        [SerializeField]
+        private LoadingIndicator indicator;
+
         [SerializeField]
         private VideoPlayer videoPlayer;
 
@@ -34,11 +34,9 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            if (!string.IsNullOrEmpty(Message))
-            {
-                indicator.Show(Message);
-            }
 
+            var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            indicator.Show(message);
             videoPlayer.Play();
             videoPlayer.loopPointReached += OnShowVideoEnded;
         }
