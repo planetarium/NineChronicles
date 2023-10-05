@@ -138,9 +138,9 @@ namespace Nekoyume.Blockchain
                             code = "27";
                         }
                     }
-                    else
+                    else if (ate.ActionId.HasValue)
                     {
-                        if (Game.Game.instance.Agent.TryGetTxId(ate.ActionId, out txId))
+                        if (Game.Game.instance.Agent.TryGetTxId(ate.ActionId.Value, out txId))
                         {
                             errorMsg += $" Transaction for action is still staged. (txId: {txId})";
                             code = "26";
