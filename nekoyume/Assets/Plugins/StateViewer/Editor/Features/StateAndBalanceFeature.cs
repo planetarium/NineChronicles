@@ -15,6 +15,7 @@ using StateViewer.Runtime;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Boolean = Bencodex.Types.Boolean;
 
 namespace StateViewer.Editor.Features
@@ -89,18 +90,19 @@ namespace StateViewer.Editor.Features
         [SerializeField]
         private string crystalValue;
 
+        [SerializeField]
+        private string itemTokenTicker;
+
+        [SerializeField]
+        private string itemTokenValue;
+
         private bool _loadingSomething;
 
         public StateAndBalanceFeature(StateViewerWindow editorWindow)
         {
             _editorWindow = editorWindow;
             sourceFrom = SourceFrom.GetStateFromPlayModeAgent;
-            encodedBencodexValue = string.Empty;
-            searchingAddrStr = string.Empty;
-            blockHashOrIndex = string.Empty;
-            stateTreeViewScrollPosition = Vector2.zero;
-            ncgValue = string.Empty;
-            crystalValue = string.Empty;
+            ClearAll();
 
             stateTreeView = new StateTreeView(
                 tableSheets: editorWindow.GetTableSheets()!,
@@ -116,10 +118,12 @@ namespace StateViewer.Editor.Features
             encodedBencodexValue = string.Empty;
             searchingAddrStr = string.Empty;
             blockHashOrIndex = string.Empty;
-            stateTreeView.ClearData();
+            stateTreeView?.ClearData();
             stateTreeViewScrollPosition = Vector2.zero;
             ncgValue = string.Empty;
             crystalValue = string.Empty;
+            itemTokenTicker = "Item_T_400000"; //string.Empty;
+            itemTokenValue = "100"; //string.Empty;
         }
 
         public void OnGUI()
@@ -376,6 +380,28 @@ namespace StateViewer.Editor.Features
 
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
+
+            // Item Token
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.BeginDisabledGroup(!StateViewerWindow.IsSavable);
+            itemTokenTicker = EditorGUILayout.TextField("Item Token Ticker", itemTokenTicker);
+            itemTokenValue = EditorGUILayout.TextField("Item Token Value", itemTokenValue);
+            if (GUILayout.Button("Save", GUILayout.MaxWidth(50f)))
+            {
+                var currency = Currency.Uncapped(
+                    ticker: itemTokenTicker,
+                    decimalPlaces: 0,
+                    minters: null);
+                var fav = FungibleAssetValue.Parse(currency, itemTokenValue);
+                var balanceList = new List<(Address addr, FungibleAssetValue fav)>
+                {
+                    (new Address(searchingAddrStr), fav),
+                };
+                ActionManager.Instance?.ManipulateState(null, balanceList);
+            }
+
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
         }
 
         private async UniTaskVoid GetStateAndUpdateStateTreeViewAsync(
@@ -402,11 +428,18 @@ namespace StateViewer.Editor.Features
                 IValue? state;
                 FungibleAssetValue? ncgFav;
                 FungibleAssetValue? crystalFav;
+                FungibleAssetValue? itemTokenFav;
                 if (string.IsNullOrEmpty(blockHashOrIndex))
                 {
                     (addr, state) = await stateProxy.GetStateAsync(addrStr);
                     (_, ncgFav) = stateProxy.GetBalance(addr!.Value, ncg.Value);
                     (_, crystalFav) = stateProxy.GetBalance(addr.Value, Currencies.Crystal);
+                    (_, itemTokenFav) = stateProxy.GetBalance(
+                        addr.Value,
+                        Currency.Uncapped(
+                            ticker: itemTokenTicker,
+                            decimalPlaces: 0,
+                            minters: null));
                 }
                 else if (long.TryParse(blockHashOrIndex, out var blockIndex))
                 {
@@ -418,6 +451,13 @@ namespace StateViewer.Editor.Features
                     (_, crystalFav) = await stateProxy.GetBalanceAsync(
                         addr.Value,
                         Currencies.Crystal,
+                        blockIndex);
+                    (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
+                        addr.Value,
+                        Currency.Uncapped(
+                            ticker: itemTokenTicker,
+                            decimalPlaces: 0,
+                            minters: null),
                         blockIndex);
                 }
                 else
@@ -432,11 +472,19 @@ namespace StateViewer.Editor.Features
                         addr.Value,
                         Currencies.Crystal,
                         blockHash);
+                    (_, itemTokenFav) = await stateProxy.GetBalanceAsync(
+                        addr.Value,
+                        Currency.Uncapped(
+                            ticker: itemTokenTicker,
+                            decimalPlaces: 0,
+                            minters: null),
+                        blockHash);
                 }
 
                 stateTreeView.SetData(addr, state);
                 ncgValue = $"{ncgFav.Value.MajorUnit}.{ncgFav.Value.MinorUnit}";
                 crystalValue = $"{crystalFav.Value.MajorUnit}.{crystalFav.Value.MinorUnit}";
+                itemTokenValue = itemTokenFav.Value.MajorUnit.ToString();
             }
             catch (KeyNotFoundException)
             {
