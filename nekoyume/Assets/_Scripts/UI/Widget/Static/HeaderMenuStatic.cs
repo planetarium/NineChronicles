@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Module
             Settings,
             Quit,
             PortalReward,
+            Notice,
         }
 
         public enum AssetVisibleState
@@ -55,7 +56,7 @@ namespace Nekoyume.UI.Module
         {
             public ToggleType Type;
             public Toggle Toggle;
-            public Image Notification;
+            public List<Image> Notification;
             public GameObject Lock;
             public TextMeshProUGUI LockText;
         }
@@ -105,6 +106,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Toggle menuToggleDropdown;
 
+        [SerializeField]
+        private List<Image> menuToggleNotifications;
+
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         private readonly Dictionary<ToggleType, Widget> _toggleWidgets =
@@ -119,6 +123,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.Mail, new ReactiveProperty<bool>(false) },
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
                 { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
+                { ToggleType.Notice, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
@@ -163,13 +168,17 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
             _toggleWidgets.Add(ToggleType.Quit, Find<QuitSystem>());
+            _toggleWidgets.Add(ToggleType.Notice, Find<EventReleaseNotePopup>());
 
             foreach (var toggleInfo in toggles)
             {
                 if (_toggleNotifications.ContainsKey(toggleInfo.Type))
                 {
-                    _toggleNotifications[toggleInfo.Type].SubscribeTo(toggleInfo.Notification)
-                        .AddTo(gameObject);
+                    foreach (var notiObj in toggleInfo.Notification)
+                    {
+                        _toggleNotifications[toggleInfo.Type].SubscribeTo(notiObj)
+                            .AddTo(gameObject);
+                    }
                 }
 
                 toggleInfo.Toggle.onValueChanged.AddListener((value) =>
@@ -177,8 +186,8 @@ namespace Nekoyume.UI.Module
                     var widget = _toggleWidgets[toggleInfo.Type];
                     if (value)
                     {
-                        var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                        if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                            !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                         {
                             OneLineSystem.Push(MailType.System,
                                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
@@ -246,6 +255,28 @@ namespace Nekoyume.UI.Module
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            var liveAsset = Nekoyume.Game.LiveAsset.LiveAssetManager.instance;
+            _toggleNotifications[ToggleType.Notice].Value = liveAsset.HasUnreadEvent || liveAsset.HasUnreadNotice;
+            liveAsset.ObservableHasUnread
+                .SubscribeTo(_toggleNotifications[ToggleType.Notice])
+                .AddTo(gameObject);
+
+            var mergedMenuNoti = Observable.CombineLatest(_toggleNotifications[ToggleType.Notice], _toggleNotifications[ToggleType.PortalReward], _toggleNotifications[ToggleType.Rank]);
+            foreach (var item in menuToggleNotifications)
+            {
+                mergedMenuNoti.Subscribe(notices=> {
+                    foreach (var noti in notices)
+                    {
+                        if (noti)
+                        {
+                            item.enabled = true;
+                            return;
+                        }
+                    }
+                    item.enabled = false;
+                }).AddTo(gameObject);
+            }
         }
 
         protected override void OnEnable()
