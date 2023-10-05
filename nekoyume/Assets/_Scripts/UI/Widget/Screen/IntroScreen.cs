@@ -18,7 +18,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class IntroScreen : LoadingScreen
+    public class IntroScreen : ScreenWidget
     {
         [SerializeField] private GameObject pcContainer;
         [Header("Mobile")]
@@ -55,7 +55,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            indicator.Close();
 
             // videoPlayer.loopPointReached += _ => OnVideoEnd();
             // videoSkipButton.onClick.AddListener(OnVideoEnd);
