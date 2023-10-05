@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Lib9c;
+using Libplanet.Common;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -504,6 +506,27 @@ namespace Nekoyume.State
 
         public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(
             Address address,
+            HashDigest<SHA256> hash,
+            bool allowBrokenState = false)
+        {
+            AvatarState avatarState = null;
+            var exist = false;
+            try
+            {
+                avatarState = await GetAvatarStateAsync(address, hash, allowBrokenState);
+                exist = true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(
+                    $"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
+            }
+
+            return (exist, avatarState);
+        }
+
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(
+            Address address,
             bool allowBrokenState = false)
         {
             AvatarState avatarState = null;
@@ -520,6 +543,58 @@ namespace Nekoyume.State
             }
 
             return (exist, avatarState);
+        }
+
+        private static async UniTask<AvatarState> GetAvatarStateAsync(
+            Address address,
+            HashDigest<SHA256> hash,
+            bool allowBrokenState)
+        {
+            var agent = Game.Game.instance.Agent;
+            var avatarStateValue = await agent.GetStateAsync(address, hash);
+            if (avatarStateValue is not Dictionary dict)
+            {
+                Debug.LogWarning("Failed to get AvatarState");
+                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
+            }
+
+            if (dict.ContainsKey(LegacyNameKey))
+            {
+                return new AvatarState(dict);
+            }
+
+            var addressPairList = new List<string>
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey
+            }.Select(key => (Key: key, KeyAddress: address.Derive(key))).ToArray();
+
+            var states =
+                await agent.GetStateBulkAsync(addressPairList.Select(value => value.KeyAddress), hash);
+            // Make Tuple list by state value and state address key.
+            var stateAndKeys = states.Join(
+                addressPairList,
+                state => state.Key,
+                addressPair => addressPair.KeyAddress,
+                (state, addressPair) => (state.Value, addressPair.Key));
+
+            foreach (var (stateIValue, key) in stateAndKeys)
+            {
+                if (stateIValue is null)
+                {
+                    if (allowBrokenState && dict.ContainsKey(key))
+                    {
+                        dict = new Dictionary(dict.Remove((Text)key));
+                    }
+
+                    continue;
+                }
+
+                dict = dict.SetItem(key, stateIValue);
+            }
+
+            return new AvatarState(dict);
         }
 
         private static async UniTask<AvatarState> GetAvatarStateAsync(Address address,
