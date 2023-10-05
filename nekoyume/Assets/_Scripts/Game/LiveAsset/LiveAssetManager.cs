@@ -41,6 +41,10 @@ namespace Nekoyume.Game.LiveAsset
             .ObserveAdd()
             .Select(_ => HasUnreadNotice);
 
+        public IObservable<bool> ObservableHasUnread => _alreadyReadNotices
+            .ObserveAdd()
+            .Select(_ => HasUnreadNotice || HasUnreadEvent);
+
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
         public GameConfig GameConfig { get; private set; }
