@@ -103,7 +103,7 @@ namespace Nekoyume.UI.Module
         private VFX workshopVFX;
 
         [SerializeField]
-        private ToggleDropdown menuToggleDropdown;
+        private Toggle menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -209,14 +209,17 @@ namespace Nekoyume.UI.Module
                 {
                     CloseWidget = () => { menuToggleDropdown.isOn = false; };
                     WidgetStack.Push(gameObject);
+                    Animator.Play("HamburgerMenu@Show");
                 }
                 else
                 {
+                    Animator.Play("HamburgerMenu@Close");
                     CloseWidget = null;
                     Observable.NextFrame().Subscribe(_ =>
                     {
                         var list = WidgetStack.ToList();
                         list.Remove(gameObject);
+                        WidgetStack.Clear();
                         foreach (var go in list)
                         {
                             WidgetStack.Push(go);
