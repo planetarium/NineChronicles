@@ -124,8 +124,25 @@ namespace Nekoyume.UI
         {
             indicator.Close();
             dialogEnd = true;
+            System.Func<IEnumerator> coroutine = null;
             if (isNext)
             {
+                if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+                {
+                    switch (stageId)
+                    {
+                        case VideoPlayStage:
+                            coroutine = PlayVideo;
+                            LoadingEnd = false;
+                            break;
+                        case WorkshopDialogStage:
+                            coroutine = PlaySmallDialog;
+                            LoadingEnd = false;
+                            break;
+                        default: break;
+                    }
+                }
+
                 yield return CoDialog(clearedStageId);
             }
 
@@ -135,19 +152,9 @@ namespace Nekoyume.UI
                 StageInformation.GetStageIdString(stageType, stageId, true));
             indicator.Show(message);
 
-            if (isNext &&
-                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+            if (coroutine != null)
             {
-                switch (stageId)
-                {
-                    case VideoPlayStage:
-                        StartCoroutine(PlayVideo());
-                        break;
-                    case WorkshopDialogStage:
-                        StartCoroutine(PlaySmallDialog());
-                        break;
-                        default: break;
-                }
+                StartCoroutine(coroutine());
             }
         }
 
