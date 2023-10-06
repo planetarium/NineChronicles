@@ -2,11 +2,16 @@ using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.State;
+using Nekoyume.UI.Tween;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
@@ -19,6 +24,16 @@ namespace Nekoyume.UI
         private const string SpriteNameFormat02 = "{0}_02";
         private const float ImageMargin = 700f;
 
+        [SerializeField]
+        private VideoPlayer videoPlayer;
+
+        [SerializeField]
+        private DOTweenGroupAlpha loadingAlphaTweener;
+
+        [SerializeField]
+        private Image loadingImage;
+
+        public bool LoadingEnd { get; private set; } = true;
         public List<Image> images;
         public bool closeEnd;
         public bool dialogEnd;
@@ -26,6 +41,9 @@ namespace Nekoyume.UI
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
+
+        private const int VideoPlayStage = 2;
+        private const int WorkshopDialogStage = 3;
 
         protected override void Awake()
         {
@@ -116,6 +134,21 @@ namespace Nekoyume.UI
                 worldName,
                 StageInformation.GetStageIdString(stageType, stageId, true));
             indicator.Show(message);
+
+            if (isNext &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+            {
+                switch (stageId)
+                {
+                    case VideoPlayStage:
+                        StartCoroutine(PlayVideo());
+                        break;
+                    case WorkshopDialogStage:
+                        StartCoroutine(PlaySmallDialog());
+                        break;
+                        default: break;
+                }
+            }
         }
 
         private IEnumerator CoDialog(int worldStage)
@@ -183,6 +216,52 @@ namespace Nekoyume.UI
             }
 
             yield return null;
+        }
+
+        private IEnumerator PlayVideo()
+        {
+            LoadingEnd = false;
+            var audioController = AudioController.instance;
+            audioController.StopAll(0.5f);
+            videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+            videoPlayer.gameObject.SetActive(true);
+            videoPlayer.Prepare();
+            yield return new WaitUntil(() => videoPlayer.isPrepared);
+            videoPlayer.Play();
+            videoPlayer.Pause();
+            loadingAlphaTweener.PlayForward().OnComplete(() =>
+            {
+                videoPlayer.Play();
+            });
+
+            yield return new WaitUntil(() => videoPlayer.isPlaying);
+            yield return new WaitUntil(() => !videoPlayer.isPlaying);
+
+            CompleteLoading();
+        }
+
+        private IEnumerator PlaySmallDialog()
+        {
+            LoadingEnd = false;
+            loadingImage.gameObject.SetActive(true);
+            loadingAlphaTweener.PlayForward();
+            Find<Tutorial>().PlaySmallGuide(101);
+
+            yield return null;
+            yield return new WaitUntil(() => !Find<Tutorial>().isActiveAndEnabled);
+            CompleteLoading();
+        }
+
+        public void CompleteLoading()
+        {
+            videoPlayer.Stop();
+            var tween = loadingAlphaTweener.PlayReverse();
+            tween.OnComplete(() =>
+            {
+                videoPlayer.gameObject.SetActive(false);
+                loadingImage.gameObject.SetActive(false);
+                LoadingEnd = true;
+            });
         }
     }
 }
