@@ -108,6 +108,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b3cc3e943519b486da5d49bb2aeb78b9, type: 3}
   - {fileID: 21300000, guid: 1607b2d4d21b243a4a553cb1dfd30540, type: 3}
   - {fileID: 21300000, guid: 6f5519d4a79507c49953651cfc1c022e, type: 3}
+  - {fileID: 21300000, guid: ceed9bd4d743bc146860d4b64925eedd, type: 3}
   - {fileID: 21300000, guid: e846e7e4c74b6854c822fd64dc526271, type: 3}
   - {fileID: 21300000, guid: 5272f4f47ac464bda9534ac398b76603, type: 3}
   - {fileID: 21300000, guid: 4a978f150a975894897a7dd3dbbe7331, type: 3}
@@ -175,6 +176,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 98643db945dfd4bbb8892a22fa24f946, type: 3}
   - {fileID: 21300000, guid: f1309fd9b72ec464ba2c265c5d8c411e, type: 3}
   - {fileID: 21300000, guid: 001e252a3c854354b941a4745381f383, type: 3}
+  - {fileID: 21300000, guid: 9b87562abef3acb4caa1fd440c5b56e9, type: 3}
   - {fileID: 21300000, guid: b0f0d13a905e14ae2b9d05c821ebb219, type: 3}
   - {fileID: 21300000, guid: 4906883aea275b14aaeef0c1fec4c339, type: 3}
   - {fileID: 21300000, guid: bc221f3aa2559334aa5f9ed7ca265c35, type: 3}
@@ -225,6 +227,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 189118edb1599534787fd2ed6563ff52, type: 3}
   - {fileID: 21300000, guid: 3a4de4fd4b3809e4dbfb9a445f47a39d, type: 3}
   - {fileID: 21300000, guid: 0db7990e056098c49aa96802f8de723e, type: 3}
+  - {fileID: 21300000, guid: a665b81e6c2bba148ab21c8cf7b4af63, type: 3}
   - {fileID: 21300000, guid: b227014e230f5514e940db305d2fab34, type: 3}
   - {fileID: 21300000, guid: c328835e2f81242639320502c526d6ac, type: 3}
   - {fileID: 21300000, guid: 33fc296e9857a7b40b26ec93c43a3163, type: 3}
@@ -301,6 +304,7 @@ SpriteAtlas:
   - Main_mimisbrunnr_05
   - Main_Leaf_10
   - bg_xmas_lamp_01
+  - worldboss_03_Bg
   - Main_Cloud_04
   - bg_valentine_monster_03
   - bg_Character_main_03_distortion
@@ -368,6 +372,7 @@ SpriteAtlas:
   - Menu_Season_bg
   - Main_tower_06
   - Main_Patrol_01
+  - worldboss_02
   - Main_rock_03
   - PatrolReward_00
   - bg_character_main_07
@@ -418,6 +423,7 @@ SpriteAtlas:
   - Main_tower_08
   - PatrolReward_02
   - Main_Staking
+  - worldboss_01
   - worldboss_03_Chain_Back_5
   - Main_Leaf_04
   - Main_Cloud_01
