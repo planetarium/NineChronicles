@@ -5134,6 +5134,11 @@ PrefabInstance:
       propertyPath: speechBubble
       value: 
       objectReference: {fileID: 1305400102967374056}
+    - target: {fileID: 5955187542966030738, guid: 16913dec42abae948a9298f9e887d339,
+        type: 3}
+      propertyPath: targetScale
+      value: 1.02
+      objectReference: {fileID: 0}
     - target: {fileID: 8427618971591113178, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_Enabled
@@ -9487,12 +9492,12 @@ PrefabInstance:
     - target: {fileID: 2674885860706672921, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -140.99998
+      value: -108
       objectReference: {fileID: 0}
     - target: {fileID: 2674885860706672921, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -234.4
+      value: -262
       objectReference: {fileID: 0}
     - target: {fileID: 2674885860706672921, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
