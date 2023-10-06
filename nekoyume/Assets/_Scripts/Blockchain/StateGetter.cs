@@ -22,12 +22,6 @@ namespace Nekoyume.Blockchain
         public static IValue GetState(Address address, HashDigest<SHA256> hash) =>
             Game.Game.instance.Agent.GetState(address, hash);
 
-        public static bool TryGetState(Address address, HashDigest<SHA256> hash, out IValue value)
-        {
-            value = Game.Game.instance.Agent.GetState(address, hash);
-            return value is not Null;
-        }
-
         public static IReadOnlyList<IValue> GetStates(
             IReadOnlyList<Address> addresses,
             HashDigest<SHA256> hash) =>
