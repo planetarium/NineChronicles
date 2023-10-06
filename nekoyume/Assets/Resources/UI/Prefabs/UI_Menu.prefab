@@ -5235,6 +5235,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 45616220256582301, guid: 16913dec42abae948a9298f9e887d339,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
     - target: {fileID: 227069572547131843, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -5404,6 +5409,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9184902237990004220, guid: 16913dec42abae948a9298f9e887d339,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4293783039
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16913dec42abae948a9298f9e887d339, type: 3}
@@ -6651,6 +6661,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7478032419956731259, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
     - target: {fileID: 8206634158862837943, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
       propertyPath: m_fontColor32.rgba
@@ -7261,6 +7276,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5520891608466833979, guid: e6d7b535158669e49bc77f0431126854,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
     - target: {fileID: 6908113565772393284, guid: e6d7b535158669e49bc77f0431126854,
         type: 3}
       propertyPath: m_IsActive
@@ -7486,6 +7506,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3492808557744766346, guid: a0621b719bbce604a8df0febf5bf9537,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4026531840
       objectReference: {fileID: 0}
     - target: {fileID: 3886547888181220809, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
@@ -8526,7 +8551,7 @@ PrefabInstance:
     - target: {fileID: 5608115725178288552, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_EffectFactor
-      value: 0.5003329
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5802445486661880002, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
@@ -8601,12 +8626,22 @@ PrefabInstance:
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 220
+      objectReference: {fileID: 0}
+    - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
@@ -8646,12 +8681,12 @@ PrefabInstance:
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 56
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -271.68
+      value: 54
       objectReference: {fileID: 0}
     - target: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,
         type: 3}
