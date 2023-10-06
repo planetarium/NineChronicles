@@ -114,7 +114,10 @@ namespace Nekoyume.Blockchain
                             });
                     }
 
-                    Debug.Log($"-------Test {actionType.TypeIdentifier.Inspect(false)}, {currentAvatarState.address.ToString()},//// {agentState.address.ToString()}");
+                    var actionTypeName = actionType.TypeIdentifier.Inspect(false);
+                    if (actionTypeName.Contains("transfer_"))
+                        return;
+
                     Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
                 }
             }).AddTo(_disposables);

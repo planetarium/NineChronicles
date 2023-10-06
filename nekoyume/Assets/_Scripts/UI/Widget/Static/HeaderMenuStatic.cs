@@ -311,7 +311,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    Animator.Play("HamburgerMenu@Close");
+                    Animator.Play("HamburgerMenu@Close",-1,1);
                     CloseWidget = null;
                     Observable.NextFrame().Subscribe(_ =>
                     {
@@ -668,7 +668,6 @@ namespace Nekoyume.UI.Module
 
         public void UpdatePortalRewardDaily()
         {
-            Debug.Log("---------------UpdatePortalRewardDaily--------------");
             var updateAtToday = true;
             if (PlayerPrefs.HasKey(PortalRewardNotificationDailyKey) &&
                 DateTime.TryParseExact(PlayerPrefs.GetString(PortalRewardNotificationDailyKey),
