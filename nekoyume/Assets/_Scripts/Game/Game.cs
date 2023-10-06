@@ -126,6 +126,8 @@ namespace Nekoyume.Game
 
         public MarketServiceClient MarketServiceClient;
 
+        public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
+
         public Url URL { get; private set; }
 
         public readonly LruCache<Address, IValue> CachedStates = new();
@@ -331,6 +333,8 @@ namespace Nekoyume.Game
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+            PatrolRewardServiceClient =
+                new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             GL.Clear(true, true, Color.black);
             var createSecondWidgetCoroutine =
@@ -343,7 +347,7 @@ namespace Nekoyume.Game
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
-                        Analyzer.SetUniqueId(Agent.Address.ToString());
+                        Analyzer.SetAgentAddress(Agent.Address.ToString());
                     }
                 )
             );
@@ -448,16 +452,8 @@ namespace Nekoyume.Game
         {
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
-                UnityEngine.Debug.unityLogger.logEnabled = true;
-                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj =
-                    Instantiate(debugConsolePrefab);
+                Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
                 Util.IngameDebugConsoleCommands.Initailize();
-            }
-            else
-            {
-#if !UNITY_EDITOR
-                UnityEngine.Debug.unityLogger.logEnabled = false;
-#endif
             }
 
             if (_commandLineOptions.RpcClient)

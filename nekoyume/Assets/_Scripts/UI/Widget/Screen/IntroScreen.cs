@@ -214,7 +214,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
             startButtonContainer.SetActive(true);
-            signinButton.gameObject.SetActive(true);
+            // signinButton.gameObject.SetActive(true);
         }
 
         private void OnVideoEnd()
@@ -268,6 +268,7 @@ namespace Nekoyume.UI
                 platform,
                 Application.version
             );
+            pkUrl = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk-IPhonePlayer-50.3.0";
             Debug.Log($"Trying to fetch guest private key from {pkUrl}");
 
             try

@@ -60,7 +60,11 @@ namespace Nekoyume.UI
 
         [SerializeField] private MainMenu btnDcc;
 
-        [SerializeField] private SpeechBubble[] speechBubbles;
+        [SerializeField]
+        private MainMenu btnPatrolReward;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles;
 
         [SerializeField] private GameObject shopExclamationMark;
 
@@ -94,6 +98,8 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesAtShow = new();
         private GameObject _cachedCharacterTitle;
+
+        public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu)btnPatrolReward;
 
         protected override void Awake()
         {
@@ -130,12 +136,13 @@ namespace Nekoyume.UI
                     btnStaking.GetComponent<Button>(),
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
+                    btnPatrolReward.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
-            StakingLevelSubject.Level
+            StakingSubject.Level
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
@@ -544,6 +551,16 @@ namespace Nekoyume.UI
             Close(true);
             Find<DccMain>().Show();
 #endif
+        }
+
+        public void PatrolRewardClick()
+        {
+            if(!btnPatrolReward.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<PatrolRewardPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

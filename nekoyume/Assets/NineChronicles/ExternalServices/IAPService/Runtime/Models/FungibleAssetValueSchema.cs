@@ -8,6 +8,6 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         public Currency Ticker { get; set; }
 
         [JsonPropertyName("amount")]
-        public int Amount { get; set; }
+        public decimal Amount { get; set; }
     }
 }

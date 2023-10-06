@@ -82,18 +82,6 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
             SubmitWidget = null;
 
-            AnimationState.Subscribe(stateType =>
-            {
-                var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
-                                                 System.Reflection.BindingFlags.Instance);
-                foreach (var selectable in fields
-                             .Select(field => field.GetValue(this))
-                             .OfType<UnityEngine.UI.Selectable>())
-                {
-                    selectable.interactable = stateType == AnimationStateType.Shown;
-                }
-            }).AddTo(gameObject);
-
             var blur = transform.GetComponentInChildren<Blur>();
             if (blur)
             {
@@ -159,6 +147,7 @@ namespace Nekoyume.UI
                 case WidgetType.Tooltip:
                 case WidgetType.Screen:
                 case WidgetType.System:
+                case WidgetType.TutorialMask:
                 case WidgetType.Development:
                     Pool.Add(type, new PoolElementModel
                     {
@@ -168,7 +157,6 @@ namespace Nekoyume.UI
                     break;
                 case WidgetType.Hud:
                 case WidgetType.Animation:
-                case WidgetType.TutorialMask:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

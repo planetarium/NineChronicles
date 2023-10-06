@@ -15,10 +15,20 @@ namespace Nekoyume.UI
     {
         public override WidgetType WidgetType => WidgetType.TutorialMask;
 
-        [SerializeField] private Button button;
-        [SerializeField] private List<ItemContainer> items;
-        [SerializeField] private Animator animator;
-        [SerializeField] private float playTime = 2;
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private List<ItemContainer> items;
+
+        [SerializeField]
+        private Animator animator;
+
+        [SerializeField]
+        private float playTime = 2;
+
+        [SerializeField]
+        private GuideDialog guideDialog;
 
         private Coroutine _coroutine;
         private System.Action _callback;
@@ -28,8 +38,22 @@ namespace Nekoyume.UI
         private bool _isPlaying;
         private IDisposable _onClickDispose = null;
         private IDisposable _onClickWithSkipDispose = null;
+        public BattleTutorialController TutorialController { get; private set; }
 
         public Button NextButton => button;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            TutorialController = new BattleTutorialController();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            guideDialog.gameObject.SetActive(false);
+            items.ForEach(item => item.Item.gameObject.SetActive(false));
+            base.Close(ignoreCloseAnimation);
+        }
 
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
         {
@@ -78,6 +102,31 @@ namespace Nekoyume.UI
                 item?.Item.Play(data, () => PlayEnd());
             }
             _callback = callback;
+        }
+
+        public void PlaySmallGuide(int id)
+        {
+            void ShowGuideDialog(BattleTutorialController.BattleTutorialModel model)
+            {
+                Show();
+                guideDialog.Show(model, () =>
+                {
+                    if (model.NextId == 0)
+                    {
+                        Close(true);
+                    }
+                    else
+                    {
+                        ShowGuideDialog(TutorialController.GetBattleTutorialModel(model.NextId));
+                    }
+                });
+            }
+
+            if (TutorialController.TryGetBattleTutorialModel(id, out var model))
+            {
+                guideDialog.gameObject.SetActive(false);
+                ShowGuideDialog(model);
+            }
         }
 
         public void Stop(System.Action callback = null)

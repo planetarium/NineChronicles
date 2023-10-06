@@ -50,8 +50,12 @@ namespace Nekoyume.UI.Model
             var sheets = TableSheets.Instance;
 
             var key = $"SKILL_DESCRIPTION_{skillId}";
-            var buffList = sheets.SkillBuffSheet[skillId].BuffIds;
-            if (L10nManager.ContainsKey(key) && buffList.Count == 2)
+
+            List<int> buffList = null;
+            if (sheets.SkillBuffSheet.TryGetValue(skillId, out var skillBuffSheetRow))
+                buffList = skillBuffSheetRow.BuffIds;
+
+            if (L10nManager.ContainsKey(key) && buffList != null && buffList.Count == 2)
             {
                 List<string> arg = new List<string>();
                 var buff = sheets.StatBuffSheet[buffList[0]];

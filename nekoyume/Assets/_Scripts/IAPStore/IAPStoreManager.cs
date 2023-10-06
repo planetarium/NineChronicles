@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using UnityEngine;
@@ -21,6 +22,8 @@ namespace Nekoyume.IAPStore
         public IEnumerable<Product> IAPProducts => _controller.products.all;
         public bool IsInitialized { get; private set; }
 
+        private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
+
         private async void Awake()
         {
             try
@@ -36,19 +39,28 @@ namespace Nekoyume.IAPStore
             }
 
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            var products = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
-                Game.Game.instance.Agent.Address);
-            if (products is null)
+
+            var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
+                States.Instance.AgentState.address);
+            if (categorys is null)
             {
                 // TODO: not initialized case handling
                 Debug.LogError(
-                    $"IAPServiceManager.GetProductsAsync({Game.Game.instance.Agent.Address}): Products is null.");
+                    $"IAPServiceManager.GetProductsAsync({States.Instance.AgentState.address}): Product Catagorys is null.");
                 return;
             }
 
-            foreach (var schema in products.Where(s => s.Active))
+            foreach (var category in categorys)
             {
-                builder.AddProduct(schema.GoogleSku, ProductType.Consumable);
+                foreach (var product in category.ProductList)
+                {
+                    _initailizedProductSchema.TryAdd(product.GoogleSku, product);
+                }
+            }
+
+            foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
+            {
+                builder.AddProduct(schema.Value.GoogleSku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
@@ -106,7 +118,8 @@ namespace Nekoyume.IAPStore
                 return PurchaseProcessingResult.Pending;
             }
 
-            Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
+            Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
         }
@@ -154,7 +167,7 @@ namespace Nekoyume.IAPStore
                         states.AgentState.address,
                         states.CurrentAvatarState.address);
 
-                Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
+                Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
 
                 if (result is null)
                 {
@@ -184,13 +197,15 @@ namespace Nekoyume.IAPStore
                             Widget.Find<LoginSystem>().ShowResetPassword();
                         }
                     };
-                    Widget.Find<MobileShop>().UpdateView();
+                    Widget.Find<MobileShop>().PurchaseComplete(e.purchasedProduct.definition.id);
+                    Widget.Find<MobileShop>().RefreshGrid();
+                    Widget.Find<ShopListPopup>().Close();
                     _controller.ConfirmPendingPurchase(e.purchasedProduct);
                 }
             }
             catch (Exception exc)
             {
-                Widget.Find<MobileShop>().PurchaseButtonLoadingEnd();
+                Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
         }

@@ -136,6 +136,17 @@ namespace Nekoyume.UI.Module
                 var type = pair.Key;
                 var cost = pair.Value;
 
+                switch (type)
+                {
+                    case CostType.NCG:
+                    case CostType.Crystal:
+                    case CostType.ActionPoint:
+                    case CostType.Hourglass:
+                        break;
+                    default:
+                        return CostType.None;
+                }
+
                 if (!CheckCostOfType(type, cost))
                 {
                     return type;
