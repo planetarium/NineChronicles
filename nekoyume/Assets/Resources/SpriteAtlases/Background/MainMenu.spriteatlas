@@ -56,13 +56,16 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6d76650021450c44c854ba1ce7235527, type: 3}
   - {fileID: 21300000, guid: 05a67b00d3cda4f439b7eed00fd9676f, type: 3}
   - {fileID: 21300000, guid: 211666107e50d43909fe24e487662bac, type: 3}
+  - {fileID: 21300000, guid: 31d8d610028143f47ab121a2664540a8, type: 3}
   - {fileID: 21300000, guid: c3a719101f2b6401587db8857b0e43ba, type: 3}
   - {fileID: 21300000, guid: 4dc792505e23afb4ab8c7cbd22782ae3, type: 3}
   - {fileID: 21300000, guid: c97729502c238554d9ac21db7d48a68c, type: 3}
+  - {fileID: 21300000, guid: 4849a4601d2e9fe49a33ca68baa57e8b, type: 3}
   - {fileID: 21300000, guid: 8491f4605045a4ace956851cd5aec008, type: 3}
   - {fileID: 21300000, guid: b084db9065ab4ca4cbfa8a17658ad616, type: 3}
   - {fileID: 21300000, guid: 913dbfb0728ed412a935302879f765ac, type: 3}
   - {fileID: 21300000, guid: 2d2fe0d034b3e034aba29751e6e023c0, type: 3}
+  - {fileID: 21300000, guid: 27bbf0e01f3b826458ec9c2f9c8de97c, type: 3}
   - {fileID: 21300000, guid: 5cb3a1e068b394b1ba033ec945d1e7ba, type: 3}
   - {fileID: 21300000, guid: 49bce3e06021b4e139ddd205878820b4, type: 3}
   - {fileID: 21300000, guid: 676647e041a114d43b8e0a7a017a7164, type: 3}
@@ -118,9 +121,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6ca33495efcd448acad7095905ef87d4, type: 3}
   - {fileID: 21300000, guid: 77d9cdd507e7a7d4b912eb3701182d22, type: 3}
   - {fileID: 21300000, guid: 910448e5740265746bb24c1fcf93991b, type: 3}
+  - {fileID: 21300000, guid: 59c470f5d1da91a4db3f3083049a8337, type: 3}
   - {fileID: 21300000, guid: 424b5236291800848a622965dfedf3b2, type: 3}
   - {fileID: 21300000, guid: 5ec6d146ae1744756927cac2c7d94a09, type: 3}
   - {fileID: 21300000, guid: 45901b46b66d24d9daf3b2530b715753, type: 3}
+  - {fileID: 21300000, guid: 3e75a8962a8765e429ea66fa3f9635f5, type: 3}
   - {fileID: 21300000, guid: b10781a6ee75b1a4a9f563f9e57c5ba6, type: 3}
   - {fileID: 21300000, guid: 668f0aa68ee2aac4f98b665ad008a125, type: 3}
   - {fileID: 21300000, guid: a8f557b653cd3924db3ab5a28c18ea48, type: 3}
@@ -167,11 +172,14 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 001e252a3c854354b941a4745381f383, type: 3}
   - {fileID: 21300000, guid: b0f0d13a905e14ae2b9d05c821ebb219, type: 3}
   - {fileID: 21300000, guid: 4906883aea275b14aaeef0c1fec4c339, type: 3}
+  - {fileID: 21300000, guid: bc221f3aa2559334aa5f9ed7ca265c35, type: 3}
+  - {fileID: 21300000, guid: 013bb45a1b22d9746b3e6d571cd65735, type: 3}
   - {fileID: 21300000, guid: 1402b85ae950dd64f911cea59c53d8f9, type: 3}
   - {fileID: 21300000, guid: b235196af13ed7a4e9f665e072233413, type: 3}
   - {fileID: 21300000, guid: 7833b27a668f2cf448a41c16993d3185, type: 3}
   - {fileID: 21300000, guid: 271a7e7a0874443ce8d9261bf4f84b10, type: 3}
   - {fileID: 21300000, guid: bb54f98a20a734874b2ebd4c0cb247f1, type: 3}
+  - {fileID: 21300000, guid: 770cb6aae28920a4abf9638ed2b2413e, type: 3}
   - {fileID: 21300000, guid: c9b052ba45d9f479ab3362cb153c6d4f, type: 3}
   - {fileID: 21300000, guid: c6f878caf3260430083d07b425095017, type: 3}
   - {fileID: 21300000, guid: 4a2f2ada36ca3470e8abaee98f19c6c6, type: 3}
@@ -227,19 +235,23 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5c6124bff6a58a549bd28bf040584b63, type: 3}
   - {fileID: 21300000, guid: b74556bf9c88c4ff3ae7a8ae1d7fd156, type: 3}
   - {fileID: 21300000, guid: 363a28df0616a4ce2bf6d9c1a139720d, type: 3}
+  - {fileID: 21300000, guid: 0efefbef2c67ff14db8f92e8e12ef654, type: 3}
   - {fileID: 21300000, guid: 20a16defdc4cd4e9e9ba758c05f2d5e6, type: 3}
   - {fileID: 21300000, guid: 0a338fffed88d774e8269dc38d226163, type: 3}
   m_PackedSpriteNamesToIndex:
   - worldboss_03_Support_Back
   - Staking_02
   - UI_icon_Speech_05
+  - shop_01
   - bg_valentine_bg_04
   - worldboss_03_Chain_Front_2
   - Main_leaf_00
+  - shop_01_02
   - UI_icon_Speech_06
   - bg_xmas_tree_02_light_01
   - Main_tower_07
   - bg_character_main_07
+  - Shop_01_add
   - UI_icon_Speech_01
   - UI_icon_Speech_07
   - Main_tower_09
@@ -295,9 +307,11 @@ SpriteAtlas:
   - UI_SpeechBox_01
   - bg_xmas_box_01
   - worldboss_03_Support_Front
+  - bg_character_main_06
   - worldboss_03_Chain_Front_5
   - Main_Leaf_13
   - Main_Leaf_06
+  - combination_01_01
   - bg_xmas_tree_02
   - Main_leaf_02
   - worldboss_03_Chain_Back_2
@@ -344,11 +358,14 @@ SpriteAtlas:
   - Main_Patrol_01
   - Main_rock_03
   - PatrolReward_00
+  - bg_character_main_07
+  - shop_02_01
   - bg_xmas_tree_02_light_03
   - Staking_05
   - Test
   - worldboss_03_Base
   - Main_Cloud_05
+  - bg_Character_main_03_distortion_01
   - Main_Cloud_03
   - Main_tower_00
   - Main_rock_05
@@ -404,6 +421,7 @@ SpriteAtlas:
   - Main_tower_05
   - bg_valentine_bg_10
   - bg_valentine_bg_11
+  - shop_01_01
   - bg_valentine_bg_14
   - bg_xmas_tree_02_light_02
   m_RenderDataMap: {}
