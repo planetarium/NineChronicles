@@ -45,6 +45,12 @@ namespace Nekoyume.UI
         {
             if (data is GuideArrowData d)
             {
+                if (!gameObject.activeSelf)
+                {
+                    callback?.Invoke();
+                    return;
+                }
+
                 if (_coroutine != null)
                 {
                     StopCoroutine(_coroutine);
@@ -84,6 +90,12 @@ namespace Nekoyume.UI
 
         public override void Stop(System.Action callback)
         {
+            if (!gameObject.activeSelf)
+            {
+                callback?.Invoke();
+                return;
+            }
+
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);

@@ -50,9 +50,9 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            base.Close(ignoreCloseAnimation);
             guideDialog.gameObject.SetActive(false);
             items.ForEach(item => item.Item.gameObject.SetActive(false));
+            base.Close(ignoreCloseAnimation);
         }
 
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
