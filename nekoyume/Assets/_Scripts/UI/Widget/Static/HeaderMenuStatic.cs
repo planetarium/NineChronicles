@@ -20,6 +20,7 @@ namespace Nekoyume.UI.Module
     using Nekoyume.Helper;
     using Nekoyume.UI.Module.WorldBoss;
     using Nekoyume.UI.Scroller;
+    using System.Globalization;
     using UniRx;
 
     public class HeaderMenuStatic : StaticWidget
@@ -160,6 +161,9 @@ namespace Nekoyume.UI.Module
 
         public const string PortalRewardNotificationCombineKey = "PORTAL_REWARD_NOTIFICATION_COMBINE_ACTION";
         public const string PortalRewardNotificationTradingKey = "PORTAL_REWARD_NOTIFICATION_TRADING_ACTION";
+        public const string PortalRewardNotificationDailyKey = "PORTAL_REWARD_NOTIFICATION_DAILY_ACTION";
+
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
         public override void Initialize()
         {
@@ -653,13 +657,34 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void UpdatePotalRewardOnce(string key)
+        public void UpdatePortalRewardOnce(string key)
         {
             var count = PlayerPrefs.GetInt(key, 0);
             if(count == 0) {
                 UpdatePortalReward(true);
             }
             PlayerPrefs.SetInt(key, ++count);
+        }
+
+        public void UpdatePortalRewardDaily()
+        {
+            Debug.Log("---------------UpdatePortalRewardDaily--------------");
+            var updateAtToday = true;
+            if (PlayerPrefs.HasKey(PortalRewardNotificationDailyKey) &&
+                DateTime.TryParseExact(PlayerPrefs.GetString(PortalRewardNotificationDailyKey),
+                    DateTimeFormat,
+                    null,
+                    DateTimeStyles.None,
+                    out var result))
+            {
+                updateAtToday = DateTime.Today != result.Date;
+            }
+
+            if (updateAtToday)
+            {
+                UpdatePortalReward(true);
+                PlayerPrefs.SetString(PortalRewardNotificationDailyKey, DateTime.Today.ToString(DateTimeFormat));
+            }
         }
     }
 }

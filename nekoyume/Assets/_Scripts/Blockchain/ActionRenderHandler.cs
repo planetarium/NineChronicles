@@ -113,6 +113,9 @@ namespace Nekoyume.Blockchain
                                 ["AgentAddress"] = agentState.address.ToString(),
                             });
                     }
+
+                    Debug.Log($"-------Test {actionType.TypeIdentifier.Inspect(false)}, {currentAvatarState.address.ToString()},//// {agentState.address.ToString()}");
+                    Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
                 }
             }).AddTo(_disposables);
 
@@ -904,7 +907,7 @@ namespace Nekoyume.Blockchain
                         PushNotifier.PushType.Workshop);
                 }
 
-                Widget.Find<HeaderMenuStatic>().UpdatePotalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -958,7 +961,7 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId);
-                Widget.Find<HeaderMenuStatic>().UpdatePotalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -1006,7 +1009,7 @@ namespace Nekoyume.Blockchain
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
-            Widget.Find<HeaderMenuStatic>().UpdatePotalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
@@ -1043,7 +1046,7 @@ namespace Nekoyume.Blockchain
                 "NOTIFICATION_COMBINATION_COMPLETE",
                 resultItem.GetLocalizedName(false));
             NotificationSystem.Reserve(MailType.Workshop, format, 1, Guid.Empty);
-            Widget.Find<HeaderMenuStatic>().UpdatePotalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
         }
 
@@ -1558,7 +1561,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            Widget.Find<HeaderMenuStatic>().UpdatePotalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
 
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
