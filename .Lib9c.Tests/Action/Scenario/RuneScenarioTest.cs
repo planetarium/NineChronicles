@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action.Scenario
             );
 
             var context = new ActionContext();
-            IAccount initialState = new Tests.Action.MockStateDelta()
+            IAccount initialState = new Account(MockState.Empty)
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(

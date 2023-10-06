@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System.Linq;
     using Bencodex.Types;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -26,7 +27,7 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivations(activations);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, adminState.Serialize()));
             var actionContext = new ActionContext()
@@ -77,7 +78,7 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivations();
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, adminState.Serialize()));
 

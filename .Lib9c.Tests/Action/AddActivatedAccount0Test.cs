@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
@@ -43,7 +43,7 @@ namespace Lib9c.Tests.Action
         public void Rehearsal()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
         public void CheckPermission()
         {
             var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, new AdminState(admin, 100).Serialize())
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));

@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action.Scenario
                     GameConfig.RequireClearedStageLevel.ActionsInShop),
             };
 
-            _initialState = new Tests.Action.MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())

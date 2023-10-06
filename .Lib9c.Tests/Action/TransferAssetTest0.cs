@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidSigner()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidRecipient()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000));
             // Should not allow TransferAsset with same sender and recipient.
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInsufficientBalance()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
@@ -166,7 +166,7 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyBySender = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, currencyBySender * 1000)
                     .SetBalance(_recipient, currencyBySender * 10));
@@ -198,7 +198,7 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyByRecipient = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, currencyByRecipient * 1000)
                     .SetBalance(_recipient, currencyByRecipient * 10));

@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(initStates);
+            var state = new Account(initStates);
             var action = new AddRedeemCode
             {
                 redeemCsv = "New Value",

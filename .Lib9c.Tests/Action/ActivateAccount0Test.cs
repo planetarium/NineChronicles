@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                     .SetState(pendingActivation.address, pendingActivation.Serialize()));
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                     .SetState(pendingActivation.address, pendingActivation.Serialize()));
@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             // state에는 pendingActivation에 해당하는 대기가 없는 상태를 가정합니다.
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
 
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
                     .SetState(pendingActivation.address, pendingActivation.Serialize()));
