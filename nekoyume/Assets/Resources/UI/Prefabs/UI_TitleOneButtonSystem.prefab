@@ -304,7 +304,6 @@ GameObject:
   - component: {fileID: 1485157206147868878}
   - component: {fileID: 2571306757381840005}
   - component: {fileID: 3175259728604683506}
-  - component: {fileID: 7215780529062231656}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -445,26 +444,6 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
---- !u!95 &7215780529062231656
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1535826946684109519}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 0cd5d2c86a44744489151e7b78facb01, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2241797748500709185
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,6 +511,7 @@ MonoBehaviour:
   content: {fileID: 8644702060668481867}
   labelOK: {fileID: 5799543178635023116}
   titleBorder: {fileID: 34329484027275196}
+  CloseButton: {fileID: 6240922507212636315}
 --- !u!95 &7435949875806070387
 Animator:
   serializedVersion: 4

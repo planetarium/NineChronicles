@@ -4,11 +4,15 @@ using mixpanel;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
     public class TitleOneButtonSystem : Alert
     {
+        [SerializeField]
+        private Button CloseButton;
+
         public override WidgetType WidgetType => WidgetType.System;
 
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
@@ -24,6 +28,21 @@ namespace Nekoyume.UI
             }
 
             base.Show(title, content, labelOK, localize);
+        }
+
+        public void Set(string title, string content, bool hasCloseBtn, string labelOK = "UI_OK", bool localize = true, float blurSize = 1)
+        {
+            base.Set(title, content, labelOK, localize, blurSize);
+            CloseButton.gameObject.SetActive(hasCloseBtn);
+            CloseButton.onClick.AddListener(()=> {
+                Close(true);
+            });
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            CloseButton.onClick.RemoveAllListeners();
         }
 
         public void ShowAndQuit(string title, string content, string labelOK = "UI_OK", bool localize = true)

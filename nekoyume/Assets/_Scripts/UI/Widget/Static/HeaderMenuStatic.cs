@@ -172,8 +172,6 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Rank, Find<RankPopup>());
             _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
-            _toggleWidgets.Add(ToggleType.Quit, Find<QuitSystem>());
-            _toggleWidgets.Add(ToggleType.Notice, Find<EventReleaseNotePopup>());
 
             foreach (var toggleInfo in toggles)
             {
@@ -220,7 +218,7 @@ namespace Nekoyume.UI.Module
                                         Close();
                                         AudioController.PlayClick();
                                     };
-                                    confirm.Set("", "");
+                                    confirm.Set("UI_INFORMATION_CHARACTER_SELECT", "UI_DESCRIPTION_CHARACTER_SELECT", true);
                                     confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
                                 }
 
@@ -230,6 +228,37 @@ namespace Nekoyume.UI.Module
                                 if (confirm.isActiveAndEnabled)
                                 {
                                     confirm.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                    case ToggleType.Notice:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var widget = Find<EventReleaseNotePopup>();
+                            if (value)
+                            {
+                                if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                                {
+                                    OneLineSystem.Push(MailType.System,
+                                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                        NotificationCell.NotificationType.UnlockCondition);
+                                    toggleInfo.Toggle.isOn = false;
+                                    return;
+                                }
+
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.ShowNotFilterd(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
                                 }
                             }
                         });
