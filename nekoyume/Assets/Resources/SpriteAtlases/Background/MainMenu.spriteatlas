@@ -111,7 +111,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ceed9bd4d743bc146860d4b64925eedd, type: 3}
   - {fileID: 21300000, guid: e846e7e4c74b6854c822fd64dc526271, type: 3}
   - {fileID: 21300000, guid: 5272f4f47ac464bda9534ac398b76603, type: 3}
-  - {fileID: 21300000, guid: 4a978f150a975894897a7dd3dbbe7331, type: 3}
   - {fileID: 21300000, guid: 53d58b25e4a090d4ab230a3f8fccbc16, type: 3}
   - {fileID: 21300000, guid: e6501135ff8154112a0211dbf110f904, type: 3}
   - {fileID: 21300000, guid: 90d34055c6ff5084a86019808b9d9c49, type: 3}
@@ -171,6 +170,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9362bd396ab080b4cafad93e9353ab6c, type: 3}
   - {fileID: 21300000, guid: f9505149aa83f4ef3a6ed3c6262637b6, type: 3}
   - {fileID: 21300000, guid: 5a01628922279d14d9669d9c879ffc09, type: 3}
+  - {fileID: 21300000, guid: 846c3f891338acc40945a1b8ab965875, type: 3}
   - {fileID: 21300000, guid: cb7d04a9e008f47fead8086913791eba, type: 3}
   - {fileID: 21300000, guid: dc3c04b92bbfa3243a68325c1e10cf59, type: 3}
   - {fileID: 21300000, guid: 98643db945dfd4bbb8892a22fa24f946, type: 3}
@@ -307,7 +307,6 @@ SpriteAtlas:
   - worldboss_03_Bg
   - Main_Cloud_04
   - bg_valentine_monster_03
-  - bg_Character_main_03_distortion
   - Main_tower_01
   - Main_tower_01
   - Main_rock_04
@@ -367,6 +366,7 @@ SpriteAtlas:
   - Main_dcc_01
   - bg_valentine_bg_13
   - worldboss_03_Chain_Front_1
+  - bg_character_main_10
   - UI_SpeechBox_00
   - bg_xmas_tree_01_01
   - Menu_Season_bg
