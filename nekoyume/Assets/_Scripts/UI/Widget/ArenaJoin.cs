@@ -104,7 +104,7 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowAsync(
             bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
+            var loading = Find<LoadingScreen>();
             loading.Show();
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
                 RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),

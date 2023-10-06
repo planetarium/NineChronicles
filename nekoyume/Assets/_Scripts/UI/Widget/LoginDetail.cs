@@ -89,7 +89,7 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Choose Nickname");
-            Find<GrayLoadingScreen>().Show("UI_IN_MINING_A_BLOCK", true);
+            Find<LoadingScreen>().Show("UI_IN_MINING_A_BLOCK", true);
 
             var (hairIndex, eyeIndex, earIndex, tailIndex) = loginDetailCostume.GetCostumeId();
             Game.Game.instance.ActionManager
@@ -97,7 +97,7 @@ namespace Nekoyume.UI
                 .DoOnError(e =>
                 {
                     Game.Game.PopupError(e).Forget();
-                    Find<GrayLoadingScreen>().Close();
+                    Find<LoadingScreen>().Close();
                 })
                 .Subscribe();
         }
@@ -117,14 +117,14 @@ namespace Nekoyume.UI
 
         private IEnumerator CreateAndLoginAnimation(AvatarState state)
         {
-            var grayLoadingScreen = Find<GrayLoadingScreen>();
-            if (grayLoadingScreen is null)
+            var loadingScreen = Find<LoadingScreen>();
+            if (loadingScreen is null)
             {
                 yield break;
             }
 
-            grayLoadingScreen.Close();
-            yield return new WaitUntil(() => grayLoadingScreen.IsCloseAnimationCompleted);
+            loadingScreen.Close();
+            yield return new WaitUntil(() => loadingScreen.IsCloseAnimationCompleted);
             OnDidAvatarStateLoaded(state);
         }
 
@@ -132,8 +132,8 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
             btnLogin.SetActive(false);
-            var loadingScreen = Find<GrayLoadingScreen>();
-            loadingScreen.Show("UI_IN_MINING_A_BLOCK", true);
+            var loadingScreen = Find<LoadingScreen>();
+            loadingScreen.Show(L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
             await RxProps.SelectAvatarAsync(_selectedIndex);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
@@ -161,7 +161,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                var loadingScreen = Find<DimmedLoadingScreen>();
+                var loadingScreen = Find<LoadingScreen>();
                 loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
                 Game.Event.OnUpdateAddresses.Invoke();

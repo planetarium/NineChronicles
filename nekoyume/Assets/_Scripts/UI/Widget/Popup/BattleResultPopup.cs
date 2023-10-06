@@ -889,7 +889,7 @@ namespace Nekoyume.UI
                     && lastClearedStageId == SharedModel.StageID
                     && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
                 {
-                    var worldMapLoading = Find<WorldMapLoadingScreen>();
+                    var worldMapLoading = Find<LoadingScreen>();
                     worldMapLoading.Show();
                     Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
                     {
@@ -909,7 +909,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
-            var worldMapLoading = Find<WorldMapLoadingScreen>();
+            var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {

@@ -368,8 +368,8 @@ namespace Nekoyume.UI
             {
                 try
                 {
-                    var loadingScreen = Find<DataLoadingScreen>();
-                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    var loadingScreen = Find<LoadingScreen>();
+                    loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     loadingScreen.Show();
                     await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
@@ -379,7 +379,7 @@ namespace Nekoyume.UI
                 catch (KeyNotFoundException e)
                 {
                     Debug.LogWarning(e.Message);
-                    Find<DataLoadingScreen>().Close();
+                    Find<LoadingScreen>().Close();
                     EnterLogin();
                 }
             }

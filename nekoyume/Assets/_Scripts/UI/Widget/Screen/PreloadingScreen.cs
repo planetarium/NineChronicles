@@ -51,8 +51,8 @@ namespace Nekoyume.UI
                     Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
                     States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
-                    var loadingScreen = Find<DataLoadingScreen>();
-                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    var loadingScreen = Find<LoadingScreen>();
+                    loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     loadingScreen.Show();
                     await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();

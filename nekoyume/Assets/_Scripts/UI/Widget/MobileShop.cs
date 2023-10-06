@@ -59,7 +59,7 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
+            var loading = Find<LoadingScreen>();
             loading.Show();
 
             try
