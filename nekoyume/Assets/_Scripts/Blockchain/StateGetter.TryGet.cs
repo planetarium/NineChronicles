@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using Bencodex.Types;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Exceptions;
@@ -11,6 +12,12 @@ namespace Nekoyume.Blockchain
 {
     public static partial class StateGetter
     {
+        public static bool TryGetState(Address address, HashDigest<SHA256> hash, out IValue value)
+        {
+            value = Game.Game.instance.Agent.GetState(address, hash);
+            return value is not Null;
+        }
+
         public static bool TryGetAvatarState(
             Address avatarAddress,
             HashDigest<SHA256> hash,
