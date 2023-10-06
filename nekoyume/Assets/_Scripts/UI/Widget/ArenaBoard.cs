@@ -71,7 +71,7 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<LoadingScreen>();
-            loading.Show();
+            loading.Show(LoadingScreen.LoadingType.Arena);
             if (!_useGrandFinale)
             {
                 await UniTask.WaitWhile(() =>

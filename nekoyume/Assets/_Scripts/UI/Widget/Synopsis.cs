@@ -369,8 +369,9 @@ namespace Nekoyume.UI
                 try
                 {
                     var loadingScreen = Find<LoadingScreen>();
-                    loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
-                    loadingScreen.Show();
+                    loadingScreen.Show(
+                        LoadingScreen.LoadingType.None,
+                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);

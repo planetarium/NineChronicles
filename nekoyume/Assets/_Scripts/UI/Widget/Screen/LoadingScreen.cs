@@ -1,20 +1,47 @@
+using System;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class LoadingScreen : ScreenWidget
     {
+        public enum LoadingType
+        {
+            None,
+            Entering,
+            Adventure,
+            Arena,
+            Shop,
+            Workshop,
+        }
+
+        [Serializable]
+        private struct BackgroundItem
+        {
+            public LoadingType type;
+            public VideoClip videoClip;
+            public Texture2D texture;
+        }
+
         [SerializeField] private LoadingIndicator indicator;
         [SerializeField] private TextMeshProUGUI toolTip;
         [SerializeField] private Button toolTipChangeButton;
         [SerializeField] private Slider slider;
+
+        [SerializeField] private GameObject animationContainer;
+        [SerializeField] private RawImage imageContainer;
+        [SerializeField] private VideoPlayer videoPlayer;
+
+        [SerializeField] private BackgroundItem[] backgroundItems;
 
         private string _defaultMessage;
         private readonly ReactiveProperty<string> _message = new();
@@ -48,7 +75,7 @@ namespace Nekoyume.UI
             L10nManager.OnLanguageChange.Subscribe(_ => LoadL10N()).AddTo(gameObject);
         }
 
-        public void Show(string message = null, bool ignoreShowAnimation = false)
+        public void Show(LoadingType loadingType = LoadingType.None, string message = null, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
@@ -56,6 +83,7 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().Close();
 
+            SetBackGround(loadingType);
             SetToolTipText();
             PlaySliderAnimation();
         }
@@ -94,6 +122,29 @@ namespace Nekoyume.UI
             {
                 _tweener.Kill();
                 _tweener = null;
+            }
+        }
+
+        private void SetBackGround(LoadingType type)
+        {
+            var playVideo = type != LoadingType.None;
+            animationContainer.SetActive(!playVideo);
+            imageContainer.gameObject.SetActive(playVideo);
+
+            if (playVideo)
+            {
+                var item = backgroundItems.FirstOrDefault(item => item.type == type);
+                var clip = item.videoClip;
+
+                if (clip)
+                {
+                    videoPlayer.clip = clip;
+                    videoPlayer.Play();
+                }
+                else
+                {
+                    imageContainer.texture = item.texture;
+                }
             }
         }
     }

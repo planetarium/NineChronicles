@@ -92,7 +92,7 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubTypeFilter.Weapon, MarketOrderType.cp_desc, ItemDisplayCount);
             base.Show(ignoreShowAnimation);
