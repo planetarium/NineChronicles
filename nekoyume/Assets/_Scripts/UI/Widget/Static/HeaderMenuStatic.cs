@@ -16,7 +16,9 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module
 {
     using Nekoyume.Game;
+    using Nekoyume.Game.Controller;
     using Nekoyume.Helper;
+    using Nekoyume.UI.Module.WorldBoss;
     using Nekoyume.UI.Scroller;
     using UniRx;
 
@@ -191,6 +193,45 @@ namespace Nekoyume.UI.Module
                         {
                             Game.instance.PortalConnect.OpenPortalRewardUrl();
                             UpdatePortalReward(false);
+                        });
+                        break;
+                    case ToggleType.Quit:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        var address = States.Instance.CurrentAvatarState.address;
+                                        if (WorldBossStates.IsReceivingGradeRewards(address))
+                                        {
+                                            OneLineSystem.Push(
+                                                MailType.System,
+                                                L10nManager.Localize("UI_CAN_NOT_CHANGE_CHARACTER"),
+                                                NotificationCell.NotificationType.Alert);
+                                            return;
+                                        }
+
+                                        Game.instance.BackToNest();
+                                        Close();
+                                        AudioController.PlayClick();
+                                    };
+                                    confirm.Set("", "");
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
                         });
                         break;
                     default:
