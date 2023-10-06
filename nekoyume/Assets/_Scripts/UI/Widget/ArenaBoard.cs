@@ -70,7 +70,7 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
+            var loading = Find<LoadingScreen>();
             loading.Show();
             if (!_useGrandFinale)
             {
