@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
@@ -46,6 +47,7 @@ namespace Nekoyume.UI
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
         private readonly List<IDisposable> _disposables = new();
 
+        private Address _currentAvatarAddress;
         private bool _initialized;
 
         protected override void Awake()
@@ -70,12 +72,29 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
+        public async Task InitializePatrolReward()
+        {
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (_currentAvatarAddress.Equals(avatarAddress))
+            {
+                return;
+            }
+
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var level = Game.Game.instance.States.CurrentAvatarState.level;
+            await PatrolReward.InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
+            PatrolReward.Initialize();
+
+            Claiming.Value = false;
+
+            _currentAvatarAddress = avatarAddress;
+        }
+
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            if (!PatrolReward.Initialized)
-            {
-                await PatrolReward.Initialize();
-            }
+            await InitializePatrolReward();
+
+            SetIntervalText(PatrolReward.Interval);
 
             if (!_initialized)
             {
@@ -87,8 +106,7 @@ namespace Nekoyume.UI
             {
                 await PatrolReward.LoadPolicyInfo(level);
 
-                gaugeUnitText1.text = GetTimeString(PatrolReward.Interval / 2);
-                gaugeUnitText2.text = GetTimeString(PatrolReward.Interval);
+                SetIntervalText(PatrolReward.Interval);
             }
 
             OnChangeTime(PatrolReward.PatrolTime.Value);
@@ -109,7 +127,6 @@ namespace Nekoyume.UI
                 .AddTo(_disposables);
 
             receiveButton.OnSubmitSubject
-                .Where(_ => PatrolReward.Initialized)
                 .Subscribe(_ => ClaimRewardAsync())
                 .AddTo(_disposables);
 
@@ -150,6 +167,12 @@ namespace Nekoyume.UI
             var hourText = hourExist ? $"{(int)time.TotalHours}h " : string.Empty;
             var minuteText = minuteExist || !hourExist ? $"{time.Minutes}m" : string.Empty;
             return $"{hourText}{minuteText}";
+        }
+
+        private void SetIntervalText(TimeSpan interval)
+        {
+            gaugeUnitText1.text = GetTimeString(interval / 2);
+            gaugeUnitText2.text = GetTimeString(interval);
         }
 
         private void OnChangeRewards(Dictionary<PatrolRewardType, int> rewards)
@@ -229,6 +252,11 @@ namespace Nekoyume.UI
                 var txStatus = txResultResponse.transaction.transactionResult.txStatus;
                 if (txStatus == TxResultQuery.TxStatus.SUCCESS)
                 {
+                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    {
+                        return;
+                    }
+
                     OneLineSystem.Push(
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED"),
                         NotificationCell.NotificationType.Notification);
@@ -239,6 +267,11 @@ namespace Nekoyume.UI
 
                 if (txStatus == TxResultQuery.TxStatus.FAILURE)
                 {
+                    if (avatarAddress != Game.Game.instance.States.CurrentAvatarState.address)
+                    {
+                        return;
+                    }
+
                     OneLineSystem.Push(
                         MailType.System, L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED_FAILE"),
                         NotificationCell.NotificationType.Alert);
