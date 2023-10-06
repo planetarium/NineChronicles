@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
 
             var context = new ActionContext();
-            var initialState = new MockStateDelta()
+            var initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
@@ -140,7 +140,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 Miner = default,
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Rehearsal = true,
                 Signer = _agentAddress,
             });

@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = 101,
                     Signer = default,
                     Rehearsal = true,
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                 }
             );
             Assert.Equal(

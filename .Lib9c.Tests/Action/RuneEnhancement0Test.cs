@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Linq;
     using Bencodex.Types;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
@@ -38,7 +39,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -190,7 +191,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -243,7 +244,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -312,7 +313,7 @@ namespace Lib9c.Tests.Action
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
             var context = new ActionContext();
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 
@@ -425,7 +426,7 @@ namespace Lib9c.Tests.Action
                 .StartedBlockIndex;
 
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(agentAddress, new AgentState(agentAddress).Serialize());
 

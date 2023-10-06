@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly AvatarState _avatarState;
         private readonly AvatarState _avatarState2;
-        private readonly MockStateDelta _baseState;
+        private readonly IAccount _baseState;
         private readonly TableSheets _tableSheets;
 
         public RewardGoldTest()
@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
             IActionContext context = new ActionContext();
-            _baseState = (MockStateDelta)new MockStateDelta()
+            _baseState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
                 .MintAsset(context, GoldCurrencyState.Address, gold.Currency * 100000000000);
@@ -569,7 +569,7 @@ namespace Lib9c.Tests.Action
             var patronAddress = new PrivateKey().ToAddress();
             var contractAddress = agentAddress.GetPledgeAddress();
             IActionContext context = new ActionContext();
-            IAccount states = new MockStateDelta()
+            IAccount states = new Account(MockState.Empty)
                 .MintAsset(context, patronAddress, patronMead * Currencies.Mead)
                 .TransferAsset(context, patronAddress, agentAddress, 1 * Currencies.Mead)
                 .SetState(contractAddress, List.Empty.Add(patronAddress.Serialize()).Add(true.Serialize()).Add(balance.Serialize()))

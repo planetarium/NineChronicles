@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             IAccount nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -124,7 +124,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             // state가 올바르게 초기화되지 않은 상태를 가정합니다.
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
             Assert.Throws<ActivatedAccountsDoesNotExistsException>(() =>

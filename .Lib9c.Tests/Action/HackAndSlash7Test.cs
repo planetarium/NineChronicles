@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -496,7 +496,7 @@ namespace Lib9c.Tests.Action
                 WeeklyArenaAddress = _weeklyArenaState.address,
             };
 
-            IAccount state = backward ? new MockStateDelta() : _initialState;
+            IAccount state = backward ? new Account(MockState.Empty) : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -875,7 +875,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext()
             {

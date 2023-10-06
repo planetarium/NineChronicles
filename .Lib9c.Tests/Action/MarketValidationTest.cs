@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
 
         public MarketValidationTest()
         {
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize());
         }
 

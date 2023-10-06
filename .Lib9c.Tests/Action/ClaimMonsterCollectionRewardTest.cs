@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
 
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -187,7 +187,7 @@ namespace Lib9c.Tests.Action
         {
             IAccount nextState = _action.Execute(new ActionContext
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _signer,
                     BlockIndex = 0,
                     Rehearsal = true,

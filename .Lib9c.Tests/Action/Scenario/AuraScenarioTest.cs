@@ -50,7 +50,7 @@ namespace Lib9c.Tests.Action.Scenario
             var skill = SkillFactory.Get(skillRow, 0, 100, 0, StatType.NONE);
             _aura.Skills.Add(skill);
             var addresses = new[] { _avatarAddress, _enemyAvatarAddress };
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             for (int i = 0; i < addresses.Length; i++)
             {
                 var avatarAddress = addresses[i];

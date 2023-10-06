@@ -236,7 +236,7 @@ namespace Lib9c.Tests.Action
 
             IAccount nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -368,7 +368,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = 1,

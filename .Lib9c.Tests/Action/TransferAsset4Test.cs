@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action
             var context = new ActionContext();
             IAccount nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta().MintAsset(context, _sender, Currencies.Mead * 1),
+                PreviousState = new Account(MockState.Empty).MintAsset(context, _sender, Currencies.Mead * 1),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
