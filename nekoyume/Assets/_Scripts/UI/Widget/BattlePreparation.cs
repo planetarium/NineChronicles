@@ -529,7 +529,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
 
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];

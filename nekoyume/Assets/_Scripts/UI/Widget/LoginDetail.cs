@@ -89,8 +89,10 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Choose Nickname");
-            Find<LoadingScreen>().Show("UI_IN_MINING_A_BLOCK", true);
-
+            Find<LoadingScreen>().Show(
+                LoadingScreen.LoadingType.Entering,
+                L10nManager.Localize("UI_IN_MINING_A_BLOCK"),
+                true);
             var (hairIndex, eyeIndex, earIndex, tailIndex) = loginDetailCostume.GetCostumeId();
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, hairIndex, eyeIndex, earIndex, tailIndex)
@@ -133,7 +135,8 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             btnLogin.SetActive(false);
             var loadingScreen = Find<LoadingScreen>();
-            loadingScreen.Show(L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
+            loadingScreen.Show(
+                LoadingScreen.LoadingType.Entering, L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
             await RxProps.SelectAvatarAsync(_selectedIndex);
             loadingScreen.Close();
             OnDidAvatarStateLoaded(States.Instance.CurrentAvatarState);
@@ -162,7 +165,9 @@ namespace Nekoyume.UI
             else
             {
                 var loadingScreen = Find<LoadingScreen>();
-                loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
+                loadingScreen.Show(
+                    LoadingScreen.LoadingType.Entering,
+                    L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
                 Game.Event.OnUpdateAddresses.Invoke();
                 loadingScreen.Close();
