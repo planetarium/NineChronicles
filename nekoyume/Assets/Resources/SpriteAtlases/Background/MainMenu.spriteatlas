@@ -65,6 +65,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2d2fe0d034b3e034aba29751e6e023c0, type: 3}
   - {fileID: 21300000, guid: 5cb3a1e068b394b1ba033ec945d1e7ba, type: 3}
   - {fileID: 21300000, guid: 49bce3e06021b4e139ddd205878820b4, type: 3}
+  - {fileID: 21300000, guid: 676647e041a114d43b8e0a7a017a7164, type: 3}
   - {fileID: 21300000, guid: d73521f0f04e65647bce56ae80ad041a, type: 3}
   - {fileID: 21300000, guid: c31e0751ebc4c4de6a2af5db6fbc69d7, type: 3}
   - {fileID: 21300000, guid: 4cdf9691d78cc496e9c9242f19a436e2, type: 3}
@@ -75,6 +76,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b8a21402b38df4100921a59a2f234d98, type: 3}
   - {fileID: 21300000, guid: 315b8e12138034a6e83aa0f943fa1ed3, type: 3}
   - {fileID: 21300000, guid: c09d48429d0df47fb85dbcf8248967fe, type: 3}
+  - {fileID: 21300000, guid: c23398624efa7a44c98b6e94836e0e21, type: 3}
   - {fileID: 21300000, guid: 474b4672c2642d84699f0bd07ddb3bad, type: 3}
   - {fileID: 21300000, guid: cd12e792f67bd784daa7ce9b79b16dfe, type: 3}
   - {fileID: 21300000, guid: 200261b24f352954aae6fafcc4975ba2, type: 3}
@@ -92,14 +94,17 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ba41f8537aa517649a5d28eff1c1c37d, type: 3}
   - {fileID: 21300000, guid: 34f1be7318e8e411b86f4e4edac009f4, type: 3}
   - {fileID: 21300000, guid: 96a414a3a7d324f1dbff365c91b9be5f, type: 3}
+  - {fileID: 21300000, guid: 1bbd24c311b454144a73714aaaa3e408, type: 3}
   - {fileID: 21300000, guid: 9f4e6d242059b7d4abbec04b282d36da, type: 3}
   - {fileID: 21300000, guid: 8c6b00647a83b4fdc9e8e2f7cdb12144, type: 3}
   - {fileID: 21300000, guid: 0d99f29445ede4027a706d52ef2b79b3, type: 3}
+  - {fileID: 21300000, guid: b51f6a94aa08edf4fb10140fb9518f6b, type: 3}
   - {fileID: 21300000, guid: b3cc3e943519b486da5d49bb2aeb78b9, type: 3}
   - {fileID: 21300000, guid: 1607b2d4d21b243a4a553cb1dfd30540, type: 3}
   - {fileID: 21300000, guid: 6f5519d4a79507c49953651cfc1c022e, type: 3}
   - {fileID: 21300000, guid: e846e7e4c74b6854c822fd64dc526271, type: 3}
   - {fileID: 21300000, guid: 5272f4f47ac464bda9534ac398b76603, type: 3}
+  - {fileID: 21300000, guid: 53d58b25e4a090d4ab230a3f8fccbc16, type: 3}
   - {fileID: 21300000, guid: e6501135ff8154112a0211dbf110f904, type: 3}
   - {fileID: 21300000, guid: 90d34055c6ff5084a86019808b9d9c49, type: 3}
   - {fileID: 21300000, guid: 94902365b5e0e49e3b751fb8856c8cac, type: 3}
@@ -138,11 +143,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b00c0768e41b94170818eee1396da1f8, type: 3}
   - {fileID: 21300000, guid: 3db3d078606356d449ebbd72ff076074, type: 3}
   - {fileID: 21300000, guid: fa7839785ed1e4246b37cb931cd94a95, type: 3}
+  - {fileID: 21300000, guid: b4097f78ee2746642898e3c123da0ba0, type: 3}
   - {fileID: 21300000, guid: 7d7d8088036c042a6802301e29cea95c, type: 3}
   - {fileID: 21300000, guid: df48d588f1558b747bbd796e79ffa89f, type: 3}
   - {fileID: 21300000, guid: 09c16498545c24e11859a801f79bb8db, type: 3}
   - {fileID: 21300000, guid: 3f987db8e23d0164897578c32fca16cb, type: 3}
   - {fileID: 21300000, guid: b32371e81f00449eba1143b34c808951, type: 3}
+  - {fileID: 21300000, guid: 6798dfe8a26de4448aa3af64ee81f6bb, type: 3}
   - {fileID: 21300000, guid: 06a8dfe8d66adbc48b0425a1816d5ffa, type: 3}
   - {fileID: 21300000, guid: cc733bf8392f944dfabdaf1045287f84, type: 3}
   - {fileID: 21300000, guid: f6cb79093b92144dd9d799d65bdb8d4b, type: 3}
@@ -169,7 +176,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5c0bd91b815c8214f88b26f388897f45, type: 3}
   - {fileID: 21300000, guid: c8bfe22b1b08f452b82dca491a7073bf, type: 3}
   - {fileID: 21300000, guid: 7181962b9ea38f74ab75b90bee588abb, type: 3}
+  - {fileID: 21300000, guid: 3833806be80dc0042bbd9c14dadb3cfa, type: 3}
   - {fileID: 21300000, guid: 401ef88bc3b154fb28b4cda4d9c90fed, type: 3}
+  - {fileID: 21300000, guid: 140e9dbb409b2484c950043883a2c697, type: 3}
   - {fileID: 21300000, guid: 5dd2bfbb6a954a242b3a23aece0aa053, type: 3}
   - {fileID: 21300000, guid: e81418db5b3ab1a4fa88fdf9eb33f3fc, type: 3}
   - {fileID: 21300000, guid: 81b8a3eb07ff02e49a802855efdbfe95, type: 3}
@@ -195,6 +204,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9a5fdb8db91be4f4881d3f823199d1a5, type: 3}
   - {fileID: 21300000, guid: db11b5cda8ec3b245bac2b7d3a6035b3, type: 3}
   - {fileID: 21300000, guid: 1af2d6cdc26dc4009877e1775ce923f0, type: 3}
+  - {fileID: 21300000, guid: 189118edb1599534787fd2ed6563ff52, type: 3}
   - {fileID: 21300000, guid: 3a4de4fd4b3809e4dbfb9a445f47a39d, type: 3}
   - {fileID: 21300000, guid: 0db7990e056098c49aa96802f8de723e, type: 3}
   - {fileID: 21300000, guid: b227014e230f5514e940db305d2fab34, type: 3}
@@ -209,6 +219,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9f50b87fc06eb91438fa095eac947dc5, type: 3}
   - {fileID: 21300000, guid: 0ab51e7ff1aac854e84fee01bc651cb2, type: 3}
   - {fileID: 21300000, guid: 69b8f79ff5cf94fe19e4de8fcbfb31cc, type: 3}
+  - {fileID: 21300000, guid: 5c6124bff6a58a549bd28bf040584b63, type: 3}
   - {fileID: 21300000, guid: b74556bf9c88c4ff3ae7a8ae1d7fd156, type: 3}
   - {fileID: 21300000, guid: 363a28df0616a4ce2bf6d9c1a139720d, type: 3}
   - {fileID: 21300000, guid: 20a16defdc4cd4e9e9ba758c05f2d5e6, type: 3}
@@ -226,6 +237,7 @@ SpriteAtlas:
   - bg_character_main_07
   - UI_icon_Speech_01
   - UI_icon_Speech_07
+  - Main_tower_09
   - worldboss_02
   - bg_valentine_bg_05
   - UI_icon_Speech_03
@@ -236,6 +248,7 @@ SpriteAtlas:
   - Main_info_01
   - Main_Cloud_02
   - bg_valentine_bg_00
+  - Main_tower_06
   - worldboss_03_Chain_Front_3
   - shop_01_01
   - Staking_04
@@ -253,14 +266,17 @@ SpriteAtlas:
   - bg_xmas_lamp_01_light_01
   - Common_gradiant_64_Mainmenu
   - Main_Leaf_01
+  - Main_tower_04
   - Main_Cloud_03
   - Main_info_00
   - Main_tower_05
+  - Main_tower_03
   - Main_mimisbrunnr_05
   - Main_Leaf_10
   - bg_xmas_lamp_01
   - Main_Cloud_04
   - bg_valentine_monster_03
+  - Main_tower_01
   - Main_tower_01
   - Main_rock_04
   - bg_valentine_bg_01
@@ -299,11 +315,13 @@ SpriteAtlas:
   - Main_tower_02
   - Main_leaf_03
   - Main_Leaf_07
+  - Main_tower_02
   - Main_Leaf_11
   - bg_Character_main_03_distortion_00
   - Main_Cloud_01
   - bg_xmas_bell_01
   - UI_icon_Speech_04
+  - Main_tower_00
   - worldboss_03_Chain_Back_4
   - UI_icon_new_Mainmenu
   - Main_mimisbrunnr_05_2
@@ -330,7 +348,9 @@ SpriteAtlas:
   - UI_icon_Speech_09
   - Main_mimisbrunnr_03
   - worldboss_Reward_2
+  - Main_tower_07
   - bg_valentine_bg_03
+  - ranking_01
   - worldboss_01
   - Main_rock_03
   - PatrolReward
@@ -356,6 +376,7 @@ SpriteAtlas:
   - worldboss_Reward
   - bg_xmas_Island_01
   - Main_Leaf_08
+  - Main_tower_08
   - PatrolReward_02
   - Main_Staking
   - worldboss_03_Chain_Back_5
@@ -370,6 +391,7 @@ SpriteAtlas:
   - worldboss_03_Chain_Front_1
   - Main_dcc_01
   - UI_icon_Speech_02
+  - Main_tower_05
   - bg_valentine_bg_10
   - bg_valentine_bg_11
   - bg_valentine_bg_14
