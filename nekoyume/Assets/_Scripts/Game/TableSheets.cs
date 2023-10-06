@@ -225,6 +225,10 @@ namespace Nekoyume.Game
 
         public LoadIntoMyGaragesCostSheet LoadIntoMyGaragesCostSheet { get; private set; }
 
+        public CreateAvatarItemSheet CreateAvatarItemSheet { get; private set; }
+
+        public CreateAvatarFavSheet CreateAvatarFavSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
