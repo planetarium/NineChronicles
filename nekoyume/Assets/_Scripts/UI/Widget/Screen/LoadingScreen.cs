@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.L10n;
@@ -29,7 +30,7 @@ namespace Nekoyume.UI
         {
             public LoadingType type;
             public VideoClip videoClip;
-            public Texture2D texture;
+            public Texture texture;
         }
 
         [SerializeField] private LoadingIndicator indicator;
@@ -40,6 +41,7 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject animationContainer;
         [SerializeField] private RawImage imageContainer;
         [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private Texture videoTexture;
 
         [SerializeField] private BackgroundItem[] backgroundItems;
 
@@ -47,6 +49,7 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<string> _message = new();
         private string[] _tips;
         private Tweener _tweener;
+        private Coroutine _coroutine;
 
         protected override void Awake()
         {
@@ -75,7 +78,11 @@ namespace Nekoyume.UI
             L10nManager.OnLanguageChange.Subscribe(_ => LoadL10N()).AddTo(gameObject);
         }
 
-        public void Show(LoadingType loadingType = LoadingType.None, string message = null, bool ignoreShowAnimation = false)
+        public void Show(
+            LoadingType loadingType = LoadingType.None,
+            string message = null,
+            bool autoClose = false,
+            bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
@@ -86,6 +93,12 @@ namespace Nekoyume.UI
             SetBackGround(loadingType);
             SetToolTipText();
             PlaySliderAnimation();
+
+            if (autoClose)
+            {
+                Observable.Timer(TimeSpan.FromSeconds(3))
+                    .Subscribe(_ => Close()).AddTo(gameObject);
+            }
         }
 
         protected override void OnDisable()
@@ -112,8 +125,20 @@ namespace Nekoyume.UI
         {
             StopSliderAnimation();
 
-            slider.value = slider.minValue;
-            _tweener = slider.DOValue(slider.maxValue, Random.Range(1f, 2f)).SetDelay(1f);
+            _coroutine = StartCoroutine(CoPlaySliderAnimation());
+        }
+
+        private IEnumerator CoPlaySliderAnimation()
+        {
+            yield return new WaitForSeconds(1f);
+
+            while (gameObject.activeSelf)
+            {
+                slider.value = slider.minValue;
+                _tweener = slider.DOValue(slider.maxValue, Random.Range(1f, 3f));
+
+                yield return _tweener.WaitForCompletion();
+            }
         }
 
         private void StopSliderAnimation()
@@ -122,6 +147,12 @@ namespace Nekoyume.UI
             {
                 _tweener.Kill();
                 _tweener = null;
+            }
+
+            if (_coroutine is not null)
+            {
+                StopCoroutine(_coroutine);
+                _coroutine = null;
             }
         }
 
@@ -140,6 +171,7 @@ namespace Nekoyume.UI
                 {
                     videoPlayer.clip = clip;
                     videoPlayer.Play();
+                    imageContainer.texture = videoTexture;
                 }
                 else
                 {
