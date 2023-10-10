@@ -58,6 +58,7 @@ namespace Nekoyume.UI
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 3;
         public const int RequiredStageForAccelButton = 5;
+        private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
         protected override void Awake()
         {
@@ -76,15 +77,7 @@ namespace Nekoyume.UI
                 }
             });
 
-            accelerationToggle.onValueChanged.AddListener(value =>
-            {
-                var stage = Game.Game.instance.Stage;
-                stage.AnimationTimeScaleWeight = value
-                    ? Stage.AcceleratedAnimationTimeScaleWeight
-                    : Stage.DefaultAnimationTimeScaleWeight;
-                stage.UpdateTimeScale();
-            });
-
+            accelerationToggle.onValueChanged.AddListener(SetAccelToggle);
             accelerationToggleLockButton.onClick.AddListener(() =>
             {
                 OneLineSystem.Push(
@@ -176,7 +169,8 @@ namespace Nekoyume.UI
             accelerationToggleLockButton.gameObject.SetActive(!canAccel);
             accelerationToggleParent.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
-            accelerationToggle.isOn = false;
+            accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
+            SetAccelToggle(accelerationToggle.isOn);
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
@@ -252,5 +246,25 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Close(true);
         }
         #endregion
+
+        private void SetAccelToggle(bool value)
+        {
+            var stage = Game.Game.instance.Stage;
+            stage.AnimationTimeScaleWeight = value
+                ? Stage.AcceleratedAnimationTimeScaleWeight
+                : Stage.DefaultAnimationTimeScaleWeight;
+            stage.UpdateTimeScale();
+            SetAccelToggleIsOn(value);
+        }
+
+        private bool GetAccelToggleIsOn()
+        {
+            return PlayerPrefs.GetInt(BattleAccelToggleValueKey, 0) != 0;
+        }
+
+        private void SetAccelToggleIsOn(bool isOn)
+        {
+            PlayerPrefs.SetInt(BattleAccelToggleValueKey, isOn ? 1 : 0);
+        }
     }
 }
