@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,13 +22,13 @@ namespace Nekoyume.UI.Tween
             _graphic = GetComponent<Graphic>();
             if (playAtStart)
             {
-                _graphic.DOFade(beginValue, 0.0f);
+                ResetToBeginningValue();
             }
         }
 
         public override DG.Tweening.Tween PlayForward()
         {
-            _graphic.DOFade(beginValue, 0.0f);
+            ResetToBeginningValue();
             currentTween = _graphic.DOFade(endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
@@ -79,6 +80,11 @@ namespace Nekoyume.UI.Tween
         private void OnDisable()
         {
             Stop();
+        }
+
+        public void ResetToBeginningValue()
+        {
+            _graphic.DOFade(beginValue, 0f);
         }
     }
 }
