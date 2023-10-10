@@ -31,7 +31,7 @@ namespace Nekoyume.UI
         private DOTweenGroupAlpha loadingAlphaTweener;
 
         [SerializeField]
-        private Image loadingImage;
+        private GameObject loadingImage;
 
         public bool LoadingEnd { get; private set; } = true;
         public List<Image> images;
@@ -250,7 +250,7 @@ namespace Nekoyume.UI
         private IEnumerator PlaySmallDialog()
         {
             LoadingEnd = false;
-            loadingImage.gameObject.SetActive(true);
+            loadingImage.SetActive(true);
             loadingAlphaTweener.PlayForward();
             Find<Tutorial>().PlaySmallGuide(101);
 
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
             tween.OnComplete(() =>
             {
                 videoPlayer.gameObject.SetActive(false);
-                loadingImage.gameObject.SetActive(false);
+                loadingImage.SetActive(false);
                 LoadingEnd = true;
             });
         }
