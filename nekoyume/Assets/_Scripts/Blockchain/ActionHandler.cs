@@ -16,6 +16,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Blockchain
 {
@@ -196,6 +197,24 @@ namespace Nekoyume.Blockchain
             {
                 Debug.LogError($"Failed to get AvatarState: {avatarAddress}");
             }
+        }
+
+        protected static void UpdateCurrentAvatarInventory<T>(ActionEvaluation<T> eval)
+            where T : ActionBase
+        {
+            var states = States.Instance;
+            if (states.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var avatarAddr = states.CurrentAvatarState.address;
+            var inventoryAddr = avatarAddr.Derive(LegacyInventoryKey);
+            var inventory = StateGetter.GetInventory(inventoryAddr, eval.OutputState);
+            var avatarState = states.CurrentAvatarState;
+            avatarState.inventory = inventory;
+            avatarState = LocalLayer.Instance.ModifyInventoryOnly(avatarState);
+            ReactiveAvatarState.UpdateInventory(avatarState.inventory);
         }
 
         protected static void UpdateGameConfigState<T>(ActionEvaluation<T> evaluation) where T : ActionBase

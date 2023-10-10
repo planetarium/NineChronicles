@@ -37,7 +37,6 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -122,6 +121,7 @@ namespace Nekoyume.Blockchain
             GameConfig();
             CreateAvatar();
             TransferAsset();
+            TransferAssets();
             Stake();
 
             // MeadPledge
@@ -177,6 +177,9 @@ namespace Nekoyume.Blockchain
 
             // GARAGE
             UnloadFromMyGarages();
+
+            // Claim Items
+            ClaimItems();
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
@@ -391,6 +394,14 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void TransferAssets()
+        {
+            _actionRenderer.EveryRender<TransferAssets>()
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAssets)
+                .AddTo(_disposables);
+        }
+
         private void HackAndSlashSweep()
         {
             _actionRenderer.EveryRender<HackAndSlashSweep>()
@@ -563,10 +574,7 @@ namespace Nekoyume.Blockchain
 
                     if (action.FungibleIdAndCounts is not null)
                     {
-                        var inventoryAddr = avatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
-                        var inventory = StateGetter.GetInventory(inventoryAddr, states);
-                        gameStates.CurrentAvatarState.inventory = inventory;
-                        ReactiveAvatarState.UpdateInventory(inventory);
+                        UpdateCurrentAvatarInventory(eval);
                     }
 
                     var avatarValue = StateGetter.GetState(avatarAddr, states);
@@ -608,6 +616,27 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="ClaimItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void ClaimItems()
+        {
+            _actionRenderer.EveryRender<ClaimItems>()
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    if (eval.Exception is not null)
+                    {
+                        Debug.Log(eval.Exception.Message);
+                        return;
+                    }
+
+                    UpdateCurrentAvatarInventory(eval);
+                })
                 .AddTo(_disposables);
         }
 
@@ -2100,15 +2129,45 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var senderAddress = eval.Action.Sender;
-            var recipientAddress = eval.Action.Recipient;
+            TransferAssetInternal(
+                eval.OutputState,
+                eval.Action.Sender,
+                eval.Action.Recipient,
+                eval.Action.Amount);
+
+            UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private void ResponseTransferAssets(ActionEvaluation<TransferAssets> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            foreach (var (recipientAddress, amount) in eval.Action.Recipients)
+            {
+                TransferAssetInternal(
+                    eval.OutputState,
+                    eval.Action.Sender,
+                    recipientAddress,
+                    amount);
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private static void TransferAssetInternal(
+            HashDigest<SHA256> outputState,
+            Address senderAddr,
+            Address recipientAddress,
+            FungibleAssetValue amount)
+        {
             var currentAgentAddress = States.Instance.AgentState.address;
             var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
             var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
-            if (senderAddress == currentAgentAddress)
+            if (senderAddr == currentAgentAddress)
             {
-                var amount = eval.Action.Amount;
-
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize(
@@ -2119,8 +2178,7 @@ namespace Nekoyume.Blockchain
             }
             else if (recipientAddress == currentAgentAddress)
             {
-                var amount = eval.Action.Amount;
-                if (senderAddress == playToEarnRewardAddress)
+                if (senderAddr == playToEarnRewardAddress)
                 {
                     OneLineSystem.Push(
                         MailType.System,
@@ -2134,30 +2192,26 @@ namespace Nekoyume.Blockchain
                         L10nManager.Localize(
                             "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
                             amount,
-                            senderAddress),
+                            senderAddr),
                         NotificationCell.NotificationType.Notification);
                 }
             }
             else if (recipientAddress == currentAvatarAddress)
             {
-                var amount = eval.Action.Amount;
                 var currency = amount.Currency;
                 States.Instance.CurrentAvatarBalances[currency.Ticker] =
                     StateGetter.GetBalance(
                         currentAvatarAddress,
-                        eval.Action.Amount.Currency,
-                        eval.OutputState
-                    );
+                        currency,
+                        outputState);
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize(
                         "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
                         amount,
-                        senderAddress),
+                        senderAddr),
                     NotificationCell.NotificationType.Notification);
             }
-
-            UpdateAgentStateAsync(eval).Forget();
         }
 
         private void ResponseGrinding(ActionEvaluation<Grinding> eval)
