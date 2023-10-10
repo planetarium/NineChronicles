@@ -58,7 +58,7 @@ namespace Nekoyume.UI
 
         public PortalConnect(string url)
         {
-            if (url == null || url == string.Empty)
+            if (string.IsNullOrEmpty(url))
                 url = "https://nine-chronicles.com";
 
             PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
