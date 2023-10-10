@@ -275,12 +275,12 @@ namespace Nekoyume.UI
         public void CompleteLoading()
         {
             skippableVideoPlayer.Stop();
-            var tween = loadingAlphaTweener.PlayReverse();
-            tween.OnComplete(() =>
+            loadingDimTweener.PlayForward().OnComplete(() =>
             {
+                loadingAlphaTweener.ResetToBeginningValue();
                 skippableVideoPlayer.gameObject.SetActive(false);
                 loadingVideoObject.SetActive(false);
-                LoadingEnd = true;
+                loadingDimTweener.PlayReverse().OnComplete(() => LoadingEnd = true);
             });
         }
     }
