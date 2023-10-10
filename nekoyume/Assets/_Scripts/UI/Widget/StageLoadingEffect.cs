@@ -25,13 +25,16 @@ namespace Nekoyume.UI
         private const float ImageMargin = 700f;
 
         [SerializeField]
-        private VideoPlayer videoPlayer;
-
-        [SerializeField]
         private DOTweenGroupAlpha loadingAlphaTweener;
 
         [SerializeField]
-        private GameObject loadingImage;
+        private VideoPlayer skippableVideoPlayer;
+
+        [SerializeField]
+        private GameObject loadingVideoObject;
+
+        [SerializeField]
+        private GraphicAlphaTweener loadingDimTweener;
 
         public bool LoadingEnd { get; private set; } = true;
         public List<Image> images;
@@ -231,19 +234,22 @@ namespace Nekoyume.UI
             LoadingEnd = false;
             var audioController = AudioController.instance;
             audioController.StopAll(0.5f);
-            videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
-            videoPlayer.gameObject.SetActive(true);
-            videoPlayer.Prepare();
-            yield return new WaitUntil(() => videoPlayer.isPrepared);
-            videoPlayer.Play();
-            videoPlayer.Pause();
-            loadingAlphaTweener.PlayForward().OnComplete(() =>
+            skippableVideoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+            skippableVideoPlayer.gameObject.SetActive(true);
+            skippableVideoPlayer.Prepare();
+            loadingDimTweener.PlayForward().OnComplete(() =>
             {
-                videoPlayer.Play();
+                skippableVideoPlayer.Play();
+                skippableVideoPlayer.Pause();
+                loadingAlphaTweener.ResetToEndingValue();
+                loadingDimTweener.PlayReverse().OnComplete(() =>
+                {
+                    skippableVideoPlayer.Play();
+                });
             });
 
-            yield return new WaitUntil(() => videoPlayer.isPlaying);
-            yield return new WaitUntil(() => !videoPlayer.isPlaying);
+            yield return new WaitUntil(() => skippableVideoPlayer.isPlaying);
+            yield return new WaitUntil(() => !skippableVideoPlayer.isPlaying);
 
             CompleteLoading();
         }
@@ -251,23 +257,29 @@ namespace Nekoyume.UI
         private IEnumerator PlaySmallDialog()
         {
             LoadingEnd = false;
-            loadingImage.SetActive(true);
-            loadingAlphaTweener.PlayForward();
-            Find<Tutorial>().PlaySmallGuide(WorkShopDialogId);
+            loadingVideoObject.SetActive(true);
+            var tweenEnd = false;
+            loadingDimTweener.PlayForward().OnComplete(() =>
+            {
+                loadingAlphaTweener.ResetToEndingValue();
+                loadingDimTweener.PlayReverse();
+                Find<Tutorial>().PlaySmallGuide(WorkShopDialogId);
+                tweenEnd = true;
+            });
 
             yield return null;
-            yield return new WaitUntil(() => !Find<Tutorial>().isActiveAndEnabled);
+            yield return new WaitUntil(() => !Find<Tutorial>().isActiveAndEnabled && tweenEnd);
             CompleteLoading();
         }
 
         public void CompleteLoading()
         {
-            videoPlayer.Stop();
+            skippableVideoPlayer.Stop();
             var tween = loadingAlphaTweener.PlayReverse();
             tween.OnComplete(() =>
             {
-                videoPlayer.gameObject.SetActive(false);
-                loadingImage.SetActive(false);
+                skippableVideoPlayer.gameObject.SetActive(false);
+                loadingVideoObject.SetActive(false);
                 LoadingEnd = true;
             });
         }
