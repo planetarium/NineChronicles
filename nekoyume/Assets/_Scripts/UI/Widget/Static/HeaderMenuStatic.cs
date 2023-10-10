@@ -37,6 +37,7 @@ namespace Nekoyume.UI.Module
             Quit,
             PortalReward,
             Notice,
+            InviteFriend,
         }
 
         public enum AssetVisibleState
@@ -127,6 +128,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
                 { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
                 { ToggleType.Notice, new ReactiveProperty<bool>(false) },
+                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
@@ -137,7 +139,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
                 { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
                 { ToggleType.Rank, 1 },
-                { ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat },
+                { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
                 { ToggleType.Quit, 1 },
             };
@@ -190,10 +192,38 @@ namespace Nekoyume.UI.Module
 
                 switch (toggleInfo.Type)
                 {
+                    case ToggleType.InviteFriend:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                            toggleInfo.Toggle.isOn = false;
+                        });
+                        break;
                     case ToggleType.PortalReward:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            Game.instance.PortalConnect.OpenPortalRewardUrl();
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                    };
+                                    confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
                             UpdatePortalReward(false);
                         });
                         break;
@@ -225,7 +255,6 @@ namespace Nekoyume.UI.Module
                                     confirm.Set("UI_INFORMATION_CHARACTER_SELECT", "UI_DESCRIPTION_CHARACTER_SELECT", true);
                                     confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
                                 }
-
                             }
                             else
                             {
@@ -242,16 +271,6 @@ namespace Nekoyume.UI.Module
                             var widget = Find<EventReleaseNotePopup>();
                             if (value)
                             {
-                                if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
-                                    !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
-                                {
-                                    OneLineSystem.Push(MailType.System,
-                                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
-                                        NotificationCell.NotificationType.UnlockCondition);
-                                    toggleInfo.Toggle.isOn = false;
-                                    return;
-                                }
-
                                 var stage = Game.instance.Stage;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
