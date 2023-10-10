@@ -431,6 +431,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Workshop, null, true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
         }

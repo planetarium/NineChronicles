@@ -441,7 +441,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4970320178608074463}
   m_Father: {fileID: 5631972601959498813}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1811,6 +1812,82 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!1 &4563649779222939399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4970320178608074463}
+  - component: {fileID: 5483420236948657308}
+  - component: {fileID: 2707711886605958886}
+  m_Layer: 5
+  m_Name: black
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4970320178608074463
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563649779222939399}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3574044551462554591}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5483420236948657308
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563649779222939399}
+  m_CullTransparentMesh: 1
+--- !u!114 &2707711886605958886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563649779222939399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5082658965829991197
 GameObject:
   m_ObjectHideFlags: 0
@@ -2301,22 +2378,23 @@ MonoBehaviour:
   animationContainer: {fileID: 2048829160211974950}
   imageContainer: {fileID: 94068296415751043}
   videoPlayer: {fileID: 8818702099018925639}
+  videoTexture: {fileID: 8400000, guid: a9081cc788181714aaedbdd034ebed09, type: 2}
   backgroundItems:
-  - type: 0
-    videoClip: {fileID: 0}
-    texture: {fileID: 0}
   - type: 1
-    videoClip: {fileID: 0}
-    texture: {fileID: 0}
+    videoClip: {fileID: 32900000, guid: c4183c979c441a645be25420a63608b1, type: 3}
+    texture: {fileID: 2800000, guid: 5bbad4ad68b59cc40b36c23664c59a7b, type: 3}
   - type: 2
-    videoClip: {fileID: 0}
-    texture: {fileID: 0}
+    videoClip: {fileID: 32900000, guid: 9554a6a1a90356c4982abd7842c995cd, type: 3}
+    texture: {fileID: 2800000, guid: 03c4befec3392944f98473ff712023d7, type: 3}
   - type: 3
-    videoClip: {fileID: 0}
-    texture: {fileID: 0}
+    videoClip: {fileID: 32900000, guid: ec6ec8f1d33c14245875e6207eaca717, type: 3}
+    texture: {fileID: 2800000, guid: f8c78760de4942e42b701e825be5f48a, type: 3}
   - type: 4
-    videoClip: {fileID: 0}
-    texture: {fileID: 0}
+    videoClip: {fileID: 32900000, guid: 5a649783487c9994eadf3e03968d4ff1, type: 3}
+    texture: {fileID: 2800000, guid: e94c4948ba810f348943bee2ce27db31, type: 3}
+  - type: 5
+    videoClip: {fileID: 32900000, guid: 902961e2611c10b4a8a8a8f878032b7e, type: 3}
+    texture: {fileID: 2800000, guid: 234d2ad2cceae5449af559de3bd329fc, type: 3}
 --- !u!1 &9164911897383629554
 GameObject:
   m_ObjectHideFlags: 0
