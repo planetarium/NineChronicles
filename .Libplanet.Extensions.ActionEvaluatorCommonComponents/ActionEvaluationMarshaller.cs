@@ -1,6 +1,8 @@
+using System.Security.Cryptography;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet.Action;
+using Libplanet.Common;
 
 namespace Libplanet.Extensions.ActionEvaluatorCommonComponents;
 
@@ -8,51 +10,43 @@ public static class ActionEvaluationMarshaller
 {
     private static readonly Codec Codec = new Codec();
 
-    public static byte[] Serialize(this IActionEvaluation actionEvaluation)
+    public static byte[] Serialize(this ICommittedActionEvaluation actionEvaluation)
     {
         return Codec.Encode(Marshal(actionEvaluation));
     }
 
-    public static IEnumerable<Dictionary> Marshal(this IEnumerable<IActionEvaluation> actionEvaluations)
+    public static IEnumerable<Dictionary> Marshal(this IEnumerable<ICommittedActionEvaluation> actionEvaluations)
     {
         var actionEvaluationsArray = actionEvaluations.ToArray();
-        var outputStates = AccountStateDeltaMarshaller.Marshal(actionEvaluationsArray.Select(aev => aev.OutputState));
-        var previousStates = AccountStateDeltaMarshaller.Marshal(actionEvaluationsArray.Select(aev => aev.InputContext.PreviousState));
         foreach (var actionEvaluation in actionEvaluationsArray)
         {
-            yield return Dictionary.Empty
-                .Add("action", actionEvaluation.Action)
-                .Add("output_states", AccountStateDeltaMarshaller.Marshal(actionEvaluation.OutputState))
-                .Add("input_context", ActionContextMarshaller.Marshal(actionEvaluation.InputContext))
-                .Add("exception", actionEvaluation.Exception?.GetType().FullName is { } typeName ? (Text)typeName : Null.Value);
+            yield return Marshal(actionEvaluation);
         }
     }
 
-    public static Dictionary Marshal(this IActionEvaluation actionEvaluation)
-    {
-        return Dictionary.Empty
+    public static Dictionary Marshal(this ICommittedActionEvaluation actionEvaluation) =>
+        Dictionary.Empty
             .Add("action", actionEvaluation.Action)
-            .Add("output_states", AccountStateDeltaMarshaller.Marshal(actionEvaluation.OutputState))
-            .Add("input_context", ActionContextMarshaller.Marshal(actionEvaluation.InputContext))
+            .Add("output_states", actionEvaluation.OutputState.ToByteArray())
+            .Add("input_context", actionEvaluation.InputContext.Marshal())
             .Add("exception", actionEvaluation.Exception?.GetType().FullName is { } typeName ? (Text)typeName : Null.Value);
-    }
 
-    public static ActionEvaluation Unmarshal(IValue value)
+    public static ICommittedActionEvaluation Unmarshal(IValue value)
     {
         if (value is not Dictionary dictionary)
         {
             throw new ArgumentException(nameof(value));
         }
 
-        return new ActionEvaluation(
+        return new CommittedActionEvaluation(
             dictionary["action"],
             ActionContextMarshaller.Unmarshal((Dictionary)dictionary["input_context"]),
-            AccountStateDeltaMarshaller.Unmarshal(dictionary["output_states"]),
+            new HashDigest<SHA256>((Binary)dictionary["output_states"]),
             dictionary["exception"] is Text typeName ? new Exception(typeName) : null
         );
     }
 
-    public static ActionEvaluation Deserialize(byte[] serialized)
+    public static ICommittedActionEvaluation Deserialize(byte[] serialized)
     {
         var decoded = Codec.Decode(serialized);
         return Unmarshal(decoded);

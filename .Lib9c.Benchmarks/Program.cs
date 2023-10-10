@@ -144,25 +144,6 @@ namespace Lib9c.Benchmarks
             Console.WriteLine("Total elapsed\t{0}", ended - started);
         }
 
-        // Copied from BlockChain.DetermineBlockStateRootHash().
-        private static void SetStates(
-            Guid chainId,
-            IStore store,
-            IStateStore stateStore,
-            Block block,
-            IReadOnlyList<IActionEvaluation> actionEvaluations,
-            bool buildStateReferences
-        )
-        {
-            IImmutableDictionary<KeyBytes, IValue> totalDelta = actionEvaluations.GetRawTotalDelta();
-
-            if (!stateStore.ContainsStateRoot(block.StateRootHash))
-            {
-                HashDigest<SHA256>? prevStateRootHash = store.GetStateRootHash(block.PreviousHash);
-                ITrie stateRoot = stateStore.Commit(prevStateRootHash, totalDelta);
-            }
-        }
-
         // Copied from ActionEvaluationsExtensions.GetTotalDelta().
         private static ImmutableDictionary<string, IValue> GetTotalDelta(
             IReadOnlyList<IActionEvaluation> actionEvaluations,

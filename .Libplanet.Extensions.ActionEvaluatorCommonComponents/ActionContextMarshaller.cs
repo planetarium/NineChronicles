@@ -14,22 +14,22 @@ public static class ActionContextMarshaller
 {
     private static readonly Codec Codec = new Codec();
 
-    public static byte[] Serialize(this IActionContext actionContext)
+    public static byte[] Serialize(this ICommittedActionContext actionContext)
     {
         return Codec.Encode(Marshal(actionContext));
     }
 
-    public static Dictionary Marshal(this IActionContext actionContext)
+    public static Dictionary Marshal(this ICommittedActionContext actionContext)
     {
         var dictionary = Bencodex.Types.Dictionary.Empty
-            .Add("block_action", actionContext.BlockAction)
+            .Add("signer", actionContext.Signer.ToHex())
             .Add("miner", actionContext.Miner.ToHex())
-            .Add("rehearsal", actionContext.Rehearsal)
             .Add("block_index", actionContext.BlockIndex)
             .Add("block_protocol_version", actionContext.BlockProtocolVersion)
+            .Add("rehearsal", actionContext.Rehearsal)
+            .Add("previous_states", actionContext.PreviousState.ByteArray)
             .Add("random_seed", actionContext.RandomSeed)
-            .Add("signer", actionContext.Signer.ToHex())
-            .Add("previous_states", AccountStateDeltaMarshaller.Marshal(actionContext.PreviousState));
+            .Add("block_action", actionContext.BlockAction);
 
         if (actionContext.TxId is { } txId)
         {
@@ -39,32 +39,25 @@ public static class ActionContextMarshaller
         return dictionary;
     }
 
-    public static ActionContext Unmarshal(Dictionary dictionary)
+    public static ICommittedActionContext Unmarshal(Dictionary dictionary)
     {
-        return new ActionContext(
-            genesisHash: dictionary.TryGetValue((Text)"genesis_hash", out IValue genesisHashValue) &&
-                         genesisHashValue is Binary genesisHashBinaryValue
-                ? new BlockHash(genesisHashBinaryValue.ByteArray)
-                : null,
-            blockIndex: (Integer)dictionary["block_index"],
-            blockProtocolVersion: (Integer)dictionary["block_protocol_version"],
+        return new CommittedActionContext(
             signer: new Address(((Text)dictionary["signer"]).Value),
             txId: dictionary.TryGetValue((Text)"tx_id", out IValue txIdValue) &&
                   txIdValue is Binary txIdBinaryValue
                 ? new TxId(txIdBinaryValue.ByteArray)
                 : null,
-            blockAction: (Boolean)dictionary["block_action"],
             miner: new Address(((Text)dictionary["miner"]).Value),
+            blockIndex: (Integer)dictionary["block_index"],
+            blockProtocolVersion: (Integer)dictionary["block_protocol_version"],
             rehearsal: (Boolean)dictionary["rehearsal"],
-            previousStateRootHash: dictionary.ContainsKey("previous_state_root_hash")
-                ? new HashDigest<SHA256>(((Binary)dictionary["previous_state_root_hash"]).ByteArray)
-                : null,
-            previousState: AccountStateDeltaMarshaller.Unmarshal(dictionary["previous_states"]),
-            randomSeed: (Integer)dictionary["random_seed"]
+            previousState: new HashDigest<SHA256>(((Binary)dictionary["previous_states"]).ByteArray),
+            randomSeed: (Integer)dictionary["random_seed"],
+            blockAction: (Boolean)dictionary["block_action"]
         );
     }
 
-    public static ActionContext Deserialize(byte[] serialized)
+    public static ICommittedActionContext Deserialize(byte[] serialized)
     {
         var decoded = Codec.Decode(serialized);
         if (!(decoded is Dictionary dictionary))
