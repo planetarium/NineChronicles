@@ -15,19 +15,10 @@ public static class ActionEvaluationMarshaller
         return Codec.Encode(Marshal(actionEvaluation));
     }
 
-    public static IEnumerable<Dictionary> Marshal(this IEnumerable<ICommittedActionEvaluation> actionEvaluations)
-    {
-        var actionEvaluationsArray = actionEvaluations.ToArray();
-        foreach (var actionEvaluation in actionEvaluationsArray)
-        {
-            yield return Marshal(actionEvaluation);
-        }
-    }
-
     public static Dictionary Marshal(this ICommittedActionEvaluation actionEvaluation) =>
         Dictionary.Empty
             .Add("action", actionEvaluation.Action)
-            .Add("output_states", actionEvaluation.OutputState.ToByteArray())
+            .Add("output_states", actionEvaluation.OutputState.ByteArray)
             .Add("input_context", actionEvaluation.InputContext.Marshal())
             .Add("exception", actionEvaluation.Exception?.GetType().FullName is { } typeName ? (Text)typeName : Null.Value);
 

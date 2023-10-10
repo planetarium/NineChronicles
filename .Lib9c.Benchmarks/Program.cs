@@ -1,26 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using Bencodex.Types;
 using Libplanet.Action;
-using Libplanet.Action.State;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
-using Libplanet.Common;
-using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain;
 using Nekoyume.Blockchain.Policy;
 using Serilog;
-using Serilog.Events;
 
 namespace Lib9c.Benchmarks
 {
@@ -143,51 +136,5 @@ namespace Lib9c.Benchmarks
             Console.WriteLine("Average per action\t{0}ms", execActionsTotalMilliseconds / actions);
             Console.WriteLine("Total elapsed\t{0}", ended - started);
         }
-
-        // Copied from ActionEvaluationsExtensions.GetTotalDelta().
-        private static ImmutableDictionary<string, IValue> GetTotalDelta(
-            IReadOnlyList<IActionEvaluation> actionEvaluations,
-            Func<Address, string> toStateKey,
-            Func<(Address, Currency), string> toFungibleAssetKey)
-        {
-            IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
-                .SelectMany(a => a.OutputState.Delta.StateUpdatedAddresses)
-                .ToImmutableHashSet();
-            IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
-                .SelectMany(a => a.OutputState.Delta.UpdatedFungibleAssets)
-                .ToImmutableHashSet();
-
-            IAccount lastStates = actionEvaluations.Count > 0
-                ? actionEvaluations[actionEvaluations.Count - 1].OutputState
-                : null;
-            ImmutableDictionary<string, IValue> totalDelta =
-                stateUpdatedAddresses.ToImmutableDictionary(
-                    toStateKey,
-                    a => lastStates?.GetState(a)
-                ).SetItems(
-                    updatedFungibleAssets.Select(pair =>
-                        new KeyValuePair<string, IValue>(
-                            toFungibleAssetKey(pair),
-                            new Bencodex.Types.Integer(
-                                lastStates?.GetBalance(pair.Item1, pair.Item2).RawValue ?? 0
-                            )
-                        )
-                    )
-                );
-
-            return totalDelta;
-        }
-
-        // Copied from KeyConverters.ToStateKey().
-        private static string ToStateKey(Address address) => address.ToHex().ToLowerInvariant();
-
-        // Copied from KeyConverters.ToFungibleAssetKey().
-        private static string ToFungibleAssetKey(Address address, Currency currency) =>
-            "_" + address.ToHex().ToLowerInvariant() +
-            "_" + ByteUtil.Hex(currency.Hash.ByteArray).ToLowerInvariant();
-
-        // Copied from KeyConverters.ToFungibleAssetKey().
-        private static string ToFungibleAssetKey((Address, Currency) pair) =>
-            ToFungibleAssetKey(pair.Item1, pair.Item2);
     }
 }

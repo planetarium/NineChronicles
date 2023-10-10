@@ -1,10 +1,9 @@
 using System.Collections.Immutable;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet.Action;
-using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
-using Libplanet.Store;
-using Libplanet.Store.Trie;
 
 namespace Libplanet.Extensions.ActionEvaluatorCommonComponents.Tests;
 
@@ -13,20 +12,14 @@ public class ActionEvaluationSerializerTest
     [Fact]
     public void Serialization()
     {
-        IKeyValueStore keyValueStore = new MemoryKeyValueStore();
-        IStateStore stateStore = new TrieStateStore(keyValueStore);
         var addresses = Enumerable.Repeat(0, 4).Select(_ => new PrivateKey().ToAddress()).ToImmutableList();
-        AccountStateDelta outputStates = (AccountStateDelta)new AccountStateDelta()
-            .SetState(addresses[0], Null.Value)
-            .SetState(addresses[1], (Text)"foo")
-            .SetState(addresses[2], new List((Text)"bar"));
-        var previousTrie = stateStore.GetStateRoot(null);
-        var nextTrie = previousTrie;
-        foreach (var kv in outputStates.Delta.ToRawDelta())
-        {
-            nextTrie = nextTrie.Set(kv.Key, kv.Value);
-        }
-        nextTrie = stateStore.Commit(nextTrie);
+
+        var random = new System.Random();
+        var buffer = new byte[HashDigest<SHA256>.Size];
+        random.NextBytes(buffer);
+        var prevState = new HashDigest<SHA256>(buffer);
+        random.NextBytes(buffer);
+        var outputState = new HashDigest<SHA256>(buffer);
 
         var committed = new CommittedActionEvaluation(
             action: Null.Value,
@@ -37,10 +30,10 @@ public class ActionEvaluationSerializerTest
                 blockIndex: 0,
                 blockProtocolVersion: 0,
                 rehearsal: false,
-                previousState: previousTrie.Hash,
+                previousState: prevState,
                 randomSeed: 123,
                 blockAction: true),
-            outputState: nextTrie.Hash,
+            outputState: outputState,
             exception: new UnexpectedlyTerminatedActionException(
                 "",
                 null,
@@ -58,7 +51,7 @@ public class ActionEvaluationSerializerTest
         Assert.Equal(0, deserialized.InputContext.BlockProtocolVersion);
         Assert.Equal(addresses[0], deserialized.InputContext.Signer);
         Assert.Equal(addresses[1], deserialized.InputContext.Miner);
-        Assert.Equal(previousTrie.Hash, deserialized.InputContext.PreviousState);
-        Assert.Equal(nextTrie.Hash, deserialized.OutputState);
+        Assert.Equal(prevState, deserialized.InputContext.PreviousState);
+        Assert.Equal(outputState, deserialized.OutputState);
     }
 }
