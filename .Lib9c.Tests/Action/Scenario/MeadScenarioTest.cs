@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action.Scenario
             Currency mead = Currencies.Mead;
             var patron = new PrivateKey().ToAddress();
             IActionContext context = new ActionContext();
-            IAccount states = new MockStateDelta().MintAsset(context, patron, 10 * mead);
+            IAccount states = new Account(MockState.Empty).MintAsset(context, patron, 10 * mead);
 
             var agentAddress = new PrivateKey().ToAddress();
             var requestPledge = new RequestPledge
@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var action = (IAction)Activator.CreateInstance(typeId)!;
                 var actionContext = new ActionContext
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                 };
                 try
                 {

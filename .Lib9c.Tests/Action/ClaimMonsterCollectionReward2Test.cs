@@ -35,7 +35,7 @@
 
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -210,7 +210,7 @@
 
             IAccount nextState = action.Execute(new ActionContext
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _signer,
                     BlockIndex = 0,
                     Rehearsal = true,

@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action.Coupons
         {
             IRandom random = new TestRandom();
             var sheets = TableSheetsImporter.ImportSheets();
-            IAccount state = new Lib9c.Tests.Action.MockStateDelta()
+            IAccount state = new Account(MockState.Empty)
                 .SetState(
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()

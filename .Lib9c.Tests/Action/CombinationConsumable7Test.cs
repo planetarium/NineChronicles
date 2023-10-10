@@ -52,7 +52,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
 

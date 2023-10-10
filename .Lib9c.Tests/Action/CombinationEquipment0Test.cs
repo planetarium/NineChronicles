@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(
@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = _agentAddress,
                 RandomSeed = 0,
             }));

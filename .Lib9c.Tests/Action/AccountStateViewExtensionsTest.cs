@@ -48,8 +48,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarState()
         {
-            var states = new MockStateDelta();
-            states = (MockStateDelta)states.SetState(_avatarAddress, _avatarState.Serialize());
+            IAccount states = new Account(MockState.Empty);
+            states = states.SetState(_avatarAddress, _avatarState.Serialize());
 
             Assert.True(states.TryGetAvatarState(_agentAddress, _avatarAddress, out var avatarState2));
             Assert.Equal(_avatarAddress, avatarState2.address);
@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarStateEmptyAddress()
         {
-            var states = new MockStateDelta();
+            var states = new Account(MockState.Empty);
 
             Assert.False(states.TryGetAvatarState(default, default, out _));
         }
@@ -67,7 +67,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarStateAddressKeyNotFoundException()
         {
-            var states = new MockStateDelta().SetState(default, Dictionary.Empty);
+            var states = new Account(MockState.Empty).SetState(default, Dictionary.Empty);
 
             Assert.False(states.TryGetAvatarState(default, default, out _));
         }
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarStateKeyNotFoundException()
         {
-            var states = new MockStateDelta()
+            var states = new Account(MockState.Empty)
                 .SetState(
                 default,
                 Dictionary.Empty
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarStateInvalidCastException()
         {
-            var states = new MockStateDelta().SetState(default, default(Text));
+            var states = new Account(MockState.Empty).SetState(default, default(Text));
 
             Assert.False(states.TryGetAvatarState(default, default, out _));
         }
@@ -96,7 +96,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void TryGetAvatarStateInvalidAddress()
         {
-            var states = new MockStateDelta().SetState(default, _avatarState.Serialize());
+            var states = new Account(MockState.Empty).SetState(default, _avatarState.Serialize());
 
             Assert.False(states.TryGetAvatarState(Addresses.GameConfig, _avatarAddress, out _));
         }
@@ -104,8 +104,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetAvatarStateV2()
         {
-            var states = new MockStateDelta();
-            states = (MockStateDelta)states
+            IAccount states = new Account(MockState.Empty);
+            states = states
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
@@ -123,13 +123,13 @@ namespace Lib9c.Tests.Action
         [InlineData(LegacyQuestListKey)]
         public void GetAvatarStateV2_Throw_FailedLoadStateException(string key)
         {
-            var states = new MockStateDelta();
-            states = (MockStateDelta)states
+            IAccount states = new Account(MockState.Empty);
+            states = states
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize());
-            states = (MockStateDelta)states.SetState(_avatarAddress.Derive(key), null);
+            states = states.SetState(_avatarAddress.Derive(key), null);
             var exc = Assert.Throws<FailedLoadStateException>(() => states.GetAvatarStateV2(_avatarAddress));
             Assert.Contains(key, exc.Message);
         }
@@ -139,15 +139,15 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void TryGetAvatarStateV2(bool backward)
         {
-            var states = new MockStateDelta();
+            IAccount states = new Account(MockState.Empty);
             if (backward)
             {
-                states = (MockStateDelta)states
+                states = states
                     .SetState(_avatarAddress, _avatarState.Serialize());
             }
             else
             {
-                states = (MockStateDelta)states
+                states = states
                     .SetState(_avatarAddress, _avatarState.SerializeV2())
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
@@ -163,16 +163,16 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void TryGetAgentAvatarStatesV2(bool backward)
         {
-            var states = new MockStateDelta().SetState(_agentAddress, _agentState.Serialize());
+            IAccount states = new Account(MockState.Empty).SetState(_agentAddress, _agentState.Serialize());
 
             if (backward)
             {
-                states = (MockStateDelta)states
+                states = states
                     .SetState(_avatarAddress, _avatarState.Serialize());
             }
             else
             {
-                states = (MockStateDelta)states
+                states = states
                     .SetState(_avatarAddress, _avatarState.SerializeV2())
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
@@ -186,7 +186,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetStatesAsDict()
         {
-            IAccount states = new MockStateDelta();
+            IAccount states = new Account(MockState.Empty);
             var dict = new Dictionary<Address, IValue>
             {
                 { new PrivateKey().ToAddress(), Null.Value },
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetSheets()
         {
-            IAccount states = new MockStateDelta();
+            IAccount states = new Account(MockState.Empty);
             SheetsExtensionsTest.InitSheets(
                 states,
                 out _,
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action
         [InlineData(true)]
         public void GetCrystalCostState(bool exist)
         {
-            IAccount state = new MockStateDelta();
+            IAccount state = new Account(MockState.Empty);
             int expectedCount = exist ? 1 : 0;
             FungibleAssetValue expectedCrystal = exist
                 ? 100 * CrystalCalculator.CRYSTAL
@@ -273,7 +273,7 @@ namespace Lib9c.Tests.Action
             Address previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 1);
             Address beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 2);
             var crystalCostState = new CrystalCostState(default, 100 * CrystalCalculator.CRYSTAL);
-            IAccount state = new MockStateDelta()
+            IAccount state = new Account(MockState.Empty)
                 .SetState(dailyCostAddress, crystalCostState.Serialize())
                 .SetState(weeklyCostAddress, crystalCostState.Serialize())
                 .SetState(previousCostAddress, crystalCostState.Serialize())
@@ -303,7 +303,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void GetCouponWallet()
         {
-            IAccount states = new MockStateDelta();
+            IAccount states = new Account(MockState.Empty);
             var guid1 = new Guid("6856AE42-A820-4041-92B0-5D7BAA52F2AA");
             var guid2 = new Guid("701BA698-CCB9-4FC7-B88F-7CB8C707D135");
             var guid3 = new Guid("910296E7-34E4-45D7-9B4E-778ED61F278B");

@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
 
             _sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(_sheets);

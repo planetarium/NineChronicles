@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
             var tableSheets = new TableSheets(sheets);
             Address agentAddress = new PrivateKey().ToAddress();
             Address avatarAddress = new PrivateKey().ToAddress();
-            IAccount state = new MockStateDelta();
+            IAccount state = new Account(MockState.Empty);
 
             var runeWeightSheet = new RuneWeightSheet();
             runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight

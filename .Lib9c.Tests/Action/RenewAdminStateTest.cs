@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
             _adminPrivateKey = new PrivateKey();
             _validUntil = 1_500_000L;
             _adminState = new AdminState(_adminPrivateKey.ToAddress(), _validUntil);
-            _stateDelta = new MockStateDelta(
+            _stateDelta = new Account(
                 MockState.Empty
                     .SetState(Addresses.Admin, _adminState.Serialize()));
         }

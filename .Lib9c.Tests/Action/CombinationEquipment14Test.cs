@@ -77,7 +77,7 @@
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 

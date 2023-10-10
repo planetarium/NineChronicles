@@ -35,7 +35,7 @@
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -207,7 +207,7 @@
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
@@ -228,7 +228,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
