@@ -21,6 +21,8 @@ namespace Nekoyume.UI
         TutorialActionClickItemInformationTooltipSubmitButton = 12,
         TutorialActionCloseAvatarInfoWidget = 13,
         TutorialActionClickGuidedQuestWorldStage2 = 14,
+        TutorialActionClickMenuButton = 15,
+        TutorialActionClickPortalRewardButton = 50001,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

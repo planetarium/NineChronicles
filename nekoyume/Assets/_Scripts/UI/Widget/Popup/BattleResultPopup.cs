@@ -646,15 +646,18 @@ namespace Nekoyume.UI
             }
 
             // for tutorial
-            if (SharedModel.StageID == Battle.RequiredStageForExitButton &&
-                SharedModel.LastClearedStageId == Battle.RequiredStageForExitButton &&
+            if (SharedModel.StageID == SharedModel.LastClearedStageId &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                stagePreparationButton.gameObject.SetActive(false);
-                nextButton.gameObject.SetActive(false);
-                repeatButton.gameObject.SetActive(false);
-                bottomText.text = string.Empty;
-                yield break;
+                if (SharedModel.StageID == Battle.RequiredStageForExitButton ||
+                    SharedModel.StageID == 5)
+                {
+                    stagePreparationButton.gameObject.SetActive(false);
+                    nextButton.gameObject.SetActive(false);
+                    repeatButton.gameObject.SetActive(false);
+                    bottomText.text = string.Empty;
+                    yield break;
+                }
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
