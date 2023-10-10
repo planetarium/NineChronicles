@@ -2247,7 +2247,7 @@ namespace Nekoyume.Blockchain
 
         private void ResponseUnlockWorld(ActionEvaluation<UnlockWorld> eval)
         {
-            Widget.Find<UnlockWorldLoadingScreen>().Close();
+            Widget.Find<LoadingScreen>().Close();
 
             if (eval.Exception is not null)
             {
