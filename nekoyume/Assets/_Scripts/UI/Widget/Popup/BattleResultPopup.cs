@@ -836,7 +836,13 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
+            var stageLoadingEffect = Find<StageLoadingEffect>();
+            if (!stageLoadingEffect.LoadingEnd)
+            {
+                yield return new WaitUntil(() => stageLoadingEffect.LoadingEnd);
+            }
+
+            yield return StartCoroutine(stageLoadingEffect.CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(log);
             Close();

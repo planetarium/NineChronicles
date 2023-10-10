@@ -21,13 +21,13 @@ namespace Nekoyume.UI.Tween
             _group = GetComponent<CanvasGroup>();
             if (playAtStart)
             {
-                _group.DOFade(beginValue, 0.0f);
+                ResetToBeginningValue();
             }
         }
 
         public override Tween PlayForward()
         {
-            _group.DOFade(beginValue, 0.0f);
+            ResetToBeginningValue();
             currentTween = _group.DOFade(endValue, duration);
             if (infiniteLoop)
             {
@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Tween
 
         public override Tween PlayReverse()
         {
-            _group.DOFade(endValue, 0.0f);
+            ResetToEndingValue();
             currentTween = _group.DOFade(beginValue, duration);
             if (TweenType.PingPongOnce == tweenType)
             {
@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Tween
 
         protected override IEnumerator CoPlayDelayed(float delay)
         {
-            _group.DOFade(beginValue, 0.0f);
+            ResetToBeginningValue();
             yield return new WaitForSeconds(delay);
             Play();
         }
@@ -98,6 +98,16 @@ namespace Nekoyume.UI.Tween
             {
                 Play();
             }
+        }
+
+        public void ResetToBeginningValue()
+        {
+            _group.alpha = beginValue;
+        }
+
+        public void ResetToEndingValue()
+        {
+            _group.alpha = endValue;
         }
     }
 }
