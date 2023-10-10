@@ -43,6 +43,19 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void Show(string message)
+        {
+            gameObject.SetActive(true);
+            SetMessage(message);
+            SetToolTipText();
+            PlaySliderAnimation();
+        }
+
+        public void Close()
+        {
+            gameObject.SetActive(false);
+        }
+
         private void LoadL10N()
         {
             _defaultMessage = $"{L10nManager.Localize("BLOCK_CHAIN_MINING_TX")}...";

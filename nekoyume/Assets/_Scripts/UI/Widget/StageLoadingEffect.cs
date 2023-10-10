@@ -40,7 +40,7 @@ namespace Nekoyume.UI
         public List<Image> images;
         public bool closeEnd;
         public bool dialogEnd;
-        public LoadingIndicator indicator;
+        public LoadingModule loadingModule;
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
@@ -54,6 +54,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             CloseWidget = null;
+
+            loadingModule.Initialize();
         }
 
         private static Sprite GetSprite(string background, string spriteNameFormat)
@@ -126,7 +128,7 @@ namespace Nekoyume.UI
             bool isNext,
             int clearedStageId)
         {
-            indicator.Close();
+            loadingModule.Close();
             dialogEnd = true;
             System.Func<IEnumerator> coroutine = null;
             if (isNext)
@@ -154,7 +156,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
                 worldName,
                 StageInformation.GetStageIdString(stageType, stageId, true));
-            indicator.Show(message);
+            loadingModule.Show(message);
 
             if (coroutine != null)
             {
