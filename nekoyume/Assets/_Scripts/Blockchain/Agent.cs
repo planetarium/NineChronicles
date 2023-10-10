@@ -329,8 +329,22 @@ namespace Nekoyume.Blockchain
             });
         }
 
-        public Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList, HashDigest<SHA256> stateRootHash) =>
-            throw new NotImplementedException();
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash)
+        {
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, IValue>();
+                foreach (var address in addressList)
+                {
+                    var result = await GetStateAsync(address, stateRootHash);
+                    dict[address] = result;
+                }
+
+                return dict;
+            });
+        }
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
             _transactions.TryGetValue(actionId, out txId);
