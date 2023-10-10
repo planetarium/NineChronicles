@@ -266,8 +266,8 @@ namespace Nekoyume.Game
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
-            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 #endif
+            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 
 #if ENABLE_FIREBASE
             // NOTE: Initialize Firebase.
