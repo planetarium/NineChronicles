@@ -66,12 +66,10 @@ namespace Lib9c.Tests.Action
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
-            var orderedClaimData = action.ClaimData.OrderBy(x => x.address).ToList();
-
             foreach (var i in Enumerable.Range(0, 2))
             {
-                Assert.Equal(orderedClaimData[i].address, deserialized.ClaimData[i].address);
-                Assert.True(orderedClaimData[i].fungibleAssetValues
+                Assert.Equal(action.ClaimData[i].address, deserialized.ClaimData[i].address);
+                Assert.True(action.ClaimData[i].fungibleAssetValues
                     .SequenceEqual(deserialized.ClaimData[i].fungibleAssetValues));
             }
         }
