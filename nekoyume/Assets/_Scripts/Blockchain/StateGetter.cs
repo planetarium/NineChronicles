@@ -36,9 +36,9 @@ namespace Nekoyume.Blockchain
         public static GameConfigState GetGameConfigState(HashDigest<SHA256> hash)
         {
             var value = Game.Game.instance.Agent.GetState(GameConfigState.Address, hash);
-            if (value is Null)
+            if (value is null or Null)
             {
-                Log.Warning("No game config state ({0})", GameConfigState.Address.ToHex());
+                Log.Warning("No game config state ({GameConfigStateAddress})", GameConfigState.Address.ToHex());
                 return null;
             }
 
@@ -48,7 +48,7 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(GetGameConfigState)}()");
+                Log.Error(e, "Unexpected error occurred during {GameConfigStateName}()", nameof(GetGameConfigState));
                 throw;
             }
         }
@@ -74,21 +74,21 @@ namespace Nekoyume.Blockchain
         public static AgentState GetAgentState(Address address, HashDigest<SHA256> hash)
         {
             var serializedAgent = Game.Game.instance.Agent.GetState(address, hash);
-            if (serializedAgent is Null)
+            if (serializedAgent is null or Null)
             {
-                Log.Warning("No agent state ({0})", address.ToHex());
+                Log.Warning("No agent state ({Address})", address.ToHex());
                 return null;
             }
 
             try
             {
-                return new AgentState((Bencodex.Types.Dictionary)serializedAgent);
+                return new AgentState((Dictionary)serializedAgent);
             }
             catch (InvalidCastException e)
             {
                 Log.Error(
                     e,
-                    "Invalid agent state ({0}): {1}",
+                    "Invalid agent state ({Address}): {SerializedAgent}",
                     address.ToHex(),
                     serializedAgent
                 );
@@ -109,9 +109,9 @@ namespace Nekoyume.Blockchain
         {
             var stakeStateAddr = StakeStateV2.DeriveAddress(address);
             IValue serialized = Game.Game.instance.Agent.GetState(stakeStateAddr, hash);
-            if (serialized is Null)
+            if (serialized is null or Null)
             {
-                Log.Warning("No stake state ({0})", address.ToHex());
+                Log.Warning("No stake state ({Address})", address.ToHex());
                 throw new StateNullException(address);
             }
 
@@ -123,7 +123,7 @@ namespace Nekoyume.Blockchain
             {
                 Log.Error(
                     e,
-                    "Invalid stake state ({0}): {1}",
+                    "Invalid stake state ({Address}): {Serialized}",
                     address.ToHex(),
                     serialized
                 );
@@ -132,12 +132,12 @@ namespace Nekoyume.Blockchain
             }
         }
 
-       public static Inventory GetInventory(
+        public static Inventory GetInventory(
             Address inventoryAddr,
             HashDigest<SHA256> hash)
         {
             var inventoryState = Game.Game.instance.Agent.GetState(inventoryAddr, hash);
-            if (inventoryState is null || inventoryState is Null)
+            if (inventoryState is null or Null)
             {
                 throw new StateNullException(inventoryAddr);
             }
@@ -158,7 +158,7 @@ namespace Nekoyume.Blockchain
                 )
             );
             var value = Game.Game.instance.Agent.GetState(address, hash);
-            if (value is Null)
+            if (value is null or Null)
             {
                 throw new StateNullException(address);
             }
@@ -169,7 +169,10 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                Log.Error(
+                    e,
+                    "Unexpected error occurred during {CombinationSlotStateName}()",
+                    nameof(GetCombinationSlotState));
                 throw;
             }
         }
@@ -178,9 +181,11 @@ namespace Nekoyume.Blockchain
         public static RedeemCodeState GetRedeemCodeState(HashDigest<SHA256> hash)
         {
             var value = Game.Game.instance.Agent.GetState(RedeemCodeState.Address, hash);
-            if (value is Null)
+            if (value is null or Null)
             {
-                Log.Warning("RedeemCodeState is null. ({0})", RedeemCodeState.Address.ToHex());
+                Log.Warning(
+                    "RedeemCodeState is null or Null. ({RedeemCodeStateAddress})",
+                    RedeemCodeState.Address.ToHex());
                 throw new StateNullException(RedeemCodeState.Address);
             }
 
@@ -190,7 +195,10 @@ namespace Nekoyume.Blockchain
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                Log.Error(
+                    e,
+                    "Unexpected error occurred during {CombinationSlotStateName}()",
+                    nameof(GetCombinationSlotState));
                 throw;
             }
         }
