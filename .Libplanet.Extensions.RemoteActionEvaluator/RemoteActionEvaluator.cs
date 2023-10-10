@@ -19,45 +19,29 @@ namespace Libplanet.Extensions.RemoteActionEvaluator;
 public class RemoteActionEvaluator : IActionEvaluator
 {
     private readonly Uri _endpoint;
-    private readonly IBlockChainStates _blockChainStates;
 
-    public RemoteActionEvaluator(Uri endpoint, IBlockChainStates blockChainStates)
+    public RemoteActionEvaluator(Uri endpoint)
     {
         _endpoint = endpoint;
-        _blockChainStates = blockChainStates;
     }
 
     public IActionLoader ActionLoader => throw new NotSupportedException();
 
-    public IReadOnlyList<IActionEvaluation> Evaluate(
+    public IReadOnlyList<ICommittedActionEvaluation> Evaluate(
         IPreEvaluationBlock block, HashDigest<SHA256>? baseStateRootHash)
     {
         using var httpClient = new HttpClient();
         var response = httpClient.PostAsJsonAsync(_endpoint, new RemoteEvaluationRequest
         {
             PreEvaluationBlock = PreEvaluationBlockMarshaller.Serialize(block),
+            BaseStateRootHash = baseStateRootHash is null
+                ? new byte[]{}
+                : baseStateRootHash.Value.ToByteArray(),
         }).Result;
         var evaluationResponse = response.Content.ReadFromJsonAsync<RemoteEvaluationResponse>().Result;
 
         var actionEvaluations = evaluationResponse.Evaluations.Select(ActionEvaluationMarshaller.Deserialize)
             .ToImmutableList();
-
-        for (var i = 0; i < actionEvaluations.Count; ++i)
-        {
-            if (i > 0)
-            {
-                actionEvaluations[i].InputContext.PreviousState.BaseState =
-                    actionEvaluations[i - 1].OutputState;
-            }
-            else
-            {
-                actionEvaluations[i].InputContext.PreviousState.BaseState =
-                    _blockChainStates.GetAccountState(block.PreviousHash);
-            }
-
-            actionEvaluations[i].OutputState.BaseState =
-                actionEvaluations[i].InputContext.PreviousState;
-        }
 
         return actionEvaluations;
     }
