@@ -203,6 +203,7 @@ namespace Nekoyume.Blockchain
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
             _actionRenderer.EveryRender<RewardGold>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval => UpdateAgentStateAsync(eval).Forget())
                 .AddTo(_disposables);
@@ -265,6 +266,7 @@ namespace Nekoyume.Blockchain
         private void CancelProductRegistration()
         {
             _actionRenderer.EveryRender<CancelProductRegistration>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCancelProductRegistrationAsync)
                 .AddTo(_disposables);
@@ -273,6 +275,7 @@ namespace Nekoyume.Blockchain
         private void ReRegisterProduct()
         {
             _actionRenderer.EveryRender<ReRegisterProduct>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseReRegisterProduct)
                 .AddTo(_disposables);
@@ -281,6 +284,9 @@ namespace Nekoyume.Blockchain
         private void BuyProduct()
         {
             _actionRenderer.EveryRender<BuyProduct>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.ProductInfos.Any(info => info.AgentAddress.Equals(States.Instance.AgentState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyProduct)
                 .AddTo(_disposables);
@@ -316,6 +322,7 @@ namespace Nekoyume.Blockchain
         private void Grinding()
         {
             _actionRenderer.EveryRender<Grinding>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
                 .AddTo(_disposables);
@@ -395,6 +402,10 @@ namespace Nekoyume.Blockchain
         private void TransferAsset()
         {
             _actionRenderer.EveryRender<TransferAsset>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipient.Equals(States.Instance.AgentState.address) ||
+                    eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
@@ -403,6 +414,11 @@ namespace Nekoyume.Blockchain
         private void TransferAssets()
         {
             _actionRenderer.EveryRender<TransferAssets>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipients.Any(e =>
+                        e.recipient.Equals(States.Instance.AgentState.address) ||
+                        e.recipient.Equals(States.Instance.CurrentAvatarState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAssets)
                 .AddTo(_disposables);
@@ -429,7 +445,9 @@ namespace Nekoyume.Blockchain
         private void ClaimStakeReward()
         {
             _actionRenderer.ActionRenderSubject
-                .Where(eval => eval.Action is IClaimStakeReward)
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) &&
+                    eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
@@ -516,6 +534,7 @@ namespace Nekoyume.Blockchain
         private void RequestPledge()
         {
             _actionRenderer.EveryRender<RequestPledge>()
+                .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRequestPledge)
                 .AddTo(_disposables);
@@ -533,6 +552,12 @@ namespace Nekoyume.Blockchain
         private void UnloadFromMyGarages()
         {
             _actionRenderer.EveryRender<UnloadFromMyGarages>()
+                .Where(eval =>
+                    eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
+                    (eval.Action.FungibleAssetValues is not null &&
+                    eval.Action.FungibleAssetValues.Any(e =>
+                        e.balanceAddr.Equals(States.Instance.AgentState.address) ||
+                        e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -632,6 +657,8 @@ namespace Nekoyume.Blockchain
         private void ClaimItems()
         {
             _actionRenderer.EveryRender<ClaimItems>()
+                .Where(eval =>
+                    eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
