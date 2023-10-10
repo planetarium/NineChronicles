@@ -197,6 +197,7 @@ namespace Nekoyume.Blockchain
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
             _actionRenderer.EveryRender<RewardGold>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval => UpdateAgentStateAsync(eval).Forget())
                 .AddTo(_disposables);
@@ -259,6 +260,7 @@ namespace Nekoyume.Blockchain
         private void CancelProductRegistration()
         {
             _actionRenderer.EveryRender<CancelProductRegistration>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCancelProductRegistrationAsync)
                 .AddTo(_disposables);
@@ -267,6 +269,7 @@ namespace Nekoyume.Blockchain
         private void ReRegisterProduct()
         {
             _actionRenderer.EveryRender<ReRegisterProduct>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseReRegisterProduct)
                 .AddTo(_disposables);
@@ -275,6 +278,9 @@ namespace Nekoyume.Blockchain
         private void BuyProduct()
         {
             _actionRenderer.EveryRender<BuyProduct>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.ProductInfos.Any(info => info.AgentAddress.Equals(States.Instance.AgentState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyProduct)
                 .AddTo(_disposables);
@@ -310,6 +316,7 @@ namespace Nekoyume.Blockchain
         private void Grinding()
         {
             _actionRenderer.EveryRender<Grinding>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
                 .AddTo(_disposables);
@@ -389,6 +396,10 @@ namespace Nekoyume.Blockchain
         private void TransferAsset()
         {
             _actionRenderer.EveryRender<TransferAsset>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipient.Equals(States.Instance.AgentState.address) ||
+                    eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
@@ -397,6 +408,11 @@ namespace Nekoyume.Blockchain
         private void TransferAssets()
         {
             _actionRenderer.EveryRender<TransferAssets>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipients.Any(e =>
+                        e.recipient.Equals(States.Instance.AgentState.address) ||
+                        e.recipient.Equals(States.Instance.CurrentAvatarState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAssets)
                 .AddTo(_disposables);
@@ -423,7 +439,9 @@ namespace Nekoyume.Blockchain
         private void ClaimStakeReward()
         {
             _actionRenderer.ActionRenderSubject
-                .Where(eval => eval.Action is IClaimStakeReward)
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) &&
+                    eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
@@ -510,6 +528,7 @@ namespace Nekoyume.Blockchain
         private void RequestPledge()
         {
             _actionRenderer.EveryRender<RequestPledge>()
+                .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRequestPledge)
                 .AddTo(_disposables);
@@ -527,86 +546,14 @@ namespace Nekoyume.Blockchain
         private void UnloadFromMyGarages()
         {
             _actionRenderer.EveryRender<UnloadFromMyGarages>()
+                .Where(eval =>
+                    eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
+                    (eval.Action.FungibleAssetValues is not null &&
+                    eval.Action.FungibleAssetValues.Any(e =>
+                        e.balanceAddr.Equals(States.Instance.AgentState.address) ||
+                        e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    if (eval.Exception is not null)
-                    {
-                        Debug.Log(eval.Exception.Message);
-                        return;
-                    }
-
-                    var gameStates = Game.Game.instance.States;
-                    var agentAddr = gameStates.AgentState.address;
-                    var avatarAddr = gameStates.CurrentAvatarState.address;
-                    var states = eval.OutputState;
-                    var action = eval.Action;
-                    if (action.FungibleAssetValues is not null)
-                    {
-                        foreach (var (balanceAddr, value) in action.FungibleAssetValues)
-                        {
-                            var balance = StateGetter.GetBalance(
-                                balanceAddr,
-                                value.Currency,
-                                states);
-                            if (balanceAddr.Equals(agentAddr))
-                            {
-                                if (value.Currency.Equals(GoldCurrency))
-                                {
-                                    var goldState = new GoldBalanceState(balanceAddr, balance);
-                                    gameStates.SetGoldBalanceState(goldState);
-                                }
-                                else if (value.Currency.Equals(Currencies.Crystal))
-                                {
-                                    gameStates.SetCrystalBalance(balance);
-                                }
-                                else if (value.Currency.Equals(Currencies.Garage))
-                                {
-                                    AgentStateSubject.OnNextGarage(value);
-                                }
-                            }
-                            else if (balanceAddr.Equals(avatarAddr))
-                            {
-                                gameStates.SetCurrentAvatarBalance(balance);
-                            }
-                        }
-                    }
-
-                    if (action.FungibleIdAndCounts is not null)
-                    {
-                        UpdateCurrentAvatarInventory(eval);
-                    }
-
-                    var avatarValue = StateGetter.GetState(avatarAddr, states);
-                    if (avatarValue is not Dictionary avatarDict)
-                    {
-                        Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                        return;
-                    }
-
-                    if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
-                        avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
-                    {
-                        Debug.LogError($"Failed to get mail box: {avatarAddr}");
-                        return;
-                    }
-
-                    var mailBox = new MailBox(mailBoxList);
-                    var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                        .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
-                    if (mail is not null)
-                    {
-                        mail.New = true;
-                        gameStates.CurrentAvatarState.mailBox = mailBox;
-                        LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                                         $"the render context of UnloadFromMyGarages action.\n" +
-                                         $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                    }
-                })
+                .Subscribe(ResponseUnloadFromMyGarages)
                 .AddTo(_disposables);
         }
 
@@ -626,6 +573,8 @@ namespace Nekoyume.Blockchain
         private void ClaimItems()
         {
             _actionRenderer.EveryRender<ClaimItems>()
+                .Where(eval =>
+                    eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -2956,6 +2905,91 @@ namespace Nekoyume.Blockchain
             }
 
             States.Instance.SetPledgeStates(address, approved);
+        }
+
+        private void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.FungibleAssetValues is not null)
+            {
+                foreach (var (balanceAddr, value) in action.FungibleAssetValues)
+                {
+                    if (balanceAddr.Equals(agentAddr))
+                    {
+                        var balance = StateGetter.GetBalance(
+                            balanceAddr,
+                            value.Currency,
+                            states);
+                        if (value.Currency.Equals(GoldCurrency))
+                        {
+                            var goldState = new GoldBalanceState(balanceAddr, balance);
+                            gameStates.SetGoldBalanceState(goldState);
+                        }
+                        else if (value.Currency.Equals(Currencies.Crystal))
+                        {
+                            gameStates.SetCrystalBalance(balance);
+                        }
+                        else if (value.Currency.Equals(Currencies.Garage))
+                        {
+                            AgentStateSubject.OnNextGarage(value);
+                        }
+                    }
+                    else if (balanceAddr.Equals(avatarAddr))
+                    {
+                        var balance = StateGetter.GetBalance(
+                            balanceAddr,
+                            value.Currency,
+                            states);
+                        gameStates.SetCurrentAvatarBalance(balance);
+                    }
+                }
+            }
+
+            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                action.FungibleIdAndCounts is not null)
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }
+
+            var avatarValue = StateGetter.GetState(avatarAddr, states);
+            if (avatarValue is not Dictionary avatarDict)
+            {
+                Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                return;
+            }
+
+            if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+            {
+                Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                return;
+            }
+
+            var mailBox = new MailBox(mailBoxList);
+            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+            if (mail is not null)
+            {
+                mail.New = true;
+                gameStates.CurrentAvatarState.mailBox = mailBox;
+                LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+            }
+            else
+            {
+                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                                 $"the render context of UnloadFromMyGarages action.\n" +
+                                 $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+            }
         }
     }
 }
