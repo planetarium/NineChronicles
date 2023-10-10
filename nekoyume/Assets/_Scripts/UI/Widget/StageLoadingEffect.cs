@@ -44,6 +44,7 @@ namespace Nekoyume.UI
 
         private const int VideoPlayStage = 2;
         private const int WorkshopDialogStage = 3;
+        private const int WorkShopDialogId = 101;
 
         protected override void Awake()
         {
@@ -252,7 +253,7 @@ namespace Nekoyume.UI
             LoadingEnd = false;
             loadingImage.SetActive(true);
             loadingAlphaTweener.PlayForward();
-            Find<Tutorial>().PlaySmallGuide(101);
+            Find<Tutorial>().PlaySmallGuide(WorkShopDialogId);
 
             yield return null;
             yield return new WaitUntil(() => !Find<Tutorial>().isActiveAndEnabled);
