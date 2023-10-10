@@ -37,6 +37,7 @@ namespace Nekoyume.UI.Module
             Quit,
             PortalReward,
             Notice,
+            InviteFriend,
         }
 
         public enum AssetVisibleState
@@ -127,6 +128,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
                 { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
                 { ToggleType.Notice, new ReactiveProperty<bool>(false) },
+                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
@@ -190,6 +192,14 @@ namespace Nekoyume.UI.Module
 
                 switch (toggleInfo.Type)
                 {
+                    case ToggleType.InviteFriend:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                            toggleInfo.Toggle.isOn = false;
+                        });
+                        break;
                     case ToggleType.PortalReward:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
