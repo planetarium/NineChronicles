@@ -1,8 +1,9 @@
+using System.Security.Cryptography;
 using Bencodex;
 using Bencodex.Types;
 using Lib9c.StateService.Shared;
 using Libplanet.Action;
-using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Extensions.ActionEvaluatorCommonComponents;
 using Libplanet.Store;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace Lib9c.StateService.Controllers;
 [Route("/evaluation")]
 public class RemoteEvaluationController : ControllerBase
 {
-    private readonly IStateStore _stateStore;
+    private readonly IActionEvaluator _actionEvaluator;
     private readonly ILogger<RemoteEvaluationController> _logger;
     private readonly Codec _codec;
 
@@ -24,7 +25,10 @@ public class RemoteEvaluationController : ControllerBase
         ILogger<RemoteEvaluationController> logger,
         Codec codec)
     {
-        _stateStore = stateStore;
+        _actionEvaluator = new ActionEvaluator(
+            _ => new RewardGold(),
+            stateStore,
+            new NCActionLoader());
         _logger = logger;
         _codec = codec;
     }
@@ -38,17 +42,19 @@ public class RemoteEvaluationController : ControllerBase
             return StatusCode(StatusCodes.Status400BadRequest);
         }
 
+        var decodedStateRootHash = _codec.Decode(request.BaseStateRootHash);
+        if (decodedStateRootHash is not Binary binary)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
         var preEvaluationBlock = PreEvaluationBlockMarshaller.Unmarshal(dictionary);
-        var actionEvaluator =
-            new ActionEvaluator(
-                context => new RewardGold(),
-                _stateStore,
-                new NCActionLoader());
+        var baseStateRootHash = new HashDigest<SHA256>(binary);
+
         return Ok(new RemoteEvaluationResponse
         {
-            // FIXME: As a temporary measure, null is used.  This does not work properly.
-            Evaluations = actionEvaluator
-                .Evaluate(preEvaluationBlock, null)
+            Evaluations = _actionEvaluator
+                .Evaluate(preEvaluationBlock, baseStateRootHash)
                 .Select(ActionEvaluationMarshaller.Serialize)
                 .ToArray(),
         });
