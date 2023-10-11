@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.UI
@@ -24,7 +24,9 @@ namespace Nekoyume.UI
         MailReceiveButton = 15, //
         CombinationSlots = 16, //// <---- 더미데이터 써야할듯 -340 / +50, +90
         GuidedQuestButton = 17, // 좌표 안맞음
-        CombinationResultPopupButton = 18// 좌표 안맞음
+        CombinationResultPopupButton = 18, // 좌표 안맞음
+        MenuButton = 19,
+        PortalReward = 50001,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

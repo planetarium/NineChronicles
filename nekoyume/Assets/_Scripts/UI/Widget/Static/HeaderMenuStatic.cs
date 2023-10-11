@@ -664,6 +664,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void TutorialActionClickMenuButton()
+        {
+            if(menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = true;
+            }
+        }
+
+        public void TutorialActionClickPortalRewardButton()
+        {
+            Game.instance.PortalConnect.OpenPortalRewardUrl();
+            if (menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = false;
+            }
+        }
+
         public void UpdatePortalRewardByLevel(int level)
         {
             foreach (var noticePoint in ResourcesHelper.GetPortalRewardLevelTable())
