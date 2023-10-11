@@ -41,6 +41,11 @@ namespace Nekoyume.UI
 
                 foreach (var target in widget.tutorialTargets.Where(target => target != null))
                 {
+                    if (_targets.ContainsKey(target.type))
+                    {
+                        Debug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
+                        continue;
+                    }
                     _targets.Add(target.type, target.rectTransform);
                 }
 
@@ -50,6 +55,11 @@ namespace Nekoyume.UI
                     var methodInfo = type.GetMethod(action.ToString());
                     if (methodInfo != null)
                     {
+                        if (_actions.ContainsKey(action))
+                        {
+                            Debug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
+                            continue;
+                        }
                         _actions.Add(action, new TutorialAction(widget, methodInfo));
                     }
                 }
