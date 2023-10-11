@@ -818,7 +818,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
+  m_fontSize: 27
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1625,6 +1625,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageRewardItemView (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1953,6 +1988,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageRewardItemView (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2100,6 +2170,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
@@ -2249,6 +2354,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageRewardItemView
       objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 40.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -50.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 60.97
+      objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2364,6 +2504,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7055143591876530020, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4586961182084761879, guid: f5d25136d0ee01b4599de5ee424b1575, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f5d25136d0ee01b4599de5ee424b1575, type: 3}
@@ -2410,6 +2555,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
@@ -3125,6 +3305,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageRewardItemView (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
       propertyPath: m_Pivot.x
@@ -3419,6 +3634,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
@@ -4170,6 +4420,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
@@ -10298,6 +10583,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: StageRewardItemView (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
       propertyPath: m_Pivot.x
@@ -10739,6 +11059,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 260
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441652980433859373, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5165915944552467560, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}
