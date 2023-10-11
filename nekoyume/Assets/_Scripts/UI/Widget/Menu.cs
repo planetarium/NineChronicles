@@ -194,7 +194,7 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
@@ -431,6 +431,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Workshop, null, true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
         }
@@ -524,8 +525,12 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
+#if UNITY_ANDROID
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             Find<StakingPopup>().Show();
+#endif
         }
 
         public void WorldBossClick()

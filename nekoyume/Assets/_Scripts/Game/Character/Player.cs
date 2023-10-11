@@ -12,6 +12,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    using Nekoyume.Helper;
     // NOTE: Avoid Ambiguous invocation:
     // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
     // System.ObservableExtensions and UniRx.ObservableExtensions
@@ -343,6 +344,10 @@ namespace Nekoyume.Game.Character
                 });
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
+                for (int interLevel = Level+1; interLevel <= level; interLevel++)
+                {
+                    Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
+                }
                 InitStats(Model);
             }
 
