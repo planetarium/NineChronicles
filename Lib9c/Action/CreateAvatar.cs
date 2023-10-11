@@ -262,7 +262,7 @@ namespace Nekoyume.Action
                 sheetTypes: new[] {typeof(CreateAvatarItemSheet), typeof(CreateAvatarFavSheet)});
             var itemSheet = sheets.GetItemSheet();
             var createAvatarItemSheet = sheets.GetSheet<CreateAvatarItemSheet>();
-            AddItem(itemSheet, createAvatarItemSheet, avatarState, context.Random);
+            AddItem(itemSheet, createAvatarItemSheet, avatarState, context.GetRandom());
             var createAvatarFavSheet = sheets.GetSheet<CreateAvatarFavSheet>();
             states = MintAsset(createAvatarFavSheet, avatarState, states, context);
             sw.Stop();

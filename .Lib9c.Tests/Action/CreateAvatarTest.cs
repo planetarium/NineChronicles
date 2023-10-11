@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = state,
                 Signer = _agentAddress,
                 BlockIndex = blockIndex,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             var avatarAddress = _agentAddress.Derive(
@@ -359,7 +359,7 @@ RUNE_GOLDENLEAF,200000,Avatar
             var avatarAddress = new PrivateKey().ToAddress();
             var agentAddress = new PrivateKey().ToAddress();
             var avatarState = new AvatarState(avatarAddress, agentAddress, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
-            var nextState = CreateAvatar.MintAsset(createAvatarFavSheet, avatarState, new MockStateDelta(), new ActionContext());
+            var nextState = CreateAvatar.MintAsset(createAvatarFavSheet, avatarState, new Account(MockState.Empty), new ActionContext());
             foreach (var row in createAvatarFavSheet.Values)
             {
                 var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
