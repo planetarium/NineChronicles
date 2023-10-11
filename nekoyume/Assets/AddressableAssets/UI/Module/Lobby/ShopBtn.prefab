@@ -2629,7 +2629,6 @@ RectTransform:
   - {fileID: 2543131741813834659}
   - {fileID: 9184220585697022119}
   - {fileID: 7733699665344727966}
-  - {fileID: 9044489233577518989}
   m_Father: {fileID: 1806947039787728185}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4939,7 +4938,7 @@ GameObject:
   - component: {fileID: 1673535001864683183}
   - component: {fileID: 7233660687830345774}
   m_Layer: 5
-  m_Name: Text_03
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4957,12 +4956,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2117963323469927503}
-  m_RootOrder: 4
+  m_Father: {fileID: 7733699665344727966}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 134, y: -5.9999847}
+  m_AnchoredPosition: {x: 0, y: 2}
   m_SizeDelta: {x: 130, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &810613015827040233
@@ -8666,8 +8665,9 @@ GameObject:
   - component: {fileID: 451885826224824757}
   - component: {fileID: 3492808557744766346}
   - component: {fileID: 424534771387203232}
+  - component: {fileID: 5043166196005284161}
   m_Layer: 5
-  m_Name: Text_03
+  m_Name: Text_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8684,7 +8684,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 9044489233577518989}
   m_Father: {fileID: 2117963323469927503}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8821,6 +8822,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &5043166196005284161
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8719805506543957082}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8849036602878522369
 GameObject:
   m_ObjectHideFlags: 0
