@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
         private int _count;
         private readonly List<MailRewards> _mailRewardsList = new();
-        private readonly ReactiveProperty<bool> _isDone = new();
+        protected readonly ReactiveProperty<bool> _isDone = new();
         private readonly List<IDisposable> _disposables = new();
 
         protected override void Awake()
@@ -118,7 +118,7 @@ namespace Nekoyume.UI
             StartCoroutine(PlayAnimation());
         }
 
-        private IEnumerator PlayAnimation()
+        protected virtual IEnumerator PlayAnimation()
         {
             yield return null;
             var movement = content.sizeDelta.x / (_count + 1);
