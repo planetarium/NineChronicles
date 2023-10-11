@@ -348,8 +348,20 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
-        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency, HashDigest<SHA256> stateRootHash) =>
-            throw new NotImplementedException();
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            HashDigest<SHA256> stateRootHash)
+        { 
+            var raw = await _service.GetBalanceBySrh(
+                address.ToByteArray(),
+                _codec.Encode(currency.Serialize()),
+                stateRootHash.ToByteArray());
+            var serialized = (List) _codec.Decode(raw);
+            return FungibleAssetValue.FromRawValue(
+                new Currency(serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger());
+        }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
