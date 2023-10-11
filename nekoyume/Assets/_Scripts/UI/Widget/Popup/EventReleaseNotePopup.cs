@@ -61,7 +61,7 @@ namespace Nekoyume.UI
 
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
-
+        private const int MinimumClearStageId = 20;
 
         public override void Initialize()
         {
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
             }
 
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (clearedStageId <= 10)
+            if (clearedStageId <= MinimumClearStageId)
             {
                 return;
             }
