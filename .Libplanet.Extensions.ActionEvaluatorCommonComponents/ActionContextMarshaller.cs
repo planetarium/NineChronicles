@@ -27,7 +27,7 @@ public static class ActionContextMarshaller
             .Add("rehearsal", actionContext.Rehearsal)
             .Add("block_index", actionContext.BlockIndex)
             .Add("block_protocol_version", actionContext.BlockProtocolVersion)
-            .Add("random_seed", actionContext.Random.Seed)
+            .Add("random_seed", actionContext.RandomSeed)
             .Add("signer", actionContext.Signer.ToHex())
             .Add("previous_states", AccountStateDeltaMarshaller.Marshal(actionContext.PreviousState));
 
@@ -60,7 +60,7 @@ public static class ActionContextMarshaller
                 ? new HashDigest<SHA256>(((Binary)dictionary["previous_state_root_hash"]).ByteArray)
                 : null,
             previousState: AccountStateDeltaMarshaller.Unmarshal(dictionary["previous_states"]),
-            random: new Random((Integer)dictionary["random_seed"])
+            randomSeed: (Integer)dictionary["random_seed"]
         );
     }
 

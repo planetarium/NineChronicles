@@ -70,9 +70,10 @@ namespace Nekoyume.Action
             };
 
             // create mail
+            var random = ctx.GetRandom();
             var mail = new DailyRewardMail(result,
                                            ctx.BlockIndex,
-                                           ctx.Random.GenerateRandomGuid(),
+                                           random.GenerateRandomGuid(),
                                            ctx.BlockIndex);
 
             result.id = mail.id;

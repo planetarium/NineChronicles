@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlock
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex
@@ -301,7 +301,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex
@@ -399,7 +399,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex

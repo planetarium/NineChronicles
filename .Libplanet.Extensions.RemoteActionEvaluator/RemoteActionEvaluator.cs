@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.StateService.Shared;
 using Libplanet.Action;
@@ -11,6 +12,7 @@ using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Consensus;
 using Libplanet.Extensions.ActionEvaluatorCommonComponents;
+using Libplanet.Common;
 
 namespace Libplanet.Extensions.RemoteActionEvaluator;
 
@@ -27,7 +29,8 @@ public class RemoteActionEvaluator : IActionEvaluator
 
     public IActionLoader ActionLoader => throw new NotSupportedException();
 
-    public IReadOnlyList<IActionEvaluation> Evaluate(IPreEvaluationBlock block)
+    public IReadOnlyList<IActionEvaluation> Evaluate(
+        IPreEvaluationBlock block, HashDigest<SHA256>? baseStateRootHash)
     {
         using var httpClient = new HttpClient();
         var response = httpClient.PostAsJsonAsync(_endpoint, new RemoteEvaluationRequest

@@ -4,6 +4,7 @@ using Lib9c.StateService.Shared;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Extensions.ActionEvaluatorCommonComponents;
+using Libplanet.Store;
 using Microsoft.AspNetCore.Mvc;
 using Nekoyume.Action;
 using Nekoyume.Action.Loader;
@@ -14,16 +15,16 @@ namespace Lib9c.StateService.Controllers;
 [Route("/evaluation")]
 public class RemoteEvaluationController : ControllerBase
 {
-    private readonly IBlockChainStates _blockChainStates;
+    private readonly IStateStore _stateStore;
     private readonly ILogger<RemoteEvaluationController> _logger;
     private readonly Codec _codec;
 
     public RemoteEvaluationController(
-        IBlockChainStates blockChainStates,
+        IStateStore stateStore,
         ILogger<RemoteEvaluationController> logger,
         Codec codec)
     {
-        _blockChainStates = blockChainStates;
+        _stateStore = stateStore;
         _logger = logger;
         _codec = codec;
     }
@@ -41,11 +42,14 @@ public class RemoteEvaluationController : ControllerBase
         var actionEvaluator =
             new ActionEvaluator(
                 context => new RewardGold(),
-                _blockChainStates,
+                _stateStore,
                 new NCActionLoader());
         return Ok(new RemoteEvaluationResponse
         {
-            Evaluations = actionEvaluator.Evaluate(preEvaluationBlock).Select(ActionEvaluationMarshaller.Serialize)
+            // FIXME: As a temporary measure, null is used.  This does not work properly.
+            Evaluations = actionEvaluator
+                .Evaluate(preEvaluationBlock, null)
+                .Select(ActionEvaluationMarshaller.Serialize)
                 .ToArray(),
         });
     }

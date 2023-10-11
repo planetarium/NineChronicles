@@ -124,13 +124,14 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 recipeId = recipe.Id,
                 subRecipeId = recipe.SubRecipeIds?[1],
             };
-            stateV2 = action.Execute(new ActionContext
+            var ctx = new ActionContext
             {
                 PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
-                Random = random,
-            });
+            };
+            ctx.SetRandom(random);
+            stateV2 = action.Execute(ctx);
             var slotState = stateV2.GetCombinationSlotState(_avatarAddr, 0);
             // TEST: No additional option added (1 star)
             Assert.Equal(
@@ -164,13 +165,14 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 subRecipeId = recipe.SubRecipeIds?[1],
                 petId = _petId,
             };
-            stateV2 = petAction.Execute(new ActionContext
+            ctx = new ActionContext
             {
                 PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
-                Random = random,
-            });
+            };
+            ctx.SetRandom(random);
+            stateV2 = petAction.Execute(ctx);
             var petSlotState = stateV2.GetCombinationSlotState(_avatarAddr, 1);
             // TEST: One additional option added (2 star)
             Assert.Equal(

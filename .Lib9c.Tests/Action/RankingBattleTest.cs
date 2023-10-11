@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattleTest(ITestOutputHelper outputHelper)
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var keys = new List<string>
             {
@@ -169,7 +169,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });

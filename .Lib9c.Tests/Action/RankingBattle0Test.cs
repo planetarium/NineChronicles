@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle0Test()
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -134,7 +134,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = signer,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -248,7 +248,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -326,7 +326,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -367,7 +367,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -418,7 +418,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });

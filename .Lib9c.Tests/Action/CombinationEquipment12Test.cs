@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var currency = nextState.GetGoldCurrency();
@@ -369,7 +369,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }

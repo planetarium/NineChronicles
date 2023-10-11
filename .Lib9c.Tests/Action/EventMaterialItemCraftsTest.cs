@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
 
         public EventMaterialItemCraftsTest()
         {
-            _initialStates = new MockStateDelta();
+            _initialStates = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -264,7 +264,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

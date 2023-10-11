@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleV4Test()
         {
-            _initialStates = new MockStateDelta();
+            _initialStates = new Account(MockState.Empty);
 
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
@@ -374,7 +374,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
                 PreviousState = _initialStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.Throws(exception, () =>
@@ -478,7 +478,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

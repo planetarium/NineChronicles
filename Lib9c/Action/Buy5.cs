@@ -251,7 +251,8 @@ namespace Nekoyume.Action
                 purchaseResult.shopItem = shopItem;
                 purchaseResult.itemUsable = shopItem.ItemUsable;
                 purchaseResult.costume = shopItem.Costume;
-                var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
+                var random = ctx.GetRandom();
+                var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, random.GenerateRandomGuid(),
                     ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
@@ -262,7 +263,7 @@ namespace Nekoyume.Action
                     costume = shopItem.Costume,
                     gold = taxedPrice
                 };
-                var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
+                var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, random.GenerateRandomGuid(),
                     ctx.BlockIndex);
                 sellerResult.id = sellerMail.id;
                 sellerResults.Add(sellerResult);

@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             sheets[nameof(StakeRegularRewardSheet)] =

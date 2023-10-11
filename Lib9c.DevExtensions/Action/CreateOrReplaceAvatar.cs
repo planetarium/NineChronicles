@@ -372,9 +372,10 @@ namespace Lib9c.DevExtensions.Action
                 return context.PreviousState;
             }
 
+            var random = context.GetRandom();
             return Execute(
                 context.PreviousState,
-                context.Random,
+                random,
                 context.BlockIndex,
                 context.Signer);
         }

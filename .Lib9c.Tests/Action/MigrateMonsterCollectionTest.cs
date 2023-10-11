@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
 
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = states,
                 Signer = _signer,
                 BlockIndex = 0,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = states,
                 Signer = _signer,
                 BlockIndex = ActionObsoleteConfig.V100220ObsoleteIndex + 1,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.True(states.TryGetAvatarStateV2(
@@ -139,7 +139,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = states,
                 Signer = _signer,
                 BlockIndex = claimBlockIndex,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             Assert.True(states.TryGetStakeState(_signer, out StakeState stakeState));

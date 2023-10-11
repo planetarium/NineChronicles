@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         {
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _state,
                 Signer = _signer,
                 BlockIndex = rewardLevel * MonsterCollectionState0.RewardInterval,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             MonsterCollectionState0 nextMonsterCollectionState = new MonsterCollectionState0((Dictionary)nextState.GetState(collectionAddress));
@@ -291,7 +291,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = _state,
                     Signer = _signer,
                     BlockIndex = MonsterCollectionState0.ExpirationIndex,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 })
             );
         }

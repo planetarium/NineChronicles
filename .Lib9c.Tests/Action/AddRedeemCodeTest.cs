@@ -1,9 +1,8 @@
 namespace Lib9c.Tests.Action
 {
     using System.Collections.Immutable;
-    using Bencodex.Types;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
-    using Libplanet.Types.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -19,7 +18,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(initStates);
+            var state = new Account(initStates);
             var action = new AddRedeemCode
             {
                 redeemCsv = "New Value",
@@ -69,7 +68,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = adminAddress,
                 BlockIndex = 0,
-                PreviousState = new MockStateDelta()
+                PreviousState = new Account(MockState.Empty)
                     .SetState(Addresses.Admin, adminState.Serialize())
                     .SetState(Addresses.RedeemCode, new RedeemCodeState(new RedeemCodeListSheet()).Serialize()),
             });
@@ -91,7 +90,7 @@ namespace Lib9c.Tests.Action
             var sheet = new RedeemCodeListSheet();
             sheet.Set(csv);
 
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                     .SetState(Addresses.RedeemCode, new RedeemCodeState(sheet).Serialize());
 
             var action = new AddRedeemCode
@@ -118,7 +117,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Rehearsal = true,
             });
 

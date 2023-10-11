@@ -32,7 +32,7 @@
 
         public RankingBattle5Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -194,7 +194,7 @@
             {
                 PreviousState = previousState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -227,7 +227,7 @@
                 {
                     PreviousState = _initialState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -272,7 +272,7 @@
                 {
                     PreviousState = _initialState,
                     Signer = signer,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -307,7 +307,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -339,7 +339,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -373,7 +373,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -414,7 +414,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -442,7 +442,7 @@
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -471,7 +471,7 @@
             {
                 PreviousState = _initialState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -536,7 +536,7 @@
             {
                 PreviousState = state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             }));
         }

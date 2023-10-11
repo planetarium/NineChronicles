@@ -392,9 +392,10 @@ namespace Nekoyume.Action
             var winCount = 0;
             var defeatCount = 0;
             var rewards = new List<ItemBase>();
+            var random = context.GetRandom();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulatorV3(context.Random);
+                var simulator = new ArenaSimulatorV3(random);
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
@@ -409,7 +410,7 @@ namespace Nekoyume.Action
                 }
 
                 var reward = RewardSelector.Select(
-                    context.Random,
+                    random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
                     myArenaPlayerDigest.Level,

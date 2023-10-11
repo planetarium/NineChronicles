@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -182,7 +182,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             const long expiredBlockIndex = Sell6.ExpiredBlockIndex + 1;
@@ -513,7 +513,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             // Check AvatarState and Inventory
@@ -602,7 +602,7 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = _agentAddress,
             }));
         }
@@ -655,7 +655,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -685,7 +685,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 11,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

@@ -317,8 +317,9 @@ namespace Nekoyume.Action
             var simulatorSheets = useV100291Sheets
                 ? sheets.GetSimulatorSheetsV100291()
                 : sheets.GetSimulatorSheetsV1();
+            var random = context.GetRandom();
             var simulator = new StageSimulatorV2(
-                context.Random,
+                random,
                 avatarState,
                 Foods,
                 new List<Skill>(),
@@ -332,7 +333,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulatorV2.GetWaveRewards(
-                    context.Random,
+                    random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),
                     PlayCount));

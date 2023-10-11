@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle10Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var keys = new List<string>
             {
@@ -214,7 +214,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousState,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -268,7 +268,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -312,7 +312,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = _initialState,
                     Signer = signer,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -346,7 +346,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -377,7 +377,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -410,7 +410,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -450,7 +450,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agent1Address,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -477,7 +477,7 @@ namespace Lib9c.Tests.Action
                 _avatar1Address.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext
             {
@@ -539,7 +539,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agent1Address,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             }));
         }

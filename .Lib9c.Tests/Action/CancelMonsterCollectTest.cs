@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
         public CancelMonsterCollectTest()
         {
             _signer = default;
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
             var agentState = new AgentState(_signer);

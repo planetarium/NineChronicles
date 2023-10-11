@@ -49,7 +49,7 @@ namespace Nekoyume.Action
         {
             var started = DateTimeOffset.UtcNow;
             context.UseGas(1);
-            var states = context.PreviousState;
+            IAccount states = context.PreviousState;
 
             // NOTE: Restrict staking if there is a monster collection until now.
             if (states.GetAgentState(context.Signer) is { } agentState &&

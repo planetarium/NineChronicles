@@ -99,7 +99,8 @@ namespace Nekoyume.Action
 
             Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
-            var productId = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            var productId = random.GenerateRandomGuid();
             long expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
 
             // Select an item to sell from the inventory and adjust the quantity.
@@ -200,7 +201,7 @@ namespace Nekoyume.Action
                 itemUsable = shopItem.ItemUsable,
                 costume = shopItem.Costume
             };
-            var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), expiredBlockIndex);
+            var mail = new SellCancelMail(result, ctx.BlockIndex, random.GenerateRandomGuid(), expiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);
 

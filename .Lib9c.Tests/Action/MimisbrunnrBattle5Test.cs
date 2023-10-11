@@ -54,7 +54,7 @@
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
@@ -176,7 +176,7 @@
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -261,7 +261,7 @@
                 {
                     PreviousState = previousState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -285,7 +285,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _agentAddress,
                 });
             });
@@ -400,7 +400,7 @@
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
             });
         }
@@ -482,7 +482,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, RandomSeed = 0, Rehearsal = false,
                 });
             });
         }
@@ -567,7 +567,7 @@
                 PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
         }
 
@@ -595,7 +595,7 @@
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext()
             {

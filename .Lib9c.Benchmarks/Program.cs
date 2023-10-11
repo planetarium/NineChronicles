@@ -89,7 +89,7 @@ namespace Lib9c.Benchmarks
             var stateStore = new TrieStateStore(stateKeyValueStore);
             var actionEvaluator = new ActionEvaluator(
                 _ => policy.BlockAction,
-                new BlockChainStates(store, stateStore),
+                stateStore,
                 new NCActionLoader());
             var chain = new BlockChain(
                 policy,
@@ -128,15 +128,7 @@ namespace Lib9c.Benchmarks
                     block.Transactions.Count()
                 );
 
-                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<IActionEvaluation> blockEvals);
-                SetStates(
-                    chain.Id,
-                    store,
-                    stateStore,
-                    block,
-                    blockEvals.ToArray(),
-                    buildStateReferences: true
-                );
+                chain.DetermineBlockStateRootHash(block, out IReadOnlyList<ICommittedActionEvaluation> blockEvals);
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx =>
                     tx.Actions is { } customActions ? customActions.LongCount() : 0);

@@ -14,7 +14,6 @@ namespace Lib9c.Tests.Action.Scenario
     using Xunit;
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
-    using State = Lib9c.Tests.Action.MockStateDelta;
 
     public class StakeAndClaimStakeReward2ScenarioTest
     {
@@ -32,7 +31,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new State();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             var sheet = @"level,required_gold,item_id,rate

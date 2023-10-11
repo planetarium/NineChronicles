@@ -205,7 +205,8 @@ namespace Nekoyume.Action
                 tradableFungibleItem = shopItem.TradableFungibleItem,
                 tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
             };
-            var mail = new SellCancelMail(result, context.BlockIndex, context.Random.GenerateRandomGuid(), context.BlockIndex);
+            var random = context.GetRandom();
+            var mail = new SellCancelMail(result, context.BlockIndex, random.GenerateRandomGuid(), context.BlockIndex);
             result.id = mail.id;
 
             avatarState.Update(mail);

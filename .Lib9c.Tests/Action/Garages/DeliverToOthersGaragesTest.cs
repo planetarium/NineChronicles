@@ -338,7 +338,7 @@ namespace Lib9c.Tests.Action.Garages
                     BlockIndex = blockIndex,
                     Rehearsal = false,
                     PreviousState = previousState,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 }));
         }
 

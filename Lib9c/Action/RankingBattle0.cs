@@ -156,8 +156,9 @@ namespace Nekoyume.Action
 
             Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
+            var random = ctx.GetRandom();
             var simulator = new RankingSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 enemyAvatarState,
                 consumableIds,

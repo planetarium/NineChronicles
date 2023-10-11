@@ -387,7 +387,8 @@ namespace Nekoyume.Action
                 productDict = (Dictionary)productDict.Remove(productIdSerialized);
                 shopStateDict = shopStateDict.SetItem("products", productDict);
 
-                var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+                var random = ctx.GetRandom();
+                var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, random.GenerateRandomGuid(), ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
                 var sellerResultToAdd = new Buy7.SellerResult
@@ -397,7 +398,7 @@ namespace Nekoyume.Action
                     costume = shopItem.Costume,
                     gold = taxedPrice
                 };
-                var sellerMail = new SellerMail(sellerResultToAdd, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
+                var sellerMail = new SellerMail(sellerResultToAdd, ctx.BlockIndex, random.GenerateRandomGuid(),
                     ctx.BlockIndex);
                 sellerResultToAdd.id = sellerMail.id;
                 sellerResults.Add(sellerResultToAdd);

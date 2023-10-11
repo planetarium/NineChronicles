@@ -117,7 +117,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
-                Random = random,
+                RandomSeed = random.Seed,
             });
 
             // Combination2: Raises error
@@ -135,7 +135,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 1L,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 })
             );
         }

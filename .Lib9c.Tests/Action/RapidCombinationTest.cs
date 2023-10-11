@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
 
         public RapidCombinationTest()
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -384,7 +384,7 @@ namespace Lib9c.Tests.Action
                 slotAddress,
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var action = new RapidCombination
             {

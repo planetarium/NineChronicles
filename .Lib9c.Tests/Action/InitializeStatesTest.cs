@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
@@ -61,7 +62,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Signer = minterKey.ToAddress(),
                 Miner = default,
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
             });
 
             var addresses = new List<Address>()
@@ -128,7 +129,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Miner = default,
                 Signer = minterKey.ToAddress(),
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
             });
 
             var fetchedState = new AuthorizedMinersState(
@@ -177,7 +178,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Miner = default,
                 Signer = minterKey.ToAddress(),
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
             });
 
             var fetchedState = new ActivatedAccountsState(
@@ -229,7 +230,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Miner = default,
                 Signer = minterKey.ToAddress(),
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
             });
 
             var fetchedState = new CreditsState(
@@ -275,7 +276,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Miner = default,
                 Signer = minterKey.ToAddress(),
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
             });
 
             var fetchedState = new ActivatedAccountsState(

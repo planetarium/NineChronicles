@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
@@ -136,7 +136,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _agentAddress,
                     BlockIndex = 0,
                 })
@@ -504,7 +504,7 @@ namespace Lib9c.Tests.Action
                 Addresses.Blacksmith,
             };
 
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()

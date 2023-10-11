@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -203,7 +203,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
 
             avatarState = state.GetAvatarStateV2(avatarState.address);
@@ -343,7 +343,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 
@@ -405,7 +405,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             }));
 
@@ -428,7 +428,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            IAccount state = backward ? new MockStateDelta() : _initialState;
+            IAccount state = backward ? new Account(MockState.Empty) : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -442,7 +442,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<FailedLoadStateException>(exec);
@@ -466,7 +466,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<SheetRowNotFoundException>(exec);
@@ -492,7 +492,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<SheetRowColumnException>(exec);
@@ -519,7 +519,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<SheetRowNotFoundException>(exec);
@@ -554,7 +554,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<FailedAddWorldException>(exec);
@@ -580,7 +580,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<InvalidWorldException>(exec);
@@ -621,7 +621,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<InvalidStageException>(exec);
@@ -648,7 +648,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<InvalidStageException>(exec);
@@ -689,7 +689,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<RequiredBlockIndexException>(exec);
@@ -733,7 +733,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<EquipmentSlotUnlockException>(exec);
@@ -765,7 +765,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
 
             SerializeException<NotEnoughActionPointException>(exec);
@@ -822,7 +822,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -892,7 +892,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = state,
                         Signer = avatarState.agentAddress,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     }));
 
                     SerializeException<NotEnoughAvatarLevelException>(exec);
@@ -997,7 +997,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -1067,7 +1067,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext
             {

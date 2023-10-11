@@ -133,9 +133,10 @@ namespace Nekoyume.Action
             }
 
             var requiredBlockIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
+            var random = context.GetRandom();
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipRow,
-                ctx.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 requiredBlockIndex
             );
 
@@ -174,7 +175,7 @@ namespace Nekoyume.Action
                 }
 
                 optionIds = SelectOption(states.GetSheet<EquipmentItemOptionSheet>(), states.GetSheet<SkillSheet>(),
-                    subRecipe, ctx.Random, equipment);
+                    subRecipe, random, equipment);
                 equipment.Update(requiredBlockIndex);
             }
 
@@ -227,7 +228,7 @@ namespace Nekoyume.Action
                 itemType = ItemType.Equipment,
             };
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
-            var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
+            var mail = new CombinationMail(result, ctx.BlockIndex, random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);

@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivation(pendingActivation);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, adminState.Serialize()));
             var actionContext = new ActionContext()
@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
             var action = new CreatePendingActivation(pendingActivation);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new MockStateDelta(
+            var state = new Account(
                 MockState.Empty
                     .SetState(AdminState.Address, adminState.Serialize()));
 
@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = 101,
                     Signer = default,
                     Rehearsal = true,
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                 }
             );
             Assert.Equal(

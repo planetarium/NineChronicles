@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(
@@ -110,7 +110,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
@@ -185,9 +185,9 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -276,7 +276,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = _initialState,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 })
             );
         }
@@ -323,7 +323,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -360,7 +360,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -394,7 +394,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

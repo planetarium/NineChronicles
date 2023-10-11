@@ -66,11 +66,12 @@ namespace Nekoyume.Action.Coupons
 
             wallet = wallet.Remove(CouponId);
             var itemSheets = states.GetItemSheet();
+            var random = context.GetRandom();
             foreach ((int itemId, uint q) in coupon)
             {
                 for (uint i = 0U; i < q; i++)
                 {
-                    ItemBase item = ItemFactory.CreateItem(itemSheets[itemId], context.Random);
+                    ItemBase item = ItemFactory.CreateItem(itemSheets[itemId], random);
                     // XXX: Inventory.AddItem() method silently ignores count if the item is
                     // non-fungible.
                     avatarState.inventory.AddItem(item, count: 1);

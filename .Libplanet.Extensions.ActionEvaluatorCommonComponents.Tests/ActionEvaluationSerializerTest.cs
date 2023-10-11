@@ -28,7 +28,7 @@ public class ActionEvaluationSerializerTest
                 0,
                 false,
                 previousStates,
-                new Random(123),
+                123,
                 null,
                 true),
             outputStates,
@@ -37,7 +37,7 @@ public class ActionEvaluationSerializerTest
         var deserialized = ActionEvaluationMarshaller.Deserialize(serialized);
 
         Assert.Equal(Null.Value, deserialized.Action);
-        Assert.Equal(123, deserialized.InputContext.Random.Seed);
+        Assert.Equal(123, deserialized.InputContext.RandomSeed);
         Assert.Equal(0, deserialized.InputContext.BlockIndex);
         Assert.Equal(0, deserialized.InputContext.BlockProtocolVersion);
         Assert.Equal(addresses[0], deserialized.InputContext.Signer);

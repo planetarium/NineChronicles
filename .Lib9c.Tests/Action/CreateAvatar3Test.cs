@@ -6,6 +6,7 @@
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
+    using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume;
@@ -51,7 +52,7 @@
 
             var sheets = TableSheetsImporter.ImportSheets();
             var context = new ActionContext();
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(
                     Addresses.GoldDistribution,
@@ -117,7 +118,7 @@
                 name = nickName,
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
                 {
@@ -158,7 +159,7 @@
                 name = "test",
             };
 
-            var state = new MockStateDelta().SetState(avatarAddress, avatarState.Serialize());
+            var state = new Account(MockState.Empty).SetState(avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
@@ -175,7 +176,7 @@
         public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
+            var state = new Account(MockState.Empty).SetState(_agentAddress, agentState.Serialize());
             var action = new CreateAvatar3()
             {
                 index = index,
@@ -210,7 +211,7 @@
                 )
             );
             agentState.avatarAddresses[index] = avatarAddress;
-            var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
+            var state = new Account(MockState.Empty).SetState(_agentAddress, agentState.Serialize());
 
             var action = new CreateAvatar3()
             {
@@ -282,7 +283,7 @@
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(Addresses.Ranking, new RankingState0().Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 

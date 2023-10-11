@@ -248,8 +248,9 @@ namespace Nekoyume.Action
             }
 
             sw.Restart();
+            var random = ctx.GetRandom();
             var simulator = new StageSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 foods,
                 worldId,

@@ -335,8 +335,9 @@ namespace Nekoyume.Action
                 }
             }
 
+            var random = context.GetRandom();
             var simulator = new StageSimulatorV3(
-                context.Random,
+                random,
                 avatarState,
                 Foods,
                 runeStates,
@@ -351,7 +352,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulatorV3.GetWaveRewards(
-                    context.Random,
+                    random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),
                     PlayCount));

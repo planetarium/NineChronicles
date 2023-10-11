@@ -164,7 +164,8 @@ namespace Nekoyume.Action
 
             ITradableItem tradableItem = avatarState.inventory.SellItem(tradableId, context.BlockIndex, count);
 
-            var productId = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            var productId = random.GenerateRandomGuid();
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             if (!states.TryGetState(shardedShopAddress, out BxDictionary serializedSharedShopState))
             {
@@ -276,7 +277,7 @@ namespace Nekoyume.Action
             var mail = new SellCancelMail(
                 result,
                 context.BlockIndex,
-                context.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 expiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);

@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
 #pragma warning restore CS0618
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                RandomSeed = _random.Seed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);

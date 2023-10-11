@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action.Summon
             var gold = new GoldCurrencyState(_currency);
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
@@ -178,13 +178,14 @@ namespace Lib9c.Tests.Action.Summon
             if (expectedExc == null)
             {
                 // Success
-                var nextState = action.Execute(new ActionContext
+                var ctx = new ActionContext
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = random,
-                });
+                };
+                ctx.SetRandom(random);
+                var nextState = action.Execute(ctx);
 
                 var equipments = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
                     .ToList();
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action.Summon
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
                 });
             }

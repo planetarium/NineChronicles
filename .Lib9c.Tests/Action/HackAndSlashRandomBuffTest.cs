@@ -71,7 +71,7 @@ namespace Lib9c.Tests.Action
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = states,
                     Signer = _agentAddress,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.Equal(
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = states,
                         Signer = _agentAddress,
-                        Random = _random,
+                        RandomSeed = _random.Seed,
                     });
                 });
             }
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = states,
                     Signer = _agentAddress,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
                 var newGachaState = new CrystalRandomSkillState(
                     gachaStateAddress,

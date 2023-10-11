@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             _validator = new Validator(new PrivateKey().PublicKey, BigInteger.One);
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(initStates);
+            var state = new Account(initStates);
             var action = ValidatorSetOperate.Append(_validator);
             var nextState = action.Execute(
                 new ActionContext()
@@ -66,7 +66,7 @@ namespace Lib9c.Tests.Action
             var adminState = new AdminState(adminAddress, 100);
             var initStates = MockState.Empty
                 .SetState(AdminState.Address, adminState.Serialize());
-            var state = new MockStateDelta(initStates);
+            var state = new Account(initStates);
             var action = ValidatorSetOperate.Append(_validator);
 
             PermissionDeniedException exc1 = Assert.Throws<PermissionDeniedException>(() =>
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Update_Throws_WhenDoNotExistValidator()
         {
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
             var action = ValidatorSetOperate.Update(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Remove_Throws_WhenDoNotExistValidator()
         {
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
             var action = ValidatorSetOperate.Remove(_validator);
             InvalidOperationException exc = Assert.Throws<InvalidOperationException>(() =>
                 action.Execute(new ActionContext

@@ -83,7 +83,8 @@ namespace Nekoyume.Action
                     $"{nameof(HackAndSlashRandomBuff)} required {cost}, but balance is {balance}");
             }
 
-            var buffSelector = new WeightedSelector<int>(context.Random);
+            var random = context.GetRandom();
+            var buffSelector = new WeightedSelector<int>(random);
             var buffSheet = states.GetSheet<CrystalRandomBuffSheet>();
             foreach (var buffRow in buffSheet.Values)
             {
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
             var needPitySystem = IsPitySystemNeeded(buffIds, gachaCount, buffSheet);
             if (needPitySystem)
             {
-                var newBuffSelector = new WeightedSelector<int>(context.Random);
+                var newBuffSelector = new WeightedSelector<int>(random);
                 var minimumRank = AdvancedGacha
                     ? CrystalRandomBuffSheet.Row.BuffRank.S
                     : CrystalRandomBuffSheet.Row.BuffRank.A;

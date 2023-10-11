@@ -167,9 +167,10 @@ namespace Nekoyume.Action
             var raidSimulatorSheets = sheets.GetRaidSimulatorSheetsV1();
 
             // Simulate.
+            var random = context.GetRandom();
             var simulator = new RaidSimulatorV1(
                 row.BossId,
-                context.Random,
+                random,
                 avatarState,
                 FoodIds,
                 raidSimulatorSheets,
@@ -228,7 +229,7 @@ namespace Nekoyume.Action
                         sheets.GetSheet<RuneWeightSheet>(),
                         sheets.GetSheet<WorldBossKillRewardSheet>(),
                         sheets.GetSheet<RuneSheet>(),
-                        context.Random,
+                        random,
                         AvatarAddress,
                         context.Signer
                     );
