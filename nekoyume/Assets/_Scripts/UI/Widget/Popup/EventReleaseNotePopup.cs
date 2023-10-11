@@ -150,7 +150,7 @@ namespace Nekoyume.UI
             }
 
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (clearedStageId <= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            if (clearedStageId <= 10)
             {
                 return;
             }
