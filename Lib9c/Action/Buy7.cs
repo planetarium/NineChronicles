@@ -253,6 +253,7 @@ namespace Nekoyume.Action
             buyerMultipleResult = new BuyerMultipleResult();
             sellerMultipleResult = new SellerMultipleResult();
 
+            var random = ctx.GetRandom();
             foreach (var purchaseInfo in purchaseInfos)
             {
                 PurchaseResult purchaseResult = new PurchaseResult(purchaseInfo.productId);
@@ -425,7 +426,6 @@ namespace Nekoyume.Action
                 purchaseResult.costume = shopItem.Costume;
                 purchaseResult.tradableFungibleItem = shopItem.TradableFungibleItem;
                 purchaseResult.tradableFungibleItemCount = shopItem.TradableFungibleItemCount;
-                var random = ctx.GetRandom();
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, random.GenerateRandomGuid(),
                     ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
