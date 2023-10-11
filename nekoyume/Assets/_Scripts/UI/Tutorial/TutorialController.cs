@@ -23,7 +23,8 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
-        private const string CheckPoint = "Tutorial_Check_Point";
+        private static string CheckPointKey =>
+            $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
         private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
@@ -177,7 +178,7 @@ namespace Nekoyume.UI
              * when ended tutorial, check point = stage id * -1 (in TutorialScenario, "checkPointId")
              */
 
-            var checkPoint = PlayerPrefs.GetInt(CheckPoint, 0);
+            var checkPoint = PlayerPrefs.GetInt(CheckPointKey, 0);
             if (checkPoint > 0)
             {
                 return checkPoint;
@@ -225,7 +226,7 @@ namespace Nekoyume.UI
 
         private static void SetCheckPoint(int id)
         {
-            PlayerPrefs.SetInt(CheckPoint, id);
+            PlayerPrefs.SetInt(CheckPointKey, id);
         }
 
         private void SendMixPanel(int id)
