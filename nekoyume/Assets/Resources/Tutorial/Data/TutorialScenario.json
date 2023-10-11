@@ -705,10 +705,11 @@
       "data": {
         "presetId": 1,
         "targetType": 100000,
-        "actionType": 100001,
+        "actionType": 0,
         "emojiType": 1,
         "guideType": 3,
-        "scriptKey": "TUTORIAL_10_002"
+        "scriptKey": "TUTORIAL_10_002",
+        "fullScreenButton" : true
       }
     },
     {
@@ -717,24 +718,37 @@
       "checkPointId": 100000,
       "data": {
         "presetId": 1,
-        "targetType": 100001,
-        "actionType": 100002,
+        "targetType": 100000,
+        "actionType": 100001,
         "emojiType": 1,
-        "guideType": 1,
+        "guideType": 3,
         "scriptKey": "TUTORIAL_10_003"
       }
     },
     {
       "id": 100003,
+      "nextId": 100004,
+      "checkPointId": 100000,
+      "data": {
+        "presetId": 1,
+        "targetType": 100001,
+        "actionType": 100002,
+        "emojiType": 1,
+        "guideType": 1,
+        "scriptKey": "TUTORIAL_10_004"
+      }
+    },
+    {
+      "id": 100004,
       "nextId": 0,
       "checkPointId": -10,
       "data": {
         "presetId": 2,
         "targetType": 0,
         "actionType": 0,
-        "emojiType": 1,
+        "emojiType": 2,
         "guideType": 0,
-        "scriptKey": "TUTORIAL_10_004",
+        "scriptKey": "TUTORIAL_10_005",
         "noArrow": true
       }
     }
