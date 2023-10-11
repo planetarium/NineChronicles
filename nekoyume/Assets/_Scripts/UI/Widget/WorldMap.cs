@@ -420,7 +420,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                 () =>
                 {
-                    Find<UnlockWorldLoadingScreen>().Show();
+                    Find<LoadingScreen>().Show();
                     ActionManager.Instance.UnlockWorld(new List<int> { worldId }, (int) cost).Subscribe();
                 },
                 OnAttractInPaymentPopup);
@@ -451,7 +451,7 @@ namespace Nekoyume.UI
                         L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                         () =>
                         {
-                            Find<UnlockWorldLoadingScreen>().Show();
+                            Find<LoadingScreen>().Show();
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock, (int) cost).Subscribe();
                         },
                         OnAttractInPaymentPopup);

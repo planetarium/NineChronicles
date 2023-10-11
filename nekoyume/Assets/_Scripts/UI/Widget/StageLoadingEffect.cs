@@ -2,11 +2,16 @@ using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.State;
+using Nekoyume.UI.Tween;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
@@ -19,19 +24,38 @@ namespace Nekoyume.UI
         private const string SpriteNameFormat02 = "{0}_02";
         private const float ImageMargin = 700f;
 
+        [SerializeField]
+        private DOTweenGroupAlpha loadingAlphaTweener;
+
+        [SerializeField]
+        private VideoPlayer skippableVideoPlayer;
+
+        [SerializeField]
+        private GameObject loadingVideoObject;
+
+        [SerializeField]
+        private GraphicAlphaTweener loadingDimTweener;
+
+        public bool LoadingEnd { get; private set; } = true;
         public List<Image> images;
         public bool closeEnd;
         public bool dialogEnd;
-        public LoadingIndicator indicator;
+        public LoadingModule loadingModule;
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
+
+        private const int VideoPlayStage = 2;
+        private const int WorkshopDialogStage = 3;
+        private const int WorkShopDialogId = 101;
 
         protected override void Awake()
         {
             base.Awake();
 
             CloseWidget = null;
+
+            loadingModule.Initialize();
         }
 
         private static Sprite GetSprite(string background, string spriteNameFormat)
@@ -104,10 +128,27 @@ namespace Nekoyume.UI
             bool isNext,
             int clearedStageId)
         {
-            indicator.Close();
+            loadingModule.Close();
             dialogEnd = true;
+            System.Func<IEnumerator> coroutine = null;
             if (isNext)
             {
+                if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+                {
+                    switch (stageId)
+                    {
+                        case VideoPlayStage:
+                            coroutine = PlayVideo;
+                            LoadingEnd = false;
+                            break;
+                        case WorkshopDialogStage:
+                            coroutine = PlaySmallDialog;
+                            LoadingEnd = false;
+                            break;
+                        default: break;
+                    }
+                }
+
                 yield return CoDialog(clearedStageId);
             }
 
@@ -115,7 +156,12 @@ namespace Nekoyume.UI
                 L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
                 worldName,
                 StageInformation.GetStageIdString(stageType, stageId, true));
-            indicator.Show(message);
+            loadingModule.Show(message);
+
+            if (coroutine != null)
+            {
+                StartCoroutine(coroutine());
+            }
         }
 
         private IEnumerator CoDialog(int worldStage)
@@ -183,6 +229,61 @@ namespace Nekoyume.UI
             }
 
             yield return null;
+        }
+
+        private IEnumerator PlayVideo()
+        {
+            LoadingEnd = false;
+            var audioController = AudioController.instance;
+            audioController.StopAll(0.5f);
+            skippableVideoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
+            skippableVideoPlayer.gameObject.SetActive(true);
+            skippableVideoPlayer.Prepare();
+            loadingDimTweener.PlayForward().OnComplete(() =>
+            {
+                skippableVideoPlayer.Play();
+                skippableVideoPlayer.Pause();
+                loadingAlphaTweener.ResetToEndingValue();
+                loadingDimTweener.PlayReverse().OnComplete(() =>
+                {
+                    skippableVideoPlayer.Play();
+                });
+            });
+
+            yield return new WaitUntil(() => skippableVideoPlayer.isPlaying);
+            yield return new WaitUntil(() => !skippableVideoPlayer.isPlaying);
+
+            CompleteLoading();
+        }
+
+        private IEnumerator PlaySmallDialog()
+        {
+            LoadingEnd = false;
+            loadingVideoObject.SetActive(true);
+            var tweenEnd = false;
+            loadingDimTweener.PlayForward().OnComplete(() =>
+            {
+                loadingAlphaTweener.ResetToEndingValue();
+                loadingDimTweener.PlayReverse();
+                Find<Tutorial>().PlaySmallGuide(WorkShopDialogId);
+                tweenEnd = true;
+            });
+
+            yield return null;
+            yield return new WaitUntil(() => !Find<Tutorial>().isActiveAndEnabled && tweenEnd);
+            CompleteLoading();
+        }
+
+        public void CompleteLoading()
+        {
+            skippableVideoPlayer.Stop();
+            loadingDimTweener.PlayForward().OnComplete(() =>
+            {
+                loadingAlphaTweener.ResetToBeginningValue();
+                skippableVideoPlayer.gameObject.SetActive(false);
+                loadingVideoObject.SetActive(false);
+                loadingDimTweener.PlayReverse().OnComplete(() => LoadingEnd = true);
+            });
         }
     }
 }

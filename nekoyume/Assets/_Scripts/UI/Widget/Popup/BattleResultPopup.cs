@@ -646,15 +646,18 @@ namespace Nekoyume.UI
             }
 
             // for tutorial
-            if (SharedModel.StageID == Battle.RequiredStageForExitButton &&
-                SharedModel.LastClearedStageId == Battle.RequiredStageForExitButton &&
+            if (SharedModel.StageID == SharedModel.LastClearedStageId &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                stagePreparationButton.gameObject.SetActive(false);
-                nextButton.gameObject.SetActive(false);
-                repeatButton.gameObject.SetActive(false);
-                bottomText.text = string.Empty;
-                yield break;
+                if (SharedModel.StageID == Battle.RequiredStageForExitButton ||
+                    SharedModel.StageID == 5)
+                {
+                    stagePreparationButton.gameObject.SetActive(false);
+                    nextButton.gameObject.SetActive(false);
+                    repeatButton.gameObject.SetActive(false);
+                    bottomText.text = string.Empty;
+                    yield break;
+                }
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
@@ -836,7 +839,13 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
+            var stageLoadingEffect = Find<StageLoadingEffect>();
+            if (!stageLoadingEffect.LoadingEnd)
+            {
+                yield return new WaitUntil(() => stageLoadingEffect.LoadingEnd);
+            }
+
+            yield return StartCoroutine(stageLoadingEffect.CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(log);
             Close();
@@ -883,7 +892,7 @@ namespace Nekoyume.UI
                     && lastClearedStageId == SharedModel.StageID
                     && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
                 {
-                    var worldMapLoading = Find<WorldMapLoadingScreen>();
+                    var worldMapLoading = Find<LoadingScreen>();
                     worldMapLoading.Show();
                     Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
                     {
@@ -903,7 +912,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
 
-            var worldMapLoading = Find<WorldMapLoadingScreen>();
+            var worldMapLoading = Find<LoadingScreen>();
             worldMapLoading.Show();
             Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
             {

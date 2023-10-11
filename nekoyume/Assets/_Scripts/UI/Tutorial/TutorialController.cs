@@ -70,6 +70,10 @@ namespace Nekoyume.UI
                 var checkPoint = GetCheckPoint(clearedStageId);
                 if (checkPoint == 0)
                 {
+                    if(clearedStageId == 5)
+                    {
+                        Play(50000);
+                    }
                     return;
                 }
 
