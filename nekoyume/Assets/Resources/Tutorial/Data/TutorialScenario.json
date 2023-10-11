@@ -3,7 +3,7 @@
     {
       "id": 1,
       "nextId": 0,
-      "checkPointId": 2,
+      "checkPointId": -1,
       "data": {
         "presetId": 1,
         "targetType": 1,
@@ -631,7 +631,7 @@
     {
       "id": 50003,
       "nextId": 0,
-      "checkPointId": 0,
+      "checkPointId": -5,
       "data": {
         "presetId": 1,
         "targetType": 17,
@@ -674,7 +674,7 @@
     {
       "id": 30002,
       "nextId": 0,
-      "checkPointId": 0,
+      "checkPointId": -3,
       "data": {
         "presetId": 1,
         "targetType": 12,
@@ -727,7 +727,7 @@
     {
       "id": 100003,
       "nextId": 0,
-      "checkPointId": 0,
+      "checkPointId": -10,
       "data": {
         "presetId": 2,
         "targetType": 0,
