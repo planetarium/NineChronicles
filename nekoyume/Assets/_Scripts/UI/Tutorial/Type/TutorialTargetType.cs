@@ -27,6 +27,7 @@ namespace Nekoyume.UI
         CombinationResultPopupButton = 18, // 좌표 안맞음
         MenuButton = 19,
         PortalReward = 50001,
+        ItemTooltipEquipButton = 30000,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

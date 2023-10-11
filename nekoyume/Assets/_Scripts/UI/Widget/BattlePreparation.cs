@@ -750,5 +750,24 @@ namespace Nekoyume.UI
                 ? mimisbrunnrSheetRow.ElementalTypes
                 : ElementalTypeExtension.GetAllTypes();
         }
+
+        public void TutorialActionClickBattlePreparationFirstInventoryCellView()
+        {
+            try
+            {
+                if (information.TryGetFirstCell(out var item))
+                {
+                    item.Selected.Value = true;
+                }
+                else
+                {
+                    Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
+                }
+            }
+            catch
+            {
+                Debug.LogError($"TryGetFirstCell throw error.");
+            }
+        }
     }
 }
