@@ -28,6 +28,8 @@ namespace Nekoyume.UI
         MenuButton = 19,
         PortalReward = 50001,
         ItemTooltipEquipButton = 30000,
+        SummonEnteringButton = 100000,
+        Normal1SummonButton,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
