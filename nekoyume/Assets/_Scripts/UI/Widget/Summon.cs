@@ -294,5 +294,12 @@ namespace Nekoyume.UI
                 return result;
             }
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickNormal1SummonButton()
+        {
+            var button = drawItems[0].draw1Button;
+            button.OnClickSubject.OnNext(button.CurrentState.Value);
+        }
     }
 }

@@ -728,6 +728,12 @@ namespace Nekoyume.UI
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
         }
 
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionGoToWorkShop()
+        {
+            CombinationClick();
+        }
+
 #if UNITY_EDITOR
         protected override void Update()
         {
