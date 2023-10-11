@@ -69,6 +69,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
+            IRandom random = ctx.GetRandom();
             var signer = ctx.Signer;
             var states = ctx.PreviousState;
             var avatarAddress = signer.Derive(
@@ -217,7 +218,7 @@ namespace Nekoyume.Action
 
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow,
-                    context.Random.GenerateRandomGuid(),
+                    random.GenerateRandomGuid(),
                     0L,
                     madeWithMimisbrunnrRecipe: subRecipeRow.IsMimisbrunnrSubRecipe ?? false);
 
@@ -257,7 +258,7 @@ namespace Nekoyume.Action
                         .First(x => x.ItemSubType == subType &&
                                     x.Grade == grade &&
                                     x.Level == i);
-                    equipment.LevelUp(ctx.Random, costRow, true);
+                    equipment.LevelUp(random, costRow, true);
                 }
 
                 avatarState.inventory.AddItem(equipment);
