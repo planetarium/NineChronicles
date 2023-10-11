@@ -47,7 +47,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetState(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize())
                     .SetBalance(_sender, _currency * 1000)
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidSigner()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInvalidRecipient()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000));
             // Should not allow TransferAsset2 with same sender and recipient.
@@ -139,7 +139,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInsufficientBalance()
         {
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, _currency * 1000)
                     .SetBalance(_recipient, _currency * 10));
@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyBySender = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, currencyBySender * 1000)
                     .SetBalance(_recipient, currencyBySender * 10));
@@ -200,7 +200,7 @@ namespace Lib9c.Tests.Action
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currencyByRecipient = Currency.Legacy("NCG", 2, _sender);
 #pragma warning restore CS0618
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetBalance(_sender, currencyByRecipient * 1000)
                     .SetBalance(_sender, currencyByRecipient * 10));
@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteWithUnactivatedRecipient()
         {
             var activatedAddress = new ActivatedAccountsState().AddAccount(new PrivateKey().ToAddress());
-            var prevState = new MockStateDelta(
+            var prevState = new Account(
                 MockState.Empty
                     .SetState(_sender.Derive(ActivationKey.DeriveKey), true.Serialize())
                     .SetState(Addresses.ActivatedAccount, activatedAddress.Serialize())
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
 
             IAccount nextState = action.Execute(new ActionContext()
             {
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
@@ -375,7 +375,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _sender,
                     Rehearsal = false,
                     BlockIndex = TransferAsset3.CrystalTransferringRestrictionStartIndex,

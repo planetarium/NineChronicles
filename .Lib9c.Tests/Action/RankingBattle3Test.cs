@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
 
         public RankingBattle3Test(ITestOutputHelper outputHelper)
         {
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)

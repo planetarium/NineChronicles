@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
 
         public static MockState Empty => _empty;
 
-        public ITrie Trie => throw new NotSupportedException();
+        public ITrie Trie => new MerkleTrie(new MemoryKeyValueStore());
 
         public IImmutableDictionary<Address, IValue> States => _states;
 

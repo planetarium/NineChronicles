@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
             new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
         }.ToImmutableList();
 
-        private static readonly MockStateDelta _previousState = new MockStateDelta(
+        private static readonly IAccount _previousState = new Account(
             MockState.Empty
                 .SetState(AdminState.Address, new AdminState(_admin, 100).Serialize())
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(NCG).Serialize())

@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new MockStateDelta();
+            _state = new Account(MockState.Empty);
 
             _signer = new PrivateKey().ToAddress();
             _avatarAddress = _signer.Derive("avatar");

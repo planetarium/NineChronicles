@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Extensions
 
         public SheetsExtensionsTest()
         {
-            _states = new Tests.Action.MockStateDelta();
+            _states = new Account(Tests.Action.MockState.Empty);
             InitSheets(
                 _states,
                 out _sheetNameAndFiles,

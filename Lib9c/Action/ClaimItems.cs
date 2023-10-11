@@ -33,23 +33,24 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             ImmutableDictionary<string, IValue>.Empty
-                .Add(ClaimDataKey, ClaimData.Select(tuple =>
+                .Add(ClaimDataKey, ClaimData.Aggregate(List.Empty, (list, tuple) =>
                 {
                     var serializedFungibleAssetValues = tuple.fungibleAssetValues.Select(x => x.Serialize()).Serialize();
 
-                    return (tuple.address, serialized: serializedFungibleAssetValues);
-                }).Serialize());
+                    return list.Add(new List(tuple.address.Bencoded, serializedFungibleAssetValues));
+                }));
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            ClaimData = plainValue[ClaimDataKey].ToStateList()
-                .Select((tuple =>
+            ClaimData = ((List)plainValue[ClaimDataKey])
+                .Select(pairValue =>
                 {
+                    List pair = (List)pairValue;
                     return (
-                        tuple.Item1,
-                        tuple.Item2.ToList((x => x.ToFungibleAssetValue())) as IReadOnlyList<FungibleAssetValue>);
-                })).ToList();
+                        new Address(pair[0]),
+                        pair[1].ToList(x => x.ToFungibleAssetValue()) as IReadOnlyList<FungibleAssetValue>);
+                }).ToList();
         }
 
         public override IAccount Execute(IActionContext context)

@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Util
         {
             adminAddr ??= new PrivateKey().ToAddress();
             var context = new ActionContext();
-            var states = new MockStateDelta().SetState(
+            var states = new Account(MockState.Empty).SetState(
                 Addresses.Admin,
                 new AdminState(adminAddr.Value, long.MaxValue).Serialize());
 

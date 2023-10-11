@@ -27,7 +27,7 @@ namespace Lib9c.DevExtensions.Tests.Action
 
         public CreateOrReplaceAvatarTest()
         {
-            _initialStates = new Lib9c.Tests.Action.MockStateDelta();
+            _initialStates = new Account(MockState.Empty);
 
 #pragma warning disable CS0618
             var ncgCurrency = Currency.Legacy("NCG", 2, null);

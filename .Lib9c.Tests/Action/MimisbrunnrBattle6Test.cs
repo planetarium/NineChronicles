@@ -55,7 +55,7 @@
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
@@ -297,7 +297,7 @@
             {
                 action.Execute(new ActionContext()
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _agentAddress,
                 });
             });
@@ -754,7 +754,7 @@
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext()
             {

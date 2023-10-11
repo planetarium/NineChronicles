@@ -58,7 +58,7 @@ namespace Lib9c.Tests.Action
             ));
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())

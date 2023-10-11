@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action.Coupons
         [Fact]
         public void Execute()
         {
-            IAccount state = new Lib9c.Tests.Action.MockStateDelta()
+            IAccount state = new Account(MockState.Empty)
                 .SetState(
                     AdminState.Address,
                     new AdminState(CouponsFixture.AgentAddress1, 1)

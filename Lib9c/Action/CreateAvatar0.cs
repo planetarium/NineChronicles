@@ -197,9 +197,11 @@ namespace Nekoyume.Action
             var costumeItemSheet = ctx.PreviousState.GetSheet<CostumeItemSheet>();
             var equipmentItemSheet = ctx.PreviousState.GetSheet<EquipmentItemSheet>();
             var consumableItemSheet = ctx.PreviousState.GetSheet<ConsumableItemSheet>();
+            var random = context.GetRandom();
+
             AddItemsForTest(
                 avatarState: avatarState,
-                random: ctx.Random,
+                random: random,
                 costumeItemSheet: costumeItemSheet,
                 materialItemSheet: materialItemSheet,
                 equipmentItemSheet: equipmentItemSheet,
@@ -216,7 +218,7 @@ namespace Nekoyume.Action
             {
                 AddCustomEquipment(
                     avatarState: avatarState,
-                    random: ctx.Random,
+                    random: random,
                     skillSheet: skillSheet,
                     equipmentItemSheet: equipmentItemSheet,
                     equipmentItemOptionSheet: optionSheet,

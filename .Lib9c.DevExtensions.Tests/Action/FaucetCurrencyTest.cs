@@ -31,7 +31,7 @@ namespace Lib9c.DevExtensions.Tests.Action
             _crystal = Currency.Legacy("CRYSTAL", 18, null);
 #pragma warning restore CS0618
 
-            _initialState = new MockStateDelta(
+            _initialState = new Account(
                 MockState.Empty
                     .AddBalance(GoldCurrencyState.Address, _ncg * int.MaxValue));
 

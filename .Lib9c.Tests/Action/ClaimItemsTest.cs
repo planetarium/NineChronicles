@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
@@ -66,12 +66,10 @@ namespace Lib9c.Tests.Action
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
-            var orderedClaimData = action.ClaimData.OrderBy(x => x.address).ToList();
-
             foreach (var i in Enumerable.Range(0, 2))
             {
-                Assert.Equal(orderedClaimData[i].address, deserialized.ClaimData[i].address);
-                Assert.True(orderedClaimData[i].fungibleAssetValues
+                Assert.Equal(action.ClaimData[i].address, deserialized.ClaimData[i].address);
+                Assert.True(action.ClaimData[i].fungibleAssetValues
                     .SequenceEqual(deserialized.ClaimData[i].fungibleAssetValues));
             }
         }
