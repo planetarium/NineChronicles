@@ -151,7 +151,6 @@ RectTransform:
   - {fileID: 7702144876723794782}
   - {fileID: 814064675049409318}
   - {fileID: 6353520659713945240}
-  - {fileID: 3028424330904642687}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -314,7 +313,7 @@ GameObject:
   - component: {fileID: 4168524533700969186}
   - component: {fileID: 6015658260906588982}
   m_Layer: 5
-  m_Name: Text_01
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -332,12 +331,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2674885860706672921}
-  m_RootOrder: 4
+  m_Father: {fileID: 6353520659713945240}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -7, y: -43}
+  m_AnchoredPosition: {x: -0.000011444092, y: 2}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1806462785869275233
@@ -480,6 +479,7 @@ GameObject:
   - component: {fileID: 4974139728866503668}
   - component: {fileID: 846685452882810400}
   - component: {fileID: 1144163934400727114}
+  - component: {fileID: 5971098112710885736}
   m_Layer: 5
   m_Name: Text_01
   m_TagString: Untagged
@@ -498,7 +498,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3028424330904642687}
   m_Father: {fileID: 2674885860706672921}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -635,6 +636,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &5971098112710885736
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4177925589961350370}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5582978022049418341
 GameObject:
   m_ObjectHideFlags: 0

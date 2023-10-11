@@ -558,7 +558,7 @@ GameObject:
   - component: {fileID: 7790667210685184448}
   - component: {fileID: 634076973525659171}
   m_Layer: 5
-  m_Name: Text_01
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -576,12 +576,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7187391779192438341}
-  m_RootOrder: 3
+  m_Father: {fileID: 5775234223405810815}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 4}
+  m_AnchoredPosition: {x: 0, y: 2.0000114}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6487946274420817554
@@ -1127,6 +1127,7 @@ GameObject:
   - component: {fileID: 5213055350498904684}
   - component: {fileID: 7118184811323292582}
   - component: {fileID: 8924145289039579141}
+  - component: {fileID: 6937342903242809232}
   m_Layer: 5
   m_Name: Text_01
   m_TagString: Untagged
@@ -1145,7 +1146,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6616467984748174150}
   m_Father: {fileID: 7187391779192438341}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1282,6 +1284,18 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!225 &6937342903242809232
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082554488911231405}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5490012866475073919
 GameObject:
   m_ObjectHideFlags: 0
@@ -1371,7 +1385,6 @@ GameObject:
   - component: {fileID: 2008305561833836790}
   - component: {fileID: 3331478993148939148}
   - component: {fileID: 1490375834063041160}
-  - component: {fileID: 7303821826608427635}
   - component: {fileID: 6068821011712354128}
   m_Layer: 5
   m_Name: PatrolBtn
@@ -1493,26 +1506,6 @@ MonoBehaviour:
   target: {fileID: 6592624933604104257}
   tweenDuration: 0.3
   targetScale: 1.05
---- !u!95 &7303821826608427635
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7228520635994709221}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7857c3a065f02ac4db66821f1ea6f79a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &6068821011712354128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1573,7 +1566,6 @@ RectTransform:
   - {fileID: 5105620646223665888}
   - {fileID: 9065644537166042147}
   - {fileID: 5775234223405810815}
-  - {fileID: 6616467984748174150}
   m_Father: {fileID: 6592624933604104257}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
