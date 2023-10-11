@@ -2706,6 +2706,8 @@ MonoBehaviour:
     rectTransform: {fileID: 4229272892398452896}
   - type: 9
     rectTransform: {fileID: 2688362243490165820}
+  - type: 30000
+    rectTransform: {fileID: 1224776344879185514}
   tutorialActions: 01000000020000000e000000
   btnQuest: {fileID: 553648111353541289}
   btnCombination: {fileID: 553648110939848765}
@@ -10077,6 +10079,12 @@ PrefabInstance:
 --- !u!224 &139211124017369840 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8854689716550185738, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 8866671384757117434}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1224776344879185514 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7778835022345314192, guid: 5b9a9c1cc12b64a1eaba8ba00204a0f8,
     type: 3}
   m_PrefabInstance: {fileID: 8866671384757117434}
   m_PrefabAsset: {fileID: 0}

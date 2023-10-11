@@ -366,5 +366,11 @@ namespace Nekoyume.UI
         {
             _isPointerOnScrollArea = value;
         }
+
+        public void TutorialActionClickItemInformationTooltipSubmitButton()
+        {
+            _onSubmit?.Invoke();
+            Close();
+        }
     }
 }

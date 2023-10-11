@@ -23,6 +23,7 @@ namespace Nekoyume.UI
         TutorialActionClickGuidedQuestWorldStage2 = 14,
         TutorialActionClickMenuButton = 15,
         TutorialActionClickPortalRewardButton = 50001,
+        TutorialActionClickBattlePreparationFirstInventoryCellView = 30000,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

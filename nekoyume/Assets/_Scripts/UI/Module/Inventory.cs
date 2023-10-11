@@ -1013,7 +1013,9 @@ namespace Nekoyume.UI.Module
 
         public bool TryGetFirstCell(out InventoryItem cell)
         {
-            return scroll.TryGetFirstItem(out cell);
+            var result = scroll.TryGetFirstItem(out cell);
+            OnClickItem(cell);
+            return result;
         }
 
         #endregion
