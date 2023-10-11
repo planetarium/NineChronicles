@@ -73,6 +73,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
+            var random = ctx.GetRandom();
             var states = ctx.PreviousState;
             if (ctx.Rehearsal)
             {
@@ -197,7 +198,6 @@ namespace Nekoyume.Action
             var costumeItemSheet = ctx.PreviousState.GetSheet<CostumeItemSheet>();
             var equipmentItemSheet = ctx.PreviousState.GetSheet<EquipmentItemSheet>();
             var consumableItemSheet = ctx.PreviousState.GetSheet<ConsumableItemSheet>();
-            var random = context.GetRandom();
 
             AddItemsForTest(
                 avatarState: avatarState,
