@@ -16,24 +16,26 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar9Test
     {
         private readonly Address _agentAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar9Test()
         {
             _agentAddress = default;
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
         [Theory]
-        [InlineData(0L)]
-        [InlineData(7_210_000L)]
-        [InlineData(7_210_001L)]
-        public void Execute(long blockIndex)
+        [InlineData(0L, 600_000, true, true)]
+        [InlineData(7_210_000L, 600_000, true, true)]
+        [InlineData(7_210_001L, 200_000, true, true)]
+        [InlineData(7_210_001L, 200_000, false, true)]
+        [InlineData(7_210_001L, 200_000, true, false)]
+        public void Execute(long blockIndex, int expected, bool avatarItemSheetExist, bool avatarFavSheetExist)
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = 0,
                 hair = 0,
@@ -52,49 +54,56 @@ namespace Lib9c.Tests.Action
 
             foreach (var (key, value) in sheets)
             {
+                if (key == nameof(CreateAvatarItemSheet) && !avatarItemSheetExist)
+                {
+                    continue;
+                }
+
+                if (key == nameof(CreateAvatarFavSheet) && !avatarFavSheetExist)
+                {
+                    continue;
+                }
+
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             Assert.Equal(0 * CrystalCalculator.CRYSTAL, state.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
 
-            var nextState = action.Execute(new ActionContext()
+            if (!avatarItemSheetExist && !avatarFavSheetExist)
             {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = blockIndex,
-                Random = new TestRandom(),
-            });
+                var nextState = action.Execute(new ActionContext()
+                {
+                    PreviousState = state,
+                    Signer = _agentAddress,
+                    BlockIndex = blockIndex,
+                });
 
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    0
-                )
-            );
-            Assert.True(nextState.TryGetAgentAvatarStatesV2(
-                default,
-                avatarAddress,
-                out var agentState,
-                out var nextAvatarState,
-                out _)
-            );
-            Assert.True(agentState.avatarAddresses.Any());
-            Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(200_000 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
-            var avatarItemSheet = nextState.GetSheet<CreateAvatarItemSheet>();
-            foreach (var row in avatarItemSheet.Values)
-            {
-                Assert.True(nextAvatarState.inventory.HasItem(row.ItemId, row.Count));
+                var avatarAddress = _agentAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CreateAvatar2.DeriveFormat,
+                        0
+                    )
+                );
+                Assert.True(nextState.TryGetAgentAvatarStatesV2(
+                    default,
+                    avatarAddress,
+                    out var agentState,
+                    out var nextAvatarState,
+                    out _)
+                );
+                Assert.True(agentState.avatarAddresses.Any());
+                Assert.Equal("test", nextAvatarState.name);
+                Assert.Equal(expected * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
             }
-
-            var avatarFavSheet = nextState.GetSheet<CreateAvatarFavSheet>();
-            foreach (var row in avatarFavSheet.Values)
+            else
             {
-                var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
-                    ? _agentAddress
-                    : avatarAddress;
-                Assert.Equal(row.Currency * row.Quantity, nextState.GetBalance(targetAddress, row.Currency));
+                Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousState = state,
+                    Signer = _agentAddress,
+                    BlockIndex = blockIndex,
+                }));
             }
         }
 
@@ -105,7 +114,7 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = default(Address);
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = 0,
                 hair = 0,
@@ -146,7 +155,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = 0,
                 hair = 0,
@@ -174,7 +183,7 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = index,
                 hair = 0,
@@ -210,7 +219,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[index] = avatarAddress;
             var state = new MockStateDelta().SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = index,
                 hair = 0,
@@ -244,7 +253,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = index,
                 hair = 0,
@@ -298,7 +307,7 @@ namespace Lib9c.Tests.Action
         public void Serialize_With_DotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar9()
             {
                 index = 2,
                 hair = 1,
@@ -312,7 +321,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar9)formatter.Deserialize(ms);
 
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);
@@ -320,52 +329,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(5, deserialized.lens);
             Assert.Equal(7, deserialized.tail);
             Assert.Equal("test", deserialized.name);
-        }
-
-        [Fact]
-        public void AddItem()
-        {
-            var itemSheet = _tableSheets.ItemSheet;
-            var createAvatarItemSheet = new CreateAvatarItemSheet();
-            createAvatarItemSheet.Set(@"item_id,count
-10112000,2
-10512000,2
-600201,2
-");
-            var avatarState = new AvatarState(default, default, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
-            CreateAvatar.AddItem(itemSheet, createAvatarItemSheet, avatarState, new TestRandom());
-            foreach (var row in createAvatarItemSheet.Values)
-            {
-                Assert.True(avatarState.inventory.HasItem(row.ItemId, row.Count));
-            }
-
-            Assert.Equal(4, avatarState.inventory.Equipments.Count());
-            foreach (var equipment in avatarState.inventory.Equipments)
-            {
-                var equipmentRow = _tableSheets.EquipmentItemSheet[equipment.Id];
-                Assert.Equal(equipmentRow.Stat, equipment.Stat);
-            }
-        }
-
-        [Fact]
-        public void MintAsset()
-        {
-            var createAvatarFavSheet = new CreateAvatarFavSheet();
-            createAvatarFavSheet.Set(@"currency,quantity,target
-CRYSTAL,200000,Agent
-RUNE_GOLDENLEAF,200000,Avatar
-");
-            var avatarAddress = new PrivateKey().ToAddress();
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarState = new AvatarState(avatarAddress, agentAddress, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
-            var nextState = CreateAvatar.MintAsset(createAvatarFavSheet, avatarState, new MockStateDelta(), new ActionContext());
-            foreach (var row in createAvatarFavSheet.Values)
-            {
-                var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
-                    ? agentAddress
-                    : avatarAddress;
-                Assert.Equal(row.Currency * row.Quantity, nextState.GetBalance(targetAddress, row.Currency));
-            }
         }
     }
 }

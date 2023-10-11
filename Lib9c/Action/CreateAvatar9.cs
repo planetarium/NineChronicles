@@ -9,7 +9,6 @@ using Bencodex.Types;
 using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
-using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -23,12 +22,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2166
-    /// Updated at https://github.com/planetarium/lib9c/pull/2166
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1991
+    /// Updated at https://github.com/planetarium/lib9c/pull/1991
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar10")]
-    public class CreateAvatar : GameAction, ICreateAvatarV2
+    [ActionType("create_avatar9")]
+    public class CreateAvatar9 : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -103,6 +102,13 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(ctx, GoldCurrencyMock, signer);
+            }
+
+            var itemSheetAddress = Addresses.GetSheetAddress<CreateAvatarItemSheet>();
+            var favSheetAddress = Addresses.GetSheetAddress<CreateAvatarFavSheet>();
+            if (states.GetState(itemSheetAddress) is not null || states.GetState(favSheetAddress) is not null)
+            {
+                throw new ActionObsoletedException(nameof(CreateAvatar9));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -257,65 +263,21 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(equipment);
             }
 #endif
-            var sheets = ctx.PreviousState.GetSheets(containItemSheet: true,
-                sheetTypes: new[] {typeof(CreateAvatarItemSheet), typeof(CreateAvatarFavSheet)});
-            var itemSheet = sheets.GetItemSheet();
-            var createAvatarItemSheet = sheets.GetSheet<CreateAvatarItemSheet>();
-            AddItem(itemSheet, createAvatarItemSheet, avatarState, context.Random);
-            var createAvatarFavSheet = sheets.GetSheet<CreateAvatarFavSheet>();
-            states = MintAsset(createAvatarFavSheet, avatarState, states, context);
+
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            // TODO delete check blockIndex hard-fork this action
+            // Fix invalid mint crystal balance in internal network. main-net always mint 200_000
+            var mintingValue = context.BlockIndex > 7_210_000L ? 200_000 : 600_000;
             return states
                 .SetState(signer, agentState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
-        }
-
-        public static void AddItem(ItemSheet itemSheet, CreateAvatarItemSheet createAvatarItemSheet,
-            AvatarState avatarState, IRandom random)
-        {
-            foreach (var row in createAvatarItemSheet.Values)
-            {
-                var itemId = row.ItemId;
-                var count = row.Count;
-                var itemRow = itemSheet[itemId];
-                if (itemRow is MaterialItemSheet.Row materialRow)
-                {
-                    var item = ItemFactory.CreateMaterial(materialRow);
-                    avatarState.inventory.AddItem(item, count);
-                }
-                else
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        var item = ItemFactory.CreateItem(itemRow, random);
-                        avatarState.inventory.AddItem(item);
-                    }
-                }
-            }
-        }
-
-        public static IAccount MintAsset(CreateAvatarFavSheet favSheet,
-            AvatarState avatarState, IAccount states, IActionContext context)
-        {
-            foreach (var row in favSheet.Values)
-            {
-                var currency = row.Currency;
-                var targetAddress = row.Target switch
-                {
-                    CreateAvatarFavSheet.Target.Agent => avatarState.agentAddress,
-                    CreateAvatarFavSheet.Target.Avatar => avatarState.address,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                states = states.MintAsset(context, targetAddress, currency * row.Quantity);
-            }
-
-            return states;
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .MintAsset(ctx, signer, mintingValue * CrystalCalculator.CRYSTAL);
         }
     }
 }
