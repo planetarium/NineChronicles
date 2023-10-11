@@ -306,6 +306,7 @@ namespace Nekoyume.Action
             var sellerResults = new List<Buy7.SellerResult>();
             var materialSheet = states.GetSheet<MaterialItemSheet>();
 
+            var random = ctx.GetRandom();
             foreach (var productInfo in purchaseInfos)
             {
                 if (productInfo is null)
@@ -387,7 +388,6 @@ namespace Nekoyume.Action
                 productDict = (Dictionary)productDict.Remove(productIdSerialized);
                 shopStateDict = shopStateDict.SetItem("products", productDict);
 
-                var random = ctx.GetRandom();
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, random.GenerateRandomGuid(), ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 

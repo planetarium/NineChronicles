@@ -66,6 +66,7 @@ namespace Nekoyume.Action
 
             long rewardLevel = monsterCollectionState.GetRewardLevel(context.BlockIndex);
             ItemSheet itemSheet = states.GetItemSheet();
+            var random = context.GetRandom();
             for (int i = 0; i < rewardLevel; i++)
             {
                 int level = i + 1;
@@ -75,7 +76,6 @@ namespace Nekoyume.Action
                 }
 
                 List<MonsterCollectionRewardSheet.RewardInfo> rewards = monsterCollectionState.RewardLevelMap[level];
-                var random = context.GetRandom();
                 Guid id = random.GenerateRandomGuid();
                 MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
                 MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
