@@ -838,6 +838,8 @@ namespace Nekoyume.UI
                 yield break;
             }
 
+            yield return StartCoroutine(CoFadeOut());
+
             var stageLoadingEffect = Find<StageLoadingEffect>();
             if (!stageLoadingEffect.LoadingEnd)
             {
@@ -845,7 +847,7 @@ namespace Nekoyume.UI
             }
 
             yield return StartCoroutine(stageLoadingEffect.CoClose());
-            yield return StartCoroutine(CoFadeOut());
+
             Game.Event.OnStageStart.Invoke(log);
             Close();
         }
