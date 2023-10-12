@@ -180,7 +180,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Show
+  m_Name: UICelebratesPopup2@Show
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -541,6 +541,32 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!1102 &1102153509136615604
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Show
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: e2591a3784167fd409b9aa34848839b8, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1102 &1102300793469542844
 AnimatorState:
   serializedVersion: 6
@@ -577,11 +603,14 @@ AnimatorStateMachine:
   m_Name: Base Layer
   m_ChildStates:
   - serializedVersion: 1
+    m_State: {fileID: 1102153509136615604}
+    m_Position: {x: 270, y: 40, z: 0}
+  - serializedVersion: 1
     m_State: {fileID: 1102300793469542844}
     m_Position: {x: 310, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2348702286695944506}
-    m_Position: {x: 330, y: 120, z: 0}
+    m_Position: {x: 345, y: 255, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 771534331087749830}
     m_Position: {x: 380, y: 320, z: 0}
@@ -594,7 +623,7 @@ AnimatorStateMachine:
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 50, y: 210, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: -2348702286695944506}
+  m_DefaultState: {fileID: 1102153509136615604}
 --- !u!1102 &1791468501685663493
 AnimatorState:
   serializedVersion: 6
