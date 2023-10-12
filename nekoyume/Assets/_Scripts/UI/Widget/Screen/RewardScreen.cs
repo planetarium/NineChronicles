@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-
+using Nekoyume.Game.Controller;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -19,6 +19,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
             _disposable?.Dispose();
             _disposable = Observable
                 .EveryUpdate()
