@@ -122,6 +122,8 @@ namespace Nekoyume.UI
 
         public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu)btnPatrolReward;
 
+        public bool IsShown => AnimationState.Value == AnimationStateType.Shown;
+
         protected override void Awake()
         {
             base.Awake();

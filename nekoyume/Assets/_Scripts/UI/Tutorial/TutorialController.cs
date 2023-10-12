@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
@@ -34,6 +35,7 @@ namespace Nekoyume.UI
         private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
+        private Coroutine _rewardScreenCoroutine;
 
         public TutorialController(IEnumerable<Widget> widgets)
         {
@@ -103,36 +105,6 @@ namespace Nekoyume.UI
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
-                if (id == CreateAvatarRewardTutorialId)
-                {
-                    var mailRewards = new List<MailReward>();
-                    foreach (var row in TableSheets.Instance.CreateAvatarItemSheet.Values)
-                    {
-                        var itemId = row.ItemId;
-                        var count = row.Count;
-                        var itemRow = TableSheets.Instance.ItemSheet[itemId];
-                        if (itemRow is MaterialItemSheet.Row materialRow)
-                        {
-                            var item = ItemFactory.CreateMaterial(materialRow);
-                            mailRewards.Add(new MailReward(item, count));
-                        }
-                        else
-                        {
-                            for (var i = 0; i < count; i++)
-                            {
-                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                                mailRewards.Add(new MailReward(item, 1));
-                            }
-                        }
-                    }
-
-                    mailRewards.AddRange(
-                        TableSheets.Instance.CreateAvatarFavSheet.Values
-                            .Select(row =>
-                                new MailReward(row.Currency * row.Quantity, row.Quantity)));
-                    Widget.Find<RewardScreen>().Show(mailRewards);
-                }
-
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
@@ -141,6 +113,11 @@ namespace Nekoyume.UI
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
                 });
+
+                if (id == CreateAvatarRewardTutorialId && _rewardScreenCoroutine == null)
+                {
+                    _rewardScreenCoroutine = _tutorial.StartCoroutine(CoShowTutorialRewardScreen());
+                }
             }
             else
             {
@@ -276,6 +253,38 @@ namespace Nekoyume.UI
                 ["Id"] = id,
             };
             Analyzer.Instance.Track("Unity/Tutorial progress", props);
+        }
+
+        private IEnumerator CoShowTutorialRewardScreen()
+        {
+            yield return new WaitUntil(() => Widget.Find<Menu>().IsShown);
+
+            var mailRewards = new List<MailReward>();
+            foreach (var row in TableSheets.Instance.CreateAvatarItemSheet.Values)
+            {
+                var itemId = row.ItemId;
+                var count = row.Count;
+                var itemRow = TableSheets.Instance.ItemSheet[itemId];
+                if (itemRow is MaterialItemSheet.Row materialRow)
+                {
+                    var item = ItemFactory.CreateMaterial(materialRow);
+                    mailRewards.Add(new MailReward(item, count));
+                }
+                else
+                {
+                    for (var i = 0; i < count; i++)
+                    {
+                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                        mailRewards.Add(new MailReward(item, 1));
+                    }
+                }
+            }
+
+            mailRewards.AddRange(
+                TableSheets.Instance.CreateAvatarFavSheet.Values
+                    .Select(row =>
+                        new MailReward(row.Currency * row.Quantity, row.Quantity)));
+            Widget.Find<RewardScreen>().Show(mailRewards);
         }
     }
 }
