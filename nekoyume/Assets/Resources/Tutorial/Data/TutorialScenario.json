@@ -606,7 +606,7 @@
         "actionType": 15,
         "emojiType": 1,
         "guideType": 2,
-        "arrowPositionOffset": { "x": -48, "y": -66 },
+        "arrowPositionOffset": { "x": 10000, "y": 10000 },
         "targetPositionOffset": { "x": 3, "y": 17 },
         "scriptKey": "TUTORIAL_05_002"
       }
@@ -677,10 +677,10 @@
       "checkPointId": -3,
       "data": {
         "presetId": 1,
-        "targetType": 12,
-        "actionType": 0,
+        "targetType": 30001,
+        "actionType": 30001,
         "emojiType": 2,
-        "guideType": 4,
+        "guideType": 1,
         "fullScreenButton" : true,
         "scriptKey": "TUTORIAL_03_003"
       }
