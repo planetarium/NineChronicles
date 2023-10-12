@@ -344,7 +344,7 @@ namespace Nekoyume.Game.Character
                 });
 
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
-                for (int interLevel = Level+1; interLevel <= level; interLevel++)
+                for (int interLevel = level + 1; interLevel <= Level; interLevel++)
                 {
                     Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
                 }
