@@ -16,10 +16,15 @@ namespace Nekoyume.UI
             _isDone.SetValueAndForceNotify(true);
         }
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
-            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
             _disposable?.Dispose();
             _disposable = Observable
                 .EveryUpdate()
