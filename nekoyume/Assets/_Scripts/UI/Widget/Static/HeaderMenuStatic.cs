@@ -16,8 +16,11 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module
 {
     using Nekoyume.Game;
+    using Nekoyume.Game.Controller;
     using Nekoyume.Helper;
+    using Nekoyume.UI.Module.WorldBoss;
     using Nekoyume.UI.Scroller;
+    using System.Globalization;
     using UniRx;
 
     public class HeaderMenuStatic : StaticWidget
@@ -32,6 +35,9 @@ namespace Nekoyume.UI.Module
             Chat,
             Settings,
             Quit,
+            PortalReward,
+            Notice,
+            InviteFriend,
         }
 
         public enum AssetVisibleState
@@ -54,7 +60,7 @@ namespace Nekoyume.UI.Module
         {
             public ToggleType Type;
             public Toggle Toggle;
-            public Image Notification;
+            public List<Image> Notification;
             public GameObject Lock;
             public TextMeshProUGUI LockText;
         }
@@ -102,7 +108,10 @@ namespace Nekoyume.UI.Module
         private VFX workshopVFX;
 
         [SerializeField]
-        private ToggleDropdown menuToggleDropdown;
+        private Toggle menuToggleDropdown;
+
+        [SerializeField]
+        private List<Image> menuToggleNotifications;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -117,6 +126,9 @@ namespace Nekoyume.UI.Module
                 { ToggleType.CombinationSlots, new ReactiveProperty<bool>(false) },
                 { ToggleType.Mail, new ReactiveProperty<bool>(false) },
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
+                { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
+                { ToggleType.Notice, new ReactiveProperty<bool>(false) },
+                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
@@ -127,7 +139,7 @@ namespace Nekoyume.UI.Module
                 { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
                 { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
                 { ToggleType.Rank, 1 },
-                { ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat },
+                { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
                 { ToggleType.Quit, 1 },
             };
@@ -147,6 +159,14 @@ namespace Nekoyume.UI.Module
 
         public override bool CanHandleInputEvent => false;
 
+        private const string PortalRewardNotificationKey = "PORTAL_REWARD_NOTIFICATION";
+
+        public const string PortalRewardNotificationCombineKey = "PORTAL_REWARD_NOTIFICATION_COMBINE_ACTION";
+        public const string PortalRewardNotificationTradingKey = "PORTAL_REWARD_NOTIFICATION_TRADING_ACTION";
+        public const string PortalRewardNotificationDailyKey = "PORTAL_REWARD_NOTIFICATION_DAILY_ACTION";
+
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
         public override void Initialize()
         {
             base.Initialize();
@@ -158,45 +178,146 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Rank, Find<RankPopup>());
             _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
-            _toggleWidgets.Add(ToggleType.Quit, Find<QuitSystem>());
 
             foreach (var toggleInfo in toggles)
             {
                 if (_toggleNotifications.ContainsKey(toggleInfo.Type))
                 {
-                    _toggleNotifications[toggleInfo.Type].SubscribeTo(toggleInfo.Notification)
-                        .AddTo(gameObject);
+                    foreach (var notiObj in toggleInfo.Notification)
+                    {
+                        _toggleNotifications[toggleInfo.Type].SubscribeTo(notiObj)
+                            .AddTo(gameObject);
+                    }
                 }
 
-                toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                switch (toggleInfo.Type)
                 {
-                    var widget = _toggleWidgets[toggleInfo.Type];
-                    if (value)
-                    {
-                        var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                    case ToggleType.InviteFriend:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
-                                NotificationCell.NotificationType.UnlockCondition);
+                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
                             toggleInfo.Toggle.isOn = false;
-                            return;
-                        }
+                        });
+                        break;
+                    case ToggleType.PortalReward:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                    };
+                                    confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
+                            UpdatePortalReward(false);
+                        });
+                        break;
+                    case ToggleType.Quit:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        var address = States.Instance.CurrentAvatarState.address;
+                                        if (WorldBossStates.IsReceivingGradeRewards(address))
+                                        {
+                                            OneLineSystem.Push(
+                                                MailType.System,
+                                                L10nManager.Localize("UI_CAN_NOT_CHANGE_CHARACTER"),
+                                                NotificationCell.NotificationType.Alert);
+                                            return;
+                                        }
 
-                        var stage = Game.instance.Stage;
-                        if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                        Game.instance.BackToNest();
+                                        Close();
+                                        AudioController.PlayClick();
+                                    };
+                                    confirm.Set("UI_INFORMATION_CHARACTER_SELECT", "UI_DESCRIPTION_CHARACTER_SELECT", true);
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                    case ToggleType.Notice:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            widget.Show(() => { toggleInfo.Toggle.isOn = false; });
-                        }
-                    }
-                    else
-                    {
-                        if (widget.isActiveAndEnabled)
+                            var widget = Find<EventReleaseNotePopup>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.ShowNotFilterd(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                    default:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            widget.Close(true);
-                        }
-                    }
-                });
+                            var widget = _toggleWidgets[toggleInfo.Type];
+                            if (value)
+                            {
+                                if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                                {
+                                    OneLineSystem.Push(MailType.System,
+                                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                        NotificationCell.NotificationType.UnlockCondition);
+                                    toggleInfo.Toggle.isOn = false;
+                                    return;
+                                }
+
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                }
             }
 
             menuToggleDropdown.onValueChanged.AddListener((value) =>
@@ -205,14 +326,17 @@ namespace Nekoyume.UI.Module
                 {
                     CloseWidget = () => { menuToggleDropdown.isOn = false; };
                     WidgetStack.Push(gameObject);
+                    Animator.Play("HamburgerMenu@Show");
                 }
                 else
                 {
+                    Animator.Play("HamburgerMenu@Close",-1,1);
                     CloseWidget = null;
                     Observable.NextFrame().Subscribe(_ =>
                     {
                         var list = WidgetStack.ToList();
                         list.Remove(gameObject);
+                        WidgetStack.Clear();
                         foreach (var go in list)
                         {
                             WidgetStack.Push(go);
@@ -239,6 +363,30 @@ namespace Nekoyume.UI.Module
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            var liveAsset = Nekoyume.Game.LiveAsset.LiveAssetManager.instance;
+            _toggleNotifications[ToggleType.Notice].Value = liveAsset.HasUnreadEvent || liveAsset.HasUnreadNotice;
+            liveAsset.ObservableHasUnread
+                .SubscribeTo(_toggleNotifications[ToggleType.Notice])
+                .AddTo(gameObject);
+
+            var mergedMenuNoti = Observable.CombineLatest(_toggleNotifications[ToggleType.Notice], _toggleNotifications[ToggleType.PortalReward], _toggleNotifications[ToggleType.Rank]);
+            foreach (var item in menuToggleNotifications)
+            {
+                mergedMenuNoti.Subscribe(notices=> {
+                    foreach (var noti in notices)
+                    {
+                        if (noti)
+                        {
+                            item.enabled = true;
+                            return;
+                        }
+                    }
+                    item.enabled = false;
+                }).AddTo(gameObject);
+            }
+
+            _toggleNotifications[ToggleType.PortalReward].Value = PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) == 0 ? false : true;
         }
 
         protected override void OnEnable()
@@ -477,6 +625,12 @@ namespace Nekoyume.UI.Module
             _toggleNotifications[ToggleType.Mail].Value = hasNotification;
         }
 
+        public void UpdatePortalReward(bool hasNotification)
+        {
+            _toggleNotifications[ToggleType.PortalReward].Value = hasNotification;
+            PlayerPrefs.SetInt(PortalRewardNotificationKey, hasNotification ? 1:0);
+        }
+
         public void SetActiveAvatarInfo(bool value)
         {
             var avatarInfo = toggles.FirstOrDefault(x => x.Type == ToggleType.AvatarInfo);
@@ -507,6 +661,65 @@ namespace Nekoyume.UI.Module
             if (info != null)
             {
                 info.Toggle.isOn = true;
+            }
+        }
+
+        public void TutorialActionClickMenuButton()
+        {
+            if(menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = true;
+            }
+        }
+
+        public void TutorialActionClickPortalRewardButton()
+        {
+            Game.instance.PortalConnect.OpenPortalRewardUrl();
+            if (menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = false;
+            }
+            UpdatePortalReward(false);
+        }
+
+        public void UpdatePortalRewardByLevel(int level)
+        {
+            foreach (var noticePoint in ResourcesHelper.GetPortalRewardLevelTable())
+            {
+                if (noticePoint == level)
+                {
+                    UpdatePortalReward(true);
+                    return;
+                }
+            }
+        }
+
+        public void UpdatePortalRewardOnce(string key)
+        {
+            var count = PlayerPrefs.GetInt(key, 0);
+            if(count == 0) {
+                UpdatePortalReward(true);
+            }
+            PlayerPrefs.SetInt(key, ++count);
+        }
+
+        public void UpdatePortalRewardDaily()
+        {
+            var updateAtToday = true;
+            if (PlayerPrefs.HasKey(PortalRewardNotificationDailyKey) &&
+                DateTime.TryParseExact(PlayerPrefs.GetString(PortalRewardNotificationDailyKey),
+                    DateTimeFormat,
+                    null,
+                    DateTimeStyles.None,
+                    out var result))
+            {
+                updateAtToday = DateTime.Today != result.Date;
+            }
+
+            if (updateAtToday)
+            {
+                UpdatePortalReward(true);
+                PlayerPrefs.SetString(PortalRewardNotificationDailyKey, DateTime.Today.ToString(DateTimeFormat));
             }
         }
     }
