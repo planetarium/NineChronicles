@@ -54,18 +54,18 @@ namespace Nekoyume.UI
             bool autoClose = false,
             bool ignoreShowAnimation = false)
         {
-            SetBackGround(loadingType);
-
-            loadingModule.SetMessage(message);
-            loadingModule.SetToolTipText();
-            loadingModule.PlaySliderAnimation();
-
             if (autoClose)
             {
                 Observable.Timer(TimeSpan.FromSeconds(3))
                     .Subscribe(_ => Close()).AddTo(gameObject);
             }
+
+            SetBackGround(loadingType);
+            loadingModule.SetMessage(message);
+            loadingModule.SetToolTipText();
+
             base.Show(ignoreShowAnimation);
+            loadingModule.PlaySliderAnimation();
         }
 
         private void SetBackGround(LoadingType type)
