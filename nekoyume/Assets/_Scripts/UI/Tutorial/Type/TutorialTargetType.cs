@@ -28,6 +28,7 @@ namespace Nekoyume.UI
         MenuButton = 19,
         PortalReward = 50001,
         ItemTooltipEquipButton = 30000,
+        BattlePreparationStartButton = 30001,
         SummonEnteringButton = 100000,
         Normal1SummonButton,
     }

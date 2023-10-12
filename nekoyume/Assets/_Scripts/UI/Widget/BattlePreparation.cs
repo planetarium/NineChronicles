@@ -769,5 +769,10 @@ namespace Nekoyume.UI
                 Debug.LogError($"TryGetFirstCell throw error.");
             }
         }
+
+        public void TutorialActionClickBattlePreparationHackAndSlash()
+        {
+            OnClickBattle();
+        }
     }
 }
