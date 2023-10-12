@@ -57,7 +57,7 @@ namespace Nekoyume.UI
         public StageProgressBar StageProgressBar => stageProgressBar;
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 3;
-        public const int RequiredStageForAccelButton = 5;
+        public const int RequiredStageForAccelButton = 3;
         private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
         protected override void Awake()
