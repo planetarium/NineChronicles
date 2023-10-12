@@ -77,6 +77,7 @@ namespace Nekoyume.UI
             if (playVideo)
             {
                 var item = backgroundItems.FirstOrDefault(item => item.type == type);
+                imageContainer.texture = item.texture;
                 var clip = item.videoClip;
 
                 if (clip)
@@ -84,10 +85,6 @@ namespace Nekoyume.UI
                     videoPlayer.clip = clip;
                     videoPlayer.Play();
                     imageContainer.texture = videoTexture;
-                }
-                else
-                {
-                    imageContainer.texture = item.texture;
                 }
             }
         }
