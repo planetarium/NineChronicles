@@ -55,7 +55,6 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Find<HeaderMenuStatic>().Close();
             SetBackGround(loadingType);
 
             loadingModule.SetMessage(message);
