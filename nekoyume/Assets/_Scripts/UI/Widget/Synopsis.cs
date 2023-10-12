@@ -370,7 +370,7 @@ namespace Nekoyume.UI
                 {
                     var loadingScreen = Find<LoadingScreen>();
                     loadingScreen.Show(
-                        LoadingScreen.LoadingType.None,
+                        LoadingScreen.LoadingType.Entering,
                         L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
