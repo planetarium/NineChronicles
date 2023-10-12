@@ -679,6 +679,7 @@ namespace Nekoyume.UI.Module
             {
                 menuToggleDropdown.isOn = false;
             }
+            UpdatePortalReward(false);
         }
 
         public void UpdatePortalRewardByLevel(int level)
