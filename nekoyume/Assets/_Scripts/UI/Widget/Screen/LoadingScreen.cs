@@ -54,8 +54,6 @@ namespace Nekoyume.UI
             bool autoClose = false,
             bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
-            Find<HeaderMenuStatic>().Close();
             SetBackGround(loadingType);
 
             loadingModule.SetMessage(message);
@@ -67,6 +65,7 @@ namespace Nekoyume.UI
                 Observable.Timer(TimeSpan.FromSeconds(3))
                     .Subscribe(_ => Close()).AddTo(gameObject);
             }
+            base.Show(ignoreShowAnimation);
         }
 
         private void SetBackGround(LoadingType type)

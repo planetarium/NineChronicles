@@ -91,8 +91,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Choose Nickname");
             Find<LoadingScreen>().Show(
                 LoadingScreen.LoadingType.Entering,
-                L10nManager.Localize("UI_IN_MINING_A_BLOCK"),
-                true);
+                L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
             var (hairIndex, eyeIndex, earIndex, tailIndex) = loginDetailCostume.GetCostumeId();
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, hairIndex, eyeIndex, earIndex, tailIndex)
