@@ -54,13 +54,13 @@ namespace Nekoyume.IAPStore
             {
                 foreach (var product in category.ProductList)
                 {
-                    _initailizedProductSchema.TryAdd(product.GoogleSku, product);
+                    _initailizedProductSchema.TryAdd(product.Sku, product);
                 }
             }
 
             foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
             {
-                builder.AddProduct(schema.Value.GoogleSku, ProductType.Consumable);
+                builder.AddProduct(schema.Value.Sku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
