@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
+using Nekoyume.Blockchain;
+using Nekoyume.Game;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
@@ -23,6 +27,7 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
+        private const int CreateAvatarRewardTutorialId = 49;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
@@ -98,6 +103,36 @@ namespace Nekoyume.UI
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
+                if (id == CreateAvatarRewardTutorialId)
+                {
+                    var mailRewards = new List<MailReward>();
+                    foreach (var row in TableSheets.Instance.CreateAvatarItemSheet.Values)
+                    {
+                        var itemId = row.ItemId;
+                        var count = row.Count;
+                        var itemRow = TableSheets.Instance.ItemSheet[itemId];
+                        if (itemRow is MaterialItemSheet.Row materialRow)
+                        {
+                            var item = ItemFactory.CreateMaterial(materialRow);
+                            mailRewards.Add(new MailReward(item, count));
+                        }
+                        else
+                        {
+                            for (var i = 0; i < count; i++)
+                            {
+                                var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, 1));
+                            }
+                        }
+                    }
+
+                    mailRewards.AddRange(
+                        TableSheets.Instance.CreateAvatarFavSheet.Values
+                            .Select(row =>
+                                new MailReward(row.Currency * row.Quantity, row.Quantity)));
+                    Widget.Find<RewardScreen>().Show(mailRewards);
+                }
+
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
