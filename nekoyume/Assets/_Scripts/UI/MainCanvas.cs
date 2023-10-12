@@ -175,6 +175,7 @@ namespace Nekoyume.UI
                 Widget.Create<RuneCombineResultScreen>(),
                 Widget.Create<RuneEnhancementResultScreen>(),
                 Widget.Create<MailRewardScreen>(),
+                Widget.Create<RewardScreen>(),
                 Widget.Create<CPScreen>(),
                 Widget.Create<PetLevelUpResultScreen>(),
                 Widget.Create<PetSummonResultScreen>(),
