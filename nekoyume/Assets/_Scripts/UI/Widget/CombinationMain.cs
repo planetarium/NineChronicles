@@ -131,5 +131,11 @@ namespace Nekoyume.UI
 
             summonNotificationImage.enabled = Summon.HasNotification;
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickSummonEnteringButton()
+        {
+            summonButton.onClick?.Invoke();
+        }
     }
 }
