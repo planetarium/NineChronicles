@@ -54,18 +54,18 @@ namespace Nekoyume.UI
             bool autoClose = false,
             bool ignoreShowAnimation = false)
         {
-            SetBackGround(loadingType);
-
-            loadingModule.SetMessage(message);
-            loadingModule.SetToolTipText();
-            loadingModule.PlaySliderAnimation();
-
             if (autoClose)
             {
                 Observable.Timer(TimeSpan.FromSeconds(3))
                     .Subscribe(_ => Close()).AddTo(gameObject);
             }
+
+            SetBackGround(loadingType);
+            loadingModule.SetMessage(message);
+            loadingModule.SetToolTipText();
+
             base.Show(ignoreShowAnimation);
+            loadingModule.PlaySliderAnimation();
         }
 
         private void SetBackGround(LoadingType type)
@@ -77,6 +77,7 @@ namespace Nekoyume.UI
             if (playVideo)
             {
                 var item = backgroundItems.FirstOrDefault(item => item.type == type);
+                imageContainer.texture = item.texture;
                 var clip = item.videoClip;
 
                 if (clip)
@@ -84,10 +85,6 @@ namespace Nekoyume.UI
                     videoPlayer.clip = clip;
                     videoPlayer.Play();
                     imageContainer.texture = videoTexture;
-                }
-                else
-                {
-                    imageContainer.texture = item.texture;
                 }
             }
         }
