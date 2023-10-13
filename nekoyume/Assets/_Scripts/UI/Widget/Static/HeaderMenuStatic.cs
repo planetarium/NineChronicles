@@ -212,6 +212,7 @@ namespace Nekoyume.UI.Module
                                     confirm.SubmitCallback = () =>
                                     {
                                         Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                        confirm.Close();
                                     };
                                     confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
                                     confirm.Show(() => { toggleInfo.Toggle.isOn = false; });

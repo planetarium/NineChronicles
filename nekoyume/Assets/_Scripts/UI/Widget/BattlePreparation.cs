@@ -763,6 +763,8 @@ namespace Nekoyume.UI
                 {
                     Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
                 }
+
+                Find<EquipmentTooltip>().OnEnterButtonArea(true);
             }
             catch
             {
