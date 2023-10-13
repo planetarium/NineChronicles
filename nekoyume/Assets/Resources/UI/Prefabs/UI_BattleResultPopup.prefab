@@ -5352,6 +5352,7 @@ GameObject:
   - component: {fileID: 8298727756366207027}
   - component: {fileID: 273521789866024183}
   - component: {fileID: 5209631345032510817}
+  - component: {fileID: 3386172159660107499}
   m_Layer: 5
   m_Name: List_2
   m_TagString: Untagged
@@ -5467,6 +5468,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &3386172159660107499
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 323822860176905800}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &342717255173292265
 GameObject:
   m_ObjectHideFlags: 0
@@ -21799,6 +21812,7 @@ GameObject:
   - component: {fileID: 7885515759282763183}
   - component: {fileID: 5854465553406141739}
   - component: {fileID: 1597246134367266754}
+  - component: {fileID: 7051107416617754360}
   m_Layer: 5
   m_Name: List_4
   m_TagString: Untagged
@@ -21914,6 +21928,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &7051107416617754360
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1596362272188505403}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1685361606119936724
 GameObject:
   m_ObjectHideFlags: 0
@@ -43399,6 +43425,7 @@ GameObject:
   - component: {fileID: 2853324576608097625}
   - component: {fileID: 1325103469162261304}
   - component: {fileID: 5559580829666670959}
+  - component: {fileID: 101466071922087504}
   m_Layer: 5
   m_Name: List_1
   m_TagString: Untagged
@@ -43514,6 +43541,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &101466071922087504
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3653126056500675793}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3758376901312529385
 GameObject:
   m_ObjectHideFlags: 0
@@ -70678,6 +70717,7 @@ GameObject:
   - component: {fileID: 5473585561630445498}
   - component: {fileID: 7348526492530671298}
   - component: {fileID: 5977323942007939279}
+  - component: {fileID: 3938323108405421458}
   m_Layer: 5
   m_Name: List_3
   m_TagString: Untagged
@@ -70793,6 +70833,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &3938323108405421458
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5923416063068132531}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6196047958878849152
 GameObject:
   m_ObjectHideFlags: 0
