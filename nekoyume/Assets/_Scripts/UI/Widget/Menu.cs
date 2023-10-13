@@ -123,6 +123,8 @@ namespace Nekoyume.UI
 
         public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu)btnPatrolReward;
 
+        public bool IsShown => AnimationState.Value == AnimationStateType.Shown;
+
         protected override void Awake()
         {
             base.Awake();
@@ -195,7 +197,7 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
@@ -432,6 +434,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Workshop, null, true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
         }
@@ -525,8 +528,12 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
+#if UNITY_ANDROID
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             Find<StakingPopup>().Show();
+#endif
         }
 
         public void WorldBossClick()
@@ -723,5 +730,69 @@ namespace Nekoyume.UI
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionGoToWorkShop()
+        {
+            CombinationClick();
+        }
+
+#if UNITY_EDITOR
+        protected override void Update()
+        {
+            base.Update();
+
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.C) &&
+                    !Find<CombinationResultPopup>().gameObject.activeSelf)
+                {
+                    Find<CombinationResultPopup>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.E) &&
+                         !Find<EnhancementResultPopup>().gameObject.activeSelf)
+                {
+                    Find<EnhancementResultPopup>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.U) &&
+                         !Find<OneButtonSystem>().gameObject.activeSelf)
+                {
+                    var game = Game.Game.instance;
+                    var states = game.States;
+                    var sheet = game.TableSheets.MaterialItemSheet;
+                    var mail = new UnloadFromMyGaragesRecipientMail(
+                        game.Agent.BlockIndex,
+                        Guid.NewGuid(),
+                        game.Agent.BlockIndex,
+                        fungibleAssetValue: new[]
+                        {
+                            (
+                                states.AgentState.address,
+                                new FungibleAssetValue(
+                                    states.GoldBalanceState.Gold.Currency,
+                                    9,
+                                    99)
+                            ),
+                            (states.CurrentAvatarState.address, 99 * Currencies.Crystal),
+                        },
+                        fungibleIdAndCount: sheet.OrderedList!.Take(3)
+                            .Select((row, index) => (
+                                row.ItemId,
+                                index + 1)),
+                        "memo")
+                    {
+                        New = true,
+                    };
+                    var mailBox = states.CurrentAvatarState.mailBox;
+                    mailBox.Add(mail);
+                    mailBox.CleanUp();
+                    states.CurrentAvatarState.mailBox = mailBox;
+                    LocalLayerModifier.AddNewMail(
+                        game.States.CurrentAvatarState.address,
+                        mail.id);
+                }
+            }
+        }
+#endif
     }
 }

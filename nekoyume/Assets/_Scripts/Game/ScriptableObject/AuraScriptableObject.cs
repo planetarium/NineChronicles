@@ -8,7 +8,7 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class AuraScriptableObject : ScriptableObject
     {
-        public List<WeaponAuraData> data;
+        public List<AuraData> data;
     }
 
     [Serializable]

@@ -92,7 +92,7 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            Find<DataLoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Shop);
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
             await ReactiveShopState.RequestBuyProductsAsync(ItemSubTypeFilter.Weapon, MarketOrderType.cp_desc, ItemDisplayCount);
             base.Show(ignoreShowAnimation);
@@ -101,7 +101,7 @@ namespace Nekoyume.UI
                 ReactiveShopState.BuyFungibleAssetProducts,
                 ShowItemTooltip);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-            Find<DataLoadingScreen>().Close();
+            Find<LoadingScreen>().Close();
         }
 
         public void Open()

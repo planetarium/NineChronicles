@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -57,8 +57,11 @@ namespace Nekoyume.UI
         private NoticeItem _selectedNoticeItem;
         private readonly ToggleGroup _tabGroup = new();
 
+        private System.Action _onClose;
+
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+        private const int MinimumClearStageId = 20;
 
         public override void Initialize()
         {
@@ -124,6 +127,20 @@ namespace Nekoyume.UI
             RenderNotice(_selectedEventBannerItem.Data);
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            _onClose?.Invoke();
+        }
+
+        public void ShowNotFilterd(System.Action onClose)
+        {
+            _onClose = onClose;
+            base.Show();
+            _tabGroup.SetToggledOn(eventTabButton);
+            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
@@ -133,7 +150,7 @@ namespace Nekoyume.UI
             }
 
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (clearedStageId <= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            if (clearedStageId <= MinimumClearStageId)
             {
                 return;
             }
