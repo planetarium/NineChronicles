@@ -62,8 +62,6 @@ namespace Nekoyume.Blockchain
 
         private Block _genesis;
 
-        private DateTimeOffset _lastTipChangedAt;
-
         public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
         public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
@@ -120,7 +118,6 @@ namespace Nekoyume.Blockchain
                     new ChannelOption("grpc.max_receive_message_length", -1)
                 }
             );
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
             var connect = StreamingHubClient
                 .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
                     _channel,
@@ -160,7 +157,6 @@ namespace Nekoyume.Blockchain
                     new ChannelOption("grpc.max_receive_message_length", -1)
                 }
             );
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
             if (_hub == null)
             {
                 var connect = StreamingHubClient
@@ -738,12 +734,11 @@ namespace Nekoyume.Blockchain
             var newTipBlock = BlockMarshaler.UnmarshalBlock(dict);
             var blockIndex = newTipBlock.Index;
             var blockHash = new BlockHash(newTipBlock.Hash.ToByteArray());
-            _blockHashCache.Add(blockIndex, blockHash);
             BlockIndex = blockIndex;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = blockHash;
             BlockTipHashSubject.OnNext(BlockTipHash);
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
+            _blockHashCache.Add(BlockIndex, BlockTipHash, newTipBlock.Header.StateRootHash);
 
             Debug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
             BlockRenderer.RenderBlock(null, null);
@@ -843,7 +838,6 @@ namespace Nekoyume.Blockchain
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
             BlockTipHashSubject.OnNext(BlockTipHash);
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
 
             Debug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
         }
@@ -939,13 +933,25 @@ namespace Nekoyume.Blockchain
 
         private async UniTask<BlockHash?> GetBlockHashAsync(long? blockIndex)
         {
-            return blockIndex.HasValue
-                ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
-                    ? outBlockHash
-                    : _codec.Decode(await _service.GetBlockHash(blockIndex.Value)) is { } rawBlockHash
-                        ? new BlockHash(rawBlockHash)
-                        : (BlockHash?)null
-                : BlockTipHash;
+            if (blockIndex is null ||
+                blockIndex == BlockIndex)
+            {
+                return BlockTipHash;
+            }
+
+            if (_blockHashCache.TryGet(blockIndex.Value, out var blockHash, out _))
+            {
+                return blockHash;
+            }
+
+            var blockHashBytes = await _service.GetBlockHash(blockIndex.Value);
+            if (_codec.Decode(blockHashBytes) is { } rawBlockHash)
+            {
+                blockHash = new BlockHash(rawBlockHash);
+                _blockHashCache.Add(blockIndex.Value, blockHash, null);
+            }
+
+            return blockHash;
         }
     }
 }
