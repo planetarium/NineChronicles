@@ -163,7 +163,7 @@ namespace Nekoyume.Blockchain
                 var policy = new BlockPolicySource().GetPolicy();
                 var actionEvaluator = new ActionEvaluator(
                     _ => policy.BlockAction,
-                    blockChainStates,
+                    _stateStore,
                     actionLoader);
 
                 if (store.GetCanonicalChainId() is null)
