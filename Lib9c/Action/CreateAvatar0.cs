@@ -182,6 +182,7 @@ namespace Nekoyume.Action
             Address rankingMapAddress)
         {
             var state = ctx.PreviousState;
+            var random = ctx.GetRandom();
             var gameConfigState = state.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
