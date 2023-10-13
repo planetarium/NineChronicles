@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -23,6 +24,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Action.State;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using mixpanel;
@@ -35,7 +37,6 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Market;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using Skill = Nekoyume.Model.Skill.Skill;
 
@@ -126,6 +127,7 @@ namespace Nekoyume.Blockchain
             GameConfig();
             CreateAvatar();
             TransferAsset();
+            TransferAssets();
             Stake();
 
             // MeadPledge
@@ -182,6 +184,9 @@ namespace Nekoyume.Blockchain
             // GARAGE
             UnloadFromMyGarages();
 
+            // Claim Items
+            ClaimItems();
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
             ManipulateState();
@@ -198,7 +203,7 @@ namespace Nekoyume.Blockchain
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
             _actionRenderer.EveryRender<RewardGold>()
-                .Where(HasUpdatedAssetsForCurrentAgent)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval => UpdateAgentStateAsync(eval).Forget())
                 .AddTo(_disposables);
@@ -261,7 +266,7 @@ namespace Nekoyume.Blockchain
         private void CancelProductRegistration()
         {
             _actionRenderer.EveryRender<CancelProductRegistration>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCancelProductRegistrationAsync)
                 .AddTo(_disposables);
@@ -270,7 +275,7 @@ namespace Nekoyume.Blockchain
         private void ReRegisterProduct()
         {
             _actionRenderer.EveryRender<ReRegisterProduct>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseReRegisterProduct)
                 .AddTo(_disposables);
@@ -279,6 +284,9 @@ namespace Nekoyume.Blockchain
         private void BuyProduct()
         {
             _actionRenderer.EveryRender<BuyProduct>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.ProductInfos.Any(info => info.AgentAddress.Equals(States.Instance.AgentState.address)))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyProduct)
                 .AddTo(_disposables);
@@ -314,7 +322,7 @@ namespace Nekoyume.Blockchain
         private void Grinding()
         {
             _actionRenderer.EveryRender<Grinding>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
                 .AddTo(_disposables);
@@ -358,7 +366,7 @@ namespace Nekoyume.Blockchain
 
         private void GameConfig()
         {
-            _actionRenderer.EveryRender(GameConfigState.Address)
+            _actionRenderer.EveryRender<PatchTableSheet>()
                 .ObserveOnMainThread()
                 .Subscribe(UpdateGameConfigState)
                 .AddTo(_disposables);
@@ -395,9 +403,24 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<TransferAsset>()
                 .Where(eval =>
-                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipient.Equals(States.Instance.AgentState.address) ||
+                    eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
+        }
+
+        private void TransferAssets()
+        {
+            _actionRenderer.EveryRender<TransferAssets>()
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) ||
+                    eval.Action.Recipients.Any(e =>
+                        e.recipient.Equals(States.Instance.AgentState.address) ||
+                        e.recipient.Equals(States.Instance.CurrentAvatarState.address)))
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAssets)
                 .AddTo(_disposables);
         }
 
@@ -422,8 +445,9 @@ namespace Nekoyume.Blockchain
         private void ClaimStakeReward()
         {
             _actionRenderer.ActionRenderSubject
-                .Where(ValidateEvaluationForCurrentAvatarState)
-                .Where(eval => eval.Action is IClaimStakeReward)
+                .Where(eval =>
+                    ValidateEvaluationForCurrentAgent(eval) &&
+                    eval.Action is IClaimStakeReward)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
@@ -510,8 +534,7 @@ namespace Nekoyume.Blockchain
         private void RequestPledge()
         {
             _actionRenderer.EveryRender<RequestPledge>()
-                .Where(eval =>
-                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
+                .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState.address))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRequestPledge)
                 .AddTo(_disposables);
@@ -529,89 +552,14 @@ namespace Nekoyume.Blockchain
         private void UnloadFromMyGarages()
         {
             _actionRenderer.EveryRender<UnloadFromMyGarages>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(eval =>
+                    eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
+                    (eval.Action.FungibleAssetValues is not null &&
+                    eval.Action.FungibleAssetValues.Any(e =>
+                        e.balanceAddr.Equals(States.Instance.AgentState.address) ||
+                        e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    if (eval.Exception is not null)
-                    {
-                        Debug.Log(eval.Exception.Message);
-                        return;
-                    }
-
-                    var gameStates = Game.Game.instance.States;
-                    var agentAddr = gameStates.AgentState.address;
-                    var avatarAddr = gameStates.CurrentAvatarState.address;
-                    var states = eval.OutputState;
-                    var action = eval.Action;
-                    if (action.FungibleAssetValues is not null)
-                    {
-                        foreach (var (balanceAddr, value) in action.FungibleAssetValues)
-                        {
-                            var balance = states.GetBalance(
-                                balanceAddr,
-                                value.Currency);
-                            if (balanceAddr.Equals(agentAddr))
-                            {
-                                if (value.Currency.Equals(GoldCurrency))
-                                {
-                                    var goldState = new GoldBalanceState(balanceAddr, balance);
-                                    gameStates.SetGoldBalanceState(goldState);
-                                }
-                                else if (value.Currency.Equals(Currencies.Crystal))
-                                {
-                                    gameStates.SetCrystalBalance(balance);
-                                }
-                                else if (value.Currency.Equals(Currencies.Garage))
-                                {
-                                    AgentStateSubject.OnNextGarage(value);
-                                }
-                            }
-                            else if (balanceAddr.Equals(avatarAddr))
-                            {
-                                gameStates.SetCurrentAvatarBalance(balance);
-                            }
-                        }
-                    }
-
-                    if (action.FungibleIdAndCounts is not null)
-                    {
-                        var inventoryAddr = avatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
-                        var inventory = states.GetInventory(inventoryAddr);
-                        gameStates.CurrentAvatarState.inventory = inventory;
-                        ReactiveAvatarState.UpdateInventory(inventory);
-                    }
-
-                    var avatarValue = states.GetState(avatarAddr);
-                    if (avatarValue is not Dictionary avatarDict)
-                    {
-                        Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
-                        return;
-                    }
-
-                    if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
-                        avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
-                    {
-                        Debug.LogError($"Failed to get mail box: {avatarAddr}");
-                        return;
-                    }
-
-                    var mailBox = new MailBox(mailBoxList);
-                    var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                        .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
-                    if (mail is not null)
-                    {
-                        mail.New = true;
-                        gameStates.CurrentAvatarState.mailBox = mailBox;
-                        LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                                         $"the render context of UnloadFromMyGarages action.\n" +
-                                         $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                    }
-                })
+                .Subscribe(ResponseUnloadFromMyGarages)
                 .AddTo(_disposables);
         }
 
@@ -621,6 +569,29 @@ namespace Nekoyume.Blockchain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="ClaimItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void ClaimItems()
+        {
+            _actionRenderer.EveryRender<ClaimItems>()
+                .Where(eval =>
+                    eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
+                .ObserveOnMainThread()
+                .Subscribe(eval =>
+                {
+                    if (eval.Exception is not null)
+                    {
+                        Debug.Log(eval.Exception.Message);
+                        return;
+                    }
+
+                    UpdateCurrentAvatarInventory(eval);
+                })
                 .AddTo(_disposables);
         }
 
@@ -662,7 +633,15 @@ namespace Nekoyume.Blockchain
             {
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
-                var slotState = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
+                if (!StateGetter.TryGetCombinationSlotState(
+                        avatarAddress,
+                        slotIndex,
+                        eval.OutputState,
+                        out var slotState))
+                {
+                    return;
+                }
+
                 var result = (RapidCombination5.ResultModel)slotState.Result;
                 foreach (var pair in result.cost)
                 {
@@ -772,7 +751,7 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 if (slotState.PetId.HasValue)
                 {
-                    UpdatePetState(avatarAddress, eval.OutputState, slotState.PetId.Value);
+                    UpdatePetState(avatarAddress, slotState.PetId.Value, eval.OutputState);
                 }
 
                 Widget.Find<CombinationSlotsPopup>().SetCaching(
@@ -795,14 +774,14 @@ namespace Nekoyume.Blockchain
                 var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
-                var slot = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
+                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
                 var result = (CombinationConsumable5.ResultModel)slot.Result;
 
-                if (!eval.OutputState.TryGetAvatarStateV2(
+                if (!StateGetter.TryGetAvatarState(
                         agentAddress,
                         avatarAddress,
-                        out var avatarState,
-                        out _))
+                        eval.OutputState,
+                        out var avatarState))
                 {
                     return;
                 }
@@ -832,7 +811,7 @@ namespace Nekoyume.Blockchain
                 var hammerPointStateAddress =
                     Addresses.GetHammerPointStateAddress(avatarAddress, result.recipeId);
                 var hammerPointState = new HammerPointState(hammerPointStateAddress,
-                    eval.OutputState.GetState(hammerPointStateAddress) as List);
+                    StateGetter.GetState(hammerPointStateAddress, eval.OutputState) as List);
 
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
@@ -842,7 +821,7 @@ namespace Nekoyume.Blockchain
                 var action = eval.Action;
                 if (action.petId.HasValue)
                 {
-                    UpdatePetState(avatarAddress, eval.OutputState, action.petId.Value);
+                    UpdatePetState(avatarAddress, action.petId.Value, eval.OutputState);
                 }
 
                 if (nextQuest is not null)
@@ -927,14 +906,14 @@ namespace Nekoyume.Blockchain
                 var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
-                var slot = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
+                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
                 var result = (CombinationConsumable5.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
-                if (!eval.OutputState.TryGetAvatarStateV2(
+                if (!StateGetter.TryGetAvatarState(
                         agentAddress,
                         avatarAddress,
-                        out var avatarState,
-                        out _))
+                        eval.OutputState,
+                        out var avatarState))
                 {
                     return;
                 }
@@ -984,7 +963,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.SlotIndex;
-            var slot = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
+            var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
@@ -1062,14 +1041,14 @@ namespace Nekoyume.Blockchain
                 var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
-                var slot = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
+                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
                 var result = (ItemEnhancement.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
-                if (!eval.OutputState.TryGetAvatarStateV2(
+                if (!StateGetter.TryGetAvatarState(
                         agentAddress,
                         avatarAddress,
-                        out var avatarState,
-                        out _))
+                        eval.OutputState,
+                        out var avatarState))
                 {
                     return;
                 }
@@ -1277,7 +1256,7 @@ namespace Nekoyume.Blockchain
                     var rand = new LocalRandom(eval.RandomSeed);
                     var productId = rand.GenerateRandomGuid();
                     var deriveAddress = Product.DeriveAddress(productId);
-                    eval.OutputState.TryGetState(deriveAddress, out List rawState);
+                    List rawState = (List)StateGetter.GetState(deriveAddress, eval.OutputState);
                     var product = ProductFactory.DeserializeProduct(rawState);
                     if (product is not ItemProduct itemProduct)
                     {
@@ -1978,11 +1957,14 @@ namespace Nekoyume.Blockchain
         private void ResponseRedeemCode(ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";
-            if (eval.Exception is null)
+            if (eval.Exception is null
+                && StateGetter.TryGetRedeemCodeState(
+                    eval.OutputState,
+                    out RedeemCodeState redeem))
             {
                 Widget.Find<CodeRewardPopup>().Show(
                     eval.Action.Code,
-                    eval.OutputState.GetRedeemCodeState());
+                    redeem);
                 key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 var msg = L10nManager.Localize(key);
@@ -2037,10 +2019,11 @@ namespace Nekoyume.Blockchain
 
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            if (!eval.OutputState.TryGetAvatarStateV2(
+            if (!StateGetter.TryGetAvatarState(
                     agentAddress,
                     avatarAddress,
-                    out var avatarState, out _))
+                    eval.OutputState,
+                    out var avatarState))
             {
                 return;
             }
@@ -2108,15 +2091,45 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var senderAddress = eval.Action.Sender;
-            var recipientAddress = eval.Action.Recipient;
+            TransferAssetInternal(
+                eval.OutputState,
+                eval.Action.Sender,
+                eval.Action.Recipient,
+                eval.Action.Amount);
+
+            UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private void ResponseTransferAssets(ActionEvaluation<TransferAssets> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            foreach (var (recipientAddress, amount) in eval.Action.Recipients)
+            {
+                TransferAssetInternal(
+                    eval.OutputState,
+                    eval.Action.Sender,
+                    recipientAddress,
+                    amount);
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private static void TransferAssetInternal(
+            HashDigest<SHA256> outputState,
+            Address senderAddr,
+            Address recipientAddress,
+            FungibleAssetValue amount)
+        {
             var currentAgentAddress = States.Instance.AgentState.address;
             var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
             var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
-            if (senderAddress == currentAgentAddress)
+            if (senderAddr == currentAgentAddress)
             {
-                var amount = eval.Action.Amount;
-
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize(
@@ -2127,8 +2140,7 @@ namespace Nekoyume.Blockchain
             }
             else if (recipientAddress == currentAgentAddress)
             {
-                var amount = eval.Action.Amount;
-                if (senderAddress == playToEarnRewardAddress)
+                if (senderAddr == playToEarnRewardAddress)
                 {
                     OneLineSystem.Push(
                         MailType.System,
@@ -2142,29 +2154,26 @@ namespace Nekoyume.Blockchain
                         L10nManager.Localize(
                             "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
                             amount,
-                            senderAddress),
+                            senderAddr),
                         NotificationCell.NotificationType.Notification);
                 }
             }
             else if (recipientAddress == currentAvatarAddress)
             {
-                var amount = eval.Action.Amount;
                 var currency = amount.Currency;
                 States.Instance.CurrentAvatarBalances[currency.Ticker] =
-                    eval.OutputState.GetBalance(
+                    StateGetter.GetBalance(
                         currentAvatarAddress,
-                        eval.Action.Amount.Currency
-                    );
+                        currency,
+                        outputState);
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize(
                         "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
                         amount,
-                        senderAddress),
+                        senderAddr),
                     NotificationCell.NotificationType.Notification);
             }
-
-            UpdateAgentStateAsync(eval).Forget();
         }
 
         private void ResponseGrinding(ActionEvaluation<Grinding> eval)
@@ -2175,7 +2184,7 @@ namespace Nekoyume.Blockchain
             }
 
             var avatarAddress = eval.Action.AvatarAddress;
-            var avatarState = eval.OutputState.GetAvatarState(avatarAddress);
+            var avatarState = StateGetter.GetAvatarState(avatarAddress, eval.OutputState);
             var mail = avatarState.mailBox.OfType<GrindingMail>()
                 .FirstOrDefault(m => m.id.Equals(eval.Action.Id));
             if (mail is null)
@@ -2462,13 +2471,14 @@ namespace Nekoyume.Blockchain
                 championshipId,
                 round);
             var previousMyScore =
-                eval.PreviousState.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore)
+                StateGetter.TryGetArenaScore(myArenaScoreAdr, eval.PreviousState, out var myArenaScore)
                     ? myArenaScore.Score
                     : ArenaScore.ArenaScoreDefault;
-            int outMyScore = eval.OutputState.TryGetState(
+            int outMyScore = StateGetter.TryGetState(
                 myArenaScoreAdr,
-                out List outputMyScoreList)
-                ? (Integer)outputMyScoreList[1]
+                eval.OutputState,
+                out var outputMyScoreList)
+                ? (Integer)((List)outputMyScoreList)[1]
                 : ArenaScore.ArenaScoreDefault;
 
             var hasMedalReward =
@@ -2534,18 +2544,18 @@ namespace Nekoyume.Blockchain
         }
 
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
-            IAccount prevStates,
-            IAccount outputStates,
+            HashDigest<SHA256> prevStates,
+            HashDigest<SHA256> outputStates,
             Address myAvatarAddress,
             Address enemyAvatarAddress)
         {
             var myAvatarState = States.Instance.CurrentAvatarState;
-            var enemyAvatarState = prevStates.GetAvatarState(enemyAvatarAddress);
+            var enemyAvatarState = StateGetter.GetAvatarState(enemyAvatarAddress, prevStates);
             enemyAvatarState.inventory =
-                new Model.Item.Inventory((List)prevStates.GetState(enemyAvatarAddress.Derive("inventory")));
+                new Model.Item.Inventory((List)StateGetter.GetState(enemyAvatarAddress.Derive("inventory"), prevStates));
             var myItemSlotStateAddress = ItemSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
-            var myItemSlotState = outputStates.TryGetState(myItemSlotStateAddress, out List rawItemSlotState)
-                ? new ItemSlotState(rawItemSlotState)
+            var myItemSlotState = StateGetter.TryGetState(myItemSlotStateAddress, outputStates, out var rawItemSlotState)
+                ? new ItemSlotState((List)rawItemSlotState)
                 : new ItemSlotState(BattleType.Arena);
 
             var myRuneSlotState = States.Instance.CurrentRuneSlotStates[BattleType.Arena];
@@ -2566,13 +2576,13 @@ namespace Nekoyume.Blockchain
 
             var enemyItemSlotStateAddress = ItemSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
             var enemyItemSlotState =
-                prevStates.GetState(enemyItemSlotStateAddress) is List enemyRawItemSlotState
+                StateGetter.GetState(enemyItemSlotStateAddress, prevStates) is List enemyRawItemSlotState
                     ? new ItemSlotState(enemyRawItemSlotState)
                     : new ItemSlotState(BattleType.Arena);
 
             var enemyRuneSlotStateAddress = RuneSlotState.DeriveAddress(enemyAvatarAddress, BattleType.Arena);
             var enemyRuneSlotState =
-                prevStates.GetState(enemyRuneSlotStateAddress) is List enemyRawRuneSlotState
+                StateGetter.GetState(enemyRuneSlotStateAddress, prevStates) is List enemyRawRuneSlotState
                     ? new RuneSlotState(enemyRawRuneSlotState)
                     : new RuneSlotState(BattleType.Arena);
 
@@ -2582,7 +2592,7 @@ namespace Nekoyume.Blockchain
                 RuneState.DeriveAddress(enemyAvatarAddress, info.RuneId));
             foreach (var address in runeAddresses)
             {
-                if (prevStates.GetState(address) is List rawRuneState)
+                if (StateGetter.GetState(address, prevStates) is List rawRuneState)
                 {
                     enemyRuneStates.Add(new RuneState(rawRuneState));
                 }
@@ -2803,11 +2813,12 @@ namespace Nekoyume.Blockchain
 
             UpdateAgentStateAsync(eval).Forget();
             var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
-            States.Instance.CurrentAvatarBalances[soulStoneTicker] = eval.OutputState.GetBalance(
+            States.Instance.CurrentAvatarBalances[soulStoneTicker] = StateGetter.GetBalance(
                 action.AvatarAddress,
-                Currencies.GetMinterlessCurrency(soulStoneTicker)
+                Currencies.GetMinterlessCurrency(soulStoneTicker),
+                eval.OutputState
             );
-            UpdatePetState(action.AvatarAddress, eval.OutputState, action.PetId);
+            UpdatePetState(action.AvatarAddress, action.PetId, eval.OutputState);
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;
         }
@@ -2850,11 +2861,12 @@ namespace Nekoyume.Blockchain
 
         private static void UpdatePetState(
             Address avatarAddress,
-            IAccountState states,
-            int petId)
+            int petId,
+            HashDigest<SHA256> hash)
         {
-            var rawPetState = states.GetState(
-                PetState.DeriveAddress(avatarAddress, petId)
+            var rawPetState = StateGetter.GetState(
+                PetState.DeriveAddress(avatarAddress, petId),
+                hash
             );
             States.Instance.PetStates.UpdatePetState(
                 petId,
@@ -2875,7 +2887,7 @@ namespace Nekoyume.Blockchain
             Address? address = null;
             var approved = false;
             var mead = 0;
-            if (eval.OutputState.GetState(pledgeAddress) is List l)
+            if (StateGetter.GetState(pledgeAddress, eval.OutputState) is List l)
             {
                 address = l[0].ToAddress();
                 approved = l[1].ToBoolean();
@@ -2898,7 +2910,7 @@ namespace Nekoyume.Blockchain
             Address? address = null;
             var approved = false;
             var mead = 0;
-            if (eval.OutputState.GetState(pledgeAddress) is List l)
+            if (StateGetter.GetState(pledgeAddress, eval.OutputState) is List l)
             {
                 address = l[0].ToAddress();
                 approved = l[1].ToBoolean();
@@ -2906,6 +2918,91 @@ namespace Nekoyume.Blockchain
             }
 
             States.Instance.SetPledgeStates(address, approved);
+        }
+
+        private void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.FungibleAssetValues is not null)
+            {
+                foreach (var (balanceAddr, value) in action.FungibleAssetValues)
+                {
+                    if (balanceAddr.Equals(agentAddr))
+                    {
+                        var balance = StateGetter.GetBalance(
+                            balanceAddr,
+                            value.Currency,
+                            states);
+                        if (value.Currency.Equals(GoldCurrency))
+                        {
+                            var goldState = new GoldBalanceState(balanceAddr, balance);
+                            gameStates.SetGoldBalanceState(goldState);
+                        }
+                        else if (value.Currency.Equals(Currencies.Crystal))
+                        {
+                            gameStates.SetCrystalBalance(balance);
+                        }
+                        else if (value.Currency.Equals(Currencies.Garage))
+                        {
+                            AgentStateSubject.OnNextGarage(value);
+                        }
+                    }
+                    else if (balanceAddr.Equals(avatarAddr))
+                    {
+                        var balance = StateGetter.GetBalance(
+                            balanceAddr,
+                            value.Currency,
+                            states);
+                        gameStates.SetCurrentAvatarBalance(balance);
+                    }
+                }
+            }
+
+            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                action.FungibleIdAndCounts is not null)
+            {
+                UpdateCurrentAvatarInventory(eval);
+            }
+
+            var avatarValue = StateGetter.GetState(avatarAddr, states);
+            if (avatarValue is not Dictionary avatarDict)
+            {
+                Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                return;
+            }
+
+            if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+            {
+                Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                return;
+            }
+
+            var mailBox = new MailBox(mailBoxList);
+            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+            if (mail is not null)
+            {
+                mail.New = true;
+                gameStates.CurrentAvatarState.mailBox = mailBox;
+                LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+            }
+            else
+            {
+                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                                 $"the render context of UnloadFromMyGarages action.\n" +
+                                 $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+            }
         }
     }
 }
