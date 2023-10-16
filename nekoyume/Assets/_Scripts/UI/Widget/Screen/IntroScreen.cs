@@ -184,7 +184,7 @@ namespace Nekoyume.UI
             // else
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-            startButtonContainer.SetActive(true);
+            // startButtonContainer.SetActive(true);  // Show in animation 'UI_IntroScreen/Mobile'
             // signinButton.gameObject.SetActive(true);
         }
 
