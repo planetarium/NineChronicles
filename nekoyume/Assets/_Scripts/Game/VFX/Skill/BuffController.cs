@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Helper;
@@ -17,7 +18,8 @@ namespace Nekoyume.Game.VFX.Skill
         public BuffController(ObjectPool objectPool)
         {
             _pool = objectPool;
-            var buffs = Resources.LoadAll<BuffVFX>("VFX/Prefabs");
+            AssetBundleLoader.LoadVFXCache();
+            var buffs = AssetBundleLoader.LoadAllAssetBundle<SkillVFX>("vfx/prefabs");
             foreach (var buff in buffs)
             {
                 _pool.Add(buff.gameObject, InitCount);

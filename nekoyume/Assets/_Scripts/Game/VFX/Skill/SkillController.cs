@@ -1,3 +1,4 @@
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.BattleStatus.Arena;
@@ -17,7 +18,8 @@ namespace Nekoyume.Game.VFX.Skill
         public SkillController(IObjectPool objectPool)
         {
             _pool = objectPool;
-            var skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
+            AssetBundleLoader.LoadVFXCache();
+            var skills = AssetBundleLoader.LoadAllAssetBundle<SkillVFX>("vfx/skills");
             foreach (var skill in skills)
             {
                 _pool.Add(skill.gameObject, InitCount);
@@ -42,7 +44,7 @@ namespace Nekoyume.Game.VFX.Skill
                 if (elemental == ElementalType.Normal)
                     elemental = ElementalType.Fire;
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -83,7 +85,7 @@ namespace Nekoyume.Game.VFX.Skill
                 if (elemental == ElementalType.Normal)
                     elemental = ElementalType.Fire;
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -146,7 +148,8 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public T Get<T>(GameObject target, ElementalType elemental, SkillCategory skillCategory, SkillTargetType skillTargetType) where T : SkillVFX
+        public T Get<T>(GameObject target, ElementalType elemental, SkillCategory skillCategory,
+            SkillTargetType skillTargetType) where T : SkillVFX
         {
             var position = target.transform.position;
             var size = "m";
@@ -154,7 +157,7 @@ namespace Nekoyume.Game.VFX.Skill
             {
                 size = "l";
                 var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
-                    new Vector2((float) Screen.width / 2, 0));
+                    new Vector2((float)Screen.width / 2, 0));
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
@@ -170,6 +173,7 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x -= 0.2f;
                 position.y += 0.32f;
             }
+
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
