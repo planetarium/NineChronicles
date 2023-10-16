@@ -1,6 +1,6 @@
 using Bencodex;
-using Libplanet.Action.State;
-using Libplanet.Extensions.RemoteBlockChainStates;
+using Libplanet.RocksDBStore;
+using Libplanet.Store;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +15,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<Codec>();
 
-builder.Services.AddSingleton<IBlockChainStates, RemoteBlockChainStates>(_ =>
+builder.Services.AddSingleton<IStateStore, TrieStateStore>(_ =>
 {
-    const string DefaultEndpoint = "http://localhost:31280/graphql/explorer";
-    var endpoint = builder.Configuration.GetValue<string>("RemoteBlockChainStatesEndpoint") ?? DefaultEndpoint;
-    return new RemoteBlockChainStates(new Uri(endpoint));
+    var path = builder.Configuration.GetValue<string>("StateStorePath");
+    return new TrieStateStore(new RocksDBKeyValueStore(path));
 });
 
 var app = builder.Build();
