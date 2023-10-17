@@ -27,7 +27,7 @@ namespace Nekoyume.UI
         private BossStatus bossStatus;
 
         [SerializeField]
-        private GameObject accelerationToggleParent;
+        private RectTransform accelerationToggleRect;
 
         [SerializeField]
         private Button accelerationToggleLockButton;
@@ -161,16 +161,28 @@ namespace Nekoyume.UI
             exitToggle.isOn = isExitReserved;
             exitToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);
-            accelerationToggle.gameObject.SetActive(true);
 
             var canAccel =
                 States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
                     RequiredStageForAccelButton);
             accelerationToggleLockButton.gameObject.SetActive(!canAccel);
-            accelerationToggleParent.SetActive(canAccel);
+            accelerationToggle.gameObject.SetActive(canAccel);
             accelerationToggle.interactable = canAccel;
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
             SetAccelToggle(accelerationToggle.isOn);
+
+            // tutorial code for accel button
+            if (stageId == RequiredStageForAccelButton + 1 &&
+                !States.Instance.CurrentAvatarState.worldInformation
+                    .IsStageCleared(stageId))
+            {
+                SetAccelToggle(true);
+                Find<Tutorial>().PlayOnlyGuideArrow(
+                    GuideType.Circle,
+                    accelerationToggleRect,
+                    // arrow position offset for hiding
+                    arrowPositionOffset: new Vector2(0f, -10000));
+            }
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
