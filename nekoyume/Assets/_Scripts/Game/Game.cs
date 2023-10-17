@@ -343,7 +343,6 @@ namespace Nekoyume.Game
                 new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             GL.Clear(true, true, Color.black);
-            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -396,7 +395,7 @@ namespace Nekoyume.Game
 
             IEnumerator CoInitializeSecondWidget()
             {
-                yield return createSecondWidgetCoroutine;
+                yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
             }
 
