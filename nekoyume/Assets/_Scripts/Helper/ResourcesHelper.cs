@@ -1,3 +1,5 @@
+using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,6 +106,11 @@ namespace Nekoyume.Helper
             }
 
             return -1;
+        }
+
+        public static List<int> GetPortalRewardLevelTable()
+        {
+            return Get<PortalRewardScriptalbeObject>().levelData;
         }
     }
 }

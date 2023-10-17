@@ -12,6 +12,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    using Nekoyume.Helper;
     // NOTE: Avoid Ambiguous invocation:
     // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
     // System.ObservableExtensions and UniRx.ObservableExtensions
@@ -329,20 +330,24 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            var level = Level;
+            var beforeLevel = Level;
             Model.GetExp(exp);
             EXP += exp;
 
-            if (Level != level)
+            if (Level != beforeLevel)
             {
                 Analyzer.Instance.Track("Unity/User Level Up", new Dictionary<string, Value>()
                 {
-                    ["code"] = level,
+                    ["code"] = beforeLevel,
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
                 });
 
-                Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
+                Widget.Find<LevelUpCelebratePopup>()?.Show(beforeLevel, Level);
+                for (int interLevel = beforeLevel + 1; interLevel <= Level; interLevel++)
+                {
+                    Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
+                }
                 InitStats(Model);
             }
 

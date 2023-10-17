@@ -1,103 +1,92 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using Nekoyume.L10n;
 using Nekoyume.UI.Module;
-using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class LoadingScreen : ScreenWidget
     {
-        public LoadingIndicator indicator;
-        public TextMeshProUGUI toolTip;
-        public Button toolTipChangeButton;
+        public enum LoadingType
+        {
+            None,
+            Entering,
+            Adventure,
+            Arena,
+            Shop,
+            Workshop,
+        }
 
-        public string Message { get; internal set; }
+        [Serializable]
+        private struct BackgroundItem
+        {
+            public LoadingType type;
+            public VideoClip videoClip;
+            public Texture texture;
+        }
 
-        private List<string> _tips;
+        [SerializeField] private LoadingModule loadingModule;
+        [Space]
+        [SerializeField] private GameObject animationContainer;
+        [SerializeField] private RawImage imageContainer;
+        [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private Texture videoTexture;
 
-        #region Mono
+        [SerializeField] private BackgroundItem[] backgroundItems;
 
         protected override void Awake()
         {
             base.Awake();
 
-            if (L10nManager.CurrentState == L10nManager.State.Initialized)
-            {
-                var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-                indicator.UpdateMessage(message);
-                _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
+            var pos = transform.localPosition;
+            pos.z = -5f;
+            transform.localPosition = pos;
 
-                var pos = transform.localPosition;
-                pos.z = -5f;
-                transform.localPosition = pos;
-
-                if (ReferenceEquals(indicator, null) ||
-                    ReferenceEquals(toolTip, null))
-                {
-                    throw new SerializeFieldNullException();
-                }
-            }
-
-            if (toolTipChangeButton != null)
-            {
-                toolTipChangeButton.onClick.AddListener(SetToolTipText);
-            }
-
-            L10nManager.OnLanguageChange
-                .Subscribe(_ =>
-                {
-                    Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-                    _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
-                })
-                .AddTo(gameObject);
+            loadingModule.Initialize();
         }
 
-        protected override void Update()
+        public void Show(
+            LoadingType loadingType = LoadingType.None,
+            string message = null,
+            bool autoClose = false,
+            bool ignoreShowAnimation = false)
         {
-            if (!string.IsNullOrEmpty(Message) && indicator.text.text != Message)
+            if (autoClose)
             {
-                if (indicator.gameObject.activeSelf)
-                {
-                    indicator.UpdateMessage(Message);
-                }
-                else
-                {
-                    indicator.Show(Message);
-                }
+                Observable.Timer(TimeSpan.FromSeconds(3))
+                    .Subscribe(_ => Close()).AddTo(gameObject);
             }
-        }
 
-        public override void Show(bool ignoreShowAnimation = false)
-        {
+            SetBackGround(loadingType);
+            loadingModule.SetMessage(message);
+            loadingModule.SetToolTipText();
+
             base.Show(ignoreShowAnimation);
-            Find<HeaderMenuStatic>().Close();
+            loadingModule.PlaySliderAnimation();
         }
 
-        protected override void OnEnable()
+        private void SetBackGround(LoadingType type)
         {
-            base.OnEnable();
-            
-            SetToolTipText();
-        }
+            var playVideo = type != LoadingType.None;
+            animationContainer.SetActive(!playVideo);
+            imageContainer.gameObject.SetActive(playVideo);
 
-        protected override void OnDisable()
-        {
-            Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-            base.OnDisable();
-        }
-
-        public void SetToolTipText()
-        {
-            if (_tips != null)
+            if (playVideo)
             {
-                toolTip.text = _tips[Random.Range(0, _tips.Count)];
+                var item = backgroundItems.FirstOrDefault(item => item.type == type);
+                imageContainer.texture = item.texture;
+                var clip = item.videoClip;
+
+                if (clip)
+                {
+                    videoPlayer.clip = clip;
+                    videoPlayer.Play();
+                    imageContainer.texture = videoTexture;
+                }
             }
         }
-
-        #endregion
     }
 }

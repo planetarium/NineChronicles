@@ -517,7 +517,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
 
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
@@ -737,6 +737,32 @@ namespace Nekoyume.UI
             return mimisbrunnrSheet.TryGetValue(_stageId, out var mimisbrunnrSheetRow)
                 ? mimisbrunnrSheetRow.ElementalTypes
                 : ElementalTypeExtension.GetAllTypes();
+        }
+
+        public void TutorialActionClickBattlePreparationFirstInventoryCellView()
+        {
+            try
+            {
+                if (information.TryGetFirstCell(out var item))
+                {
+                    item.Selected.Value = true;
+                }
+                else
+                {
+                    Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
+                }
+
+                Find<EquipmentTooltip>().OnEnterButtonArea(true);
+            }
+            catch
+            {
+                Debug.LogError($"TryGetFirstCell throw error.");
+            }
+        }
+
+        public void TutorialActionClickBattlePreparationHackAndSlash()
+        {
+            OnClickBattle();
         }
     }
 }

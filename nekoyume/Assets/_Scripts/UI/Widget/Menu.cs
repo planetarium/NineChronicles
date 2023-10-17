@@ -101,6 +101,8 @@ namespace Nekoyume.UI
 
         public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu)btnPatrolReward;
 
+        public bool IsShown => AnimationState.Value == AnimationStateType.Shown;
+
         protected override void Awake()
         {
             base.Awake();
@@ -174,7 +176,7 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
@@ -411,6 +413,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Workshop, null, true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
         }
@@ -706,6 +709,12 @@ namespace Nekoyume.UI
             var player = Game.Game.instance.Stage.GetPlayer();
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionGoToWorkShop()
+        {
+            CombinationClick();
         }
 
 #if UNITY_EDITOR

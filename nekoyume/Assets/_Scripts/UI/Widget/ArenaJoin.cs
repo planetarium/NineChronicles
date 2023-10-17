@@ -104,8 +104,8 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowAsync(
             bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
-            loading.Show();
+            var loading = Find<LoadingScreen>();
+            loading.Show(LoadingScreen.LoadingType.Arena);
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
                 RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),
                 States.Instance.GrandFinaleStates
@@ -330,7 +330,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     _innerState = InnerState.EarlyRegistration;
-                    Find<LoadingScreen>().Show();
+                    Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
                 })
                 .AddTo(gameObject);
 
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                 }
 
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
-                Find<LoadingScreen>().Show();
+                Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
                 var selectedRoundData = _scroll.SelectedItemData.RoundData;
                 var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
                 var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
@@ -648,7 +648,7 @@ namespace Nekoyume.UI
 
         private void JoinArenaAction()
         {
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Arena);
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Arena];
             var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
