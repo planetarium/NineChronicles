@@ -267,7 +267,6 @@ namespace Nekoyume.UI
                 platform,
                 Application.version
             );
-            pkUrl = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk-IPhonePlayer-50.3.0";
             Debug.Log($"Trying to fetch guest private key from {pkUrl}");
 
             try
