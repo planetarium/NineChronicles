@@ -495,7 +495,7 @@ namespace Editor
                 }
             };
 
-            dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com",
+            dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
         
             // write plist
             Plist.writeXml(dict, plistPath);
