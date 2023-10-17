@@ -50,6 +50,9 @@ namespace Nekoyume.UI
         private Address _currentAvatarAddress;
         private bool _initialized;
 
+        public bool CanClaim =>
+            PatrolReward.PatrolTime.Value >= PatrolReward.Interval && !Claiming.Value;
+
         protected override void Awake()
         {
             base.Awake();
