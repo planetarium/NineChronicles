@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,8 @@ namespace Nekoyume.UI
 
         private int _progress = 0;
 
+        public const float SliderAnimationDuration = 2f;
+
         public void Show(string message, bool localize, float alpha = 0.4f)
         {
             loadingSlider.container.SetActive(false);
@@ -79,7 +82,7 @@ namespace Nekoyume.UI
             text.text = L10nManager.Localize($"UI_LOADING_GAME_START_{(int)progress}");
 
             loadingSlider.container.SetActive(true);
-            loadingSlider.slider.value = percent;
+            loadingSlider.slider.DOValue(percent, SliderAnimationDuration);
             loadingSlider.text.text = $"{percent}%";
 
             base.Show(true);

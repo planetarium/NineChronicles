@@ -428,11 +428,13 @@ namespace Nekoyume.Game
                 out var appProtocolVersion);
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
             Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ProgressCompleted);
-            ShowNext(agentInitializeSucceed);
             Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
 
             StartCoroutine(CoUpdate());
             ReservePushNotifications();
+
+            yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
+            ShowNext(agentInitializeSucceed);
         }
 
         protected override void OnDestroy()
