@@ -54,6 +54,8 @@ namespace Nekoyume.UI
 
             yield return UnityEngine.Android.Permission
                 .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera);
+#elif UNITY_IOS
+            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
 #endif
             yield return null;
             rawCamImage.gameObject.SetActive(true);
