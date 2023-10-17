@@ -79,14 +79,6 @@ namespace Nekoyume.UI
             }
         }
 
-        [Serializable]
-        public struct RewardsArea
-        {
-            public GameObject root;
-            public BattleReward[] rewards;
-            public BattleReward rewardForMulti;
-        }
-
         private const int Timer = 10;
         private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
 
@@ -117,8 +109,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI expText;
 
+
         [SerializeField]
-        private RewardsArea rewardsArea;
+        private BattleReward.RewardItems rewardItems;
 
         [SerializeField]
         private TextMeshProUGUI bottomText;
@@ -135,8 +128,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button repeatButton;
 
-        [SerializeField]
-        private StageProgressBar stageProgressBar;
 
         [SerializeField]
         private GameObject[] victoryResultTexts;
@@ -144,12 +135,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private ActionPoint actionPoint;
 
+        [SerializeField]
         private BattleWin01VFX _battleWin01VFX;
 
+        [SerializeField]
         private BattleWin02VFX _battleWin02VFX;
 
+        [SerializeField]
         private BattleWin03VFX _battleWin03VFX;
 
+        [SerializeField]
         private BattleWin04VFX _battleWin04VFX;
 
         private Coroutine _coUpdateBottomText;
@@ -164,8 +159,6 @@ namespace Nekoyume.UI
         private Model SharedModel { get; set; }
 
         public Model ModelForMultiHackAndSlash { get; set; }
-
-        public StageProgressBar StageProgressBar => stageProgressBar;
 
         protected override void Awake()
         {
@@ -382,12 +375,6 @@ namespace Nekoyume.UI
             actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.gameObject.SetActive(false);
-            }
-            rewardsArea.rewardForMulti.gameObject.SetActive(false);
-
             base.Show();
             closeButton.gameObject.SetActive(
                 model.StageID >= Battle.RequiredStageForExitButton ||
@@ -408,12 +395,27 @@ namespace Nekoyume.UI
                 obj.SetActive(false);
             }
 
-            stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateView(bool isBoosted)
         {
+            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
+                          SharedModel.ClearedCountForEachWaves.Sum() > 1;
+
+            rewardItems.Set(SharedModel.Rewards);
+
+            if (isNotClearedInMulti)
+            {
+                Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
+                            SharedModel.StageID, out var row);
+                var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
+                var maxStarCount = row?.MaxStar ?? 0;
+
+                /*view.Set(SharedModel.ClearedCountForEachWaves, starCount, maxStarCount);*/
+            }
+
+
             switch (SharedModel.State)
             {
                 case BattleLog.Result.Win:
@@ -475,9 +477,6 @@ namespace Nekoyume.UI
                 rewardArea.SetActive(true);
             }
 
-            stageProgressBar.Show();
-            stageProgressBar.SetStarProgress(SharedModel.ClearedWaveNumber);
-
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
             yield return StartCoroutine(CoUpdateRewards());
         }
@@ -487,25 +486,34 @@ namespace Nekoyume.UI
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
 
+            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
+              SharedModel.ClearedCountForEachWaves.Sum() > 1;
+
             switch (SharedModel.ClearedWaveNumber)
             {
                 case 1:
-                    _battleWin01VFX =
+                    _battleWin01VFX.Play();
+                    /*_battleWin01VFX =
                         VFXController.instance.CreateAndChase<BattleWin01VFX>(
                             ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
+                            VfxBattleWinOffset);*/
                     break;
                 case 2:
-                    _battleWin02VFX =
+                    _battleWin02VFX.Play();
+                    /*_battleWin02VFX =
                         VFXController.instance.CreateAndChase<BattleWin02VFX>(
                             ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
+                            VfxBattleWinOffset);*/
                     break;
                 case 3:
-                    _battleWin03VFX =
+                    _battleWin03VFX.Play();
+                    /*_battleWin03VFX =
                         VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
+                            VfxBattleWinOffset);*/
+                    break;
+                default:
+                    _battleWin04VFX.Play();
                     break;
             }
         }
@@ -550,9 +558,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateRewards()
         {
-            rewardsArea.root.SetActive(true);
-            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
-                                      SharedModel.ClearedCountForEachWaves.Sum() > 1;
+            /*rewardsArea.root.SetActive(true);
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
                 var view =
@@ -617,7 +623,8 @@ namespace Nekoyume.UI
             }
 
             rewardsArea.rewardForMulti.StopShowAnimation();
-            rewardsArea.rewardForMulti.StartScaleTween();
+            rewardsArea.rewardForMulti.StartScaleTween();*/
+            yield return null;
         }
 
         private IEnumerator CoUpdateBottom(int limitSeconds)
@@ -1041,31 +1048,27 @@ namespace Nekoyume.UI
             if (_battleWin01VFX)
             {
                 _battleWin01VFX.Stop();
-                _battleWin01VFX = null;
             }
 
             if (_battleWin02VFX)
             {
                 _battleWin02VFX.Stop();
-                _battleWin02VFX = null;
             }
 
             if (_battleWin03VFX)
             {
                 _battleWin03VFX.Stop();
-                _battleWin03VFX = null;
             }
 
             if (_battleWin04VFX)
             {
                 _battleWin04VFX.Stop();
-                _battleWin04VFX = null;
             }
 
-            foreach (var reward in rewardsArea.rewards)
+/*            foreach (var reward in rewardsArea.rewards)
             {
                 reward.StopVFX();
-            }
+            }*/
         }
     }
 }

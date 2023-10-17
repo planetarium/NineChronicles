@@ -438,7 +438,6 @@ namespace Nekoyume.Game
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
-            Widget.Find<BattleResultPopup>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(StageType, stageId);
             IsShowHud = false;
