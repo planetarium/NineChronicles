@@ -412,6 +412,42 @@ namespace Nekoyume.Blockchain
             return result;
         }
 
+        // FIXME: Implement IBlockChainService.GetBalanceBulk() method and use it.
+        public async Task<Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>> GetBalanceBulkAsync(
+            IEnumerable<(Address, Currency)> tuples,
+            HashDigest<SHA256>? stateRootHash = null)
+        {
+            var dict = new Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>();
+            if (stateRootHash.HasValue)
+            {
+                foreach (var (address, currency) in tuples)
+                {
+                    var result = await GetBalanceAsync(address, currency, stateRootHash.Value);
+                    if (!dict.TryGetValue(address, out _))
+                    {
+                        dict[address] = new Dictionary<Currency, FungibleAssetValue>();
+                    }
+
+                    dict[address][currency] = result;
+                }
+            }
+            else
+            {
+                foreach (var (address, currency) in tuples)
+                {
+                    var result = await GetBalanceAsync(address, currency);
+                    if (!dict.TryGetValue(address, out _))
+                    {
+                        dict[address] = new Dictionary<Currency, FungibleAssetValue>();
+                    }
+
+                    dict[address][currency] = result;
+                }
+            }
+
+            return dict;
+        }
+
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             Dictionary<byte[], byte[]> raw =
@@ -431,7 +467,7 @@ namespace Nekoyume.Blockchain
             HashDigest<SHA256> stateRootHash)
         {
             Dictionary<byte[], byte[]> raw =
-                await _service.GetStateBulk(
+                await _service.GetStateBulkBySrh(
                     addressList.Select(a => a.ToByteArray()),
                     stateRootHash.ToByteArray());
             var result = new Dictionary<Address, IValue>();

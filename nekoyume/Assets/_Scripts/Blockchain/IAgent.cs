@@ -14,7 +14,6 @@ using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Tx;
 using Nekoyume.Action;
-using Nekoyume.Blockchain.Policy;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using UniRx;
@@ -87,6 +86,10 @@ namespace Nekoyume.Blockchain
         Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             HashDigest<SHA256> stateRootHash);
+
+        Task<Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>> GetBalanceBulkAsync(
+            IEnumerable<(Address, Currency)> tuples,
+            HashDigest<SHA256>? stateRootHash);
 
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList);
 
