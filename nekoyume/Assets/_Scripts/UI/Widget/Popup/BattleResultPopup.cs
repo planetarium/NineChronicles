@@ -87,15 +87,6 @@ namespace Nekoyume.UI
             public BattleReward rewardForMulti;
         }
 
-        [Serializable]
-        public struct DefeatTextArea
-        {
-            public GameObject root;
-            public TextMeshProUGUI worldStageId;
-            public TextMeshProUGUI defeatText;
-            public TextMeshProUGUI expText;
-        }
-
         private const int Timer = 10;
         private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
 
@@ -112,10 +103,19 @@ namespace Nekoyume.UI
         private TextMeshProUGUI worldStageId;
 
         [SerializeField]
-        private GameObject topArea;
+        private GameObject[] enableVictorys;
 
         [SerializeField]
-        private DefeatTextArea defeatTextArea;
+        private GameObject[] enableDefeats;
+
+        [SerializeField]
+        private GameObject cpUp;
+
+        [SerializeField]
+        private GameObject rewardArea;
+
+        [SerializeField]
+        private TextMeshProUGUI expText;
 
         [SerializeField]
         private RewardsArea rewardsArea;
@@ -200,7 +200,6 @@ namespace Nekoyume.UI
 
             CloseWidget = closeButton.onClick.Invoke;
             SubmitWidget = nextButton.onClick.Invoke;
-            defeatTextArea.root.SetActive(false);
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
@@ -454,8 +453,28 @@ namespace Nekoyume.UI
                     : SharedModel.ClearedWaveNumber);
 
             defeatImageContainer.SetActive(false);
-            topArea.SetActive(true);
-            defeatTextArea.root.SetActive(false);
+
+            foreach (var item in enableVictorys)
+            {
+                item.SetActive(true);
+            }
+
+            foreach (var item in enableDefeats)
+            {
+                item.SetActive(false);
+            }
+
+            if(SharedModel.ClearedWaveNumber == 1)
+            {
+                cpUp.SetActive(true);
+                rewardArea.SetActive(false);
+            }
+            else
+            {
+                cpUp.SetActive(false);
+                rewardArea.SetActive(true);
+            }
+
             stageProgressBar.Show();
             stageProgressBar.SetStarProgress(SharedModel.ClearedWaveNumber);
 
@@ -497,21 +516,32 @@ namespace Nekoyume.UI
 
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
-            topArea.SetActive(false);
-            defeatTextArea.root.SetActive(true);
-            var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
+
+            foreach (var item in enableVictorys)
+            {
+                item.SetActive(false);
+            }
+
+            foreach (var item in enableDefeats)
+            {
+                item.SetActive(true);
+            }
+
+            /*var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
             if (result == BattleLog.Result.TimeOver)
             {
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
-            }
+            }*/
 
             var stageText = StageInformation.GetStageIdString(
                 SharedModel.StageType,
                 SharedModel.StageID,
                 true);
-            defeatTextArea.worldStageId.text = $"{SharedModel.WorldName} {stageText}";
-            defeatTextArea.defeatText.text = L10nManager.Localize(key);
-            defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
+
+            worldStageId.text = $"{SharedModel.WorldName} {stageText}";
+            //defeatTextArea.defeatText.text = L10nManager.Localize(key);
+            expText.text = $"EXP + {SharedModel.Exp}";
+
             bottomText.enabled = false;
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
