@@ -482,13 +482,20 @@ namespace Editor
             dict = (Dictionary<string, object>)Plist.readPlist(plistPath);
         
             // update plist
-            dict["CFBundleURLTypes"] = new List<object> {
-                new Dictionary<string, object> {
-                    { "CFBundleURLSchemes", new List<object> {
-                        "com.googleusercontent.apps.449111430622-li181gdfir0mv33g0hdjcnjth6jv9r6b",
-                    } }
+            dict["CFBundleURLTypes"] = new List<object>
+            {
+                new Dictionary<string, object>
+                {
+                    {
+                        "CFBundleURLSchemes", new List<object>
+                        {
+                            "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
+                        }
+                    }
                 }
             };
+
+            dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com",
         
             // write plist
             Plist.writeXml(dict, plistPath);
