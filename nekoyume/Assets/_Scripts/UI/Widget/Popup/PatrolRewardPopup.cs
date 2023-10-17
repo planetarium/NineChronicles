@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Libplanet.Crypto;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
@@ -45,9 +44,7 @@ namespace Nekoyume.UI
         public readonly PatrolReward PatrolReward = new();
         public readonly ReactiveProperty<bool> Claiming = new(false);
         private readonly Dictionary<PatrolRewardType, int> _rewards = new();
-        private readonly List<IDisposable> _disposables = new();
 
-        private Address _currentAvatarAddress;
         private bool _initialized;
 
         public bool CanClaim =>
@@ -75,30 +72,20 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
+        // Called at CurrentAvatarState isNewlySelected
         public async Task InitializePatrolReward()
         {
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            if (_currentAvatarAddress.Equals(avatarAddress))
-            {
-                return;
-            }
-
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var level = Game.Game.instance.States.CurrentAvatarState.level;
             await PatrolReward.InitializeInformation(avatarAddress.ToHex(), agentAddress.ToHex(), level);
-            PatrolReward.Initialize();
 
+            // for changed avatar
             Claiming.Value = false;
-
-            _currentAvatarAddress = avatarAddress;
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            await InitializePatrolReward();
-
-            SetIntervalText(PatrolReward.Interval);
-
             if (!_initialized)
             {
                 Init();
@@ -108,33 +95,32 @@ namespace Nekoyume.UI
             if (PatrolReward.NextLevel <= level)
             {
                 await PatrolReward.LoadPolicyInfo(level);
-
-                SetIntervalText(PatrolReward.Interval);
             }
 
+            SetIntervalText(PatrolReward.Interval);
             OnChangeTime(PatrolReward.PatrolTime.Value);
             base.Show(ignoreShowAnimation);
         }
 
+        // it must be called after PatrolReward.InitializeInformation (called avatar selected)
         private void Init()
         {
-            _disposables.DisposeAllAndClear();
-
             PatrolReward.RewardModels
                 .Subscribe(OnChangeRewardModels)
-                .AddTo(_disposables);
+                .AddTo(gameObject);
 
             PatrolReward.PatrolTime
                 .Where(_ => gameObject.activeSelf)
                 .Subscribe(OnChangeTime)
-                .AddTo(_disposables);
+                .AddTo(gameObject);
 
             receiveButton.OnSubmitSubject
                 .Subscribe(_ => ClaimRewardAsync())
-                .AddTo(_disposables);
+                .AddTo(gameObject);
 
             Claiming.Where(claiming => claiming)
-                .Subscribe(_ => receiveButton.Interactable = false);
+                .Subscribe(_ => receiveButton.Interactable = false)
+                .AddTo(gameObject);
 
             _initialized = true;
         }
