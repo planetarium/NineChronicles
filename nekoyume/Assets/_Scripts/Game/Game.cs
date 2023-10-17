@@ -322,6 +322,8 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() L10nManager initialized");
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
+            var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
+
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
@@ -355,14 +357,28 @@ namespace Nekoyume.Game
                     }
                 )
             );
+            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
             Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
+#if UNITY_ANDROID
+            // Only use on Android or...
+            IEnumerator InitializeIAP()
+            {
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+                Debug.Log("[Game] Start() IAPStoreManager initialize start");
+            }
+
+            StartCoroutine(InitializeIAP());
+#endif
             IEnumerator InitializeWithAgent()
             {
-                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitTableSheet);
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitTableSheet);
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 Debug.Log("[Game] Start() TableSheets synchronized");
                 RxProps.Start(Agent, States, TableSheets);
@@ -377,24 +393,12 @@ namespace Nekoyume.Game
                 }).AddTo(gameObject);
             }
 
-#if UNITY_ANDROID
-            // Only use on Android or...
-            IEnumerator InitializeIAP()
-            {
-                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitIAP);
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-                Debug.Log("[Game] Start() IAPStoreManager initialize start");
-            }
-
-            StartCoroutine(InitializeIAP());
-#endif
             yield return StartCoroutine(InitializeWithAgent());
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
             IEnumerator CoInitializeSecondWidget()
             {
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
                 yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
             }
@@ -414,8 +418,8 @@ namespace Nekoyume.Game
             // Initialize D:CC NFT data
             StartCoroutine(CoInitDccAvatar());
             StartCoroutine(CoInitDccConnecting());
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitCanvas);
             yield return initializeSecondWidgetsCoroutine;
+            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressCompleted);
             Analyzer.Instance.Track("Unity/Intro/Start/SecondWidgetCompleted");
             // Initialize Stage
             Stage.Initialize();
@@ -427,7 +431,6 @@ namespace Nekoyume.Game
                 _commandLineOptions.AppProtocolVersion,
                 out var appProtocolVersion);
             Widget.Find<VersionSystem>().SetVersion(appProtocolVersion);
-            Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ProgressCompleted);
             Analyzer.Instance.Track("Unity/Intro/Start/ShowNext");
 
             StartCoroutine(CoUpdate());
@@ -1062,11 +1065,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                if (loginPopup.CheckLocalPassphrase())
-                {
-                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
-                }
-                else
+                if (!loginPopup.CheckLocalPassphrase())
                 {
                     var intro = Widget.Find<IntroScreen>();
                     intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);

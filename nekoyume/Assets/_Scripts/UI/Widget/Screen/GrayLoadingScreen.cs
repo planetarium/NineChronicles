@@ -9,17 +9,18 @@ namespace Nekoyume.UI
 {
     public enum GameInitProgress : int
     {
-        InitAgent = 1,
-        RequestPledge,
+        // 맨 앞에 ProgressStart, 맨 뒤에 ProgressCompleted는 필수. 이외의 enum은 순서가 중요하지 않음.
+        // 해당 동작이 시작하기 전에 호출
+        ProgressStart = 1, // called at after close loginSystem in Game.Start()
+        RequestPledge,  // called in mobile
         ApprovePledge,
         EndPledge,
-        CompleteLogin,
 
-        InitIAP,
+        InitIAP, // ~called in mobile
         InitTableSheet,
         InitCanvas,
 
-        ProgressCompleted,
+        ProgressCompleted, // called at last waiting point in Game.Start()
     }
 
     public class GrayLoadingScreen : ScreenWidget
@@ -67,7 +68,7 @@ namespace Nekoyume.UI
         {
             switch (progress)
             {
-                case GameInitProgress.InitAgent:
+                case GameInitProgress.ProgressStart:
                 case GameInitProgress.ProgressCompleted:
                     _progress = (int)progress;
                     break;
