@@ -64,7 +64,7 @@ namespace Nekoyume.Game.LiveAsset
             var osKey = string.Empty;
 #if UNITY_ANDROID
             osKey = "-aos";
-#elif !UNITY_IOS
+#elif UNITY_IOS
             osKey = "-ios";
 #endif
             var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
