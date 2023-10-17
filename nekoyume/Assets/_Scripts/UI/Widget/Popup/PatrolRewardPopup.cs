@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using mixpanel;
 using Nekoyume.Game.Controller;
 using Nekoyume.GraphQL;
 using Nekoyume.L10n;
@@ -86,6 +87,11 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
+            Analyzer.Instance.Track("Unity/PatrolReward/Show Popup", new Dictionary<string, Value>
+            {
+                ["PatrolTime"] = PatrolReward.PatrolTime.Value
+            });
+
             if (!_initialized)
             {
                 Init();
@@ -219,6 +225,8 @@ namespace Nekoyume.UI
 
         private async void ClaimRewardAsync()
         {
+            Analyzer.Instance.Track("Unity/PatrolReward/Request Claim Reward");
+
             Claiming.Value = true;
             Close();
 
