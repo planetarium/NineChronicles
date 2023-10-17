@@ -18,7 +18,6 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Tx;
-using LruCacheNet;
 using MagicOnion.Client;
 using MessagePack;
 using mixpanel;
@@ -88,6 +87,7 @@ namespace Nekoyume.Blockchain
 
         private readonly List<IDisposable> _disposables = new();
 
+        private readonly BlockchainCache _blockchainCache = new(balanceCapacity: 100);
         private readonly BlockHashCache _blockHashCache = new(100);
 
         /// <summary>
@@ -279,9 +279,11 @@ namespace Nekoyume.Blockchain
             return decoded;
         }
 
+        #region GetBalance
+
         public FungibleAssetValue GetBalance(Address addr, Currency currency)
         {
-            return GetBalanceAsync(addr, currency).Result;
+            return GetBalanceAsync(addr, currency, blockIndex: null).Result;
         }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
@@ -289,13 +291,14 @@ namespace Nekoyume.Blockchain
             Currency currency,
             long? blockIndex = null)
         {
-            var game = Game.Game.instance;
-            if (game.CachedBalance.TryGetValue(currency, out var cache) &&
-                cache.TryGetValue(addr, out var fav) &&
-                !fav.Equals(default))
+            if (_blockchainCache.TryGetBalance(
+                    blockIndex ?? BlockIndex,
+                    addr,
+                    currency,
+                    out var cachedBalance))
             {
-                await Task.CompletedTask;
-                return fav;
+                // return 0 * currency if cachedBalance is null.
+                return cachedBalance ?? 0 * currency;
             }
 
             var blockHash = await GetBlockHashAsync(blockIndex);
@@ -306,17 +309,11 @@ namespace Nekoyume.Blockchain
             }
 
             var balance = await GetBalanceAsync(addr, currency, blockHash.Value);
-            if (addr.Equals(Address))
-            {
-                if (!game.CachedBalance.ContainsKey(currency))
-                {
-                    game.CachedBalance[currency] =
-                        new LruCache<Address, FungibleAssetValue>(2);
-                }
-
-                game.CachedBalance[currency][addr] = balance;
-            }
-
+            _blockchainCache.Add(
+                addr,
+                balance,
+                blockIndex: blockIndex ?? BlockIndex,
+                blockHash: blockHash);
             return balance;
         }
 
@@ -325,14 +322,26 @@ namespace Nekoyume.Blockchain
             Currency currency,
             BlockHash blockHash)
         {
+            if (_blockchainCache.TryGetBalance(
+                    blockHash,
+                    address,
+                    currency,
+                    out var cachedBalance))
+            {
+                // return 0 * currency if cachedBalance is null.
+                return cachedBalance ?? 0 * currency;
+            }
+
             var raw = await _service.GetBalance(
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()),
                 BlockTipHash.ToByteArray());
             var serialized = (List)_codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
+            var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+            _blockchainCache.Add(address, balance, blockHash: blockHash);
+            return balance;
         }
 
         public async Task<FungibleAssetValue> GetBalanceAsync(
@@ -340,15 +349,29 @@ namespace Nekoyume.Blockchain
             Currency currency,
             HashDigest<SHA256> stateRootHash)
         {
+            if (_blockchainCache.TryGetBalance(
+                    stateRootHash,
+                    address,
+                    currency,
+                    out var cachedBalance))
+            {
+                // return 0 * currency if cachedBalance is null.
+                return cachedBalance ?? 0 * currency;
+            }
+
             var raw = await _service.GetBalanceBySrh(
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()),
                 stateRootHash.ToByteArray());
             var serialized = (List)_codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
+            var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+            _blockchainCache.Add(address, balance, stateRootHash: stateRootHash);
+            return balance;
         }
+
+        #endregion
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
