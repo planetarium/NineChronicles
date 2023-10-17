@@ -61,7 +61,13 @@ namespace Nekoyume.Game.LiveAsset
 
         public IEnumerator InitializeApplicationCLO()
         {
-            var cloEndpoint = CLOEndpointPrefix + Application.version.Replace(".", "-") + ".json";
+            var osKey = string.Empty;
+#if UNITY_ANDROID
+            osKey = "-aos";
+#elif !UNITY_IOS
+            osKey = "-ios";
+#endif
+            var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
             Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
             yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
 

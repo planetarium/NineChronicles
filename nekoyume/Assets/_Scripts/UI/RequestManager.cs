@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using Nekoyume.Pattern;
 using UnityEngine.Networking;
@@ -15,6 +15,7 @@ namespace Nekoyume.UI
         public IEnumerator GetJson(string url, Action<string> onSuccess, Action<UnityWebRequest> onFailed = null)
         {
             using var request = MakeRequestWithTimeout(url);
+            request.SetRequestHeader("Cache-Control", "no-cache");
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
             {
