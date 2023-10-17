@@ -142,9 +142,6 @@ namespace Nekoyume.Game
 
         public readonly Dictionary<Address, bool> CachedStateAddresses = new();
 
-        public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
-            CachedBalance = new();
-
         public PortalConnect PortalConnect => portalConnect;
 
         private CommandLineOptions _commandLineOptions;

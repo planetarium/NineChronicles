@@ -134,11 +134,11 @@ namespace Nekoyume.Blockchain
             await UpdateAgentStateAsync(GetAgentState(evaluation));
             try
             {
-                UpdateGoldBalanceState(GetGoldBalanceState(evaluation));
+                States.Instance.SetGoldBalanceState(GetGoldBalanceState(evaluation));
             }
             catch (BalanceDoesNotExistsException)
             {
-                UpdateGoldBalanceState(null);
+                States.Instance.SetGoldBalanceState(null);
             }
 
             UpdateCrystalBalance(evaluation);
@@ -246,26 +246,6 @@ namespace Nekoyume.Blockchain
         {
             UpdateCache(state);
             return States.Instance.SetAgentStateAsync(state);
-        }
-
-        private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
-        {
-            var game = Game.Game.instance;
-            if (goldBalanceState is { } &&
-                game.Agent.Address.Equals(goldBalanceState.address))
-            {
-                var currency = goldBalanceState.Gold.Currency;
-                if (!game.CachedBalance.ContainsKey(currency))
-                {
-                    game.CachedBalance[currency] =
-                        new LruCache<Address, FungibleAssetValue>(2);
-                }
-
-                game.CachedBalance[currency][goldBalanceState.address] =
-                    goldBalanceState.Gold;
-            }
-
-            States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
         protected static void UpdateCrystalBalance<T>(ActionEvaluation<T> evaluation) where T : ActionBase
