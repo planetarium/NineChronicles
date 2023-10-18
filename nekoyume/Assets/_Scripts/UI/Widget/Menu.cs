@@ -277,6 +277,16 @@ namespace Nekoyume.UI
             Close(true);
         }
 
+        public void GoToCraftEquipment()
+        {
+            GoToCraftWithToggleType(0);
+        }
+
+        public void GoToFood()
+        {
+            GoToCraftWithToggleType(1);
+        }
+
         private void GoToCraftWithToggleType(int toggleIndex)
         {
             AudioController.PlayClick();
