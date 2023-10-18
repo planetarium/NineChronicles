@@ -12,14 +12,9 @@ namespace Nekoyume.UI
 
         protected override IEnumerator PlayAnimation()
         {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
             yield return new WaitUntil(() => AnimationState.Value == AnimationStateType.Shown);
             _isDone.SetValueAndForceNotify(true);
-        }
-
-        public override void Show(bool ignoreShowAnimation = false)
-        {
-            base.Show(ignoreShowAnimation);
-            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
         }
 
         protected override void OnEnable()
