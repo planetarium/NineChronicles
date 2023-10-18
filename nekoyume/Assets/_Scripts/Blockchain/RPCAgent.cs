@@ -546,17 +546,6 @@ namespace Nekoyume.Blockchain
             // 에이전트의 상태를 한 번 동기화 한다.
             var currencyTask = Task.Run(async () =>
             {
-                await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
-                var ncg = States.Instance.NCG;
-                States.Instance.SetGoldBalanceState(
-                    new GoldBalanceState(
-                        Address,
-                        await GetBalanceAsync(Address, ncg)));
-                States.Instance.SetCrystalBalance(
-                    await GetBalanceAsync(Address, Currencies.Crystal));
                 if (await GetStateAsync(GoldCurrencyState.Address) is Dictionary goldDict)
                 {
                     var goldCurrencyState = new GoldCurrencyState(goldDict);
@@ -576,8 +565,19 @@ namespace Nekoyume.Blockchain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
+                var agentAddress = Address;
+                await States.Instance.SetAgentStateAsync(
+                    await GetStateAsync(agentAddress) is Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(agentAddress));
+                var ncg = States.Instance.NCG;
+                States.Instance.SetAgentNCG(
+                    await GetBalanceAsync(agentAddress, ncg));
+                States.Instance.SetAgentCrystal(
+                    await GetBalanceAsync(agentAddress, Currencies.Crystal));
+
                 // NOTE: Initialize staking states after setting GameConfigState.
-                var stakeAddr = StakeStateV2.DeriveAddress(Address);
+                var stakeAddr = StakeStateV2.DeriveAddress(agentAddress);
                 if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
                 {
                     if (!StakeStateUtilsForClient.TryMigrate(
@@ -609,7 +609,7 @@ namespace Nekoyume.Blockchain
                             stakeRegularRewardSheet.Set(
                                 sheetStates[sheetAddrArr[1]].ToDotnetString());
                             level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
-                                Address,
+                                agentAddress,
                                 balance);
                         }
                         catch
@@ -626,7 +626,6 @@ namespace Nekoyume.Blockchain
                     }
                 }
 
-                var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
                 Address? patronAddress = null;
                 var approved = false;

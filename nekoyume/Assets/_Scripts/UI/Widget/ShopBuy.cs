@@ -172,8 +172,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sumPrice =
-                new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
+            var sumPrice = new FungibleAssetValue(States.Instance.NCG, 0, 0);
             foreach (var model in models)
             {
                 if (model.ItemBase is not null)
@@ -186,7 +185,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (States.Instance.GoldBalanceState.Gold < sumPrice)
+            if (States.Instance.AgentNCG < sumPrice)
             {
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("UI_NOT_ENOUGH_NCG"),

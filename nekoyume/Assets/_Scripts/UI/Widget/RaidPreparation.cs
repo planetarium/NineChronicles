@@ -177,7 +177,7 @@ namespace Nekoyume.UI
         {
             var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
             crystalText.text = $"{crystalCost:#,0}";
-            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ?
+            crystalText.color = States.Instance.AgentCrystal.MajorUnit >= crystalCost ?
                 Palette.GetColor(ColorType.ButtonEnabled) :
                 Palette.GetColor(ColorType.TextDenial);
         }
@@ -218,7 +218,7 @@ namespace Nekoyume.UI
                     if (raiderState is null)
                     {
                         var cost = GetEntranceFee(avatarState);
-                        if (States.Instance.CrystalBalance.MajorUnit < cost)
+                        if (States.Instance.AgentCrystal.MajorUnit < cost)
                         {
                             Find<PaymentPopup>().ShowAttract(
                                 CostType.Crystal,
@@ -375,11 +375,10 @@ namespace Nekoyume.UI
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
             var cur = States.Instance.NCG;
             var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
-            var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(
                 CostType.WorldBossTicket,
                 CostType.NCG,
-                balance.Gold,
+                States.Instance.AgentNCG,
                 cost,
                 raiderState.PurchaseCount,
                 row.MaxPurchaseCount,

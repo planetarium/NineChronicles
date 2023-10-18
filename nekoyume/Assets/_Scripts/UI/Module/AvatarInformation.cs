@@ -239,7 +239,7 @@ namespace Nekoyume.UI.Module
                         var cost = slot.RuneType == RuneType.Stat
                             ? States.Instance.GameConfigState.RuneStatSlotUnlockCost
                             : States.Instance.GameConfigState.RuneSkillSlotUnlockCost;
-                        var ncgHas = States.Instance.GoldBalanceState.Gold;
+                        var ncgHas = States.Instance.AgentNCG;
                         var enough = ncgHas.MajorUnit >= cost;
                         var content = slot.RuneType == RuneType.Stat
                                 ? L10nManager.Localize("UI_RUNE_SLOT_OPEN_STAT")

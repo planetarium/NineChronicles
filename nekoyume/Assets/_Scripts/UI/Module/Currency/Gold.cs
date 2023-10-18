@@ -48,13 +48,12 @@ namespace Nekoyume.UI.Module
 
         private void UpdateGold()
         {
-            if (States.Instance is null ||
-                States.Instance.GoldBalanceState is null)
+            if (States.Instance is null)
             {
                 return;
             }
 
-            SetGold(States.Instance.GoldBalanceState.Gold);
+            SetGold(States.Instance.AgentNCG);
         }
 
         private void SetGold(FungibleAssetValue gold)

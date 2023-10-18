@@ -41,11 +41,10 @@ namespace Nekoyume.ActionExtensions
             }
 
             var gold = action.purchaseInfos.Aggregate(
-                states.GoldBalanceState.Gold,
+                states.AgentNCG,
                 (current, purchaseInfo) => current - purchaseInfo.Price);
 
-            var state = new GoldBalanceState(states.GoldBalanceState.address, gold);
-            states.SetGoldBalanceState(state);
+            states.SetAgentNCG(gold);
         }
     }
 }

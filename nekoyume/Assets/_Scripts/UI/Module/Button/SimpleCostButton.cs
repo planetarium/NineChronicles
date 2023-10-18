@@ -92,9 +92,9 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case CostType.NCG:
-                    return States.Instance.GoldBalanceState.Gold.MajorUnit >= cost;
+                    return States.Instance.AgentNCG.MajorUnit >= cost;
                 case CostType.Crystal:
-                    return States.Instance.CrystalBalance.MajorUnit >= cost;
+                    return States.Instance.AgentCrystal.MajorUnit >= cost;
                 case CostType.ActionPoint:
                     return States.Instance.CurrentAvatarState.actionPoint >= cost;
                 case CostType.Hourglass:

@@ -476,9 +476,9 @@ namespace Nekoyume.Blockchain
                     await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
-                States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
-                    await GetBalanceAsync(Address, ncg)));
-                States.Instance.SetCrystalBalance(
+                States.Instance.SetAgentNCG(
+                    await GetBalanceAsync(Address, ncg));
+                States.Instance.SetAgentCrystal(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)

@@ -40,9 +40,56 @@ namespace Nekoyume.State
 
         public GoldCurrencyState GoldCurrencyState { get; private set; }
         public Currency NCG => GoldCurrencyState.Currency;
+
+        private readonly Dictionary<Address, Dictionary<Currency, FungibleAssetValue>> _balances = new();
+
+        #region Agent
+
         public AgentState AgentState { get; private set; }
 
-        public GoldBalanceState GoldBalanceState { get; private set; }
+        /// <summary>
+        /// The balances of the <see cref="States.AgentState"/>.
+        /// It throws <see cref="InvalidOperationException"/> if <see cref="States.AgentState"/> is null.
+        /// Use <see cref="GetAgentBalance"/> if you want to avoid the exception.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public Dictionary<Currency, FungibleAssetValue> AgentBalances
+        {
+            get
+            {
+                if (AgentState is null)
+                {
+                    throw new InvalidOperationException(
+                        $"[{nameof(States)}.{nameof(AgentBalances)}] {nameof(AgentState)} is null.");
+                }
+
+                if (!_balances.ContainsKey(AgentState.address))
+                {
+                    _balances[AgentState.address] = new Dictionary<Currency, FungibleAssetValue>();
+                }
+
+                return _balances[AgentState.address];
+            }
+        }
+
+        /// <summary>
+        /// Get the balance of the <see cref="States.AgentState"/>.
+        /// It returns 0 if <see cref="States.AgentState"/> is null or the balance of the currency is not found.
+        /// </summary>
+        public FungibleAssetValue GetAgentBalance(Currency currency)
+        {
+            try
+            {
+                return AgentBalances.First(pair => pair.Key.Equals(currency)).Value;
+            }
+            catch
+            {
+                return 0 * currency;
+            }
+        }
+
+        public FungibleAssetValue AgentNCG => GetAgentBalance(NCG);
+        public FungibleAssetValue AgentCrystal => GetAgentBalance(Currencies.Crystal);
 
         // NOTE: Staking Properties
         public GoldBalanceState StakedBalanceState { get; private set; }
@@ -51,6 +98,8 @@ namespace Nekoyume.State
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
         // ~: Staking Properties
+
+        #endregion
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
@@ -66,7 +115,6 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public FungibleAssetValue CrystalBalance { get; private set; }
 
         public List<RuneState> RuneStates { get; } = new();
 
@@ -145,29 +193,30 @@ namespace Nekoyume.State
             }
         }
 
-        public void SetGoldBalanceState(GoldBalanceState goldBalanceState)
+        public void SetAgentNCG(FungibleAssetValue ncg)
         {
-            if (goldBalanceState is null)
+            if (!ncg.Currency.Equals(NCG))
             {
-                Debug.LogWarning(
-                    $"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
+                Debug.LogError($"Currency not matches. {ncg.Currency}");
                 return;
             }
 
-            var ncg = LocalLayer.Instance.ModifyNCG(goldBalanceState.Gold);
-            AgentStateSubject.OnNextGold(ncg);
+            ncg = LocalLayer.Instance.ModifyNCG(ncg);
+            AgentBalances[NCG] = ncg;
+            AgentStateSubject.OnNextGold(AgentNCG);
         }
 
-        public void SetCrystalBalance(FungibleAssetValue fav)
+        public void SetAgentCrystal(FungibleAssetValue crystal)
         {
-            if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
+            if (!crystal.Currency.Equals(Currencies.Crystal))
             {
-                Debug.LogWarning($"Currency not matches. {fav.Currency}");
+                Debug.LogError($"Currency not matches. {crystal.Currency}");
                 return;
             }
 
-            CrystalBalance = LocalLayer.Instance.ModifyCrystal(fav);
-            AgentStateSubject.OnNextCrystal(CrystalBalance);
+            crystal = LocalLayer.Instance.ModifyCrystal(crystal);
+            AgentBalances[Currencies.Crystal] = crystal;
+            AgentStateSubject.OnNextCrystal(AgentCrystal);
         }
 
         public async UniTask InitAvatarBalancesAsync()

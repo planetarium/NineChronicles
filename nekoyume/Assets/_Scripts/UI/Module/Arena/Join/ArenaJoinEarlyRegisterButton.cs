@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using Lib9c;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -54,7 +55,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             _button.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                var balance = States.Instance.CrystalBalance;
+                var balance = States.Instance.AgentCrystal;
                 var enoughMessageFormat =
                     L10nManager.Localize("UI_ARENA_EARLY_REGISTRATION_Q");
                 var notEnoughMessage =
@@ -124,9 +125,8 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private void JoinArenaAction()
         {
-            var costFav =
-                _cost * States.Instance.CrystalBalance.Currency;
-            if (States.Instance.CrystalBalance < costFav)
+            var costFav = _cost * Currencies.Crystal;
+            if (States.Instance.AgentCrystal < costFav)
             {
                 NotificationSystem.Push(
                     MailType.System,

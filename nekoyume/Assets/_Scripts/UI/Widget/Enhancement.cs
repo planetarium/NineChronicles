@@ -197,7 +197,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
+            if (States.Instance.AgentNCG.MajorUnit < _costNcg)
             {
                 _errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 NotificationSystem.Push(MailType.System, _errorMessage,

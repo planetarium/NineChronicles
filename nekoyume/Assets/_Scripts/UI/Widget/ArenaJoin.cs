@@ -374,7 +374,7 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
-                var balance = States.Instance.CrystalBalance;
+                var balance = States.Instance.AgentCrystal;
                 var cost = _paymentButton.CrystalCost;
                 var enoughMessageFormat = L10nManager.Localize("UI_ARENA_JOIN_WITH_CRYSTAL_Q");
                 var notEnoughMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
@@ -575,7 +575,7 @@ namespace Nekoyume.UI
                 selectedRoundData,
                 blockIndex,
                 States.Instance.CurrentAvatarState.level);
-            return States.Instance.CrystalBalance >= cost;
+            return States.Instance.AgentCrystal >= cost;
         }
 
         private bool CheckChampionshipConditions(bool considerCrystal)

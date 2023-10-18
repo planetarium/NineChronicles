@@ -190,7 +190,7 @@ namespace Nekoyume.UI.Model
                 .OrderBy(x => x.UnlockStage);
 
             var unlockableRecipes = new List<int>();
-            var balance = States.Instance.CrystalBalance.MajorUnit;
+            var balance = States.Instance.AgentCrystal.MajorUnit;
             var totalCost = 0;
             foreach (var availableRecipe in availableRecipes)
             {

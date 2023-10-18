@@ -193,10 +193,10 @@ namespace Nekoyume.UI.Scroller
                 Widget.Find<Grind>().Show();
             };
 
-            if (States.Instance.CrystalBalance.MajorUnit >= _openCost)
+            if (States.Instance.AgentCrystal.MajorUnit >= _openCost)
             {
                 var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
-                var balance = States.Instance.CrystalBalance;
+                var balance = States.Instance.AgentCrystal;
 
                 Widget.Find<PaymentPopup>().Show(
                     CostType.Crystal,
@@ -449,7 +449,7 @@ namespace Nekoyume.UI.Scroller
             {
                 openAllRecipeArea.costText.text = _openCost.ToString();
 
-                var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
+                var hasEnoughBalance = States.Instance.AgentCrystal.MajorUnit >= _openCost;
                 openAllRecipeArea.costText.color = hasEnoughBalance
                     ? Palette.GetColor(ColorType.ButtonEnabled)
                     : Palette.GetColor(ColorType.ButtonDisabled);
