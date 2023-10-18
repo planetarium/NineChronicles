@@ -5,6 +5,7 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,is
 102001,102000,공격 강화,100,25,Self,ATK,Percentage,50,true
 102002,102000,공격 강화,100,10,Self,ATK,Percentage,25,true
 102003,102000,ATK UP (Stat conversion),100,10,Self,ATK,Add,0,true
+102004,102004,Double edged sword (ATK),100,20,Self,ATK,Percentage,30,true
 103000,103000,방어 강화,20,10,Self,DEF,Percentage,25,true
 103001,103000,방어 강화,100,25,Self,DEF,Percentage,50,true
 103002,103000,방어 강화,100,10,Self,DEF,Percentage,25,true
@@ -12,9 +13,13 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,is
 104000,104000,치명 증가,20,10,Self,CRI,Percentage,50,true
 104001,104000,치명 증가,100,25,Self,CRI,Percentage,75,true
 104002,104000,치명 증가,100,10,Self,CRI,Percentage,25,true
+104003,104003,Frenzied CRI(Self) Lv1,100,20,Self,CRI,Percentage,0,true
+104004,104003,Frenzied CRI(Self) LV2,100,20,Self,CRI,Percentage,0,true
+104005,104003,Frenzied CRI(Self) Lv3,100,20,Self,CRI,Percentage,0,true
 105000,105000,회피 증가,20,10,Self,HIT,Percentage,50,true
 105001,105000,회피 증가,100,25,Self,HIT,Percentage,75,true
 105002,105000,회피 증가,100,10,Self,HIT,Percentage,25,true
+105003,105003,회피증가 (아우라),100,20,Self,HIT,Percentage,0,true
 106000,106000,속도 증가,20,10,Self,SPD,Percentage,50,true
 106001,106000,속도 증가,100,25,Self,SPD,Percentage,75,true
 106002,106000,속도 증가,100,10,Self,SPD,Percentage,25,true
@@ -26,7 +31,10 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,is
 202003,202000,ATK ALL Down (Stat conversion),100,6,Enemies,ATK,Add,0,true
 203001,203000,방어 약화,100,10,Enemy,DEF,Percentage,-25,true
 203002,203000,DEF Down (Stat conversion),100,10,Enemy,DEF,Add,0,true
+203003,203003,Double edged sword (DEF),100,20,Self,DEF,Percentage,-20,false
 204001,204000,치명 감소,100,10,Enemy,CRI,Percentage,-25,true
+204002,204002,Frenzied CRI(Enemy) Lv1,100,20,Enemies,CRI,Percentage,-50,false
+204003,204002,Frenzied CRI(Enemy) Lv2_3,100,20,Enemies,CRI,Percentage,-500,false
 205001,205000,회피 감소,100,10,Enemy,HIT,Percentage,-25,true
 205002,205000,HIT Down (Stat conversion),100,10,Enemy,HIT,Add,0,true
 206001,206000,속도 감소,100,10,Enemy,SPD,Percentage,-25,true
@@ -113,7 +121,3 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,is
 701000,701000,DRV (Rune),100,0,Self,DRV,Add,0,true
 702000,701000,DRR (Rune),100,0,Self,DRR,Add,0,true
 703000,703000,CDMG (Rune),100,0,Self,CDMG,Add,0,true
-801001,801001,양날의 검 ATK,100,20,Self,ATK,Percentage,30,true
-801002,801002,양날의 검 DEF,100,20,Self,DEF,Percentage,-20,false
-802001,802001,기선제압 CRI(Self),100,20,Self,CRI,Percentage,20,true
-802002,802002,기선제압 CRI(Enemy),100,20,Enemies,CRI,Percentage,-50,false
