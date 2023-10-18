@@ -36,6 +36,11 @@ namespace Nekoyume.State
     /// </summary>
     public class States
     {
+        private class Workshop
+        {
+            public Dictionary<int, CombinationSlotState> States { get; } = new();
+        }
+
         public static States Instance => Game.Game.instance.States;
 
         public GoldCurrencyState GoldCurrencyState { get; private set; }
@@ -129,10 +134,6 @@ namespace Nekoyume.State
 
         public GrandFinaleStates GrandFinaleStates { get; } = new();
 
-        private class Workshop
-        {
-            public Dictionary<int, CombinationSlotState> States { get; } = new();
-        }
 
         public PetStates PetStates { get; } = new();
 
