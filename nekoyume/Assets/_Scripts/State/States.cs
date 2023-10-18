@@ -686,6 +686,7 @@ namespace Nekoyume.State
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                     await SetPetStates(avatarState.address);
+                    await Widget.Find<PatrolRewardPopup>().InitializePatrolReward();
                 });
             }
 

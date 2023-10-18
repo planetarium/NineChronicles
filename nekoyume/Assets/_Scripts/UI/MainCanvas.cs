@@ -264,6 +264,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBoard>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             yield return null;
 
@@ -378,8 +380,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
 
             // tooltip
