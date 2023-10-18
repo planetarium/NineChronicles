@@ -207,17 +207,17 @@ namespace Nekoyume.UI
                 checkPoint = 2;
             }
             // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 5 && checkPoint != -5)
+            else if (clearedStageId == 7 && checkPoint != -7)
             {
-                checkPoint = 50000;
+                checkPoint = 70000;
             }
-            else if (clearedStageId == 10 && checkPoint != -10)
+            else if (clearedStageId == 5 && checkPoint != -5)
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
                         (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
                 {
-                    checkPoint = 100000;
+                    checkPoint = 50000;
                 }
             }
 

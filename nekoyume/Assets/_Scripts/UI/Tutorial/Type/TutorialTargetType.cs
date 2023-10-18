@@ -26,10 +26,10 @@ namespace Nekoyume.UI
         GuidedQuestButton = 17, // 좌표 안맞음
         CombinationResultPopupButton = 18, // 좌표 안맞음
         MenuButton = 19,
-        PortalReward = 50001,
+        PortalReward = 70001,
         ItemTooltipEquipButton = 30000,
         BattlePreparationStartButton = 30001,
-        SummonEnteringButton = 100000,
+        SummonEnteringButton = 50000,
         Normal1SummonButton,
     }
 
