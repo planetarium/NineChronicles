@@ -26,12 +26,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                     continue;
                 }
 
+                var states = States.Instance;
                 var runeStones = new List<FungibleAssetValue>();
                 foreach (var row in runeRows)
                 {
-                    if (States.Instance.CurrentAvatarBalances.ContainsKey(row.Ticker))
+                    if (states.TryGetCurrentAvatarBalance(row.Ticker, out var balance))
                     {
-                        runeStones.Add(States.Instance.CurrentAvatarBalances[row.Ticker]);
+                        runeStones.Add(balance);
                     }
                 }
 

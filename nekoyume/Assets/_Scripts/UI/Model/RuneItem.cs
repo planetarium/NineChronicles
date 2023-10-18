@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Lib9c;
 using Libplanet.Types.Assets;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -38,12 +39,13 @@ namespace Nekoyume.UI.Model
             IsMaxLevel = level == optionRow.LevelOptionMap.Count;
 
             var runeRow = Game.Game.instance.TableSheets.RuneSheet[row.Id];
-            if (!States.Instance.CurrentAvatarBalances.ContainsKey(runeRow.Ticker))
+            var rune = Currencies.GetRune(runeRow.Ticker);
+            if (!States.Instance.CurrentAvatarBalances.ContainsKey(rune))
             {
                 return;
             }
 
-            RuneStone = States.Instance.CurrentAvatarBalances[runeRow.Ticker];
+            RuneStone = States.Instance.CurrentAvatarBalances[rune];
 
             var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
             if (!costSheet.TryGetValue(row.Id, out var costRow))

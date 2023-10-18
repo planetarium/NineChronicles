@@ -98,7 +98,7 @@ namespace Nekoyume.Helper
                 nextCost.SoulStoneQuantity;
             return States.Instance.AgentNCG >= ncgCost &&
                    States.Instance.CurrentAvatarBalances.TryGetValue(
-                       soulStoneCost.Currency.Ticker,
+                       soulStoneCost.Currency,
                        out var soulStone) &&
                    soulStone >= soulStoneCost;
         }
