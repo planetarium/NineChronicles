@@ -2945,12 +2945,11 @@ namespace Nekoyume.Blockchain
                             states);
                         if (value.Currency.Equals(States.Instance.NCG))
                         {
-                            var goldState = new GoldBalanceState(balanceAddr, balance);
-                            gameStates.SetGoldBalanceState(goldState);
+                            gameStates.SetAgentNCG(balance);
                         }
                         else if (value.Currency.Equals(Currencies.Crystal))
                         {
-                            gameStates.SetCrystalBalance(balance);
+                            gameStates.SetAgentCrystal(balance);
                         }
                         else if (value.Currency.Equals(Currencies.Garage))
                         {

@@ -231,7 +231,7 @@ namespace Nekoyume.UI
                 PetHelper.GetSoulstoneCurrency(_petRow.SoulStoneTicker) *
                 soulStone;
             var enoughNcg
-                = States.Instance.GoldBalanceState.Gold >= ncgCost;
+                = States.Instance.AgentNCG >= ncgCost;
             var enoughSoulStone
                 = States.Instance.CurrentAvatarBalances[soulStoneCost.Currency.Ticker] >= soulStoneCost;
             var enough = enoughNcg && enoughSoulStone;

@@ -422,7 +422,7 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var balance = States.Instance.GoldBalanceState.Gold;
+                    var balance = States.Instance.AgentNCG;
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,

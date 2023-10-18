@@ -269,7 +269,7 @@ namespace Nekoyume.UI
                     worldButton.Lock();
                 }
 
-                SetWorldOpenCostTextColor(States.Instance.CrystalBalance);
+                SetWorldOpenCostTextColor(States.Instance.AgentCrystal);
             }
 
             if (!worldInformation.TryGetFirstWorld(out _))
@@ -408,7 +408,7 @@ namespace Nekoyume.UI
                     new[] { worldId },
                     Game.TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
-            var balance = States.Instance.CrystalBalance;
+            var balance = States.Instance.AgentCrystal;
             var usageMessage = L10nManager.Localize(
                 "UI_UNLOCK_WORLD_FORMAT",
                 L10nManager.LocalizeWorldName(worldId));
@@ -444,7 +444,7 @@ namespace Nekoyume.UI
                         tableSheets.WorldUnlockSheet).MajorUnit;
                     paymentPopup.Show(
                         CostType.Crystal,
-                        States.Instance.CrystalBalance.MajorUnit,
+                        States.Instance.AgentCrystal.MajorUnit,
                         cost,
                         L10nManager.Localize(
                             "CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),

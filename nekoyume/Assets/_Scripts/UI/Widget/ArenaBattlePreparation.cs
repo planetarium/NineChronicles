@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var balance = States.Instance.GoldBalanceState.Gold;
+            var balance = States.Instance.AgentNCG;
             var cost = ArenaHelper.GetTicketPrice(
                 _roundData,
                 RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,

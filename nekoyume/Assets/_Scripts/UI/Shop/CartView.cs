@@ -63,11 +63,6 @@ namespace Nekoyume.UI.Module
 
         public void UpdateCart(List<ShopItem> selectedItems, System.Action onClick)
         {
-            if (States.Instance.GoldBalanceState is null)
-            {
-                return;
-            }
-
             var ncg = States.Instance.NCG;
             var sortedItems = selectedItems.Where(x => !x.Expired.Value).ToList();
             var price = new FungibleAssetValue(ncg, 0 ,0);
@@ -94,7 +89,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            if (States.Instance?.GoldBalanceState.Gold < price)
+            if (States.Instance.AgentNCG < price)
             {
                 buyButton.Interactable = false;
                 priceText.color = Palette.GetColor(ColorType.ButtonDisabled);

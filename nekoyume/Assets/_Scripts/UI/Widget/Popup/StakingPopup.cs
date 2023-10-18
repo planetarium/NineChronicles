@@ -135,7 +135,7 @@ namespace Nekoyume.UI
         {
             SetBenefitsListViews();
             var level = States.Instance.StakingLevel;
-            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = States.Instance.AgentNCG.MajorUnit;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 
             if (level < 1)
@@ -205,7 +205,7 @@ namespace Nekoyume.UI
         {
             var states = States.Instance;
             var level = states.StakingLevel;
-            var deposit = states.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var deposit = states.AgentNCG.MajorUnit;
             var regularSheet = states.StakeRegularRewardSheet;
             var regularFixedSheet = states.StakeRegularFixedRewardSheet;
             var stakeStateV2 = states.StakeStateV2;

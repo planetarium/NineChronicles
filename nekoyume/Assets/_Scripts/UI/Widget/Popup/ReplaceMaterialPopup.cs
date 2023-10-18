@@ -95,7 +95,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                confirmCallback = cost.MajorUnit <= States.Instance.CrystalBalance.MajorUnit
+                confirmCallback = cost.MajorUnit <= States.Instance.AgentCrystal.MajorUnit
                     ? confirmCallback
                     : () => OnInsufficientCost(cost.MajorUnit);
             }

@@ -703,13 +703,13 @@ namespace Nekoyume.UI
 
         private bool CheckNCGAndSlotIsEnough()
         {
-            if (_selectedRecipeInfo.CostNCG > States.Instance.GoldBalanceState.Gold.MajorUnit)
+            if (_selectedRecipeInfo.CostNCG > States.Instance.AgentNCG.MajorUnit)
             {
                 return false;
             }
 
             var slots = Widget.Find<CombinationSlotsPopup>();
-            if (!slots.TryGetEmptyCombinationSlot(out var _))
+            if (!slots.TryGetEmptyCombinationSlot(out _))
             {
                 return false;
             }
@@ -755,7 +755,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (States.Instance.GoldBalanceState.Gold.MajorUnit < _selectedRecipeInfo.CostNCG)
+            if (States.Instance.AgentNCG.MajorUnit < _selectedRecipeInfo.CostNCG)
             {
                 errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 return false;
@@ -833,8 +833,8 @@ namespace Nekoyume.UI
 
             var costNCG = equipmentRow.RequiredGold + subRecipe.RequiredGold;
             var isCostEnough =
-                States.Instance.GoldBalanceState.Gold.MajorUnit >= costNCG &&
-                States.Instance.CrystalBalance.MajorUnit >= costCrystal.MajorUnit &&
+                States.Instance.AgentNCG.MajorUnit >= costNCG &&
+                States.Instance.AgentCrystal.MajorUnit >= costCrystal.MajorUnit &&
                 replaceableMaterials;
 
             return isCostEnough;

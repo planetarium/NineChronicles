@@ -221,8 +221,8 @@ namespace Nekoyume.UI
             {
                 Find<RuneEnhancementResultScreen>().Show(
                     _selectedRuneItem,
-                    States.Instance.GoldBalanceState.Gold,
-                    States.Instance.CrystalBalance,
+                    States.Instance.AgentNCG,
+                    States.Instance.AgentCrystal,
                     TryCount.Value,
                     random);
             }
@@ -494,10 +494,10 @@ namespace Nekoyume.UI
                     ? item.RuneStone.MajorUnit / item.Cost.RuneStoneQuantity
                     : -1;
                 var maxCrystal = item.Cost.CrystalQuantity > 0
-                    ? States.Instance.CrystalBalance.MajorUnit / item.Cost.CrystalQuantity
+                    ? States.Instance.AgentCrystal.MajorUnit / item.Cost.CrystalQuantity
                     : -1;
                 var maxNcg = item.Cost.NcgQuantity > 0
-                    ? States.Instance.GoldBalanceState.Gold.MajorUnit / item.Cost.NcgQuantity
+                    ? States.Instance.AgentNCG.MajorUnit / item.Cost.NcgQuantity
                     : -1;
                 var maxValues = new List<BigInteger> { maxRuneStone, maxCrystal, maxNcg };
                 var count = (int)maxValues.Where(x => x >= 0).Min();
@@ -558,7 +558,7 @@ namespace Nekoyume.UI
                     break;
                 case RuneCostType.Crystal:
                     name = L10nManager.Localize("ITEM_NAME_9999998");
-                    count = States.Instance.CrystalBalance.GetQuantityString();
+                    count = States.Instance.AgentCrystal.GetQuantityString();
                     content = L10nManager.Localize("ITEM_DESCRIPTION_9999998");
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
@@ -571,7 +571,7 @@ namespace Nekoyume.UI
                     break;
                 case RuneCostType.Ncg:
                     name = L10nManager.Localize("ITEM_NAME_9999999");
-                    count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
+                    count = States.Instance.AgentNCG.GetQuantityString();
                     content = L10nManager.Localize("ITEM_DESCRIPTION_9999999");
                     buttonText = L10nManager.Localize("UI_SHOP");
                     callback = () =>

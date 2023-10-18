@@ -52,7 +52,7 @@ namespace Nekoyume
             var value = expiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
             button.SetSubmittable(value > 0);
             button.SetSubmitText(L10nManager.Localize("UI_BUY"));
-            button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            button.ShowNCG(price, price <= States.Instance.AgentNCG);
             timer.gameObject.SetActive(true);
             timer.UpdateTimer(expiredBlockIndex);
 
@@ -66,7 +66,7 @@ namespace Nekoyume
             _onSubmit = onSubmit;
             button.SetSubmittable(true);
             button.SetSubmitText(L10nManager.Localize("UI_BUY"));
-            button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            button.ShowNCG(price, price <= States.Instance.AgentNCG);
             timer.gameObject.SetActive(false);
         }
     }
