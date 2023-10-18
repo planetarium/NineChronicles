@@ -686,69 +686,69 @@
       }
     },
     {
-      "id": 100000,
-      "nextId": 100001,
-      "checkPointId": 100000,
+      "id": 50000,
+      "nextId": 50001,
+      "checkPointId": 50000,
       "data": {
         "presetId": 1,
         "targetType": 2,
-        "actionType": 100000,
+        "actionType": 50000,
         "emojiType": 1,
         "guideType": 3,
-        "scriptKey": "TUTORIAL_10_001"
+        "scriptKey": "TUTORIAL_05_001"
       }
     },
     {
-      "id": 100001,
-      "nextId": 100002,
-      "checkPointId": 100000,
+      "id": 50001,
+      "nextId": 50002,
+      "checkPointId": 50000,
       "data": {
         "presetId": 1,
-        "targetType": 100000,
+        "targetType": 50000,
         "actionType": 0,
         "emojiType": 1,
         "guideType": 3,
-        "scriptKey": "TUTORIAL_10_002",
+        "scriptKey": "TUTORIAL_05_002",
         "fullScreenButton" : true
       }
     },
     {
-      "id": 100002,
-      "nextId": 100003,
-      "checkPointId": 100000,
+      "id": 50002,
+      "nextId": 50003,
+      "checkPointId": 50000,
       "data": {
         "presetId": 1,
-        "targetType": 100000,
-        "actionType": 100001,
+        "targetType": 50000,
+        "actionType": 50001,
         "emojiType": 1,
         "guideType": 3,
-        "scriptKey": "TUTORIAL_10_003"
+        "scriptKey": "TUTORIAL_05_003"
       }
     },
     {
-      "id": 100003,
-      "nextId": 100004,
-      "checkPointId": 100000,
+      "id": 50003,
+      "nextId": 50004,
+      "checkPointId": 50000,
       "data": {
         "presetId": 1,
-        "targetType": 100001,
-        "actionType": 100002,
+        "targetType": 50001,
+        "actionType": 50002,
         "emojiType": 1,
         "guideType": 1,
-        "scriptKey": "TUTORIAL_10_004"
+        "scriptKey": "TUTORIAL_05_004"
       }
     },
     {
-      "id": 100004,
+      "id": 50004,
       "nextId": 0,
-      "checkPointId": -10,
+      "checkPointId": -5,
       "data": {
         "presetId": 2,
         "targetType": 0,
         "actionType": 0,
         "emojiType": 2,
         "guideType": 0,
-        "scriptKey": "TUTORIAL_10_005",
+        "scriptKey": "TUTORIAL_05_005",
         "noArrow": true
       }
     }

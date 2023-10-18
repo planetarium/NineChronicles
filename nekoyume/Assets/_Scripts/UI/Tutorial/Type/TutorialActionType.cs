@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         TutorialActionClickPortalRewardButton = 70001,
         TutorialActionClickBattlePreparationFirstInventoryCellView = 30000,
         TutorialActionClickBattlePreparationHackAndSlash = 30001,
-        TutorialActionGoToWorkShop = 100000,
+        TutorialActionGoToWorkShop = 50000,
         TutorialActionClickSummonEnteringButton,
         TutorialActionClickNormal1SummonButton,
     }
