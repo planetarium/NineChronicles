@@ -1,6 +1,6 @@
 using System;
+using Lib9c;
 using Libplanet.Types.Assets;
-using Nekoyume.Helper;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
@@ -15,9 +15,9 @@ namespace Nekoyume.State.Modifiers
 
         public AgentCrystalModifier(FungibleAssetValue crystal)
         {
-            if (!crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            if (!crystal.Currency.Equals(Currencies.Crystal))
             {
-                this.crystal = CrystalCalculator.CRYSTAL * 0;
+                this.crystal = Currencies.Crystal * 0;
                 return;
             }
 
@@ -26,8 +26,7 @@ namespace Nekoyume.State.Modifiers
 
         public void Add(IAccumulatableValueModifier<FungibleAssetValue> modifier)
         {
-            if (!(modifier is AgentCrystalModifier m) ||
-                !crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            if (modifier is not AgentCrystalModifier m)
             {
                 return;
             }
@@ -37,8 +36,7 @@ namespace Nekoyume.State.Modifiers
 
         public void Remove(IAccumulatableValueModifier<FungibleAssetValue> modifier)
         {
-            if (!(modifier is AgentCrystalModifier m) ||
-                !crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            if (modifier is not AgentCrystalModifier m)
             {
                 return;
             }
@@ -48,18 +46,10 @@ namespace Nekoyume.State.Modifiers
 
         public FungibleAssetValue Modify(FungibleAssetValue value)
         {
-            //if (!crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
-            //{
-            //    return value;
-            //}
-
             //return value + crystal;
             return value;
         }
 
-        public override string ToString()
-        {
-            return $"{nameof(crystal)}: {crystal.MajorUnit}";
-        }
+        public override string ToString() => crystal.ToString();
     }
 }

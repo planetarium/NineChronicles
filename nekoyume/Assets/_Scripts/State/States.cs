@@ -154,8 +154,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
-            AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
+            var ncg = LocalLayer.Instance.ModifyNCG(goldBalanceState.Gold);
+            AgentStateSubject.OnNextGold(ncg);
         }
 
         public void SetCrystalBalance(FungibleAssetValue fav)

@@ -18,7 +18,7 @@ namespace Tests.EditMode
     {
         private TableSheets _tableSheets;
         private AgentState _agentState;
-        private GoldBalanceState _goldBalanceState;
+        private FungibleAssetValue _ncgBalance;
         private AvatarState _avatarState;
 
         [SetUp]
@@ -26,12 +26,8 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
             var currency = Currency.Legacy("NCG", 2, null);
-#pragma warning restore CS0618
-            var gold = new FungibleAssetValue(currency, 0, 0);
-            _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
+            _ncgBalance = new FungibleAssetValue(currency, 0, 0);
             _avatarState = new AvatarState(
                 new Address(),
                 _agentState.address,
@@ -41,23 +37,13 @@ namespace Tests.EditMode
                 new Address());
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _avatarState = null;
-            _goldBalanceState = null;
-            _agentState = null;
-            _tableSheets = null;
-        }
-
         [Test]
         public void AgentGoldModifier()
         {
-            var gold = _goldBalanceState.Gold;
-            var modifier = JsonTest(new AgentGoldModifier(gold.Currency, 100));
-            _goldBalanceState = modifier.Modify(_goldBalanceState);
-            Assert.AreEqual(gold + new FungibleAssetValue(gold.Currency, 100, 0),
-                _goldBalanceState.Gold);
+            var gold = _ncgBalance;
+            var modifier = JsonTest(new AgentNCGModifier(gold.Currency * 100));
+            _ncgBalance = modifier.Modify(_ncgBalance);
+            Assert.AreEqual(gold + new FungibleAssetValue(gold.Currency, 100, 0), _ncgBalance);
         }
 
         [Test]
