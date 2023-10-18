@@ -568,7 +568,7 @@ namespace Nekoyume.Blockchain
 
                         States.Instance.SetStakeState(
                             stakeStateV2,
-                            new GoldBalanceState(stakeAddr, balance),
+                            balance,
                             level,
                             stakeRegularFixedRewardSheet,
                             stakeRegularRewardSheet);

@@ -282,7 +282,7 @@ namespace Nekoyume.Blockchain
                 await GetStakeStateAsync(evaluation);
             States.Instance.SetStakeState(
                 stakeStateV2,
-                new GoldBalanceState(stakeAddr, deposit),
+                deposit,
                 stakingLevel,
                 stakeRegularFixedRewardSheet,
                 stakeRegularRewardSheet);
