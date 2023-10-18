@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 224232232013115230}
   - component: {fileID: 222444819713102854}
   - component: {fileID: 114803091748312378}
-  - component: {fileID: 4721395841211014387}
   m_Layer: 5
   m_Name: UI_GrayLoadingScreen
   m_TagString: Untagged
@@ -68,26 +67,6 @@ MonoBehaviour:
     container: {fileID: 4794839732907787892}
     slider: {fileID: 5445760242843227016}
     text: {fileID: 4554444801469890161}
---- !u!95 &4721395841211014387
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1145248988570000}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: b7cff3935ed7cbf4d812c909d2394188, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1334572938244390
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,7 +288,7 @@ Animator:
   m_GameObject: {fileID: 691694271769932544}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0ab9f6e0d0d8649f1b72507dd329a5c1, type: 2}
+  m_Controller: {fileID: 9100000, guid: 18e0d011391542e49b2ce611fc4f28cb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -404,7 +383,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 72
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

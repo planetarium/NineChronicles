@@ -242,7 +242,6 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
-                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
             });
             guestButton.interactable = true;
         }
