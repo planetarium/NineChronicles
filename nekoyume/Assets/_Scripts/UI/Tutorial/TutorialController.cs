@@ -207,9 +207,9 @@ namespace Nekoyume.UI
                 checkPoint = 2;
             }
             // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 5 && checkPoint != -5)
+            else if (clearedStageId == 7 && checkPoint != -7)
             {
-                checkPoint = 50000;
+                checkPoint = 70000;
             }
             else if (clearedStageId == 10 && checkPoint != -10)
             {
