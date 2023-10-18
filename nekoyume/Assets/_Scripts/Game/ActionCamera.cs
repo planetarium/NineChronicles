@@ -383,7 +383,7 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             UpdateStaticRatioWithLetterBox();
 #else
             UpdateDynamicRatio();
