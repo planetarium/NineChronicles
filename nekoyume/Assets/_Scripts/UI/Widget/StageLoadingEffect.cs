@@ -137,10 +137,10 @@ namespace Nekoyume.UI
                 {
                     switch (stageId)
                     {
-                        case VideoPlayStage:
-                            coroutine = PlayVideo;
-                            LoadingEnd = false;
-                            break;
+                        // case VideoPlayStage:
+                        //     coroutine = PlayVideo;
+                        //     LoadingEnd = false;
+                        //     break;
                         case WorkshopDialogStage:
                             coroutine = PlaySmallDialog;
                             LoadingEnd = false;
