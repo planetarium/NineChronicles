@@ -465,7 +465,6 @@ namespace Nekoyume.Blockchain
                 {
                     var goldCurrencyState = new GoldCurrencyState(goldDict);
                     States.Instance.SetGoldCurrencyState(goldCurrencyState);
-                    ActionRenderHandler.Instance.GoldCurrency = goldCurrencyState.Currency;
                 }
                 else
                 {

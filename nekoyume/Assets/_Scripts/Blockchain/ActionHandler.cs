@@ -23,7 +23,6 @@ namespace Nekoyume.Blockchain
     public abstract class ActionHandler
     {
         public bool Pending { get; set; }
-        public Currency GoldCurrency { get; internal set; }
 
         public abstract void Start(ActionRenderer renderer);
 
@@ -51,7 +50,7 @@ namespace Nekoyume.Blockchain
 
             return StateGetter.GetGoldBalanceState(
                 agentAddress,
-                GoldCurrency,
+                States.Instance.NCG,
                 evaluation.OutputState);
         }
 
@@ -80,7 +79,7 @@ namespace Nekoyume.Blockchain
                     return (stakeAddr, null, new FungibleAssetValue(), 0, null, null);
                 }
 
-                var balance = await agent.GetBalanceAsync(stakeAddr, GoldCurrency);
+                var balance = await agent.GetBalanceAsync(stakeAddr, States.Instance.NCG);
                 var sheetAddrArr = new[]
                 {
                     Addresses.GetSheetAddress(
