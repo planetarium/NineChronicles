@@ -109,6 +109,8 @@ namespace Nekoyume.State
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
+        #region Avatar
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -117,9 +119,66 @@ namespace Nekoyume.State
 
         public AvatarState CurrentAvatarState { get; private set; }
 
-        public Dictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
+        /// <summary>
+        /// The balances of the <see cref="States.CurrentAvatarState"/>.
+        /// It throws <see cref="InvalidOperationException"/> if <see cref="States.CurrentAvatarState"/> is null.
+        /// Use <see cref="GetCurrentAvatarBalance"/> if you want to avoid the exception.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public Dictionary<Currency, FungibleAssetValue> CurrentAvatarBalances
+        {
+            get
+            {
+                if (CurrentAvatarState is null)
+                {
+                    throw new InvalidOperationException(
+                        $"[{nameof(States)}.{nameof(CurrentAvatarBalances)}] {nameof(CurrentAvatarState)} is null.");
+                }
 
+                if (!_balances.ContainsKey(CurrentAvatarState.address))
+                {
+                    _balances[CurrentAvatarState.address] = new Dictionary<Currency, FungibleAssetValue>();
+                }
 
+                return _balances[CurrentAvatarState.address];
+            }
+        }
+
+        /// <summary>
+        /// Get the balance of the <see cref="States.CurrentAvatarState"/>.
+        /// It returns 0 if <see cref="States.CurrentAvatarState"/> is null or the balance of the currency is not found.
+        /// </summary>
+        public FungibleAssetValue GetCurrentAvatarBalance(Currency currency)
+        {
+            try
+            {
+                return CurrentAvatarBalances.First(pair => pair.Key.Equals(currency)).Value;
+            }
+            catch
+            {
+                return 0 * currency;
+            }
+        }
+
+        /// <summary>
+        /// Get the balance of the <see cref="States.CurrentAvatarState"/>.
+        /// It returns false below conditions:
+        ///   - <see cref="States.CurrentAvatarState"/> is null.
+        ///   - The balance of the currency is not found with <paramref name="ticker"/>.
+        /// </summary>
+        public bool TryGetCurrentAvatarBalance(string ticker, out FungibleAssetValue balance)
+        {
+            try
+            {
+                balance = CurrentAvatarBalances.First(pair => pair.Key.Ticker == ticker).Value;
+                return true;
+            }
+            catch
+            {
+                balance = default;
+                return false;
+            }
+        }
 
         public List<RuneState> RuneStates { get; } = new();
 
@@ -132,8 +191,9 @@ namespace Nekoyume.State
         public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new();
+        #endregion
 
+        public GrandFinaleStates GrandFinaleStates { get; } = new();
 
         public PetStates PetStates { get; } = new();
 
