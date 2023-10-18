@@ -503,12 +503,16 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Tutorial>().Close(true);
 
+            List<TableData.EquipmentItemRecipeSheet.Row> newRecipes = null;
+
             if (newlyClearedStage)
             {
                 yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
-                yield return StartCoroutine(CoUnlockRecipe(stageId));
-                yield return new WaitForSeconds(1f);
+                newRecipes = TableSheets.Instance.EquipmentItemRecipeSheet.OrderedList
+                    .Where(row => row.UnlockStage == stageId)
+                    .Distinct()
+                    .ToList();
             }
 
             IsShowHud = false;
@@ -635,7 +639,7 @@ namespace Nekoyume.Game
             }
 
             _battleResultModel.ClearedCountForEachWaves[log.clearedWaveNumber] = 1;
-            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti, newRecipes);
             yield return null;
 
             var characterSheet = TableSheets.Instance.CharacterSheet;

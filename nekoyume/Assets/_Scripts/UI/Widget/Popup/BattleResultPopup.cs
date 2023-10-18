@@ -25,6 +25,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class BattleResultPopup : PopupWidget
@@ -79,8 +80,54 @@ namespace Nekoyume.UI
             }
         }
 
+        [Serializable]
+        public struct RecipeItems
+        {
+            public GameObject gameObject;
+            public RecipeCell[] items;
+            public TextMeshProUGUI[] itemNames;
+            public TextMeshProUGUI[] itemMainStats;
+        }
+
+        [Serializable]
+        public struct RewardItems
+        {
+            public GameObject gameObject;
+            public SimpleCountableItemView[] items;
+
+            public void Set(IReadOnlyList<CountableItem> rewardItems)
+            {
+                foreach (var view in items)
+                {
+                    view.gameObject.SetActive(false);
+                }
+
+                for (var i = 0; i < rewardItems.Count; i++)
+                {
+                    var rt = items[i].RectTransform;
+                    var itemBase = rewardItems[i].ItemBase.Value;
+                    items[i].SetData(rewardItems[i], () => ShowTooltip(itemBase));
+                    items[i].gameObject.SetActive(true);
+                }
+            }
+
+            private static void ShowTooltip(ItemBase itemBase)
+            {
+                AudioController.PlayClick();
+                var tooltip = ItemTooltip.Find(itemBase.ItemType);
+                tooltip.Show(itemBase, string.Empty, false, null);
+            }
+        }
+
+        [Serializable]
+        public struct StarForMulti
+        {
+            public TextMeshProUGUI StarCountText;
+            public TextMeshProUGUI[] WaveStarTexts;
+            public TextMeshProUGUI RemainingStarText;
+        }
+
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
 
         [SerializeField]
         private CanvasGroup canvasGroup;
@@ -109,9 +156,17 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI expText;
 
+        [SerializeField]
+        private RewardItems rewardItems;
 
         [SerializeField]
-        private BattleReward.RewardItems rewardItems;
+        private RecipeItems recipeItems;
+
+        [SerializeField]
+        private GameObject startRewards;
+
+        [SerializeField]
+        private StarForMulti starForMulti;
 
         [SerializeField]
         private TextMeshProUGUI bottomText;
@@ -331,7 +386,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Show(Model model, bool isBoosted)
+        public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
@@ -379,6 +434,31 @@ namespace Nekoyume.UI
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
+            if(newRecipes != null && newRecipes.Count > 0)
+            {
+                recipeItems.gameObject.SetActive(true);
+                for (int i = 0; i < recipeItems.items.Length; i++)
+                {
+                    if(i < newRecipes.Count)
+                    {
+                        recipeItems.items[i].transform.parent.gameObject.SetActive(true);
+                        recipeItems.items[i].Show(newRecipes[i], false);
+
+                        var resultItem = newRecipes[i].GetResultEquipmentItemRow();
+                        recipeItems.itemNames[i].text = resultItem.GetLocalizedName(true);
+                        recipeItems.itemMainStats[i].text = resultItem.GetUniqueStat().DecimalStatToString();
+                    }
+                    else
+                    {
+                        recipeItems.items[i].transform.parent.gameObject.SetActive(false);
+                    }
+                }
+            }
+            else
+            {
+                recipeItems.gameObject.SetActive(false);
+            }
+
             UpdateView(isBoosted);
         }
 
@@ -391,21 +471,9 @@ namespace Nekoyume.UI
 
         private void UpdateView(bool isBoosted)
         {
-            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
-                          SharedModel.ClearedCountForEachWaves.Sum() > 1;
+            expText.text = $"EXP + {SharedModel.Exp}";
 
             rewardItems.Set(SharedModel.Rewards);
-
-            if (isNotClearedInMulti)
-            {
-                Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
-                            SharedModel.StageID, out var row);
-                var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
-                var maxStarCount = row?.MaxStar ?? 0;
-
-                /*view.Set(SharedModel.ClearedCountForEachWaves, starCount, maxStarCount);*/
-            }
-
 
             switch (SharedModel.State)
             {
@@ -468,8 +536,30 @@ namespace Nekoyume.UI
                 rewardArea.SetActive(true);
             }
 
+            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
+                          SharedModel.ClearedCountForEachWaves.Sum() > 1;
+            if (isNotClearedInMulti && SharedModel.ClearedWaveNumber == 2)
+            {
+                startRewards.SetActive(true);
+                Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
+                            SharedModel.StageID, out var row);
+                var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
+                var maxStarCount = row?.MaxStar ?? 0;
+
+                starForMulti.StarCountText.text = $"{starCount}/{maxStarCount}";
+                for (int i = 0; i < starForMulti.WaveStarTexts.Length; i++)
+                {
+                    starForMulti.WaveStarTexts[i].text = SharedModel.ClearedCountForEachWaves[i].ToString();
+                }
+            }
+            else
+            {
+                startRewards.SetActive(false);
+            }
+
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
-            yield return StartCoroutine(CoUpdateRewards());
+
+            yield return null;
         }
 
         private IEnumerator EmitBattleWinVFX()
@@ -484,24 +574,12 @@ namespace Nekoyume.UI
             {
                 case 1:
                     battleWin01VFX.Play();
-                    /*_battleWin01VFX =
-                        VFXController.instance.CreateAndChase<BattleWin01VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);*/
                     break;
                 case 2:
                     battleWin02VFX.Play();
-                    /*_battleWin02VFX =
-                        VFXController.instance.CreateAndChase<BattleWin02VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);*/
                     break;
                 case 3:
                     battleWin03VFX.Play();
-                    /*_battleWin03VFX =
-                        VFXController.instance.CreateAndChase<BattleWin03VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);*/
                     break;
                 default:
                     battleWin04VFX.Play();
@@ -516,6 +594,9 @@ namespace Nekoyume.UI
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
 
+            cpUp.SetActive(true);
+            rewardArea.SetActive(false);
+
             foreach (var item in enableVictorys)
             {
                 item.SetActive(false);
@@ -526,96 +607,16 @@ namespace Nekoyume.UI
                 item.SetActive(true);
             }
 
-            /*var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
-            if (result == BattleLog.Result.TimeOver)
-            {
-                key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
-            }*/
-
             var stageText = StageInformation.GetStageIdString(
                 SharedModel.StageType,
                 SharedModel.StageID,
                 true);
 
             worldStageId.text = $"{SharedModel.WorldName} {stageText}";
-            //defeatTextArea.defeatText.text = L10nManager.Localize(key);
-            expText.text = $"EXP + {SharedModel.Exp}";
 
             bottomText.enabled = false;
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
-            StartCoroutine(CoUpdateRewards());
-        }
-
-        private IEnumerator CoUpdateRewards()
-        {
-            /*rewardsArea.root.SetActive(true);
-            for (var i = 0; i < rewardsArea.rewards.Length; i++)
-            {
-                var view =
-                    i == 2 &&
-                    isNotClearedInMulti
-                        ? rewardsArea.rewardForMulti
-                        : rewardsArea.rewards[i];
-
-                view.StartShowAnimation();
-
-                var sum = 0;
-                for (var j = i; j < 3; j++)
-                {
-                    sum += SharedModel.ClearedCountForEachWaves[j + 1];
-                }
-
-                var cleared = sum > 0;
-                switch (i)
-                {
-                    case 0:
-                        view.Set(SharedModel.Exp, cleared);
-                        break;
-                    case 1:
-                        view.Set(SharedModel.Rewards, cleared);
-                        break;
-                    case 2:
-                        if (isNotClearedInMulti)
-                        {
-                            Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
-                                SharedModel.StageID, out var row);
-                            var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
-                            var maxStarCount = row?.MaxStar ?? 0;
-
-                            view.Set(SharedModel.ClearedCountForEachWaves, starCount, maxStarCount);
-                        }
-                        else
-                        {
-                            view.Set(cleared);
-                        }
-
-                        break;
-                }
-
-                yield return new WaitForSeconds(0.5f);
-
-                view.gameObject.SetActive(true);
-                if (i < 2 || !isNotClearedInMulti)
-                {
-                    view.EnableStar(cleared);
-                }
-
-                yield return null;
-                AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            }
-
-            yield return new WaitForSeconds(0.5f);
-
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.StopShowAnimation();
-                reward.StartScaleTween();
-            }
-
-            rewardsArea.rewardForMulti.StopShowAnimation();
-            rewardsArea.rewardForMulti.StartScaleTween();*/
-            yield return null;
         }
 
         private IEnumerator CoUpdateBottom(int limitSeconds)
@@ -1055,11 +1056,6 @@ namespace Nekoyume.UI
             {
                 battleWin04VFX.Stop();
             }
-
-/*            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.StopVFX();
-            }*/
         }
     }
 }
