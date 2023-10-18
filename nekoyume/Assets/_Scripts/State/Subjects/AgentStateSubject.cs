@@ -30,7 +30,7 @@ namespace Nekoyume.State.Subjects
 
         public static void OnNextGold(FungibleAssetValue gold)
         {
-            if (gold.Currency.Equals(States.Instance.GoldBalanceState.Gold.Currency))
+            if (gold.Currency.Equals(States.Instance.NCG))
             {
                 _gold.OnNext(gold);
             }

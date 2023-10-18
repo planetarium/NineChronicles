@@ -426,7 +426,7 @@ namespace Nekoyume.UI
                     var cost = RxProps.EventScheduleRowForDungeon.Value
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
-                            States.Instance.GoldBalanceState.Gold.Currency);
+                            States.Instance.NCG);
                     var purchasedCount = RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
 
                     Find<TicketPurchasePopup>().Show(

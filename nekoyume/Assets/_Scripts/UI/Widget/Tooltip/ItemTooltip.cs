@@ -238,7 +238,7 @@ namespace Nekoyume.UI
             if (item.Product.Legacy)
             {
                 buy.Set(item.Product.RegisteredBlockIndex + Order.ExpirationInterval,
-                    (BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                    (BigInteger)item.Product.Price * States.Instance.NCG,
                     () =>
                     {
                         onBuy?.Invoke();
@@ -247,7 +247,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                buy.Set((BigInteger)item.Product.Price * States.Instance.GoldBalanceState.Gold.Currency,
+                buy.Set((BigInteger)item.Product.Price * States.Instance.NCG,
                     () =>
                     {
                         onBuy?.Invoke();

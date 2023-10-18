@@ -519,7 +519,7 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var agentAddress = States.Instance.AgentState.address;
             var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var currency = States.Instance.NCG;
             var price = itemProduct?.Price ?? favProduct.Price;
             var fav = new FungibleAssetValue(currency, (int)price, 0);
             var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;

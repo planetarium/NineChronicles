@@ -215,10 +215,10 @@ namespace Nekoyume
                     var price = item?.Price ?? fav?.Price ?? 0;
                     var tax = decimal.Divide(price, 100) * Buy.TaxRate;
                     var tp = price - tax;
-                    var currency = States.Instance.GoldBalanceState.Gold.Currency;
+                    var ncg = States.Instance.NCG;
                     var majorUnit = (int)tp;
                     var minorUnit = (int)((tp - majorUnit) * 100);
-                    var fungibleAsset = new FungibleAssetValue(currency, majorUnit, minorUnit);
+                    var fungibleAsset = new FungibleAssetValue(ncg, majorUnit, minorUnit);
                     return L10nManager.Localize("UI_SELLER_MAIL_FORMAT", fungibleAsset,
                         sellProductName);
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
@@ -698,8 +698,7 @@ namespace Nekoyume
             BigInteger cost)
         {
             // NCG
-            if (asset.Currency.Equals(
-                    Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            if (asset.Currency.Equals(States.Instance.NCG))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
                 return L10nManager.Localize(

@@ -546,21 +546,26 @@ namespace Nekoyume.Blockchain
             // 에이전트의 상태를 한 번 동기화 한다.
             var currencyTask = Task.Run(async () =>
             {
-                var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
-                ).Currency;
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
-
                 await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
+                var ncg = States.Instance.NCG;
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(
                         Address,
-                        await GetBalanceAsync(Address, goldCurrency)));
+                        await GetBalanceAsync(Address, ncg)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
+                if (await GetStateAsync(GoldCurrencyState.Address) is Dictionary goldDict)
+                {
+                    var goldCurrencyState = new GoldCurrencyState(goldDict);
+                    States.Instance.SetGoldCurrencyState(goldCurrencyState);
+                }
+                else
+                {
+                    throw new FailedToInstantiateStateException<GoldCurrencyState>();
+                }
 
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {
@@ -584,13 +589,13 @@ namespace Nekoyume.Blockchain
                     }
                     else
                     {
-                        var balance = new FungibleAssetValue(goldCurrency);
+                        var balance = new FungibleAssetValue(ncg);
                         var level = 0;
                         var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
                         var stakeRegularRewardSheet = new StakeRegularRewardSheet();
                         try
                         {
-                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
+                            balance = await GetBalanceAsync(stakeAddr, ncg);
                             var sheetAddrArr = new[]
                             {
                                 Addresses.GetSheetAddress(

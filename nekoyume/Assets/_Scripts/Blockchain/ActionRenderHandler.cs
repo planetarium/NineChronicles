@@ -2943,7 +2943,7 @@ namespace Nekoyume.Blockchain
                             balanceAddr,
                             value.Currency,
                             states);
-                        if (value.Currency.Equals(GoldCurrency))
+                        if (value.Currency.Equals(States.Instance.NCG))
                         {
                             var goldState = new GoldBalanceState(balanceAddr, balance);
                             gameStates.SetGoldBalanceState(goldState);
