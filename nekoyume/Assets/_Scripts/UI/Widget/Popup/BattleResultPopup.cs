@@ -184,19 +184,16 @@ namespace Nekoyume.UI
         private Button repeatButton;
 
         [SerializeField]
+        private Button shopButton;
+
+        [SerializeField]
+        private Button craftButton;
+
+        [SerializeField]
+        private Button foodButton;
+
+        [SerializeField]
         private ActionPoint actionPoint;
-
-        [SerializeField]
-        private BattleWin01VFX battleWin01VFX;
-
-        [SerializeField]
-        private BattleWin02VFX battleWin02VFX;
-
-        [SerializeField]
-        private BattleWin03VFX battleWin03VFX;
-
-        [SerializeField]
-        private BattleWin04VFX battleWin04VFX;
 
         private Coroutine _coUpdateBottomText;
 
@@ -233,6 +230,10 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             stagePreparationButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
+
+            shopButton.OnClickAsObservable().Subscribe(_ => GoToProduct()).AddTo(gameObject);
+            craftButton.OnClickAsObservable().Subscribe(_ => GoToCraft()).AddTo(gameObject);
+            foodButton.OnClickAsObservable().Subscribe(_ => GoToFood()).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
@@ -464,8 +465,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            StopVFX();
-
             base.Close(ignoreCloseAnimation);
         }
 
@@ -566,25 +565,6 @@ namespace Nekoyume.UI
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-
-            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
-              SharedModel.ClearedCountForEachWaves.Sum() > 1;
-
-            switch (SharedModel.ClearedWaveNumber)
-            {
-                case 1:
-                    battleWin01VFX.Play();
-                    break;
-                case 2:
-                    battleWin02VFX.Play();
-                    break;
-                case 3:
-                    battleWin03VFX.Play();
-                    break;
-                default:
-                    battleWin04VFX.Play();
-                    break;
-            }
         }
 
         private void UpdateViewAsDefeat(BattleLog.Result result)
@@ -709,7 +689,6 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            StopVFX();
             switch (SharedModel.NextState)
             {
                 case NextState.GoToMain:
@@ -754,8 +733,6 @@ namespace Nekoyume.UI
                 SharedModel.StageID + 1,
                 true, SharedModel.StageID);
             Find<Status>().Close();
-
-            StopVFX();
             var player = stage.RunPlayerForNextStage();
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
@@ -795,7 +772,6 @@ namespace Nekoyume.UI
                 SharedModel.StageID);
             Find<Status>().Close();
 
-            StopVFX();
             var player = stage.RunPlayerForNextStage();
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
@@ -1014,6 +990,49 @@ namespace Nekoyume.UI
             });
         }
 
+        private void GoToProduct()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                Find<ShopBuy>().Show();
+            });
+        }
+
+        private void GoToCraft()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Widget.Find<Menu>().GoToCraftEquipment();
+            });
+        }
+
+        private void GoToFood()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Widget.Find<Menu>().GoToFood();
+            });
+        }
+
         private void StopCoUpdateBottomText()
         {
             if (_coUpdateBottomText != null)
@@ -1033,29 +1052,6 @@ namespace Nekoyume.UI
 
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
-        }
-
-        private void StopVFX()
-        {
-            if (battleWin01VFX)
-            {
-                battleWin01VFX.Stop();
-            }
-
-            if (battleWin02VFX)
-            {
-                battleWin02VFX.Stop();
-            }
-
-            if (battleWin03VFX)
-            {
-                battleWin03VFX.Stop();
-            }
-
-            if (battleWin04VFX)
-            {
-                battleWin04VFX.Stop();
-            }
         }
     }
 }
