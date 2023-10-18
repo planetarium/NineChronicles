@@ -31,7 +31,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifier = new AgentGoldModifier(gold);
+            var modifier = new AgentNCGModifier(gold);
             LocalLayer.Instance.Add(agentAddress, modifier);
 
             //FIXME Avoid LocalLayer duplicate modify gold.

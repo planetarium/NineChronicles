@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
@@ -37,7 +38,7 @@ namespace Nekoyume.State
 
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
-        private ModifierInfo<AgentGoldModifier> _agentGoldModifierInfo;
+        private ModifierInfo<AgentNCGModifier> _agentNCGModifierInfo;
 
         private ModifierInfo<AgentCrystalModifier> _agentCrystalModifierInfo;
 
@@ -75,7 +76,7 @@ namespace Nekoyume.State
             // _agentModifierInfo 초기화하기.
             _agentModifierInfo =
                 new ModifierInfo<AgentStateModifier>(address);
-            _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(address);
+            _agentNCGModifierInfo = new ModifierInfo<AgentNCGModifier>(address);
             _agentCrystalModifierInfo = new ModifierInfo<AgentCrystalModifier>(address);
         }
 
@@ -209,7 +210,7 @@ namespace Nekoyume.State
             }
         }
 
-        public void Add(Address agentAddress, AgentGoldModifier modifier)
+        public void Add(Address agentAddress, AgentNCGModifier modifier)
         {
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null || modifier.IsEmpty)
@@ -217,9 +218,9 @@ namespace Nekoyume.State
                 return;
             }
 
-            if (agentAddress.Equals(_agentGoldModifierInfo.Address))
+            if (agentAddress.Equals(_agentNCGModifierInfo.Address))
             {
-                var modifiers = _agentGoldModifierInfo.Modifiers;
+                var modifiers = _agentNCGModifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -476,30 +477,14 @@ namespace Nekoyume.State
             return PostModify(state, _agentModifierInfo);
         }
 
-        public FungibleAssetValue ModifyCrystal(FungibleAssetValue value)
+        public FungibleAssetValue ModifyNCG(FungibleAssetValue ncg)
         {
-            if (value.Equals(default) ||
-                !value.Currency.Equals(CrystalCalculator.CRYSTAL) ||
-                value.Sign == 0)
-            {
-                return value;
-            }
-
-            return PostModifyValue(value, _agentCrystalModifierInfo);
+            return PostModifyValue(ncg, _agentNCGModifierInfo);
         }
 
-        /// <summary>
-        /// 인자로 받은 잔고 상태에 로컬 세팅을 반영한다.
-        /// </summary>
-        public GoldBalanceState Modify(GoldBalanceState state)
+        public FungibleAssetValue ModifyCrystal(FungibleAssetValue crystal)
         {
-            if (state is null ||
-                !state.address.Equals(_agentGoldModifierInfo.Address))
-            {
-                return state;
-            }
-
-            return PostModify(state, _agentGoldModifierInfo);
+            return PostModifyValue(crystal, _agentCrystalModifierInfo);
         }
 
         /// <summary>
