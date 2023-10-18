@@ -45,6 +45,7 @@ namespace Nekoyume.State
 
         public GoldCurrencyState GoldCurrencyState { get; private set; }
         public Currency NCG => GoldCurrencyState.Currency;
+        public GameConfigState GameConfigState { get; private set; }
 
         private readonly Dictionary<Address, Dictionary<Currency, FungibleAssetValue>> _balances = new();
 
@@ -118,7 +119,6 @@ namespace Nekoyume.State
 
         public Dictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
 
-        public GameConfigState GameConfigState { get; private set; }
 
 
         public List<RuneState> RuneStates { get; } = new();
@@ -160,6 +160,12 @@ namespace Nekoyume.State
         public void SetGoldCurrencyState(GoldCurrencyState state)
         {
             GoldCurrencyState = state;
+        }
+
+        public void SetGameConfigState(GameConfigState state)
+        {
+            GameConfigState = state;
+            GameConfigStateSubject.OnNext(state);
         }
 
         /// <summary>
@@ -895,12 +901,6 @@ namespace Nekoyume.State
             var states = _slotStates[avatarState.address].States;
             return states.Where(x => !x.Value.Validate(avatarState, currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        public void SetGameConfigState(GameConfigState state)
-        {
-            GameConfigState = state;
-            GameConfigStateSubject.OnNext(state);
         }
 
         #endregion
