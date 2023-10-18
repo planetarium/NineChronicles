@@ -91,7 +91,8 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * nextCost.NcgQuantity;
+            var ncg = States.Instance.NCG;
+            var ncgCost = ncg * nextCost.NcgQuantity;
             var soulStoneCost =
                 PetHelper.GetSoulstoneCurrency(TableSheets.Instance.PetSheet[id].SoulStoneTicker) *
                 nextCost.SoulStoneQuantity;

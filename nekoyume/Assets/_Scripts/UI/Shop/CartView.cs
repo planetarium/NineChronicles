@@ -68,8 +68,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var ncg = States.Instance.NCG;
             var sortedItems = selectedItems.Where(x => !x.Expired.Value).ToList();
-            var price = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
+            var price = new FungibleAssetValue(ncg, 0 ,0);
             for (var i = 0; i < cartItems.Count; i++)
             {
                 if (i < sortedItems.Count)
@@ -77,7 +78,7 @@ namespace Nekoyume.UI.Module
                     var p = sortedItems[i].ItemBase is not null
                         ? (BigInteger)sortedItems[i].Product.Price
                         : (BigInteger)sortedItems[i].FungibleAssetProduct.Price;
-                    price += p * States.Instance.GoldBalanceState.Gold.Currency;
+                    price += p * ncg;
                     cartItems[i].gameObject.SetActive(true);
                     cartItems[i].Set(sortedItems[i], (item) =>
                     {

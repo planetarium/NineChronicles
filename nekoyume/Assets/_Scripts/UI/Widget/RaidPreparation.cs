@@ -373,7 +373,7 @@ namespace Nekoyume.UI
 
             var avatarState = States.Instance.CurrentAvatarState;
             var raiderState = WorldBossStates.GetRaiderState(avatarState.address);
-            var cur = States.Instance.GoldBalanceState.Gold.Currency;
+            var cur = States.Instance.NCG;
             var cost = WorldBossHelper.CalculateTicketPrice(row, raiderState, cur);
             var balance = States.Instance.GoldBalanceState;
             Find<TicketPurchasePopup>().Show(

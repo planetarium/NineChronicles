@@ -226,7 +226,7 @@ namespace Nekoyume.UI
             }
 
             soulStoneCostText.text = soulStone.ToString();
-            var ncgCost = States.Instance.GoldBalanceState.Gold.Currency * ncg;
+            var ncgCost = States.Instance.NCG * ncg;
             var soulStoneCost =
                 PetHelper.GetSoulstoneCurrency(_petRow.SoulStoneTicker) *
                 soulStone;

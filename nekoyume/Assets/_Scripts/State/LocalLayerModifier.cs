@@ -53,10 +53,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var fav = new FungibleAssetValue(
-                States.Instance.GoldBalanceState.Gold.Currency,
-                gold,
-                0);
+            var fav = new FungibleAssetValue(States.Instance.NCG, gold, 0);
             ModifyAgentGoldAsync(agentAddress, fav).Forget();
         }
 

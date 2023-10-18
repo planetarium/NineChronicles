@@ -129,7 +129,7 @@ namespace StateViewer.Editor
                 return null;
             }
 
-            return _ncg ??= Game.instance.States?.GoldBalanceState?.Gold.Currency;
+            return _ncg ??= Game.instance.States?.NCG;
         }
 
         public TableSheets? GetTableSheets()
@@ -167,7 +167,7 @@ namespace StateViewer.Editor
                 _stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
             }
 
-            _ncg = states.GoldBalanceState.Gold.Currency;
+            _ncg = states.NCG;
         }
     }
 }

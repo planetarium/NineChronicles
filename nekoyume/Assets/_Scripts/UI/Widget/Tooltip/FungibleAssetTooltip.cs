@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             registerButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(true);
             sell.gameObject.SetActive(false);
-            buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency,
+            buy.Set((BigInteger)item.FungibleAssetProduct.Price * States.Instance.NCG,
                 ()=>
                 {
                     onBuy?.Invoke();

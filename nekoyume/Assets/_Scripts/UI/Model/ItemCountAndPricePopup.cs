@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Model
 
         public ItemCountAndPricePopup()
         {
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var currency = States.Instance.NCG;
             Price = new ReactiveProperty<FungibleAssetValue>(new FungibleAssetValue(currency, 10, 0));
         }
 

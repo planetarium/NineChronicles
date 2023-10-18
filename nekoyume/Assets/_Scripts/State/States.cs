@@ -29,13 +29,17 @@ using Event = Nekoyume.Game.Event;
 namespace Nekoyume.State
 {
     /// <summary>
-    /// 클라이언트가 참조할 상태를 포함한다.
-    /// 체인의 상태를 Setter를 통해서 받은 후, 로컬의 상태로 필터링해서 사용한다.
+    /// The blockchain state for game client.
+    /// - Set blockchain state by setter methods here.
+    /// - The blockchain state modified by <see cref="LocalLayer"/> in setter methods.
+    /// - Get modified blockchain state by getter methods here.
     /// </summary>
     public class States
     {
         public static States Instance => Game.Game.instance.States;
 
+        public GoldCurrencyState GoldCurrencyState { get; private set; }
+        public Currency NCG => GoldCurrencyState.Currency;
         public AgentState AgentState { get; private set; }
 
         public GoldBalanceState GoldBalanceState { get; private set; }
@@ -103,6 +107,11 @@ namespace Nekoyume.State
         }
 
         #region Setter
+
+        public void SetGoldCurrencyState(GoldCurrencyState state)
+        {
+            GoldCurrencyState = state;
+        }
 
         /// <summary>
         /// 에이전트 상태를 할당한다.

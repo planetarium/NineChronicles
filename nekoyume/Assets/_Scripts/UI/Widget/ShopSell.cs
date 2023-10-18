@@ -298,7 +298,7 @@ namespace Nekoyume.UI
             }
 
             var data = SharedModel.ItemCountableAndPricePopup.Value;
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var currency = States.Instance.NCG;
             data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.UnitPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
@@ -343,7 +343,7 @@ namespace Nekoyume.UI
                 var unitPrice = price / model.Product.Quantity;
                 var majorUnit = (int)unitPrice;
                 var minorUnit = (int)((unitPrice - majorUnit) * 100);
-                var currency = States.Instance.GoldBalanceState.Gold.Currency;
+                var currency = States.Instance.NCG;
                 data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
 
                 data.ProductId.Value = model.Product.ProductId;
@@ -367,7 +367,7 @@ namespace Nekoyume.UI
                 var unitPrice = price / model.FungibleAssetProduct.Quantity;
                 var majorUnit = (int)unitPrice;
                 var minorUnit = (int)((unitPrice - majorUnit) * 100);
-                var currency = States.Instance.GoldBalanceState.Gold.Currency;
+                var currency = States.Instance.NCG;
                 data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
 
                 data.ProductId.Value = model.FungibleAssetProduct.ProductId;
@@ -470,7 +470,7 @@ namespace Nekoyume.UI
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+            var goldCurrency = States.Instance.NCG;
 
             var oneLineSystemInfos = new List<(string name, int count)>();
             var productInfos = new List<IProductInfo>();
@@ -556,7 +556,7 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
             SharedModel.ItemCountAndPricePopup.Value.ProductId.Value = productId;
             SharedModel.ItemCountAndPricePopup.Value.Price.Value = (BigInteger)price *
-                States.Instance.GoldBalanceState.Gold.Currency;
+                States.Instance.NCG;
             SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
             SharedModel.ItemCountAndPricePopup.Value.ChargeAp.Value = chargeAp;
             var itemCount = (int)quantity;
@@ -703,7 +703,7 @@ namespace Nekoyume.UI
         private static (IProductInfo, IRegisterInfo) GetReRegisterInfo(Guid productId, int newPrice)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var goldCurrency = States.Instance.GoldBalanceState.Gold.Currency;
+            var goldCurrency = States.Instance.NCG;
             var itemProduct = ReactiveShopState.GetSellItemProduct(productId);
             if (itemProduct is not null)
             {

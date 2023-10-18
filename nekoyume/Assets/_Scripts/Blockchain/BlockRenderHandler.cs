@@ -79,7 +79,7 @@ namespace Nekoyume.Blockchain
                         FungibleAssetValue garage;
                         try
                         {
-                            var ncg = States.Instance.GoldBalanceState.Gold.Currency;
+                            var ncg = States.Instance.NCG;
                             var favArr = await Task.WhenAll(
                                 agent.GetBalanceAsync(agentState.address, ncg),
                                 agent.GetBalanceAsync(agentState.address, Currencies.Crystal),

@@ -318,9 +318,7 @@ namespace Nekoyume.Blockchain
                     ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
                         eventScheduleId,
                         out var scheduleRow)
-                        ? scheduleRow.GetDungeonTicketCost(
-                            numberOfTicketPurchases,
-                            States.Instance.GoldBalanceState.Gold.Currency)
+                        ? scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases, States.Instance.NCG)
                             .GetQuantityString(true)
                         : "0"
                     : "0",

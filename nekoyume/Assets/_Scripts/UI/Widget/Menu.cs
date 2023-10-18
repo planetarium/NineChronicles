@@ -768,10 +768,7 @@ namespace Nekoyume.UI
                         {
                             (
                                 states.AgentState.address,
-                                new FungibleAssetValue(
-                                    states.GoldBalanceState.Gold.Currency,
-                                    9,
-                                    99)
+                                new FungibleAssetValue(states.NCG, 9, 99)
                             ),
                             (states.CurrentAvatarState.address, 99 * Currencies.Crystal),
                         },

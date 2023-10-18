@@ -178,11 +178,11 @@ namespace Nekoyume.UI
             {
                 if (model.ItemBase is not null)
                 {
-                    sumPrice += (BigInteger)model.Product.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                    sumPrice += (BigInteger)model.Product.Price * States.Instance.NCG;
                 }
                 else
                 {
-                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.GoldBalanceState.Gold.Currency;
+                    sumPrice += (BigInteger)model.FungibleAssetProduct.Price * States.Instance.NCG;
                 }
             }
 
@@ -207,7 +207,7 @@ namespace Nekoyume.UI
         {
             var productInfos = new List<IProductInfo>();
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            var currency = States.Instance.NCG;
             foreach (var model in models)
             {
                 var itemProduct = model.Product;
