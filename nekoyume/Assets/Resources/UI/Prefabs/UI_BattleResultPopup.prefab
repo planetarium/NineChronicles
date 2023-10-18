@@ -5162,16 +5162,12 @@ MonoBehaviour:
   stagePreparationButton: {fileID: 3326781521486410000}
   nextButton: {fileID: 7074026571992738424}
   repeatButton: {fileID: 7118180269659475256}
-  victoryResultTexts:
-  - {fileID: 8230862612390237325}
-  - {fileID: 4591145547087743158}
-  - {fileID: 4968660374080426740}
-  - {fileID: 3515565167540673253}
   actionPoint: {fileID: 6755360473609218157}
-  _battleWin01VFX: {fileID: 1396642277028726461}
-  _battleWin02VFX: {fileID: 7019807630386726729}
-  _battleWin03VFX: {fileID: 7059827336986676717}
-  _battleWin04VFX: {fileID: 430531837978594587}
+  battleWin01VFX: {fileID: 1396642277028726461}
+  battleWin02VFX: {fileID: 7019807630386726729}
+  battleWin03VFX: {fileID: 7059827336986676717}
+  battleWin04VFX: {fileID: 430531837978594587}
+  victoryAnimator: {fileID: 6635707154745881692}
 --- !u!225 &7638979988393841442
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -128,24 +128,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button repeatButton;
 
-
-        [SerializeField]
-        private GameObject[] victoryResultTexts;
-
         [SerializeField]
         private ActionPoint actionPoint;
 
         [SerializeField]
-        private BattleWin01VFX _battleWin01VFX;
+        private BattleWin01VFX battleWin01VFX;
 
         [SerializeField]
-        private BattleWin02VFX _battleWin02VFX;
+        private BattleWin02VFX battleWin02VFX;
 
         [SerializeField]
-        private BattleWin03VFX _battleWin03VFX;
+        private BattleWin03VFX battleWin03VFX;
 
         [SerializeField]
-        private BattleWin04VFX _battleWin04VFX;
+        private BattleWin04VFX battleWin04VFX;
 
         private Coroutine _coUpdateBottomText;
 
@@ -390,11 +386,6 @@ namespace Nekoyume.UI
         {
             StopVFX();
 
-            foreach (var obj in victoryResultTexts)
-            {
-                obj.SetActive(false);
-            }
-
             base.Close(ignoreCloseAnimation);
         }
 
@@ -492,28 +483,28 @@ namespace Nekoyume.UI
             switch (SharedModel.ClearedWaveNumber)
             {
                 case 1:
-                    _battleWin01VFX.Play();
+                    battleWin01VFX.Play();
                     /*_battleWin01VFX =
                         VFXController.instance.CreateAndChase<BattleWin01VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);*/
                     break;
                 case 2:
-                    _battleWin02VFX.Play();
+                    battleWin02VFX.Play();
                     /*_battleWin02VFX =
                         VFXController.instance.CreateAndChase<BattleWin02VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);*/
                     break;
                 case 3:
-                    _battleWin03VFX.Play();
+                    battleWin03VFX.Play();
                     /*_battleWin03VFX =
                         VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);*/
                     break;
                 default:
-                    _battleWin04VFX.Play();
+                    battleWin04VFX.Play();
                     break;
             }
         }
@@ -1045,24 +1036,24 @@ namespace Nekoyume.UI
 
         private void StopVFX()
         {
-            if (_battleWin01VFX)
+            if (battleWin01VFX)
             {
-                _battleWin01VFX.Stop();
+                battleWin01VFX.Stop();
             }
 
-            if (_battleWin02VFX)
+            if (battleWin02VFX)
             {
-                _battleWin02VFX.Stop();
+                battleWin02VFX.Stop();
             }
 
-            if (_battleWin03VFX)
+            if (battleWin03VFX)
             {
-                _battleWin03VFX.Stop();
+                battleWin03VFX.Stop();
             }
 
-            if (_battleWin04VFX)
+            if (battleWin04VFX)
             {
-                _battleWin04VFX.Stop();
+                battleWin04VFX.Stop();
             }
 
 /*            foreach (var reward in rewardsArea.rewards)
