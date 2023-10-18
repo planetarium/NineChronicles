@@ -97,13 +97,11 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        public static GoldBalanceState GetGoldBalanceState(
+        public static FungibleAssetValue GetAgentNCG(
             Address address,
             Currency currency,
             HashDigest<SHA256> hash) =>
-            new GoldBalanceState(
-                address,
-                Game.Game.instance.Agent.GetBalanceAsync(address, currency, hash).Result);
+            Game.Game.instance.Agent.GetBalanceAsync(address, currency, hash).Result;
 
         public static StakeStateV2? GetStakeStateV2(Address address, HashDigest<SHA256> hash)
         {

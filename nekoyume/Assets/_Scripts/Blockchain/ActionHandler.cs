@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using LruCacheNet;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
@@ -39,16 +38,16 @@ namespace Nekoyume.Blockchain
             return StateGetter.GetAgentState(agentAddress, evaluation.OutputState);
         }
 
-        protected GoldBalanceState GetGoldBalanceState<T>(ActionEvaluation<T> evaluation)
+        protected static FungibleAssetValue GetAgentNCG<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             if (!evaluation.Signer.Equals(agentAddress))
             {
-                return null;
+                return 0 * States.Instance.NCG;
             }
 
-            return StateGetter.GetGoldBalanceState(
+            return StateGetter.GetAgentNCG(
                 agentAddress,
                 States.Instance.NCG,
                 evaluation.OutputState);
@@ -133,7 +132,7 @@ namespace Nekoyume.Blockchain
             await UpdateAgentStateAsync(GetAgentState(evaluation));
             try
             {
-                States.Instance.SetAgentNCG(GetGoldBalanceState(evaluation));
+                States.Instance.SetAgentNCG(GetAgentNCG(evaluation));
             }
             catch (BalanceDoesNotExistsException)
             {
