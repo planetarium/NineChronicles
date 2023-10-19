@@ -524,7 +524,7 @@ namespace Nekoyume.UI
                 item.SetActive(false);
             }
 
-            if(SharedModel.ClearedWaveNumber == 1)
+            if(SharedModel.ClearedWaveNumber == 1 && !isBoosted)
             {
                 cpUp.SetActive(true);
                 rewardArea.SetActive(false);
@@ -535,9 +535,7 @@ namespace Nekoyume.UI
                 rewardArea.SetActive(true);
             }
 
-            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
-                          SharedModel.ClearedCountForEachWaves.Sum() > 1;
-            if (isNotClearedInMulti && SharedModel.ClearedWaveNumber == 2)
+            if (SharedModel.ClearedCountForEachWaves[3] <= 0 && (SharedModel.ClearedWaveNumber == 2 || isBoosted))
             {
                 startRewards.SetActive(true);
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
