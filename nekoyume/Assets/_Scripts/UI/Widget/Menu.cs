@@ -565,6 +565,11 @@ namespace Nekoyume.UI
 
         public void DccClick()
         {
+            if (!btnStaking.IsUnlocked)
+            {
+                return;
+            }
+
             AudioController.PlayClick();
 #if UNITY_ANDROID
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
