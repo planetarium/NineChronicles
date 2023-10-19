@@ -28,6 +28,8 @@ namespace Nekoyume.UI
         TutorialActionGoToWorkShop = 50000,
         TutorialActionClickSummonEnteringButton,
         TutorialActionClickNormal1SummonButton,
+        TutorialActionClickPatrolRewardMenu = 100000,
+        TutorialActionClickClaimPatrolRewardButton,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

@@ -736,6 +736,12 @@ namespace Nekoyume.UI
             CombinationClick();
         }
 
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickPatrolRewardMenu()
+        {
+            PatrolRewardClick();
+        }
+
 #if UNITY_EDITOR
         protected override void Update()
         {

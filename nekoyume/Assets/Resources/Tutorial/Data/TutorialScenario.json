@@ -214,7 +214,6 @@
         "actionType": 30001,
         "emojiType": 2,
         "guideType": 1,
-        "fullScreenButton" : true,
         "scriptKey": "TUTORIAL_03_003"
       }
     },
@@ -283,6 +282,92 @@
         "guideType": 0,
         "scriptKey": "TUTORIAL_05_005",
         "noArrow": true
+      }
+    },
+    {
+      "id": 100000,
+      "nextId": 100001,
+      "checkPointId": 100000,
+      "data": {
+        "presetId": 1,
+        "targetType": 100000,
+        "actionType": 100000,
+        "emojiType": 2,
+        "guideType": 3,
+        "scriptKey": "TUTORIAL_10_001"
+      }
+    },
+    {
+      "id": 100001,
+      "nextId": 100002,
+      "checkPointId": 100000,
+      "data": {
+        "presetId": 1,
+        "targetType": 100001,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 1,
+        "scriptKey": "TUTORIAL_10_002",
+        "fullScreenButton": true,
+        "noArrow": true
+      }
+    },
+    {
+      "id": 100002,
+      "nextId": 100003,
+      "checkPointId": 100000,
+      "data": {
+        "presetId": 1,
+        "targetType": 100002,
+        "actionType": 100000,
+        "emojiType": 2,
+        "guideType": 1,
+        "scriptKey": "TUTORIAL_10_003"
+      }
+    },
+    {
+      "id": 100003,
+      "nextId": 100004,
+      "checkPointId": 100000,
+      "data": {
+        "presetId": 1,
+        "targetType": 17,
+        "actionType": 14,
+        "emojiType": 2,
+        "guideType": 1,
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0
+        },
+        "targetPositionOffset": {
+          "x": -20.0,
+          "y": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 20.0
+        },
+        "buttonRaycastPadding": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0,
+          "w": -20.0
+        },
+        "scriptKey": "TUTORIAL_10_004",
+        "arrowAdditionalDelay" : 1.5
+      }
+    },
+    {
+      "id": 100004,
+      "nextId": 0,
+      "checkPointId": -10,
+      "data": {
+        "presetId": 1,
+        "targetType": 30001,
+        "actionType": 30001,
+        "emojiType": 2,
+        "guideType": 1,
+        "scriptKey": "TUTORIAL_10_005"
       }
     }
   ]

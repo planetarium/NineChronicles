@@ -281,5 +281,11 @@ namespace Nekoyume.UI
             Claiming.Value = false;
             await PatrolReward.LoadAvatarInfo(avatarAddress.ToHex(), agentAddress.ToHex());
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickClaimPatrolRewardButton()
+        {
+            receiveButton.OnSubmitSubject.OnNext(default);
+        }
     }
 }
