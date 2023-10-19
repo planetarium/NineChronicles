@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Lib9c;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -233,7 +234,10 @@ namespace Nekoyume.UI
             var enoughNcg
                 = States.Instance.AgentNCG >= ncgCost;
             var enoughSoulStone
-                = States.Instance.CurrentAvatarBalances[soulStoneCost.Currency.Ticker] >= soulStoneCost;
+                = States.Instance.TryGetCurrentAvatarBalance(
+                      soulStoneCost.Currency.Ticker,
+                      out var avatarSoulStoneBalance) &&
+                  avatarSoulStoneBalance >= soulStoneCost;
             var enough = enoughNcg && enoughSoulStone;
             _enoughBalance = enough;
             soulStoneNotEnoughObject.SetActive(!enoughSoulStone);
@@ -252,7 +256,8 @@ namespace Nekoyume.UI
         {
             var popup = Find<MaterialNavigationPopup>();
             var soulStoneName = L10nManager.Localize($"ITEM_NAME_{row.Id}");
-            var count = States.Instance.CurrentAvatarBalances[row.SoulStoneTicker].GetQuantityString();
+            var soulStone = Currencies.GetSoulStone(row.SoulStoneTicker);
+            var count = States.Instance.GetCurrentAvatarBalance(soulStone).GetQuantityString();
             var content = L10nManager.Localize($"ITEM_DESCRIPTION_{row.Id}");
             var buttonText = L10nManager.Localize("UI_SHOP");
 

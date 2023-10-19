@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Lib9c;
 using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 using Nekoyume.State;
@@ -53,7 +54,8 @@ namespace Nekoyume.UI
             string name, count, content, buttonText;
             System.Action callback;
             name = L10nManager.Localize($"ITEM_NAME_{data.id}");
-            count = States.Instance.CurrentAvatarBalances[data.ticker].GetQuantityString();
+            var runeStone = Currencies.GetRune(data.ticker);
+            count = States.Instance.GetCurrentAvatarBalance(runeStone).GetQuantityString();
             content = L10nManager.Localize($"ITEM_DESCRIPTION_{data.id}");
             buttonText = L10nManager.Localize("UI_RUNE");
             callback = () =>

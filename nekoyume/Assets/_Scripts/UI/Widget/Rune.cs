@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Cysharp.Threading.Tasks;
+using Lib9c;
 using Libplanet.Action;
 using Libplanet.Types.Assets;
 using Nekoyume.Blockchain;
@@ -536,7 +537,8 @@ namespace Nekoyume.UI
                         out var canObtain);
                     name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
                     var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
-                    count = States.Instance.CurrentAvatarBalances[ticker].GetQuantityString();
+                    var runeStone = Currencies.GetRune(ticker);
+                    count = States.Instance.GetCurrentAvatarBalance(runeStone).GetQuantityString();
                     content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
                     buttonText = canObtain
                         ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")

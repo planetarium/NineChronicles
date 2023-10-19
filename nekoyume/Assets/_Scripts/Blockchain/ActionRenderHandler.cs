@@ -1219,7 +1219,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                await States.Instance.UpdateCurrentAvatarBalanceAsync(assetInfo.Asset.Currency.Ticker);
                 var shopSell = Widget.Find<ShopSell>();
                 if (shopSell.isActiveAndEnabled)
                 {
@@ -1288,7 +1288,7 @@ namespace Nekoyume.Blockchain
 
                     break;
                 case AssetInfo assetInfo:
-                    await States.Instance.SetBalanceAsync(assetInfo.Asset.Currency.Ticker);
+                    await States.Instance.UpdateCurrentAvatarBalanceAsync(assetInfo.Asset.Currency.Ticker);
                     itemName = assetInfo.Asset.GetLocalizedName();
                     count = Convert.ToInt32(assetInfo.Asset.GetQuantityString());
                     break;
@@ -1358,7 +1358,7 @@ namespace Nekoyume.Blockchain
                 if (favProduct is not null)
                 {
                     count = (int)favProduct.Quantity;
-                    await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                    await States.Instance.UpdateCurrentAvatarBalanceAsync(favProduct.Ticker);
                 }
 
                 LocalLayerModifier.AddNewMail(eval.Action.AvatarAddress, productInfo.ProductId);
@@ -1472,7 +1472,7 @@ namespace Nekoyume.Blockchain
                     if (favProduct is not null)
                     {
                         count = (int)favProduct.Quantity;
-                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                        await States.Instance.UpdateCurrentAvatarBalanceAsync(favProduct.Ticker);
                     }
 
                     var price = info.Price;
@@ -1515,7 +1515,7 @@ namespace Nekoyume.Blockchain
                     if (favProduct is not null)
                     {
                         count = (int)favProduct.Quantity;
-                        await States.Instance.SetBalanceAsync(favProduct.Ticker);
+                        await States.Instance.UpdateCurrentAvatarBalanceAsync(favProduct.Ticker);
                     }
 
                     var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
@@ -2161,11 +2161,11 @@ namespace Nekoyume.Blockchain
             else if (recipientAddress == currentAvatarAddress)
             {
                 var currency = amount.Currency;
-                States.Instance.CurrentAvatarBalances[currency.Ticker] =
-                    StateGetter.GetBalance(
-                        currentAvatarAddress,
-                        currency,
-                        outputState);
+                var balance = StateGetter.GetBalance(
+                    currentAvatarAddress,
+                    currency,
+                    outputState); 
+                States.Instance.SetCurrentAvatarBalance(balance);
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize(
@@ -2813,11 +2813,11 @@ namespace Nekoyume.Blockchain
 
             UpdateAgentStateAsync(eval).Forget();
             var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
-            States.Instance.CurrentAvatarBalances[soulStoneTicker] = StateGetter.GetBalance(
+            var balance = StateGetter.GetBalance(
                 action.AvatarAddress,
                 Currencies.GetMinterlessCurrency(soulStoneTicker),
-                eval.OutputState
-            );
+                eval.OutputState);
+            States.Instance.SetCurrentAvatarBalance(balance);
             UpdatePetState(action.AvatarAddress, action.PetId, eval.OutputState);
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;

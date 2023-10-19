@@ -36,10 +36,16 @@ namespace Nekoyume.State
     /// </summary>
     public class States
     {
+        private class Workshop
+        {
+            public Dictionary<int, CombinationSlotState> States { get; } = new();
+        }
+
         public static States Instance => Game.Game.instance.States;
 
         public GoldCurrencyState GoldCurrencyState { get; private set; }
         public Currency NCG => GoldCurrencyState.Currency;
+        public GameConfigState GameConfigState { get; private set; }
 
         private readonly Dictionary<Address, Dictionary<Currency, FungibleAssetValue>> _balances = new();
 
@@ -103,6 +109,8 @@ namespace Nekoyume.State
 
         public CrystalRandomSkillState CrystalRandomSkillState { get; private set; }
 
+        #region Avatar
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -111,10 +119,66 @@ namespace Nekoyume.State
 
         public AvatarState CurrentAvatarState { get; private set; }
 
-        public Dictionary<string, FungibleAssetValue> CurrentAvatarBalances { get; } = new();
+        /// <summary>
+        /// The balances of the <see cref="States.CurrentAvatarState"/>.
+        /// It throws <see cref="InvalidOperationException"/> if <see cref="States.CurrentAvatarState"/> is null.
+        /// Use <see cref="GetCurrentAvatarBalance"/> if you want to avoid the exception.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public Dictionary<Currency, FungibleAssetValue> CurrentAvatarBalances
+        {
+            get
+            {
+                if (CurrentAvatarState is null)
+                {
+                    throw new InvalidOperationException(
+                        $"[{nameof(States)}.{nameof(CurrentAvatarBalances)}] {nameof(CurrentAvatarState)} is null.");
+                }
 
-        public GameConfigState GameConfigState { get; private set; }
+                if (!_balances.ContainsKey(CurrentAvatarState.address))
+                {
+                    _balances[CurrentAvatarState.address] = new Dictionary<Currency, FungibleAssetValue>();
+                }
 
+                return _balances[CurrentAvatarState.address];
+            }
+        }
+
+        /// <summary>
+        /// Get the balance of the <see cref="States.CurrentAvatarState"/>.
+        /// It returns 0 if <see cref="States.CurrentAvatarState"/> is null or the balance of the currency is not found.
+        /// </summary>
+        public FungibleAssetValue GetCurrentAvatarBalance(Currency currency)
+        {
+            try
+            {
+                return CurrentAvatarBalances.First(pair => pair.Key.Equals(currency)).Value;
+            }
+            catch
+            {
+                return 0 * currency;
+            }
+        }
+
+        /// <summary>
+        /// Get the balance of the <see cref="States.CurrentAvatarState"/>.
+        /// It returns false below conditions:
+        ///   - <see cref="States.CurrentAvatarState"/> is null.
+        ///   - The balance of the currency is not found with <paramref name="ticker"/>.
+        /// </summary>
+        public bool TryGetCurrentAvatarBalance(string ticker, out FungibleAssetValue balance)
+        {
+            try
+            {
+                balance = CurrentAvatarBalances.First(pair => pair.Key.Ticker == ticker).Value;
+                return true;
+            }
+            catch
+            {
+                balance = default;
+                return false;
+            }
+        }
 
         public List<RuneState> RuneStates { get; } = new();
 
@@ -127,12 +191,9 @@ namespace Nekoyume.State
         public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new();
+        #endregion
 
-        private class Workshop
-        {
-            public Dictionary<int, CombinationSlotState> States { get; } = new();
-        }
+        public GrandFinaleStates GrandFinaleStates { get; } = new();
 
         public PetStates PetStates { get; } = new();
 
@@ -159,6 +220,12 @@ namespace Nekoyume.State
         public void SetGoldCurrencyState(GoldCurrencyState state)
         {
             GoldCurrencyState = state;
+        }
+
+        public void SetGameConfigState(GameConfigState state)
+        {
+            GameConfigState = state;
+            GameConfigStateSubject.OnNext(state);
         }
 
         /// <summary>
@@ -231,12 +298,14 @@ namespace Nekoyume.State
             var agent = Game.Game.instance.Agent;
             var avatarAddress = CurrentAvatarState.address;
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            await foreach (var row in runeSheet.Values)
+            var tuples = runeSheet.Values
+                .Select(x => (avatarAddress, Currencies.GetRune(x.Ticker)))
+                .ToArray();
+            var balances = await agent.GetBalanceBulkAsync(tuples, null);
+            foreach (var (address, currency) in tuples)
             {
-                CurrentAvatarBalances.Remove(row.Ticker);
-                var rune = RuneHelper.ToCurrency(row);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, rune);
-                CurrentAvatarBalances.Add(row.Ticker, fungibleAsset);
+                var balance = balances[address][currency];
+                CurrentAvatarBalances[currency] = balance;
             }
         }
 
@@ -381,12 +450,14 @@ namespace Nekoyume.State
             var agent = Game.Game.instance.Agent;
             var avatarAddress = CurrentAvatarState.address;
             var petSheet = Game.Game.instance.TableSheets.PetSheet;
-            await foreach (var row in petSheet.Values)
+            var tuples = petSheet.Values
+                .Select(x => (avatarAddress, Currencies.GetSoulStone(x.SoulStoneTicker)))
+                .ToArray();
+            var balances = await agent.GetBalanceBulkAsync(tuples, null);
+            foreach (var (address, currency) in tuples)
             {
-                CurrentAvatarBalances.Remove(row.SoulStoneTicker);
-                var soulStone = PetHelper.GetSoulstoneCurrency(row.SoulStoneTicker);
-                var fungibleAsset = await agent.GetBalanceAsync(avatarAddress, soulStone);
-                CurrentAvatarBalances.Add(soulStone.Ticker, fungibleAsset);
+                var balance = balances[address][currency];
+                CurrentAvatarBalances[currency] = balance;
             }
         }
 
@@ -470,27 +541,28 @@ namespace Nekoyume.State
 
         public async Task<FungibleAssetValue?> SetRuneStoneBalance(int runeId)
         {
+            var game = Game.Game.instance;
             var avatarAddress = CurrentAvatarState.address;
-            var costSheet = Game.Game.instance.TableSheets.RuneCostSheet;
+            var costSheet = game.TableSheets.RuneCostSheet;
             if (!costSheet.TryGetValue(runeId, out _))
             {
                 return null;
             }
 
-            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            var runeSheet = game.TableSheets.RuneSheet;
             var runeRow = runeSheet.Values.First(x => x.Id == runeId);
-            var rune = RuneHelper.ToCurrency(runeRow);
-            var fungibleAsset = await Game.Game.instance.Agent.GetBalanceAsync(avatarAddress, rune);
-            CurrentAvatarBalances[runeRow.Ticker] = fungibleAsset;
+            var rune = Currencies.GetRune(runeRow.Ticker);
+            var fungibleAsset = await game.Agent.GetBalanceAsync(avatarAddress, rune);
+            CurrentAvatarBalances[rune] = fungibleAsset;
             return fungibleAsset;
         }
 
-        public async Task SetBalanceAsync(string ticker)
+        public async Task UpdateCurrentAvatarBalanceAsync(string ticker)
         {
             var currency = Currencies.GetMinterlessCurrency(ticker);
             var agent = Game.Game.instance.Agent;
             var fungibleAsset = await agent.GetBalanceAsync(CurrentAvatarState.address, currency);
-            CurrentAvatarBalances[ticker] = fungibleAsset;
+            CurrentAvatarBalances[currency] = fungibleAsset;
         }
 
         /// <summary>
@@ -498,10 +570,10 @@ namespace Nekoyume.State
         /// </summary>
         public void SetCurrentAvatarBalance(FungibleAssetValue fav)
         {
-            var preFav = CurrentAvatarBalances[fav.Currency.Ticker];
+            var preFav = GetCurrentAvatarBalance(fav.Currency);
             var major = preFav.MajorUnit - fav.MajorUnit;
             var miner = preFav.MinorUnit - fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency.Ticker] =
+            CurrentAvatarBalances[fav.Currency] =
                 new FungibleAssetValue(fav.Currency, major, miner);
         }
 
@@ -894,12 +966,6 @@ namespace Nekoyume.State
             var states = _slotStates[avatarState.address].States;
             return states.Where(x => !x.Value.Validate(avatarState, currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        public void SetGameConfigState(GameConfigState state)
-        {
-            GameConfigState = state;
-            GameConfigStateSubject.OnNext(state);
         }
 
         #endregion
