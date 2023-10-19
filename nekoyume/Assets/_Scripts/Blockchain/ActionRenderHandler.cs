@@ -786,7 +786,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
                 foreach (var pair in result.materials)
                 {
@@ -918,7 +918,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
                 foreach (var pair in result.materials)
                 {
@@ -967,7 +967,7 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
@@ -1053,7 +1053,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
                 LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
                     .Forget();
 
@@ -1476,7 +1476,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     var price = info.Price;
-                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
+                    LocalLayerModifier.ModifyBalance(agentAddress, price);
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
@@ -1519,7 +1519,7 @@ namespace Nekoyume.Blockchain
                     }
 
                     var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
-                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, -taxedPrice).Forget();
+                    LocalLayerModifier.ModifyBalance(agentAddress, -taxedPrice);
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;

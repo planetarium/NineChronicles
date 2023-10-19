@@ -370,7 +370,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
@@ -449,7 +449,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
@@ -717,9 +717,7 @@ namespace Nekoyume.Blockchain
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var info in productInfos)
             {
-                LocalLayerModifier
-                    .ModifyAgentGoldAsync(buyerAgentAddress, -info.Price)
-                    .Forget();
+                LocalLayerModifier.ModifyBalance(buyerAgentAddress, -info.Price);
             }
 
             var action = new BuyProduct
@@ -742,9 +740,7 @@ namespace Nekoyume.Blockchain
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var purchaseInfo in purchaseInfos)
             {
-                LocalLayerModifier
-                    .ModifyAgentGoldAsync(buyerAgentAddress, -purchaseInfo.Price)
-                    .Forget();
+                LocalLayerModifier.ModifyBalance(buyerAgentAddress, -purchaseInfo.Price);
             }
 
             var action = new Buy
@@ -796,7 +792,7 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
+            LocalLayerModifier.ModifyBalance(agentAddress, -costNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
 
@@ -1030,7 +1026,7 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
             if (useHammerPoint)
             {

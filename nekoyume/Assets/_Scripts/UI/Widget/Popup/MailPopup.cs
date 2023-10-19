@@ -461,7 +461,7 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var order = await Util.GetOrder(orderSellerMail.OrderId);
             var taxedPrice = order.Price - order.GetTax();
-            LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
+            LocalLayerModifier.ModifyBalance(agentAddress, taxedPrice);
             LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
         }
 
@@ -522,8 +522,8 @@ namespace Nekoyume.UI
             var currency = States.Instance.NCG;
             var price = itemProduct?.Price ?? favProduct.Price;
             var fav = new FungibleAssetValue(currency, (int)price, 0);
-            var taxedPrice = fav.DivRem(100, out _) * Action.Buy.TaxRate;
-            LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
+            var taxedPrice = fav.DivRem(100, out _) * Buy.TaxRate;
+            LocalLayerModifier.ModifyBalance(agentAddress, taxedPrice);
             LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
         }
 

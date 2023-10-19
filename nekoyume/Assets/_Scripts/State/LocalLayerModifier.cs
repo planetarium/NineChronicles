@@ -41,37 +41,6 @@ namespace Nekoyume.State
             States.Instance.SetBalance(address, balance + value, useLocalLayer: false);
         }
 
-        /// <summary>
-        /// Modify the agent's gold.
-        /// </summary>
-        /// <param name="agentAddress"></param>
-        /// <param name="gold"></param>
-        public static async UniTask ModifyAgentGoldAsync(Address agentAddress, FungibleAssetValue gold)
-        {
-            if (gold.Sign == 0)
-            {
-                return;
-            }
-
-            var modifier = new AgentNCGModifier(gold);
-            LocalLayer.Instance.Add(agentAddress, modifier);
-
-            //FIXME Avoid LocalLayer duplicate modify gold.
-            var ncg = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, gold.Currency);
-            States.Instance.SetAgentNCG(ncg);
-        }
-
-        public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
-        {
-            if (gold == 0)
-            {
-                return;
-            }
-
-            var fav = new FungibleAssetValue(States.Instance.NCG, gold, 0);
-            ModifyAgentGoldAsync(agentAddress, fav).Forget();
-        }
-
         public static async UniTask ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
         {
             if (crystal == 0)
