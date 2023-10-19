@@ -18,7 +18,6 @@ using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
-using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stake;
@@ -98,7 +97,38 @@ namespace Nekoyume.State
         public FungibleAssetValue AgentCrystal => GetAgentBalance(Currencies.Crystal);
 
         // NOTE: Staking Properties
-        public GoldBalanceState StakedBalanceState { get; private set; }
+        /// <summary>
+        /// The staked NCG of the <see cref="States.AgentState"/>.
+        /// (derived by <see cref="StakeStateV2.DeriveAddress"/>)
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public FungibleAssetValue AgentStakedNCG
+        {
+            get
+            {
+                if (AgentState is null)
+                {
+                    return 0 * NCG;
+                }
+
+                var stakeAddr = Nekoyume.Model.Stake.StakeStateV2.DeriveAddress(AgentState.address);
+                return _balances.TryGetValue(stakeAddr, out var balances)
+                    ? balances[NCG]
+                    : 0 * NCG;
+            }
+            private set
+            {
+                if (AgentState is null)
+                {
+                    throw new InvalidOperationException(
+                        $"[{nameof(States)}.{nameof(AgentStakedNCG)}] {nameof(AgentState)} is null.");
+                }
+
+                var stakeAddr = Nekoyume.Model.Stake.StakeStateV2.DeriveAddress(AgentState.address);
+                _balances[stakeAddr][NCG] = value;
+            }
+        }
+
         public StakeStateV2? StakeStateV2 { get; private set; }
         public int StakingLevel { get; private set; }
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
@@ -579,26 +609,30 @@ namespace Nekoyume.State
 
         public void SetStakeState(
             StakeStateV2? stakeStateV2,
-            GoldBalanceState stakedBalanceState,
+            FungibleAssetValue? stakedNCG,
             int stakingLevel,
             [CanBeNull] StakeRegularFixedRewardSheet stakeRegularFixedRewardSheet,
             [CanBeNull] StakeRegularRewardSheet stakeRegularRewardSheet)
         {
-            StakedBalanceState = stakedBalanceState;
+            if (stakedNCG is not null)
+            {
+                AgentStakedNCG = stakedNCG.Value;
+            }
+
             StakingLevel = stakingLevel;
             StakeStateV2 = stakeStateV2;
             StakeRegularFixedRewardSheet = stakeRegularFixedRewardSheet;
             StakeRegularRewardSheet = stakeRegularRewardSheet;
 
+            if (AgentState is not null)
+            {
+                StakingSubject.OnNextStakedNCG(AgentStakedNCG);
+            }
+
             StakingSubject.OnNextLevel(StakingLevel);
             if (StakeStateV2.HasValue)
             {
                 StakingSubject.OnNextStakeStateV2(StakeStateV2);
-            }
-
-            if (StakedBalanceState is not null)
-            {
-                StakingSubject.OnNextStakedNCG(StakedBalanceState.Gold);
             }
 
             if (StakeRegularRewardSheet is not null &&
