@@ -27,7 +27,7 @@ namespace Nekoyume.UI
         private BossStatus bossStatus;
 
         [SerializeField]
-        private GameObject accelerationToggleParent;
+        private RectTransform accelerationToggleRect;
 
         [SerializeField]
         private Button accelerationToggleLockButton;
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
         public ComboText ComboText => comboText;
-        public const int RequiredStageForExitButton = 3;
+        public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
         private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
@@ -126,6 +126,30 @@ namespace Nekoyume.UI
         {
             Find<EventBanner>().Close(true);
             _stageType = stageType;
+
+            var canAccel =
+                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
+                    RequiredStageForAccelButton);
+            accelerationToggleLockButton.gameObject.SetActive(!canAccel);
+            accelerationToggle.gameObject.SetActive(canAccel);
+            accelerationToggle.interactable = canAccel;
+            accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
+            SetAccelToggle(accelerationToggle.isOn);
+
+            // tutorial code for accel button
+            if (stageId == RequiredStageForAccelButton + 1 &&
+                !States.Instance.CurrentAvatarState.worldInformation
+                    .IsStageCleared(stageId))
+            {
+                accelerationToggle.isOn = true;
+                SetAccelToggle(true);
+                Find<Tutorial>().PlayOnlyGuideArrow(
+                    GuideType.Circle,
+                    accelerationToggleRect,
+                    // arrow position offset for hiding
+                    arrowPositionOffset: new Vector2(0f, -10000));
+            }
+
             if (isTutorial)
             {
                 ShowForTutorial(false, stageId);
@@ -161,16 +185,6 @@ namespace Nekoyume.UI
             exitToggle.isOn = isExitReserved;
             exitToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);
-            accelerationToggle.gameObject.SetActive(true);
-
-            var canAccel =
-                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
-                    RequiredStageForAccelButton);
-            accelerationToggleLockButton.gameObject.SetActive(!canAccel);
-            accelerationToggleParent.SetActive(canAccel);
-            accelerationToggle.interactable = canAccel;
-            accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
-            SetAccelToggle(accelerationToggle.isOn);
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
@@ -229,13 +243,11 @@ namespace Nekoyume.UI
                 stageText.text =
                     $"STAGE {StageInformation.GetStageIdString(_stageType, stageId, true)}";
                 stageText.gameObject.SetActive(true);
-                accelerationToggleLockButton.gameObject.SetActive(true);
                 stageProgressBar.Show();
             }
 
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
-            accelerationToggle.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);

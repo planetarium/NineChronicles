@@ -163,22 +163,13 @@ namespace Nekoyume.UI
 
         public void InitializeFirst()
         {
+            // Agent 초기화가 필요없는 widget && Agent 초기화 (로그인 포함)를 위해 필요한 widget
             var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<DimmedLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
-                Widget.Create<BuffBonusLoadingScreen>(),
-                Widget.Create<PreloadingScreen>(),
-                Widget.Create<WorldBossRewardScreen>(),
-                Widget.Create<RuneCombineResultScreen>(),
-                Widget.Create<RuneEnhancementResultScreen>(),
-                Widget.Create<MailRewardScreen>(),
-                Widget.Create<RewardScreen>(),
-                Widget.Create<CPScreen>(),
-                Widget.Create<PetLevelUpResultScreen>(),
-                Widget.Create<PetSummonResultScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -210,6 +201,26 @@ namespace Nekoyume.UI
 
         public IEnumerator CreateSecondWidgets()
         {
+            // Agent 초기화가 필요없는 widget
+            _secondWidgets.Add(Widget.Create<BuffBonusLoadingScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<WorldBossRewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneCombineResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneEnhancementResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<MailRewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CPScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PetLevelUpResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
+            yield return null;
+
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -263,6 +274,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<ArenaJoin>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBoard>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             yield return null;
@@ -378,8 +391,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
 
             // tooltip

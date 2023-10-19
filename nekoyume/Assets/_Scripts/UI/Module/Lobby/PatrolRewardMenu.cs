@@ -49,27 +49,14 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
-            SetData(popup);
-        }
-
-        private async void SetData(PatrolRewardPopup popup)
-        {
-            await popup.InitializePatrolReward();
-
-            var patrolReward = popup.PatrolReward;
-            patrolReward.PatrolTime
-                .Select(time => time < patrolReward.Interval)
+            popup.PatrolReward.PatrolTime
+                .Select(time => time < popup.PatrolReward.Interval)
                 .Where(_ => !popup.Claiming.Value)
                 .Subscribe(patrolling => SetCanClaim(patrolling, false))
                 .AddTo(_disposables);
 
-            popup.Claiming.Subscribe(value =>
-            {
-                if (value)
-                {
-                    SetCanClaim(false, true);
-                }
-            }).AddTo(_disposables);
+            popup.Claiming.Where(claiming => claiming)
+                .Subscribe(value => SetCanClaim(false, true)).AddTo(_disposables);
         }
 
         private void SetCanClaim(bool patrolling, bool claiming)
