@@ -287,6 +287,12 @@ namespace Nekoyume.State
             _balances[address][balance.Currency] = balance;
             BalanceSubject.OnNextBalance(address, balance);
         }
+        
+        public void SetAgentBalance(FungibleAssetValue balance) =>
+            SetBalance(AgentState.address, balance);
+
+        public void SetCurrentAvatarBalance(FungibleAssetValue balance) =>
+            SetBalance(CurrentAvatarState.address, balance);
 
         /// <summary>
         /// 에이전트 상태를 할당한다.
@@ -318,32 +324,6 @@ namespace Nekoyume.State
             {
                 await AddOrReplaceAvatarStateAsync(pair.Value, pair.Key);
             }
-        }
-
-        public void SetAgentNCG(FungibleAssetValue ncg)
-        {
-            if (!ncg.Currency.Equals(NCG))
-            {
-                Debug.LogError($"Currency not matches. {ncg.Currency}");
-                return;
-            }
-
-            ncg = LocalLayer.Instance.ModifyBalance(AgentState.address, ncg);
-            AgentBalances[NCG] = ncg;
-            BalanceSubject.OnNextAgentBalance(AgentNCG);
-        }
-
-        public void SetAgentCrystal(FungibleAssetValue crystal)
-        {
-            if (!crystal.Currency.Equals(Currencies.Crystal))
-            {
-                Debug.LogError($"Currency not matches. {crystal.Currency}");
-                return;
-            }
-
-            crystal = LocalLayer.Instance.ModifyBalance(AgentState.address, crystal);
-            AgentBalances[Currencies.Crystal] = crystal;
-            BalanceSubject.OnNextAgentBalance(AgentCrystal);
         }
 
         public async UniTask InitAvatarBalancesAsync()
@@ -623,18 +603,6 @@ namespace Nekoyume.State
             var agent = Game.Game.instance.Agent;
             var fungibleAsset = await agent.GetBalanceAsync(CurrentAvatarState.address, currency);
             CurrentAvatarBalances[currency] = fungibleAsset;
-        }
-
-        /// <summary>
-        /// For caching
-        /// </summary>
-        public void SetCurrentAvatarBalance(FungibleAssetValue fav)
-        {
-            var preFav = GetCurrentAvatarBalance(fav.Currency);
-            var major = preFav.MajorUnit - fav.MajorUnit;
-            var miner = preFav.MinorUnit - fav.MinorUnit;
-            CurrentAvatarBalances[fav.Currency] =
-                new FungibleAssetValue(fav.Currency, major, miner);
         }
 
         public void SetStakeState(
