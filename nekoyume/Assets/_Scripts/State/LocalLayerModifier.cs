@@ -19,6 +19,28 @@ namespace Nekoyume.State
     {
         #region Agent, Avatar / Currency
 
+        public static void ModifyBalance(
+            Address address,
+            FungibleAssetValue value,
+            bool applyToStates = true)
+        {
+            if (value.Sign == 0)
+            {
+                return;
+            }
+
+            var modifier = new BalanceModifier(value);
+            LocalLayer.Instance.Add(address, modifier);
+
+            if (!applyToStates)
+            {
+                return;
+            }
+
+            var balance = States.Instance.GetBalance(address, value.Currency);
+            States.Instance.SetBalance(address, balance + value, useLocalLayer: false);
+        }
+
         /// <summary>
         /// Modify the agent's gold.
         /// </summary>
