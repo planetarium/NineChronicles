@@ -3091,7 +3091,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2970944866852909987}
-  - component: {fileID: 1229729065323769820}
   m_Layer: 5
   m_Name: SeasonPassDivision
   m_TagString: Untagged
@@ -3122,18 +3121,6 @@ RectTransform:
   m_AnchoredPosition: {x: 108, y: -59.5}
   m_SizeDelta: {x: 158, y: 373}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!225 &1229729065323769820
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5772772827802289278}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &6010175801924984512
 GameObject:
   m_ObjectHideFlags: 0
@@ -3471,6 +3458,7 @@ GameObject:
   - component: {fileID: 5775010183441497303}
   - component: {fileID: 3752941438895624943}
   - component: {fileID: 7118883877972989230}
+  - component: {fileID: 1898564775959435394}
   m_Layer: 5
   m_Name: LastReward
   m_TagString: Untagged
@@ -3552,6 +3540,26 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!95 &1898564775959435394
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6956584903784872475}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ebc7a7cf5d90ae843b86e224170406dc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6958806738156527008
 GameObject:
   m_ObjectHideFlags: 0
@@ -6176,7 +6184,7 @@ PrefabInstance:
     - target: {fileID: 1781715760850424136, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
       propertyPath: m_Name
-      value: SeasonPassCell (9)
+      value: SeasonPassCell
       objectReference: {fileID: 0}
     - target: {fileID: 1781715760850424136, guid: e0e42ee2c34e70f4d96fc2f58c308010,
         type: 3}
