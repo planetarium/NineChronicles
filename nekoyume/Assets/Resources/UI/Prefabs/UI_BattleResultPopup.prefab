@@ -143,7 +143,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b44f620dc0edc844bb13d2e87442c7ef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b52c3656e90084643a08a7b7bfe70086, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5185,10 +5185,6 @@ MonoBehaviour:
   craftButton: {fileID: 4515205457691240890}
   foodButton: {fileID: 312660734249327581}
   actionPoint: {fileID: 6755360473609218157}
-  battleWin01VFX: {fileID: 1396642277028726461}
-  battleWin02VFX: {fileID: 7019807630386726729}
-  battleWin03VFX: {fileID: 7059827336986676717}
-  battleWin04VFX: {fileID: 430531837978594587}
 --- !u!225 &7638979988393841442
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -60626,7 +60622,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_BATTLE_RESULT_LEVEL_DESCRIPTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -76705,7 +76701,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Make food and wear it.
+  m_text: Collect Stars and Try Bonus Buffs!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -76793,7 +76789,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_BATTLE_RESULT_BUFF_DESCRIPTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -92328,7 +92324,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_BATTLE_RESULT_SHOP_DESCRIPTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -92564,7 +92560,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Craft and enhance your equipment.
+  m_text: Make equipment and food in craft.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -92652,7 +92648,7 @@ MonoBehaviour:
   fixedSpacingOption: 1
   fixedMarginOption: 1
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_BATTLE_RESULT_CRAFT_DESCRIPTION
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -113687,18 +113683,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 516b24743c7c6354aa41fe2f6fbb6a9e, type: 3}
---- !u!114 &1396642277028726461 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1921684829516974292, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
-    type: 3}
-  m_PrefabInstance: {fileID: 705636788131778153}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0108edd6d4834a0aa0e35d13a78a48b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &6245551836980613832 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6874257359851379873, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
@@ -117143,18 +117127,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4389264292573500528}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7059827336986676717 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -2517434055028860515, guid: 37750658317f70e45a2f9208eecbd142,
-    type: 3}
-  m_PrefabInstance: {fileID: 4389264292573500528}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ade693f98ad4f2bbef70df48e5dd55d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5355092878080291734
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -117805,18 +117777,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5665650405965866716}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7019807630386726729 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3443902270559986069, guid: e234ee3a8fe95cd419cc9b1941901879,
-    type: 3}
-  m_PrefabInstance: {fileID: 5665650405965866716}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4595c7ef65280946b3138e7dafdc8c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5943469159699718384
 PrefabInstance:
   m_ObjectHideFlags: 0
