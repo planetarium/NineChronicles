@@ -5,6 +5,7 @@ using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 
@@ -15,7 +16,7 @@ namespace Nekoyume.State
     /// </summary>
     public static class LocalLayerModifier
     {
-        #region Agent, Avatar / Currency
+        #region Balance
 
         public static void ModifyBalance(
             Address address,
@@ -38,6 +39,29 @@ namespace Nekoyume.State
             var balance = States.Instance.GetBalance(address, value.Currency);
             States.Instance.SetBalance(address, balance + value, useLocalLayer: false);
         }
+
+        public static void ModifyAgentBalance(
+            FungibleAssetValue value,
+            bool applyToStates = true) => ModifyBalance(
+            States.Instance.AgentState.address,
+            value,
+            applyToStates);
+
+        public static void ModifyAgentStakedNCG(
+            FungibleAssetValue value,
+            bool applyToStates = true) => ModifyBalance(
+            StakeStateV2.DeriveAddress(States.Instance.AgentState.address),
+            value,
+            applyToStates);
+
+        public static void ModifyCurrentAvatarBalance(
+            FungibleAssetValue value,
+            bool applyToStates = true) => ModifyBalance(
+            States.Instance.CurrentAvatarState.address,
+            value,
+            applyToStates);
+
+        #endregion
 
         /// <summary>
         /// Modify the avatar's action point.
@@ -72,8 +96,6 @@ namespace Nekoyume.State
             outAvatarState = modifier.Modify(outAvatarState);
             ReactiveAvatarState.UpdateActionPoint(outAvatarState.actionPoint);
         }
-
-        #endregion
 
         #region Avatar / AddItem
 
