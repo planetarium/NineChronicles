@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Lib9c;
 using Lib9c.Renderers;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
@@ -1253,18 +1254,15 @@ namespace Nekoyume.Blockchain
             List<int> recipeIdList,
             BigInteger openCost)
         {
-            LocalLayerModifier
-                .ModifyAgentCrystalAsync(
-                    States.Instance.AgentState.address,
-                    -openCost)
-                .Forget();
+            var agentAddr = States.Instance.AgentState.address;
+            LocalLayerModifier.ModifyBalance(agentAddr, -openCost * Currencies.Crystal);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>()
+            var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>
             {
                 ["BurntCrystal"] = (long) openCost,
                 ["AvatarAddress"] = avatarAddress.ToString(),
-                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                ["AgentAddress"] = agentAddr.ToString(),
             }, true);
             var action = new UnlockEquipmentRecipe
             {

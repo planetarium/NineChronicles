@@ -586,9 +586,9 @@ namespace Nekoyume.UI
             {
                 if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
                 {
-                    await LocalLayerModifier.ModifyAgentCrystalAsync(
+                    LocalLayerModifier.ModifyBalance(
                         States.Instance.AgentState.address,
-                        result.CRYSTAL.MajorUnit);
+                        result.CRYSTAL);
                 }
 
                 if (itemUsable.ItemSubType == ItemSubType.Aura)
@@ -609,15 +609,14 @@ namespace Nekoyume.UI
                         false);
                 }
 
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
+                LocalLayerModifier.RemoveNewAttachmentMail(
+                    avatarAddress,
+                    itemEnhanceMail.id,
                     false);
                 var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
-                if (!exist)
-                {
-                    return null;
-                }
-
-                return avatarState;
+                return exist
+                    ? avatarState
+                    : null;
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");

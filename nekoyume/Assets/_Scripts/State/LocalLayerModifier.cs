@@ -1,11 +1,9 @@
 using System;
-using System.Numerics;
 using System.Security.Cryptography;
 using Cysharp.Threading.Tasks;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
@@ -39,26 +37,6 @@ namespace Nekoyume.State
 
             var balance = States.Instance.GetBalance(address, value.Currency);
             States.Instance.SetBalance(address, balance + value, useLocalLayer: false);
-        }
-
-        public static async UniTask ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
-        {
-            if (crystal == 0)
-            {
-                return;
-            }
-
-            var fav = new FungibleAssetValue(
-                CrystalCalculator.CRYSTAL,
-                crystal,
-                0);
-            var modifier = new AgentCrystalModifier(fav);
-            LocalLayer.Instance.Add(agentAddress, modifier);
-            var crystalBalance
-                = await Game.Game.instance.Agent.GetBalanceAsync(
-                    agentAddress,
-                    CrystalCalculator.CRYSTAL);
-            States.Instance.SetAgentCrystal(crystalBalance);
         }
 
         /// <summary>

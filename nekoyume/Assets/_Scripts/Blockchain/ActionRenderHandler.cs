@@ -1054,8 +1054,7 @@ namespace Nekoyume.Blockchain
                 }
 
                 LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
-                LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
-                    .Forget();
+                LocalLayerModifier.ModifyBalance(agentAddress, -result.CRYSTAL);
 
                 if (itemUsable.ItemSubType == ItemSubType.Aura)
                 {
@@ -2231,13 +2230,12 @@ namespace Nekoyume.Blockchain
             }
 
             var sheet = TableSheets.Instance.EquipmentItemRecipeSheet;
-            var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
+            LocalLayerModifier.ModifyBalance(
+                States.Instance.AgentState.address,
+                CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet));
             await UniTask.WhenAll(
-                LocalLayerModifier.ModifyAgentCrystalAsync(
-                    States.Instance.AgentState.address,
-                    cost.MajorUnit),
-                UpdateCurrentAvatarStateAsync(eval),
-                UpdateAgentStateAsync(eval));
+                UpdateAgentStateAsync(eval),
+                UpdateCurrentAvatarStateAsync(eval));
 
             foreach (var id in recipeIds)
             {
