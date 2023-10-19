@@ -550,16 +550,6 @@ namespace Nekoyume.State
             return ncg;
         }
 
-        public FungibleAssetValue ModifyNCG(FungibleAssetValue ncg)
-        {
-            return PostModifyValue(ncg, _agentNCGModifierInfo);
-        }
-
-        public FungibleAssetValue ModifyCrystal(FungibleAssetValue crystal)
-        {
-            return PostModifyValue(crystal, _agentCrystalModifierInfo);
-        }
-
         /// <summary>
         /// 인자로 받은 아바타 상태에 로컬 세팅을 반영한다.
         /// </summary>

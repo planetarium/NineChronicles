@@ -328,7 +328,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ncg = LocalLayer.Instance.ModifyNCG(ncg);
+            ncg = LocalLayer.Instance.ModifyBalance(AgentState.address, ncg);
             AgentBalances[NCG] = ncg;
             AgentStateSubject.OnNextGold(AgentNCG);
         }
@@ -341,7 +341,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            crystal = LocalLayer.Instance.ModifyCrystal(crystal);
+            crystal = LocalLayer.Instance.ModifyBalance(AgentState.address, crystal);
             AgentBalances[Currencies.Crystal] = crystal;
             AgentStateSubject.OnNextCrystal(AgentCrystal);
         }
