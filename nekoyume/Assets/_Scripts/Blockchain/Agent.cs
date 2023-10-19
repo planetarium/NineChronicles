@@ -315,12 +315,47 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
+        public async Task<Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>> GetBalanceBulkAsync(
+            IEnumerable<(Address, Currency)> tuples,
+            HashDigest<SHA256>? stateRootHash = null)
+        {
+            var dict = new Dictionary<Address, Dictionary<Currency, FungibleAssetValue>>();
+            if (stateRootHash.HasValue)
+            {
+                foreach (var (address, currency) in tuples)
+                {
+                    var result = await GetBalanceAsync(address, currency, stateRootHash.Value);
+                    if (!dict.TryGetValue(address, out _))
+                    {
+                        dict[address] = new Dictionary<Currency, FungibleAssetValue>();
+                    }
+
+                    dict[address][currency] = result;
+                }
+            }
+            else
+            {
+                foreach (var (address, currency) in tuples)
+                {
+                    var result = await GetBalanceAsync(address, currency);
+                    if (!dict.TryGetValue(address, out _))
+                    {
+                        dict[address] = new Dictionary<Currency, FungibleAssetValue>();
+                    }
+
+                    dict[address][currency] = result;
+                }
+            }
+
+            return dict;
+        }
+
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             var dict = new Dictionary<Address, IValue>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(GetStateAsync(address));
+                var result = await GetStateAsync(address);
                 dict[address] = result;
             }
 
@@ -334,7 +369,7 @@ namespace Nekoyume.Blockchain
             var dict = new Dictionary<Address, IValue>();
             foreach (var address in addressList)
             {
-                var result = await await Task.FromResult(GetStateAsync(address, stateRootHash));
+                var result = await GetStateAsync(address, stateRootHash);
                 dict[address] = result;
             }
 
