@@ -5,6 +5,7 @@ using Lib9c;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Helper;
+using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using UnityEngine;
@@ -42,8 +43,14 @@ namespace Nekoyume.State
 
         private ModifierInfo<AgentCrystalModifier> _agentCrystalModifierInfo;
 
-        private ModifierInfo<AvatarStateModifier> _avatarModifierInfo;
+        private ModifierInfo<BalanceModifier> _agentBalanceModifierInfo;
+        
+        private ModifierInfo<BalanceModifier> _agentStakedNCGModifierInfo;
 
+        private ModifierInfo<AvatarStateModifier> _avatarModifierInfo;
+        
+        private ModifierInfo<BalanceModifier> _currentAvatarBalanceModifierInfo;
+        
         private readonly Dictionary<Address, ModifierInfo<CombinationSlotStateModifier>>
             _combinationSlotModifierInfos = new();
 
@@ -78,6 +85,9 @@ namespace Nekoyume.State
                 new ModifierInfo<AgentStateModifier>(address);
             _agentNCGModifierInfo = new ModifierInfo<AgentNCGModifier>(address);
             _agentCrystalModifierInfo = new ModifierInfo<AgentCrystalModifier>(address);
+            _agentBalanceModifierInfo = new ModifierInfo<BalanceModifier>(address);
+            _agentStakedNCGModifierInfo =
+                new ModifierInfo<BalanceModifier>(StakeStateV2.DeriveAddress(address));
         }
 
         public void InitializeCurrentAvatarState(AvatarState avatarState)
@@ -85,17 +95,19 @@ namespace Nekoyume.State
             if (avatarState is null)
             {
                 _avatarModifierInfo = null;
+                _currentAvatarBalanceModifierInfo = null;
                 return;
             }
 
             var address = avatarState.address;
-            if (!(_avatarModifierInfo is null) &&
+            if (_avatarModifierInfo is not null &&
                 _avatarModifierInfo.Address.Equals(address))
             {
                 return;
             }
 
             _avatarModifierInfo = new ModifierInfo<AvatarStateModifier>(address);
+            _currentAvatarBalanceModifierInfo = new ModifierInfo<BalanceModifier>(address);
         }
 
         public void InitializeCombinationSlotsByCurrentAvatarState(AvatarState avatarState)
@@ -207,6 +219,47 @@ namespace Nekoyume.State
                 {
                     modifiers.Add(modifier);
                 }
+            }
+        }
+
+        public void Add(Address address, BalanceModifier modifier)
+        {
+            if (modifier is null || modifier.IsEmpty)
+            {
+                return;
+            }
+
+            List<BalanceModifier> modifiers;
+            if (address.Equals(_agentBalanceModifierInfo.Address))
+            {
+                modifiers = _agentBalanceModifierInfo.Modifiers;
+            }
+            else if (address.Equals(_agentStakedNCGModifierInfo.Address))
+            {
+                modifiers = _agentStakedNCGModifierInfo.Modifiers;
+            }
+            else if (address.Equals(_currentAvatarBalanceModifierInfo.Address))
+            {
+                modifiers = _currentAvatarBalanceModifierInfo.Modifiers;
+            }
+            else
+            {
+                Debug.Log(
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(address)}({address.ToString()})");
+                return;
+            }
+
+            if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
+            {
+                outModifier.Add(modifier);
+                if (outModifier.IsEmpty)
+                {
+                    modifiers.Remove(outModifier);
+                }
+            }
+            else
+            {
+                modifiers.Add(modifier);
             }
         }
 
@@ -475,6 +528,26 @@ namespace Nekoyume.State
             }
 
             return PostModify(state, _agentModifierInfo);
+        }
+
+        public FungibleAssetValue ModifyBalance(Address address, FungibleAssetValue ncg)
+        {
+            if (address.Equals(_agentBalanceModifierInfo.Address))
+            {
+                return PostModifyValue(ncg, _agentBalanceModifierInfo);
+            }
+
+            if (address.Equals(_agentStakedNCGModifierInfo.Address))
+            {
+                return PostModifyValue(ncg, _agentStakedNCGModifierInfo);
+            }
+
+            if (address.Equals(_currentAvatarBalanceModifierInfo.Address))
+            {
+                return PostModifyValue(ncg, _currentAvatarBalanceModifierInfo);
+            }
+
+            return ncg;
         }
 
         public FungibleAssetValue ModifyNCG(FungibleAssetValue ncg)
