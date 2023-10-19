@@ -607,9 +607,9 @@ namespace Nekoyume.Blockchain
                         ? new AgentState(agentDict)
                         : new AgentState(agentAddress));
                 var ncg = States.Instance.NCG;
-                States.Instance.SetAgentNCG(
+                States.Instance.SetAgentBalance(
                     await GetBalanceAsync(agentAddress, ncg));
-                States.Instance.SetAgentCrystal(
+                States.Instance.SetAgentBalance(
                     await GetBalanceAsync(agentAddress, Currencies.Crystal));
 
                 // NOTE: Initialize staking states after setting GameConfigState.

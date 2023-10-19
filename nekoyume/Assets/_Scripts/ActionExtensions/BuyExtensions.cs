@@ -44,7 +44,7 @@ namespace Nekoyume.ActionExtensions
                 states.AgentNCG,
                 (current, purchaseInfo) => current - purchaseInfo.Price);
 
-            states.SetAgentNCG(gold);
+            states.SetAgentBalance(gold);
         }
     }
 }

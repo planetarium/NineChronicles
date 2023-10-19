@@ -132,11 +132,11 @@ namespace Nekoyume.Blockchain
             await UpdateAgentStateAsync(GetAgentState(evaluation));
             try
             {
-                States.Instance.SetAgentNCG(GetAgentNCG(evaluation));
+                States.Instance.SetAgentBalance(GetAgentNCG(evaluation));
             }
             catch (BalanceDoesNotExistsException)
             {
-                States.Instance.SetAgentNCG(0 * States.Instance.NCG);
+                States.Instance.SetAgentBalance(0 * States.Instance.NCG);
             }
 
             UpdateCrystalBalance(evaluation);
@@ -259,14 +259,14 @@ namespace Nekoyume.Blockchain
                     evaluation.Signer,
                     CrystalCalculator.CRYSTAL,
                     evaluation.OutputState);
-                States.Instance.SetAgentCrystal(crystal);
+                States.Instance.SetAgentBalance(crystal);
             }
             catch (BalanceDoesNotExistsException)
             {
                 var crystal = FungibleAssetValue.FromRawValue(
                     CrystalCalculator.CRYSTAL,
                     0);
-                States.Instance.SetAgentCrystal(crystal);
+                States.Instance.SetAgentBalance(crystal);
             }
         }
 

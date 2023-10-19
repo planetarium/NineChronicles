@@ -2935,31 +2935,16 @@ namespace Nekoyume.Blockchain
             {
                 foreach (var (balanceAddr, value) in action.FungibleAssetValues)
                 {
+                    var balance = StateGetter.GetBalance(
+                        balanceAddr,
+                        value.Currency,
+                        states);
                     if (balanceAddr.Equals(agentAddr))
                     {
-                        var balance = StateGetter.GetBalance(
-                            balanceAddr,
-                            value.Currency,
-                            states);
-                        if (value.Currency.Equals(States.Instance.NCG))
-                        {
-                            gameStates.SetAgentNCG(balance);
-                        }
-                        else if (value.Currency.Equals(Currencies.Crystal))
-                        {
-                            gameStates.SetAgentCrystal(balance);
-                        }
-                        else if (value.Currency.Equals(Currencies.Garage))
-                        {
-                            BalanceSubject.OnNextBalance(balanceAddr, value);
-                        }
+                        gameStates.SetAgentBalance(balance);
                     }
                     else if (balanceAddr.Equals(avatarAddr))
                     {
-                        var balance = StateGetter.GetBalance(
-                            balanceAddr,
-                            value.Currency,
-                            states);
                         gameStates.SetCurrentAvatarBalance(balance);
                     }
                 }
