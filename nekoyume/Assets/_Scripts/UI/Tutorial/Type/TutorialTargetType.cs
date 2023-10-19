@@ -31,6 +31,9 @@ namespace Nekoyume.UI
         BattlePreparationStartButton = 30001,
         SummonEnteringButton = 50000,
         Normal1SummonButton,
+        PatrolRewardMenu = 100000,
+        PatrolTimeText,
+        ClaimPatrolRewardButton,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

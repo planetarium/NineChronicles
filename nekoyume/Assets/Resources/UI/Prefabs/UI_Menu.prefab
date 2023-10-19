@@ -2710,7 +2710,9 @@ MonoBehaviour:
     rectTransform: {fileID: 1224776344879185514}
   - type: 30001
     rectTransform: {fileID: 6683240913620267796}
-  tutorialActions: 01000000020000000e00000050c30000
+  - type: 100000
+    rectTransform: {fileID: 6689781835818965279}
+  tutorialActions: 01000000020000000e00000050c30000a0860100
   btnQuest: {fileID: 553648111353541289}
   btnCombination: {fileID: 553648110939848765}
   btnShop: {fileID: 1227858067435832074}
@@ -7055,6 +7057,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf3d237655b345838089e4a90cff4c99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6689781835818965279 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5105620646223665888, guid: 74c3eeff2c3b00248a4da1308d139ac8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1876927714784855039}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2501659536266527903
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -9732,8 +9732,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12024afe5c9741db8b1345adbf42a4f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 100001
+    rectTransform: {fileID: 6737121320415603452}
+  - type: 100002
+    rectTransform: {fileID: 8011685015628061880}
+  tutorialActions: a1860100
   closeButton: {fileID: 4235199995268386533}
   rewardViews:
   - rewardType: 0

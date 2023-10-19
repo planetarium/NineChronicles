@@ -638,7 +638,7 @@ namespace Nekoyume.UI
             if (SharedModel.StageID == SharedModel.LastClearedStageId &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                if (SharedModel.StageID is Battle.RequiredStageForExitButton or 7 or 5 or 3)
+                if (SharedModel.StageID is Battle.RequiredStageForExitButton or 7 or 5 or 3 or 10)
                 {
                     closeButton.gameObject.SetActive(true);
                     stagePreparationButton.gameObject.SetActive(false);

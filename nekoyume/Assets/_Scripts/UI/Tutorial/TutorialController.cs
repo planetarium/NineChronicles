@@ -220,6 +220,10 @@ namespace Nekoyume.UI
                     checkPoint = 50000;
                 }
             }
+            else if (clearedStageId == 10 && checkPoint != -10)
+            {
+                checkPoint = 100000;
+            }
 
             // format example
             void Check(int stageIdForTutorial)  // ex) 5, 10
