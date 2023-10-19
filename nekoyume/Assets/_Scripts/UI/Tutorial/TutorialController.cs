@@ -28,7 +28,7 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
-        private const int CreateAvatarRewardTutorialId = 49;
+        private const int CreateAvatarRewardTutorialId = 2;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
