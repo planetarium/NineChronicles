@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lib9c;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using Nekoyume.Helper;
 using Nekoyume.Model.Stake;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
@@ -39,10 +37,6 @@ namespace Nekoyume.State
 
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
-        private ModifierInfo<AgentNCGModifier> _agentNCGModifierInfo;
-
-        private ModifierInfo<AgentCrystalModifier> _agentCrystalModifierInfo;
-
         private ModifierInfo<BalanceModifier> _agentBalanceModifierInfo;
         
         private ModifierInfo<BalanceModifier> _agentStakedNCGModifierInfo;
@@ -73,18 +67,13 @@ namespace Nekoyume.State
             }
 
             var address = agentState.address;
-            // 이미 초기화되어 있는 에이전트와 같을 경우.
-            if (!(_agentModifierInfo is null) &&
+            if (_agentModifierInfo is not null &&
                 _agentModifierInfo.Address.Equals(address))
             {
                 return;
             }
 
-            // _agentModifierInfo 초기화하기.
-            _agentModifierInfo =
-                new ModifierInfo<AgentStateModifier>(address);
-            _agentNCGModifierInfo = new ModifierInfo<AgentNCGModifier>(address);
-            _agentCrystalModifierInfo = new ModifierInfo<AgentCrystalModifier>(address);
+            _agentModifierInfo = new ModifierInfo<AgentStateModifier>(address);
             _agentBalanceModifierInfo = new ModifierInfo<BalanceModifier>(address);
             _agentStakedNCGModifierInfo =
                 new ModifierInfo<BalanceModifier>(StakeStateV2.DeriveAddress(address));
@@ -260,57 +249,6 @@ namespace Nekoyume.State
             else
             {
                 modifiers.Add(modifier);
-            }
-        }
-
-        public void Add(Address agentAddress, AgentNCGModifier modifier)
-        {
-            // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
-            if (modifier is null || modifier.IsEmpty)
-            {
-                return;
-            }
-
-            if (agentAddress.Equals(_agentNCGModifierInfo.Address))
-            {
-                var modifiers = _agentNCGModifierInfo.Modifiers;
-                if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    if (outModifier.IsEmpty)
-                    {
-                        modifiers.Remove(outModifier);
-                    }
-                }
-                else
-                {
-                    modifiers.Add(modifier);
-                }
-            }
-        }
-
-        public void Add(Address agentAddress, AgentCrystalModifier modifier)
-        {
-            if (modifier is null || modifier.IsEmpty)
-            {
-                return;
-            }
-
-            if (agentAddress.Equals(_agentCrystalModifierInfo.Address))
-            {
-                var modifiers = _agentCrystalModifierInfo.Modifiers;
-                if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    if (outModifier.IsEmpty)
-                    {
-                        modifiers.Remove(outModifier);
-                    }
-                }
-                else
-                {
-                    modifiers.Add(modifier);
-                }
             }
         }
 
