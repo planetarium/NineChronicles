@@ -163,7 +163,7 @@ namespace Nekoyume.UI
 
             coverToBlockClick.SetActive(false);
 
-            AgentStateSubject.Crystal
+            BalanceSubject.ObserveAgentCrystal()
                 .Subscribe(_ => UpdateCrystalCost())
                 .AddTo(_disposables);
         }

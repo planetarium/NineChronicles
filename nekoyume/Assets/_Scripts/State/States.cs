@@ -330,7 +330,7 @@ namespace Nekoyume.State
 
             ncg = LocalLayer.Instance.ModifyBalance(AgentState.address, ncg);
             AgentBalances[NCG] = ncg;
-            AgentStateSubject.OnNextGold(AgentNCG);
+            BalanceSubject.OnNextAgentBalance(AgentNCG);
         }
 
         public void SetAgentCrystal(FungibleAssetValue crystal)
@@ -343,7 +343,7 @@ namespace Nekoyume.State
 
             crystal = LocalLayer.Instance.ModifyBalance(AgentState.address, crystal);
             AgentBalances[Currencies.Crystal] = crystal;
-            AgentStateSubject.OnNextCrystal(AgentCrystal);
+            BalanceSubject.OnNextAgentBalance(AgentCrystal);
         }
 
         public async UniTask InitAvatarBalancesAsync()

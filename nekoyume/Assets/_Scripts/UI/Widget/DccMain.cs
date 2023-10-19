@@ -50,10 +50,9 @@ namespace Nekoyume.UI
             }
 
             SetNotification();
-            AgentStateSubject.Gold.Subscribe(_ =>
-            {
-                SetNotification();
-            }).AddTo(_disposables);
+            BalanceSubject.ObserveAgentNCG()
+                .Subscribe(_ => SetNotification())
+                .AddTo(_disposables);
         }
 
         protected override void OnDisable()

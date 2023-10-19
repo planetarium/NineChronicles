@@ -277,7 +277,7 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.UnlockedRecipes
                 .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesAtShow);
-            AgentStateSubject.Crystal
+            BalanceSubject.ObserveAgentCrystal()
                 .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesAtShow);
         }

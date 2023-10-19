@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             UpdateStartButton(false);
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             coverToBlockClick.SetActive(false);
-            AgentStateSubject.Crystal.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
+            BalanceSubject.ObserveAgentCrystal().Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
         }
 
         public void Show(

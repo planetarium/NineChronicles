@@ -93,9 +93,9 @@ namespace Nekoyume.Blockchain
                             return (true, e);
                         }
 
-                        AgentStateSubject.OnNextGold(gold);
-                        AgentStateSubject.OnNextCrystal(crystal);
-                        AgentStateSubject.OnNextGarage(garage);
+                        BalanceSubject.OnNextAgentBalance(gold);
+                        BalanceSubject.OnNextAgentBalance(crystal);
+                        BalanceSubject.OnNextAgentBalance(garage);
                         _balanceUpdateRequired = false;
                         return (false, null);
                     });

@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = AgentStateSubject.Gold.Subscribe(SetGold);
+            _disposable = BalanceSubject.ObserveAgentNCG().Subscribe(SetGold);
             UpdateGold();
         }
 

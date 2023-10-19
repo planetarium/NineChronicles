@@ -2951,7 +2951,7 @@ namespace Nekoyume.Blockchain
                         }
                         else if (value.Currency.Equals(Currencies.Garage))
                         {
-                            AgentStateSubject.OnNextGarage(value);
+                            BalanceSubject.OnNextBalance(balanceAddr, value);
                         }
                     }
                     else if (balanceAddr.Equals(avatarAddr))

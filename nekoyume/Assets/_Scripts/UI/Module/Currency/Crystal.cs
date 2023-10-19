@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = AgentStateSubject.Crystal.Subscribe(SetCrystal);
+            _disposable = BalanceSubject.ObserveAgentCrystal().Subscribe(SetCrystal);
             UpdateCrystal();
         }
 
