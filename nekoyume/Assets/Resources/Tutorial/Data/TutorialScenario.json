@@ -163,8 +163,8 @@
     },
     {
       "id": 70003,
-      "nextId": 0,
-      "checkPointId": -7,
+      "nextId": 70004,
+      "checkPointId": 70000,
       "data": {
         "presetId": 1,
         "targetType": 17,
@@ -176,6 +176,19 @@
         "targetPositionOffset": { "x": -20, "y": 0 },
         "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
         "scriptKey": "TUTORIAL_07_004"
+      }
+    },
+    {
+      "id": 70004,
+      "nextId": 0,
+      "checkPointId": -7,
+      "data": {
+        "presetId": 1,
+        "targetType": 30001,
+        "actionType": 30001,
+        "emojiType": 2,
+        "guideType": 1,
+        "scriptKey": "TUTORIAL_07_005"
       }
     },
     {
