@@ -22,12 +22,14 @@ namespace Nekoyume.UI
         private void Awake()
         {
             var rect = rawCamImage.rectTransform.rect;
+#if !UNITY_IOS
             _camTexture = new WebCamTexture
             {
                 requestedHeight = (int)rect.height,
                 requestedWidth = (int)rect.width
             };
             rawCamImage.texture = _camTexture;
+#endif
         }
 
         private void OnDisable()
@@ -55,7 +57,18 @@ namespace Nekoyume.UI
             yield return UnityEngine.Android.Permission
                 .HasUserAuthorizedPermission(UnityEngine.Android.Permission.Camera);
 #elif UNITY_IOS
-            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+            if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+            {
+                yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+            }
+            
+            var rect = rawCamImage.rectTransform.rect;
+            _camTexture = new WebCamTexture
+            {
+                requestedHeight = (int)rect.height,
+                requestedWidth = (int)rect.width
+            };
+            rawCamImage.texture = _camTexture;
 #endif
             yield return null;
             rawCamImage.gameObject.SetActive(true);
