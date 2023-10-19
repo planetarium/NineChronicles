@@ -48,6 +48,17 @@ namespace Nekoyume.State
 
         private readonly Dictionary<Address, Dictionary<Currency, FungibleAssetValue>> _balances = new();
 
+        public FungibleAssetValue GetBalance(Address address, Currency currency)
+        {
+            if (!_balances.ContainsKey(address) ||
+                !_balances[address].ContainsKey(currency))
+            {
+                return 0 * currency;
+            }
+
+            return _balances[address][currency];
+        }
+
         #region Agent
 
         public AgentState AgentState { get; private set; }
@@ -256,6 +267,25 @@ namespace Nekoyume.State
         {
             GameConfigState = state;
             GameConfigStateSubject.OnNext(state);
+        }
+
+        public void SetBalance(
+            Address address,
+            FungibleAssetValue balance,
+            bool useLocalLayer = true)
+        {
+            if (useLocalLayer)
+            {
+                balance = LocalLayer.Instance.ModifyBalance(address, balance);    
+            }
+
+            if (!_balances.ContainsKey(address))
+            {
+                _balances[address] = new Dictionary<Currency, FungibleAssetValue>();
+            }
+
+            _balances[address][balance.Currency] = balance;
+            BalanceSubject.OnNextBalance(address, balance);
         }
 
         /// <summary>
