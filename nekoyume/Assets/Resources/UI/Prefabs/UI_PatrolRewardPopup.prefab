@@ -1400,6 +1400,42 @@ RectTransform:
   m_AnchoredPosition: {x: 60.5, y: -29}
   m_SizeDelta: {x: 121, y: 58}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1321587755439171998
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7359548901530470290}
+  m_Layer: 5
+  m_Name: PatrolTimeTextDummyForTutorial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7359548901530470290
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321587755439171998}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6274255173026261620}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 85}
+  m_SizeDelta: {x: 280, y: 60}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1340762052245912996
 GameObject:
   m_ObjectHideFlags: 0
@@ -2471,6 +2507,8 @@ RectTransform:
   - {fileID: 5277305518742973139}
   - {fileID: 8391707516876763235}
   - {fileID: 8202942177098342618}
+  - {fileID: 7359548901530470290}
+  - {fileID: 8174546948758253438}
   m_Father: {fileID: 8699870392255457920}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4848,6 +4886,42 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!1 &4256742623875023752
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8174546948758253438}
+  m_Layer: 5
+  m_Name: ClaimPatrolRewardButtonDummyForTutorial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8174546948758253438
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4256742623875023752}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6274255173026261620}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -245}
+  m_SizeDelta: {x: 320, y: 90}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4293761939686558737
 GameObject:
   m_ObjectHideFlags: 0
@@ -9734,9 +9808,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets:
   - type: 100001
-    rectTransform: {fileID: 6737121320415603452}
+    rectTransform: {fileID: 7359548901530470290}
   - type: 100002
-    rectTransform: {fileID: 8011685015628061880}
+    rectTransform: {fileID: 8174546948758253438}
   tutorialActions: a1860100
   closeButton: {fileID: 4235199995268386533}
   rewardViews:
