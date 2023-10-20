@@ -26,6 +26,7 @@ using Toggle = UnityEngine.UI.Toggle;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class RaidPreparation : Widget
     {
         private class PracticeRandom : System.Random, IRandom
@@ -37,54 +38,39 @@ namespace Nekoyume.UI
             public int Seed => throw new NotImplementedException();
         }
 
-        [SerializeField]
-        private Toggle toggle;
+        [SerializeField] private Toggle toggle;
 
-        [SerializeField]
-        private AvatarInformation information;
+        [SerializeField] private AvatarInformation information;
 
-        [SerializeField]
-        private Button startButton;
+        [SerializeField] private Button startButton;
 
-        [SerializeField]
-        private Button closeButton;
+        [SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private TextMeshProUGUI closeButtonText;
+        [SerializeField] private TextMeshProUGUI closeButtonText;
 
-        [SerializeField]
-        private TextMeshProUGUI crystalText;
+        [SerializeField] private TextMeshProUGUI crystalText;
 
-        [SerializeField]
-        private TextMeshProUGUI ticketText;
+        [SerializeField] private TextMeshProUGUI ticketText;
 
-        [SerializeField]
-        private Transform crystalImage;
+        [SerializeField] private Transform crystalImage;
 
-        [SerializeField]
-        private Transform ticketImage;
+        [SerializeField] private Transform ticketImage;
 
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
+        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
 
-        [SerializeField]
-        private bool moveToLeft = false;
+        [SerializeField] private bool moveToLeft = false;
 
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField]
-        private GameObject coverToBlockClick = null;
+        [SerializeField] private GameObject coverToBlockClick = null;
 
-        [SerializeField]
-        private GameObject blockStartingTextObject;
+        [SerializeField] private GameObject blockStartingTextObject;
 
-        [SerializeField]
-        private GameObject crystalContainer;
+        [SerializeField] private GameObject crystalContainer;
 
-        [SerializeField]
-        private GameObject currencyContainer;
+        [SerializeField] private GameObject currencyContainer;
 
         private int _requiredCost;
         private int _bossId;
@@ -136,9 +122,9 @@ namespace Nekoyume.UI
             if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
                 currencyContainer.SetActive(true);
-                ticketText.color = _headerMenu.WorldBossTickets.RemainTicket > 0 ?
-                    Palette.GetColor(ColorType.ButtonEnabled) :
-                    Palette.GetColor(ColorType.TextDenial);
+                ticketText.color = _headerMenu.WorldBossTickets.RemainTicket > 0
+                    ? Palette.GetColor(ColorType.ButtonEnabled)
+                    : Palette.GetColor(ColorType.TextDenial);
                 if (raiderState is null)
                 {
                     crystalContainer.SetActive(true);
@@ -166,6 +152,9 @@ namespace Nekoyume.UI
             AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateCrystalCost())
                 .AddTo(_disposables);
+
+            // DevCra - iOS Memory Optimization
+            this.transform.SetAsLastSibling();
         }
 
         public void UpdateInventory()
@@ -177,9 +166,9 @@ namespace Nekoyume.UI
         {
             var crystalCost = GetEntranceFee(Game.Game.instance.States.CurrentAvatarState);
             crystalText.text = $"{crystalCost:#,0}";
-            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost ?
-                Palette.GetColor(ColorType.ButtonEnabled) :
-                Palette.GetColor(ColorType.TextDenial);
+            crystalText.color = States.Instance.CrystalBalance.MajorUnit >= crystalCost
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
         }
 
         private static int GetEntranceFee(AvatarState currentAvatarState)
@@ -313,7 +302,8 @@ namespace Nekoyume.UI
             if (raiderState is null)
             {
                 var crystalAnimation = ShowMoveCrystalAnimation();
-                yield return new WaitWhile(() => ticketAnimation.IsPlaying || crystalAnimation.IsPlaying);
+                yield return new WaitWhile(() =>
+                    ticketAnimation.IsPlaying || crystalAnimation.IsPlaying);
             }
             else
             {
@@ -358,7 +348,8 @@ namespace Nekoyume.UI
             var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Raid]
                 .GetEquippedRuneSlotInfos();
 
-            ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
+            ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg)
+                .Subscribe();
             Find<LoadingScreen>().Show();
             Find<WorldBoss>().ForceClose(true);
             Close();
@@ -404,8 +395,8 @@ namespace Nekoyume.UI
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Raid);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Raid)
-                .Select(x=> x.RuneId).ToList();
-            var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
+                .Select(x => x.RuneId).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);
