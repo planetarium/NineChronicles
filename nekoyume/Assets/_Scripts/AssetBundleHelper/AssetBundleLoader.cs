@@ -1,8 +1,10 @@
+using Nekoyume.Game.VFX.Skill;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Nekoyume.AssetBundleHelper
 {
@@ -11,12 +13,42 @@ namespace Nekoyume.AssetBundleHelper
         private static readonly bool useCache = true;
         private static readonly Dictionary<string, AssetBundle> loadedAssetBundleCache = new();
 
+        #region ASYNC_DOWNLOADING
+
+        public static IEnumerator DownloadAssetBundles(string assetBundleURL, string bundleName,
+            Action<float> onProgress)
+        {
+            if (loadedAssetBundleCache.ContainsKey(bundleName)) yield break;
+
+            using var www =
+                UnityWebRequestAssetBundle.GetAssetBundle($"{assetBundleURL}/{bundleName}");
+            var operation = www.SendWebRequest();
+
+            while (!operation.isDone)
+            {
+                onProgress(www.downloadProgress);
+                yield return null;
+            }
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                var bundle = DownloadHandlerAssetBundle.GetContent(www);
+                loadedAssetBundleCache[bundleName] = bundle;
+            }
+            else
+            {
+                Debug.LogError($"AssetBundle Download failed: {www.error}");
+            }
+        }
+
+        #endregion
+
         #region ASYNC_LOADING
 
         public static IEnumerator LoadAllAssetBundleAsync<T>(string bundleName,
-            Action<float> onProgress, Action<T[]> onFinished) where T : UnityEngine.Object
+            Action<T[]> onFinished) where T : UnityEngine.Object
         {
-            return LoadFromFileAsync(bundleName, onProgress, assetBundle =>
+            return LoadFromFileAsync(bundleName, assetBundle =>
             {
                 var assets = assetBundle.LoadAllAssets<T>();
                 onFinished(assets);
@@ -24,16 +56,16 @@ namespace Nekoyume.AssetBundleHelper
         }
 
         public static IEnumerator LoadAssetBundleAsync<T>(string bundleName, string objectName,
-            Action<float> onProgress, Action<T> onFinished) where T : UnityEngine.Object
+            Action<T> onFinished) where T : UnityEngine.Object
         {
-            return LoadFromFileAsync(bundleName, onProgress, assetBundle =>
+            return LoadFromFileAsync(bundleName, assetBundle =>
             {
                 var asset = assetBundle.LoadAsset<T>(objectName);
                 onFinished(asset);
             });
         }
 
-        private static IEnumerator LoadFromFileAsync(string bundleName, Action<float> onProgress,
+        private static IEnumerator LoadFromFileAsync(string bundleName,
             Action<AssetBundle> onFinished)
         {
             if (useCache && loadedAssetBundleCache.ContainsKey(bundleName))
@@ -44,14 +76,6 @@ namespace Nekoyume.AssetBundleHelper
 
             var path = Path.Combine(Application.streamingAssetsPath, bundleName);
             var request = AssetBundle.LoadFromFileAsync(path);
-            while
-                (request.progress <
-                 0.95) // condition checks like [progress < 1] does not work properly due to the Unity engine bug
-            {
-                onProgress(request.progress);
-                yield return null;
-            }
-
             yield return request;
             var loadedBundle = request.assetBundle;
             if (loadedBundle == null)
