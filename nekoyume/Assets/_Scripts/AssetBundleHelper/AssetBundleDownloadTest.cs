@@ -16,15 +16,11 @@ namespace Nekoyume.AssetBundleHelper
                     progress => { Debug.Log($"{bundleName} - {progress * 100}%"); });
             }
 
-            /*
-            print("done!");
-            yield return AssetBundleLoader.LoadAssetBundleAsync<GameObject>("vfx/skills", "areaattack_l_fire", obj =>
-            {
-                Instantiate(obj);
-            });
+            yield return AssetBundleLoader.LoadAssetBundleAsync<GameObject>("vfx/skills",
+                "areaattack_l_fire", obj => { Instantiate(obj); });
 
-            Instantiate(AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_water"));
-            */
+            Instantiate(
+                AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_water"));
         }
     }
 }
