@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e71d258ca624eadba8b610acd051fd5, type: 3}
+  m_Name: TutorialPreset
+  m_EditorClassIdentifier: 
+  tutorialPreset:
+    preset:
+    - id: 0
+      content: Single
+      isExistFadeInBackground: 1
+      isEnableMask: 0
+      isSkipArrowAnimation: 0
+      commaId: 2
+    - id: 1
+      content: Single_Target
+      isExistFadeInBackground: 1
+      isEnableMask: 1
+      isSkipArrowAnimation: 0
+      commaId: 2
+    - id: 2
+      content: Linked_Start
+      isExistFadeInBackground: 1
+      isEnableMask: 0
+      isSkipArrowAnimation: 0
+      commaId: 1
+    - id: 3
+      content: Linked_Start_Target
+      isExistFadeInBackground: 1
+      isEnableMask: 1
+      isSkipArrowAnimation: 0
+      commaId: 1
+    - id: 4
+      content: Linked_Loop
+      isExistFadeInBackground: 0
+      isEnableMask: 0
+      isSkipArrowAnimation: 1
+      commaId: 1
+    - id: 5
+      content: Linked_Loop_Same_Target
+      isExistFadeInBackground: 0
+      isEnableMask: 1
+      isSkipArrowAnimation: 1
+      commaId: 1
+    - id: 6
+      content: Linked_Loop_New_Target
+      isExistFadeInBackground: 0
+      isEnableMask: 1
+      isSkipArrowAnimation: 0
+      commaId: 1
+    - id: 7
+      content: Linked_End
+      isExistFadeInBackground: 0
+      isEnableMask: 0
+      isSkipArrowAnimation: 1
+      commaId: 2
+    - id: 8
+      content: Linked_End_Same_Target
+      isExistFadeInBackground: 0
+      isEnableMask: 1
+      isSkipArrowAnimation: 1
+      commaId: 2
+    - id: 9
+      content: Linked_End_New_Target
+      isExistFadeInBackground: 0
+      isEnableMask: 1
+      isSkipArrowAnimation: 0
+      commaId: 2
+    - id: 10
+      content: Linked_End_Comma
+      isExistFadeInBackground: 0
+      isEnableMask: 0
+      isSkipArrowAnimation: 1
+      commaId: 1
+  json: {fileID: 4900000, guid: a9ec9b5b73874b40b5d8e320f3dd65bb, type: 3}
