@@ -482,7 +482,6 @@ namespace Nekoyume.Game
             if (isClear)
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
-                yield return new WaitForSeconds(1f);
             }
             else
             {
