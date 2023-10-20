@@ -455,13 +455,9 @@ namespace Nekoyume.UI
             popup.Pop(model);
         }
 
-        public async void Read(OrderSellerMail orderSellerMail)
+        public void Read(OrderSellerMail orderSellerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var agentAddress = States.Instance.AgentState.address;
-            var order = await Util.GetOrder(orderSellerMail.OrderId);
-            var taxedPrice = order.Price - order.GetTax();
-            LocalLayerModifier.ModifyBalance(agentAddress, taxedPrice);
             LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
         }
 
@@ -514,16 +510,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public async void Read(ProductSellerMail productSellerMail)
+        public void Read(ProductSellerMail productSellerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var agentAddress = States.Instance.AgentState.address;
-            var (_, itemProduct, favProduct) = await Game.Game.instance.MarketServiceClient.GetProductInfo(productSellerMail.ProductId);
-            var currency = States.Instance.NCG;
-            var price = itemProduct?.Price ?? favProduct.Price;
-            var fav = new FungibleAssetValue(currency, (int)price, 0);
-            var taxedPrice = fav.DivRem(100, out _) * Buy.TaxRate;
-            LocalLayerModifier.ModifyBalance(agentAddress, taxedPrice);
             LocalLayerModifier.RemoveNewMail(avatarAddress, productSellerMail.id);
         }
 
@@ -584,13 +573,6 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
-                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
-                {
-                    LocalLayerModifier.ModifyBalance(
-                        States.Instance.AgentState.address,
-                        result.CRYSTAL);
-                }
-
                 if (itemUsable.ItemSubType == ItemSubType.Aura)
                 {
                     //Because aura is a tradable item, local removal fails and an exception is handled.

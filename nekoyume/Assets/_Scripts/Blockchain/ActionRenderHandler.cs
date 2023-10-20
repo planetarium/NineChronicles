@@ -786,7 +786,6 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
                 foreach (var pair in result.materials)
                 {
@@ -918,7 +917,6 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
                 foreach (var pair in result.materials)
                 {
@@ -967,7 +965,6 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
-            LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
@@ -1052,9 +1049,6 @@ namespace Nekoyume.Blockchain
                 {
                     return;
                 }
-
-                LocalLayerModifier.ModifyBalance(agentAddress, result.gold * States.Instance.NCG);
-                LocalLayerModifier.ModifyBalance(agentAddress, -result.CRYSTAL);
 
                 if (itemUsable.ItemSubType == ItemSubType.Aura)
                 {
@@ -1475,7 +1469,6 @@ namespace Nekoyume.Blockchain
                     }
 
                     var price = info.Price;
-                    LocalLayerModifier.ModifyBalance(agentAddress, price);
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
@@ -1517,8 +1510,6 @@ namespace Nekoyume.Blockchain
                         await States.Instance.UpdateCurrentAvatarBalanceAsync(favProduct.Ticker);
                     }
 
-                    var taxedPrice = info.Price.DivRem(100, out _) * Buy.TaxRate;
-                    LocalLayerModifier.ModifyBalance(agentAddress, -taxedPrice);
                     LocalLayerModifier.AddNewMail(avatarAddress, info.ProductId);
 
                     string message;
@@ -2229,10 +2220,6 @@ namespace Nekoyume.Blockchain
                 return;
             }
 
-            var sheet = TableSheets.Instance.EquipmentItemRecipeSheet;
-            LocalLayerModifier.ModifyBalance(
-                States.Instance.AgentState.address,
-                CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet));
             await UniTask.WhenAll(
                 UpdateAgentStateAsync(eval),
                 UpdateCurrentAvatarStateAsync(eval));

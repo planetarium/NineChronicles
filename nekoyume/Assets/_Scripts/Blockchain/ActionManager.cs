@@ -371,7 +371,6 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
@@ -450,7 +449,6 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
             foreach (var pair in recipeInfo.Materials)
@@ -715,12 +713,6 @@ namespace Nekoyume.Blockchain
             Address avatarAddress,
             List<IProductInfo> productInfos)
         {
-            var buyerAgentAddress = States.Instance.AgentState.address;
-            foreach (var info in productInfos)
-            {
-                LocalLayerModifier.ModifyBalance(buyerAgentAddress, -info.Price);
-            }
-
             var action = new BuyProduct
             {
                 AvatarAddress = avatarAddress,
@@ -738,12 +730,6 @@ namespace Nekoyume.Blockchain
 
         public IObservable<ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
         {
-            var buyerAgentAddress = States.Instance.AgentState.address;
-            foreach (var purchaseInfo in purchaseInfos)
-            {
-                LocalLayerModifier.ModifyBalance(buyerAgentAddress, -purchaseInfo.Price);
-            }
-
             var action = new Buy
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -793,7 +779,6 @@ namespace Nekoyume.Blockchain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalLayerModifier.ModifyBalance(agentAddress, -costNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
 
@@ -1027,7 +1012,6 @@ namespace Nekoyume.Blockchain
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
 
-            LocalLayerModifier.ModifyBalance(agentAddress, -recipeInfo.CostNCG * States.Instance.NCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
             if (useHammerPoint)
             {
@@ -1255,8 +1239,6 @@ namespace Nekoyume.Blockchain
             BigInteger openCost)
         {
             var agentAddr = States.Instance.AgentState.address;
-            LocalLayerModifier.ModifyBalance(agentAddr, -openCost * Currencies.Crystal);
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var sentryTrace = Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Dictionary<string, Value>
             {
