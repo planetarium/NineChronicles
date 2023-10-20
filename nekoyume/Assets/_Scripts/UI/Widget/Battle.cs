@@ -58,6 +58,7 @@ namespace Nekoyume.UI
         public ComboText ComboText => comboText;
         public const int RequiredStageForExitButton = 10;
         public const int RequiredStageForAccelButton = 3;
+        public const int RequiredStageForHeaderMenu = 3;
         private const string BattleAccelToggleValueKey = "Battle_Animation_Is_On";
 
         protected override void Awake()
@@ -136,6 +137,10 @@ namespace Nekoyume.UI
             accelerationToggle.isOn = canAccel && GetAccelToggleIsOn();
             SetAccelToggle(accelerationToggle.isOn);
 
+            var canExit = States.Instance.CurrentAvatarState.worldInformation
+                .IsStageCleared(RequiredStageForExitButton);
+            exitToggle.gameObject.SetActive(canExit);
+
             // tutorial code for accel button
             if (stageId == RequiredStageForAccelButton + 1 &&
                 !States.Instance.CurrentAvatarState.worldInformation
@@ -183,7 +188,6 @@ namespace Nekoyume.UI
             comboText.Close();
 
             exitToggle.isOn = isExitReserved;
-            exitToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);
         }
 
@@ -252,7 +256,6 @@ namespace Nekoyume.UI
             bossStatus.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
             enemyPlayerStatus.gameObject.SetActive(false);
-            exitToggle.gameObject.SetActive(false);
             comboText.comboMax = 5;
             gameObject.SetActive(true);
             Find<HeaderMenuStatic>().Close(true);
