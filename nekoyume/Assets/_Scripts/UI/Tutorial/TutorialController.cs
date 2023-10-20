@@ -74,8 +74,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            _scenario.AddRange(GetData<TutorialScenario>(ScenarioPath).scenario);
-            _preset.AddRange(GetData<TutorialPreset>(PresetPath).preset);
+            _scenario.AddRange(GetData<TutorialScenarioScriptableObject>(ScenarioPath).tutorialScenario.scenario);
+            _preset.AddRange(GetData<TutorialPresetScriptableObject>(PresetPath).tutorialPreset.preset);
         }
 
         public void Run(int clearedStageId)
@@ -172,11 +172,9 @@ namespace Nekoyume.UI
             };
         }
 
-        private static T GetData<T>(string path) where T : new()
+        private static T GetData<T>(string path) where T : ScriptableObject
         {
-            var json = Resources.Load<TextAsset>(path).ToString();
-            var data = JsonUtility.FromJson<T>(json);
-            return data;
+            return Resources.Load<T>(path);
         }
 
         private static int GetCheckPoint(int clearedStageId)
