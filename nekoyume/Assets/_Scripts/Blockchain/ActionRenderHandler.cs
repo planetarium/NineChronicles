@@ -2905,7 +2905,7 @@ namespace Nekoyume.Blockchain
             States.Instance.SetPledgeStates(address, approved);
         }
 
-        private void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
+        private static void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
         {
             if (eval.Exception is not null)
             {
@@ -2914,8 +2914,6 @@ namespace Nekoyume.Blockchain
             }
 
             var gameStates = Game.Game.instance.States;
-            var agentAddr = gameStates.AgentState.address;
-            var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
             var action = eval.Action;
             if (action.FungibleAssetValues is not null)
@@ -2926,14 +2924,7 @@ namespace Nekoyume.Blockchain
                         balanceAddr,
                         value.Currency,
                         states);
-                    if (balanceAddr.Equals(agentAddr))
-                    {
-                        gameStates.SetAgentBalance(balance);
-                    }
-                    else if (balanceAddr.Equals(avatarAddr))
-                    {
-                        gameStates.SetCurrentAvatarBalance(balance);
-                    }
+                    gameStates.SetBalance(balanceAddr, balance);
                 }
             }
 
@@ -2943,6 +2934,7 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }
 
+            var avatarAddr = gameStates.CurrentAvatarState.address;
             var avatarValue = StateGetter.GetState(avatarAddr, states);
             if (avatarValue is not Dictionary avatarDict)
             {
