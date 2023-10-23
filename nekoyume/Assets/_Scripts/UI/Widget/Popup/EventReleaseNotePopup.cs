@@ -61,7 +61,23 @@ namespace Nekoyume.UI
 
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
-        private const int MinimumClearStageId = 20;
+
+        public bool HasUnread
+        {
+            get
+            {
+                var hasUnreadContents = LiveAssetManager.instance.HasUnread;
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(LastReadingDayKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return hasUnreadContents || notReadAtToday;
+            }
+        }
 
         public override void Initialize()
         {
@@ -133,47 +149,17 @@ namespace Nekoyume.UI
             _onClose?.Invoke();
         }
 
-        public void ShowNotFilterd(System.Action onClose)
+        public void ShowNotFiltered(System.Action onClose)
         {
             _onClose = onClose;
-            base.Show();
-            _tabGroup.SetToggledOn(eventTabButton);
-            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+            Show();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
-            if (worldInfo is null)
-            {
-                return;
-            }
-
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (clearedStageId <= MinimumClearStageId)
-            {
-                return;
-            }
-
-            var hasUnreadContents = LiveAssetManager.instance.HasUnreadEvent ||
-                                    LiveAssetManager.instance.HasUnreadNotice;
-            var notReadAtToday = true;
-            if (PlayerPrefs.HasKey(LastReadingDayKey) &&
-                DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
-                    DateTimeFormat,
-                    null,
-                    DateTimeStyles.None,
-                    out var result))
-            {
-                notReadAtToday = DateTime.Today != result.Date;
-            }
-
-            if (hasUnreadContents || notReadAtToday)
-            {
-                base.Show(ignoreShowAnimation);
-                _tabGroup.SetToggledOn(eventTabButton);
-                PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
-            }
+            base.Show(ignoreShowAnimation);
+            _tabGroup.SetToggledOn(eventTabButton);
+            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
         }
 
         public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)

@@ -126,9 +126,6 @@ namespace Nekoyume.UI
             public TextMeshProUGUI[] WaveStarTexts;
             public TextMeshProUGUI RemainingStarText;
         }
-
-        private const int Timer = 10;
-
         [SerializeField]
         private CanvasGroup canvasGroup;
 
@@ -199,6 +196,8 @@ namespace Nekoyume.UI
 
         private readonly WaitForSeconds _battleWinVFXYield = new(0.2f);
         private static readonly int ClearedWave = Animator.StringToHash("ClearedWave");
+        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
+        private const int Timer = 10;
 
         private Animator _victoryImageAnimator;
 
@@ -212,24 +211,13 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                var wi = States.Instance.CurrentAvatarState.worldInformation;
-                if (!wi.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-                {
-                    return;
-                }
+            closeButton.OnClickAsObservable()
+                .Subscribe(_ => StartCoroutine(OnClickClose()))
+                .AddTo(gameObject);
 
-                // NOTE: This `BattleResultPopup` cannot be closed when
-                //       the player is not cleared `Battle.RequiredStageForExitButton` stage yet.
-                var canExit = world.StageClearedId >= Battle.RequiredStageForExitButton;
-                if (canExit)
-                {
-                    StartCoroutine(OnClickClose());
-                }
-            }).AddTo(gameObject);
-
-            stagePreparationButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
+            stagePreparationButton.OnClickAsObservable()
+                .Subscribe(_ => OnClickStage())
+                .AddTo(gameObject);
 
             shopButton.OnClickAsObservable().Subscribe(_ => GoToProduct()).AddTo(gameObject);
             craftButton.OnClickAsObservable().Subscribe(_ => GoToCraft()).AddTo(gameObject);
@@ -603,26 +591,27 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
+            var canExit = SharedModel.IsClear &&
+                          (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                           SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
             if (!SharedModel.IsClear)
             {
-                stagePreparationButton.gameObject.SetActive(true);
-                stagePreparationButton.interactable = true;
+                closeButton.gameObject.SetActive(true);
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
             }
 
             var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
                                       SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
-                var value = SharedModel.IsClear &&
-                            (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
-                             SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
-                repeatButton.gameObject.SetActive(value);
-                repeatButton.interactable = value;
+                repeatButton.gameObject.SetActive(canExit);
+                repeatButton.interactable = canExit;
             }
             else
             {
-                stagePreparationButton.gameObject.SetActive(true);
-                stagePreparationButton.interactable = true;
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
             }
 
             if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
@@ -656,8 +645,9 @@ namespace Nekoyume.UI
             if (SharedModel.StageID == SharedModel.LastClearedStageId &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                if (SharedModel.StageID is Battle.RequiredStageForExitButton or 5 or 10)
+                if (SharedModel.StageID is Battle.RequiredStageForExitButton or 7 or 5 or 3 or 10)
                 {
+                    closeButton.gameObject.SetActive(true);
                     stagePreparationButton.gameObject.SetActive(false);
                     nextButton.gameObject.SetActive(false);
                     repeatButton.gameObject.SetActive(false);
