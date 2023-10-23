@@ -271,9 +271,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets:
-  - type: 100000
+  - type: 50000
     rectTransform: {fileID: 6547616293827078604}
-  tutorialActions: a1860100
+  tutorialActions: 51c30000
   summonButton: {fileID: 3248731447781743755}
   combineButton: {fileID: 6274492408613066932}
   upgradeButton: {fileID: 6274492408546324230}

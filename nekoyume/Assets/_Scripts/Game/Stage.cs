@@ -482,7 +482,6 @@ namespace Nekoyume.Game
             if (isClear)
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
-                yield return new WaitForSeconds(1f);
             }
             else
             {
@@ -686,7 +685,7 @@ namespace Nekoyume.Game
             if (avatarState.worldInformation
                 .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
             {
-                if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
+                if (worldInfo.StageClearedId < UI.Battle.RequiredStageForHeaderMenu)
                 {
                     Widget.Find<HeaderMenuStatic>().Close(true);
                     isTutorial = true;

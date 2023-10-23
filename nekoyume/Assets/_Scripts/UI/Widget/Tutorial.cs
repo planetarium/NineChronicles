@@ -129,6 +129,26 @@ namespace Nekoyume.UI
             }
         }
 
+        public void PlayOnlyGuideArrow(GuideType guideType,
+            RectTransform target,
+            Vector2 targetPositionOffset = default,
+            Vector2 targetSizeOffset = default,
+            Vector2 arrowPositionOffset = default)
+        {
+            Show(true);
+            var arrow = items.First(i => i.Type == TutorialItemType.Arrow).Item;
+            arrow.gameObject.SetActive(true);
+            arrow.Play(new GuideArrowData(
+                    guideType,
+                    target,
+                    targetPositionOffset,
+                    targetSizeOffset,
+                    arrowPositionOffset,
+                    0f,
+                    false),
+                null);
+        }
+
         public void Stop(System.Action callback = null)
         {
             _onClickDispose?.Dispose();

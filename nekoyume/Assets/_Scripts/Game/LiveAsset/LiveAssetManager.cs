@@ -33,6 +33,8 @@ namespace Nekoyume.Game.LiveAsset
         public bool HasUnreadNotice =>
             _notices.NoticeData.Any(d => !_alreadyReadNotices.Contains(d.Header));
 
+        public bool HasUnread => HasUnreadEvent || HasUnreadNotice;
+
         public IObservable<bool> ObservableHasUnreadEvent => _alreadyReadNotices
             .ObserveAdd()
             .Select(_ => HasUnreadEvent);
@@ -43,7 +45,7 @@ namespace Nekoyume.Game.LiveAsset
 
         public IObservable<bool> ObservableHasUnread => _alreadyReadNotices
             .ObserveAdd()
-            .Select(_ => HasUnreadNotice || HasUnreadEvent);
+            .Select(_ => HasUnread);
 
         public IReadOnlyList<EventNoticeData> BannerData => _bannerData;
         public IReadOnlyList<NoticeData> NoticeData => _notices.NoticeData;
@@ -61,7 +63,13 @@ namespace Nekoyume.Game.LiveAsset
 
         public IEnumerator InitializeApplicationCLO()
         {
-            var cloEndpoint = CLOEndpointPrefix + Application.version.Replace(".", "-") + ".json";
+            var osKey = string.Empty;
+#if UNITY_ANDROID
+            osKey = "-aos";
+#elif UNITY_IOS
+            osKey = "-ios";
+#endif
+            var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
             Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
             yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
 
