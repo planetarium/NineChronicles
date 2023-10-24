@@ -58,6 +58,7 @@ namespace Nekoyume.UI
         {
             guideDialog.gameObject.SetActive(false);
             items.ForEach(item => item.Item.gameObject.SetActive(false));
+            guideImage.sprite = transparentSprite;
             base.Close(ignoreCloseAnimation);
         }
 
