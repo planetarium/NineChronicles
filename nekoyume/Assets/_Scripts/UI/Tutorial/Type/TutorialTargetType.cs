@@ -34,6 +34,29 @@ namespace Nekoyume.UI
         PatrolRewardMenu = 100000,
         PatrolTimeText,
         ClaimPatrolRewardButton,
+	//아레나
+	ArenaMenu = 150000,
+	ArenaSeasonText = 150001,
+	ArenaTicket = 150002,
+	//업그레이드
+	CombinationUpgradeButton = 350000,
+	CombinationInventoryFirstCell = 350001,
+	CombinationInventorySecondCell = 350002,
+	CombinationInventoryGaugebar = 350003,
+	CombinationDeleteButton = 350004,
+	//그라인드
+	CombinationGrindButton = 400001,
+	//프리미엄과 슈퍼크래프트
+	CombineEquipmentSuperCraftGauge = 450000,
+	CombineEquipmentSuperCraft = 450001,
+	CombineEquipmentSuperCraftPopupClose = 450002,
+	CombineEquipmentPremiumRecipeButton = 450003,
+	//월드보스
+	WorldBossButton = 500000,
+	WorldBossSeasonInformation = 500001,
+	WorldBossSeasonRewardsButton = 500002,
+	WorldBossRewardsButton = 500002,
+	WorldBossEnterPracticeButton = 500003,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

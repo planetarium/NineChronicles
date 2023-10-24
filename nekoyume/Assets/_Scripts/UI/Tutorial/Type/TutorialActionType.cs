@@ -30,6 +30,25 @@ namespace Nekoyume.UI
         TutorialActionClickNormal1SummonButton,
         TutorialActionClickPatrolRewardMenu = 100000,
         TutorialActionClickClaimPatrolRewardButton,
+	//아레나
+	TutorialActionClickArenaMenu = 1000000,
+	//업그레이드
+	TutorialActionClickCombinationUpgradeButton,
+	TutorialActionClickCombinationInventoryFirstCell,
+	TutorialActionClickCombinationInventorySecondCell,
+	TutorialActionClickCombinationDeleteButton,
+	//그라인드
+	TutorialActionClickCombinationGrindButton,
+	//슈퍼크래프트와 프리미엄
+	TutorialActionClickCombineEquipmentSuperCraft,
+	TutorialActionClickCombineEquipmentSuperCraftPopupClose,
+	TutorialActionClickCombineEquipmentPremiumRecipeButton,
+	//월드보스
+	TutorialActionClickWorldBossButton,
+	TutorialActionClickWorldBossSeasonRewardsButton,
+	TutorialActionClickWorldBossRewardsButton,
+	TutorialActionClickWorldBossEnterPracticeButton,
+
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>
