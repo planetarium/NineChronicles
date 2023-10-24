@@ -40,5 +40,6 @@ namespace Nekoyume.UI
         public float arrowAdditionalDelay;
         public bool fullScreenButton;
         public bool noArrow;
+        public Sprite guideSprite;
     }
 }
