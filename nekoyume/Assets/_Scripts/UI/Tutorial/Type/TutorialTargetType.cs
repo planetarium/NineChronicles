@@ -55,8 +55,8 @@ namespace Nekoyume.UI
 	    WorldBossButton = 500000,
 	    WorldBossSeasonInformation = 500001,
 	    WorldBossSeasonRewardsButton = 500002,
-	    WorldBossRewardsButton = 500002,
-	    WorldBossEnterPracticeButton = 500003,
+	    WorldBossRewardsButton = 500003,
+	    WorldBossEnterPracticeButton = 500004,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
