@@ -43,17 +43,33 @@ public class SeasonPassServiceClient
     public class ClaimResultSchema
     {
         [JsonPropertyName("items")]
-        public object Items { get; set; }
+        public List<ItemInfoSchema> Items { get; set; }
         [JsonPropertyName("currencies")]
-        public object Currencies { get; set; }
+        public List<CurrencyInfoSchema> Currencies { get; set; }
         [JsonPropertyName("user")]
         public UserSeasonPassSchema User { get; set; }
+    }
+
+    public class CurrencyInfoSchema
+    {
+        [JsonPropertyName("ticker")]
+        public string Ticker { get; set; }
+        [JsonPropertyName("amount")]
+        public decimal Amount { get; set; }
     }
 
     public class HTTPValidationError
     {
         [JsonPropertyName("detail")]
         public List<ValidationError> Detail { get; set; }
+    }
+
+    public class ItemInfoSchema
+    {
+        [JsonPropertyName("item_id")]
+        public int ItemId { get; set; }
+        [JsonPropertyName("amount")]
+        public int Amount { get; set; }
     }
 
     public class LevelInfoSchema
@@ -90,6 +106,24 @@ public class SeasonPassServiceClient
         public string AvatarAddr { get; set; }
     }
 
+    public class RewardDetailSchema
+    {
+        [JsonPropertyName("item")]
+        public List<ItemInfoSchema> Item { get; set; }
+        [JsonPropertyName("currency")]
+        public List<CurrencyInfoSchema> Currency { get; set; }
+    }
+
+    public class RewardSchema
+    {
+        [JsonPropertyName("level")]
+        public int Level { get; set; }
+        [JsonPropertyName("normal")]
+        public RewardDetailSchema Normal { get; set; }
+        [JsonPropertyName("premium")]
+        public RewardDetailSchema Premium { get; set; }
+    }
+
     public class SeasonPassSchema
     {
         [JsonPropertyName("id")]
@@ -99,7 +133,7 @@ public class SeasonPassServiceClient
         [JsonPropertyName("end_date")]
         public string EndDate { get; set; }
         [JsonPropertyName("reward_list")]
-        public List<object> RewardList { get; set; }
+        public List<RewardSchema> RewardList { get; set; }
     }
 
     public class UserSeasonPassSchema
