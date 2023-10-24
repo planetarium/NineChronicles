@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
-                _tutorial.Play(viewData, scenario.data.presetId, () =>
+                _tutorial.Play(viewData, scenario.data.presetId, scenario.data.guideSprite, () =>
                 {
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
