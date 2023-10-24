@@ -456,4 +456,35 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+  scenarioTemplates:
+  - description: Guide Quest
+    scenarioData:
+      presetId: 1
+      arrowPositionOffset: {x: -50, y: 0}
+      targetPositionOffset: {x: -20, y: 0}
+      targetSizeOffset: {x: 25, y: 20}
+      buttonRaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+      targetType: 17
+      actionType: 14
+      guideType: 1
+      emojiType: 2
+      scriptKey: TUTORIAL_10_004
+      arrowAdditionalDelay: 1.5
+      fullScreenButton: 0
+      noArrow: 0
+  - description: Start Button in Battle Preparation
+    scenarioData:
+      presetId: 1
+      arrowPositionOffset: {x: 0, y: 0}
+      targetPositionOffset: {x: 0, y: 0}
+      targetSizeOffset: {x: 0, y: 0}
+      buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+      targetType: 30001
+      actionType: 30001
+      guideType: 1
+      emojiType: 2
+      scriptKey: TUTORIAL_10_005
+      arrowAdditionalDelay: 0
+      fullScreenButton: 0
+      noArrow: 0
   json: {fileID: 4900000, guid: 162dc39372cb9114896ac35ba9c88339, type: 3}
