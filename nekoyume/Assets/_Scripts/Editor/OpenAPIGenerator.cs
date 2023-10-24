@@ -345,6 +345,7 @@ namespace Nekoyume
                 case "string": return "string";
                 case "integer": return "int";
                 case "boolean": return "bool";
+                case "number": return "decimal";
 
                 default: return "object";
             }
