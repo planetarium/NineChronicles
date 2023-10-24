@@ -558,411 +558,411 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 350000
+      nextId: 350001
+      checkPointId: 350000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 2
+        actionType: 50000
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: 'TUTORIAL_35_001 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 350001
+      nextId: 350002
+      checkPointId: 350000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 350000
+        actionType: 1000001
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: 'TUTORIAL_35_002 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 350002
+      nextId: 350003
+      checkPointId: 350000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 350001
+        actionType: 1000002
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: 'TUTORIAL_35_003 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 350003
+      nextId: 350004
+      checkPointId: 350000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 350002
+        actionType: 1000003
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_35_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 350004
+      nextId: 350005
+      checkPointId: 350000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 350003
+        actionType: 0
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_35_005
+        arrowAdditionalDelay: 0
+        fullScreenButton: 1
+        noArrow: 0
+    - id: 350005
+      nextId: 0
+      checkPointId: -35
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 350004
+        actionType: 1000004
+        guideType: 3
+        emojiType: 2
+        scriptKey: TUTORIAL_35_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 400000
+      nextId: 400001
+      checkPointId: 400000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 2
+        actionType: 50000
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: 'TUTORIAL_40_001 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 400001
+      nextId: 400002
+      checkPointId: 400000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 400001
+        actionType: 1000005
+        guideType: 3
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: 'TUTORIAL_40_001 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 400002
+      nextId: 400003
+      checkPointId: 400000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 0
+        actionType: 0
+        guideType: 0
+        emojiType: 2
+        scriptKey: TUTORIAL_40_002
+        arrowAdditionalDelay: 0
+        fullScreenButton: 1
+        noArrow: 0
+    - id: 400003
+      nextId: 0
+      checkPointId: -40
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 0
+        actionType: 0
+        guideType: 0
+        emojiType: 2
+        scriptKey: TUTORIAL_40_003
+        arrowAdditionalDelay: 0
+        fullScreenButton: 1
+        noArrow: 0
+    - id: 450000
+      nextId: 450001
+      checkPointId: 450000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 2
+        actionType: 50000
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 450001
+      nextId: 450002
+      checkPointId: 450000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 3
+        actionType: 5
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 450002
+      nextId: 450003
+      checkPointId: 450000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 450000
+        actionType: 0
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 450003
+      nextId: 450004
+      checkPointId: 450000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 450001
+        actionType: 1000006
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 450004
+      nextId: 450005
+      checkPointId: 450000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 450002
+        actionType: 1000007
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 450005
+      nextId: 450006
+      checkPointId: 450000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 450003
+        actionType: 1000008
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
+    - id: 450006
       nextId: 0
-      checkPointId: -10
+      checkPointId: -45
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 0
+        actionType: 0
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_45_007
+        arrowAdditionalDelay: 0
+        fullScreenButton: 1
+        noArrow: 0
+    - id: 500000
+      nextId: 500001
+      checkPointId: 500000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 500000
+        actionType: 1000009
+        guideType: 3
+        emojiType: 2
+        scriptKey: 'TUTORIAL_50_001 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 500001
+      nextId: 500002
+      checkPointId: 500000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 0
+        actionType: 0
+        guideType: 0
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 500002
+      nextId: 500003
+      checkPointId: 500000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 500001
+        actionType: 0
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 500003
+      nextId: 500004
+      checkPointId: 500000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 500002
+        actionType: 1000010
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 500004
+      nextId: 500005
+      checkPointId: 500000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 500002
+        actionType: 1000011
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
+    - id: 500005
+      nextId: 500006
+      checkPointId: 500000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
+        targetType: 0
+        actionType: 0
+        guideType: 0
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_006
         arrowAdditionalDelay: 0
-        fullScreenButton: 0
+        fullScreenButton: 1
         noArrow: 0
-    - id: 100004
+    - id: 500006
       nextId: 0
-      checkPointId: -10
+      checkPointId: -50
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
+        targetType: 500003
+        actionType: 1000012
         guideType: 1
         emojiType: 2
-        scriptKey: TUTORIAL_10_005
-        arrowAdditionalDelay: 0
-        fullScreenButton: 0
-        noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
-      data:
-        presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
-        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
-        emojiType: 2
-        scriptKey: TUTORIAL_10_005
-        arrowAdditionalDelay: 0
-        fullScreenButton: 0
-        noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
-      data:
-        presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
-        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
-        emojiType: 2
-        scriptKey: TUTORIAL_10_005
-        arrowAdditionalDelay: 0
-        fullScreenButton: 0
-        noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
-      data:
-        presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
-        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
-        emojiType: 2
-        scriptKey: TUTORIAL_10_005
-        arrowAdditionalDelay: 0
-        fullScreenButton: 0
-        noArrow: 0
-    - id: 100004
-      nextId: 0
-      checkPointId: -10
-      data:
-        presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
-        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 30001
-        actionType: 30001
-        guideType: 1
-        emojiType: 2
-        scriptKey: TUTORIAL_10_005
+        scriptKey: TUTORIAL_50_007
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
