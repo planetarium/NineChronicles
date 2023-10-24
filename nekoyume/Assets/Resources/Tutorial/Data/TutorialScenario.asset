@@ -31,6 +31,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 2
       nextId: 30000
       checkPointId: 12
@@ -48,6 +49,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 9
       nextId: 11
       checkPointId: 2
@@ -65,6 +67,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 11
       nextId: 12
       checkPointId: 2
@@ -82,6 +85,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 12
       nextId: 15
       checkPointId: 12
@@ -99,6 +103,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 15
       nextId: 27
       checkPointId: 12
@@ -116,6 +121,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 27
       nextId: 49
       checkPointId: 12
@@ -133,6 +139,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 49
       nextId: 30000
       checkPointId: 12
@@ -150,6 +157,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 70000
       nextId: 70001
       checkPointId: 70000
@@ -167,6 +175,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 1
+        guideSprite: {fileID: 0}
     - id: 70001
       nextId: 70002
       checkPointId: 70000
@@ -184,6 +193,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 70002
       nextId: 70003
       checkPointId: 70000
@@ -201,6 +211,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 70003
       nextId: 70004
       checkPointId: 70000
@@ -218,6 +229,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 70004
       nextId: 0
       checkPointId: -7
@@ -235,6 +247,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 30000
       nextId: 30001
       checkPointId: 12
@@ -252,6 +265,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 30001
       nextId: 30002
       checkPointId: 48
@@ -269,6 +283,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 30002
       nextId: 0
       checkPointId: -3
@@ -286,6 +301,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 50000
       nextId: 50001
       checkPointId: 50000
@@ -303,6 +319,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 50001
       nextId: 50002
       checkPointId: 50000
@@ -320,6 +337,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 50002
       nextId: 50003
       checkPointId: 50000
@@ -337,6 +355,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 50003
       nextId: 50004
       checkPointId: 50000
@@ -354,6 +373,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 50004
       nextId: 0
       checkPointId: -5
@@ -371,6 +391,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 1
+        guideSprite: {fileID: 0}
     - id: 100000
       nextId: 100001
       checkPointId: 100000
@@ -388,6 +409,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 100001
       nextId: 100002
       checkPointId: 100000
@@ -405,6 +427,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 100002
       nextId: 100003
       checkPointId: 100000
@@ -422,6 +445,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 100003
       nextId: 100004
       checkPointId: 100000
@@ -439,6 +463,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 100004
       nextId: 0
       checkPointId: -10
@@ -456,9 +481,10 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 150000
-      nextId: 150001
-      checkPointId: 150000
+        guideSprite: {fileID: 0}
+    - id: 250000
+      nextId: 250001
+      checkPointId: 250000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -469,13 +495,14 @@ MonoBehaviour:
         actionType: 1000000
         guideType: 3
         emojiType: 2
-        scriptKey: 'TUTORIAL_15_001 '
+        scriptKey: TUTORIAL_15_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
-    - id: 150001
-      nextId: 150002
-      checkPointId: 150000
+        guideSprite: {fileID: 0}
+    - id: 250001
+      nextId: 250002
+      checkPointId: 250000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -486,13 +513,14 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 2
-        scriptKey: 'TUTORIAL_15_002 '
+        scriptKey: TUTORIAL_15_002
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-    - id: 150002
-      nextId: 150003
-      checkPointId: 150000
+        guideSprite: {fileID: 0}
+    - id: 250002
+      nextId: 250003
+      checkPointId: 250000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -507,9 +535,10 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-    - id: 150003
-      nextId: 150004
-      checkPointId: 150000
+        guideSprite: {fileID: 0}
+    - id: 250003
+      nextId: 250004
+      checkPointId: 250000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -524,9 +553,10 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-    - id: 150004
-      nextId: 150005
-      checkPointId: 150000
+        guideSprite: {fileID: 0}
+    - id: 250004
+      nextId: 250005
+      checkPointId: 250000
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -541,9 +571,10 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-    - id: 150005
+        guideSprite: {fileID: 0}
+    - id: 250005
       nextId: 0
-      checkPointId: -15
+      checkPointId: -25
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -558,6 +589,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350000
       nextId: 350001
       checkPointId: 350000
@@ -575,6 +607,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350001
       nextId: 350002
       checkPointId: 350000
@@ -592,6 +625,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350002
       nextId: 350003
       checkPointId: 350000
@@ -609,6 +643,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350003
       nextId: 350004
       checkPointId: 350000
@@ -626,6 +661,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350004
       nextId: 350005
       checkPointId: 350000
@@ -643,6 +679,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 350005
       nextId: 0
       checkPointId: -35
@@ -660,6 +697,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 400000
       nextId: 400001
       checkPointId: 400000
@@ -677,6 +715,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 400001
       nextId: 400002
       checkPointId: 400000
@@ -694,6 +733,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 400002
       nextId: 400003
       checkPointId: 400000
@@ -711,6 +751,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 400003
       nextId: 0
       checkPointId: -40
@@ -728,6 +769,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450000
       nextId: 450001
       checkPointId: 450000
@@ -745,6 +787,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450001
       nextId: 450002
       checkPointId: 450000
@@ -762,6 +805,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450002
       nextId: 450003
       checkPointId: 450000
@@ -779,6 +823,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450003
       nextId: 450004
       checkPointId: 450000
@@ -796,6 +841,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450004
       nextId: 450005
       checkPointId: 450000
@@ -813,6 +859,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450005
       nextId: 450006
       checkPointId: 450000
@@ -830,6 +877,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 450006
       nextId: 0
       checkPointId: -45
@@ -847,6 +895,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500000
       nextId: 500001
       checkPointId: 500000
@@ -864,6 +913,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500001
       nextId: 500002
       checkPointId: 500000
@@ -881,6 +931,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500002
       nextId: 500003
       checkPointId: 500000
@@ -898,6 +949,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500003
       nextId: 500004
       checkPointId: 500000
@@ -915,6 +967,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500004
       nextId: 500005
       checkPointId: 500000
@@ -932,6 +985,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500005
       nextId: 500006
       checkPointId: 500000
@@ -949,6 +1003,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
+        guideSprite: {fileID: 0}
     - id: 500006
       nextId: 0
       checkPointId: -50
@@ -966,6 +1021,7 @@ MonoBehaviour:
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
+        guideSprite: {fileID: 0}
   scenarioTemplates:
   - description: Guide Quest
     scenarioData:
@@ -982,6 +1038,7 @@ MonoBehaviour:
       arrowAdditionalDelay: 1.5
       fullScreenButton: 0
       noArrow: 0
+      guideSprite: {fileID: 0}
   - description: Start Button in Battle Preparation
     scenarioData:
       presetId: 1
@@ -997,4 +1054,5 @@ MonoBehaviour:
       arrowAdditionalDelay: 0
       fullScreenButton: 0
       noArrow: 0
+      guideSprite: {fileID: 0}
   json: {fileID: 4900000, guid: 162dc39372cb9114896ac35ba9c88339, type: 3}
