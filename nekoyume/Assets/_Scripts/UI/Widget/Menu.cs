@@ -757,6 +757,18 @@ namespace Nekoyume.UI
             PatrolRewardClick();
         }
 
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickArenaMenu()
+        {
+            // Fill this
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossButton()
+        {
+            // Fill this
+        }
+
 #if UNITY_EDITOR
         protected override void Update()
         {
