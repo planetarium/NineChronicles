@@ -72,6 +72,9 @@ namespace Nekoyume.UI
         private MainMenu btnPatrolReward;
 
         [SerializeField]
+        private MainMenu btnSeasonPass;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
         [SerializeField]
@@ -160,6 +163,7 @@ namespace Nekoyume.UI
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
+                    btnSeasonPass.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -599,6 +603,16 @@ namespace Nekoyume.UI
             }
 
             Find<PatrolRewardPopup>().Show();
+        }
+
+        public void SeasonPassClick()
+        {
+            if (!btnSeasonPass.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<SeasonPass>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

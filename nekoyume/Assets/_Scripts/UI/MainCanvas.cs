@@ -296,6 +296,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPass>());
+            yield return null;
 
             // loading
             _secondWidgets.Add(Widget.Create<StageLoadingEffect>());

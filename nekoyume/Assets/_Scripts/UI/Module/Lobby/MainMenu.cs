@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         WorldBoss,
         Dcc,
         PatrolReward,
+        SeasonPass,
     }
 
     public class MainMenu : MonoBehaviour
@@ -81,6 +82,9 @@ namespace Nekoyume.UI.Module.Lobby
                 case MenuType.Dcc:
                 case MenuType.PatrolReward:
                     _requireStage = TutorialEndStage;
+                    break;
+                case MenuType.SeasonPass:
+                    _requireStage = 1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
