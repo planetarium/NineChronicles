@@ -273,6 +273,10 @@ MonoBehaviour:
   tutorialTargets:
   - type: 50000
     rectTransform: {fileID: 6547616293827078604}
+  - type: 350000
+    rectTransform: {fileID: 6274492408546324229}
+  - type: 400001
+    rectTransform: {fileID: 1849450047935067388}
   tutorialActions: 51c30000
   summonButton: {fileID: 3248731447781743755}
   combineButton: {fileID: 6274492408613066932}

@@ -12607,7 +12607,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5192fec5e7a4a31b93db39cc2cf926c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
+  tutorialTargets:
+  - type: 500001
+    rectTransform: {fileID: 8407299464856079923}
+  - type: 500002
+    rectTransform: {fileID: 7903251042564877810}
+  - type: 500002
+    rectTransform: {fileID: 5526517116236016115}
+  - type: 500003
+    rectTransform: {fileID: 1413303026879633070}
   tutorialActions: 
   season: {fileID: 3712373159297673171}
   backButton: {fileID: 4656612568814026336}
