@@ -76,6 +76,8 @@ namespace Nekoyume.Helper
 
         private string _patrolRewardServiceHost;
 
+        private string _seasonPassServiceHost;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -437,6 +439,17 @@ namespace Nekoyume.Helper
             set
             {
                 _patrolRewardServiceHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("season-pass-service-host", Required = false, HelpText = "season pass service host")]
+        public string SeasonPassServiceHost
+        {
+            get => _seasonPassServiceHost;
+            set
+            {
+                _seasonPassServiceHost = value;
                 Empty = false;
             }
         }

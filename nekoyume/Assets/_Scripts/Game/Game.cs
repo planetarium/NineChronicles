@@ -109,6 +109,8 @@ namespace Nekoyume.Game
 
         public IAPServiceManager IAPServiceManager { get; private set; }
 
+        public SeasonPassServiceClient SeasonPassServiceClient { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -343,6 +345,8 @@ namespace Nekoyume.Game
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
             PatrolRewardServiceClient =
                 new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
+
+            SeasonPassServiceClient = new SeasonPassServiceClient(_commandLineOptions.SeasonPassServiceHost);
 
             GL.Clear(true, true, Color.black);
             // Initialize Agent
