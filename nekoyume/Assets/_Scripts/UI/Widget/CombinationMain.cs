@@ -141,13 +141,13 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationUpgradeButton()
         {
-            // Fill this
+            upgradeButton.onClick?.Invoke();
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationGrindButton()
         {
-            // Fill this
+            grindButton.onClick?.Invoke();
         }
     }
 }

@@ -441,7 +441,7 @@ namespace Nekoyume.UI
                 {
                     if(materialModels.Count > 5 || _matarialsScroller?.Position != 0)
                         enhancementSelectedMaterialItemScroll.JumpTo(materialModels[materialModels.Count - 1], 0);
-                    
+
                     animator.Play(HashToPostRegisterMaterial);
                     noneContainer.SetActive(false);
                 }
@@ -651,21 +651,33 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationInventoryFirstCell()
         {
-            // Fill this
+            var item = enhancementInventory.GetEnabledItem(0);
+            if (item.ItemBase is not Equipment equipment)
+            {
+                return;
+            }
+
+            enhancementInventory.Select(equipment.ItemSubType, equipment.ItemId);
         }
 
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationInventorySecondCell()
         {
-            // Fill this
+            var item = enhancementInventory.GetEnabledItem(1);
+            if (item.ItemBase is not Equipment equipment)
+            {
+                return;
+            }
+
+            enhancementInventory.Select(equipment.ItemSubType, equipment.ItemId);
         }
 
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombinationDeleteButton()
         {
-            // Fill this
+            enhancementInventory.DeselectItem(true);
         }
     }
 }
