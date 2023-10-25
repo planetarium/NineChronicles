@@ -59,6 +59,11 @@ namespace Nekoyume.UI
 	    WorldBossSeasonRewardsButton,
 	    WorldBossRewardsButton,
 	    WorldBossEnterPracticeButton,
+        // Action point and rune stone - 23
+        ActionPointHeaderMenu,
+        ActionPointChargeButton,
+        CombinationRuneButton, // Combination -> Rune
+        CombinationRuneCombineButton,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
