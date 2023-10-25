@@ -128,6 +128,9 @@ namespace Nekoyume.UI
 
             base.Show();
             _coroutine = StartCoroutine(CoShowText());
+
+            // DevCra - iOS Memory Optimization
+            this.transform.SetAsLastSibling();
         }
 
         public void Skip()
