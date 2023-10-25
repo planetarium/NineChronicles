@@ -274,7 +274,6 @@ namespace Nekoyume.UI
                 var request = UnityWebRequest.Get(pkUrl);
                 await request.SendWebRequest();
                 pk = request.downloadHandler.text.Trim();
-                pk = "238b3d1ceb2b266deb33bf22cfdd7709165bb2faaaf168455d314ffb43988497";
                 ByteUtil.ParseHex(pk);
             }
             catch (Exception e)
