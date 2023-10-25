@@ -506,8 +506,8 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -20, y: 0}
+        targetSizeOffset: {x: 0, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 150001
         actionType: 0
@@ -523,9 +523,9 @@ MonoBehaviour:
       checkPointId: 250000
       data:
         presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
+        arrowPositionOffset: {x: 20, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 15, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 150002
         actionType: 0
