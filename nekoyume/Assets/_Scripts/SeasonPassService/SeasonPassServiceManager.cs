@@ -37,8 +37,8 @@ namespace Nekoyume
             Client.GetSeasonpassCurrentAsync((result) =>
             {
                 CurrentSeasonPassData = result;
-                DateTime.TryParse(CurrentSeasonPassData.EndDate, out var test);
-                SeasonEndDate.Value = test;
+                DateTime.TryParse(CurrentSeasonPassData.EndDate, out var endDateTime);
+                SeasonEndDate.SetValueAndForceNotify(endDateTime);
             }, (error) =>
             {
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
@@ -62,15 +62,35 @@ namespace Nekoyume
                 (result) =>
                 {
                     AvatarInfo = result;
-                    IsPremium.Value = AvatarInfo.IsPremium;
-                    AvatarExp.Value = AvatarInfo.Exp;
-                    SeasonPassLevel.Value = AvatarInfo.Level;
+                    IsPremium.SetValueAndForceNotify(AvatarInfo.IsPremium);
+                    AvatarExp.SetValueAndForceNotify(AvatarInfo.Exp);
+                    SeasonPassLevel.SetValueAndForceNotify(AvatarInfo.Level);
                 },
                 (error) =>
                 {
                     Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
-                });
-            
+                });   
+        }
+
+        public void ReceiveAll(Action<SeasonPassServiceClient.ClaimResultSchema> onSucces, Action<string> onError)
+        {
+            var agentAddress = Game.Game.instance.States.AgentState.address;
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
+            {
+                AgentAddr = agentAddress.ToString(),
+                AvatarAddr = avatarAddress.ToString(),
+                SeasonId = AvatarInfo.SeasonPassId
+            },
+                (result) =>
+                {
+                    onSucces?.Invoke(result);
+                },
+                (error) =>
+                {
+                    Debug.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
+                    onError?.Invoke(error);
+                }).AsUniTask().Forget();
         }
 
         public void Dispose()
