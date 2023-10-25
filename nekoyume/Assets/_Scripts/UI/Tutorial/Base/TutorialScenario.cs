@@ -36,6 +36,8 @@ namespace Nekoyume.UI
         public GuideType guideType;
         [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public DialogEmojiType emojiType;
+        [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
+        public DialogPositionType dialogPositionType;
         public string scriptKey;
         public float arrowAdditionalDelay;
         public bool fullScreenButton;

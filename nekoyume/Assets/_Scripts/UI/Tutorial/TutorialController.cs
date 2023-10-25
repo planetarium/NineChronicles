@@ -167,6 +167,7 @@ namespace Nekoyume.UI
                 new GuideDialogData(
                     data.emojiType,
                     (DialogCommaType) preset.commaId,
+                    data.dialogPositionType,
                     script,
                     target)
             };
