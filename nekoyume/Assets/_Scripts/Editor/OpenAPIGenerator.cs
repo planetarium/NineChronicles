@@ -9,9 +9,292 @@ using System.Text.Json.Nodes;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Nekoyume
 {
+    public class GeneratedApiTester : EditorWindow
+    {
+        private object clientInstance;
+        private string url = "";
+        private string responseMessage;
+        private string className = "";
+        private List<string> methodNames = new List<string>();
+        private List<MethodInfo> methodInfos = new List<MethodInfo>();
+        private int selectedMethodIndex = 0;
+        private List<object> methodParameters = new List<object>();
+        private Dictionary<string, object> customClassValues = new Dictionary<string, object>();
+        private Vector2 scrollPosition;
+
+        public static void ShowWindow(string startURl, string className)
+        {
+            var window = GetWindow(typeof(GeneratedApiTester)) as GeneratedApiTester;
+            window.methodInfos.Clear();
+            window.methodNames.Clear();
+            window.selectedMethodIndex = 0;
+            window.methodParameters.Clear();
+            window.className = className;
+            window.url = startURl;
+        }
+
+        private void OnGUI()
+        {
+            GUILayout.Label("Generated API Tester", EditorStyles.boldLabel);
+
+            url = EditorGUILayout.TextField("Service URL: ", url);
+            className = EditorGUILayout.TextField("Class Name: ", className);
+
+            if (GUILayout.Button("Create Client Instance"))
+            {
+                selectedMethodIndex = 0;
+                CreateClientInstance();
+                LoadMethodsFromClientType();
+            }
+
+            if (clientInstance != null)
+            {
+                int newSelectedMethodIndex = EditorGUILayout.Popup("Select Method", selectedMethodIndex, methodNames.ToArray());
+
+                if (newSelectedMethodIndex != selectedMethodIndex)
+                {
+                    selectedMethodIndex = newSelectedMethodIndex;
+                    LoadMethodsFromClientType();
+                    LoadMethodParameters();
+                }
+
+                DrawMethodParameters();
+
+                if (GUILayout.Button("Invoke Selected Method"))
+                {
+                    InvokeSelectedMethod();
+                    scrollPosition = Vector2.zero;
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Response:", EditorStyles.boldLabel);
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            EditorGUILayout.TextArea(responseMessage, GUILayout.ExpandHeight(true));
+            EditorGUILayout.EndScrollView();
+        }
+
+        private void LoadMethodParameters()
+        {
+            methodParameters.Clear();
+
+            ParameterInfo[] parameters = methodInfos[selectedMethodIndex].GetParameters();
+            foreach (var param in parameters)
+            {
+                if (param.ParameterType == typeof(string))
+                {
+                    methodParameters.Add("");
+                }
+                else if (param.ParameterType.IsValueType)
+                {
+                    methodParameters.Add(Activator.CreateInstance(param.ParameterType));
+                }
+                else if (IsCallback(param.ParameterType))
+                {
+                    var callbackType = param.ParameterType.GetGenericArguments()[0];
+                    var callback = CreateDynamicCallback(callbackType);
+                    methodParameters.Add(callback);
+                }
+                else
+                {
+                    methodParameters.Add(null);
+                }
+            }
+        }
+
+        private void DrawMethodParameters()
+        {
+            ParameterInfo[] parameters = methodInfos[selectedMethodIndex].GetParameters();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                string paramName = parameters[i].Name;
+                Type paramType = parameters[i].ParameterType;
+
+                if (paramType == typeof(string))
+                {
+                    methodParameters[i] = EditorGUILayout.TextField(paramName + " (string)", (string)methodParameters[i]);
+                }
+                else if (paramType == typeof(int))
+                {
+                    methodParameters[i] = EditorGUILayout.IntField(paramName + " (int)", (int)methodParameters[i]);
+                }
+                else if (paramType == typeof(float))
+                {
+                    methodParameters[i] = EditorGUILayout.FloatField(paramName + " (float)", (float)methodParameters[i]);
+                }
+                else if (IsCallback(paramType))
+                {
+
+                }
+                else if (IsCustomClass(paramType))
+                {
+                    DrawCustomClassFields(paramName, paramType, out var classInstance);
+                    methodParameters[i] = classInstance;
+                }
+                else if (paramType.IsEnum)
+                {
+                    methodParameters[i] = EditorGUILayout.EnumPopup(paramName, (Enum)methodParameters[i]);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField($"Parameter {paramName} of type {paramType.Name} not supported.");
+                }
+            }
+        }
+
+        private void DrawCustomClassFields(string paramName, Type paramType, out object classIntance)
+        {
+            FieldInfo[] fields = paramType.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo[] properties = paramType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            EditorGUILayout.LabelField($"Editing {paramName} ({paramType.Name}):");
+            EditorGUI.indentLevel++;
+
+            object customClassInstance;
+            if (!customClassValues.TryGetValue(paramName, out customClassInstance))
+            {
+                customClassInstance = Activator.CreateInstance(paramType);
+                customClassValues[paramName] = customClassInstance;
+            }
+            classIntance = customClassInstance;
+
+            foreach (var prop in properties)
+            {
+                if (prop.CanRead && prop.CanWrite)
+                {
+                    UpdatePropertyValue(customClassInstance, prop);
+                }
+            }
+
+            EditorGUI.indentLevel--;
+        }
+
+        private void UpdatePropertyValue(object instance, PropertyInfo property)
+        {
+            var propertyType = property.PropertyType;
+            var propertyValue = property.GetValue(instance);
+
+            if (propertyType == typeof(int))
+            {
+                propertyValue = EditorGUILayout.IntField(property.Name + " (int)", (int)propertyValue);
+            }
+            else if (propertyType == typeof(string))
+            {
+                propertyValue = EditorGUILayout.TextField(property.Name + " (string)", (string)propertyValue);
+            }
+            else if (propertyType.IsEnum)
+            {
+                propertyValue = EditorGUILayout.EnumPopup(property.Name, (Enum)propertyValue);
+            }
+
+            property.SetValue(instance, propertyValue);
+        }
+
+        private bool IsCustomClass(Type type)
+        {
+            return type.IsClass && type != typeof(string);
+        }
+
+        private void CreateClientInstance()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Type clientType = assembly.GetType(className);
+
+            if (clientType != null)
+            {
+                clientInstance = Activator.CreateInstance(clientType, url);
+                responseMessage = "Client instance created!";
+            }
+            else
+            {
+                responseMessage = $"Failed to find {className} type.";
+            }
+        }
+
+        private void LoadMethodsFromClientType()
+        {
+            if (clientInstance != null)
+            {
+                methodNames.Clear();
+                methodInfos.Clear();
+                customClassValues.Clear();
+                MethodInfo[] methods = clientInstance.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var method in methods)
+                {
+                    methodNames.Add(method.Name);
+                    methodInfos.Add(method);
+                }
+                responseMessage = $"Loaded {methodNames.Count} methods!";
+            }
+            else
+            {
+                responseMessage = "Client instance not created.";
+            }
+        }
+
+        private void InvokeSelectedMethod()
+        {
+            MethodInfo method = methodInfos[selectedMethodIndex];
+
+            try
+            {
+                object result = method.Invoke(clientInstance, methodParameters.ToArray());
+                if (result is Task task)
+                {
+                    WaitForTaskCompletion(task);
+                }
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message;
+            }
+
+            Repaint();
+        }
+
+        private bool IsCallback(Type type)
+        {
+            if (!type.IsGenericType) return false;
+            return type.GetGenericTypeDefinition() == typeof(Action<>);
+        }
+
+        private Delegate CreateDynamicCallback(Type callbackType)
+        {
+            MethodInfo method = this.GetType().GetMethod(nameof(GenericCallback), BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo generic = method.MakeGenericMethod(callbackType);
+            return (Delegate)generic.CreateDelegate(typeof(Action<>).MakeGenericType(callbackType), this);
+        }
+        private async void WaitForTaskCompletion(Task task)
+        {
+            try
+            {
+                await task;
+            }
+            catch (Exception ex)
+            {
+                responseMessage = $"Task Error: {ex.Message}";
+                Repaint();
+            }
+        }
+
+        private void GenericCallback<T>(T obj)
+        {
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string serializedData = System.Text.Json.JsonSerializer.Serialize(obj, options);
+            responseMessage = $"{serializedData}";
+            Repaint();
+        }
+    }
+
+
     public class OpenApiGenerator : EditorWindow
     {
         private const string _outputDir = "Assets/_Scripts/GeneratedApi";
@@ -66,6 +349,10 @@ namespace Nekoyume
                     {
                         _className = data.Key;
                         _downloadJsonUrl = data.Value;
+                    }
+                    if (GUILayout.Button("TesterWindow"))
+                    {
+                        GeneratedApiTester.ShowWindow(data.Value.Replace("/openapi.json",""), data.Key);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -159,6 +446,7 @@ namespace Nekoyume
             sb.AppendLine("    {");
             sb.AppendLine("        _client.Dispose();");
             sb.AppendLine("    }");
+            sb.AppendLine();
 
             if (rootNode["components"]?["schemas"] is JsonObject schemas)
             {
@@ -374,19 +662,29 @@ namespace Nekoyume
                         var parameters = method.Value["parameters"];
                         if (parameters != null)
                         {
+                            List<string> queryParameters = new List<string>();
+
                             foreach (var parameter in parameters as JsonArray)
                             {
                                 string parameterName = parameter["name"].ToString();
                                 string parameterType = ConvertToCSharpType(parameter["schema"]);
-
                                 parameterDefinitions.Append($"{parameterType} {parameterName}, ");
+
                                 if (parameter["in"].ToString() == "query")
                                 {
-                                    parameterUsages.AppendLine($"            url += \"?{parameterName}=\" + {parameterName}.ToString();");
+                                    queryParameters.Add($"{parameterName}={{{parameterName}}}");
                                 }
                             }
+
+                            if (queryParameters.Any())
+                            {
+                                string queryString = string.Join("&", queryParameters);
+                                parameterUsages.AppendLine($"            url += $\"?{queryString}\";");
+                            }
+
                             parameterUsages.AppendLine("            request.RequestUri = new Uri(url);");
                         }
+
 
                         var requestBody = method.Value["requestBody"];
                         if (requestBody != null)
