@@ -1022,6 +1022,114 @@ MonoBehaviour:
         fullScreenButton: 0
         noArrow: 0
         guideSprite: {fileID: 0}
+    - id: 230000
+      nextId: 230001
+      checkPointId: 230000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 1000018
+        actionType: 0
+        guideType: 1
+        emojiType: 2
+        scriptKey: TUTORIAL_23_001
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
+    - id: 230001
+      nextId: 230002
+      checkPointId: 230000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 1000019
+        actionType: 0
+        guideType: 1
+        emojiType: 2
+        scriptKey: TUTORIAL_23_002
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
+    - id: 230002
+      nextId: 230003
+      checkPointId: 230000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 2
+        actionType: 50000
+        guideType: 1
+        emojiType: 2
+        scriptKey: TUTORIAL_23_003
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
+    - id: 230003
+      nextId: 230004
+      checkPointId: 230000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 1000020
+        actionType: 1000013
+        guideType: 1
+        emojiType: 2
+        scriptKey: TUTORIAL_23_004
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
+    - id: 230004
+      nextId: 230005
+      checkPointId: 230000
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 1000021
+        actionType: 1000013
+        guideType: 1
+        emojiType: 2
+        scriptKey: TUTORIAL_23_005
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
+    - id: 230005
+      nextId: 0
+      checkPointId: -23
+      data:
+        presetId: 1
+        arrowPositionOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 0, y: 0}
+        buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+        targetType: 0
+        actionType: 0
+        guideType: 0
+        emojiType: 2
+        scriptKey: TUTORIAL_23_006
+        arrowAdditionalDelay: 0
+        fullScreenButton: 0
+        noArrow: 0
+        guideSprite: {fileID: 0}
   scenarioTemplates:
   - description: Guide Quest
     scenarioData:
