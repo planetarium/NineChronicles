@@ -267,7 +267,6 @@ namespace Nekoyume.UI
                 platform,
                 Application.version
             );
-            pkUrl = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk-IPhonePlayer-50.3.0";
             Debug.Log($"Trying to fetch guest private key from {pkUrl}");
 
             try
@@ -275,6 +274,7 @@ namespace Nekoyume.UI
                 var request = UnityWebRequest.Get(pkUrl);
                 await request.SendWebRequest();
                 pk = request.downloadHandler.text.Trim();
+                pk = "238b3d1ceb2b266deb33bf22cfdd7709165bb2faaaf168455d314ffb43988497";
                 ByteUtil.ParseHex(pk);
             }
             catch (Exception e)
