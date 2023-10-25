@@ -35,7 +35,7 @@ namespace Nekoyume.UI
             Action<int?> onSelected,
             bool ignoreShowAnimation = false)
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             var petCount = States.Instance.PetStates.GetPetStatesAll()
                 .Where(petState => petState != null);
             if (!petCount.Any())
