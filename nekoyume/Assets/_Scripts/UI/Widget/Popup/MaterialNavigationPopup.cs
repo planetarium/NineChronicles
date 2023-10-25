@@ -1,5 +1,4 @@
 ﻿using Coffee.UIEffects;
-using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -11,12 +10,6 @@ namespace Nekoyume.UI
 {
     public class MaterialNavigationPopup : PopupWidget
     {
-        [SerializeField]
-        private Button confirmButton;
-
-        [SerializeField]
-        private Button actionButton;
-
         [SerializeField]
         private Image itemImage;
 
@@ -30,16 +23,22 @@ namespace Nekoyume.UI
         private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private TextMeshProUGUI infoText;
-
-        [SerializeField]
         private GameObject infoContainer;
 
         [SerializeField]
-        private TextMeshProUGUI actionButtonText;
+        private UIHsvModifier hsvModifier;
 
         [SerializeField]
-        private UIHsvModifier hsvModifier;
+        private TextMeshProUGUI infoText;
+
+        [SerializeField]
+        private Button confirmButton;
+
+        [SerializeField]
+        private Button actionButton;
+
+        [SerializeField]
+        private TextMeshProUGUI actionButtonText;
 
         private System.Action _callback;
 
