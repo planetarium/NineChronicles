@@ -30,6 +30,7 @@ public class SeasonPassServiceClient
     {
         _client.Dispose();
     }
+
     public class ClaimRequestSchema
     {
         [JsonPropertyName("agent_addr")]
@@ -66,8 +67,8 @@ public class SeasonPassServiceClient
 
     public class ItemInfoSchema
     {
-        [JsonPropertyName("item_id")]
-        public int ItemId { get; set; }
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
         [JsonPropertyName("amount")]
         public int Amount { get; set; }
     }
@@ -211,8 +212,7 @@ public class SeasonPassServiceClient
         string url = Url + "/api/user/status";
         using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
         {
-            url += "?season_id=" + season_id.ToString();
-            url += "?avatar_addr=" + avatar_addr.ToString();
+            url += $"?season_id={season_id}&avatar_addr={avatar_addr}";
             request.RequestUri = new Uri(url);
             try
             {
