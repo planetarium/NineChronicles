@@ -709,7 +709,7 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 350003
         actionType: 0
-        guideType: 3
+        guideType: 1
         emojiType: 2
         dialogPositionType: 0
         scriptKey: TUTORIAL_35_005
@@ -728,7 +728,7 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 350004
         actionType: 1000004
-        guideType: 3
+        guideType: 2
         emojiType: 2
         dialogPositionType: 0
         scriptKey: TUTORIAL_35_006
