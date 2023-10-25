@@ -22,6 +22,7 @@ namespace Nekoyume.UI
         TutorialActionCloseAvatarInfoWidget = 13,
         TutorialActionClickGuidedQuestWorldStage2 = 14,
         TutorialActionClickMenuButton = 15,
+        // 가독성을 더하기 위해 튜토리얼이 진행되는 stage id * 10000 부터 1씩 더함
         TutorialActionClickPortalRewardButton = 70001,
         TutorialActionClickBattlePreparationFirstInventoryCellView = 30000,
         TutorialActionClickBattlePreparationHackAndSlash = 30001,
@@ -30,20 +31,21 @@ namespace Nekoyume.UI
         TutorialActionClickNormal1SummonButton,
         TutorialActionClickPatrolRewardMenu = 100000,
         TutorialActionClickClaimPatrolRewardButton,
-	    //아레나
+        // TutorialScenario 편집을 json에서 SO로 바꿨기 때문에 Enum 값에 가독성이 필요없어짐
+        // Arena
 	    TutorialActionClickArenaMenu = 1000000,
-	    //업그레이드
+        // Upgrade
 	    TutorialActionClickCombinationUpgradeButton,
 	    TutorialActionClickCombinationInventoryFirstCell,
 	    TutorialActionClickCombinationInventorySecondCell,
 	    TutorialActionClickCombinationDeleteButton,
-	    //그라인드
+        // Grind
 	    TutorialActionClickCombinationGrindButton,
-	    //슈퍼크래프트와 프리미엄
+        // Craft Recipe - Premium and SuperCraft
 	    TutorialActionClickCombineEquipmentSuperCraft,
 	    TutorialActionClickCombineEquipmentSuperCraftPopupClose,
 	    TutorialActionClickCombineEquipmentPremiumRecipeButton,
-	    //월드보스
+        // World
 	    TutorialActionClickWorldBossButton,
 	    TutorialActionClickWorldBossSeasonRewardsButton,
 	    TutorialActionClickWorldBossRewardsButton,

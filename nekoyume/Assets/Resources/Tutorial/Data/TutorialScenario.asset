@@ -491,7 +491,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 150000
+        targetType: 1000000
         actionType: 1000000
         guideType: 3
         emojiType: 2
@@ -509,7 +509,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 150001
+        targetType: 1000001
         actionType: 0
         guideType: 1
         emojiType: 2
@@ -527,7 +527,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 150002
+        targetType: 1000002
         actionType: 0
         guideType: 1
         emojiType: 2
@@ -617,7 +617,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 350000
+        targetType: 1000003
         actionType: 1000001
         guideType: 3
         emojiType: 2
@@ -635,7 +635,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 350001
+        targetType: 1000004
         actionType: 1000002
         guideType: 3
         emojiType: 2
@@ -653,7 +653,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 350002
+        targetType: 1000005
         actionType: 1000003
         guideType: 3
         emojiType: 2
@@ -671,7 +671,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 350003
+        targetType: 1000006
         actionType: 0
         guideType: 3
         emojiType: 2
@@ -689,7 +689,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 350004
+        targetType: 1000007
         actionType: 1000004
         guideType: 3
         emojiType: 2
@@ -725,7 +725,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 400001
+        targetType: 1000008
         actionType: 1000005
         guideType: 3
         emojiType: 2
@@ -815,7 +815,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 450000
+        targetType: 1000009
         actionType: 0
         guideType: 1
         emojiType: 2
@@ -833,7 +833,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 450001
+        targetType: 1000010
         actionType: 1000006
         guideType: 1
         emojiType: 2
@@ -851,7 +851,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 450002
+        targetType: 1000011
         actionType: 1000007
         guideType: 1
         emojiType: 2
@@ -869,7 +869,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 450003
+        targetType: 1000012
         actionType: 1000008
         guideType: 1
         emojiType: 2
@@ -905,7 +905,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 500000
+        targetType: 1000013
         actionType: 1000009
         guideType: 3
         emojiType: 2
@@ -941,7 +941,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 500001
+        targetType: 1000014
         actionType: 0
         guideType: 1
         emojiType: 2
@@ -959,7 +959,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 500002
+        targetType: 1000015
         actionType: 1000010
         guideType: 1
         emojiType: 2
@@ -977,7 +977,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 500002
+        targetType: 1000016
         actionType: 1000011
         guideType: 1
         emojiType: 2
@@ -1013,7 +1013,7 @@ MonoBehaviour:
         targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-        targetType: 500003
+        targetType: 1000017
         actionType: 1000012
         guideType: 1
         emojiType: 2

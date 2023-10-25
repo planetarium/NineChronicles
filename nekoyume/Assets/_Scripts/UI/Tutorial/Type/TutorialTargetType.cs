@@ -26,37 +26,39 @@ namespace Nekoyume.UI
         GuidedQuestButton = 17, // 좌표 안맞음
         CombinationResultPopupButton = 18, // 좌표 안맞음
         MenuButton = 19,
+        // 가독성을 더하기 위해 튜토리얼이 진행되는 stage id * 10000 부터 1씩 더함
         PortalReward = 70001,
         ItemTooltipEquipButton = 30000,
         BattlePreparationStartButton = 30001,
-        SummonEnteringButton = 50000,
+        SummonEnteringButton = 50000,  // Combination -> Summon
         Normal1SummonButton,
         PatrolRewardMenu = 100000,
         PatrolTimeText,
         ClaimPatrolRewardButton,
-	    //아레나
-	    ArenaMenu = 150000,
-	    ArenaSeasonText = 150001,
-	    ArenaTicket = 150002,
-	    //업그레이드
-	    CombinationUpgradeButton = 350000,
-	    CombinationInventoryFirstCell = 350001,
-	    CombinationInventorySecondCell = 350002,
-	    CombinationInventoryGaugebar = 350003,
-	    CombinationDeleteButton = 350004,
-	    //그라인드
-	    CombinationGrindButton = 400001,
-	    //프리미엄과 슈퍼크래프트
-	    CombineEquipmentSuperCraftGauge = 450000,
-	    CombineEquipmentSuperCraft = 450001,
-	    CombineEquipmentSuperCraftPopupClose = 450002,
-	    CombineEquipmentPremiumRecipeButton = 450003,
-	    //월드보스
-	    WorldBossButton = 500000,
-	    WorldBossSeasonInformation = 500001,
-	    WorldBossSeasonRewardsButton = 500002,
-	    WorldBossRewardsButton = 500003,
-	    WorldBossEnterPracticeButton = 500004,
+        // TutorialScenario 편집을 json에서 SO로 바꿨기 때문에 Enum 값에 가독성이 필요없어짐
+	    // Arena - 25
+	    ArenaMenu = 1000000,
+	    ArenaSeasonText,
+	    ArenaTicket,
+	    // Upgrade - 35
+	    CombinationUpgradeButton, // Combination -> Upgrade
+	    CombinationInventoryFirstCell,
+	    CombinationInventorySecondCell,
+	    CombinationInventoryGaugebar,
+	    CombinationDeleteButton,
+	    // Grind - 40
+	    CombinationGrindButton, // Combination -> Grind
+	    // Craft Recipe - Premium and SuperCraft - 45
+	    CombineEquipmentSuperCraftGauge,
+	    CombineEquipmentSuperCraft,
+	    CombineEquipmentSuperCraftPopupClose,
+	    CombineEquipmentPremiumRecipeButton,
+	    // WorldBoss - 50
+	    WorldBossButton,
+	    WorldBossSeasonInformation,
+	    WorldBossSeasonRewardsButton,
+	    WorldBossRewardsButton,
+	    WorldBossEnterPracticeButton,
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
