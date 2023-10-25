@@ -5,6 +5,29 @@ using Nekoyume.UI;
 
 namespace Nekoyume.Game.Util
 {
+    public static class ScreenClear
+    {
+        public static async UniTaskVoid ClearScreen(bool isHorizontal)
+        {
+            GameObject screenBoader;
+            if (isHorizontal)
+            {
+                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            }
+            else
+            {
+                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+            }
+
+            if (screenBoader != null)
+            {
+                screenBoader.gameObject.SetActive(true);
+                await UniTask.WaitForEndOfFrame();
+                screenBoader.gameObject.SetActive(false);
+            }
+        }
+    }
+
     public class IngameDebugConsoleCommands
     {
         public static GameObject IngameDebugConsoleObj;
@@ -16,21 +39,6 @@ namespace Nekoyume.Game.Util
                 var raidCam = Component.FindObjectOfType<RaidCamera>();
                 if (raidCam != null)
                     raidCam.ChangeRatioState();
-
-                ClearScreen().Forget();
-                async UniTaskVoid ClearScreen()
-                {
-                    if(IngameDebugConsoleObj != null)
-                    {
-                        var blackClearingImg = IngameDebugConsoleObj.transform.Find("BlackClearingImg");
-                        if(blackClearingImg != null)
-                        {
-                            blackClearingImg.gameObject.SetActive(true);
-                            await UniTask.WaitForEndOfFrame();
-                            blackClearingImg.gameObject.SetActive(false);
-                        }
-                    }
-                }
             });
 
             DebugLogConsole.AddCommand("clo","show current commandline option", ()=>{
