@@ -1,4 +1,5 @@
-﻿using Coffee.UIEffects;
+﻿using System;
+using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -10,6 +11,34 @@ namespace Nekoyume.UI
 {
     public class MaterialNavigationPopup : PopupWidget
     {
+        [Serializable]
+        private struct SubItemCount
+        {
+            public GameObject container;
+            public Image icon;
+            public TextMeshProUGUI nameText;
+            public TextMeshProUGUI countText;
+        }
+
+        [Serializable]
+        private struct BlockGauge
+        {
+            public GameObject container;
+            public Image gaugeFillImage;
+            public GameObject filledEffectImage;
+            public TextMeshProUGUI minText;
+            public TextMeshProUGUI maxText;
+            public TextMeshProUGUI remainBlockText;
+        }
+
+        [Serializable]
+        private struct InfoText
+        {
+            public GameObject container;
+            public UIHsvModifier hsvModifier;
+            public TextMeshProUGUI infoText;
+        }
+
         [SerializeField]
         private Image itemImage;
 
@@ -20,16 +49,16 @@ namespace Nekoyume.UI
         private TextMeshProUGUI itemCountText;
 
         [SerializeField]
+        private SubItemCount subItemCount;
+
+        [SerializeField]
         private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private GameObject infoContainer;
+        private BlockGauge blockGauge;
 
         [SerializeField]
-        private UIHsvModifier hsvModifier;
-
-        [SerializeField]
-        private TextMeshProUGUI infoText;
+        private InfoText infoText;
 
         [SerializeField]
         private Button confirmButton;
@@ -66,23 +95,47 @@ namespace Nekoyume.UI
             itemImage.sprite = itemIcon;
             itemNameText.text = itemName;
             var split = itemCount.Split('.');
-            itemCountText.text = string.Format(L10nManager.Localize("UI_COUNT_FORMAT"), split[0]);
+            itemCountText.text = L10nManager.Localize("UI_COUNT_FORMAT", split[0]);
             contentText.text = content;
             actionButtonText.text = buttonText;
-            infoText.gameObject.SetActive(infoText.text != string.Empty);
-            infoContainer.SetActive(false);
+            infoText.infoText.gameObject.SetActive(infoText.infoText.text != string.Empty);
+            infoText.container.SetActive(false);  // set default
+            subItemCount.container.SetActive(false);
+            blockGauge.container.SetActive(false);
             base.Show();
         }
 
         public void SetInfo(bool isActive, (string, bool) value = default)
         {
-            infoContainer.SetActive(isActive);
+            infoText.container.SetActive(isActive);
             var (info, isPositive) = value;
-            infoText.text = info;
-            infoText.color = isPositive
+            infoText.infoText.text = info;
+            infoText.infoText.color = isPositive
                 ? Palette.GetColor(ColorType.TextPositive)
                 : Palette.GetColor(ColorType.TextDenial);
-            hsvModifier.enabled = isPositive;
+            infoText.hsvModifier.enabled = isPositive;
+        }
+
+        private readonly (int min, int max) _blockRange = new(0, 1700);
+        public void ShowAP()
+        {
+            subItemCount.container.SetActive(true);
+            subItemCount.icon.sprite = default;
+            subItemCount.nameText.text = $"{default} :";
+            subItemCount.countText.text = default;
+
+            blockGauge.minText.text = _blockRange.min.ToString();
+            blockGauge.maxText.text = _blockRange.max.ToString();
+
+            int block = default;
+            long remainBlockRange = _blockRange.max - block;
+            blockGauge.container.SetActive(true);
+            blockGauge.gaugeFillImage.fillAmount = (float)block/_blockRange.max;
+            blockGauge.filledEffectImage.SetActive(block >= _blockRange.max);
+            blockGauge.remainBlockText.text =
+                $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
+
+            base.Show();
         }
     }
 }

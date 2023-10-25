@@ -1527,11 +1527,24 @@ MonoBehaviour:
   itemImage: {fileID: 6817434740769365206}
   itemNameText: {fileID: 3103039326954476331}
   itemCountText: {fileID: 161680920514306476}
+  subItemCount:
+    container: {fileID: 7731846295236637627}
+    icon: {fileID: 4748672940613872456}
+    nameText: {fileID: 9126595996356729306}
+    countText: {fileID: 8091011096308072568}
   contentText: {fileID: 8933993629951700762}
-  infoContainer: {fileID: 8438605236828766213}
-  hsvModifier: {fileID: 1036336759904496832}
-  infoText: {fileID: 343113076271096882}
-  confirmButton: {fileID: 0}
+  blockGauge:
+    container: {fileID: 3283843087959441074}
+    gaugeFillImage: {fileID: 5315921914409371808}
+    filledEffectImage: {fileID: 4244837954558849046}
+    minText: {fileID: 4777864053334548482}
+    maxText: {fileID: 6731785210246619642}
+    remainBlockText: {fileID: 677173951039464426}
+  infoText:
+    container: {fileID: 8438605236828766213}
+    hsvModifier: {fileID: 1036336759904496832}
+    infoText: {fileID: 343113076271096882}
+  confirmButton: {fileID: 3531086564196827634}
   actionButton: {fileID: 2938688282962255136}
   actionButtonText: {fileID: 6331374721247973954}
 --- !u!1 &2625503650159746150
