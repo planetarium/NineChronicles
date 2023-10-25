@@ -21,24 +21,6 @@ namespace Nekoyume.UI.Model.Patrol
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
         private bool _initialized;
 
-        public void Initialize()
-        {
-            if (_initialized)
-            {
-                return;
-            }
-
-            _initialized = true;
-            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
-                .CombineLatest(LastRewardTime, (_, lastReward) =>
-                {
-                    var timeSpan = DateTime.Now - lastReward;
-                    return timeSpan > Interval ? Interval : timeSpan;
-                })
-                .ToReactiveProperty();
-            LastRewardTime.Subscribe(_ => SetPushNotification());
-        }
-
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
             var serviceClient = Game.Game.instance.PatrolRewardServiceClient;
@@ -104,6 +86,21 @@ $@"query {{
                 Interval = response.Policy.MinimumRequiredInterval;
                 RewardModels.Value = response.Policy.Rewards;
             }
+
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+            PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
+                .CombineLatest(LastRewardTime, (_, lastReward) =>
+                {
+                    var timeSpan = DateTime.Now - lastReward;
+                    return timeSpan > Interval ? Interval : timeSpan;
+                })
+                .ToReactiveProperty();
+            LastRewardTime.Subscribe(_ => SetPushNotification());
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)

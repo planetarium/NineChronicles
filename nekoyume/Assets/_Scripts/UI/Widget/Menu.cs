@@ -545,6 +545,11 @@ namespace Nekoyume.UI
 
         public void DccClick()
         {
+            if (!btnStaking.IsUnlocked)
+            {
+                return;
+            }
+
             AudioController.PlayClick();
 #if UNITY_ANDROID || UNITY_IOS
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
@@ -714,6 +719,12 @@ namespace Nekoyume.UI
         public void TutorialActionGoToWorkShop()
         {
             CombinationClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickPatrolRewardMenu()
+        {
+            PatrolRewardClick();
         }
 
 #if UNITY_EDITOR

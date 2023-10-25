@@ -360,7 +360,6 @@ namespace Nekoyume.UI
                     SetImage(_privateKey.PublicKey.ToAddress());
                     break;
                 case States.CreateAccount:
-                    Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitAgent);
                     CreateProtectedPrivateKey(_privateKey);
                     Login = _privateKey is not null;
                     Close();
@@ -403,7 +402,6 @@ namespace Nekoyume.UI
                 case States.Login_Mobile:
                     CheckLogin(() =>
                     {
-                        Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
                         Login = true;
                         Close();
                     });
@@ -522,7 +520,6 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Login/2");
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
-                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.InitAgent);
                 CreateProtectedPrivateKey(_privateKey);
                 Login = _privateKey is not null;
                 Close();

@@ -1032,9 +1032,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  indicator: {fileID: 2800942304858640784}
-  toolTip: {fileID: 0}
-  toolTipChangeButton: {fileID: 0}
   pcContainer: {fileID: 6668649362734582986}
   mobileContainer: {fileID: 6004842978331103633}
   videoImage: {fileID: 5860571314653810958}
@@ -6223,7 +6220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &589052843053483324
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6265,14 +6262,12 @@ VideoPlayer:
   m_DataSource: 0
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
+  m_TargetAudioSources: []
+  m_DirectAudioVolumes: []
   m_Url: 
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 00
-  m_ControlledAudioTrackCount: 1
+  m_EnabledAudioTracks: 
+  m_DirectAudioMutes: 
+  m_ControlledAudioTrackCount: 0
   m_PlayOnAwake: 1
   m_SkipOnDrop: 1
   m_Looping: 1
@@ -6372,7 +6367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &379524854130658829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8700,18 +8695,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a0b987d9e902134fa44625a2541ac08, type: 3}
---- !u!114 &2800942304858640784 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7689968050281011826, guid: 1a0b987d9e902134fa44625a2541ac08,
-    type: 3}
-  m_PrefabInstance: {fileID: 5505284533763492834}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93252f5c39664958b1279ec25159433b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5695579954384705849 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 246696151481537243, guid: 1a0b987d9e902134fa44625a2541ac08,

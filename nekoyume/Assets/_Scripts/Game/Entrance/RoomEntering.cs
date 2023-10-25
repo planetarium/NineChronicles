@@ -1,6 +1,5 @@
 using System.Collections;
 using Nekoyume.Blockchain;
-using Nekoyume.Game.Character;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -11,6 +10,9 @@ namespace Nekoyume.Game.Entrance
 {
     public class RoomEntering : MonoBehaviour
     {
+        private const int EventReleaseNotePopupLimitClearedStageId = 20;
+        private const int PatrolRewardPopupLimitClearedStageId = 20;
+
         private void Start()
         {
             StartCoroutine(Act());
@@ -81,11 +83,30 @@ namespace Nekoyume.Game.Entrance
             yield return new WaitForSeconds(1.0f);
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
-            Widget.Find<EventReleaseNotePopup>().Show();
             var headerMenu = Widget.Find<HeaderMenuStatic>();
             if (!headerMenu.isActiveAndEnabled)
             {
                 headerMenu.Show();
+            }
+
+            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
+            if (worldInfo is not null)
+            {
+                var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+
+                var patrolRewardPopup = Widget.Find<PatrolRewardPopup>();
+                if (patrolRewardPopup.CanClaim &&
+                    clearedStageId >= PatrolRewardPopupLimitClearedStageId)
+                {
+                    patrolRewardPopup.Show();
+                }
+
+                var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
+                if (eventReleaseNotePopup.HasUnread &&
+                    clearedStageId >= EventReleaseNotePopupLimitClearedStageId)
+                {
+                    eventReleaseNotePopup.Show();
+                }
             }
 
             Destroy(this);

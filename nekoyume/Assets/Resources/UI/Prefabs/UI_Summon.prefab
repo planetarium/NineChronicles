@@ -1021,9 +1021,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets:
-  - type: 100001
+  - type: 50001
     rectTransform: {fileID: 3573887815729517353}
-  tutorialActions: a2860100
+  tutorialActions: 52c30000
   costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
   closeButton: {fileID: 241345997775891456}
   drawItems:

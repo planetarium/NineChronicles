@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -8,17 +9,18 @@ namespace Nekoyume.UI
 {
     public enum GameInitProgress : int
     {
-        InitAgent = 1,
-        RequestPledge,
+        // 맨 앞에 ProgressStart, 맨 뒤에 ProgressCompleted는 필수. 이외의 enum은 순서가 중요하지 않음.
+        // 해당 동작이 시작하기 전에 호출
+        ProgressStart = 1, // called at after close loginSystem in Game.Start()
+        RequestPledge,  // called in mobile
         ApprovePledge,
         EndPledge,
-        CompleteLogin,
 
-        InitIAP,
+        InitIAP, // ~called in mobile
         InitTableSheet,
         InitCanvas,
 
-        ProgressCompleted,
+        ProgressCompleted, // called at last waiting point in Game.Start()
     }
 
     public class GrayLoadingScreen : ScreenWidget
@@ -42,6 +44,8 @@ namespace Nekoyume.UI
 
         private int _progress = 0;
 
+        public const float SliderAnimationDuration = 2f;
+
         public void Show(string message, bool localize, float alpha = 0.4f)
         {
             loadingSlider.container.SetActive(false);
@@ -64,7 +68,7 @@ namespace Nekoyume.UI
         {
             switch (progress)
             {
-                case GameInitProgress.InitAgent:
+                case GameInitProgress.ProgressStart:
                 case GameInitProgress.ProgressCompleted:
                     _progress = (int)progress;
                     break;
@@ -79,7 +83,7 @@ namespace Nekoyume.UI
             text.text = L10nManager.Localize($"UI_LOADING_GAME_START_{(int)progress}");
 
             loadingSlider.container.SetActive(true);
-            loadingSlider.slider.value = percent;
+            loadingSlider.slider.DOValue(percent, SliderAnimationDuration);
             loadingSlider.text.text = $"{percent}%";
 
             base.Show(true);
