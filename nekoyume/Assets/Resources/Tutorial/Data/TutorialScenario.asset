@@ -635,7 +635,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 3
         emojiType: 2
-        dialogPositionType: 0
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -654,7 +654,7 @@ MonoBehaviour:
         actionType: 1000001
         guideType: 3
         emojiType: 2
-        dialogPositionType: 0
+        dialogPositionType: 1
         scriptKey: TUTORIAL_35_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -666,14 +666,14 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -10, y: 10}
+        targetSizeOffset: {x: 10, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 350001
         actionType: 1000002
-        guideType: 3
+        guideType: 1
         emojiType: 2
-        dialogPositionType: 0
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -685,14 +685,14 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -10, y: 10}
+        targetSizeOffset: {x: 10, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 350002
         actionType: 1000003
-        guideType: 3
+        guideType: 1
         emojiType: 2
-        dialogPositionType: 0
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
