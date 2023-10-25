@@ -81,7 +81,7 @@ namespace Nekoyume
         /// </returns>
         public static string Push(string text, TimeSpan timespan, PushType pushType)
         {
-            if (!Settings.Instance.isPushEnabled)
+            if (!Settings.Instance.isPushEnabled || timespan.Ticks <= 0)
             {
                 return string.Empty;
             }
