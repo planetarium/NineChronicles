@@ -711,7 +711,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 3
         emojiType: 2
-        scriptKey: 'TUTORIAL_40_001 '
+        scriptKey: TUTORIAL_40_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
@@ -729,7 +729,7 @@ MonoBehaviour:
         actionType: 1000005
         guideType: 3
         emojiType: 2
-        scriptKey: 'TUTORIAL_40_001 '
+        scriptKey: TUTORIAL_40_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
         noArrow: 0
@@ -747,11 +747,11 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
-        scriptKey: TUTORIAL_40_002
+        scriptKey: TUTORIAL_40_003
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-        guideSprite: {fileID: 0}
+        guideSprite: {fileID: 21300000, guid: f9a6c79182124344dac48e5bcaba9383, type: 3}
     - id: 400003
       nextId: 0
       checkPointId: -40
@@ -765,11 +765,11 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
-        scriptKey: TUTORIAL_40_003
+        scriptKey: TUTORIAL_40_004
         arrowAdditionalDelay: 0
         fullScreenButton: 1
         noArrow: 0
-        guideSprite: {fileID: 0}
+        guideSprite: {fileID: 21300000, guid: 4008bac146480ee409803ae0df3651c4, type: 3}
     - id: 450000
       nextId: 450001
       checkPointId: 450000
