@@ -19,33 +19,18 @@ namespace Nekoyume.UI.Module.Lobby
         private void Awake()
         {
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
-            seasonPassService.IsPremium.SubscribeTo(premiumIcon).AddTo(gameObject);
-            seasonPassService.SeasonPassLevel.Subscribe((level) =>
-            {
-                levelText.text = $"Lv.{level}";
+            seasonPassService.AvatarInfo.Subscribe((info)=> {
+                if (info == null)
+                    return;
+
+                premiumIcon.SetActive(info.IsPremium);
+                levelText.text = $"Lv.{info.Level}";
             }).AddTo(gameObject);
 
-            Game.Game.instance.SeasonPassServiceManager.SeasonEndDate.Subscribe((endDate) =>
+            Game.Game.instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>
             {
-                RefreshTimeText();
+                timeText.text = $"<Style=Clock> {endDate}";
             });
-
-            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
-            {
-                RefreshTimeText();
-            }).AddTo(gameObject);
-
-            RefreshTimeText();
-        }
-
-        private void RefreshTimeText()
-        {
-            var timeSpan = Game.Game.instance.SeasonPassServiceManager.SeasonEndDate.Value - DateTime.Now;
-            var dayExist = timeSpan.TotalDays > 1;
-            var hourExist = timeSpan.TotalHours >= 1;
-            var dayText = dayExist ? $"{(int)timeSpan.TotalDays}d " : string.Empty;
-            var hourText = hourExist ? $"{(int)timeSpan.Hours}h " : string.Empty;
-            timeText.text = $"<Style=Clock> {dayText}{hourText}";
         }
     }
 }

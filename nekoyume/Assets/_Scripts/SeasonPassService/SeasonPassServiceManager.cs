@@ -2,25 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
 using Cysharp.Threading.Tasks;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Nekoyume
 {
+    using UniRx;
     public class SeasonPassServiceManager : IDisposable
     {
         public SeasonPassServiceClient Client { get; private set; }
 
         public SeasonPassServiceClient.SeasonPassSchema CurrentSeasonPassData { get; private set; }
-        public SeasonPassServiceClient.LevelInfoSchema[] LevelInfos { get; private set; }
-        public SeasonPassServiceClient.UserSeasonPassSchema AvatarInfo { get; private set; }
-
-        public ReactiveProperty<bool> IsPremium = new(false);
-        public ReactiveProperty<int> SeasonPassLevel = new (0);
-        public ReactiveProperty<int> AvatarExp = new (0);
+        public List<SeasonPassServiceClient.LevelInfoSchema> LevelInfos { get; private set; }
+        public ReactiveProperty<SeasonPassServiceClient.UserSeasonPassSchema> AvatarInfo = new();
 
         public ReactiveProperty<DateTime> SeasonEndDate = new(DateTime.MinValue);
+        public ReactiveProperty<string> RemainingDateTime = new("");
 
         public SeasonPassServiceManager(string url)
         {
@@ -39,17 +37,34 @@ namespace Nekoyume
                 CurrentSeasonPassData = result;
                 DateTime.TryParse(CurrentSeasonPassData.EndDate, out var endDateTime);
                 SeasonEndDate.SetValueAndForceNotify(endDateTime);
+                RefreshRemainingTime();
             }, (error) =>
             {
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassCurrentAsync] error: {error}");
             }).AsUniTask().Forget();
+
+            Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1)).Subscribe((time) =>
+            {
+                RefreshRemainingTime();
+            }).AddTo(Game.Game.instance);
+
             Client.GetSeasonpassLevelAsync((result) =>
             {
-                LevelInfos = result;
+                LevelInfos = result.OrderBy(info => info.Level).ToList();
             }, (error) =>
             {
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassLevelAsync] error: {error}");
             }).AsUniTask().Forget();
+        }
+
+        private void RefreshRemainingTime()
+        {
+            var timeSpan = SeasonEndDate.Value - DateTime.Now;
+            var dayExist = timeSpan.TotalDays > 1;
+            var hourExist = timeSpan.TotalHours >= 1;
+            var dayText = dayExist ? $"{(int)timeSpan.TotalDays}d " : string.Empty;
+            var hourText = hourExist ? $"{(int)timeSpan.Hours}h " : string.Empty;
+            RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}");
         }
 
         public async Task AvatarStateRefresh()
@@ -61,10 +76,7 @@ namespace Nekoyume
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(),
                 (result) =>
                 {
-                    AvatarInfo = result;
-                    IsPremium.SetValueAndForceNotify(AvatarInfo.IsPremium);
-                    AvatarExp.SetValueAndForceNotify(AvatarInfo.Exp);
-                    SeasonPassLevel.SetValueAndForceNotify(AvatarInfo.Level);
+                    AvatarInfo.SetValueAndForceNotify(result);
                 },
                 (error) =>
                 {
@@ -80,7 +92,7 @@ namespace Nekoyume
             {
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.SeasonPassId
+                SeasonId = AvatarInfo.Value.SeasonPassId
             },
                 (result) =>
                 {
@@ -91,6 +103,28 @@ namespace Nekoyume
                     Debug.LogError($"SeasonPassServiceManager [ReceiveAll] error: {error}");
                     onError?.Invoke(error);
                 }).AsUniTask().Forget();
+        }
+
+        public void GetExp(int level,  out int minExp, out int maxExp)
+        {
+            if(LevelInfos == null)
+            {
+                Debug.LogError("[SeasonPassServiceManager] LevelInfos Not Setted");
+                minExp = 0;
+                maxExp = 0;
+                return;
+            }
+
+            if(level > LevelInfos.Count)
+            {
+                minExp = LevelInfos[LevelInfos.Count - 2].Exp;
+                maxExp = LevelInfos[LevelInfos.Count - 1].Exp;
+                return;
+            }
+
+            minExp = level - 1 >= 0 ? LevelInfos[level - 1].Exp : 0;
+            maxExp = LevelInfos[level].Exp;
+            return;
         }
 
         public void Dispose()
