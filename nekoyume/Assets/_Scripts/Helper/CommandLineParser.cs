@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using Nekoyume.Planet;
 
 namespace Nekoyume.Helper
 {
@@ -16,6 +17,8 @@ namespace Nekoyume.Helper
     public class CommandLineOptions
     {
         private string _planetRegistryUrl;
+
+        private PlanetId? _planetId;
 
         private string privateKey;
 
@@ -89,6 +92,17 @@ namespace Nekoyume.Helper
             set
             {
                 _planetRegistryUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("planet-id", Required = false, HelpText = "planet id")]
+        public PlanetId? PlanetId
+        {
+            get => _planetId;
+            set
+            {
+                _planetId = value;
                 Empty = false;
             }
         }
@@ -502,6 +516,7 @@ namespace Nekoyume.Helper
                 Converters =
                 {
                     new StringEnumerableConverter(),
+                    new NullablePlanetIdJsonConverter(),
                 },
                 DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
