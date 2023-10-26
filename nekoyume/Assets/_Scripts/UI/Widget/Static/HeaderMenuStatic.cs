@@ -79,9 +79,6 @@ namespace Nekoyume.UI.Module
         private Crystal crystal;
 
         [SerializeField]
-        private GameObject dailyBonus;
-
-        [SerializeField]
         private Hourglass hourglass;
 
         [SerializeField]
@@ -147,7 +144,6 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public bool ChargingAP => actionPoint.NowCharging;
         public Gold Gold => ncg;
         public ActionPoint ActionPoint => actionPoint;
         public Crystal Crystal => crystal;
@@ -450,7 +446,7 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isDailyBonusActive: true);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Combination:
                     SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
@@ -486,7 +482,6 @@ namespace Nekoyume.UI.Module
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isActionPointActive = false,
-            bool isDailyBonusActive = false,
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
@@ -498,7 +493,6 @@ namespace Nekoyume.UI.Module
             ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
-            dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
