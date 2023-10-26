@@ -849,7 +849,7 @@ namespace Nekoyume.UI.Module
 
         private bool IsInteractableMaterial()
         {
-            if (Widget.Find<HeaderMenuStatic>().ChargingAP) // is charging?
+            if (Widget.Find<HeaderMenuStatic>().ActionPoint.NowCharging) // is charging?
             {
                 return false;
             }

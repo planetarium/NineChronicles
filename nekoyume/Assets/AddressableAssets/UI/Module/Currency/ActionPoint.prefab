@@ -169,13 +169,14 @@ RectTransform:
   - {fileID: 5477940152433574705}
   - {fileID: 5477940152661633402}
   - {fileID: 3756708108015450874}
+  - {fileID: 5129764058630803108}
   m_Father: {fileID: 4111760494294460340}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 2, y: -16}
-  m_SizeDelta: {x: 114, y: 9}
+  m_SizeDelta: {x: -26, y: 9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &351539478052600427
 MonoBehaviour:
@@ -552,7 +553,11 @@ MonoBehaviour:
     slider: {fileID: 4315581475167695412}
   text: {fileID: 2724828360276689814}
   image: {fileID: 339029149374476197}
-  tooltipArea: {fileID: 8298632334966963583}
+  dailyBonus:
+    container: {fileID: 1845199736694492496}
+    sliderAnimator:
+      slider: {fileID: 351539478052600427}
+    blockText: {fileID: 2113724252127124418}
   syncWithAvatarState: 1
   eventTrigger: {fileID: 4964743994697273151}
   loading: {fileID: 1083844508075685134}
@@ -581,29 +586,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 0
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 5754555543490644276}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: ShowTooltip
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - eventID: 1
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 5754555543490644276}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: HideTooltip
+          m_TargetAssemblyTypeName: Nekoyume.UI.Module.ActionPoint, Nekoyume
+          m_MethodName: RequestDailyReward
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -800,7 +789,6 @@ RectTransform:
   - {fileID: 4298449848138066373}
   - {fileID: 8298632334966963583}
   - {fileID: 6256447664049644017}
-  - {fileID: 5129764058630803108}
   - {fileID: 1083844508075685135}
   m_Father: {fileID: 2724828359984488557}
   m_RootOrder: 0
@@ -878,12 +866,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5185940889581993386}
-  m_Father: {fileID: 4111760494294460340}
-  m_RootOrder: 4
+  m_Father: {fileID: 6256447664049644017}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: -16}
+  m_AnchoredPosition: {x: 8, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2158926050821504971
@@ -1404,7 +1392,7 @@ PrefabInstance:
     - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
         type: 3}

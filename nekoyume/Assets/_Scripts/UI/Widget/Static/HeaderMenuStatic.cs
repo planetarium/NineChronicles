@@ -144,7 +144,6 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public bool ChargingAP => actionPoint.NowCharging;
         public Gold Gold => ncg;
         public ActionPoint ActionPoint => actionPoint;
         public Crystal Crystal => crystal;
