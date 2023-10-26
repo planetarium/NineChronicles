@@ -19,7 +19,9 @@ using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Tx;
 using LruCacheNet;
+using MagicOnion;
 using MagicOnion.Client;
+using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
@@ -52,7 +54,7 @@ namespace Nekoyume.Blockchain
 
         private readonly TransactionMap _transactions = new TransactionMap(20);
 
-        private Channel _channel;
+        private GrpcChannelx _channel;
 
         private IActionEvaluationHub _hub;
 
@@ -95,13 +97,29 @@ namespace Nekoyume.Blockchain
         public BlockHash BlockTipHash { get; private set; }
 
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-                new Subject<(NCTx tx, List<ActionBase> actions)>();
+            new Subject<(NCTx tx, List<ActionBase> actions)>();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private readonly BlockHashCache _blockHashCache = new(100);
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void OnRuntimeInitialize()
+        {
+            // Initialize gRPC channel provider when the application is loaded.
+            GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
+                new DefaultGrpcChannelProvider(new[]
+                {
+                    // send keepalive ping every 5 second, default is 2 hours
+                    new ChannelOption("grpc.keepalive_time_ms", 5000),
+                    // keepalive ping time out after 5 seconds, default is 20 seconds
+                    new ChannelOption("grpc.keepalive_timeout_ms", 5 * 1000),
+                    new ChannelOption("grpc.max_receive_message_length", -1)
+                })
+            ));
+        }
 
         /// <summary>
         /// Initialize without private key.
@@ -111,15 +129,7 @@ namespace Nekoyume.Blockchain
         public IEnumerator InitializeWithoutPrivateKey(
             CommandLineOptions options)
         {
-            _channel = new Grpc.Core.Channel(
-                options.RpcServerHost,
-                options.RpcServerPort,
-                ChannelCredentials.Insecure,
-                new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
-                }
-            );
+            _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             var connect = StreamingHubClient
                 .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
@@ -131,7 +141,7 @@ namespace Nekoyume.Blockchain
             _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
-            }).WithCancellationToken(_channel.ShutdownToken);
+            });
 
             // Android Mono only support arm7(32bit) backend in unity engine.
             // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
@@ -151,15 +161,9 @@ namespace Nekoyume.Blockchain
             Action<bool> callback)
         {
             PrivateKey = privateKey;
-            _channel ??= new Grpc.Core.Channel(
-                options.RpcServerHost,
-                options.RpcServerPort,
-                ChannelCredentials.Insecure,
-                new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
-                }
-            );
+            _channel ??= GrpcChannelx.ForTarget(
+                new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
+
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             if (_hub == null)
             {
@@ -175,7 +179,7 @@ namespace Nekoyume.Blockchain
             _service ??= MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
-            }).WithCancellationToken(_channel.ShutdownToken);
+            });
 
             IEnumerator GetTip()
             {
@@ -318,7 +322,8 @@ namespace Nekoyume.Blockchain
                 return 0 * currency;
             }
 
-            var balance = await GetBalanceAsync(addr, currency, blockHash.Value);
+            var balance = await GetBalanceAsync(addr, currency, blockHash.Value)
+                .ConfigureAwait(false);
             if (addr.Equals(Address))
             {
                 if (!game.CachedBalance.ContainsKey(currency))
@@ -352,7 +357,7 @@ namespace Nekoyume.Blockchain
             Address address,
             Currency currency,
             HashDigest<SHA256> stateRootHash)
-        { 
+        {
             var raw = await _service.GetBalanceBySrh(
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize()),
@@ -418,7 +423,7 @@ namespace Nekoyume.Blockchain
             HashDigest<SHA256> stateRootHash)
         {
             Dictionary<byte[], byte[]> raw =
-                await _service.GetStateBulk(
+                await _service.GetStateBulkBySrh(
                     addressList.Select(a => a.ToByteArray()),
                     stateRootHash.ToByteArray());
             var result = new Dictionary<Address, IValue>();
