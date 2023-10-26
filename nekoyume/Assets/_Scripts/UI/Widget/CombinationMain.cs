@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -38,6 +39,17 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private SpeechBubble speechBubble;
+
+        [SerializeField]
+        private LockObject[] lockObjects;
+
+        [Serializable]
+        private struct LockObject
+        {
+            public GameObject lockObject;
+            public int requiredStageId;
+            public Button lockedButton;
+        }
 
         protected override void Awake()
         {
@@ -98,6 +110,17 @@ namespace Nekoyume.UI
         {
             UpdateNotification();
             base.Show(ignoreShowAnimation);
+
+            if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStageId))
+            {
+                foreach (var lockObj in lockObjects)
+                {
+                    var isLocked = lastClearedStageId < lockObj.requiredStageId;
+                    lockObj.lockObject.SetActive(isLocked);
+                    lockObj.lockedButton.interactable = !isLocked;
+                }
+            }
 
             var audioController = AudioController.instance;
             var musicName = AudioController.MusicCode.Combination;
