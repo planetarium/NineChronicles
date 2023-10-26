@@ -89,7 +89,7 @@ namespace BalanceTool.Runtime
                 crystalRandomBuff: playData.CrystalRandomBuffId == 0
                     ? null
                     : (playData.StageId, new[] { playData.CrystalRandomBuffId }));
-            states = await UniTask.Run(() => cra.Execute(
+            states = await UniTask.RunOnThreadPool(() => cra.Execute(
                 states,
                 new RandomImpl(random.Next()),
                 blockIndex,

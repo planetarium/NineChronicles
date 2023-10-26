@@ -120,7 +120,7 @@ namespace Nekoyume.State
             }
 
             var getAllOfAvatarStates = AgentState is null ||
-                                       !AgentState.address.Equals(state.address);
+                !AgentState.address.Equals(state.address);
 
             LocalLayer.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalLayer.Instance.Modify(state);
@@ -676,8 +676,8 @@ namespace Nekoyume.State
 
             if (index == CurrentAvatarKey)
             {
-                return await UniTask.Run(async () =>
-                    await SelectAvatarAsync(index, initializeReactiveState));
+                return await UniTask.RunOnThreadPool(async () =>
+                    await SelectAvatarAsync(index, initializeReactiveState), configureAwait: false);
             }
 
             return state;
@@ -735,7 +735,7 @@ namespace Nekoyume.State
             if (isNewlySelected)
             {
                 _hammerPointStates = null;
-                await UniTask.Run(async () =>
+                await UniTask.RunOnThreadPool(async () =>
                 {
                     var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
                     if (!exist)
@@ -878,7 +878,7 @@ namespace Nekoyume.State
 
         public void UpdateHammerPointStates(IEnumerable<int> recipeIds)
         {
-            UniTask.Run(async () =>
+            UniTask.RunOnThreadPool(async () =>
             {
                 if (TableSheets.Instance.CrystalHammerPointSheet is null)
                 {
