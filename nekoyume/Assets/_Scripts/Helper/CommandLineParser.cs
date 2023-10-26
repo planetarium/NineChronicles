@@ -15,6 +15,8 @@ namespace Nekoyume.Helper
     [Serializable]
     public class CommandLineOptions
     {
+        private string _planetRegistryUrl;
+
         private string privateKey;
 
         // null이면 Web3KeyStore.DefaultStore 따름
@@ -79,6 +81,17 @@ namespace Nekoyume.Helper
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
+
+        [Option("planet-registry-url", Required = false, HelpText = "planet registry url")]
+        public string PlanetRegistryUrl
+        {
+            get => _planetRegistryUrl;
+            set
+            {
+                _planetRegistryUrl = value;
+                Empty = false;
+            }
+        }
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey
