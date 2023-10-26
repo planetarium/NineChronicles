@@ -2,10 +2,12 @@
 using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -60,7 +62,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI itemCountText;
 
         [SerializeField]
-        private SubItemCount subItemCount;
+        private SubItemCount subItem;
 
         [SerializeField]
         private TextMeshProUGUI contentText;
@@ -117,7 +119,7 @@ namespace Nekoyume.UI
             actionButtonText.text = buttonText;
             infoText.infoText.gameObject.SetActive(infoText.infoText.text != string.Empty);
             infoText.container.SetActive(false);  // set default
-            subItemCount.container.SetActive(false);
+            subItem.container.SetActive(false);
             blockGauge.container.SetActive(false);
             actionButton.gameObject.SetActive(true);
             conditionalButtonBrown.gameObject.SetActive(false);
@@ -136,31 +138,53 @@ namespace Nekoyume.UI
             infoText.hsvModifier.enabled = isPositive;
         }
 
-        private readonly (int min, int max) _blockRange = new(0, 1700);
-        public void ShowAP()
+        private const string ActionPointTicker = "ACTIONPOINT";
+        private const int ActionPointItemId = 9999996;
+        private const string AdventureRuneTicker = "RUNE_ADVENTURE";
+        private const int ItemId = 500000;
+
+        public void ShowAP(
+            string itemCount,
+            int subItemCount,
+            long blockRange,
+            long maxBlockRange, //
+            bool isInteractable,
+            System.Action chargeAP, //
+            System.Action getDailyReward) //
         {
-            subItemCount.container.SetActive(true);
-            subItemCount.icon.sprite = default;
-            subItemCount.nameText.text = $"{default} :";
-            subItemCount.countText.text = default;
-
-            blockGauge.minText.text = _blockRange.min.ToString();
-            blockGauge.maxText.text = _blockRange.max.ToString();
-            blockGauge.bonusItem.icon.sprite = default;
-            blockGauge.bonusItem.countText.text = default;
-            blockGauge.bonusItem.button.onClick.RemoveAllListeners();
-
-            int block = default;
-            long remainBlockRange = _blockRange.max - block;
-            blockGauge.container.SetActive(true);
-            blockGauge.gaugeFillImage.fillAmount = (float)block/_blockRange.max;
-            blockGauge.filledEffectImage.SetActive(block >= _blockRange.max);
-            blockGauge.remainBlockText.text =
-                $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
+            itemImage.sprite = SpriteHelper.GetFavIcon(ActionPointTicker);
+            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{ActionPointItemId}");
+            itemCountText.text = itemCount;
+            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{ActionPointItemId}");;
+            infoText.container.SetActive(false); // set default
 
             actionButton.gameObject.SetActive(false);
             conditionalButtonBrown.gameObject.SetActive(true);
             conditionalButtonYellow.gameObject.SetActive(true);
+
+            subItem.container.SetActive(true);
+            subItem.icon.sprite = SpriteHelper.GetItemIcon(ItemId);
+            subItem.nameText.text = $"{L10nManager.Localize($"ITEM_NAME_{ItemId}")} :";
+            subItem.countText.text = subItemCount.ToString();
+
+            blockGauge.minText.text = 0.ToString();
+            blockGauge.maxText.text = maxBlockRange.ToString();
+            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(AdventureRuneTicker);
+            blockGauge.bonusItem.countText.text = 1.ToString();
+            blockGauge.bonusItem.button.onClick.RemoveAllListeners();  // Todo Fill this
+
+            var remainBlockRange = maxBlockRange - blockRange;
+            blockGauge.container.SetActive(true);
+            blockGauge.gaugeFillImage.fillAmount = (float)blockRange / maxBlockRange;
+            blockGauge.filledEffectImage.SetActive(blockRange >= maxBlockRange);
+            blockGauge.remainBlockText.text =
+                $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
+
+            conditionalButtonBrown.Interactable = isInteractable && subItemCount > 0;
+            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => chargeAP());
+            conditionalButtonYellow.Interactable = isInteractable && remainBlockRange <= 0;
+            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => getDailyReward());
+
             base.Show();
         }
     }

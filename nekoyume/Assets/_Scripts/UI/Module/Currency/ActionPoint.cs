@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -221,38 +225,54 @@ namespace Nekoyume.UI.Module
         }
 
         // Call at Event Trigger Component
-        public void RequestDailyReward()
+        public void OnClickSlider()
         {
-            if (!dailyBonus.sliderAnimator.IsFull)
-            {
-                return;
-            }
+            var popup = Widget.Find<MaterialNavigationPopup>();
 
-            if (NowCharging)
-            {
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_CHARGING_AP"),
-                    NotificationCell.NotificationType.Information);
-            }
-            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
-            {
-                var confirm = Widget.Find<ConfirmPopup>();
-                confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
-                confirm.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.No)
-                    {
-                        return;
-                    }
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var apStoneCount = Game.Game.instance.States.CurrentAvatarState.inventory.Items
+                .Where(x =>
+                    x.item.ItemSubType == ItemSubType.ApStone &&
+                    !x.Locked &&
+                    !(x.item is ITradableItem tradableItem &&
+                      tradableItem.RequiredBlockIndex > blockIndex))
+                .Sum(item => item.count);
 
-                    GetDailyReward();
-                };
+            var itemCountText = $"{sliderAnimator.Value}/{sliderAnimator.MaxValue}";
+            var blockRange = (long)dailyBonus.sliderAnimator.Value;
+            var maxBlockRange = (long)dailyBonus.sliderAnimator.MaxValue;
+            var isInteractable = IsInteractableMaterial(); // 이 경우 버튼 자체를 비활성화
+
+            popup.ShowAP(
+                itemCountText,
+                apStoneCount,
+                blockRange,
+                maxBlockRange,
+                isInteractable,
+                () => InvokeAfterActionPointCheck(ChargeAP),
+                () => InvokeAfterActionPointCheck(GetDailyReward));
+        }
+
+        private void InvokeAfterActionPointCheck(System.Action action)
+        {
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            {
+                ShowRefillConfirmPopup(action);
             }
             else
             {
-                GetDailyReward();
+                action();
             }
+        }
+
+        private void ChargeAP()
+        {
+            // 한 줄 팝업?
+
+            var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                .First(r => r.ItemSubType == ItemSubType.ApStone);
+            var apStone = new Nekoyume.Model.Item.Material(apStoneRow);
+            Game.Game.instance.ActionManager.ChargeActionPoint(apStone).Subscribe();
         }
 
         private void GetDailyReward()
@@ -270,6 +290,32 @@ namespace Nekoyume.UI.Module
                 GameConfigStateSubject.ActionPointState.Remove(address);
             }
             GameConfigStateSubject.ActionPointState.Add(address, true);
+        }
+
+        public static bool IsInteractableMaterial()
+        {
+            if (Widget.Find<HeaderMenuStatic>().ActionPoint.NowCharging) // is charging?
+            {
+                return false;
+            }
+
+            if (States.Instance.CurrentAvatarState.actionPoint ==
+                States.Instance.GameConfigState.ActionPointMax) // full?
+            {
+                return false;
+            }
+
+            return !Game.Game.instance.IsInWorld;
+        }
+
+        public static void ShowRefillConfirmPopup(System.Action confirmCallback)
+        {
+            var confirm = Widget.Find<IconAndButtonSystem>();
+            confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT",
+                "UI_OK", "UI_CANCEL",
+                true, IconAndButtonSystem.SystemType.Information);
+            confirm.ConfirmCallback = confirmCallback;
+            confirm.CancelCallback = () => confirm.Close();
         }
     }
 }

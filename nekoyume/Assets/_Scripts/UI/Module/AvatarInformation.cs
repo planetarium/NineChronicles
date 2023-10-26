@@ -814,11 +814,13 @@ namespace Nekoyume.UI.Module
                     if (item.ItemSubType == ItemSubType.ApStone)
                     {
                         submitText = L10nManager.Localize("UI_CHARGE_AP");
-                        interactable = IsInteractableMaterial();
+                        interactable = ActionPoint.IsInteractableMaterial();
 
                         if (States.Instance.CurrentAvatarState.actionPoint > 0)
                         {
-                            submit = () => ShowRefillConfirmPopup(item as Material);
+                            submit = () => ActionPoint.ShowRefillConfirmPopup(
+                                () => Game.Game.instance.ActionManager
+                                    .ChargeActionPoint(item as Material).Subscribe());
                         }
                         else
                         {
@@ -845,32 +847,6 @@ namespace Nekoyume.UI.Module
             }
 
             return (submitText, interactable, submit, blocked, enhancement);
-        }
-
-        private bool IsInteractableMaterial()
-        {
-            if (Widget.Find<HeaderMenuStatic>().ActionPoint.NowCharging) // is charging?
-            {
-                return false;
-            }
-
-            if (States.Instance.CurrentAvatarState.actionPoint ==
-                States.Instance.GameConfigState.ActionPointMax) // full?
-            {
-                return false;
-            }
-
-            return !Game.Game.instance.IsInWorld;
-        }
-
-        private void ShowRefillConfirmPopup(Material material)
-        {
-            var confirm = Widget.Find<IconAndButtonSystem>();
-            confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT",
-                "UI_OK", "UI_CANCEL",
-                true, IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () => Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
-            confirm.CancelCallback = () => confirm.Close();
         }
 
         private void EquipOrUnequip(InventoryItem inventoryItem)
