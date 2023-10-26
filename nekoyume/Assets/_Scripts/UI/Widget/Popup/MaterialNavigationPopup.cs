@@ -3,6 +3,7 @@ using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +30,16 @@ namespace Nekoyume.UI
             public TextMeshProUGUI minText;
             public TextMeshProUGUI maxText;
             public TextMeshProUGUI remainBlockText;
+            public BonusItem bonusItem;
+        }
+
+        [Serializable]
+        private struct BonusItem
+        {
+            public GameObject container;
+            public Image icon;
+            public TextMeshProUGUI countText;
+            public Button button;
         }
 
         [Serializable]
@@ -69,6 +80,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI actionButtonText;
 
+        [SerializeField]
+        private ConditionalButton conditionalButtonBrown;
+
+        [SerializeField]
+        private ConditionalButton conditionalButtonYellow;
+
         private System.Action _callback;
 
         protected override void Awake()
@@ -102,6 +119,9 @@ namespace Nekoyume.UI
             infoText.container.SetActive(false);  // set default
             subItemCount.container.SetActive(false);
             blockGauge.container.SetActive(false);
+            actionButton.gameObject.SetActive(true);
+            conditionalButtonBrown.gameObject.SetActive(false);
+            conditionalButtonYellow.gameObject.SetActive(false);
             base.Show();
         }
 
@@ -126,6 +146,9 @@ namespace Nekoyume.UI
 
             blockGauge.minText.text = _blockRange.min.ToString();
             blockGauge.maxText.text = _blockRange.max.ToString();
+            blockGauge.bonusItem.icon.sprite = default;
+            blockGauge.bonusItem.countText.text = default;
+            blockGauge.bonusItem.button.onClick.RemoveAllListeners();
 
             int block = default;
             long remainBlockRange = _blockRange.max - block;
@@ -135,6 +158,9 @@ namespace Nekoyume.UI
             blockGauge.remainBlockText.text =
                 $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
 
+            actionButton.gameObject.SetActive(false);
+            conditionalButtonBrown.gameObject.SetActive(true);
+            conditionalButtonYellow.gameObject.SetActive(true);
             base.Show();
         }
     }

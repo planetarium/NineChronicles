@@ -1619,6 +1619,11 @@ MonoBehaviour:
     minText: {fileID: 4777864053334548482}
     maxText: {fileID: 6731785210246619642}
     remainBlockText: {fileID: 677173951039464426}
+    bonusItem:
+      container: {fileID: 1310322748533223895}
+      icon: {fileID: 6659310436743050349}
+      countText: {fileID: 7146433215533694825}
+      button: {fileID: 0}
   infoText:
     container: {fileID: 8438605236828766213}
     hsvModifier: {fileID: 1036336759904496832}
@@ -1626,6 +1631,8 @@ MonoBehaviour:
   confirmButton: {fileID: 3531086564196827634}
   actionButton: {fileID: 2938688282962255136}
   actionButtonText: {fileID: 6331374721247973954}
+  conditionalButtonBrown: {fileID: 914981209029670361}
+  conditionalButtonYellow: {fileID: 6217563350060654646}
 --- !u!1 &2625503650159746150
 GameObject:
   m_ObjectHideFlags: 0
@@ -4725,6 +4732,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6217563350060654646 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5718414708290026654, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+    type: 3}
+  m_PrefabInstance: {fileID: 1806747253522865320}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8704986967688312243
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4914,6 +4933,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 543ea58faa96c47bea69a87c29ba0ce7, type: 3}
+--- !u!114 &914981209029670361 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8393857624628101226, guid: 543ea58faa96c47bea69a87c29ba0ce7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8704986967688312243}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6439778524113007912 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2418683638863790235, guid: 543ea58faa96c47bea69a87c29ba0ce7,
