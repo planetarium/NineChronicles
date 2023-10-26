@@ -356,7 +356,11 @@ namespace Nekoyume.Blockchain
         private void Grinding()
         {
             _actionRenderer.EveryRender<Grinding>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(ValidateGrindingMailExists)
+                .Select(PrepareGrinding)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
                 .AddTo(_disposables);
@@ -2299,22 +2303,25 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
+        private bool ValidateGrindingMailExists(ActionEvaluation<Grinding> eval)
         {
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
             var avatarAddress = eval.Action.AvatarAddress;
             var avatarState = StateGetter.GetAvatarState(avatarAddress, eval.OutputState);
             var mail = avatarState.mailBox.OfType<GrindingMail>()
                 .FirstOrDefault(m => m.id.Equals(eval.Action.Id));
-            if (mail is null)
-            {
-                return;
-            }
+            return mail is not null;
+        }
 
+        private ActionEvaluation<Grinding> PrepareGrinding(ActionEvaluation<Grinding> eval)
+        {
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            return eval;
+        }
+
+        private void ResponseGrinding(ActionEvaluation<Grinding> eval)
+        {
+            var avatarAddress = eval.Action.AvatarAddress;
             if (eval.Action.ChargeAp)
             {
                 var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
@@ -2331,8 +2338,6 @@ namespace Nekoyume.Blockchain
                 MailType.Grinding,
                 L10nManager.Localize("UI_GRINDING_NOTIFY"),
                 NotificationCell.NotificationType.Information);
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            UpdateAgentStateAsync(eval).Forget();
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
