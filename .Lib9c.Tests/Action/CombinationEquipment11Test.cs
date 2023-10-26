@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -49,6 +50,8 @@ namespace Lib9c.Tests.Action
                 )
             );
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EquipmentItemRecipeSheet)] =
+                EquipmentItemSheetFixture.EquipmentItemRecipeSheetWithMimisbrunnr;
             _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
 
