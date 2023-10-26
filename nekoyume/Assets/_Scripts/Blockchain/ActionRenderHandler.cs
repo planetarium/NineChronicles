@@ -221,27 +221,60 @@ namespace Nekoyume.Blockchain
         private void HackAndSlash()
         {
             _actionRenderer.EveryRender<HackAndSlash>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareHackAndSlash)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlashAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<HackAndSlash>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionHackAndSlash)
                 .AddTo(_disposables);
         }
 
         private void MimisbrunnrBattle()
         {
             _actionRenderer.EveryRender<MimisbrunnrBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareMimisbrunnrBattle)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnrAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<MimisbrunnrBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionMimisbrunnr)
                 .AddTo(_disposables);
         }
 
         private void EventDungeonBattle()
         {
             _actionRenderer.EveryRender<EventDungeonBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareEventDungeonBattle)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventDungeonBattleAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<EventDungeonBattle>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionEventDungeonBattle)
                 .AddTo(_disposables);
         }
 
@@ -349,7 +382,10 @@ namespace Nekoyume.Blockchain
         private void HackAndSlashRandomBuff()
         {
             _actionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareHackAndSlashRandomBuff)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlashRandomBuff)
                 .AddTo(_disposables);
@@ -427,9 +463,20 @@ namespace Nekoyume.Blockchain
         private void HackAndSlashSweep()
         {
             _actionRenderer.EveryRender<HackAndSlashSweep>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareHackAndSlashSweepAsync)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlashSweepAsync)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<HackAndSlashSweep>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsTerminated)
+                .ObserveOnMainThread()
+                .Subscribe(ExceptionHackAndSlashSweep)
                 .AddTo(_disposables);
         }
 
@@ -555,9 +602,9 @@ namespace Nekoyume.Blockchain
                 .Where(eval =>
                     eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
                     (eval.Action.FungibleAssetValues is not null &&
-                    eval.Action.FungibleAssetValues.Any(e =>
-                        e.balanceAddr.Equals(States.Instance.AgentState.address) ||
-                        e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
+                        eval.Action.FungibleAssetValues.Any(e =>
+                            e.balanceAddr.Equals(States.Instance.AgentState.address) ||
+                            e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnloadFromMyGarages)
                 .AddTo(_disposables);
@@ -678,9 +725,9 @@ namespace Nekoyume.Blockchain
                                     out var subRecipeRow))
                             {
                                 formatKey = equipment.optionCountFromCombination ==
-                                            subRecipeRow.Options.Count
-                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                                    subRecipeRow.Options.Count
+                                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                        : "NOTIFICATION_COMBINATION_COMPLETE";
                             }
                             else
                             {
@@ -1065,10 +1112,10 @@ namespace Nekoyume.Blockchain
                 else
                 {
                     LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1);
                 }
 
                 foreach (var tradableId in result.materialItemIdList)
@@ -1594,291 +1641,291 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private ActionEvaluation<HackAndSlash> PrepareHackAndSlash(
+            ActionEvaluation<HackAndSlash> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return eval;
+            }
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.onEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var task = UniTask.RunOnThreadPool(async () =>
+                        {
+                            await UpdateCurrentAvatarStateAsync(eval);
+                            UpdateCrystalRandomSkillState(eval);
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(
+                                eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+            return eval;
+        }
+
         private async void ResponseHackAndSlashAsync(ActionEvaluation<HackAndSlash> eval)
         {
-            if (eval.Exception is null)
-            {
-                await Task.WhenAll(
-                    States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                    States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
+                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
 
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-                {
-                    return;
-                }
-
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.onEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.Run(async () =>
-                            {
-                                await UpdateCurrentAvatarStateAsync(eval);
-                                UpdateCrystalRandomSkillState(eval);
-                                var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(
-                                    eval.Action.AvatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                            });
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => Debug.LogException(e));
-                        });
-
-                var tableSheets = TableSheets.Instance;
-                var skillsOnWaveStart = new List<Skill>();
-                if (eval.Action.StageBuffId.HasValue)
-                {
-                    var skill = CrystalRandomSkillState.GetSkill(
-                        eval.Action.StageBuffId.Value,
-                        tableSheets.CrystalRandomBuffSheet,
-                        tableSheets.SkillSheet);
-                    skillsOnWaveStart.Add(skill);
-                }
-
-                var tempPlayer =
-                    new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
-                var resultModel = eval.GetHackAndSlashReward(
-                    tempPlayer,
-                    States.Instance.GetEquippedRuneStates(BattleType.Adventure),
-                    skillsOnWaveStart,
-                    tableSheets,
-                    out var simulator,
-                    out var temporaryAvatar);
-                var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
-                Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
-                if (eval.Action.TotalPlayCount > 1)
-                {
-                    Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
-                    if (log.IsClear)
-                    {
-                        var currentAvatar = States.Instance.CurrentAvatarState;
-                        currentAvatar.exp = temporaryAvatar.exp;
-                        currentAvatar.level = temporaryAvatar.level;
-                        currentAvatar.inventory = temporaryAvatar.inventory;
-                        currentAvatar.monsterMap = temporaryAvatar.monsterMap;
-                        currentAvatar.eventMap = temporaryAvatar.eventMap;
-                    }
-                }
-
-                if (eval.Action.StageBuffId.HasValue)
-                {
-                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
-                        new Dictionary<string, Value>
-                        {
-                            ["RandomSkillId"] = eval.Action.StageBuffId,
-                            ["IsCleared"] = simulator.Log.IsClear,
-                            ["AvatarAddress"] =
-                                States.Instance.CurrentAvatarState.address.ToString(),
-                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                        });
-                }
-
-                if (Widget.Find<LoadingScreen>().IsActive())
-                {
-                    if (Widget.Find<BattlePreparation>().IsActive())
-                    {
-                        Widget.Find<BattlePreparation>().GoToStage(log);
-                    }
-                    else if (Widget.Find<Menu>().IsActive())
-                    {
-                        Widget.Find<Menu>().GoToStage(log);
-                    }
-                }
-                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                         Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    Widget.Find<BattleResultPopup>().NextStage(log);
-                }
-            }
-            else
-            {
-                var showLoadingScreen = false;
-                if (Widget.Find<StageLoadingEffect>().IsActive())
-                {
-                    Widget.Find<StageLoadingEffect>().Close();
-                }
-
-                if (Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    showLoadingScreen = true;
-                    Widget.Find<BattleResultPopup>().Close();
-                }
-
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen)
-                    .Forget();
-            }
-        }
-
-        private async void ResponseHackAndSlashSweepAsync(
-            ActionEvaluation<HackAndSlashSweep> eval)
-        {
-            if (eval.Exception is null)
-            {
-                Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
-                if (eval.Action.apStoneCount > 0)
-                {
-                    var avatarAddress = eval.Action.avatarAddress;
-                    LocalLayerModifier.ModifyAvatarActionPoint(
-                        avatarAddress,
-                        eval.Action.actionPoint);
-                    var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                        r.ItemSubType == ItemSubType.ApStone);
-                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
-                }
-
-                await UpdateCurrentAvatarStateAsync();
-                await Task.WhenAll(
-                    States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                    States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-                Widget.Find<BattlePreparation>().UpdateInventoryView();
-            }
-            else
-            {
-                Widget.Find<SweepResultPopup>().Close();
-                Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
-            }
-        }
-
-        private async void ResponseMimisbrunnrAsync(
-            ActionEvaluation<MimisbrunnrBattle> eval)
-        {
-            if (eval.Exception is null)
-            {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-                {
-                    return;
-                }
-
-                await Task.WhenAll(
-                    States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                    States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.onEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.Run(() =>
-                            {
-                                UpdateCurrentAvatarStateAsync(eval).Forget();
-                                var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(
-                                    eval.Action.AvatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                            });
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => Debug.LogException(e));
-                        });
-
-                var sheets = TableSheets.Instance;
-                var stageRow = sheets.StageSheet[eval.Action.StageId];
-                var avatarState = States.Instance.CurrentAvatarState;
-                var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
-                var localRandom = new LocalRandom(eval.RandomSeed);
-                var simulator = new StageSimulator(
-                    localRandom,
-                    avatarState,
-                    eval.Action.Foods,
-                    runeStates,
-                    new List<Skill>(),
-                    eval.Action.WorldId,
-                    eval.Action.StageId,
-                    stageRow,
-                    sheets.StageWaveSheet[eval.Action.StageId],
-                    avatarState.worldInformation.IsStageCleared(eval.Action.StageId),
-                    0,
-                    sheets.GetStageSimulatorSheets(),
-                    sheets.EnemySkillSheet,
-                    sheets.CostumeStatSheet,
-                    StageSimulatorV2.GetWaveRewards(
-                        localRandom,
-                        stageRow,
-                        sheets.MaterialItemSheet,
-                        eval.Action.PlayCount)
-                );
-                simulator.Simulate();
-                BattleLog log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
-                Game.Game.instance.Stage.StageType = StageType.Mimisbrunnr;
-
-                if (Widget.Find<LoadingScreen>().IsActive())
-                {
-                    if (Widget.Find<BattlePreparation>().IsActive())
-                    {
-                        Widget.Find<BattlePreparation>().GoToStage(log);
-                    }
-                    else if (Widget.Find<Menu>().IsActive())
-                    {
-                        Widget.Find<Menu>().GoToStage(log);
-                    }
-                }
-                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                         Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
-                }
-            }
-            else
-            {
-                var showLoadingScreen = false;
-                if (Widget.Find<StageLoadingEffect>().IsActive())
-                {
-                    Widget.Find<StageLoadingEffect>().Close();
-                }
-
-                if (Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    showLoadingScreen = true;
-                    Widget.Find<BattleResultPopup>().Close();
-                }
-
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen)
-                    .Forget();
-            }
-        }
-
-        private async void ResponseEventDungeonBattleAsync(
-            ActionEvaluation<EventDungeonBattle> eval)
-        {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
                 return;
             }
 
-            if (eval.Exception is not null)
+            var tableSheets = TableSheets.Instance;
+            var skillsOnWaveStart = new List<Skill>();
+            if (eval.Action.StageBuffId.HasValue)
             {
-                var showLoadingScreen = false;
-                if (Widget.Find<StageLoadingEffect>().IsActive())
-                {
-                    Widget.Find<StageLoadingEffect>().Close();
-                }
+                var skill = CrystalRandomSkillState.GetSkill(
+                    eval.Action.StageBuffId.Value,
+                    tableSheets.CrystalRandomBuffSheet,
+                    tableSheets.SkillSheet);
+                skillsOnWaveStart.Add(skill);
+            }
 
-                if (Widget.Find<BattleResultPopup>().IsActive())
+            var tempPlayer =
+                new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
+            var resultModel = eval.GetHackAndSlashReward(
+                tempPlayer,
+                States.Instance.GetEquippedRuneStates(BattleType.Adventure),
+                skillsOnWaveStart,
+                tableSheets,
+                out var simulator,
+                out var temporaryAvatar);
+            var log = simulator.Log;
+            Game.Game.instance.Stage.PlayCount = eval.Action.TotalPlayCount;
+            Game.Game.instance.Stage.StageType = StageType.HackAndSlash;
+            if (eval.Action.TotalPlayCount > 1)
+            {
+                Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                if (log.IsClear)
                 {
-                    showLoadingScreen = true;
-                    Widget.Find<BattleResultPopup>().Close();
+                    var currentAvatar = States.Instance.CurrentAvatarState;
+                    currentAvatar.exp = temporaryAvatar.exp;
+                    currentAvatar.level = temporaryAvatar.level;
+                    currentAvatar.inventory = temporaryAvatar.inventory;
+                    currentAvatar.monsterMap = temporaryAvatar.monsterMap;
+                    currentAvatar.eventMap = temporaryAvatar.eventMap;
                 }
+            }
 
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen)
-                    .Forget();
+            if (eval.Action.StageBuffId.HasValue)
+            {
+                Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
+                    new Dictionary<string, Value>
+                    {
+                        ["RandomSkillId"] = eval.Action.StageBuffId,
+                        ["IsCleared"] = simulator.Log.IsClear,
+                        ["AvatarAddress"] =
+                            States.Instance.CurrentAvatarState.address.ToString(),
+                        ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                    });
+            }
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                if (Widget.Find<BattlePreparation>().IsActive())
+                {
+                    Widget.Find<BattlePreparation>().GoToStage(log);
+                }
+                else if (Widget.Find<Menu>().IsActive())
+                {
+                    Widget.Find<Menu>().GoToStage(log);
+                }
+            }
+            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
+                     Widget.Find<BattleResultPopup>().IsActive())
+            {
+                Widget.Find<BattleResultPopup>().NextStage(log);
+            }
+        }
+
+        private void ExceptionHackAndSlash(ActionEvaluation<HackAndSlash> eval)
+        {
+            var showLoadingScreen = false;
+            if (Widget.Find<StageLoadingEffect>().IsActive())
+            {
+                Widget.Find<StageLoadingEffect>().Close();
+            }
+
+            if (Widget.Find<BattleResultPopup>().IsActive())
+            {
+                showLoadingScreen = true;
+                Widget.Find<BattleResultPopup>().Close();
+            }
+
+            Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen)
+                .Forget();
+        }
+
+        private ActionEvaluation<HackAndSlashSweep> PrepareHackAndSlashSweepAsync(
+            ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = StateGetter.GetAvatarState(avatarAddress, eval.OutputState);
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
+            return eval;
+        }
+
+        private async void ResponseHackAndSlashSweepAsync(
+            ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+            if (eval.Action.apStoneCount > 0)
+            {
+                var avatarAddress = eval.Action.avatarAddress;
+                LocalLayerModifier.ModifyAvatarActionPoint(
+                    avatarAddress,
+                    eval.Action.actionPoint);
+                var row = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
+                    r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
+            }
+
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
+                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+            Widget.Find<BattlePreparation>().UpdateInventoryView();
+        }
+
+        private void ExceptionHackAndSlashSweep(ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            Widget.Find<SweepResultPopup>().Close();
+            Game.Game.BackToMainAsync(eval.Exception.InnerException).Forget();
+        }
+
+        private ActionEvaluation<MimisbrunnrBattle> PrepareMimisbrunnrBattle(
+            ActionEvaluation<MimisbrunnrBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return eval;
+            }
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.Stage.onEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var task = UniTask.RunOnThreadPool(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(
+                                eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        }, configureAwait: false);
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+            return eval;
+        }
+
+        private async void ResponseMimisbrunnrAsync(
+            ActionEvaluation<MimisbrunnrBattle> eval)
+        {
+
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
                 return;
             }
 
             await Task.WhenAll(
                 States.Instance.UpdateItemSlotStates(BattleType.Adventure),
                 States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+
+            var sheets = TableSheets.Instance;
+            var stageRow = sheets.StageSheet[eval.Action.StageId];
+            var avatarState = States.Instance.CurrentAvatarState;
+            var runeStates = States.Instance.GetEquippedRuneStates(BattleType.Adventure);
+            var localRandom = new LocalRandom(eval.RandomSeed);
+            var simulator = new StageSimulator(
+                localRandom,
+                avatarState,
+                eval.Action.Foods,
+                runeStates,
+                new List<Skill>(),
+                eval.Action.WorldId,
+                eval.Action.StageId,
+                stageRow,
+                sheets.StageWaveSheet[eval.Action.StageId],
+                avatarState.worldInformation.IsStageCleared(eval.Action.StageId),
+                0,
+                sheets.GetStageSimulatorSheets(),
+                sheets.EnemySkillSheet,
+                sheets.CostumeStatSheet,
+                StageSimulatorV2.GetWaveRewards(
+                    localRandom,
+                    stageRow,
+                    sheets.MaterialItemSheet,
+                    eval.Action.PlayCount)
+            );
+            simulator.Simulate();
+            BattleLog log = simulator.Log;
+            Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+            Game.Game.instance.Stage.StageType = StageType.Mimisbrunnr;
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                if (Widget.Find<BattlePreparation>().IsActive())
+                {
+                    Widget.Find<BattlePreparation>().GoToStage(log);
+                }
+                else if (Widget.Find<Menu>().IsActive())
+                {
+                    Widget.Find<Menu>().GoToStage(log);
+                }
+            }
+            else if (Widget.Find<StageLoadingEffect>().IsActive() &&
+                     Widget.Find<BattleResultPopup>().IsActive())
+            {
+                Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
+            }
+        }
+
+        private void ExceptionMimisbrunnr(ActionEvaluation<MimisbrunnrBattle> eval)
+        {
+            var showLoadingScreen = false;
+            if (Widget.Find<StageLoadingEffect>().IsActive())
+            {
+                Widget.Find<StageLoadingEffect>().Close();
+            }
+
+            if (Widget.Find<BattleResultPopup>().IsActive())
+            {
+                showLoadingScreen = true;
+                Widget.Find<BattleResultPopup>().Close();
+            }
+
+            Game.Game.BackToMainAsync(eval.Exception?.InnerException, showLoadingScreen)
+                .Forget();
+        }
+
+        private ActionEvaluation<EventDungeonBattle> PrepareEventDungeonBattle(
+            ActionEvaluation<EventDungeonBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return eval;
+            }
 
             if (eval.Action.BuyTicketIfNeeded)
             {
@@ -1891,18 +1938,32 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        var task = UniTask.Run(() =>
+                        var task = UniTask.RunOnThreadPool(() =>
                         {
                             UpdateCurrentAvatarStateAsync(eval).Forget();
                             RxProps.EventDungeonInfo.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
-                        });
+                        }, configureAwait: false);
                         task.ToObservable()
                             .First()
                             // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => Debug.LogException(e));
                     });
+            return eval;
+        }
+
+        private async void ResponseEventDungeonBattleAsync(
+            ActionEvaluation<EventDungeonBattle> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
+
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
+                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
 
             var playCount = Action.EventDungeonBattle.PlayCount;
             // NOTE: This is a temporary solution. The formula is not yet decided.
@@ -1952,6 +2013,24 @@ namespace Nekoyume.Blockchain
             {
                 Widget.Find<BattleResultPopup>().NextStage(log);
             }
+        }
+
+        private void ExceptionEventDungeonBattle(ActionEvaluation<EventDungeonBattle> eval)
+        {
+            var showLoadingScreen = false;
+            if (Widget.Find<StageLoadingEffect>().IsActive())
+            {
+                Widget.Find<StageLoadingEffect>().Close();
+            }
+
+            if (Widget.Find<BattleResultPopup>().IsActive())
+            {
+                showLoadingScreen = true;
+                Widget.Find<BattleResultPopup>().Close();
+            }
+
+            Game.Game.BackToMainAsync(eval.Exception?.InnerException, showLoadingScreen)
+                .Forget();
         }
 
         private void ResponseRedeemCode(ActionEvaluation<Action.RedeemCode> eval)
@@ -2030,9 +2109,9 @@ namespace Nekoyume.Blockchain
 
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
             if (mail is not MonsterCollectionMail
-                {
-                    attachment: MonsterCollectionResult monsterCollectionResult
-                })
+            {
+                attachment: MonsterCollectionResult monsterCollectionResult
+            })
             {
                 return;
             }
@@ -2271,19 +2350,18 @@ namespace Nekoyume.Blockchain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseHackAndSlashRandomBuff(
+        private ActionEvaluation<HackAndSlashRandomBuff> PrepareHackAndSlashRandomBuff(
             ActionEvaluation<HackAndSlashRandomBuff> eval)
         {
-            if (!(eval.Exception is null))
-            {
-                Debug.LogError($"HackAndSlashRandomBuff exc : {eval.Exception.InnerException}");
-                return;
-            }
-
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
             UpdateCrystalRandomSkillState(eval);
+            return eval;
+        }
 
+        private void ResponseHackAndSlashRandomBuff(
+            ActionEvaluation<HackAndSlashRandomBuff> eval)
+        {
             Widget.Find<BuffBonusLoadingScreen>().Close();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var skillState = States.Instance.CrystalRandomSkillState;
@@ -2323,39 +2401,6 @@ namespace Nekoyume.Blockchain
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
-        public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
-        {
-            if (avatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var questList = States.Instance.CurrentAvatarState.questList;
-            foreach (var id in ids)
-            {
-                var quest = questList.FirstOrDefault(q => q.Id == id);
-                if (quest == null)
-                {
-                    continue;
-                }
-
-                var rewardMap = quest.Reward.ItemMap;
-
-                foreach (var reward in rewardMap)
-                {
-                    var materialRow = TableSheets.Instance
-                        .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Item1);
-
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        materialRow.Value.ItemId,
-                        reward.Item2);
-                }
-
-                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
-            }
-        }
 
         internal class LocalRandom : System.Random, IRandom
         {
@@ -2442,7 +2487,7 @@ namespace Nekoyume.Blockchain
                 .First()
                 .Subscribe(_ =>
                 {
-                    UniTask.Run(() =>
+                    UniTask.RunOnThreadPool(() =>
                         {
                             UpdateAgentStateAsync(eval).Forget();
                             UpdateCurrentAvatarStateAsync().Forget();
@@ -2450,7 +2495,7 @@ namespace Nekoyume.Blockchain
                             // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
-                        }).ToObservable()
+                        }, configureAwait: false).ToObservable()
                         .First()
                         // ReSharper disable once ConvertClosureToMethodGroup
                         .DoOnError(e => Debug.LogException(e));
@@ -2459,7 +2504,7 @@ namespace Nekoyume.Blockchain
             var tableSheets = TableSheets.Instance;
             var (myDigest, enemyDigest) =
                 GetArenaPlayerDigest(
-					eval.PreviousState,
+                    eval.PreviousState,
                     eval.OutputState,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
@@ -2643,7 +2688,7 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(stage =>
                     {
-                        var task = UniTask.Run(() =>
+                        var task = UniTask.RunOnThreadPool(() =>
                         {
                             UpdateCurrentAvatarStateAsync(eval).Forget();
                             var avatarState = States.Instance.CurrentAvatarState;
@@ -2651,7 +2696,7 @@ namespace Nekoyume.Blockchain
                                 avatarState.questList.completedQuestIds);
                             _disposableForBattleEnd = null;
                             stage.IsAvatarStateUpdatedAfterBattle = true;
-                        });
+                        }, configureAwait: false);
                         task.ToObservable()
                             .First()
                             // ReSharper disable once ConvertClosureToMethodGroup
@@ -2728,7 +2773,7 @@ namespace Nekoyume.Blockchain
             }
 
             var isNewRecord = raiderState is null ||
-                              raiderState.HighScore < simulator.DamageDealt;
+                raiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close(true);
 
             Widget.Find<LoadingScreen>().Close();
@@ -3000,8 +3045,8 @@ namespace Nekoyume.Blockchain
             else
             {
                 Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                                 $"the render context of UnloadFromMyGarages action.\n" +
-                                 $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+                    $"the render context of UnloadFromMyGarages action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             }
         }
     }
