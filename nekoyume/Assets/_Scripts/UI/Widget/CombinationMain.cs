@@ -4,7 +4,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -45,7 +44,7 @@ namespace Nekoyume.UI
         private LockObject[] lockObjects;
 
         [Serializable]
-        public struct LockObject
+        private struct LockObject
         {
             public GameObject lockObject;
             public int requiredStageId;
