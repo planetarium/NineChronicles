@@ -2712,7 +2712,11 @@ MonoBehaviour:
     rectTransform: {fileID: 6683240913620267796}
   - type: 100000
     rectTransform: {fileID: 6994716309426001764}
-  tutorialActions: 01000000020000000e00000050c30000a0860100
+  - type: 150000
+    rectTransform: {fileID: 359115451029900426}
+  - type: 500000
+    rectTransform: {fileID: 310077401747823704}
+  tutorialActions: 01000000020000000e00000050c30000a086010040420f0049420f00
   btnQuest: {fileID: 553648111353541289}
   btnCombination: {fileID: 553648110939848765}
   btnShop: {fileID: 1227858067435832074}
@@ -5400,6 +5404,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16913dec42abae948a9298f9e887d339, type: 3}
+--- !u!224 &359115451029900426 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 21887679660293355, guid: 16913dec42abae948a9298f9e887d339,
+    type: 3}
+  m_PrefabInstance: {fileID: 339484261287866465}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &359115452020470505 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 21887680680723080, guid: 16913dec42abae948a9298f9e887d339,
@@ -9388,6 +9398,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d793ad4fed23994fad4b7fd5c99b304, type: 3}
+--- !u!224 &310077401747823704 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6188661157146602918, guid: 2d793ad4fed23994fad4b7fd5c99b304,
+    type: 3}
+  m_PrefabInstance: {fileID: 5885948842896339454}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &967204440583816733 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6684225965647263715, guid: 2d793ad4fed23994fad4b7fd5c99b304,

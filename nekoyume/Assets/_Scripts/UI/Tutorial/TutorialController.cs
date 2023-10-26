@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
-                _tutorial.Play(viewData, scenario.data.presetId, () =>
+                _tutorial.Play(viewData, scenario.data.presetId, scenario.data.guideSprite, () =>
                 {
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
@@ -167,6 +167,7 @@ namespace Nekoyume.UI
                 new GuideDialogData(
                     data.emojiType,
                     (DialogCommaType) preset.commaId,
+                    data.dialogPositionType,
                     script,
                     target)
             };
@@ -194,6 +195,19 @@ namespace Nekoyume.UI
                 return checkPoint;
             }
 
+            // format example
+            void Check(int stageIdForTutorial)  // ex) 5, 10
+            {
+                // clearedStageId == stageIdForTutorial => 튜토리얼이 실행되어야 하는 스테이지
+                // 튜토리얼이 종료된 후 checkPoint = -stageIdForTutorial 연산을 함
+                // checkPoint != -stageIdForTutorial => 해당 스테이지의 튜토리얼이 종료된적 없음
+                if (clearedStageId == stageIdForTutorial && checkPoint != -stageIdForTutorial)
+                {
+                    checkPoint = stageIdForTutorial * 10000;
+                }
+            }
+            var tutorialStageArray = new[] {7, 10, 25, 35, 40};
+
             // If PlayerPrefs doesn't exist
             if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
@@ -205,10 +219,6 @@ namespace Nekoyume.UI
                 checkPoint = 2;
             }
             // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 7 && checkPoint != -7)
-            {
-                checkPoint = 70000;
-            }
             else if (clearedStageId == 5 && checkPoint != -5)
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
@@ -218,21 +228,9 @@ namespace Nekoyume.UI
                     checkPoint = 50000;
                 }
             }
-            else if (clearedStageId == 10 && checkPoint != -10)
+            else if (tutorialStageArray.FirstOrDefault(stageId => stageId == clearedStageId) != 0)
             {
-                checkPoint = 100000;
-            }
-
-            // format example
-            void Check(int stageIdForTutorial)  // ex) 5, 10
-            {
-                // clearedStageId == stageIdForTutorial => 튜토리얼이 실행되어야 하는 스테이지
-                // 튜토리얼이 종료된 후 checkPoint = -stageIdForTutorial 연산을 함
-                // checkPoint != -stageIdForTutorial => 해당 스테이지의 튜토리얼이 종료된적 없음
-                if (clearedStageId == stageIdForTutorial && checkPoint != -stageIdForTutorial)
-                {
-                    checkPoint = stageIdForTutorial * 10000;
-                }
+                Check(clearedStageId);
             }
 
             return checkPoint;

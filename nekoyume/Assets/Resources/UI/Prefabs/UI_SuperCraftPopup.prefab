@@ -82,8 +82,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a2687f3b864deea60fd24d3f824b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 450002
+    rectTransform: {fileID: 3647888718177431565}
+  tutorialActions: 47420f00
   superCraftButton: {fileID: 1517806122348923672}
   skillTextGroupParent: {fileID: 6624249721600050660}
   skillName: {fileID: 2760609118625277589}

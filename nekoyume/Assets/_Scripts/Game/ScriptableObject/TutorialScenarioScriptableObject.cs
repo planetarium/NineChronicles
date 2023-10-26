@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -9,6 +10,15 @@ namespace Nekoyume
     {
         public TutorialScenario tutorialScenario;
 
+        public ScenarioTemplate[] scenarioTemplates;
+
         public TextAsset json;
+
+        [Serializable]
+        public struct ScenarioTemplate
+        {
+            public string description;
+            public ScenarioData scenarioData;
+        }
     }
 }

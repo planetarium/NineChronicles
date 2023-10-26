@@ -222,6 +222,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public EnhancementInventoryItem GetEnabledItem(int index)
+        {
+            return GetModels().ElementAt(index);
+        }
+
         private void OnClickItem(EnhancementInventoryItem item)
         {
             ClearSelectedItem();

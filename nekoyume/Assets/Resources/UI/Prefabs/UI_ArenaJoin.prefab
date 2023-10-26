@@ -111,6 +111,7 @@ RectTransform:
   - {fileID: 5513246164202496408}
   - {fileID: 4254734023056012053}
   - {fileID: 6374171412819578294}
+  - {fileID: 1407027339254569140}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -131,7 +132,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba08ebb4e28d44afb6577152ab1b250d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
+  tutorialTargets:
+  - type: 150001
+    rectTransform: {fileID: 4362450552639770565}
   tutorialActions: 
   _useSo: 0
   _so: {fileID: 11400000, guid: 41ea502f5144ad84ea5ef6e120dbc361, type: 2}
@@ -1200,6 +1203,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5890722658428986810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1407027339254569140}
+  m_Layer: 0
+  m_Name: TutorialDummys
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1407027339254569140
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5890722658428986810}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2783476113864661107}
+  m_Father: {fileID: 8032183764374797593}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6142635407701282021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,6 +1316,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &6350514146829784128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2783476113864661107}
+  m_Layer: 5
+  m_Name: ArenaSeasonText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2783476113864661107
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6350514146829784128}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1407027339254569140}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -55, y: 134}
+  m_SizeDelta: {x: 404, y: 64}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6625904716577366147
 GameObject:
   m_ObjectHideFlags: 0
@@ -2866,7 +2942,7 @@ PrefabInstance:
     - target: {fileID: 1897873225400433459, guid: 7234fd34c7c4fed4095ec78762f68339,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -15
+      value: -14.999878
       objectReference: {fileID: 0}
     - target: {fileID: 1897873225400433459, guid: 7234fd34c7c4fed4095ec78762f68339,
         type: 3}
@@ -3164,6 +3240,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 4971513970735907626, guid: 07b79ef66db5d0d4583077f2706f246b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -29.999878
       objectReference: {fileID: 0}
     - target: {fileID: 5031459218591766345, guid: 07b79ef66db5d0d4583077f2706f246b,
         type: 3}
@@ -3607,6 +3688,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArenaJoinSeasonInfo
       objectReference: {fileID: 0}
+    - target: {fileID: 9154004183822306799, guid: cc962a46f90dc234c8b0ae136474a8a6,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9196715674172059435, guid: cc962a46f90dc234c8b0ae136474a8a6,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3641,6 +3727,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d76e1e388a084b08ab37046e2bc31285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4362450552639770565 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4970500927464037006, guid: cc962a46f90dc234c8b0ae136474a8a6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8678522141533181259}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7902120107465675600 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1574489342133667355, guid: cc962a46f90dc234c8b0ae136474a8a6,

@@ -137,5 +137,17 @@ namespace Nekoyume.UI
         {
             summonButton.onClick?.Invoke();
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombinationUpgradeButton()
+        {
+            upgradeButton.onClick?.Invoke();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombinationGrindButton()
+        {
+            grindButton.onClick?.Invoke();
+        }
     }
 }
