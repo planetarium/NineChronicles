@@ -2318,7 +2318,6 @@ MonoBehaviour:
   ncg: {fileID: 6043580305729695720}
   actionPoint: {fileID: 357833884042807931}
   crystal: {fileID: 1559883690307185837}
-  dailyBonus: {fileID: 6893972894619664365}
   hourglass: {fileID: 7063808080988830429}
   runeStone: {fileID: 4404438338189741339}
   arenaTickets: {fileID: 6233748020144637231}
@@ -16418,12 +16417,6 @@ PrefabInstance:
 --- !u!224 &6893972894619664364 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3053886975560591763, guid: 6eb4474f608217a448203f87a5cc8085,
-    type: 3}
-  m_PrefabInstance: {fileID: 8488680378436081279}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &6893972894619664365 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3053886975560591762, guid: 6eb4474f608217a448203f87a5cc8085,
     type: 3}
   m_PrefabInstance: {fileID: 8488680378436081279}
   m_PrefabAsset: {fileID: 0}
