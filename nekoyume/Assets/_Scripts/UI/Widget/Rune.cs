@@ -588,5 +588,11 @@ namespace Nekoyume.UI
 
             popup.Show(callback, icon, name, count, content, buttonText);
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombinationRuneCombineButton()
+        {
+            Enhancement();
+        }
     }
 }

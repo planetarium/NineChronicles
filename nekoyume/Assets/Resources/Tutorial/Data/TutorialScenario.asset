@@ -1085,12 +1085,13 @@ MonoBehaviour:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 30, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000018
-        actionType: 0
+        actionType: 1000015
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1103,12 +1104,13 @@ MonoBehaviour:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 30, y: 30}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000019
-        actionType: 0
+        actionType: 1000016
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1127,6 +1129,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1145,6 +1148,7 @@ MonoBehaviour:
         actionType: 1000013
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1160,9 +1164,10 @@ MonoBehaviour:
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000021
-        actionType: 1000013
+        actionType: 1000014
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1181,6 +1186,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0

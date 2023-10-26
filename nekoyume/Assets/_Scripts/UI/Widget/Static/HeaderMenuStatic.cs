@@ -677,6 +677,12 @@ namespace Nekoyume.UI.Module
             UpdatePortalReward(false);
         }
 
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointHeaderMenu()
+        {
+            actionPoint.OnClickSlider();
+        }
+
         public void UpdatePortalRewardByLevel(int level)
         {
             foreach (var noticePoint in ResourcesHelper.GetPortalRewardLevelTable())

@@ -143,6 +143,9 @@ namespace Nekoyume.UI
         private const string AdventureRuneTicker = "RUNE_ADVENTURE";
         private const int ItemId = 500000;
 
+        private System.Action _chargeAP;
+        private System.Action _getDailyReward;
+
         public void ShowAP(
             string itemCount,
             int subItemCount,
@@ -181,11 +184,19 @@ namespace Nekoyume.UI
                 $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
 
             conditionalButtonBrown.Interactable = isInteractable && subItemCount > 0;
+            _chargeAP = chargeAP;
             conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => chargeAP());
             conditionalButtonYellow.Interactable = isInteractable && remainBlockRange <= 0;
+            _getDailyReward = getDailyReward;
             conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => getDailyReward());
 
             base.Show();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointChargeButton()
+        {
+            _getDailyReward();
         }
     }
 }
