@@ -20,7 +20,7 @@ namespace Nekoyume.Blockchain
     public static partial class StateGetter
     {
         public static IValue GetState(Address address, HashDigest<SHA256> hash) =>
-            Game.Game.instance.Agent.GetState(address, hash);
+            Game.Game.instance.Agent.GetStateAsync(address, hash).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public static IReadOnlyList<IValue> GetStates(
             IReadOnlyList<Address> addresses,
@@ -35,7 +35,7 @@ namespace Nekoyume.Blockchain
 
         public static GameConfigState GetGameConfigState(HashDigest<SHA256> hash)
         {
-            var value = Game.Game.instance.Agent.GetState(GameConfigState.Address, hash);
+            var value = GetState(GameConfigState.Address, hash);
             if (value is null or Null)
             {
                 Log.Warning("No game config state ({GameConfigStateAddress})", GameConfigState.Address.ToHex());
@@ -136,7 +136,7 @@ namespace Nekoyume.Blockchain
             Address inventoryAddr,
             HashDigest<SHA256> hash)
         {
-            var inventoryState = Game.Game.instance.Agent.GetState(inventoryAddr, hash);
+            var inventoryState = GetState(inventoryAddr, hash);
             if (inventoryState is null or Null)
             {
                 throw new StateNullException(inventoryAddr);

@@ -14,7 +14,7 @@ namespace Nekoyume.Blockchain
     {
         public static bool TryGetState(Address address, HashDigest<SHA256> hash, out IValue value)
         {
-            value = Game.Game.instance.Agent.GetState(address, hash);
+            value = Game.Game.instance.Agent.GetStateAsync(address, hash).Result;
             return value is not Null;
         }
 
