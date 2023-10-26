@@ -177,15 +177,30 @@ namespace Nekoyume
         private void UpdatePropertyValue(object instance, PropertyInfo property)
         {
             var propertyType = property.PropertyType;
+            var underlyingType = Nullable.GetUnderlyingType(propertyType);
+            var isNullable = underlyingType != null;
+            if (isNullable)
+            {
+                propertyType = underlyingType;
+            }
+
             var propertyValue = property.GetValue(instance);
 
             if (propertyType == typeof(int))
             {
-                propertyValue = EditorGUILayout.IntField(property.Name + " (int)", (int)propertyValue);
+                propertyValue = isNullable ? HandleNullableInt((int?)propertyValue, property.Name) : EditorGUILayout.IntField(property.Name + " (int)", (int)propertyValue);
             }
             else if (propertyType == typeof(string))
             {
                 propertyValue = EditorGUILayout.TextField(property.Name + " (string)", (string)propertyValue);
+            }
+            else if (propertyType == typeof(float))
+            {
+                propertyValue = isNullable ? HandleNullableFloat((float?)propertyValue, property.Name) : EditorGUILayout.FloatField(property.Name + " (float)", (float)propertyValue);
+            }
+            else if (propertyType == typeof(bool))
+            {
+                propertyValue = isNullable ? HandleNullableBool((bool?)propertyValue, property.Name) : EditorGUILayout.Toggle(property.Name + " (bool)", (bool)propertyValue);
             }
             else if (propertyType.IsEnum)
             {
@@ -193,6 +208,39 @@ namespace Nekoyume
             }
 
             property.SetValue(instance, propertyValue);
+        }
+
+        private int? HandleNullableInt(int? value, string name)
+        {
+            if (!value.HasValue)
+            {
+                value = 0;
+            }
+
+            value = EditorGUILayout.IntField(name + " (int?)", value.Value);
+            return value;
+        }
+
+        private float? HandleNullableFloat(float? value, string name)
+        {
+            if (!value.HasValue)
+            {
+                value = 0.0f;
+            }
+            
+            value = EditorGUILayout.FloatField(name + " (float?)", value.Value);
+            return value;
+        }
+
+        private bool? HandleNullableBool(bool? value, string name)
+        {
+            if (value.HasValue)
+            {
+                value = false;
+            }
+
+            value = EditorGUILayout.Toggle(name + " (bool?)", value.Value);
+            return value;
         }
 
         private bool IsCustomClass(Type type)
