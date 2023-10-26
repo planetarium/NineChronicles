@@ -23,7 +23,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject pcContainer;
         [Header("Mobile")]
         [SerializeField] private GameObject mobileContainer;
-        // [SerializeField] private Button touchScreenButton;
         [SerializeField] private RawImage videoImage;
 
         [SerializeField] private GameObject startButtonContainer;
@@ -55,9 +54,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            // videoPlayer.loopPointReached += _ => OnVideoEnd();
-            // videoSkipButton.onClick.AddListener(OnVideoEnd);
 
             startButton.OnSubmitSubject.Subscribe(_ =>
             {
@@ -166,26 +162,8 @@ namespace Nekoyume.UI
 
         public void ShowMobile()
         {
-            // PlayerPrefs FirstPlay
-            // if (PlayerPrefs.GetInt("FirstPlay", 0) == 0)
-            // {
-            //     PlayerPrefs.SetInt("FirstPlay", 1);
-            //     PlayerPrefs.Save();
-            //
-            //     videoImage.gameObject.SetActive(true);
-            //     videoSkipButton.gameObject.SetActive(false);
-            //     videoPlayer.Play();
-            //     Analyzer.Instance.Track("Unity/Intro/Video/Start");
-            //
-            //     yield return new WaitForSeconds(5);
-            //
-            //     videoSkipButton.gameObject.SetActive(true);
-            // }
-            // else
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-            // startButtonContainer.SetActive(true);  // Show in animation 'UI_IntroScreen/Mobile'
-            // signinButton.gameObject.SetActive(true);
         }
 
         private void OnVideoEnd()
