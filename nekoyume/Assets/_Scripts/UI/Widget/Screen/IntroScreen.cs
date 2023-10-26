@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Libplanet.Common;
@@ -7,6 +8,7 @@ using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
+using Nekoyume.Planet;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -29,6 +31,8 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
+        [SerializeField] private Button planetButton;
+        [SerializeField] private TextMeshProUGUI planetText;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -43,11 +47,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button googleSignInButton;
 
+        [SerializeField] private GameObject selectPlanetPopup;
+        [SerializeField] private ConditionalButton heimdallButton;
+        [SerializeField] private ConditionalButton odinButton;
+
         private int _guideIndex = 0;
         private const int GuideCount = 3;
 
         private string _keyStorePath;
         private string _privateKey;
+        private PlanetContext _planetContext;
 
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
@@ -112,6 +121,26 @@ namespace Nekoyume.UI
                 _guideIndex++;
                 ShowQrCodeGuide();
             });
+            planetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
+            heimdallButton.OnClickSubject
+                .Subscribe(_ => selectPlanetPopup.SetActive(false))
+                .AddTo(gameObject);
+            heimdallButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                _planetContext = PlanetSelector.SelectPlanet(_planetContext, heimdallButton.Text);
+                selectPlanetPopup.SetActive(false);
+            }).AddTo(gameObject);
+            odinButton.OnClickSubject
+                .Subscribe(_ => selectPlanetPopup.SetActive(false))
+                .AddTo(gameObject);
+            odinButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                _planetContext = PlanetSelector.SelectPlanet(_planetContext, odinButton.Text);
+                selectPlanetPopup.SetActive(false);
+            }).AddTo(gameObject);
+            PlanetSelector.CurrentPlanetInfoSubject
+                .Subscribe(ApplyCurrentPlanetInfo)
+                .AddTo(gameObject);
 
             startButton.Interactable = true;
             signinButton.interactable = true;
@@ -121,13 +150,15 @@ namespace Nekoyume.UI
             GetGuestPrivateKey();
         }
 
-        public void Show(string keyStorePath, string privateKey)
+        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
             Analyzer.Instance.Track("Unity/Intro/Show");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
+            _planetContext = planetContext;
 
 #if UNITY_ANDROID
+            ApplyCurrentPlanetInfo(_planetContext.CurrentPlanetInfo);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
@@ -242,6 +273,31 @@ namespace Nekoyume.UI
 
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
+        }
+        
+        private void ApplyCurrentPlanetInfo(PlanetInfo planetInfo)
+        {
+            if (planetInfo is null)
+            {
+                planetText.text = "Null";
+                heimdallButton.Interactable = false;
+                odinButton.Interactable = false;
+                return;
+            }
+
+            var textInfo = CultureInfo.InvariantCulture.TextInfo;
+            planetText.text = textInfo.ToTitleCase(planetInfo.Name);
+
+            if (planetInfo.ID.Equals(PlanetId.Odin))
+            {
+                heimdallButton.Interactable = false;
+                odinButton.Interactable = true;
+            }
+            else
+            {
+                heimdallButton.Interactable = true;
+                odinButton.Interactable = false;
+            }
         }
     }
 }
