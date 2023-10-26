@@ -2010,13 +2010,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets:
-  - type: 350003
+  - type: 1000006
     rectTransform: {fileID: 8986450904738572294}
-  - type: 350001
+  - type: 1000004
     rectTransform: {fileID: 5065785778224673168}
-  - type: 350002
+  - type: 1000005
     rectTransform: {fileID: 2564842983287249619}
-  - type: 350004
+  - type: 1000007
     rectTransform: {fileID: 4314033063988399991}
   tutorialActions: 42420f0043420f0044420f00
   enhancementInventory: {fileID: 6241664505025257659}
