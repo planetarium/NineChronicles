@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
@@ -7,6 +8,7 @@ using Libplanet.Types.Assets;
 using LruCacheNet;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -26,6 +28,18 @@ namespace Nekoyume.Blockchain
         public Currency GoldCurrency { get; internal set; }
 
         public abstract void Start(ActionRenderer renderer);
+
+        protected static bool ValidateEvaluationIsSuccess<T>(ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            return evaluation.Exception is null;
+        }
+
+        protected static bool ValidateEvaluationIsTerminated<T>(ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            return evaluation.Exception is not null;
+        }
 
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -125,6 +139,40 @@ namespace Nekoyume.Blockchain
             }
 
             return null;
+        }
+
+        public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
+        {
+            if (avatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            var questList = States.Instance.CurrentAvatarState.questList;
+            foreach (var id in ids)
+            {
+                var quest = questList.FirstOrDefault(q => q.Id == id);
+                if (quest == null)
+                {
+                    continue;
+                }
+
+                var rewardMap = quest.Reward.ItemMap;
+
+                foreach (var reward in rewardMap)
+                {
+                    var materialRow = TableSheets.Instance
+                        .MaterialItemSheet
+                        .First(pair => pair.Key == reward.Item1);
+
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        materialRow.Value.ItemId,
+                        reward.Item2);
+                }
+
+                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
+            }
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(
