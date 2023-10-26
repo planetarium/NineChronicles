@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets:
   - type: 150001
-    rectTransform: {fileID: 2783476113864661107}
+    rectTransform: {fileID: 4362450552639770565}
   tutorialActions: 
   _useSo: 0
   _so: {fileID: 11400000, guid: 41ea502f5144ad84ea5ef6e120dbc361, type: 2}
@@ -3727,6 +3727,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d76e1e388a084b08ab37046e2bc31285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4362450552639770565 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4970500927464037006, guid: cc962a46f90dc234c8b0ae136474a8a6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8678522141533181259}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7902120107465675600 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1574489342133667355, guid: cc962a46f90dc234c8b0ae136474a8a6,

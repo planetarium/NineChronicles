@@ -27,6 +27,7 @@ MonoBehaviour:
         actionType: 1
         guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_01_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
         actionType: 14
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_027
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
@@ -63,6 +65,7 @@ MonoBehaviour:
         actionType: 3
         guideType: 0
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_009
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -81,6 +84,7 @@ MonoBehaviour:
         actionType: 4
         guideType: 1
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_010
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -99,6 +103,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_011
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -117,6 +122,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_013_L01
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -135,6 +141,7 @@ MonoBehaviour:
         actionType: 8
         guideType: 2
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_014_L02
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -153,6 +160,7 @@ MonoBehaviour:
         actionType: 14
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_02_027
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
@@ -171,6 +179,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_07_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -189,6 +198,7 @@ MonoBehaviour:
         actionType: 15
         guideType: 2
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_07_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -207,6 +217,7 @@ MonoBehaviour:
         actionType: 70001
         guideType: 1
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_07_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -225,6 +236,7 @@ MonoBehaviour:
         actionType: 14
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_07_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -243,6 +255,7 @@ MonoBehaviour:
         actionType: 30001
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_07_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -261,6 +274,7 @@ MonoBehaviour:
         actionType: 30000
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_03_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -279,6 +293,7 @@ MonoBehaviour:
         actionType: 12
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_03_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -297,6 +312,7 @@ MonoBehaviour:
         actionType: 30001
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_03_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -315,6 +331,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 3
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_05_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -333,6 +350,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 3
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_05_002
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -351,6 +369,7 @@ MonoBehaviour:
         actionType: 50001
         guideType: 3
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_05_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -369,6 +388,7 @@ MonoBehaviour:
         actionType: 50002
         guideType: 1
         emojiType: 1
+        dialogPositionType: 0
         scriptKey: TUTORIAL_05_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -387,6 +407,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_05_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -405,6 +426,7 @@ MonoBehaviour:
         actionType: 100000
         guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_10_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -423,6 +445,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_10_002
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -441,6 +464,7 @@ MonoBehaviour:
         actionType: 100001
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_10_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -459,6 +483,7 @@ MonoBehaviour:
         actionType: 14
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_10_004
         arrowAdditionalDelay: 1.5
         fullScreenButton: 0
@@ -477,6 +502,7 @@ MonoBehaviour:
         actionType: 30001
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_10_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -495,6 +521,7 @@ MonoBehaviour:
         actionType: 1000000
         guideType: 3
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_15_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -506,13 +533,14 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -20, y: 0}
+        targetSizeOffset: {x: 0, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000001
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_15_002
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -523,14 +551,15 @@ MonoBehaviour:
       checkPointId: 250000
       data:
         presetId: 1
-        arrowPositionOffset: {x: 0, y: 0}
+        arrowPositionOffset: {x: 20, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 15, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000002
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_15_003
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -549,6 +578,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_15_004
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -567,6 +597,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_15_005
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -585,6 +616,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_15_006
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -603,6 +635,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 3
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -621,6 +654,7 @@ MonoBehaviour:
         actionType: 1000001
         guideType: 3
         emojiType: 2
+        dialogPositionType: 1
         scriptKey: TUTORIAL_35_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -632,13 +666,14 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -10, y: 10}
+        targetSizeOffset: {x: 10, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000004
         actionType: 1000002
-        guideType: 3
+        guideType: 1
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -650,13 +685,14 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetPositionOffset: {x: -10, y: 10}
+        targetSizeOffset: {x: 10, y: 10}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000005
         actionType: 1000003
-        guideType: 3
+        guideType: 1
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_35_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -673,8 +709,9 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000006
         actionType: 0
-        guideType: 3
+        guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_35_005
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -691,8 +728,9 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000007
         actionType: 1000004
-        guideType: 3
+        guideType: 2
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_35_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -711,6 +749,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_40_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -729,6 +768,7 @@ MonoBehaviour:
         actionType: 1000005
         guideType: 3
         emojiType: 2
+        dialogPositionType: 2
         scriptKey: TUTORIAL_40_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -747,6 +787,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_40_003
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -765,6 +806,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_40_004
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -783,6 +825,7 @@ MonoBehaviour:
         actionType: 50000
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -801,6 +844,7 @@ MonoBehaviour:
         actionType: 5
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -819,6 +863,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -837,6 +882,7 @@ MonoBehaviour:
         actionType: 1000006
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -855,6 +901,7 @@ MonoBehaviour:
         actionType: 1000007
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -873,6 +920,7 @@ MonoBehaviour:
         actionType: 1000008
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -891,6 +939,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_45_007
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -909,6 +958,7 @@ MonoBehaviour:
         actionType: 1000009
         guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: 'TUTORIAL_50_001 '
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -927,6 +977,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -945,6 +996,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -963,6 +1015,7 @@ MonoBehaviour:
         actionType: 1000010
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -981,6 +1034,7 @@ MonoBehaviour:
         actionType: 1000011
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -999,6 +1053,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_006
         arrowAdditionalDelay: 0
         fullScreenButton: 1
@@ -1017,6 +1072,7 @@ MonoBehaviour:
         actionType: 1000012
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_50_007
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1142,6 +1198,7 @@ MonoBehaviour:
       actionType: 14
       guideType: 1
       emojiType: 2
+      dialogPositionType: 0
       scriptKey: TUTORIAL_10_004
       arrowAdditionalDelay: 1.5
       fullScreenButton: 0
@@ -1158,6 +1215,7 @@ MonoBehaviour:
       actionType: 30001
       guideType: 1
       emojiType: 2
+      dialogPositionType: 0
       scriptKey: TUTORIAL_10_005
       arrowAdditionalDelay: 0
       fullScreenButton: 0

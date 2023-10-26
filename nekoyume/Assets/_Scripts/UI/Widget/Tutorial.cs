@@ -167,6 +167,7 @@ namespace Nekoyume.UI
             _finishRef = 0;
             _playTimeRef = 0;
             _isPlaying = true;
+            guideImage.sprite = transparentSprite;
             foreach (var item in items)
             {
                 item.Item.Stop(() => PlayEnd(callback));
