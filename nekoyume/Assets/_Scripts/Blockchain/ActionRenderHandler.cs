@@ -203,8 +203,8 @@ namespace Nekoyume.Blockchain
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
             _actionRenderer.EveryRender<RewardGold>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
                 .Subscribe(eval => UpdateAgentStateAsync(eval).Forget())
                 .AddTo(_disposables);
         }
@@ -212,8 +212,9 @@ namespace Nekoyume.Blockchain
         private void CreateAvatar()
         {
             _actionRenderer.EveryRender<CreateAvatar>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
+                .Where(ValidateEvaluationIsSuccess)
                 .Subscribe(ResponseCreateAvatar)
                 .AddTo(_disposables);
         }
@@ -403,7 +404,7 @@ namespace Nekoyume.Blockchain
         private void GameConfig()
         {
             _actionRenderer.EveryRender<PatchTableSheet>()
-                .ObserveOnMainThread()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Subscribe(UpdateGameConfigState)
                 .AddTo(_disposables);
         }
@@ -438,10 +439,13 @@ namespace Nekoyume.Blockchain
         private void TransferAsset()
         {
             _actionRenderer.EveryRender<TransferAsset>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     ValidateEvaluationForCurrentAgent(eval) ||
                     eval.Action.Recipient.Equals(States.Instance.AgentState.address) ||
                     eval.Action.Recipient.Equals(States.Instance.CurrentAvatarState.address))
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareTransferAsset)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
@@ -450,11 +454,14 @@ namespace Nekoyume.Blockchain
         private void TransferAssets()
         {
             _actionRenderer.EveryRender<TransferAssets>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     ValidateEvaluationForCurrentAgent(eval) ||
                     eval.Action.Recipients.Any(e =>
                         e.recipient.Equals(States.Instance.AgentState.address) ||
                         e.recipient.Equals(States.Instance.CurrentAvatarState.address)))
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareTransferAssets)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAssets)
                 .AddTo(_disposables);
@@ -483,8 +490,8 @@ namespace Nekoyume.Blockchain
         private void Stake()
         {
             _actionRenderer.EveryRender<Stake>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseStake)
                 .AddTo(_disposables);
         }
@@ -581,8 +588,8 @@ namespace Nekoyume.Blockchain
         private void RequestPledge()
         {
             _actionRenderer.EveryRender<RequestPledge>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval => eval.Action.AgentAddress.Equals(States.Instance.AgentState.address))
-                .ObserveOnMainThread()
                 .Subscribe(ResponseRequestPledge)
                 .AddTo(_disposables);
         }
@@ -590,8 +597,8 @@ namespace Nekoyume.Blockchain
         private void ApprovePledge()
         {
             _actionRenderer.EveryRender<ApprovePledge>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseApprovePledge)
                 .AddTo(_disposables);
         }
@@ -642,36 +649,39 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
-        private async UniTaskVoid ResponseCreateAvatar(
+        private void ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
-            if (eval.Exception != null)
-            {
-                return;
-            }
+            UniTask.RunOnThreadPool(async () =>
+                {
+                    await UpdateAgentStateAsync(eval);
+                    await UpdateAvatarState(eval, eval.Action.index);
 
-            await UpdateAgentStateAsync(eval);
-            await UpdateAvatarState(eval, eval.Action.index);
-            var avatarState = await States.Instance.SelectAvatarAsync(eval.Action.index);
-            await States.Instance.InitRuneStoneBalance();
-            await States.Instance.InitSoulStoneBalance();
-            await States.Instance.InitRuneStates();
-            await States.Instance.InitItemSlotStates();
-            await States.Instance.InitRuneSlotStates();
+                    await States.Instance.SelectAvatarAsync(eval.Action.index);
+                    await States.Instance.InitRuneStoneBalance();
+                    await States.Instance.InitSoulStoneBalance();
+                    await States.Instance.InitRuneStates();
+                    await States.Instance.InitItemSlotStates();
+                    await States.Instance.InitRuneSlotStates();
+                }).ToObservable()
+                .ObserveOnMainThread()
+                .Subscribe(x =>
+                {
+                    var avatarState = States.Instance.AvatarStates[eval.Action.index];
+                    RenderQuest(
+                        avatarState.address,
+                        avatarState.questList.completedQuestIds);
 
-            RenderQuest(
-                avatarState.address,
-                avatarState.questList.completedQuestIds);
+                    var agentAddr = States.Instance.AgentState.address;
+                    var avatarAddr = Addresses.GetAvatarAddress(agentAddr, eval.Action.index);
+                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddr);
 
-            var agentAddr = States.Instance.AgentState.address;
-            var avatarAddr = Addresses.GetAvatarAddress(agentAddr, eval.Action.index);
-            DialogPopup.DeleteDialogPlayerPrefs(avatarAddr);
-
-            var loginDetail = Widget.Find<LoginDetail>();
-            if (loginDetail && loginDetail.IsActive())
-            {
-                loginDetail.OnRenderCreateAvatar(eval);
-            }
+                    var loginDetail = Widget.Find<LoginDetail>();
+                    if (loginDetail && loginDetail.IsActive())
+                    {
+                        loginDetail.OnRenderCreateAvatar(eval);
+                    }
+                });
         }
 
         private void ResponseRapidCombination(ActionEvaluation<RapidCombination> eval)
@@ -2163,29 +2173,31 @@ namespace Nekoyume.Blockchain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
+        private ActionEvaluation<TransferAsset> PrepareTransferAsset(
+            ActionEvaluation<TransferAsset> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            return eval;
+        }
+
         private void ResponseTransferAsset(ActionEvaluation<TransferAsset> eval)
         {
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
             TransferAssetInternal(
                 eval.OutputState,
                 eval.Action.Sender,
                 eval.Action.Recipient,
                 eval.Action.Amount);
+        }
 
+        private ActionEvaluation<TransferAssets> PrepareTransferAssets(
+            ActionEvaluation<TransferAssets> eval)
+        {
             UpdateAgentStateAsync(eval).Forget();
+            return eval;
         }
 
         private void ResponseTransferAssets(ActionEvaluation<TransferAssets> eval)
         {
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
             foreach (var (recipientAddress, amount) in eval.Action.Recipients)
             {
                 TransferAssetInternal(
@@ -2194,8 +2206,6 @@ namespace Nekoyume.Blockchain
                     recipientAddress,
                     amount);
             }
-
-            UpdateAgentStateAsync(eval).Forget();
         }
 
         private static void TransferAssetInternal(
