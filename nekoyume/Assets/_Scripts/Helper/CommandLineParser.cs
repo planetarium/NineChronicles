@@ -9,12 +9,17 @@ using System.Text.Json.Serialization;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using Nekoyume.Planet;
 
 namespace Nekoyume.Helper
 {
     [Serializable]
     public class CommandLineOptions
     {
+        private string _planetRegistryUrl;
+
+        private PlanetId? _planetId;
+
         private string privateKey;
 
         // null이면 Web3KeyStore.DefaultStore 따름
@@ -79,6 +84,28 @@ namespace Nekoyume.Helper
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
+
+        [Option("planet-registry-url", Required = false, HelpText = "planet registry url")]
+        public string PlanetRegistryUrl
+        {
+            get => _planetRegistryUrl;
+            set
+            {
+                _planetRegistryUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("planet-id", Required = false, HelpText = "planet id")]
+        public PlanetId? PlanetId
+        {
+            get => _planetId;
+            set
+            {
+                _planetId = value;
+                Empty = false;
+            }
+        }
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey
@@ -489,6 +516,7 @@ namespace Nekoyume.Helper
                 Converters =
                 {
                     new StringEnumerableConverter(),
+                    new NullablePlanetIdJsonConverter(),
                 },
                 DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
