@@ -571,7 +571,9 @@ namespace Nekoyume.Blockchain
         private void Raid()
         {
             _actionRenderer.EveryRender<Raid>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Select(PrepareRaid)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRaidAsync)
                 .AddTo(_disposables);
@@ -580,9 +582,12 @@ namespace Nekoyume.Blockchain
         private void ClaimRaidReward()
         {
             _actionRenderer.EveryRender<ClaimRaidReward>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareClaimRaidReward)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseClaimRaidRewardAsync)
+                .Subscribe(ResponseClaimRaidReward)
                 .AddTo(_disposables);
         }
 
@@ -2800,28 +2805,11 @@ namespace Nekoyume.Blockchain
             return (myDigest, enemyDigest);
         }
 
-        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        private ActionEvaluation<Raid> PrepareRaid(ActionEvaluation<Raid> eval)
         {
             if (eval.Exception is not null)
             {
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
-                return;
-            }
-
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Raid),
-                States.Instance.UpdateRuneSlotStates(BattleType.Raid));
-
-            var worldBoss = Widget.Find<WorldBoss>();
-            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            if (Widget.Find<RaidPreparation>().IsSkipRender)
-            {
-                Widget.Find<LoadingScreen>().Close();
-                worldBoss.Close();
-                await WorldBossStates.Set(avatarAddress);
-                await States.Instance.InitRuneStoneBalance();
-                Game.Event.OnRoomEnter.Invoke(true);
-                return;
+                return eval;
             }
 
             if (eval.Action.PayNcg)
@@ -2851,6 +2839,32 @@ namespace Nekoyume.Blockchain
                             // ReSharper disable once ConvertClosureToMethodGroup
                             .DoOnError(e => Debug.LogException(e));
                     });
+            return eval;
+        }
+
+        private async void ResponseRaidAsync(ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
+            }
+
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Raid),
+                States.Instance.UpdateRuneSlotStates(BattleType.Raid));
+
+            var worldBoss = Widget.Find<WorldBoss>();
+            var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (Widget.Find<RaidPreparation>().IsSkipRender)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                worldBoss.Close();
+                await WorldBossStates.Set(avatarAddress);
+                await States.Instance.InitRuneStoneBalance();
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
 
             if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
             {
@@ -2938,16 +2952,19 @@ namespace Nekoyume.Blockchain
                 killRewards);
         }
 
-        private static async void ResponseClaimRaidRewardAsync(
+        private static ActionEvaluation<ClaimRaidReward> PrepareClaimRaidReward(
             ActionEvaluation<ClaimRaidReward> eval)
         {
-            if (eval.Exception is not null)
+            States.Instance.InitRuneStoneBalance().ToObservable().Subscribe(_ =>
             {
-                return;
-            }
+                UpdateCrystalBalance(eval);
+            });
+            return eval;
+        }
 
-            await States.Instance.InitRuneStoneBalance();
-            UpdateCrystalBalance(eval);
+        private static void ResponseClaimRaidReward(
+            ActionEvaluation<ClaimRaidReward> eval)
+        {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             WorldBossStates.SetReceivingGradeRewards(avatarAddress, false);
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
