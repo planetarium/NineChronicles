@@ -364,6 +364,7 @@ namespace Nekoyume.Game
             if (planetContext.CurrentPlanetInfo is null)
             {
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
+                yield break;
             }
 #endif
 
