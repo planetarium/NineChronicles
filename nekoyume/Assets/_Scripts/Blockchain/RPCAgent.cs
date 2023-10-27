@@ -133,9 +133,9 @@ namespace Nekoyume.Blockchain
             }).WithCancellationToken(_channel.ShutdownToken);
 
             // Android Mono only support arm7(32bit) backend in unity engine.
-            // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+            // 1. System.Net.WebClient is invalid when use Android Mono in current unity version.
             // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
-            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in async function.
             // So I can only use normal ImportBlock() function when build in Android Mono backend :(
             yield return UniTask.Run(UniTask.Action(async () =>
             {
