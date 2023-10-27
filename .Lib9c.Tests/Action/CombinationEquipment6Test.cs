@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -13,6 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -44,6 +46,8 @@ namespace Lib9c.Tests.Action
                 )
             );
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EquipmentItemRecipeSheet)] =
+                EquipmentItemSheetFixture.EquipmentItemRecipeSheetWithMimisbrunnr;
             _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var agentState = new AgentState(_agentAddress);

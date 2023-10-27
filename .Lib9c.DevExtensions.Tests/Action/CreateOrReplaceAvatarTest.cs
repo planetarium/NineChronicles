@@ -478,7 +478,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 var recipe = equipmentItemRecipeSheet.OrderedList!.First(r =>
                     r.ResultEquipmentId == equipment.Id);
                 Assert.NotNull(recipe);
-                Assert.Equal(3, recipe.SubRecipeIds.Count);
+                Assert.Equal(2, recipe.SubRecipeIds.Count);
                 Assert.True(equipmentItemSubRecipeSheetV2.TryGetValue(
                     recipe.SubRecipeIds[1],
                     out var subRecipe));

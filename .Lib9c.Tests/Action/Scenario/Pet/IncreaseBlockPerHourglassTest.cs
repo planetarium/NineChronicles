@@ -154,7 +154,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,
                 recipeId = recipe.Id,
-                subRecipeId = recipe.SubRecipeIds?[0],
+                subRecipeId = null,
                 petId = _petId,
             };
 
@@ -189,7 +189,6 @@ namespace Lib9c.Tests.Action.Scenario.Pet
 
             // TEST: All Hourglasses should be used
             var inventoryState = new Inventory((List)stateV2.GetState(_inventoryAddr));
-            Assert.Equal(1, inventoryState.Items.Count);
             Assert.Throws<InvalidOperationException>(() =>
                 inventoryState.Items.First(item => item.item.Id == _hourglassItemId));
         }

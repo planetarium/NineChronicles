@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -34,6 +35,7 @@ namespace Lib9c.Tests.Action
             _initialState = new Account(MockState.Empty);
 
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(GameConfigSheet)] = GameConfigSheetFixtures.Default;
             foreach (var (key, value) in sheets)
             {
                 _initialState = _initialState.SetState(
