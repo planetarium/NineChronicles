@@ -21,6 +21,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.Blockchain;
+using Nekoyume.Planet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.LiveAsset;
@@ -267,6 +268,24 @@ namespace Nekoyume.Game
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
+
+            // NOTE: Initialize planets
+            //       It should do after load CommandLineOptions.
+            //       And it should do before initialize Agent.
+            var planetContext = new PlanetContext(_commandLineOptions);
+            yield return PlanetSelector.InitializeAsync(planetContext).ToCoroutine();
+            if (planetContext.HasError)
+            {
+                Debug.LogError(planetContext.Error);
+                QuitWithMessage(
+                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                    planetContext.Error);
+                yield break;
+            }
+
+            OnLoadCommandlineOptions();
+            // ~Initialize planets
+
             portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 
 #if ENABLE_FIREBASE
@@ -473,6 +492,7 @@ namespace Nekoyume.Game
 
             Debug.Log("[Game] CommandLineOptions loaded");
             Debug.Log($"APV: {_commandLineOptions.AppProtocolVersion}");
+            Debug.Log($"RPC: {_commandLineOptions.RpcServerHost}:{_commandLineOptions.RpcServerPort}");
         }
 
         private void SubscribeRPCAgent()
@@ -1463,6 +1483,30 @@ namespace Nekoyume.Game
         public void ShowCLO()
         {
             Debug.Log(_commandLineOptions.ToString());
+        }
+
+        private static void QuitWithMessage(string message, string debugMessage = null)
+        {
+            message = string.IsNullOrEmpty(debugMessage)
+                ? message
+                : message + "\n" + debugMessage;
+
+            if (!Widget.TryFind<OneButtonSystem>(out var widget))
+            {
+                widget = Widget.Create<OneButtonSystem>();
+            }
+
+            widget.Show(
+                message,
+                L10nManager.Localize("UI_QUIT"),
+                () =>
+                {
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+#else
+                    Application.Quit();
+#endif
+                });
         }
     }
 }
