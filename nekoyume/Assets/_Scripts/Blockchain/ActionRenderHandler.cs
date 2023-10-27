@@ -412,8 +412,8 @@ namespace Nekoyume.Blockchain
         private void RedeemCode()
         {
             _actionRenderer.EveryRender<Action.RedeemCode>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode)
                 .AddTo(_disposables);
         }
@@ -1448,7 +1448,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateCurrentAvatarStateAsync(eval);
                 await ReactiveShopState.RequestSellProductsAsync();
-            }, configureAwait: false).Forget();
+            }).Forget();
         }
 
         private async void ResponseReRegisterProduct(ActionEvaluation<ReRegisterProduct> eval)
@@ -1515,7 +1515,7 @@ namespace Nekoyume.Blockchain
             UniTask.RunOnThreadPool(async () =>
             {
                 await UpdateCurrentAvatarStateAsync(eval);
-            }, configureAwait: false).Forget();
+            }).Forget();
         }
 
         private async void ResponseBuyProduct(ActionEvaluation<BuyProduct> eval)
@@ -1624,7 +1624,7 @@ namespace Nekoyume.Blockchain
             {
                 await UpdateAgentStateAsync(eval);
                 await UpdateCurrentAvatarStateAsync(eval);
-            }, configureAwait: false).Forget();
+            }).Forget();
         }
 
         private async void ResponseDailyRewardAsync(ActionEvaluation<DailyReward> eval)
@@ -1640,7 +1640,11 @@ namespace Nekoyume.Blockchain
                 await States.Instance.InitRuneStoneBalance();
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
-                UpdateCurrentAvatarStateAsync(eval).Forget();
+                UniTask.RunOnThreadPool(async () =>
+                {
+                    await UpdateCurrentAvatarStateAsync(eval);
+                }).Forget();
+
                 NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
@@ -2064,35 +2068,41 @@ namespace Nekoyume.Blockchain
         private void ResponseRedeemCode(ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";
-            if (eval.Exception is null
-                && StateGetter.TryGetRedeemCodeState(
-                    eval.OutputState,
-                    out RedeemCodeState redeem))
+            RedeemCodeState redeem = null;
+            UniTask.RunOnThreadPool(() =>
             {
-                Widget.Find<CodeRewardPopup>().Show(
-                    eval.Action.Code,
-                    redeem);
-                key = "UI_REDEEM_CODE_SUCCESS";
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-                var msg = L10nManager.Localize(key);
-                NotificationSystem.Push(
-                    MailType.System,
-                    msg,
-                    NotificationCell.NotificationType.Information);
-            }
-            else
-            {
-                if (eval.Exception.InnerException is DuplicateRedeemException)
+                if (StateGetter.TryGetRedeemCodeState(eval.OutputState, out redeem))
                 {
-                    key = "UI_REDEEM_CODE_ALREADY_USE";
+                    UpdateCurrentAvatarStateAsync(eval).Forget();
                 }
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (eval.Exception is null && redeem is not null)
+                {
+                    Widget.Find<CodeRewardPopup>().Show(
+                        eval.Action.Code,
+                        redeem);
+                    key = "UI_REDEEM_CODE_SUCCESS";
+                    var msg = L10nManager.Localize(key);
+                    NotificationSystem.Push(
+                        MailType.System,
+                        msg,
+                        NotificationCell.NotificationType.Information);
+                }
+                else
+                {
+                    if (eval.Exception.InnerException is DuplicateRedeemException)
+                    {
+                        key = "UI_REDEEM_CODE_ALREADY_USE";
+                    }
 
-                var msg = L10nManager.Localize(key);
-                NotificationSystem.Push(
-                    MailType.System,
-                    msg,
-                    NotificationCell.NotificationType.Alert);
-            }
+                    var msg = L10nManager.Localize(key);
+                    NotificationSystem.Push(
+                        MailType.System,
+                        msg,
+                        NotificationCell.NotificationType.Alert);
+                }
+            });
         }
 
         private void ResponseChargeActionPoint(ActionEvaluation<ChargeActionPoint> eval)
@@ -2112,7 +2122,10 @@ namespace Nekoyume.Blockchain
                     GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
                 }
 
-                UpdateCurrentAvatarStateAsync(eval).Forget();
+                UniTask.RunOnThreadPool(async () =>
+                {
+                    await UpdateCurrentAvatarStateAsync(eval);
+                }).Forget();
             }
         }
 
@@ -2126,69 +2139,72 @@ namespace Nekoyume.Blockchain
 
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            if (!StateGetter.TryGetAvatarState(
-                    agentAddress,
-                    avatarAddress,
-                    eval.OutputState,
-                    out var avatarState))
+            AvatarState avatarState = null;
+            UniTask.RunOnThreadPool(async () =>
             {
-                return;
-            }
-
-            var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
-            if (mail is not MonsterCollectionMail
-            {
-                attachment: MonsterCollectionResult monsterCollectionResult
-            })
-            {
-                return;
-            }
-
-            // LocalLayer
-            var rewardInfos = monsterCollectionResult.rewards;
-            for (var i = 0; i < rewardInfos.Count; i++)
-            {
-                var rewardInfo = rewardInfos[i];
-                if (!rewardInfo.ItemId.TryParseAsTradableId(
-                        TableSheets.Instance.ItemSheet,
-                        out var tradableId))
+                if (StateGetter.TryGetAvatarState(
+                        agentAddress,
+                        avatarAddress,
+                        eval.OutputState,
+                        out avatarState))
                 {
-                    continue;
+                    await UpdateAgentStateAsync(eval);
+                    await UpdateCurrentAvatarStateAsync(eval);
+                }
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
+                if (mail is not MonsterCollectionMail
+                {
+                    attachment: MonsterCollectionResult monsterCollectionResult
+                })
+                {
+                    return;
                 }
 
-                if (!rewardInfo.ItemId.TryGetFungibleId(
-                        TableSheets.Instance.ItemSheet,
-                        out var fungibleId))
+                // LocalLayer
+                var rewardInfos = monsterCollectionResult.rewards;
+                for (var i = 0; i < rewardInfos.Count; i++)
                 {
-                    continue;
-                }
-
-                if (avatarState.inventory.TryGetFungibleItems(fungibleId, out var items))
-                {
-                    var item = items.FirstOrDefault(x => x.item is ITradableItem);
-                    if (item?.item is ITradableItem tradableItem)
+                    var rewardInfo = rewardInfos[i];
+                    if (!rewardInfo.ItemId.TryParseAsTradableId(
+                            TableSheets.Instance.ItemSheet,
+                            out var tradableId))
                     {
-                        LocalLayerModifier.RemoveItem(
-                            avatarAddress,
-                            tradableId,
-                            tradableItem.RequiredBlockIndex,
-                            rewardInfo.Quantity);
+                        continue;
+                    }
+
+                    if (!rewardInfo.ItemId.TryGetFungibleId(
+                            TableSheets.Instance.ItemSheet,
+                            out var fungibleId))
+                    {
+                        continue;
+                    }
+
+                    if (avatarState.inventory.TryGetFungibleItems(fungibleId, out var items))
+                    {
+                        var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                        if (item?.item is ITradableItem tradableItem)
+                        {
+                            LocalLayerModifier.RemoveItem(
+                                avatarAddress,
+                                tradableId,
+                                tradableItem.RequiredBlockIndex,
+                                rewardInfo.Quantity);
+                        }
                     }
                 }
-            }
 
-            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);
-            // ~LocalLayer
+                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);
+                // ~LocalLayer
 
-            // Notification
-            NotificationSystem.Push(
-                MailType.System,
-                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
-                NotificationCell.NotificationType.Information);
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                // Notification
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                    NotificationCell.NotificationType.Information);
+                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            });
         }
 
         private ActionEvaluation<TransferAsset> PrepareTransferAsset(
@@ -2339,26 +2355,30 @@ namespace Nekoyume.Blockchain
 
             var sheet = TableSheets.Instance.EquipmentItemRecipeSheet;
             var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
-            await UniTask.WhenAll(
-                LocalLayerModifier.ModifyAgentCrystalAsync(
-                    States.Instance.AgentState.address,
-                    cost.MajorUnit),
-                UpdateCurrentAvatarStateAsync(eval),
-                UpdateAgentStateAsync(eval));
-
-            foreach (var id in recipeIds)
+            UniTask.RunOnThreadPool(() =>
             {
-                sharedModel.UnlockingRecipes.Remove(id);
-                States.Instance.UpdateHammerPointStates(
-                    id,
-                    new HammerPointState(
-                        Addresses.GetHammerPointStateAddress(eval.Action.AvatarAddress, id),
-                        id));
-            }
+                UniTask.WhenAll(
+                    LocalLayerModifier.ModifyAgentCrystalAsync(
+                        States.Instance.AgentState.address,
+                        cost.MajorUnit),
+                    UpdateCurrentAvatarStateAsync(eval),
+                    UpdateAgentStateAsync(eval));
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                foreach (var id in recipeIds)
+                {
+                    sharedModel.UnlockingRecipes.Remove(id);
+                    States.Instance.UpdateHammerPointStates(
+                        id,
+                        new HammerPointState(
+                            Addresses.GetHammerPointStateAddress(eval.Action.AvatarAddress, id),
+                            id));
+                }
 
-            recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
-            sharedModel.SetUnlockedRecipes(recipeIds);
-            sharedModel.UpdateUnlockableRecipes();
+                recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
+                sharedModel.SetUnlockedRecipes(recipeIds);
+                sharedModel.UpdateUnlockableRecipes();
+            });
         }
 
         private void ResponseUnlockWorld(ActionEvaluation<UnlockWorld> eval)
@@ -2425,8 +2445,11 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateStakeStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UniTask.RunOnThreadPool(() =>
+            {
+                UpdateStakeStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
+            }).Forget();
         }
 
 
