@@ -178,6 +178,8 @@ namespace Nekoyume.UI
             return Resources.Load<T>(path);
         }
 
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40 };
+
         private static int GetCheckPoint(int clearedStageId)
         {
             /*
@@ -206,7 +208,6 @@ namespace Nekoyume.UI
                     checkPoint = stageIdForTutorial * 10000;
                 }
             }
-            var tutorialStageArray = new[] {7, 10, 25, 35, 40};
 
             // If PlayerPrefs doesn't exist
             if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
@@ -228,7 +229,7 @@ namespace Nekoyume.UI
                     checkPoint = 50000;
                 }
             }
-            else if (tutorialStageArray.FirstOrDefault(stageId => stageId == clearedStageId) != 0)
+            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 Check(clearedStageId);
             }
