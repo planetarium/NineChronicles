@@ -2,20 +2,36 @@ using CommandLine;
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using UnityEngine;
-using System.Runtime.InteropServices;
 using System.Reflection;
 using Nekoyume.Planet;
+
+#if !UNITY_ANDROID
+using System.IO;
+#endif
 
 namespace Nekoyume.Helper
 {
     [Serializable]
     public class CommandLineOptions
     {
+        public static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            AllowTrailingCommas = true,
+            Converters =
+            {
+                new StringEnumerableConverter(),
+                new NullablePlanetIdJsonConverter(),
+            },
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+        };
+
         private string _planetRegistryUrl;
 
         private PlanetId? _planetId;
@@ -510,19 +526,6 @@ namespace Nekoyume.Helper
                 return options;
             }
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                AllowTrailingCommas = true,
-                Converters =
-                {
-                    new StringEnumerableConverter(),
-                    new NullablePlanetIdJsonConverter(),
-                },
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
 #if UNITY_ANDROID
             // error: current no clo.json
             UnityEngine.WWW www = new UnityEngine.WWW(Platform.GetStreamingAssetsPath("clo.json"));
@@ -530,12 +533,12 @@ namespace Nekoyume.Helper
             {
                 // wait for data load
             }
-            return JsonSerializer.Deserialize<CommandLineOptions>(www.text, jsonOptions);
+            return JsonSerializer.Deserialize<CommandLineOptions>(www.text, JsonOptions);
 #else
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
-                return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), jsonOptions);
+                return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), JsonOptions);
             }
 #endif
 
