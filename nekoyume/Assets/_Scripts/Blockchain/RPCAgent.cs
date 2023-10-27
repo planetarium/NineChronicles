@@ -107,6 +107,7 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
             PrivateKey = privateKey;
             _channel ??= new Grpc.Core.Channel(
                 options.RpcServerHost,
@@ -170,6 +171,7 @@ namespace Nekoyume.Blockchain
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+            Debug.Log($"[RPCAgent] Finish initialization");
         }
 
         public IValue GetState(Address address)
