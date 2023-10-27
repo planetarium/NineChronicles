@@ -170,7 +170,6 @@ namespace Nekoyume.Game
         private Thread _marketThread;
 
         private PortalConnect portalConnect;
-        private Coroutine _rpcAgentInitializeCoroutine;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -318,11 +317,6 @@ namespace Nekoyume.Game
 #endif
             var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
             MessagePackSerializer.DefaultOptions = options;
-            if (Agent is RPCAgent rpcAgent)
-            {
-                _rpcAgentInitializeCoroutine =
-                    StartCoroutine(rpcAgent.InitializeWithoutPrivateKey(_commandLineOptions));
-            }
 
 #if UNITY_EDITOR
             if (useSystemLanguage)
@@ -1096,16 +1090,10 @@ namespace Nekoyume.Game
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
-            if (_rpcAgentInitializeCoroutine != null)
-            {
-                yield return _rpcAgentInitializeCoroutine;
-            }
-
             yield return Agent.Initialize(
                 _commandLineOptions,
                 loginPopup.GetPrivateKey(),
-                callback
-            );
+                callback);
         }
 
         public void ResetStore()
