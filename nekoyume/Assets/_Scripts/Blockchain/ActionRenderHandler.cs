@@ -352,6 +352,9 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<CombinationEquipment>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Select(PreResponseCombinationEquipment)
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareCombinationEquipment)
                 .ObserveOnMainThread()
@@ -828,6 +831,16 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private ActionEvaluation<CombinationEquipment> PreResponseCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
+        {
+            if (eval.Action.payByCrystal)
+            {
+                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            }
+
+            return eval;
+        }
+
         private (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
             PrepareCombinationEquipment(
                 ActionEvaluation<CombinationEquipment> eval)
@@ -866,11 +879,6 @@ namespace Nekoyume.Blockchain
         private void ResponseCombinationEquipment(
             (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
         {
-            if (renderArgs.Evaluation.Action.payByCrystal)
-            {
-                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            }
-
             if (renderArgs.AvatarState is null)
             {
                 return;
