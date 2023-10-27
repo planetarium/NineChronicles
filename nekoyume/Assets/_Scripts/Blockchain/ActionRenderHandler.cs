@@ -408,7 +408,10 @@ namespace Nekoyume.Blockchain
         private void RapidCombination()
         {
             _actionRenderer.EveryRender<RapidCombination>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareRapidCombination)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination)
                 .AddTo(_disposables);
@@ -697,138 +700,155 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-        private void ResponseRapidCombination(ActionEvaluation<RapidCombination> eval)
+        private (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState)
+            PrepareRapidCombination(
+                ActionEvaluation<RapidCombination> eval)
         {
-            if (eval.Exception is null)
-            {
-                var avatarAddress = eval.Action.avatarAddress;
-                var slotIndex = eval.Action.slotIndex;
-                if (!StateGetter.TryGetCombinationSlotState(
-                        avatarAddress,
-                        slotIndex,
-                        eval.OutputState,
-                        out var slotState))
-                {
-                    return;
-                }
-
-                var result = (RapidCombination5.ResultModel)slotState.Result;
-                foreach (var pair in result.cost)
-                {
-                    LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
-                }
-
-                string formatKey;
-                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                var avatarState = States.Instance.AvatarStates.Values
-                    .FirstOrDefault(x => x.address == avatarAddress);
-                if (avatarState is null)
-                {
-                    return;
-                }
-
-                var combinationSlotState = States.Instance.GetCombinationSlotState(
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var avatarState = States.Instance.AvatarStates.Values
+                .FirstOrDefault(x => x.address == avatarAddress);
+            var combinationSlotState = avatarState is not null
+                ? States.Instance.GetCombinationSlotState(
                     avatarState,
-                    currentBlockIndex);
-                var stateResult = combinationSlotState[slotIndex]?.Result;
-                switch (stateResult)
+                    Game.Game.instance.Agent.BlockIndex)
+                : null;
+
+            if(StateGetter.TryGetCombinationSlotState(
+                avatarAddress,
+                slotIndex,
+                eval.OutputState,
+                out var slotState) && avatarState is not null)
+            {
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
+
+                if (slotState.PetId.HasValue)
                 {
-                    case CombinationConsumable5.ResultModel combineResultModel:
+                    UpdatePetState(avatarAddress, slotState.PetId.Value, eval.OutputState);
+                }
+            }
+
+            return (eval, avatarState, slotState, combinationSlotState);
+        }
+
+        private void ResponseRapidCombination(
+            (ActionEvaluation<RapidCombination> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState, Dictionary<int, CombinationSlotState> CurrentCombinationSlotState) renderArgs)
+        {
+            var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
+
+            if (renderArgs.CombinationSlotState is null)
+            {
+                return;
+            }
+
+            var result = (RapidCombination5.ResultModel)renderArgs.CombinationSlotState.Result;
+            foreach (var pair in result.cost)
+            {
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+            }
+
+            string formatKey;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            if (renderArgs.AvatarState is null)
+            {
+                return;
+            }
+
+            var stateResult = renderArgs.CurrentCombinationSlotState[slotIndex]?.Result;
+            switch (stateResult)
+            {
+                case CombinationConsumable5.ResultModel combineResultModel:
+                {
+                    LocalLayerModifier.AddNewResultAttachmentMail(
+                        avatarAddress,
+                        combineResultModel.id,
+                        currentBlockIndex);
+                    if (combineResultModel.itemUsable is Equipment equipment)
                     {
-                        LocalLayerModifier.AddNewResultAttachmentMail(
-                            avatarAddress,
-                            combineResultModel.id,
-                            currentBlockIndex);
-                        if (combineResultModel.itemUsable is Equipment equipment)
+                        var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
+                        if (combineResultModel.subRecipeId.HasValue &&
+                            sheet.TryGetValue(
+                                combineResultModel.subRecipeId.Value,
+                                out var subRecipeRow))
                         {
-                            var sheet = TableSheets.Instance.EquipmentItemSubRecipeSheetV2;
-                            if (combineResultModel.subRecipeId.HasValue &&
-                                sheet.TryGetValue(
-                                    combineResultModel.subRecipeId.Value,
-                                    out var subRecipeRow))
-                            {
-                                formatKey = equipment.optionCountFromCombination ==
-                                    subRecipeRow.Options.Count
-                                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                        : "NOTIFICATION_COMBINATION_COMPLETE";
-                            }
-                            else
-                            {
-                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                            }
+                            formatKey = equipment.optionCountFromCombination ==
+                                subRecipeRow.Options.Count
+                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                    : "NOTIFICATION_COMBINATION_COMPLETE";
                         }
                         else
                         {
                             formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                         }
-
-                        break;
                     }
-                    case ItemEnhancement.ResultModel enhancementResultModel:
+                    else
                     {
-                        LocalLayerModifier.AddNewResultAttachmentMail(
-                            avatarAddress,
-                            enhancementResultModel.id,
-                            currentBlockIndex);
-
-                        switch (enhancementResultModel.enhancementResult)
-                        {
-                            /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
-                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                                break;*/
-                            case Action.ItemEnhancement.EnhancementResult.Success:
-                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                                break;
-                            /*case Action.ItemEnhancement.EnhancementResult.Fail:
-                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                                    new Dictionary<string, Value>
-                                    {
-                                        ["GainedCrystal"] =
-                                            (long)enhancementResultModel.CRYSTAL.MajorUnit,
-                                        ["BurntNCG"] = (long)enhancementResultModel.gold,
-                                        ["AvatarAddress"] =
-                                            States.Instance.CurrentAvatarState.address.ToString(),
-                                        ["AgentAddress"] =
-                                            States.Instance.AgentState.address.ToString(),
-                                    });
-                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                                break;*/
-                            default:
-                                Debug.LogError(
-                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
-                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                                break;
-                        }
-
-                        break;
-                    }
-                    default:
-                        Debug.LogError(
-                            $"Unexpected state.Result: {stateResult}");
                         formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                        break;
+                    }
+
+                    break;
                 }
-
-                var format = L10nManager.Localize(formatKey);
-                NotificationSystem.CancelReserve(result.itemUsable.ItemId);
-                NotificationSystem.Push(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    NotificationCell.NotificationType.Notification);
-
-                UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
-                UpdateAgentStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-                if (slotState.PetId.HasValue)
+                case ItemEnhancement.ResultModel enhancementResultModel:
                 {
-                    UpdatePetState(avatarAddress, slotState.PetId.Value, eval.OutputState);
-                }
+                    LocalLayerModifier.AddNewResultAttachmentMail(
+                        avatarAddress,
+                        enhancementResultModel.id,
+                        currentBlockIndex);
 
-                Widget.Find<CombinationSlotsPopup>().SetCaching(
-                    avatarAddress,
-                    eval.Action.slotIndex,
-                    false);
+                    switch (enhancementResultModel.enhancementResult)
+                    {
+                        /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                            break;*/
+                        case Action.ItemEnhancement.EnhancementResult.Success:
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                            break;
+                        /*case Action.ItemEnhancement.EnhancementResult.Fail:
+                            Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
+                                new Dictionary<string, Value>
+                                {
+                                    ["GainedCrystal"] =
+                                        (long)enhancementResultModel.CRYSTAL.MajorUnit,
+                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                    ["AvatarAddress"] =
+                                        States.Instance.CurrentAvatarState.address.ToString(),
+                                    ["AgentAddress"] =
+                                        States.Instance.AgentState.address.ToString(),
+                                });
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                            break;*/
+                        default:
+                            Debug.LogError(
+                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                            break;
+                    }
+
+                    break;
+                }
+                default:
+                    Debug.LogError(
+                        $"Unexpected state.Result: {stateResult}");
+                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                    break;
             }
+
+            var format = L10nManager.Localize(formatKey);
+            NotificationSystem.CancelReserve(result.itemUsable.ItemId);
+            NotificationSystem.Push(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                NotificationCell.NotificationType.Notification);
+
+            Widget.Find<CombinationSlotsPopup>().SetCaching(
+                avatarAddress,
+                renderArgs.Evaluation.Action.slotIndex,
+                false);
         }
 
         private ActionEvaluation<CombinationEquipment> PreResponseCombinationEquipment(ActionEvaluation<CombinationEquipment> eval)
