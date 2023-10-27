@@ -58,10 +58,7 @@ namespace Nekoyume.UI
 
         public PortalConnect(string url)
         {
-            if (string.IsNullOrEmpty(url))
-                url = "https://nine-chronicles.com";
-
-            PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
+            PortalUrl = url ?? "https://nine-chronicles.com";
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
