@@ -177,6 +177,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
+            GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
 #if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
             string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
@@ -326,7 +327,9 @@ namespace Nekoyume.Game
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
-            yield return L10nManager.Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language)).ToYieldInstruction();
+            yield return L10nManager
+                .Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start() L10nManager initialized");
             // Initialize MainCanvas first
@@ -340,7 +343,35 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start() ResourcesHelper initialized");
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
-            // Initialize NineChroniclesAPIClient.
+
+            // NOTE: Initialize IAgent.
+            var agentInitialized = false;
+            var agentInitializeSucceed = false;
+            yield return StartCoroutine(CoLogin(planetContext, succeed =>
+                    {
+                        Debug.Log($"Agent initialized. {succeed}");
+                        agentInitialized = true;
+                        agentInitializeSucceed = succeed;
+                        Analyzer.SetAgentAddress(Agent.Address.ToString());
+                        Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
+                    }
+                )
+            );
+            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
+            yield return new WaitUntil(() => agentInitialized);
+
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            if (planetContext.CurrentPlanetInfo is null)
+            {
+                QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
+            }
+#endif
+
+            // NOTE: Create ActionManager after Agent initialized.
+            ActionManager = new ActionManager(Agent);
+
+            // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
+            // NOTE: Initialize several services after Agent initialized.
             ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
             if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
@@ -350,27 +381,8 @@ namespace Nekoyume.Game
 
             WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
             MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-            PatrolRewardServiceClient =
-                new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-
-            GL.Clear(true, true, Color.black);
-            // Initialize Agent
-            var agentInitialized = false;
-            var agentInitializeSucceed = false;
-            yield return StartCoroutine(CoLogin(planetContext, succeed =>
-                    {
-                        Debug.Log($"Agent initialized. {succeed}");
-                        agentInitialized = true;
-                        agentInitializeSucceed = succeed;
-                        Analyzer.SetAgentAddress(Agent.Address.ToString());
-                    }
-                )
-            );
-            grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
-            yield return new WaitUntil(() => agentInitialized);
-            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
-            // NOTE: Create ActionManager after Agent initialized.
-            ActionManager = new ActionManager(Agent);
+            PatrolRewardServiceClient = new NineChroniclesAPIClient(
+                _commandLineOptions.PatrolRewardServiceHost);
 
 #if UNITY_ANDROID
             // Only use on Android or...
@@ -385,32 +397,9 @@ namespace Nekoyume.Game
 
             StartCoroutine(InitializeIAP());
 #endif
-            IEnumerator InitializeWithAgent()
-            {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitTableSheet);
-                yield return SyncTableSheetsAsync().ToCoroutine();
-                Debug.Log("[Game] Start() TableSheets synchronized");
-                RxProps.Start(Agent, States, TableSheets);
-
-                Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
-                {
-                    var petList = States.Instance.PetStates.GetPetStatesAll()
-                        .Where(petState => petState != null)
-                        .Select(petState => petState.PetId)
-                        .ToList();
-                    SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
-                }).AddTo(gameObject);
-            }
 
             yield return StartCoroutine(InitializeWithAgent());
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
-
-            IEnumerator CoInitializeSecondWidget()
-            {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
-                yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
-                yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
-            }
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
             yield return StartCoroutine(CoCheckPledge());
@@ -447,6 +436,31 @@ namespace Nekoyume.Game
 
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
             ShowNext(agentInitializeSucceed);
+            yield break;
+
+            IEnumerator InitializeWithAgent()
+            {
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitTableSheet);
+                yield return SyncTableSheetsAsync().ToCoroutine();
+                Debug.Log("[Game] Start() TableSheets synchronized");
+                RxProps.Start(Agent, States, TableSheets);
+
+                Event.OnUpdateAddresses.AsObservable().Subscribe(_ =>
+                {
+                    var petList = States.Instance.PetStates.GetPetStatesAll()
+                        .Where(petState => petState != null)
+                        .Select(petState => petState.PetId)
+                        .ToList();
+                    SavedPetId = !petList.Any() ? null : petList[Random.Range(0, petList.Count)];
+                }).AddTo(gameObject);
+            }
+
+            IEnumerator CoInitializeSecondWidget()
+            {
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
+                yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
+                yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
+            }
         }
 
         protected override void OnDestroy()
