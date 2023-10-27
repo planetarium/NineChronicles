@@ -1118,7 +1118,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230002
       nextId: 230003
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -1127,7 +1127,7 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 2
         actionType: 50000
-        guideType: 1
+        guideType: 3
         emojiType: 2
         dialogPositionType: 0
         scriptKey: TUTORIAL_23_003
@@ -1137,7 +1137,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230003
       nextId: 230004
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -1146,7 +1146,7 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000020
         actionType: 1000013
-        guideType: 1
+        guideType: 3
         emojiType: 2
         dialogPositionType: 0
         scriptKey: TUTORIAL_23_004
@@ -1156,7 +1156,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230004
       nextId: 230005
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}

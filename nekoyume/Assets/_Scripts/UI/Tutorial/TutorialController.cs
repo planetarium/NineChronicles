@@ -229,6 +229,13 @@ namespace Nekoyume.UI
                     checkPoint = 50000;
                 }
             }
+            else if (clearedStageId == 23 && checkPoint != -23)
+            {
+                if (ActionPoint.IsInteractableMaterial())
+                {
+                    checkPoint = 230000;
+                }
+            }
             else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 Check(clearedStageId);
