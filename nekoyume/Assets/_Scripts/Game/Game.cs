@@ -130,12 +130,15 @@ namespace Nekoyume.Game
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
-        public NineChroniclesAPIClient ApiClient => _apiClient;
-        public NineChroniclesAPIClient RpcClient => _rpcClient;
+        public NineChroniclesAPIClient ApiClient { get; private set; }
 
-        public MarketServiceClient MarketServiceClient;
+        public NineChroniclesAPIClient RpcClient { get; private set; }
+
+        public MarketServiceClient MarketServiceClient { get; private set; }
 
         public NineChroniclesAPIClient PatrolRewardServiceClient { get; private set; }
+
+        public PortalConnect PortalConnect { get; private set; }
 
         public Url URL { get; private set; }
 
@@ -146,15 +149,9 @@ namespace Nekoyume.Game
         public readonly Dictionary<Currency, LruCache<Address, FungibleAssetValue>>
             CachedBalance = new();
 
-        public PortalConnect PortalConnect => portalConnect;
-
         private CommandLineOptions _commandLineOptions;
 
         private AmazonCloudWatchLogsClient _logsClient;
-
-        private NineChroniclesAPIClient _apiClient;
-
-        private NineChroniclesAPIClient _rpcClient;
 
         private PlayableDirector _activeDirector;
 
@@ -168,8 +165,6 @@ namespace Nekoyume.Game
 
         private Thread _headlessThread;
         private Thread _marketThread;
-
-        private PortalConnect portalConnect;
 
         private const string ArenaSeasonPushIdentifierKey = "ARENA_SEASON_PUSH_IDENTIFIER";
         private const string ArenaTicketPushIdentifierKey = "ARENA_TICKET_PUSH_IDENTIFIER";
@@ -285,7 +280,8 @@ namespace Nekoyume.Game
             OnLoadCommandlineOptions();
             // ~Initialize planets
 
-            portalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
+            // NOTE: Portal url does not change for each planet.
+            PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
 
 #if ENABLE_FIREBASE
             // NOTE: Initialize Firebase.
@@ -345,10 +341,10 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start() AudioController initialized");
             // Initialize NineChroniclesAPIClient.
-            _apiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+            ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
             if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
             {
-                _rpcClient = new NineChroniclesAPIClient(
+                RpcClient = new NineChroniclesAPIClient(
                     $"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
@@ -728,7 +724,7 @@ namespace Nekoyume.Game
                     while (!States.PledgeRequested)
                     {
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
-                        yield return portalConnect.RequestPledge(States.AgentState.address);
+                        yield return PortalConnect.RequestPledge(States.AgentState.address);
 
                         yield return SetTimeOut(() => States.PledgeRequested);
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
