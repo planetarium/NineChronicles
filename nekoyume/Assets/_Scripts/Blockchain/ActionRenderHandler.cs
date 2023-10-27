@@ -350,7 +350,10 @@ namespace Nekoyume.Blockchain
         private void CombinationEquipment()
         {
             _actionRenderer.EveryRender<CombinationEquipment>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareCombinationEquipment)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment)
                 .AddTo(_disposables);
@@ -825,141 +828,156 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private void ResponseCombinationEquipment(
-            ActionEvaluation<CombinationEquipment> eval)
+        private (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
+            PrepareCombinationEquipment(
+                ActionEvaluation<CombinationEquipment> eval)
         {
-            if (eval.Action.payByCrystal)
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            if(StateGetter.TryGetAvatarState(
+                agentAddress,
+                avatarAddress,
+                eval.OutputState,
+                out var avatarState))
             {
-                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            }
+                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
 
-            if (eval.Exception is null)
-            {
-                var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.avatarAddress;
-                var slotIndex = eval.Action.slotIndex;
-                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
-                var result = (CombinationConsumable5.ResultModel)slot.Result;
-
-                if (!StateGetter.TryGetAvatarState(
-                        agentAddress,
-                        avatarAddress,
-                        eval.OutputState,
-                        out var avatarState))
-                {
-                    return;
-                }
-
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
-                foreach (var pair in result.materials)
-                {
-                    LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
-                }
-
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    result.itemUsable.ItemId,
-                    result.itemUsable.RequiredBlockIndex,
-                    1);
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-
-                var tableSheets = Game.Game.instance.TableSheets;
-                var nextQuest = avatarState.questList?
-                    .OfType<CombinationEquipmentQuest>()
-                    .Where(x => !x.Complete)
-                    .OrderBy(x => x.StageId)
-                    .FirstOrDefault(x => tableSheets.EquipmentItemRecipeSheet.TryGetValue(
-                        x.RecipeId,
-                        out _));
                 var hammerPointStateAddress =
                     Addresses.GetHammerPointStateAddress(avatarAddress, result.recipeId);
                 var hammerPointState = new HammerPointState(hammerPointStateAddress,
                     StateGetter.GetState(hammerPointStateAddress, eval.OutputState) as List);
-
-                UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
-                UpdateAgentStateAsync(eval).Forget();
-                UpdateCurrentAvatarStateAsync(eval).Forget();
-                RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
                 States.Instance.UpdateHammerPointStates(result.recipeId, hammerPointState);
-                var action = eval.Action;
-                if (action.petId.HasValue)
-                {
-                    UpdatePetState(avatarAddress, action.petId.Value, eval.OutputState);
-                }
 
-                if (nextQuest is not null)
+                if (eval.Action.petId.HasValue)
                 {
-                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
-                    if (isRecipeMatch)
-                    {
-                        var celebratesPopup = Widget.Find<CelebratesPopup>();
-                        celebratesPopup.Show(nextQuest);
-                        celebratesPopup.OnDisableObservable
-                            .First()
-                            .Subscribe(_ =>
+                    UpdatePetState(avatarAddress, eval.Action.petId.Value, eval.OutputState);
+                }
+            }
+
+            return (eval, avatarState, slot);
+        }
+
+        private void ResponseCombinationEquipment(
+            (ActionEvaluation<CombinationEquipment> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        {
+            if (renderArgs.Evaluation.Action.payByCrystal)
+            {
+                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            }
+
+            if (renderArgs.AvatarState is null)
+            {
+                return;
+            }
+
+            var agentAddress = renderArgs.Evaluation.Signer;
+            var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
+            var slot = renderArgs.CombinationSlotState;
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+            var avatarState = renderArgs.AvatarState;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
+            {
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+            }
+
+            LocalLayerModifier.RemoveItem(
+                avatarAddress,
+                result.itemUsable.ItemId,
+                result.itemUsable.RequiredBlockIndex,
+                1);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var nextQuest = avatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.StageId)
+                .FirstOrDefault(x => tableSheets.EquipmentItemRecipeSheet.TryGetValue(
+                    x.RecipeId,
+                    out _));
+
+            RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
+
+            if (nextQuest is not null)
+            {
+                var isRecipeMatch = nextQuest.RecipeId == renderArgs.Evaluation.Action.recipeId;
+                if (isRecipeMatch)
+                {
+                    var celebratesPopup = Widget.Find<CelebratesPopup>();
+                    celebratesPopup.Show(nextQuest);
+                    celebratesPopup.OnDisableObservable
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var menu = Widget.Find<Menu>();
+                            if (menu.isActiveAndEnabled)
                             {
-                                var menu = Widget.Find<Menu>();
-                                if (menu.isActiveAndEnabled)
-                                {
-                                    menu.UpdateGuideQuest(avatarState);
-                                }
-                            });
-                    }
+                                menu.UpdateGuideQuest(avatarState);
+                            }
+                        });
                 }
+            }
 
-                // Notify
-                string formatKey;
-                if (result.itemUsable is Equipment equipment)
+            // Notify
+            string formatKey;
+            if (result.itemUsable is Equipment equipment)
+            {
+                if (renderArgs.Evaluation.Action.subRecipeId.HasValue &&
+                    TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                        renderArgs.Evaluation.Action.subRecipeId.Value,
+                        out var row))
                 {
-                    if (eval.Action.subRecipeId.HasValue &&
-                        TableSheets.Instance.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                            eval.Action.subRecipeId.Value,
-                            out var row))
-                    {
-                        formatKey = equipment.optionCountFromCombination == row.Options.Count
-                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                            : "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
-                    else
-                    {
-                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
+                    formatKey = equipment.optionCountFromCombination == row.Options.Count
+                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                        : "NOTIFICATION_COMBINATION_COMPLETE";
                 }
                 else
                 {
-                    Debug.LogError(
-                        $"[{nameof(ResponseCombinationEquipment)}] result.itemUsable is not Equipment");
                     formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                 }
-
-                var format = L10nManager.Localize(formatKey);
-                NotificationSystem.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId);
-
-                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-                if (blockCount >= WorkshopNotifiedBlockCount)
-                {
-                    var expectedNotifiedTime =
-                        BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
-                    var notificationText = L10nManager.Localize(
-                        "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
-                        result.itemUsable.GetLocalizedNonColoredName(false));
-                    PushNotifier.Push(
-                        notificationText,
-                        expectedNotifiedTime,
-                        PushNotifier.PushType.Workshop);
-                }
-
-                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
-                // ~Notify
-
-                Widget.Find<CombinationSlotsPopup>()
-                    .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+            else
+            {
+                Debug.LogError(
+                    $"[{nameof(ResponseCombinationEquipment)}] result.itemUsable is not Equipment");
+                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+            }
+
+            var format = L10nManager.Localize(formatKey);
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+
+            var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            if (blockCount >= WorkshopNotifiedBlockCount)
+            {
+                var expectedNotifiedTime =
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                var notificationText = L10nManager.Localize(
+                    "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
+                    result.itemUsable.GetLocalizedNonColoredName(false));
+                PushNotifier.Push(
+                    notificationText,
+                    expectedNotifiedTime,
+                    PushNotifier.PushType.Workshop);
+            }
+
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            // ~Notify
+
+            Widget.Find<CombinationSlotsPopup>()
+                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
