@@ -4,10 +4,10 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -100,6 +100,28 @@ namespace Nekoyume.UI
                 Close(true);
                 _callback?.Invoke();
             });
+            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _chargeAP?.Invoke();
+            }));
+            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _getDailyReward?.Invoke();
+            }));
+        }
+
+        private static void InvokeAfterActionPointCheck(System.Action action)
+        {
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            {
+                ActionPoint.ShowRefillConfirmPopup(action);
+            }
+            else
+            {
+                action();
+            }
         }
 
         public void Show(
@@ -184,11 +206,9 @@ namespace Nekoyume.UI
                 $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
 
             conditionalButtonBrown.Interactable = isInteractable && subItemCount > 0;
-            _chargeAP = chargeAP;
-            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => chargeAP());
             conditionalButtonYellow.Interactable = isInteractable && remainBlockRange <= 0;
+            _chargeAP = chargeAP;
             _getDailyReward = getDailyReward;
-            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => getDailyReward());
 
             base.Show();
         }
@@ -196,6 +216,7 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionActionPointChargeButton()
         {
+            Close(true);
             _getDailyReward();
         }
     }
