@@ -51,6 +51,7 @@ namespace Nekoyume.UI.Module
                 ItemView.NotificationObject.SetActive(false);
                 ItemView.GrindingCountObject.SetActive((false));
                 ItemView.LevelLimitObject.SetActive(false);
+                ItemView.RewardReceived.SetActive(false);
 
                 disposable?.Dispose();
 
@@ -95,7 +96,15 @@ namespace Nekoyume.UI.Module
                     int lastClaim = isNormal ? avatarInfo.LastNormalClaim : avatarInfo.LastPremiumClaim;
                     bool isUnrReceived = level > lastClaim && level <= avatarInfo.Level;
                     Light.SetActive(isUnrReceived);
-                    ItemView.LevelLimitObject.SetActive(level > avatarInfo.Level);
+                    if(!avatarInfo.IsPremium && !isNormal)
+                    {
+                        ItemView.LevelLimitObject.SetActive(true);
+                    }
+                    else
+                    {
+                        ItemView.LevelLimitObject.SetActive(level > avatarInfo.Level);
+                    }
+                    ItemView.RewardReceived.SetActive(level <= lastClaim);
                 });
 
                 if (TooltipButton.onClick.GetPersistentEventCount() < 1)
@@ -140,11 +149,11 @@ namespace Nekoyume.UI.Module
         {
             Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Subscribe((avatarInfo) =>
             {
-                RefreshLevelLight(avatarInfo);
+                RefreshWithAvatarInfo(avatarInfo);
             });
         }
 
-        private void RefreshLevelLight(SeasonPassServiceClient.UserSeasonPassSchema avatarInfo)
+        private void RefreshWithAvatarInfo(SeasonPassServiceClient.UserSeasonPassSchema avatarInfo)
         {
             if (avatarInfo == null || rewardSchema == null)
                 return;
@@ -165,7 +174,7 @@ namespace Nekoyume.UI.Module
                 item.text = rewardSchema.Level.ToString();
             }
 
-            RefreshLevelLight(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
+            RefreshWithAvatarInfo(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
 
             normal.SetData(rewardSchema.Normal.Item.First(), rewardSchema.Normal.Currency.First(), rewardSchema.Level, true);
 

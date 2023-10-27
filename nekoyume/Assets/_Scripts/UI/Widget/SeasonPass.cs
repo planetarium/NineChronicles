@@ -5,6 +5,8 @@ using TMPro;
 using UniRx;
 using Nekoyume.UI.Module;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
+using System.Linq;
 
 namespace Nekoyume.UI
 {
@@ -24,6 +26,22 @@ namespace Nekoyume.UI
         private SeasonPassRewardCell[] rewardCells;
         [SerializeField]
         private Image lineImage;
+        [SerializeField]
+        private SeasonPassRewardCell lastRewardCell;
+        [SerializeField]
+        private Scrollbar rewardCellScrollbar;
+        [SerializeField]
+        private Slider expSlider;
+        [SerializeField]
+        private GameObject premiumIcon;
+        [SerializeField]
+        private GameObject premiumUnlockBtn;
+        [SerializeField]
+        private GameObject premiumPlusUnlockBtn;
+        [SerializeField]
+        private GameObject premiumPlusIcon;
+
+        private bool isLastCellShow;
 
         protected override void Awake()
         {
@@ -36,10 +54,16 @@ namespace Nekoyume.UI
                 levelText.text = seasonPassInfo.Level.ToString();
                 seasonPassManager.GetExp(seasonPassInfo.Level, out var minExp, out var maxExp);
                 expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
+                expSlider.value = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
 
                 receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim;
 
                 lineImage.fillAmount = (float)(seasonPassInfo.Level - 1f) / (float)seasonPassManager.CurrentSeasonPassData.RewardList.Count;
+
+                /*premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);*/
+                premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
+                /*premiumPlusUnlockBtn.SetActive(seasonPassInfo.IsPremium && !seasonPassInfo.IsPremiumPlus);*/
+                /*premiumPlusIcon.SetActive(seasonPassInfo.IsPremiumPlus);*/
             }).AddTo(gameObject);
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
@@ -61,25 +85,50 @@ namespace Nekoyume.UI
                         rewardCells[i].gameObject.SetActive(false);
                     }
                 }
+                lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList.Last());
             }).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            lastRewardAnim.Play("SeasonPassLastReward@Close", -1, 1);
-
             base.Show(ignoreShowAnimation);
-
-            /*lastRewardAnim.SetBool("Show", false);*/
+            Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            if(rewardCellScrollbar.value > 0.95f)
+            {
+                if (isLastCellShow)
+                {
+                    isLastCellShow = false;
+                    lastRewardAnim.Play("SeasonPassLastReward@Close", -1);
+                }
+            }
+            else
+            {
+                if (!isLastCellShow)
+                {
+                    lastRewardAnim.Play("SeasonPassLastReward@Show", -1);
+                    isLastCellShow = true;
+                }
+            }
+        }
 
         public void ReceiveAllBtn()
         {
-            Game.Game.instance.SeasonPassServiceManager.ReceiveAll((result) =>
-            {
+            Game.Game.instance.SeasonPassServiceManager.ReceiveAll(
+                (result) =>
+                {
+                    Debug.Log($"SeasonPass ReceiveSuccess~!! {result.User.AvatarAddr} {result.Items.Count} {result.Currencies.Count}");
+                    //result.
+                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
+                },
+                (error) =>
+                {
 
-            }, null);
+                });
         }
     }
 }
