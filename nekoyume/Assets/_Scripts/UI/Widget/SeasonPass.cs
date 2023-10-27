@@ -7,6 +7,9 @@ using Nekoyume.UI.Module;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System.Linq;
+using Nekoyume.Model.Mail;
+using Nekoyume.L10n;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -118,16 +121,17 @@ namespace Nekoyume.UI
 
         public void ReceiveAllBtn()
         {
+            receiveBtn.Interactable = false;
             Game.Game.instance.SeasonPassServiceManager.ReceiveAll(
                 (result) =>
                 {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),NotificationCell.NotificationType.Notification);
                     Debug.Log($"SeasonPass ReceiveSuccess~!! {result.User.AvatarAddr} {result.Items.Count} {result.Currencies.Count}");
-                    //result.
                     Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
                 },
                 (error) =>
                 {
-
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
                 });
         }
     }
