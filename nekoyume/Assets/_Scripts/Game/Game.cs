@@ -367,7 +367,7 @@ namespace Nekoyume.Game
             // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            yield return StartCoroutine(CoLogin(succeed =>
+            yield return StartCoroutine(CoLogin(planetContext, succeed =>
                     {
                         Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
@@ -1028,7 +1028,7 @@ namespace Nekoyume.Game
             vfx.Play();
         }
 
-        private IEnumerator CoLogin(Action<bool> callback)
+        private IEnumerator CoLogin(PlanetContext planetContext, Action<bool> callback)
         {
             if (_commandLineOptions.Maintenance)
             {
@@ -1088,7 +1088,10 @@ namespace Nekoyume.Game
                 if (!loginPopup.CheckLocalPassphrase())
                 {
                     var intro = Widget.Find<IntroScreen>();
-                    intro.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                    intro.Show(
+                        _commandLineOptions.KeyStorePath,
+                        _commandLineOptions.PrivateKey,
+                        planetContext);
                 }
                 yield return new WaitUntil(() => loginPopup.Login);
             }
