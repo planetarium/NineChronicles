@@ -282,7 +282,10 @@ namespace Nekoyume.Blockchain
         private void CombinationConsumable()
         {
             _actionRenderer.EveryRender<CombinationConsumable>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareCombinationConsumable)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable)
                 .AddTo(_disposables);
@@ -959,58 +962,70 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private void ResponseCombinationConsumable(
-            ActionEvaluation<CombinationConsumable> eval)
+        private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
+            PrepareCombinationConsumable(
+                ActionEvaluation<CombinationConsumable> eval)
         {
-            if (eval.Exception is null)
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
+
+            if(StateGetter.TryGetAvatarState(
+                agentAddress,
+                avatarAddress,
+                eval.OutputState,
+                out var avatarState))
             {
-                var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.avatarAddress;
-                var slotIndex = eval.Action.slotIndex;
-                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
-                var result = (CombinationConsumable5.ResultModel)slot.Result;
-                var itemUsable = result.itemUsable;
-                if (!StateGetter.TryGetAvatarState(
-                        agentAddress,
-                        avatarAddress,
-                        eval.OutputState,
-                        out var avatarState))
-                {
-                    return;
-                }
-
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
-                foreach (var pair in result.materials)
-                {
-                    LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
-                }
-
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-
-                // Notify
-                var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                NotificationSystem.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId);
-                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
-                // ~Notify
-
-                Widget.Find<CombinationSlotsPopup>()
-                    .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+
+            return (eval, avatarState, slot);
+        }
+
+        private void ResponseCombinationConsumable(
+            (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        {
+            if (renderArgs.AvatarState is null)
+            {
+                return;
+            }
+
+            var agentAddress = renderArgs.Evaluation.Signer;
+            var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
+            var slot = renderArgs.CombinationSlotState;
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
+            {
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+            }
+
+            LocalLayerModifier.RemoveItem(
+                avatarAddress,
+                result.itemUsable.ItemId,
+                result.itemUsable.RequiredBlockIndex,
+                1);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            RenderQuest(avatarAddress, renderArgs.AvatarState.questList.completedQuestIds);
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
+            // ~Notify
+
+            Widget.Find<CombinationSlotsPopup>()
+                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
         }
 
         private void ResponseEventConsumableItemCrafts(
