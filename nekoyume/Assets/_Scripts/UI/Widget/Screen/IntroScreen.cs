@@ -139,7 +139,7 @@ namespace Nekoyume.UI
                 selectPlanetPopup.SetActive(false);
             }).AddTo(gameObject);
             PlanetSelector.CurrentPlanetInfoSubject
-                .Subscribe(ApplyCurrentPlanetInfo)
+                .Subscribe(tuple => ApplyCurrentPlanetInfo(tuple.planetContext))
                 .AddTo(gameObject);
 
             startButton.Interactable = true;
@@ -158,7 +158,7 @@ namespace Nekoyume.UI
             _planetContext = planetContext;
 
 #if UNITY_ANDROID
-            ApplyCurrentPlanetInfo(_planetContext.CurrentPlanetInfo);
+            ApplyCurrentPlanetInfo(_planetContext);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
@@ -274,21 +274,39 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
         }
-        
-        private void ApplyCurrentPlanetInfo(PlanetInfo planetInfo)
+
+        private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {
-            if (planetInfo is null)
+            var planets = planetContext.Planets;
+            var planetInfo = planetContext.CurrentPlanetInfo;
+            if (planets is null ||
+                planetInfo is null)
             {
                 planetText.text = "Null";
                 heimdallButton.Interactable = false;
+                heimdallButton.Text = "Heimdall (Null)";
                 odinButton.Interactable = false;
+                odinButton.Text = "Odin (Null)";
                 return;
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             planetText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (planetInfo.ID.Equals(PlanetId.Odin))
+            if (planets.TryGetPlanetInfo(PlanetId.Heimdall, out var heimdallInfo) ||
+                planets.TryGetPlanetInfo(PlanetId.HeimdallInternal, out heimdallInfo))
+            {
+                heimdallButton.Text = textInfo.ToTitleCase(heimdallInfo.Name);
+            }
+
+            if (planets.TryGetPlanetInfo(PlanetId.Odin, out var odinInfo) ||
+                planets.TryGetPlanetInfo(PlanetId.OdinInternal, out odinInfo))
+            {
+                odinButton.Text = textInfo.ToTitleCase(odinInfo.Name);
+            }
+
+            if (planetInfo.ID.Equals(PlanetId.Odin) ||
+                planetInfo.ID.Equals(PlanetId.OdinInternal))
             {
                 heimdallButton.Interactable = false;
                 odinButton.Interactable = true;

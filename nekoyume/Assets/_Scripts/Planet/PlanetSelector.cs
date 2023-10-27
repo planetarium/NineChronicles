@@ -13,7 +13,8 @@ namespace Nekoyume.Planet
 
         private static PlanetId DefaultPlanetId => PlanetId.Heimdall;
 
-        public static Subject<PlanetInfo> CurrentPlanetInfoSubject { get; } = new();
+        public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
+            CurrentPlanetInfoSubject { get; } = new();
 
         public static async UniTask<PlanetContext> InitializeAsync(
             PlanetContext context)
@@ -148,7 +149,7 @@ namespace Nekoyume.Planet
             context.CurrentPlanetInfo = planetInfo;
             PlayerPrefs.SetString(CurrentPlanetIdHexKey, context.CurrentPlanetInfo!.ID.ToHexString());
             context = UpdateCommandLineOptions(context);
-            CurrentPlanetInfoSubject.OnNext(context.CurrentPlanetInfo);
+            CurrentPlanetInfoSubject.OnNext((context, context.CurrentPlanetInfo));
             return context;
         }
 
