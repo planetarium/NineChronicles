@@ -4,10 +4,10 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -100,6 +100,28 @@ namespace Nekoyume.UI
                 Close(true);
                 _callback?.Invoke();
             });
+            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _chargeAP?.Invoke();
+            }));
+            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _getDailyReward?.Invoke();
+            }));
+        }
+
+        private static void InvokeAfterActionPointCheck(System.Action action)
+        {
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            {
+                ActionPoint.ShowRefillConfirmPopup(action);
+            }
+            else
+            {
+                action();
+            }
         }
 
         public void Show(
@@ -143,6 +165,9 @@ namespace Nekoyume.UI
         private const string AdventureRuneTicker = "RUNE_ADVENTURE";
         private const int ItemId = 500000;
 
+        private System.Action _chargeAP;
+        private System.Action _getDailyReward;
+
         public void ShowAP(
             string itemCount,
             int subItemCount,
@@ -181,11 +206,18 @@ namespace Nekoyume.UI
                 $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
 
             conditionalButtonBrown.Interactable = isInteractable && subItemCount > 0;
-            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => chargeAP());
             conditionalButtonYellow.Interactable = isInteractable && remainBlockRange <= 0;
-            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => getDailyReward());
+            _chargeAP = chargeAP;
+            _getDailyReward = getDailyReward;
 
             base.Show();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointChargeButton()
+        {
+            Close(true);
+            _getDailyReward();
         }
     }
 }

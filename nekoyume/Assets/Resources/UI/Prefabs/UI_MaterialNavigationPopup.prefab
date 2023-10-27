@@ -1646,8 +1646,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9287e1ddba3443db9872fd46fd8abf43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 1000019
+    rectTransform: {fileID: 262653613262069959}
+  tutorialActions: 50420f00
   itemImage: {fileID: 6817434740769365206}
   itemNameText: {fileID: 3103039326954476331}
   itemCountText: {fileID: 161680920514306476}

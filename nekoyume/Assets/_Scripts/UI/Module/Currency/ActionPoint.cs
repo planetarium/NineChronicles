@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Nekoyume.Game;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -51,10 +49,16 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject loading;
 
+        [SerializeField]
+        private Animator animator = null;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private int _currentActionPoint;
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
+
+        private static readonly int IsFull = Animator.StringToHash("IsFull");
+        private static readonly int GetReward = Animator.StringToHash("GetReward");
 
         public bool IsRemained => _currentActionPoint > 0;
 
@@ -69,6 +73,10 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange
                 .Subscribe(_ => OnSliderChange())
                 .AddTo(gameObject);
+            dailyBonus.sliderAnimator.OnSliderChange
+                .Subscribe(_ => OnDailyBonusSliderChange())
+                .AddTo(gameObject);
+
             sliderAnimator.SetValue(0f, false);
             dailyBonus.sliderAnimator.SetValue(0f, false);
 
@@ -124,6 +132,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
 
             OnSliderChange();
+            OnDailyBonusSliderChange();
 
             if (States.Instance.CurrentAvatarState is null)
             {
@@ -196,8 +205,8 @@ namespace Nekoyume.UI.Module
 
             dailyBonus.sliderAnimator.SetValue(value, useAnimation);
             var timeSpanString =
-                remainBlock > 0 ? remainBlock.BlockRangeToTimeSpanString() : string.Empty;
-            dailyBonus.blockText.text =  $"{remainBlock:#,0}({timeSpanString})";
+                remainBlock > 0 ? $"({remainBlock.BlockRangeToTimeSpanString()})" : string.Empty;
+            dailyBonus.blockText.text =  $"{remainBlock:#,0}{timeSpanString}";
         }
 
         private void OnSliderChange()
@@ -205,6 +214,11 @@ namespace Nekoyume.UI.Module
             var current = ((int)sliderAnimator.Value).ToString("N0", CultureInfo.CurrentCulture);
             var max = ((int)sliderAnimator.MaxValue).ToString("N0", CultureInfo.CurrentCulture);
             text.text = $"{current}/{max}";
+        }
+
+        private void OnDailyBonusSliderChange()
+        {
+            animator.SetBool(IsFull, dailyBonus.sliderAnimator.IsFull);
         }
 
         public void SetActionPoint(int actionPoint)
@@ -221,7 +235,6 @@ namespace Nekoyume.UI.Module
         {
             loading.SetActive(isCharging);
             text.enabled = !isCharging;
-            dailyBonus.container.SetActive(!isCharging);
         }
 
         // Call at Event Trigger Component
@@ -249,26 +262,12 @@ namespace Nekoyume.UI.Module
                 blockRange,
                 maxBlockRange,
                 isInteractable,
-                () => InvokeAfterActionPointCheck(ChargeAP),
-                () => InvokeAfterActionPointCheck(GetDailyReward));
+                ChargeAP,
+                GetDailyReward);
         }
 
-        private void InvokeAfterActionPointCheck(System.Action action)
+        private static void ChargeAP()
         {
-            if (States.Instance.CurrentAvatarState.actionPoint > 0)
-            {
-                ShowRefillConfirmPopup(action);
-            }
-            else
-            {
-                action();
-            }
-        }
-
-        private void ChargeAP()
-        {
-            // 한 줄 팝업?
-
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.ApStone);
             var apStone = new Nekoyume.Model.Item.Material(apStoneRow);
@@ -290,6 +289,8 @@ namespace Nekoyume.UI.Module
                 GameConfigStateSubject.ActionPointState.Remove(address);
             }
             GameConfigStateSubject.ActionPointState.Add(address, true);
+
+            animator.SetTrigger(GetReward);
         }
 
         public static bool IsInteractableMaterial()

@@ -53,6 +53,8 @@ namespace Nekoyume.UI
         // Action point and rune stone - 23
         TutorialActionClickCombinationRuneButton,
         TutorialActionClickCombinationRuneCombineButton,
+        TutorialActionActionPointHeaderMenu,
+        TutorialActionActionPointChargeButton
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

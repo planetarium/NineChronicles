@@ -206,7 +206,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 70002
       nextId: 70003
-      checkPointId: 70000
+      checkPointId: 70003
       data:
         presetId: 1
         arrowPositionOffset: {x: -50, y: 0}
@@ -225,7 +225,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 70003
       nextId: 70004
-      checkPointId: 70000
+      checkPointId: 70003
       data:
         presetId: 1
         arrowPositionOffset: {x: -50, y: 0}
@@ -1085,12 +1085,13 @@ MonoBehaviour:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 30, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000018
-        actionType: 0
+        actionType: 1000015
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_001
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1103,12 +1104,13 @@ MonoBehaviour:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
         targetPositionOffset: {x: 0, y: 0}
-        targetSizeOffset: {x: 0, y: 0}
+        targetSizeOffset: {x: 30, y: 30}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000019
-        actionType: 0
+        actionType: 1000016
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_002
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1116,7 +1118,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230002
       nextId: 230003
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -1125,8 +1127,9 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 2
         actionType: 50000
-        guideType: 1
+        guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_003
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1134,7 +1137,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230003
       nextId: 230004
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -1143,8 +1146,9 @@ MonoBehaviour:
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000020
         actionType: 1000013
-        guideType: 1
+        guideType: 3
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_004
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1152,7 +1156,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
     - id: 230004
       nextId: 230005
-      checkPointId: 230000
+      checkPointId: 230002
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
@@ -1160,9 +1164,10 @@ MonoBehaviour:
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000021
-        actionType: 1000013
+        actionType: 1000014
         guideType: 1
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_005
         arrowAdditionalDelay: 0
         fullScreenButton: 0
@@ -1181,6 +1186,7 @@ MonoBehaviour:
         actionType: 0
         guideType: 0
         emojiType: 2
+        dialogPositionType: 0
         scriptKey: TUTORIAL_23_006
         arrowAdditionalDelay: 0
         fullScreenButton: 0

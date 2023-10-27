@@ -6772,8 +6772,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b1817c8ad814d428cd6eb70a2cc9068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
+  tutorialTargets:
+  - type: 1000021
+    rectTransform: {fileID: 1919135622005391901}
+  tutorialActions: 4e420f00
   currentOptions: {fileID: 4447128031363598585}
   costItems:
   - {fileID: 9065187067033104469}
@@ -12251,6 +12253,7 @@ MonoBehaviour:
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 0
   fillWithNullToEmptyCellGroup: 0
+  fillWithNullToMinimumCount: 0
   cellTemplate: {fileID: 6406110039037078131, guid: 8a6a536249b2f430b8c26076b52ed442,
     type: 3}
 --- !u!1 &2808666856778803016

@@ -2240,9 +2240,11 @@ MonoBehaviour:
     rectTransform: {fileID: 1694633225111495849}
   - type: 70001
     rectTransform: {fileID: 5015842198834861827}
-  - type: 150002
+  - type: 1000002
     rectTransform: {fileID: 5576564636939272136}
-  tutorialActions: 0500000006000000070000000f00000071110100
+  - type: 1000018
+    rectTransform: {fileID: 7997136429659628322}
+  tutorialActions: 0500000006000000070000000f000000711101004f420f00
   toggles:
   - Type: 0
     Toggle: {fileID: 6700164880138307927}
@@ -2269,7 +2271,7 @@ MonoBehaviour:
     Lock: {fileID: 0}
     LockText: {fileID: 0}
   - Type: 4
-    Toggle: {fileID: 8992205062881914935}
+    Toggle: {fileID: 5028132414350984223}
     Notification:
     - {fileID: 5484205292056598842}
     - {fileID: 7916447709324994024}
