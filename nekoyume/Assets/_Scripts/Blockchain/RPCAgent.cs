@@ -102,53 +102,12 @@ namespace Nekoyume.Blockchain
 
         private readonly BlockHashCache _blockHashCache = new(100);
 
-        /// <summary>
-        /// Initialize without private key.
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public IEnumerator InitializeWithoutPrivateKey(
-            CommandLineOptions options)
-        {
-            _channel = new Grpc.Core.Channel(
-                options.RpcServerHost,
-                options.RpcServerPort,
-                ChannelCredentials.Insecure,
-                new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
-                }
-            );
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
-            var connect = StreamingHubClient
-                .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
-                    _channel,
-                    this)
-                .AsCoroutine();
-            yield return connect;
-            _hub = connect.Result;
-            _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
-            {
-                new ClientFilter()
-            }).WithCancellationToken(_channel.ShutdownToken);
-
-            // Android Mono only support arm7(32bit) backend in unity engine.
-            // 1. System.Net.WebClient is invalid when use Android Mono in current unity version.
-            // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
-            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in async function.
-            // So I can only use normal ImportBlock() function when build in Android Mono backend :(
-            yield return UniTask.Run(UniTask.Action(async () =>
-            {
-                var genesisBlockPath = options.GenesisBlockPath ?? BlockManager.GenesisBlockPath();
-                _genesis = await BlockManager.ImportBlockAsync(genesisBlockPath);
-            })).ToCoroutine();
-        }
-
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
             PrivateKey = privateKey;
             _channel ??= new Grpc.Core.Channel(
                 options.RpcServerHost,
@@ -212,6 +171,7 @@ namespace Nekoyume.Blockchain
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+            Debug.Log($"[RPCAgent] Finish initialization");
         }
 
         public IValue GetState(Address address)

@@ -120,6 +120,7 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[Agent] Start initialization");
             if (disposed)
             {
                 Debug.Log("Agent Exist");
@@ -127,6 +128,7 @@ namespace Nekoyume.Blockchain
             }
 
             InitAgentAsync(callback, privateKey, options);
+            Debug.Log($"[Agent] Finish initialization");
         }
 
         private async Task InitAsync(

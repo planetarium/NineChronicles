@@ -37,7 +37,7 @@ namespace Nekoyume.Planet
                 return true;
             }
 
-            Debug.Log("Planets] start initialization");
+            Debug.Log("[Planets] start initialization");
             using var req = UnityWebRequest.Get(_planetRegistryUrl);
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
@@ -49,14 +49,14 @@ namespace Nekoyume.Planet
             {
                 if (ex.CancellationToken == cts.Token)
                 {
-                    Debug.LogError($"Planets] initialize failed due to timeout({timeout})");
+                    Debug.LogError($"[Planets] initialize failed due to timeout({timeout})");
                     return false;
                 }
             }
 
             if (req.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"Planets] initialize failed: {req.error}");
+                Debug.LogError($"[Planets] initialize failed: {req.error}");
                 return false;
             }
 
@@ -67,7 +67,7 @@ namespace Nekoyume.Planet
             {
                 if (planetInfos.Count == 0)
                 {
-                    Debug.LogError("Planets] initialize failed: count of planet infos is 0.");
+                    Debug.LogError("[Planets] initialize failed: count of planet infos is 0.");
                     return false;
                 }
 
@@ -75,7 +75,7 @@ namespace Nekoyume.Planet
                 IsInitialized = true;
             }
 
-            Debug.Log($"Planets] finish initialization: {IsInitialized}");
+            Debug.Log($"[Planets] finish initialization: {IsInitialized}");
             return IsInitialized;
         }
 
