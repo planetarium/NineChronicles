@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Planet;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -234,7 +235,7 @@ namespace Nekoyume.UI
             Application.OpenURL($"{PortalUrl}{PortalRewardEndpoint}");
         }
 
-        public IEnumerator RequestPledge(Address address)
+        public IEnumerator RequestPledge(PlanetId planetId, Address address)
         {
             var url = $"{PortalUrl}{RequestPledgeEndpoint}";
             var os = string.Empty;
@@ -247,6 +248,7 @@ namespace Nekoyume.UI
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
             form.AddField("os", os);
+            form.AddField("planetId", planetId.ToString());
 
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;

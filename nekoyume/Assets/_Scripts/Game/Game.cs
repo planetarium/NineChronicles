@@ -402,7 +402,10 @@ namespace Nekoyume.Game
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
-            yield return StartCoroutine(CoCheckPledge());
+
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            yield return StartCoroutine(CoCheckPledge(planetContext.CurrentPlanetInfo.ID));    
+#endif
 
 #if UNITY_EDITOR_WIN
             // wait for headless connect.
@@ -682,8 +685,47 @@ namespace Nekoyume.Game
             popup.SetCancelCallbackToExit();
         }
 
-        private IEnumerator CoCheckPledge()
+#if UNITY_ANDROID
+        private IEnumerator CoCheckPledge(PlanetId planetId)
         {
+            if (!States.PledgeRequested || !States.PledgeApproved)
+            {
+                if (!States.PledgeRequested)
+                {
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.RequestPledge);
+
+                    while (!States.PledgeRequested)
+                    {
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
+                        yield return PortalConnect.RequestPledge(
+                            planetId,
+                            States.AgentState.address);
+
+                        yield return SetTimeOut(() => States.PledgeRequested);
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
+                    }
+                }
+
+                if (States.PledgeRequested && !States.PledgeApproved)
+                {
+                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ApprovePledge);
+
+                    while (!States.PledgeApproved)
+                    {
+                        Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
+                        var patronAddress = States.PatronAddress!.Value;
+                        ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
+
+                        yield return SetTimeOut(() => States.PledgeApproved);
+                    }
+
+                    Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
+                }
+
+                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
+            }
+            yield break;
+
             IEnumerator SetTimeOut(Func<bool> condition)
             {
                 const int timeLimit = 180;
@@ -727,45 +769,8 @@ namespace Nekoyume.Game
                     yield return new WaitUntil(() => clickRetry);
                 }
             }
-
-#if UNITY_ANDROID
-            if (!States.PledgeRequested || !States.PledgeApproved)
-            {
-                if (!States.PledgeRequested)
-                {
-                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.RequestPledge);
-
-                    while (!States.PledgeRequested)
-                    {
-                        Analyzer.Instance.Track("Unity/Intro/Pledge/Request");
-                        yield return PortalConnect.RequestPledge(States.AgentState.address);
-
-                        yield return SetTimeOut(() => States.PledgeRequested);
-                        Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
-                    }
-                }
-
-                if (States.PledgeRequested && !States.PledgeApproved)
-                {
-                    Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.ApprovePledge);
-
-                    while (!States.PledgeApproved)
-                    {
-                        Analyzer.Instance.Track("Unity/Intro/Pledge/ApproveAction");
-                        var patronAddress = States.PatronAddress!.Value;
-                        ActionManager.Instance.ApprovePledge(patronAddress).Subscribe();
-
-                        yield return SetTimeOut(() => States.PledgeApproved);
-                    }
-
-                    Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
-                }
-
-                Widget.Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.EndPledge);
-            }
-#endif
-            yield break;
         }
+#endif
 
         // FIXME: Leave one between this or CoSyncTableSheets()
         private IEnumerator CoInitializeTableSheets()
