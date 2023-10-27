@@ -332,7 +332,13 @@ namespace Nekoyume.Blockchain
         private void ItemEnhancement()
         {
             _actionRenderer.EveryRender<ItemEnhancement>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Select(PreResponseItemEnhancement)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareItemEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
@@ -1158,157 +1164,174 @@ namespace Nekoyume.Blockchain
             // ~Notify
         }
 
-        private void ResponseItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
+        private ActionEvaluation<ItemEnhancement> PreResponseItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
         {
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            if (eval.Exception is null)
+            return eval;
+        }
+
+        private (ActionEvaluation<ItemEnhancement> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
+            PrepareItemEnhancement(ActionEvaluation<ItemEnhancement> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
+
+            if(StateGetter.TryGetAvatarState(
+                agentAddress,
+                avatarAddress,
+                eval.OutputState,
+                out var avatarState))
             {
-                var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.avatarAddress;
-                var slotIndex = eval.Action.slotIndex;
-                var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
-                var result = (ItemEnhancement.ResultModel)slot.Result;
-                var itemUsable = result.itemUsable;
-                if (!StateGetter.TryGetAvatarState(
-                        agentAddress,
-                        avatarAddress,
-                        eval.OutputState,
-                        out var avatarState))
-                {
-                    return;
-                }
-
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
-                    .Forget();
-
-                if (itemUsable.ItemSubType == ItemSubType.Aura)
-                {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                    LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
-                }
-                else
-                {
-                    LocalLayerModifier.AddItem(
-                        avatarAddress,
-                        itemUsable.ItemId,
-                        itemUsable.RequiredBlockIndex,
-                        1);
-                }
-
-                foreach (var tradableId in result.materialItemIdList)
-                {
-                    if (avatarState.inventory.TryGetNonFungibleItem(
-                            tradableId,
-                            out ItemUsable materialItem))
-                    {
-                        if(itemUsable.ItemSubType == ItemSubType.Aura)
-                        {
-                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
-                        }
-                        else
-                        {
-                            LocalLayerModifier.AddItem(
-                                avatarAddress,
-                                tradableId,
-                                materialItem.RequiredBlockIndex,
-                                1);
-                        }
-                    }
-                }
-
-                if (itemUsable.ItemSubType == ItemSubType.Aura)
-                {
-                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
-                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
-                }
-                else
-                {
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        itemUsable.ItemId,
-                        itemUsable.RequiredBlockIndex,
-                        1);
-                }
-
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-
-                // Notify
-                string formatKey;
-                switch (result.enhancementResult)
-                {
-                    /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
-                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                        break;*/
-                    case Action.ItemEnhancement.EnhancementResult.Success:
-                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                        break;
-                    /*case Action.ItemEnhancement.EnhancementResult.Fail:
-                        Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
-                            new Dictionary<string, Value>
-                            {
-                                ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
-                                ["BurntNCG"] = (long)result.gold,
-                                ["AvatarAddress"] =
-                                    States.Instance.CurrentAvatarState.address.ToString(),
-                                ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
-                            });
-                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                        break;*/
-                    default:
-                        Debug.LogError(
-                            $"Unexpected result.enhancementResult: {result.enhancementResult}");
-                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                        break;
-                }
-
-                var format = L10nManager.Localize(formatKey);
-                NotificationSystem.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId);
-
-                var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
-                if (blockCount >= WorkshopNotifiedBlockCount)
-                {
-                    var expectedNotifiedTime =
-                        BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
-                    var notificationText = L10nManager.Localize(
-                        "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
-                        result.itemUsable.GetLocalizedNonColoredName(false));
-                    PushNotifier.Push(
-                        notificationText,
-                        expectedNotifiedTime,
-                        PushNotifier.PushType.Workshop);
-                }
-                // ~Notify
-
-                var avatarSlotIndex = States.Instance.AvatarStates
-                    .FirstOrDefault(x => x.Value.address == eval.Action.avatarAddress).Key;
-                var itemSlotStates = States.Instance.ItemSlotStates[avatarSlotIndex];
-
-                for (var i = 1; i < (int)BattleType.End; i++)
-                {
-                    var battleType = (BattleType)i;
-                    var currentItemSlotState = States.Instance.CurrentItemSlotStates[battleType];
-                    currentItemSlotState.Costumes.Remove(eval.Action.itemId);
-                    currentItemSlotState.Equipments.Remove(eval.Action.itemId);
-
-                    var itemSlotState = itemSlotStates[battleType];
-                    itemSlotState.Costumes.Remove(eval.Action.itemId);
-                    itemSlotState.Equipments.Remove(eval.Action.itemId);
-                }
-
-                Widget.Find<CombinationSlotsPopup>()
-                    .SetCaching(avatarAddress, eval.Action.slotIndex, false);
             }
+
+            return (eval, avatarState, slot);
+        }
+
+        private void ResponseItemEnhancement(
+            (ActionEvaluation<ItemEnhancement> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState) renderArgs)
+        {
+            if (renderArgs.AvatarState is null)
+            {
+                return;
+            }
+
+            var agentAddress = renderArgs.Evaluation.Signer;
+            var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
+            var result = (ItemEnhancement.ResultModel)renderArgs.CombinationSlotState.Result;
+            var itemUsable = result.itemUsable;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
+                .Forget();
+
+            if (itemUsable.ItemSubType == ItemSubType.Aura)
+            {
+                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+            }
+            else
+            {
+                LocalLayerModifier.AddItem(
+                    avatarAddress,
+                    itemUsable.ItemId,
+                    itemUsable.RequiredBlockIndex,
+                    1);
+            }
+
+            foreach (var tradableId in result.materialItemIdList)
+            {
+                if (renderArgs.AvatarState.inventory.TryGetNonFungibleItem(
+                        tradableId,
+                        out ItemUsable materialItem))
+                {
+                    if(itemUsable.ItemSubType == ItemSubType.Aura)
+                    {
+                        //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                        LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                    }
+                    else
+                    {
+                        LocalLayerModifier.AddItem(
+                            avatarAddress,
+                            tradableId,
+                            materialItem.RequiredBlockIndex,
+                            1);
+                    }
+                }
+            }
+
+            if (itemUsable.ItemSubType == ItemSubType.Aura)
+            {
+                //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
+            }
+            else
+            {
+                LocalLayerModifier.RemoveItem(
+                    avatarAddress,
+                    itemUsable.ItemId,
+                    itemUsable.RequiredBlockIndex,
+                    1);
+            }
+
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            RenderQuest(avatarAddress, renderArgs.AvatarState.questList.completedQuestIds);
+
+            // Notify
+            string formatKey;
+            switch (result.enhancementResult)
+            {
+                /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                    break;*/
+                case Action.ItemEnhancement.EnhancementResult.Success:
+                    formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                    break;
+                /*case Action.ItemEnhancement.EnhancementResult.Fail:
+                    Analyzer.Instance.Track("Unity/ItemEnhancement Failed",
+                        new Dictionary<string, Value>
+                        {
+                            ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
+                            ["BurntNCG"] = (long)result.gold,
+                            ["AvatarAddress"] =
+                                States.Instance.CurrentAvatarState.address.ToString(),
+                            ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
+                        });
+                    formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                    break;*/
+                default:
+                    Debug.LogError(
+                        $"Unexpected result.enhancementResult: {result.enhancementResult}");
+                    formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                    break;
+            }
+
+            var format = L10nManager.Localize(formatKey);
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                renderArgs.CombinationSlotState.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+
+            var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            if (blockCount >= WorkshopNotifiedBlockCount)
+            {
+                var expectedNotifiedTime =
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                var notificationText = L10nManager.Localize(
+                    "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
+                    result.itemUsable.GetLocalizedNonColoredName(false));
+                PushNotifier.Push(
+                    notificationText,
+                    expectedNotifiedTime,
+                    PushNotifier.PushType.Workshop);
+            }
+            // ~Notify
+
+            var avatarSlotIndex = States.Instance.AvatarStates
+                .FirstOrDefault(x => x.Value.address == renderArgs.Evaluation.Action.avatarAddress).Key;
+            var itemSlotStates = States.Instance.ItemSlotStates[avatarSlotIndex];
+
+            for (var i = 1; i < (int)BattleType.End; i++)
+            {
+                var battleType = (BattleType)i;
+                var currentItemSlotState = States.Instance.CurrentItemSlotStates[battleType];
+                currentItemSlotState.Costumes.Remove(renderArgs.Evaluation.Action.itemId);
+                currentItemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
+
+                var itemSlotState = itemSlotStates[battleType];
+                itemSlotState.Costumes.Remove(renderArgs.Evaluation.Action.itemId);
+                itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
+            }
+
+            Widget.Find<CombinationSlotsPopup>()
+                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
         }
 
         private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
