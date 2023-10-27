@@ -160,6 +160,8 @@ namespace Nekoyume.Planet
                 context.Error = "CurrentPlanetInfo is null.";
                 return context;
             }
+            
+            context.CommandLineOptions.genesisBlockPath = currentPlanetInfo.GenesisUri;
 
             if (currentPlanetInfo.RPCEndpoints.HeadlessGrpc.Count == 0)
             {
