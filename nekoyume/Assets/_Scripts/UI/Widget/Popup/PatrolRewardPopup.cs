@@ -49,7 +49,8 @@ namespace Nekoyume.UI
         private bool _initialized;
 
         public bool CanClaim =>
-            PatrolReward.PatrolTime.Value >= PatrolReward.Interval && !Claiming.Value;
+            PatrolReward.Initialized && !Claiming.Value &&
+            PatrolReward.PatrolTime.Value >= PatrolReward.Interval;
 
         protected override void Awake()
         {
@@ -65,6 +66,12 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (!PatrolReward.Initialized)
+            {
+                Debug.LogError("PatrolReward is not initialized.");
+                return;
+            }
+
             if (Claiming.Value)
             {
                 return;

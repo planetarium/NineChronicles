@@ -277,6 +277,16 @@ namespace Nekoyume.UI
             Close(true);
         }
 
+        public void GoToCraftEquipment()
+        {
+            GoToCraftWithToggleType(0);
+        }
+
+        public void GoToFood()
+        {
+            GoToCraftWithToggleType(1);
+        }
+
         private void GoToCraftWithToggleType(int toggleIndex)
         {
             AudioController.PlayClick();
@@ -745,6 +755,18 @@ namespace Nekoyume.UI
         public void TutorialActionClickPatrolRewardMenu()
         {
             PatrolRewardClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickArenaMenu()
+        {
+            RankingClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossButton()
+        {
+            // Fill this
         }
 
 #if UNITY_EDITOR

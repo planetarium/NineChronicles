@@ -431,5 +431,23 @@ namespace Nekoyume.UI
                 o.SetActive(value);
             }
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossSeasonRewardsButton()
+        {
+            // Fill this
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossRewardsButton()
+        {
+            // Fill this
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossEnterPracticeButton()
+        {
+            // Fill this
+        }
     }
 }

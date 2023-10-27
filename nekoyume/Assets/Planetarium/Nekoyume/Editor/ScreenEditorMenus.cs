@@ -15,22 +15,6 @@ namespace Planetarium.Nekoyume.Editor
             var raidCam = Component.FindObjectOfType<RaidCamera>();
             if (raidCam != null)
                 raidCam.UpdateDynamicRatio();
-
-            ClearScreen().Forget();
-
-            static async UniTaskVoid ClearScreen()
-            {
-                if (IngameDebugConsoleCommands.IngameDebugConsoleObj != null)
-                {
-                    var blackClearingImg = IngameDebugConsoleCommands.IngameDebugConsoleObj.transform.Find("BlackClearingImg");
-                    if (blackClearingImg != null)
-                    {
-                        blackClearingImg.gameObject.SetActive(true);
-                        await UniTask.WaitForEndOfFrame();
-                        blackClearingImg.gameObject.SetActive(false);
-                    }
-                }
-            }
         }
 
         [MenuItem("Screen/StaticRatio")]
@@ -40,22 +24,6 @@ namespace Planetarium.Nekoyume.Editor
             var raidCam = Component.FindObjectOfType<RaidCamera>();
             if (raidCam != null)
                 raidCam.UpdateStaticRatioWithLetterBox();
-
-            ClearScreen().Forget();
-
-            static async UniTaskVoid ClearScreen()
-            {
-                if (IngameDebugConsoleCommands.IngameDebugConsoleObj != null)
-                {
-                    var blackClearingImg = IngameDebugConsoleCommands.IngameDebugConsoleObj.transform.Find("BlackClearingImg");
-                    if (blackClearingImg != null)
-                    {
-                        blackClearingImg.gameObject.SetActive(true);
-                        await UniTask.WaitForEndOfFrame();
-                        blackClearingImg.gameObject.SetActive(false);
-                    }
-                }
-            }
         }
     }
 }

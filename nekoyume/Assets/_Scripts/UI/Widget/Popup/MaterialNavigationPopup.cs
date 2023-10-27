@@ -1,8 +1,11 @@
-﻿using Coffee.UIEffects;
-using Nekoyume.Battle;
+﻿using System;
+using Coffee.UIEffects;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.State;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,11 +14,43 @@ namespace Nekoyume.UI
 {
     public class MaterialNavigationPopup : PopupWidget
     {
-        [SerializeField]
-        private Button confirmButton;
+        [Serializable]
+        private struct SubItemCount
+        {
+            public GameObject container;
+            public Image icon;
+            public TextMeshProUGUI nameText;
+            public TextMeshProUGUI countText;
+        }
 
-        [SerializeField]
-        private Button actionButton;
+        [Serializable]
+        private struct BlockGauge
+        {
+            public GameObject container;
+            public Image gaugeFillImage;
+            public GameObject filledEffectImage;
+            public TextMeshProUGUI minText;
+            public TextMeshProUGUI maxText;
+            public TextMeshProUGUI remainBlockText;
+            public BonusItem bonusItem;
+        }
+
+        [Serializable]
+        private struct BonusItem
+        {
+            public GameObject container;
+            public Image icon;
+            public TextMeshProUGUI countText;
+            public Button button;
+        }
+
+        [Serializable]
+        private struct InfoText
+        {
+            public GameObject container;
+            public UIHsvModifier hsvModifier;
+            public TextMeshProUGUI infoText;
+        }
 
         [SerializeField]
         private Image itemImage;
@@ -27,19 +62,31 @@ namespace Nekoyume.UI
         private TextMeshProUGUI itemCountText;
 
         [SerializeField]
+        private SubItemCount subItem;
+
+        [SerializeField]
         private TextMeshProUGUI contentText;
 
         [SerializeField]
-        private TextMeshProUGUI infoText;
+        private BlockGauge blockGauge;
 
         [SerializeField]
-        private GameObject infoContainer;
+        private InfoText infoText;
+
+        [SerializeField]
+        private Button confirmButton;
+
+        [SerializeField]
+        private Button actionButton;
 
         [SerializeField]
         private TextMeshProUGUI actionButtonText;
 
         [SerializeField]
-        private UIHsvModifier hsvModifier;
+        private ConditionalButton conditionalButtonBrown;
+
+        [SerializeField]
+        private ConditionalButton conditionalButtonYellow;
 
         private System.Action _callback;
 
@@ -53,6 +100,28 @@ namespace Nekoyume.UI
                 Close(true);
                 _callback?.Invoke();
             });
+            conditionalButtonBrown.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _chargeAP?.Invoke();
+            }));
+            conditionalButtonYellow.OnSubmitSubject.Subscribe(_ => InvokeAfterActionPointCheck(() =>
+            {
+                Close();
+                _getDailyReward?.Invoke();
+            }));
+        }
+
+        private static void InvokeAfterActionPointCheck(System.Action action)
+        {
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            {
+                ActionPoint.ShowRefillConfirmPopup(action);
+            }
+            else
+            {
+                action();
+            }
         }
 
         public void Show(
@@ -67,23 +136,88 @@ namespace Nekoyume.UI
             itemImage.sprite = itemIcon;
             itemNameText.text = itemName;
             var split = itemCount.Split('.');
-            itemCountText.text = string.Format(L10nManager.Localize("UI_COUNT_FORMAT"), split[0]);
+            itemCountText.text = L10nManager.Localize("UI_COUNT_FORMAT", split[0]);
             contentText.text = content;
             actionButtonText.text = buttonText;
-            infoText.gameObject.SetActive(infoText.text != string.Empty);
-            infoContainer.SetActive(false);
+            infoText.infoText.gameObject.SetActive(infoText.infoText.text != string.Empty);
+            infoText.container.SetActive(false);  // set default
+            subItem.container.SetActive(false);
+            blockGauge.container.SetActive(false);
+            actionButton.gameObject.SetActive(true);
+            conditionalButtonBrown.gameObject.SetActive(false);
+            conditionalButtonYellow.gameObject.SetActive(false);
             base.Show();
         }
 
         public void SetInfo(bool isActive, (string, bool) value = default)
         {
-            infoContainer.SetActive(isActive);
+            infoText.container.SetActive(isActive);
             var (info, isPositive) = value;
-            infoText.text = info;
-            infoText.color = isPositive
+            infoText.infoText.text = info;
+            infoText.infoText.color = isPositive
                 ? Palette.GetColor(ColorType.TextPositive)
                 : Palette.GetColor(ColorType.TextDenial);
-            hsvModifier.enabled = isPositive;
+            infoText.hsvModifier.enabled = isPositive;
+        }
+
+        private const string ActionPointTicker = "ACTIONPOINT";
+        private const int ActionPointItemId = 9999996;
+        private const string AdventureRuneTicker = "RUNE_ADVENTURE";
+        private const int ItemId = 500000;
+
+        private System.Action _chargeAP;
+        private System.Action _getDailyReward;
+
+        public void ShowAP(
+            string itemCount,
+            int subItemCount,
+            long blockRange,
+            long maxBlockRange, //
+            bool isInteractable,
+            System.Action chargeAP, //
+            System.Action getDailyReward) //
+        {
+            itemImage.sprite = SpriteHelper.GetFavIcon(ActionPointTicker);
+            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{ActionPointItemId}");
+            itemCountText.text = itemCount;
+            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{ActionPointItemId}");;
+            infoText.container.SetActive(false); // set default
+
+            actionButton.gameObject.SetActive(false);
+            conditionalButtonBrown.gameObject.SetActive(true);
+            conditionalButtonYellow.gameObject.SetActive(true);
+
+            subItem.container.SetActive(true);
+            subItem.icon.sprite = SpriteHelper.GetItemIcon(ItemId);
+            subItem.nameText.text = $"{L10nManager.Localize($"ITEM_NAME_{ItemId}")} :";
+            subItem.countText.text = subItemCount.ToString();
+
+            blockGauge.minText.text = 0.ToString();
+            blockGauge.maxText.text = maxBlockRange.ToString();
+            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(AdventureRuneTicker);
+            blockGauge.bonusItem.countText.text = 1.ToString();
+            blockGauge.bonusItem.button.onClick.RemoveAllListeners();  // Todo Fill this
+
+            var remainBlockRange = maxBlockRange - blockRange;
+            blockGauge.container.SetActive(true);
+            blockGauge.gaugeFillImage.fillAmount = (float)blockRange / maxBlockRange;
+            blockGauge.filledEffectImage.SetActive(blockRange >= maxBlockRange);
+            blockGauge.remainBlockText.text =
+                $"{remainBlockRange:#,0}({remainBlockRange.BlockRangeToTimeSpanString()})";
+
+            conditionalButtonBrown.Interactable = isInteractable && subItemCount > 0;
+            conditionalButtonYellow.Interactable = isInteractable && remainBlockRange <= 0;
+            _chargeAP = chargeAP;
+            _getDailyReward = getDailyReward;
+
+            base.Show();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointChargeButton()
+        {
+            Close(true);
+            _getDailyReward();
         }
     }
 }
