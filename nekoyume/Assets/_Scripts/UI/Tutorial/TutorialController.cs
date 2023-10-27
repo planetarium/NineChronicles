@@ -178,7 +178,7 @@ namespace Nekoyume.UI
             return Resources.Load<T>(path);
         }
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40 };
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
 
         private static int GetCheckPoint(int clearedStageId)
         {
