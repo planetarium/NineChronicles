@@ -106,7 +106,7 @@ namespace Nekoyume.Game.OAuth
             }
         }
 
-        private IEnumerator CoSendGoogleIdToken(string idToken)
+        private static IEnumerator CoSendGoogleIdToken(string idToken)
         {
             yield return new WaitUntil(() => Game.instance.PortalConnect != null);
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");

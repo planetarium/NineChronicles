@@ -99,29 +99,30 @@ namespace Nekoyume.UI
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
 
-            if (param.ContainsKey("clientSecret"))
+            if (param.TryGetValue("clientSecret", out var outClientSecret))
             {
-                clientSecret = param["clientSecret"];
+                clientSecret = outClientSecret;
             }
 
             var accountExist = param.ContainsKey("ncAddress");
-            if (param.ContainsKey("code"))
+            if (param.TryGetValue("code", out var outCode))
             {
-                code = param["code"];
+                code = outCode;
                 if (string.IsNullOrEmpty(code) && !accountExist)
                 {
-                    RequestCode(OnSuccess);
+                    RequestCode(OnSuccessAsync);
                     return;
                 }
             }
 
-            OnSuccess();
+            OnSuccessAsync().Forget();
+            return;
 
-            void OnSuccess()
+            async UniTaskVoid OnSuccessAsync()
             {
                 if (!accountExist)
                 {
-                    AccessToken();
+                    await AccessTokenAsync();
                 }
 
                 Address? address = accountExist
@@ -153,7 +154,7 @@ namespace Nekoyume.UI
             return clientSecret;
         }
 
-        private async void RequestCode(System.Action onSuccess)
+        private async void RequestCode(Func<UniTaskVoid> onSuccessAsync)
         {
             Analyzer.Instance.Track("Unity/Portal/3");
 
@@ -171,7 +172,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.code))
                 {
                     code = data.code;
-                    onSuccess.Invoke();
+                    onSuccessAsync.Invoke();
                 }
                 else
                 {
@@ -186,9 +187,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private async void AccessToken()
+        private async UniTask AccessTokenAsync()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
+            Debug.Log($"[PortalConnect] AccessTokenAsync url: {url}");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -203,7 +205,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                Debug.Log(e.Text);
+                Debug.LogException(e);
             }
 
             HandleAccessTokenResult(request);
@@ -218,6 +220,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
+                    Debug.Log($"[PortalConnect] accessToken: {accessToken}");
                     return true;
                 }
 
@@ -279,7 +282,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowRequestErrorPopup(RequestResult data)
+        private static void ShowRequestErrorPopup(RequestResult data)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
             message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
@@ -291,7 +294,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/0");
         }
 
-        private void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
+        private static void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
             message += string.IsNullOrEmpty(errorMessage) ? string.Empty : $"\n{errorMessage}";
