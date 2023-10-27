@@ -84,17 +84,38 @@ namespace Nekoyume.Blockchain
 #endif
         }
 
-        public static async Task<Block> ImportBlockAsync(string path)
+        public static async UniTask<Block> ImportBlockAsync(string path)
         {
-            // If it contains "main", it is main-net genesis block. client have to contain main-net genesis block.
-            var localPath = path.Contains("main")
-                ? Platform.GetStreamingAssetsPath("genesis-block-9c-main")
-                : path;
+            var uri = new Uri(path);
+            // NOTE: Check cached genesis block in local path.
+            string localPath;
+            if (uri.IsFile)
+            {
+                localPath = path;
+            }
+            else if (uri.AbsolutePath.Equals("/genesis-block-9c-main"))
+            {
+                localPath = Platform.GetStreamingAssetsPath("planets/0x000000000000/genesis");
+            }
+            else if (uri.AbsolutePath.StartsWith("/planets/0x"))
+            {
+                localPath = Platform.GetStreamingAssetsPath(uri.LocalPath[1..]);
+            }
+            else
+            {
+                localPath = path;
+            }
+
+            Debug.Log($"[BlockManager] localPath: {localPath}");
+
 #if UNITY_ANDROID
-            var loadingRequest = UnityWebRequest.Get(localPath);
+            // NOTE: UnityWebRequest requires to be called in main thread.
+            await UniTask.SwitchToMainThread();
+            using var loadingRequest = UnityWebRequest.Get(localPath);
             await loadingRequest.SendWebRequest();
             if (loadingRequest.result == UnityWebRequest.Result.Success)
             {
+                Debug.Log($"[BlockManager] Load genesis block from local path via UnityWebRequest. {localPath}");
                 var buffer = loadingRequest.downloadHandler.data;
                 var dict = (Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
@@ -102,14 +123,16 @@ namespace Nekoyume.Blockchain
 #else
             if (File.Exists(localPath))
             {
+                Debug.Log($"[BlockManager] Load genesis block from local path via File IO. {localPath}");
                 var buffer = await File.ReadAllBytesAsync(localPath);
                 var dict = (Dictionary)_codec.Decode(buffer);
                 return BlockMarshaler.UnmarshalBlock(dict);
             }
 #endif
-            var uri = new Uri(path);
+
             using var client = new WebClient();
             {
+                Debug.Log($"[BlockManager] Load genesis block from remote path via WebClient. {uri.AbsoluteUri}");
                 var rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
                 var dict = (Dictionary)_codec.Decode(rawGenesisBlock);
                 return BlockMarshaler.UnmarshalBlock(dict);
