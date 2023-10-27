@@ -636,7 +636,10 @@ namespace Nekoyume.Blockchain
         private void AuraSummon()
         {
             _actionRenderer.EveryRender<AuraSummon>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareAuraSummon)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseAuraSummon)
                 .AddTo(_disposables);
@@ -1308,14 +1311,15 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            return eval;
+        }
+
         private void ResponseAuraSummon(ActionEvaluation<AuraSummon> eval)
         {
-            if (eval.Exception is not null)
-            {
-                Debug.Log(eval.Exception.Message);
-                return;
-            }
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = eval.Action;
 
@@ -1324,9 +1328,6 @@ namespace Nekoyume.Blockchain
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
             var count = summonRow.CostMaterialCount * action.SummonCount;
             LocalLayerModifier.AddItem(avatarAddress, materialRow.ItemId, count);
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
 
             Widget.Find<Summon>().OnActionRender(eval);
         }
