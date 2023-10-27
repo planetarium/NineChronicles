@@ -2591,7 +2591,7 @@ GameObject:
   - component: {fileID: 8608925896140197387}
   - component: {fileID: 3565262644825397241}
   m_Layer: 15
-  m_Name: Background
+  m_Name: BG_A80
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3358,7 +3358,7 @@ Animator:
   m_GameObject: {fileID: 8480990721381200431}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ea646067dfda87b4aa71a07f667f0ff5, type: 2}
+  m_Controller: {fileID: 22100000, guid: 0cd5d2c86a44744489151e7b78facb01, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -3588,7 +3588,7 @@ GameObject:
   - component: {fileID: 7599966658990015493}
   - component: {fileID: 5159548253556594265}
   m_Layer: 15
-  m_Name: CanvasGroup
+  m_Name: Modal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7839,7 +7839,7 @@ PrefabInstance:
     - target: {fileID: 2553203319082723085, guid: 611f699e84a28fb409596048a9c8d9ca,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 86.72
+      value: 91.72
       objectReference: {fileID: 0}
     - target: {fileID: 2553203319082723085, guid: 611f699e84a28fb409596048a9c8d9ca,
         type: 3}
