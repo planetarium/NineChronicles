@@ -61,13 +61,19 @@ namespace Nekoyume.UI
         public PortalConnect(string url)
         {
             PortalUrl = url ?? "https://nine-chronicles.com";
+            Debug.Log($"[PortalConnect] PortalUrl: {PortalUrl}");
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
             {
                 OnDeepLinkActivated(Application.absoluteURL);
             }
-            else deeplinkURL = "[none]";
+            else
+            {
+                deeplinkURL = "[none]";
+            }
+
+            Debug.Log($"[PortalConnect] deeplinkURL: {deeplinkURL}");
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
@@ -82,6 +88,7 @@ namespace Nekoyume.UI
         private void OnDeepLinkActivated(string url)
         {
             deeplinkURL = url;
+            Debug.Log($"[PortalConnect] deeplinkURL: {deeplinkURL}");
 
             if (_onPortalEnd != null)
             {
@@ -159,12 +166,12 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            Debug.Log($"[PortalConnect] RequestCode url: {url}");
+
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
-
             await request.SendWebRequest();
-
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<RequestCodeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -248,6 +255,9 @@ namespace Nekoyume.UI
 #elif UNITY_IOS
             os = "ios";
 #endif
+
+            Debug.Log($"[PortalConnect] RequestPledge: url({url}), os({os})," +
+                      $" planetId({planetId}), address({address}), accessToken({accessToken})");
 
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
