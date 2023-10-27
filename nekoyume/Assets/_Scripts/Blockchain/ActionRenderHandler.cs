@@ -559,7 +559,10 @@ namespace Nekoyume.Blockchain
         private void EventMaterialItemCrafts()
         {
             _actionRenderer.EveryRender<EventMaterialItemCrafts>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareEventMaterialItemCrafts)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventMaterialItemCrafts)
                 .AddTo(_disposables);
@@ -1136,14 +1139,16 @@ namespace Nekoyume.Blockchain
                 .SetCaching(avatarAddress, renderArgs.Evaluation.Action.SlotIndex, false);
         }
 
+        private ActionEvaluation<EventMaterialItemCrafts> PrepareEventMaterialItemCrafts(ActionEvaluation<EventMaterialItemCrafts> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            return eval;
+        }
+
         private void ResponseEventMaterialItemCrafts(
             ActionEvaluation<EventMaterialItemCrafts> eval)
         {
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
             var avatarAddress = eval.Action.AvatarAddress;
             var materialsToUse = eval.Action.MaterialsToUse;
             var recipe = TableSheets.Instance.EventMaterialItemRecipeSheet[
@@ -1157,9 +1162,6 @@ namespace Nekoyume.Blockchain
                 var id = TableSheets.Instance.MaterialItemSheet[material.Key].ItemId;
                 LocalLayerModifier.AddItem(avatarAddress, id, material.Value);
             }
-
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
 
             // Notify
             var format = L10nManager.Localize(
