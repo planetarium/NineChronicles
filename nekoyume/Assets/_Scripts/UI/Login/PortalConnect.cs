@@ -117,19 +117,19 @@ namespace Nekoyume.UI
                 code = outCode;
                 if (string.IsNullOrEmpty(code) && !accountExist)
                 {
-                    RequestCode(OnSuccessAsync);
+                    RequestCode(OnSuccess);
                     return;
                 }
             }
 
-            OnSuccessAsync().Forget();
+            OnSuccess();
             return;
 
-            async UniTaskVoid OnSuccessAsync()
+            void OnSuccess()
             {
                 if (!accountExist)
                 {
-                    await AccessTokenAsync();
+                    AccessToken();
                 }
 
                 Address? address = accountExist
@@ -161,7 +161,7 @@ namespace Nekoyume.UI
             return clientSecret;
         }
 
-        private async void RequestCode(Func<UniTaskVoid> onSuccessAsync)
+        private async void RequestCode(System.Action onSuccess)
         {
             Analyzer.Instance.Track("Unity/Portal/3");
 
@@ -179,7 +179,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.code))
                 {
                     code = data.code;
-                    onSuccessAsync.Invoke();
+                    onSuccess.Invoke();
                 }
                 else
                 {
@@ -194,10 +194,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private async UniTask AccessTokenAsync()
+        private async void AccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
-            Debug.Log($"[PortalConnect] AccessTokenAsync url: {url}");
+            Debug.Log($"[PortalConnect] AccessToken url: {url}");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
