@@ -671,19 +671,11 @@ namespace Nekoyume.Blockchain
         private void ClaimItems()
         {
             _actionRenderer.EveryRender<ClaimItems>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    if (eval.Exception is not null)
-                    {
-                        Debug.Log(eval.Exception.Message);
-                        return;
-                    }
-
-                    UpdateCurrentAvatarInventory(eval);
-                })
+                .Where(ValidateEvaluationIsSuccess)
+                .Subscribe(UpdateCurrentAvatarInventory)
                 .AddTo(_disposables);
         }
 
