@@ -175,7 +175,8 @@ namespace Nekoyume.UI
             long maxBlockRange, //
             bool isInteractable,
             System.Action chargeAP, //
-            System.Action getDailyReward) //
+            System.Action getDailyReward,
+            bool ignoreShowAnimation = false) //
         {
             itemImage.sprite = SpriteHelper.GetFavIcon(ActionPointTicker);
             itemNameText.text = L10nManager.Localize($"ITEM_NAME_{ActionPointItemId}");
@@ -210,7 +211,7 @@ namespace Nekoyume.UI
             _chargeAP = chargeAP;
             _getDailyReward = getDailyReward;
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

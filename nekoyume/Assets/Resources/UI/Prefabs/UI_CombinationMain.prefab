@@ -278,7 +278,7 @@ MonoBehaviour:
   - type: 1000008
     rectTransform: {fileID: 8198216319887951354}
   - type: 1000020
-    rectTransform: {fileID: 8198216319887951354}
+    rectTransform: {fileID: 449854588667141351}
   tutorialActions: 51c3000041420f0045420f004d420f00
   summonButton: {fileID: 3248731447781743755}
   combineButton: {fileID: 6274492408613066932}
@@ -298,7 +298,7 @@ MonoBehaviour:
     requiredStageId: 35
     lockedButton: {fileID: 6274492408546324230}
   - lockObject: {fileID: 5878592841190458125}
-    requiredStageId: 0
+    requiredStageId: 23
     lockedButton: {fileID: 4062579702270901021}
   - lockObject: {fileID: 7119327703163488112}
     requiredStageId: 40
@@ -7121,7 +7121,7 @@ PrefabInstance:
     - target: {fileID: 8259376983496205467, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}
       propertyPath: m_text
-      value: Stage 999
+      value: Stage 23
       objectReference: {fileID: 0}
     - target: {fileID: 8322290979673836999, guid: 0517f477e3636ed42aaab081c05cd889,
         type: 3}

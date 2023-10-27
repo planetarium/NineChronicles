@@ -240,6 +240,12 @@ namespace Nekoyume.UI.Module
         // Call at Event Trigger Component
         public void OnClickSlider()
         {
+            const int requiredStage = 23;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+            {
+                return;
+            }
+
             var popup = Widget.Find<MaterialNavigationPopup>();
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -263,7 +269,8 @@ namespace Nekoyume.UI.Module
                 maxBlockRange,
                 isInteractable,
                 ChargeAP,
-                GetDailyReward);
+                GetDailyReward,
+                true);
         }
 
         private static void ChargeAP()
