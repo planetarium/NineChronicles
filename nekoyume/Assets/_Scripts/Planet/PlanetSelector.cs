@@ -37,8 +37,17 @@ namespace Nekoyume.Planet
         private static async UniTask<PlanetContext> InitializePlanetsAsync(
             PlanetContext context)
         {
-#if !UNITY_EDITOR && (!UNITY_ANDROID || !UNITY_IOS)
-            Debug.Log("Skip initializing Planets because `!UNITY_EDITOR && (!UNITY_ANDROID || !UNITY_IOS)` is true.");
+#if UNITY_EDITOR
+            if (string.IsNullOrEmpty(context.CommandLineOptions.PlanetRegistryUrl))
+            {
+                Debug.Log("Skip initializing Planets because PlanetRegistryUrl in" +
+                          " CommandLineOptions is null or empty in editor.");
+                context.IsSkipped = true;
+                return context;
+            }
+#elif !UNITY_ANDROID && !UNITY_IOS
+            Debug.Log("Skip initializing Planets because `!UNITY_ANDROID && !UNITY_IOS`" +
+                      " is true in non-editor.");
             context.IsSkipped = true;
             return context;
 #endif
@@ -77,7 +86,7 @@ namespace Nekoyume.Planet
         {
             if (context.CommandLineOptions.PlanetId.HasValue)
             {
-                return SelectPlanet(context, context.CommandLineOptions.PlanetId.Value);    
+                return SelectPlanet(context, context.CommandLineOptions.PlanetId.Value);
             }
 
             var defaultPlanetIdHex = DefaultPlanetId.ToHexString();
