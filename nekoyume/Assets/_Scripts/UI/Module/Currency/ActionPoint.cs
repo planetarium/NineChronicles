@@ -263,7 +263,8 @@ namespace Nekoyume.UI.Module
                 maxBlockRange,
                 isInteractable,
                 ChargeAP,
-                GetDailyReward);
+                GetDailyReward,
+                true);
         }
 
         private static void ChargeAP()
