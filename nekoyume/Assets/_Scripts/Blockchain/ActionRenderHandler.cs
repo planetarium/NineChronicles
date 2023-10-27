@@ -3049,12 +3049,16 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<ManipulateState>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(async eval =>
+                .Select(eval =>
                 {
-                    await UpdateCurrentAvatarStateAsync(eval);
-                    await RxProps.SelectAvatarAsync(
+                    UpdateCurrentAvatarStateAsync(eval).Forget();
+                    return eval;
+                })
+                .Subscribe(eval =>
+                {
+                    RxProps.SelectAvatarAsync(
                         States.Instance.CurrentAvatarKey,
-                        forceNewSelection: true);
+                        forceNewSelection: true).Forget();
                     NotificationSystem.Push(
                         MailType.System,
                         "State Manipulated",
