@@ -9,6 +9,7 @@ namespace Nekoyume.Game.Util
     {
         public static async UniTaskVoid ClearScreen(bool isHorizontal)
         {
+            await UniTask.WaitForEndOfFrame();
             GameObject screenBoader;
             if (isHorizontal)
             {
