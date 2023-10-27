@@ -639,12 +639,14 @@ namespace Nekoyume.Blockchain
         private void UnloadFromMyGarages()
         {
             _actionRenderer.EveryRender<UnloadFromMyGarages>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) ||
                     (eval.Action.FungibleAssetValues is not null &&
                         eval.Action.FungibleAssetValues.Any(e =>
                             e.balanceAddr.Equals(States.Instance.AgentState.address) ||
                             e.balanceAddr.Equals(States.Instance.CurrentAvatarState.address))))
+                .Select(PrepareUnloadFromMyGarages)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnloadFromMyGarages)
                 .AddTo(_disposables);
@@ -3131,14 +3133,9 @@ namespace Nekoyume.Blockchain
             States.Instance.SetPledgeStates(address, approved);
         }
 
-        private void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
+        private ActionEvaluation<UnloadFromMyGarages> PrepareUnloadFromMyGarages(
+            ActionEvaluation<UnloadFromMyGarages> eval)
         {
-            if (eval.Exception is not null)
-            {
-                Debug.Log(eval.Exception.Message);
-                return;
-            }
-
             var gameStates = Game.Game.instance.States;
             var agentAddr = gameStates.AgentState.address;
             var avatarAddr = gameStates.CurrentAvatarState.address;
@@ -3185,35 +3182,56 @@ namespace Nekoyume.Blockchain
                 UpdateCurrentAvatarInventory(eval);
             }
 
-            var avatarValue = StateGetter.GetState(avatarAddr, states);
-            if (avatarValue is not Dictionary avatarDict)
+            return eval;
+        }
+
+        private void ResponseUnloadFromMyGarages(ActionEvaluation<UnloadFromMyGarages> eval)
+        {
+            if (eval.Exception is not null)
             {
-                Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                Debug.Log(eval.Exception.Message);
                 return;
             }
 
-            if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
-                avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
-            {
-                Debug.LogError($"Failed to get mail box: {avatarAddr}");
-                return;
-            }
+            var gameStates = Game.Game.instance.States;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
 
-            var mailBox = new MailBox(mailBoxList);
-            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
-            if (mail is not null)
+            IValue avatarValue = null;
+            UniTask.RunOnThreadPool(() =>
             {
-                mail.New = true;
-                gameStates.CurrentAvatarState.mailBox = mailBox;
-                LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
-            }
-            else
+                avatarValue = StateGetter.GetState(avatarAddr, states);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
-                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                    $"the render context of UnloadFromMyGarages action.\n" +
-                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-            }
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+
+                var mailBox = new MailBox(mailBoxList);
+                var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+                if (mail is not null)
+                {
+                    mail.New = true;
+                    gameStates.CurrentAvatarState.mailBox = mailBox;
+                    LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                }
+                else
+                {
+                    Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                        $"the render context of UnloadFromMyGarages action.\n" +
+                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+                }
+            });
         }
     }
 }
