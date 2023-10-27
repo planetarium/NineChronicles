@@ -547,7 +547,10 @@ namespace Nekoyume.Blockchain
         private void EventConsumableItemCrafts()
         {
             _actionRenderer.EveryRender<EventConsumableItemCrafts>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareEventConsumableItemCrafts)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseEventConsumableItemCrafts)
                 .AddTo(_disposables);
@@ -1083,18 +1086,25 @@ namespace Nekoyume.Blockchain
                 .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
         }
 
-        private void ResponseEventConsumableItemCrafts(
+        private (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) PrepareEventConsumableItemCrafts(
             ActionEvaluation<EventConsumableItemCrafts> eval)
         {
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slotIndex = eval.Action.SlotIndex;
             var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
+            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            return (eval, slot);
+        }
+
+        private void ResponseEventConsumableItemCrafts(
+            (ActionEvaluation<EventConsumableItemCrafts> Evaluation, CombinationSlotState CombinationSlotState) renderArgs)
+        {
+            var agentAddress = renderArgs.Evaluation.Signer;
+            var avatarAddress = renderArgs.Evaluation.Action.AvatarAddress;
+            var slot = renderArgs.CombinationSlotState;
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
 
@@ -1112,10 +1122,6 @@ namespace Nekoyume.Blockchain
                 1);
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-            UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
-
             // Notify
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             NotificationSystem.Reserve(
@@ -1127,7 +1133,7 @@ namespace Nekoyume.Blockchain
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, eval.Action.SlotIndex, false);
+                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.SlotIndex, false);
         }
 
         private void ResponseEventMaterialItemCrafts(
