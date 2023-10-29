@@ -612,7 +612,11 @@ namespace Nekoyume.Blockchain
         private void PetEnhancement()
         {
             _actionRenderer.EveryRender<PetEnhancement>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(eval => eval.Action.AvatarAddress == States.Instance.CurrentAvatarState.address)
+                .Select(PreparePetEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponsePetEnhancement)
                 .AddTo(_disposables);
@@ -2997,15 +3001,23 @@ namespace Nekoyume.Blockchain
                 NotificationCell.NotificationType.Notification);
         }
 
+        private ActionEvaluation<PetEnhancement> PreparePetEnhancement(ActionEvaluation<PetEnhancement> eval)
+        {
+            UpdateAgentStateAsync(eval).Forget();
+            var soulStoneTicker = TableSheets.Instance.PetSheet[eval.Action.PetId].SoulStoneTicker;
+            States.Instance.CurrentAvatarBalances[soulStoneTicker] = StateGetter.GetBalance(
+                eval.Action.AvatarAddress,
+                Currencies.GetMinterlessCurrency(soulStoneTicker),
+                eval.OutputState
+            );
+            UpdatePetState(eval.Action.AvatarAddress, eval.Action.PetId, eval.OutputState);
+            return eval;
+        }
+
         private void ResponsePetEnhancement(ActionEvaluation<PetEnhancement> eval)
         {
             LoadingHelper.PetEnhancement.Value = 0;
             var action = eval.Action;
-            if (eval.Exception is not null ||
-                action.AvatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
 
             if (States.Instance.PetStates.TryGetPetState(action.PetId, out _))
             {
@@ -3016,14 +3028,6 @@ namespace Nekoyume.Blockchain
                 Widget.Find<PetSummonResultScreen>().Show(action.PetId);
             }
 
-            UpdateAgentStateAsync(eval).Forget();
-            var soulStoneTicker = TableSheets.Instance.PetSheet[action.PetId].SoulStoneTicker;
-            States.Instance.CurrentAvatarBalances[soulStoneTicker] = StateGetter.GetBalance(
-                action.AvatarAddress,
-                Currencies.GetMinterlessCurrency(soulStoneTicker),
-                eval.OutputState
-            );
-            UpdatePetState(action.AvatarAddress, action.PetId, eval.OutputState);
             Widget.Find<DccCollection>().UpdateView();
             Game.Game.instance.SavedPetId = action.PetId;
         }
