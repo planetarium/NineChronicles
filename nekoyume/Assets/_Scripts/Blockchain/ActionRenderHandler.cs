@@ -594,7 +594,13 @@ namespace Nekoyume.Blockchain
         private void RuneEnhancement()
         {
             _actionRenderer.EveryRender<RuneEnhancement>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Select(PreResponseRuneEnhancement)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareRuneEnhancement)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRuneEnhancement)
                 .AddTo(_disposables);
@@ -2974,17 +2980,22 @@ namespace Nekoyume.Blockchain
             Widget.Find<WorldBossRewardScreen>().Show(new LocalRandom(eval.RandomSeed));
         }
 
-        private void ResponseRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        private ActionEvaluation<RuneEnhancement> PreResponseRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
         {
             Widget.Find<Rune>().OnActionRender(new LocalRandom(eval.RandomSeed)).Forget();
+            return eval;
+        }
 
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
+        private ActionEvaluation<RuneEnhancement> PrepareRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        {
             UpdateCrystalBalance(eval);
             UpdateAgentStateAsync(eval).Forget();
+            return eval;
+        }
+
+        private void ResponseRuneEnhancement(ActionEvaluation<RuneEnhancement> eval)
+        {
+            return;
         }
 
         private ActionEvaluation<UnlockRuneSlot> PreResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
