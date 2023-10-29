@@ -603,7 +603,13 @@ namespace Nekoyume.Blockchain
         private void UnlockRuneSlot()
         {
             _actionRenderer.EveryRender<UnlockRuneSlot>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(ValidateEvaluationIsSuccess)
+                .ObserveOnMainThread()
+                .Select(PreResponseUnlockRuneSlot)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Select(PrepareUnlockRuneSlot)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockRuneSlot)
                 .AddTo(_disposables);
@@ -2981,20 +2987,25 @@ namespace Nekoyume.Blockchain
             UpdateAgentStateAsync(eval).Forget();
         }
 
-        private void ResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
+        private ActionEvaluation<UnlockRuneSlot> PreResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
         {
-            if (eval.Exception is not null)
-            {
-                return;
-            }
-
             for (var i = 1; i < (int)BattleType.End; i++)
             {
                 States.Instance.CurrentRuneSlotStates[(BattleType)i].Unlock(eval.Action.SlotIndex);
             }
 
             LoadingHelper.UnlockRuneSlot.Remove(eval.Action.SlotIndex);
+            return eval;
+        }
+
+        private ActionEvaluation<UnlockRuneSlot> PrepareUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
+        {
             UpdateAgentStateAsync(eval).Forget();
+            return eval;
+        }
+
+        private void ResponseUnlockRuneSlot(ActionEvaluation<UnlockRuneSlot> eval)
+        {
             NotificationSystem.Push(
                 MailType.Workshop,
                 L10nManager.Localize("UI_MESSAGE_RUNE_SLOT_OPEN"),
