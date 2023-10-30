@@ -34,7 +34,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Scrollbar rewardCellScrollbar;
         [SerializeField]
-        private Slider expSlider;
+        private Image expLineImage;
         [SerializeField]
         private GameObject premiumIcon;
         [SerializeField]
@@ -57,11 +57,11 @@ namespace Nekoyume.UI
                 levelText.text = seasonPassInfo.Level.ToString();
                 seasonPassManager.GetExp(seasonPassInfo.Level, out var minExp, out var maxExp);
                 expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
-                expSlider.value = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
+                expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
 
                 receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim;
 
-                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1f) / (float)seasonPassManager.CurrentSeasonPassData.RewardList.Count;
+                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count-1);
 
                 premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);
                 premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
@@ -119,7 +119,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
+            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            seasonPassManager.AvatarStateRefresh().AsUniTask().Forget();
+
+            rewardCellScrollbar.value = (float)(seasonPassManager.AvatarInfo.Value.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
         }
 
         protected override void Update()

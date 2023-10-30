@@ -15,6 +15,8 @@ namespace Nekoyume.UI.Module.Lobby
         private TextMeshProUGUI levelText;
         [SerializeField]
         private TextMeshProUGUI timeText;
+        [SerializeField]
+        private GameObject notificationObj;
 
         private void Awake()
         {
@@ -24,7 +26,9 @@ namespace Nekoyume.UI.Module.Lobby
                     return;
 
                 premiumIcon.SetActive(info.IsPremium);
+                premiumPlusIcon.SetActive(info.IsPremiumPlus);
                 levelText.text = $"Lv.{info.Level}";
+                notificationObj.SetActive(info.LastNormalClaim != info.Level);
             }).AddTo(gameObject);
 
             Game.Game.instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>

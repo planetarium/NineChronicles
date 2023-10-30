@@ -564,7 +564,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.526
+  m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 1
@@ -780,7 +780,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.27502126
+  m_Size: 0.33642823
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1099,7 +1099,7 @@ MonoBehaviour:
   lineImage: {fileID: 1147658861157065791}
   lastRewardCell: {fileID: 3096717548364766336}
   rewardCellScrollbar: {fileID: 7662404699307306602}
-  expSlider: {fileID: 2152339957439578021}
+  expLineImage: {fileID: 6084632217890695975}
   premiumIcon: {fileID: 5283041761355611675}
   premiumUnlockBtn: {fileID: 5618137876446749482}
   premiumPlusUnlockBtn: {fileID: 1256621147745764403}

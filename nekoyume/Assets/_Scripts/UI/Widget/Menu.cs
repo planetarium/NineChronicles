@@ -607,7 +607,7 @@ namespace Nekoyume.UI
 
         public void SeasonPassClick()
         {
-            if (!btnSeasonPass.IsUnlocked)
+            if (!btnSeasonPass.IsUnlocked || Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
             {
                 return;
             }
