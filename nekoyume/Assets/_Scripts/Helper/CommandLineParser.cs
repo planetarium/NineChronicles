@@ -407,6 +407,9 @@ namespace Nekoyume.Helper
             }
         }
 
+        /// <summary>
+        /// WorldBoss Host.
+        /// </summary>
         [Option("on-boarding-host", Required = false, HelpText = "on boarding host")]
         public string OnBoardingHost
         {
