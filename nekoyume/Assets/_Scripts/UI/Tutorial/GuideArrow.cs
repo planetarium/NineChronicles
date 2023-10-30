@@ -66,18 +66,29 @@ namespace Nekoyume.UI
 
                 if (d.guideType != GuideType.Stop)
                 {
-                    for (var i = 0; i < arrowTransform.Count; i++)
+                    Vector3[] aWorldCorners = new Vector3[4];
+                    Vector3[] bWorldCorners = new Vector3[4];
+
+                    d.target.GetWorldCorners(aWorldCorners);
+
+                    for (int i = 0; i < 4; i++)
                     {
-                        arrowTransform[i].anchoredPosition =
-                            _arrowDefaultPositionOffset[i] + d.arrowPositionOffset;
+                        // A의 월드 좌표를 화면 좌표로 변환
+                        Vector2 screenPos = Camera.main.WorldToScreenPoint(aWorldCorners[i]);
+
+                        // 변환된 화면 좌표를 B의 월드 좌표로 다시 변환
+                        RectTransformUtility.ScreenPointToWorldPointInRectangle(_rectTransform,
+                            screenPos, Camera.main, out bWorldCorners[i]);
                     }
-                    _rectTransform.anchoredPosition = d.target.anchoredPosition;
-                    _rectTransform.anchorMin = d.target.anchorMin;
-                    _rectTransform.anchorMax = d.target.anchorMax;
-                    _rectTransform.pivot = d.target.pivot;
-                    _rectTransform.position = d.target.position;
-                    _rectTransform.anchoredPosition += d.targetPositionOffset;
-                    _rectTransform.sizeDelta = d.target.sizeDelta + d.targetSizeOffset;
+
+                    Vector2 newCenter = (bWorldCorners[0] + bWorldCorners[2]) * 0.5f;
+                    _rectTransform.position = newCenter;
+
+                    _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                        d.target.rect.width);
+                    _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                        d.target.rect.height);
+
                     if (d.guideType == GuideType.Outline)
                     {
                         ApplyOutline(d.target);
