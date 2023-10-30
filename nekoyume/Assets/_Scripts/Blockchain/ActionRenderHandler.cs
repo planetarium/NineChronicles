@@ -624,6 +624,16 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
         }
 
+        private void MintAssets()
+        {
+            _actionRenderer.EveryRender<MintAssets>()
+                .Where(eval =>
+                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMintAssets)
+                .AddTo(_disposables);
+        }
+
         private async UniTaskVoid ResponseCreateAvatar(
             ActionEvaluation<CreateAvatar> eval)
         {
@@ -2312,6 +2322,59 @@ namespace Nekoyume.Blockchain
 
             UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
+        }
+
+        private void ResponseMintAssets(ActionEvaluation<MintAssets> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                return;
+            }
+
+            var senderAddress = eval.Signer;
+            foreach (var (recipient, amount) in eval.Action.FungibleAssetValues)
+            {
+                var currentAgentAddress = States.Instance.AgentState.address;
+                var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
+                if (senderAddress == currentAgentAddress)
+                {
+                    OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize(
+                        "UI_TRANSFERASSET_NOTIFICATION_SENDER",
+                        amount,
+                        recipient),
+                    NotificationCell.NotificationType.Notification);
+                }
+                else if (recipient == currentAgentAddress)
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize(
+                            "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
+                            amount,
+                            senderAddress),
+                        NotificationCell.NotificationType.Notification);
+                }
+                else if (recipient == currentAvatarAddress)
+                {
+                    var currency = amount.Currency;
+                    States.Instance.CurrentAvatarBalances[currency.Ticker] =
+                        eval.OutputState.GetBalance(
+                            currentAvatarAddress,
+                            amount.Currency
+                        );
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize(
+                            "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
+                            amount,
+                            senderAddress),
+                        NotificationCell.NotificationType.Notification);
+                }
+            }
+
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
