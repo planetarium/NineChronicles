@@ -56,7 +56,9 @@ namespace Nekoyume.Game.Util
                 foreach (var poolData in list)
                 {
                     _dict.Add(poolData.Prefab.name, poolData);
+#if !UNITY_ANDOIRD && !UNITY_IOS
                     Add(poolData.Prefab, poolData.InitCount);
+#endif
                 }
             }
 
@@ -119,6 +121,26 @@ namespace Nekoyume.Game.Util
 
                 Destroy(go);
                 return gameObjects.Remove(go);
+            }
+
+            public void RemoveAllExceptFirst()
+            {
+                _objects.Values.ToList().ForEach(list => {
+                    if (list.Count > 1) {
+                        bool first = true;
+                        list.ForEach(gameObject => {
+                            if (first)
+                            {
+                                first = false;
+                            }
+                            else
+                            {
+                                Destroy(gameObject);
+                            }
+                        });
+                        list.RemoveRange(1, list.Count - 1);
+                    }
+                });
             }
 
             public void ReleaseAll()
@@ -212,6 +234,11 @@ namespace Nekoyume.Game.Util
         public bool Remove<T>(GameObject go)
         {
             return _impl.Remove<T>(go);
+        }
+
+        public void RemoveAllExceptFirst()
+        {
+            _impl.RemoveAllExceptFirst();
         }
 
         public void ReleaseAll()
