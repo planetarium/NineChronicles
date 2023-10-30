@@ -11,6 +11,8 @@ namespace Nekoyume
     using UniRx;
     public class SeasonPassServiceManager : IDisposable
     {
+        public int StageCourageAmount = 10;
+
         public SeasonPassServiceClient Client { get; private set; }
 
         public SeasonPassServiceClient.SeasonPassSchema CurrentSeasonPassData { get; private set; }

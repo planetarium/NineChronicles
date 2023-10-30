@@ -192,6 +192,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private ActionPoint actionPoint;
 
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
+
         private Coroutine _coUpdateBottomText;
 
         private readonly WaitForSeconds _battleWinVFXYield = new(0.2f);
@@ -377,6 +382,8 @@ namespace Nekoyume.UI
 
         public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
         {
+            RefreshSeasonPassCourageAmount();
+
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
             if (isBoosted && model.StageType == StageType.HackAndSlash)
@@ -1041,6 +1048,25 @@ namespace Nekoyume.UI
 
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
+        }
+
+        private void RefreshSeasonPassCourageAmount()
+        {
+            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.StageCourageAmount}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
     }
 }
