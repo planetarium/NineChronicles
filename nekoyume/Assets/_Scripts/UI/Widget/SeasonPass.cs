@@ -63,10 +63,10 @@ namespace Nekoyume.UI
 
                 lineImage.fillAmount = (float)(seasonPassInfo.Level - 1f) / (float)seasonPassManager.CurrentSeasonPassData.RewardList.Count;
 
-                /*premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);*/
+                premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);
                 premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
-                /*premiumPlusUnlockBtn.SetActive(seasonPassInfo.IsPremium && !seasonPassInfo.IsPremiumPlus);*/
-                /*premiumPlusIcon.SetActive(seasonPassInfo.IsPremiumPlus);*/
+                premiumPlusUnlockBtn.SetActive(seasonPassInfo.IsPremium && !seasonPassInfo.IsPremiumPlus);
+                premiumPlusIcon.SetActive(seasonPassInfo.IsPremiumPlus);
             }).AddTo(gameObject);
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
@@ -90,6 +90,30 @@ namespace Nekoyume.UI
                 }
                 lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList.Last());
             }).AddTo(gameObject);
+        }
+
+        public void ShowSeasonPassPremiumPopup()
+        {
+#if UNITY_ANDROID || UNITY_IOS
+            Widget.Find<SeasonPassPremiumPopup>().Show();
+#else
+            var confirm = Widget.Find<ConfirmPopup>();
+            confirm.CloseCallback = result =>
+            {
+                switch (result)
+                {
+                    case ConfirmResult.Yes:
+                        //Application.OpenURL("");
+                        break;
+                    case ConfirmResult.No:
+                        //Application.OpenURL("");
+                        break;
+                    default:
+                        break;
+                }
+            };
+            confirm.Show("UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_TITLE", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_CONTENT", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_ANDROID", "UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_IOS");
+#endif
         }
 
         public override void Show(bool ignoreShowAnimation = false)
