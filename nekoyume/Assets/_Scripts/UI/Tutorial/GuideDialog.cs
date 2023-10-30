@@ -84,8 +84,15 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            var height = data.target ? data.target.anchoredPosition.y : 0;
-            transform.SetParent(height < 0 ? topContainer : bottomContainer);
+            var parent = data.positionType switch
+            {
+                DialogPositionType.None => (data.target ? data.target.anchoredPosition.y : 0) < 0 ? topContainer : bottomContainer,
+                DialogPositionType.Top => topContainer,
+                DialogPositionType.Bottom => bottomContainer,
+                _ => bottomContainer
+            };
+
+            transform.SetParent(parent);
             transform.localPosition = Vector3.zero;
             ShowEmoji(data.emojiType);
             PlaySound(data.emojiType);
