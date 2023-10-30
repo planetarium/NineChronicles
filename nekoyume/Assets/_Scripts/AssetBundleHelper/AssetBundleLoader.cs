@@ -21,7 +21,8 @@ namespace Nekoyume.AssetBundleHelper
             if (loadedAssetBundleCache.ContainsKey(bundleName)) yield break;
 
             using var www =
-                UnityWebRequestAssetBundle.GetAssetBundle($"{assetBundleURL}/{bundleName}");
+                UnityWebRequestAssetBundle.GetAssetBundle(
+                    $"{assetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}");
             var operation = www.SendWebRequest();
 
             while (!operation.isDone)
@@ -39,6 +40,16 @@ namespace Nekoyume.AssetBundleHelper
             {
                 Debug.LogError($"AssetBundle Download failed: {www.error}");
             }
+        }
+
+        private static string GetPlatform()
+        {
+            return Application.platform switch
+            {
+                RuntimePlatform.Android => "Android",
+                RuntimePlatform.IPhonePlayer => "iOS",
+                _ => "Windows",
+            };
         }
 
         #endregion

@@ -1,3 +1,4 @@
 "C:\Program Files\Unity\Hub\Editor\2021.3.5f1\Editor\Unity.exe" -batchmode -quit -projectPath . -executeMethod BuildAssetBundle.BuildAllAssetBundlesIOS -logFile ./output-android.log
 "C:\Program Files\Unity\Hub\Editor\2021.3.5f1\Editor\Unity.exe" -batchmode -quit -projectPath . -executeMethod BuildAssetBundle.BuildAllAssetBundlesAndroid -logFile ./output-iOS.log
 "C:\Program Files\Unity\Hub\Editor\2021.3.5f1\Editor\Unity.exe" -batchmode -quit -projectPath . -executeMethod BuildAssetBundle.BuildAllAssetBundlesWindows -logFile ./output-windows.log
+aws s3 cp ./Assets/AssetBundles s3://9c-test-bucket/AssetBundles/ --recursive
