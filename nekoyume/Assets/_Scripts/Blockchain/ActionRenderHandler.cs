@@ -532,7 +532,9 @@ namespace Nekoyume.Blockchain
         private void InitializeArenaActions()
         {
             _actionRenderer.EveryRender<JoinArena>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Select(PrepareJoinArena)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseJoinArenaAsync)
                 .AddTo(_disposables);
@@ -746,10 +748,10 @@ namespace Nekoyume.Blockchain
                 : null;
 
             if(StateGetter.TryGetCombinationSlotState(
-                avatarAddress,
-                slotIndex,
-                eval.OutputState,
-                out var slotState) && avatarState is not null)
+                   avatarAddress,
+                   slotIndex,
+                   eval.OutputState,
+                   out var slotState) && avatarState is not null)
             {
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slotState);
                 UpdateAgentStateAsync(eval).Forget();
@@ -902,10 +904,10 @@ namespace Nekoyume.Blockchain
             var result = (CombinationConsumable5.ResultModel)slot.Result;
 
             if(StateGetter.TryGetAvatarState(
-                agentAddress,
-                avatarAddress,
-                eval.OutputState,
-                out var avatarState))
+                   agentAddress,
+                   avatarAddress,
+                   eval.OutputState,
+                   out var avatarState))
             {
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
@@ -1048,10 +1050,10 @@ namespace Nekoyume.Blockchain
             var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
 
             if(StateGetter.TryGetAvatarState(
-                agentAddress,
-                avatarAddress,
-                eval.OutputState,
-                out var avatarState))
+                   agentAddress,
+                   avatarAddress,
+                   eval.OutputState,
+                   out var avatarState))
             {
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
@@ -1202,10 +1204,10 @@ namespace Nekoyume.Blockchain
             var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
 
             if(StateGetter.TryGetAvatarState(
-                agentAddress,
-                avatarAddress,
-                eval.OutputState,
-                out var avatarState))
+                   agentAddress,
+                   avatarAddress,
+                   eval.OutputState,
+                   out var avatarState))
             {
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
@@ -2576,6 +2578,13 @@ namespace Nekoyume.Blockchain
             }
         }
 
+        private static ActionEvaluation<JoinArena> PrepareJoinArena(
+            ActionEvaluation<JoinArena> eval)
+        {
+            UpdateCrystalBalance(eval);
+            return eval;
+        }
+
         private static async UniTaskVoid ResponseJoinArenaAsync(
             ActionEvaluation<JoinArena> eval)
         {
@@ -2593,7 +2602,6 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            UpdateCrystalBalance(eval);
             await Task.WhenAll(
                 States.Instance.UpdateItemSlotStates(BattleType.Arena),
                 States.Instance.UpdateRuneSlotStates(BattleType.Arena));
@@ -2645,26 +2653,6 @@ namespace Nekoyume.Blockchain
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
-
-            _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
-                .First()
-                .Subscribe(_ =>
-                {
-                    UniTask.RunOnThreadPool(() =>
-                        {
-                            UpdateAgentStateAsync(eval).Forget();
-                            UpdateCurrentAvatarStateAsync().Forget();
-                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
-                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
-                        }, configureAwait: false).ToObservable()
-                        .First()
-                        // ReSharper disable once ConvertClosureToMethodGroup
-                        .DoOnError(e => Debug.LogException(e));
-                });
-
             var tableSheets = TableSheets.Instance;
             var (myDigest, enemyDigest) =
                 GetArenaPlayerDigest(
@@ -2679,77 +2667,105 @@ namespace Nekoyume.Blockchain
                 eval.Action.myAvatarAddress,
                 championshipId,
                 round);
-            var previousMyScore =
-                StateGetter.TryGetArenaScore(myArenaScoreAdr, eval.PreviousState, out var myArenaScore)
+
+            var previousMyScore = ArenaScore.ArenaScoreDefault;
+            var outMyScore = ArenaScore.ArenaScoreDefault;
+
+            var prepareObserve = UniTask.RunOnThreadPool(() =>
+            {
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        UniTask.RunOnThreadPool(() =>
+                            {
+                                UpdateAgentStateAsync(eval).Forget();
+                                UpdateCurrentAvatarStateAsync().Forget();
+                                // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                                // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
+                            }, configureAwait: false).ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+                previousMyScore = StateGetter.TryGetArenaScore(myArenaScoreAdr, eval.PreviousState, out var myArenaScore)
                     ? myArenaScore.Score
                     : ArenaScore.ArenaScoreDefault;
-            int outMyScore = StateGetter.TryGetState(
-                myArenaScoreAdr,
-                eval.OutputState,
-                out var outputMyScoreList)
-                ? (Integer)((List)outputMyScoreList)[1]
-                : ArenaScore.ArenaScoreDefault;
+                outMyScore = StateGetter.TryGetState(
+                    myArenaScoreAdr,
+                    eval.OutputState,
+                    out var outputMyScoreList)
+                    ? (Integer)((List)outputMyScoreList)[1]
+                    : ArenaScore.ArenaScoreDefault;
+            }).ToObservable().ObserveOnMainThread();
 
-            var hasMedalReward =
-                tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
-                row.ArenaType != ArenaType.OffSeason;
-            var medalItem = ItemFactory.CreateMaterial(
-                tableSheets.MaterialItemSheet,
-                ArenaHelper.GetMedalItemId(championshipId, round));
 
-            var random = new LocalRandom(eval.RandomSeed);
-            var winCount = 0;
-            var defeatCount = 0;
-            var logs = new List<ArenaLog>();
-            var rewards = new List<ItemBase>();
-            var arenaSheets = tableSheets.GetArenaSimulatorSheets();
-            for (int i = 0; i < eval.Action.ticket; i++)
+            prepareObserve.Subscribe(_ =>
             {
-                var simulator = new ArenaSimulator(random);
-                var log = simulator.Simulate(
-                    myDigest,
-                    enemyDigest,
-                    arenaSheets);
-
-                var reward = RewardSelector.Select(
-                    random,
-                    tableSheets.WeeklyArenaRewardSheet,
+                var hasMedalReward =
+                    tableSheets.ArenaSheet[championshipId].TryGetRound(round, out var row) &&
+                    row.ArenaType != ArenaType.OffSeason;
+                var medalItem = ItemFactory.CreateMaterial(
                     tableSheets.MaterialItemSheet,
-                    myDigest.Level,
-                    ArenaHelper.GetRewardCount(previousMyScore));
+                    ArenaHelper.GetMedalItemId(championshipId, round));
 
-                if (log.Result.Equals(ArenaLog.ArenaResult.Win))
+                var random = new LocalRandom(eval.RandomSeed);
+                var winCount = 0;
+                var defeatCount = 0;
+                var logs = new List<ArenaLog>();
+                var rewards = new List<ItemBase>();
+                var arenaSheets = tableSheets.GetArenaSimulatorSheets();
+                for (int i = 0; i < eval.Action.ticket; i++)
                 {
-                    if (hasMedalReward && medalItem is { })
+                    var simulator = new ArenaSimulator(random);
+                    var log = simulator.Simulate(
+                        myDigest,
+                        enemyDigest,
+                        arenaSheets);
+
+                    var reward = RewardSelector.Select(
+                        random,
+                        tableSheets.WeeklyArenaRewardSheet,
+                        tableSheets.MaterialItemSheet,
+                        myDigest.Level,
+                        ArenaHelper.GetRewardCount(previousMyScore));
+
+                    if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                     {
-                        reward.Add(medalItem);
+                        if (hasMedalReward && medalItem is { })
+                        {
+                            reward.Add(medalItem);
+                        }
+
+                        winCount++;
+                    }
+                    else
+                    {
+                        defeatCount++;
                     }
 
-                    winCount++;
+                    log.Score = outMyScore;
+
+                    logs.Add(log);
+                    rewards.AddRange(reward);
                 }
-                else
+
+                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
                 {
-                    defeatCount++;
+                    arenaBattlePreparation.OnRenderBattleArena(eval);
+                    Game.Game.instance.Arena.Enter(
+                        logs.First(),
+                        rewards,
+                        myDigest,
+                        enemyDigest,
+                        eval.Action.myAvatarAddress,
+                        eval.Action.enemyAvatarAddress,
+                        winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
                 }
-
-                log.Score = outMyScore;
-
-                logs.Add(log);
-                rewards.AddRange(reward);
-            }
-
-            if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
-            {
-                arenaBattlePreparation.OnRenderBattleArena(eval);
-                Game.Game.instance.Arena.Enter(
-                    logs.First(),
-                    rewards,
-                    myDigest,
-                    enemyDigest,
-                    eval.Action.myAvatarAddress,
-                    eval.Action.enemyAvatarAddress,
-                    winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
-            }
+            });
         }
 
         private (ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest) GetArenaPlayerDigest(
