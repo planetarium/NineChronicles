@@ -1302,7 +1302,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 09000000
-  xTweener: {fileID: 6759549063537764849}
   tabState: 0
   allButton: {fileID: 2709296799983315556}
   workshopButton: {fileID: 5105692124886159941}
@@ -1443,7 +1442,6 @@ GameObject:
   - component: {fileID: 3104326235381396197}
   - component: {fileID: 3106727626842032719}
   - component: {fileID: 964634165146872937}
-  - component: {fileID: 6759549063537764849}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -1524,47 +1522,6 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
---- !u!114 &6759549063537764849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2886678452255110699}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playAtStart: 1
-  startDelay: 0
-  duration: 0.25
-  tweenType: 0
-  ease: 27
-  completeMethod: 
-  componentIndex: 0
-  target: {fileID: 0}
-  completeDelay: 0
-  useCustomEaseCurve: 0
-  customEaseCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  endValue: -594
-  snapping: 0
-  isFrom: 1
-  axisType: 0
 --- !u!1 &2998979708203457744
 GameObject:
   m_ObjectHideFlags: 0

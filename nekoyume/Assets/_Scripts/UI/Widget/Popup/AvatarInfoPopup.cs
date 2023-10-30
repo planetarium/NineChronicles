@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class AvatarInfoPopup : XTweenPopupWidget
+    public class AvatarInfoPopup : PopupWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 

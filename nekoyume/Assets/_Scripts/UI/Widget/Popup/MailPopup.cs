@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class MailPopup : XTweenPopupWidget, IMail
+    public class MailPopup : PopupWidget, IMail
     {
         public enum MailTabState : int
         {
