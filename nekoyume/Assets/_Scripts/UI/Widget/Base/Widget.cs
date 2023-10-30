@@ -502,5 +502,11 @@ namespace Nekoyume.UI
                 CloseWidget?.Invoke();
             }
         }
+
+        public static bool Remove<T>(T widget) where T : Widget
+        {
+            Destroy(widget.gameObject);
+            return Pool.Remove(typeof(T));
+        }
     }
 }

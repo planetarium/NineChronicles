@@ -235,11 +235,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
 
-#if UNITY_ANDROID || UNITY_IOS
-            _secondWidgets.Add(Widget.Create<MobileShop>());
-            yield return null;
-#endif
-
             // _secondWidgets.Add(Widget.Create<ShopSell>());
             // yield return null;
             // _secondWidgets.Add(Widget.Create<ShopBuy>());
@@ -456,6 +451,21 @@ namespace Nekoyume.UI
             _secondWidgets.Add(widget);
             widget.Initialize();
             return widget;
+        }
+
+        // DevCra - iOS Memory Optimization
+        public bool RemoveWidget<T>(T widget) where T : Widget
+        {
+            if (Widget.TryFind<T>(out var found))
+            {
+                if (found == widget)
+                {
+                    _secondWidgets.Remove(widget);
+                    return Widget.Remove(widget);
+                }
+            }
+
+            return false;
         }
     }
 }
