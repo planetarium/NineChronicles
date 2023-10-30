@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Planet;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
@@ -30,6 +31,7 @@ namespace Nekoyume.UI
         public class AccessTokenResult : RequestResult
         {
             public string accessToken;
+            public string refreshToken;
             public string address;
         }
 
@@ -58,17 +60,20 @@ namespace Nekoyume.UI
 
         public PortalConnect(string url)
         {
-            if (string.IsNullOrEmpty(url))
-                url = "https://nine-chronicles.com";
-
-            PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
+            PortalUrl = url ?? "https://nine-chronicles.com";
+            Debug.Log($"[PortalConnect] PortalUrl: {PortalUrl}");
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
             {
                 OnDeepLinkActivated(Application.absoluteURL);
             }
-            else deeplinkURL = "[none]";
+            else
+            {
+                deeplinkURL = "[none]";
+            }
+
+            Debug.Log($"[PortalConnect] deeplinkURL: {deeplinkURL}");
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
@@ -83,6 +88,7 @@ namespace Nekoyume.UI
         private void OnDeepLinkActivated(string url)
         {
             deeplinkURL = url;
+            Debug.Log($"[PortalConnect] deeplinkURL: {deeplinkURL}");
 
             if (_onPortalEnd != null)
             {
@@ -100,15 +106,15 @@ namespace Nekoyume.UI
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
 
-            if (param.ContainsKey("clientSecret"))
+            if (param.TryGetValue("clientSecret", out var outClientSecret))
             {
-                clientSecret = param["clientSecret"];
+                clientSecret = outClientSecret;
             }
 
             var accountExist = param.ContainsKey("ncAddress");
-            if (param.ContainsKey("code"))
+            if (param.TryGetValue("code", out var outCode))
             {
-                code = param["code"];
+                code = outCode;
                 if (string.IsNullOrEmpty(code) && !accountExist)
                 {
                     RequestCode(OnSuccess);
@@ -117,6 +123,7 @@ namespace Nekoyume.UI
             }
 
             OnSuccess();
+            return;
 
             void OnSuccess()
             {
@@ -159,12 +166,12 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            Debug.Log($"[PortalConnect] RequestCode url: {url}");
+
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
-
             await request.SendWebRequest();
-
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<RequestCodeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -190,6 +197,7 @@ namespace Nekoyume.UI
         private async void AccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
+            Debug.Log($"[PortalConnect] AccessToken url: {url}");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -204,7 +212,7 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                Debug.Log(e.Text);
+                Debug.LogException(e);
             }
 
             HandleAccessTokenResult(request);
@@ -219,6 +227,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
+                    Debug.Log($"[PortalConnect] accessToken: {accessToken}");
                     return true;
                 }
 
@@ -237,7 +246,7 @@ namespace Nekoyume.UI
             Application.OpenURL($"{PortalUrl}{PortalRewardEndpoint}");
         }
 
-        public IEnumerator RequestPledge(Address address)
+        public IEnumerator RequestPledge(PlanetId planetId, Address address)
         {
             var url = $"{PortalUrl}{RequestPledgeEndpoint}";
             var os = string.Empty;
@@ -247,9 +256,13 @@ namespace Nekoyume.UI
             os = "ios";
 #endif
 
+            Debug.Log($"[PortalConnect] RequestPledge: url({url}), os({os})," +
+                      $" planetId({planetId}), address({address}), accessToken({accessToken})");
+
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
             form.AddField("os", os);
+            form.AddField("planetId", planetId.ToString());
 
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
@@ -279,7 +292,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowRequestErrorPopup(RequestResult data)
+        private static void ShowRequestErrorPopup(RequestResult data)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
             message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
@@ -291,7 +304,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/0");
         }
 
-        private void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
+        private static void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
             message += string.IsNullOrEmpty(errorMessage) ? string.Empty : $"\n{errorMessage}";

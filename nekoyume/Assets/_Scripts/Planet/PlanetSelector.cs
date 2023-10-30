@@ -13,7 +13,8 @@ namespace Nekoyume.Planet
 
         private static PlanetId DefaultPlanetId => PlanetId.Heimdall;
 
-        public static Subject<PlanetInfo> CurrentPlanetInfoSubject { get; } = new();
+        public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
+            CurrentPlanetInfoSubject { get; } = new();
 
         public static async UniTask<PlanetContext> InitializeAsync(
             PlanetContext context)
@@ -148,7 +149,7 @@ namespace Nekoyume.Planet
             context.CurrentPlanetInfo = planetInfo;
             PlayerPrefs.SetString(CurrentPlanetIdHexKey, context.CurrentPlanetInfo!.ID.ToHexString());
             context = UpdateCommandLineOptions(context);
-            CurrentPlanetInfoSubject.OnNext(context.CurrentPlanetInfo);
+            CurrentPlanetInfoSubject.OnNext((context, context.CurrentPlanetInfo));
             return context;
         }
 
@@ -161,25 +162,41 @@ namespace Nekoyume.Planet
                 return context;
             }
             
-            context.CommandLineOptions.genesisBlockPath = currentPlanetInfo.GenesisUri;
-
-            if (currentPlanetInfo.RPCEndpoints.HeadlessGrpc.Count == 0)
+            var clo = context.CommandLineOptions;
+            clo.genesisBlockPath = currentPlanetInfo.GenesisUri;
+            var rpcEndpoints = currentPlanetInfo.RPCEndpoints;
+            if (rpcEndpoints.HeadlessGrpc.Count == 0)
             {
                 context.Error = "RPCEndpoints.HeadlessGrpc is empty." +
                                 "Check the planet registry url in command line options: " +
-                                context.CommandLineOptions.PlanetRegistryUrl;
+                                clo.PlanetRegistryUrl;
                 return context;
             }
 
-            var uris = currentPlanetInfo.RPCEndpoints.HeadlessGrpc
+            var uris = rpcEndpoints.HeadlessGrpc
                 .Select(url => new Uri(url))
                 .ToArray();
-            context.CommandLineOptions.RpcServerHosts = uris.Select(uri => uri.Host);
+            clo.RpcServerHosts = uris.Select(uri => uri.Host);
 
-            // FIXME: It determines the RPC server host randomly for now.
+            // FIXME: RpcServer is selected randomly for now.
             var uri = uris[Random.Range(0, uris.Length)];
-            context.CommandLineOptions.RpcServerHost = uri.Host;
-            context.CommandLineOptions.RpcServerPort = uri.Port;
+            clo.RpcServerHost = uri.Host;
+            clo.RpcServerPort = uri.Port;
+
+            // FIXME: Other hosts are selected randomly for now.
+            clo.ApiServerHost = rpcEndpoints.HeadlessGql.Count > 0
+                ? rpcEndpoints.HeadlessGql[Random.Range(0, rpcEndpoints.HeadlessGql.Count)]
+                : null;
+            clo.MarketServiceHost = rpcEndpoints.MarketRest.Count > 0
+                ? rpcEndpoints.MarketRest[Random.Range(0, rpcEndpoints.MarketRest.Count)]
+                : null;
+            clo.OnBoardingHost = rpcEndpoints.WorldBossRest.Count > 0
+                ? rpcEndpoints.WorldBossRest[Random.Range(0, rpcEndpoints.WorldBossRest.Count)]
+                : null;
+            clo.PatrolRewardServiceHost = rpcEndpoints.PatrolRewardGql.Count > 0
+                ? rpcEndpoints.PatrolRewardGql[Random.Range(0, rpcEndpoints.PatrolRewardGql.Count)]
+                : null;
+
             return context;
         }
     }

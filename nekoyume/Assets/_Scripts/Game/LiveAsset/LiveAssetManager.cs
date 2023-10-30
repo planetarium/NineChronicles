@@ -11,6 +11,7 @@ using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using Nekoyume.Planet;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -119,20 +120,9 @@ namespace Nekoyume.Game.LiveAsset
                 CommandLineOptions = options;
             }
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                AllowTrailingCommas = true,
-                Converters =
-                {
-                    new CommandLineOptions.StringEnumerableConverter(),
-                },
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
-
-            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(response, jsonOptions);
+            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(
+                response,
+                CommandLineOptions.JsonOptions);
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
