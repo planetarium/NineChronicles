@@ -2440,6 +2440,9 @@ MonoBehaviour:
   - {fileID: 6137914013786699274}
   - {fileID: 6492667346026243244}
   - {fileID: 6867350966047390733}
+  seasonPassObjs:
+  - {fileID: 6106541516352620039}
+  seasonPassCourageAmount: {fileID: 4867040543279173755}
 --- !u!95 &4248137110423402528
 Animator:
   serializedVersion: 4

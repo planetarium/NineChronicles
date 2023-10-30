@@ -12,6 +12,7 @@ namespace Nekoyume
     public class SeasonPassServiceManager : IDisposable
     {
         public int StageCourageAmount = 10;
+        public int RankingCourageAmount = 10;
 
         public SeasonPassServiceClient Client { get; private set; }
 
