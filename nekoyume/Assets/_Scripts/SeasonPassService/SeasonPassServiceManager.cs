@@ -13,6 +13,7 @@ namespace Nekoyume
     {
         public int StageCourageAmount = 10;
         public int RankingCourageAmount = 10;
+        public int WorldBossCourageAmount = 10;
 
         public SeasonPassServiceClient Client { get; private set; }
 

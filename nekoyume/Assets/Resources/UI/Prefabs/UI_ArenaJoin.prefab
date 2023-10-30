@@ -2432,6 +2432,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7613795907578652874, guid: cc962a46f90dc234c8b0ae136474a8a6,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_COURAGEourage
+      objectReference: {fileID: 0}
     - target: {fileID: 7794857806927809462, guid: cc962a46f90dc234c8b0ae136474a8a6,
         type: 3}
       propertyPath: m_AnchorMax.y
