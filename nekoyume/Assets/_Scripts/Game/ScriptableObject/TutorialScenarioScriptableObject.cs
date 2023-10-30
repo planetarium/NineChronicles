@@ -10,6 +10,8 @@ namespace Nekoyume
     {
         public TutorialScenario tutorialScenario;
 
+        public TutorialScenarioWithComment[] tutorialScenarioWithComments;
+
         public ScenarioTemplate[] scenarioTemplates;
 
         public TextAsset json;
@@ -19,6 +21,14 @@ namespace Nekoyume
         {
             public string description;
             public ScenarioData scenarioData;
+        }
+
+        [Serializable]
+        public struct TutorialScenarioWithComment
+        {
+            public string title;
+            public string description;
+            public TutorialScenario tutorialScenario;
         }
     }
 }
