@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
 
         public bool IsPlaying => _tutorial.IsActive();
         private Coroutine _rewardScreenCoroutine;
@@ -178,8 +178,6 @@ namespace Nekoyume.UI
             return Resources.Load<T>(path);
         }
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
-
         private static int GetCheckPoint(int clearedStageId)
         {
             /*
@@ -251,7 +249,9 @@ namespace Nekoyume.UI
 
         private void SendMixPanel(int id)
         {
-            if (!_mixpanelTargets.Exists(x => x == id))
+            // tutorial start point (id <= 2 : before stage 5)
+            // in playing stage3 tutorial, id 30000 is played. (duplicate tutorial)
+            if (TutorialStageArray.All(x => x * 10000 != id) || id <= 2 || id != 30000)
             {
                 return;
             }
