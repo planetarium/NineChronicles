@@ -187,10 +187,10 @@ RectTransform:
   m_Father: {fileID: 5631972601959498813}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1500, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5785037528321090618
 CanvasRenderer:
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 2800000, guid: 03c4befec3392944f98473ff712023d7, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1175,19 +1175,19 @@ MonoBehaviour:
   videoTexture: {fileID: 8400000, guid: a9081cc788181714aaedbdd034ebed09, type: 2}
   backgroundItems:
   - type: 1
-    videoClip: {fileID: 32900000, guid: c4183c979c441a645be25420a63608b1, type: 3}
+    videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: 5bbad4ad68b59cc40b36c23664c59a7b, type: 3}
   - type: 2
-    videoClip: {fileID: 32900000, guid: 9554a6a1a90356c4982abd7842c995cd, type: 3}
+    videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: 03c4befec3392944f98473ff712023d7, type: 3}
   - type: 3
-    videoClip: {fileID: 32900000, guid: ec6ec8f1d33c14245875e6207eaca717, type: 3}
+    videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: f8c78760de4942e42b701e825be5f48a, type: 3}
   - type: 4
-    videoClip: {fileID: 32900000, guid: 5a649783487c9994eadf3e03968d4ff1, type: 3}
+    videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: e94c4948ba810f348943bee2ce27db31, type: 3}
   - type: 5
-    videoClip: {fileID: 32900000, guid: 902961e2611c10b4a8a8a8f878032b7e, type: 3}
+    videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: 234d2ad2cceae5449af559de3bd329fc, type: 3}
 --- !u!1 &9164911897383629554
 GameObject:

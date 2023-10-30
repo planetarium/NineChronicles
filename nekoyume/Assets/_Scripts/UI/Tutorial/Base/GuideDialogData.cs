@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -19,14 +18,18 @@ namespace Nekoyume.UI
 
         public TutorialItemType Type => type;
 
+        public DialogPositionType positionType;
+
         public GuideDialogData(
             DialogEmojiType emojiType,
             DialogCommaType commaType,
+            DialogPositionType positionType,
             string script,
             RectTransform target)
         {
             this.emojiType = emojiType;
             this.commaType = commaType;
+            this.positionType = positionType;
             this.script = script;
             this.target = target;
         }
