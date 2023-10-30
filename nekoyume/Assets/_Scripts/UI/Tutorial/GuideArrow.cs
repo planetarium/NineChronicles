@@ -89,6 +89,9 @@ namespace Nekoyume.UI
                     _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                         d.target.rect.height);
 
+                    _rectTransform.anchoredPosition += d.targetPositionOffset;
+                    _rectTransform.sizeDelta += d.targetSizeOffset;
+
                     if (d.guideType == GuideType.Outline)
                     {
                         ApplyOutline(d.target);
