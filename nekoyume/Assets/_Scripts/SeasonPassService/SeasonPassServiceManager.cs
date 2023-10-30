@@ -11,8 +11,8 @@ namespace Nekoyume
     using UniRx;
     public class SeasonPassServiceManager : IDisposable
     {
-        public int StageCourageAmount = 10;
-        public int RankingCourageAmount = 10;
+        public int AdventureCourageAmount = 10;
+        public int ArenaCourageAmount = 10;
         public int WorldBossCourageAmount = 10;
 
         public SeasonPassServiceClient Client { get; private set; }

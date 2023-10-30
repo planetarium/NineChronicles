@@ -106,7 +106,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.RankingCourageAmount}";
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount}";
             }
             else
             {

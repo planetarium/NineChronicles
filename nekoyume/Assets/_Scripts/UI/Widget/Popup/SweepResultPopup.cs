@@ -79,6 +79,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private int maxPlayCount = 11;
 
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
+
         private GameObject _titleDeco;
         private Coroutine _coroutine;
         private StageSheet.Row _stageRow;
@@ -133,6 +139,8 @@ namespace Nekoyume.UI
             _attackCount.SetValueAndForceNotify(0);
             _sweepRewind.SetValueAndForceNotify(true);
             playableDirector.Play();
+
+            RefreshSeasonPassCourageAmount(apPlayCount + apStonePlayCount);
         }
 
         private void UpdateTitleDeco(int worldId)
@@ -271,6 +279,25 @@ namespace Nekoyume.UI
         public void OnStopMusic()
         {
             AudioController.instance.StopMusicAll();
+        }
+
+        private void RefreshSeasonPassCourageAmount(int playCount)
+        {
+            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
     }
 }

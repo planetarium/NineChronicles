@@ -382,8 +382,6 @@ namespace Nekoyume.UI
 
         public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
         {
-            RefreshSeasonPassCourageAmount();
-
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
             if (isBoosted && model.StageType == StageType.HackAndSlash)
@@ -423,6 +421,9 @@ namespace Nekoyume.UI
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();
+
+            RefreshSeasonPassCourageAmount();
+
             closeButton.gameObject.SetActive(
                 model.StageID >= Battle.RequiredStageForExitButton ||
                 model.LastClearedStageId >= Battle.RequiredStageForExitButton);
@@ -1058,7 +1059,17 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.StageCourageAmount}";
+                int playCount = 0;
+                try
+                {
+                    playCount = SharedModel.ClearedCountForEachWaves.Skip(1).Sum();
+                }
+                catch
+                {
+                    Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
+                }
+
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
             }
             else
             {
