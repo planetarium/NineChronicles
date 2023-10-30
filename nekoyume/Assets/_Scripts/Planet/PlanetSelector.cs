@@ -178,23 +178,25 @@ namespace Nekoyume.Planet
                 .ToArray();
             clo.RpcServerHosts = uris.Select(uri => uri.Host);
 
-            // FIXME: It determines the RPC server host randomly for now.
+            // FIXME: RpcServer is selected randomly for now.
             var uri = uris[Random.Range(0, uris.Length)];
             clo.RpcServerHost = uri.Host;
             clo.RpcServerPort = uri.Port;
+
+            // FIXME: Other hosts are selected randomly for now.
             clo.ApiServerHost = rpcEndpoints.HeadlessGql.Count > 0
-                ? rpcEndpoints.HeadlessGql[0]
+                ? rpcEndpoints.HeadlessGql[Random.Range(0, rpcEndpoints.HeadlessGql.Count)]
                 : null;
             clo.MarketServiceHost = rpcEndpoints.MarketRest.Count > 0
-                ? rpcEndpoints.MarketRest[0]
+                ? rpcEndpoints.MarketRest[Random.Range(0, rpcEndpoints.MarketRest.Count)]
                 : null;
             clo.OnBoardingHost = rpcEndpoints.WorldBossRest.Count > 0
-                ? rpcEndpoints.DataProviderGql[0]
+                ? rpcEndpoints.WorldBossRest[Random.Range(0, rpcEndpoints.WorldBossRest.Count)]
                 : null;
             clo.PatrolRewardServiceHost = rpcEndpoints.PatrolRewardGql.Count > 0
-                ? rpcEndpoints.PatrolRewardGql[0]
+                ? rpcEndpoints.PatrolRewardGql[Random.Range(0, rpcEndpoints.PatrolRewardGql.Count)]
                 : null;
-            
+
             return context;
         }
     }
