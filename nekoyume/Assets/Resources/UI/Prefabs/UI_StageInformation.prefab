@@ -1440,6 +1440,10 @@ MonoBehaviour:
   world: {fileID: 2852340884972781699}
   buttonNotification: {fileID: 422019586417822543}
   closeButton: {fileID: 1441527950717303178}
+  seasonPassObjs:
+  - {fileID: 2576220546217596041}
+  - {fileID: 2921797662032179206}
+  seasonPassCourageAmount: {fileID: 6842731230375634074}
 --- !u!1 &8664116939152282519
 GameObject:
   m_ObjectHideFlags: 0

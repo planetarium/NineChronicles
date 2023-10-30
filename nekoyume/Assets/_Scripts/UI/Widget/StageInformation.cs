@@ -54,6 +54,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
+
         private WorldMap.ViewModel _sharedViewModel;
         private StageType _stageType;
         private readonly List<IDisposable> _disposablesOnShow = new();
@@ -104,6 +110,25 @@ namespace Nekoyume.UI
             }
 
             Close(true);
+        }
+
+        private void RefreshSeasonPassCourageAmount()
+        {
+            if(Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                seasonPassCourageAmount.text = $"+{10}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
 
         public void Show(
@@ -162,6 +187,7 @@ namespace Nekoyume.UI
 
             base.Show(true);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
+            RefreshSeasonPassCourageAmount();
         }
 
         public void Show(
@@ -183,6 +209,7 @@ namespace Nekoyume.UI
             world.Set(eventDungeonRow);
             world.Set(openedStageId, nextStageId);
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, nextStageId);
+            RefreshSeasonPassCourageAmount();
             base.Show(true);
         }
 
