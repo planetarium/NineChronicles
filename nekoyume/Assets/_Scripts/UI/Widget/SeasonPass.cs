@@ -126,7 +126,6 @@ namespace Nekoyume.UI
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),NotificationCell.NotificationType.Notification);
-                    Debug.Log($"SeasonPass ReceiveSuccess~!! {result.User.AvatarAddr} {result.Items.Count} {result.Currencies.Count}");
                     Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
                 },
                 (error) =>

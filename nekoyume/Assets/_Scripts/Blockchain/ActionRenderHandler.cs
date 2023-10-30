@@ -2996,6 +2996,10 @@ namespace Nekoyume.Blockchain
                 mail.New = true;
                 gameStates.CurrentAvatarState.mailBox = mailBox;
                 LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                if(mail.Memo != null && mail.Memo.Contains("season_pass"))
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"), NotificationCell.NotificationType.Notification);
+                }
             }
             else
             {
