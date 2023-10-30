@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
@@ -165,7 +164,8 @@ namespace Nekoyume.IAPStore
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address,
-                        states.CurrentAvatarState.address);
+                        states.CurrentAvatarState.address,
+                        Game.Game.instance.PlanetId.ToString());
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
 

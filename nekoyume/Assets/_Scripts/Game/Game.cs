@@ -139,6 +139,8 @@ namespace Nekoyume.Game
 
         public Url URL { get; private set; }
 
+        public PlanetId PlanetId { get; private set; }
+
         public readonly LruCache<Address, IValue> CachedStates = new();
 
         public readonly Dictionary<Address, bool> CachedStateAddresses = new();
@@ -244,6 +246,7 @@ namespace Nekoyume.Game
             SubscribeRPCAgent();
 #endif
 
+            PlanetId = _commandLineOptions.PlanetId ?? PlanetId.Odin;
             States = new States();
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();

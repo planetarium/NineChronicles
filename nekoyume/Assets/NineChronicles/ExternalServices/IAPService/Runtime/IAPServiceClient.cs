@@ -64,7 +64,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 Store store,
                 string receipt,
                 Address agentAddr,
-                Address avatarAddr)
+                Address avatarAddr,
+                string planetId)
         {
             var receiptJson = JsonNode.Parse(receipt);
             var reqJson = new JsonObject
@@ -72,7 +73,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 { "store", (int)store },
                 { "data", receiptJson },
                 { "agentAddress", agentAddr.ToHex() },
-                { "avatarAddress", avatarAddr.ToHex() }
+                { "avatarAddress", avatarAddr.ToHex() },
+                { "planetId", planetId }
             };
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),
