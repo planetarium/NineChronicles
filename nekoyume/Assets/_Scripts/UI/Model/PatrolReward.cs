@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model.Patrol
         public IReadOnlyReactiveProperty<TimeSpan> PatrolTime;
 
         private const string PatrolRewardPushIdentifierKey = "PATROL_REWARD_PUSH_IDENTIFIER";
-        private bool _initialized;
+        public bool Initialized;
 
         public async Task InitializeInformation(string avatarAddress, string agentAddress, int level)
         {
@@ -87,12 +87,12 @@ $@"query {{
                 RewardModels.Value = response.Policy.Rewards;
             }
 
-            if (_initialized)
+            if (Initialized)
             {
                 return;
             }
 
-            _initialized = true;
+            Initialized = true;
             PatrolTime = Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(1))
                 .CombineLatest(LastRewardTime, (_, lastReward) =>
                 {

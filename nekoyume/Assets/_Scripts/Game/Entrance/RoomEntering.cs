@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Entrance
 {
     public class RoomEntering : MonoBehaviour
     {
-        private const int EventReleaseNotePopupLimitClearedStageId = 20;
+        private const int EventReleaseNotePopupLimitClearedStageId = 40;
         private const int PatrolRewardPopupLimitClearedStageId = 20;
 
         private void Start()
@@ -94,12 +94,12 @@ namespace Nekoyume.Game.Entrance
             {
                 var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
 
-                var patrolRewardPopup = Widget.Find<PatrolRewardPopup>();
-                if (patrolRewardPopup.CanClaim &&
-                    clearedStageId >= PatrolRewardPopupLimitClearedStageId)
-                {
-                    patrolRewardPopup.Show();
-                }
+                // var patrolRewardPopup = Widget.Find<PatrolRewardPopup>();
+                // if (patrolRewardPopup.CanClaim &&
+                //     clearedStageId >= PatrolRewardPopupLimitClearedStageId)
+                // {
+                //     patrolRewardPopup.Show();
+                // }
 
                 var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
                 if (eventReleaseNotePopup.HasUnread &&
