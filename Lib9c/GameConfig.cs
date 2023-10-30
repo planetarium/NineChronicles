@@ -56,11 +56,11 @@ namespace Nekoyume
         {
             #region character costume slot
 
-            public const int CharacterFullCostumeSlot = IsEditor ? 1 : 2;
-            public const int CharacterHairCostumeSlot = IsEditor ? 1 : 2;
-            public const int CharacterEarCostumeSlot = IsEditor ? 1 : 2;
-            public const int CharacterEyeCostumeSlot = IsEditor ? 1 : 2;
-            public const int CharacterTailCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterFullCostumeSlot = 2;
+            public const int CharacterHairCostumeSlot = 2;
+            public const int CharacterEarCostumeSlot = 2;
+            public const int CharacterEyeCostumeSlot = 2;
+            public const int CharacterTailCostumeSlot = 2;
             public const int CharacterTitleSlot = 1;
 
             #endregion
@@ -68,11 +68,11 @@ namespace Nekoyume
             #region character equipment slot
 
             public const int CharacterEquipmentSlotWeapon = 1;
-            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 3;
-            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 5;
-            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 8;
-            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 13;
-            public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 46;
+            public const int CharacterEquipmentSlotArmor = 3;
+            public const int CharacterEquipmentSlotBelt = 5;
+            public const int CharacterEquipmentSlotNecklace = 8;
+            public const int CharacterEquipmentSlotRing1 = 13;
+            public const int CharacterEquipmentSlotRing2 = 46;
             public const int CharacterEquipmentSlotAura = 1;
 
             #endregion
@@ -80,10 +80,10 @@ namespace Nekoyume
             #region character consumable slot
 
             public const int CharacterConsumableSlot1 = 1;
-            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 35;
-            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 100;
-            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 200;
-            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 350;
+            public const int CharacterConsumableSlot2 = 35;
+            public const int CharacterConsumableSlot3 = 100;
+            public const int CharacterConsumableSlot4 = 200;
+            public const int CharacterConsumableSlot5 = 350;
 
             #endregion
         }
@@ -92,31 +92,13 @@ namespace Nekoyume
         {
             #region action
 
-            public const int CombinationEquipmentAction = IsEditor ? 1 : 3;
-            public const int CombinationConsumableAction = IsEditor ? 1 : 6;
-            public const int ItemEnhancementAction = IsEditor ? 1 : 9;
-            public const int ActionsInShop = IsEditor ? 1 : 17;
-            public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
-            public const int ActionsInMimisbrunnr = IsEditor ? 1 : 100;
-            public const int ActionsInRaid = IsEditor ? 1 : 50;
-
-            #endregion
-
-            #region ui
-
-            public const int UIMainMenuStage = 0;
-            public const int UIMainMenuCombination = CombinationEquipmentAction;
-            public const int UIMainMenuShop = ActionsInShop;
-            public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
-            public const int UIMainMenuMimisbrunnr = ActionsInMimisbrunnr;
-
-            public const int UIBottomMenuInBattle = 1;
-            public const int UIBottomMenuCharacter = 1;
-            public const int UIBottomMenuMail = CombinationEquipmentAction;
-            public const int UIBottomMenuChat = IsEditor ? 1 : 7;
-            public const int UIBottomMenuQuest = 1;
-            public const int UIBottomMenuMimisbrunnr = ActionsInMimisbrunnr;
-            public const int UIBottomMenuRanking = IsEditor ? 1 : 3;
+            public const int CombinationEquipmentAction = 3;
+            public const int CombinationConsumableAction = 6;
+            public const int ItemEnhancementAction = 9;
+            public const int ActionsInShop = 17;
+            public const int ActionsInRankingBoard = 25;
+            public const int ActionsInMimisbrunnr = 100;
+            public const int ActionsInRaid = 50;
 
             #endregion
         }
