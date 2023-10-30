@@ -39,15 +39,15 @@ namespace Nekoyume.Game.OAuth
 
         public void OnSignIn()
         {
+            Debug.Log("[GoogleSigninBehaviour] OnSignIn");
             GoogleSignIn.Configuration = _configuration;
-            Debug.Log("Calling SignIn");
             State.Value = SignInState.Waiting;
-            GoogleSignIn.DefaultInstance.SignIn()
-                .ContinueWith(OnAuthenticationFinished);
+            GoogleSignIn.DefaultInstance.SignIn().ContinueWith(OnAuthenticationFinished);
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 if (state is SignInState.Signed)
                 {
+                    Debug.Log("[GoogleSigninBehaviour] GoogleSignIn: Signed");
                     Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
                     StartCoroutine(CoSendGoogleIdToken(_idToken));
                 }
@@ -83,7 +83,8 @@ namespace Nekoyume.Game.OAuth
                 if (enumerator != null && enumerator.MoveNext())
                 {
                     var error = (GoogleSignIn.SignInException)enumerator.Current;
-                    Debug.Log("Got Error: " + error.Status + " " + error.Message);
+                    Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished Got Error: "
+                              + error.Status + " " + error.Message);
                 }
                 else
                 {
@@ -108,6 +109,7 @@ namespace Nekoyume.Game.OAuth
 
         private static IEnumerator CoSendGoogleIdToken(string idToken)
         {
+            Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken: idToken({idToken})");
             yield return new WaitUntil(() => Game.instance.PortalConnect != null);
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
 
