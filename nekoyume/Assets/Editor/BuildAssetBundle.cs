@@ -6,17 +6,35 @@ using UnityEngine;
 
 public class BuildAssetBundle
 {
-    [MenuItem("Assets/Build AssetBundles")]
-    static void BuildAllAssetBundles()
+    private static readonly string assetBundleDirectory = "Assets/AssetBundles";
+
+    [MenuItem("Assets/Build AssetBundles/iOS")]
+    public static void BuildAllAssetBundlesIOS()
     {
-        string assetBundleDirectory = "Assets/AssetBundles";
-        if (!Directory.Exists(assetBundleDirectory))
+        BuildAllAssetBundles(assetBundleDirectory + "/iOS", BuildTarget.iOS);
+    }
+
+    [MenuItem("Assets/Build AssetBundles/Android")]
+    public static void BuildAllAssetBundlesAndroid()
+    {
+        BuildAllAssetBundles(assetBundleDirectory + "/Android", BuildTarget.Android);
+    }
+
+    [MenuItem("Assets/Build AssetBundles/Windows")]
+    public static void BuildAllAssetBundlesWindows()
+    {
+        BuildAllAssetBundles(assetBundleDirectory + "/Windows", BuildTarget.StandaloneWindows);
+    }
+
+    private static void BuildAllAssetBundles(string path, BuildTarget target)
+    {
+        if (!Directory.Exists(path))
         {
-            Directory.CreateDirectory(assetBundleDirectory);
+            Directory.CreateDirectory(path);
         }
 
-        BuildPipeline.BuildAssetBundles(assetBundleDirectory,
+        BuildPipeline.BuildAssetBundles(path,
             BuildAssetBundleOptions.None,
-            BuildTarget.StandaloneWindows);
+            target);
     }
 }
