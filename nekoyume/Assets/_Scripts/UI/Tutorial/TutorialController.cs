@@ -28,7 +28,7 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
-        private const int CreateAvatarRewardTutorialId = 49;
+        private const int CreateAvatarRewardTutorialId = 2;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
@@ -74,8 +74,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            _scenario.AddRange(GetData<TutorialScenario>(ScenarioPath).scenario);
-            _preset.AddRange(GetData<TutorialPreset>(PresetPath).preset);
+            _scenario.AddRange(GetData<TutorialScenarioScriptableObject>(ScenarioPath).tutorialScenario.scenario);
+            _preset.AddRange(GetData<TutorialPresetScriptableObject>(PresetPath).tutorialPreset.preset);
         }
 
         public void Run(int clearedStageId)
@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
-                _tutorial.Play(viewData, scenario.data.presetId, () =>
+                _tutorial.Play(viewData, scenario.data.presetId, scenario.data.guideSprite, () =>
                 {
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
@@ -167,17 +167,18 @@ namespace Nekoyume.UI
                 new GuideDialogData(
                     data.emojiType,
                     (DialogCommaType) preset.commaId,
+                    data.dialogPositionType,
                     script,
                     target)
             };
         }
 
-        private static T GetData<T>(string path) where T : new()
+        private static T GetData<T>(string path) where T : ScriptableObject
         {
-            var json = Resources.Load<TextAsset>(path).ToString();
-            var data = JsonUtility.FromJson<T>(json);
-            return data;
+            return Resources.Load<T>(path);
         }
+
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
 
         private static int GetCheckPoint(int clearedStageId)
         {
@@ -196,6 +197,18 @@ namespace Nekoyume.UI
                 return checkPoint;
             }
 
+            // format example
+            void Check(int stageIdForTutorial)  // ex) 5, 10
+            {
+                // clearedStageId == stageIdForTutorial => 튜토리얼이 실행되어야 하는 스테이지
+                // 튜토리얼이 종료된 후 checkPoint = -stageIdForTutorial 연산을 함
+                // checkPoint != -stageIdForTutorial => 해당 스테이지의 튜토리얼이 종료된적 없음
+                if (clearedStageId == stageIdForTutorial && checkPoint != -stageIdForTutorial)
+                {
+                    checkPoint = stageIdForTutorial * 10000;
+                }
+            }
+
             // If PlayerPrefs doesn't exist
             if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
@@ -209,28 +222,23 @@ namespace Nekoyume.UI
             // playing tutorial id = clearedStageId * 100000
             else if (clearedStageId == 5 && checkPoint != -5)
             {
-                checkPoint = 50000;
-            }
-            else if (clearedStageId == 10 && checkPoint != -10)
-            {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
                         (CostType)summonRow.CostMaterial, summonRow.CostMaterialCount))
                 {
-                    checkPoint = 100000;
+                    checkPoint = 50000;
                 }
             }
-
-            // format example
-            void Check(int stageIdForTutorial)  // ex) 5, 10
+            else if (clearedStageId == 23 && checkPoint != -23)
             {
-                // clearedStageId == stageIdForTutorial => 튜토리얼이 실행되어야 하는 스테이지
-                // 튜토리얼이 종료된 후 checkPoint = -stageIdForTutorial 연산을 함
-                // checkPoint != -stageIdForTutorial => 해당 스테이지의 튜토리얼이 종료된적 없음
-                if (clearedStageId == stageIdForTutorial && checkPoint != -stageIdForTutorial)
+                if (ActionPoint.IsInteractableMaterial())
                 {
-                    checkPoint = stageIdForTutorial * 10000;
+                    checkPoint = 230000;
                 }
+            }
+            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
+            {
+                Check(clearedStageId);
             }
 
             return checkPoint;

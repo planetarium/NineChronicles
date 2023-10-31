@@ -30,6 +30,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuideDialog guideDialog;
 
+        [SerializeField]
+        private Image guideImage;
+
+        [SerializeField]
+        private Sprite transparentSprite;
+
         private Coroutine _coroutine;
         private System.Action _callback;
         private const int ItemCount = 3;
@@ -52,10 +58,11 @@ namespace Nekoyume.UI
         {
             guideDialog.gameObject.SetActive(false);
             items.ForEach(item => item.Item.gameObject.SetActive(false));
+            guideImage.sprite = transparentSprite;
             base.Close(ignoreCloseAnimation);
         }
 
-        public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
+        public void Play(List<ITutorialData> datas, int presetId, Sprite guideSprite = null, System.Action callback = null)
         {
             if(!(_onClickDispose is null))
             {
@@ -101,6 +108,8 @@ namespace Nekoyume.UI
                 item?.Item.gameObject.SetActive(true);
                 item?.Item.Play(data, () => PlayEnd());
             }
+
+            guideImage.sprite = guideSprite != null ? guideSprite : transparentSprite;
             _callback = callback;
         }
 
@@ -129,6 +138,26 @@ namespace Nekoyume.UI
             }
         }
 
+        public void PlayOnlyGuideArrow(GuideType guideType,
+            RectTransform target,
+            Vector2 targetPositionOffset = default,
+            Vector2 targetSizeOffset = default,
+            Vector2 arrowPositionOffset = default)
+        {
+            Show(true);
+            var arrow = items.First(i => i.Type == TutorialItemType.Arrow).Item;
+            arrow.gameObject.SetActive(true);
+            arrow.Play(new GuideArrowData(
+                    guideType,
+                    target,
+                    targetPositionOffset,
+                    targetSizeOffset,
+                    arrowPositionOffset,
+                    0f,
+                    false),
+                null);
+        }
+
         public void Stop(System.Action callback = null)
         {
             _onClickDispose?.Dispose();
@@ -138,6 +167,7 @@ namespace Nekoyume.UI
             _finishRef = 0;
             _playTimeRef = 0;
             _isPlaying = true;
+            guideImage.sprite = transparentSprite;
             foreach (var item in items)
             {
                 item.Item.Stop(() => PlayEnd(callback));

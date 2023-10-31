@@ -25,6 +25,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Helper;
     using UniRx;
 
     public class BattleResultPopup : PopupWidget
@@ -80,25 +81,51 @@ namespace Nekoyume.UI
         }
 
         [Serializable]
-        public struct RewardsArea
+        public struct RecipeItems
         {
-            public GameObject root;
-            public BattleReward[] rewards;
-            public BattleReward rewardForMulti;
+            public GameObject gameObject;
+            public RecipeCell[] items;
+            public TextMeshProUGUI[] itemNames;
+            public TextMeshProUGUI[] itemMainStats;
         }
 
         [Serializable]
-        public struct DefeatTextArea
+        public struct RewardItems
         {
-            public GameObject root;
-            public TextMeshProUGUI worldStageId;
-            public TextMeshProUGUI defeatText;
-            public TextMeshProUGUI expText;
+            public GameObject gameObject;
+            public SimpleCountableItemView[] items;
+
+            public void Set(IReadOnlyList<CountableItem> rewardItems)
+            {
+                foreach (var view in items)
+                {
+                    view.gameObject.SetActive(false);
+                }
+
+                for (var i = 0; i < rewardItems.Count; i++)
+                {
+                    var rt = items[i].RectTransform;
+                    var itemBase = rewardItems[i].ItemBase.Value;
+                    items[i].SetData(rewardItems[i], () => ShowTooltip(itemBase));
+                    items[i].gameObject.SetActive(true);
+                }
+            }
+
+            private static void ShowTooltip(ItemBase itemBase)
+            {
+                AudioController.PlayClick();
+                var tooltip = ItemTooltip.Find(itemBase.ItemType);
+                tooltip.Show(itemBase, string.Empty, false, null);
+            }
         }
 
-        private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
-
+        [Serializable]
+        public struct StarForMulti
+        {
+            public TextMeshProUGUI StarCountText;
+            public TextMeshProUGUI[] WaveStarTexts;
+            public TextMeshProUGUI RemainingStarText;
+        }
         [SerializeField]
         private CanvasGroup canvasGroup;
 
@@ -112,13 +139,31 @@ namespace Nekoyume.UI
         private TextMeshProUGUI worldStageId;
 
         [SerializeField]
-        private GameObject topArea;
+        private GameObject[] enableVictorys;
 
         [SerializeField]
-        private DefeatTextArea defeatTextArea;
+        private GameObject[] enableDefeats;
 
         [SerializeField]
-        private RewardsArea rewardsArea;
+        private GameObject cpUp;
+
+        [SerializeField]
+        private GameObject rewardArea;
+
+        [SerializeField]
+        private TextMeshProUGUI expText;
+
+        [SerializeField]
+        private RewardItems rewardItems;
+
+        [SerializeField]
+        private RecipeItems recipeItems;
+
+        [SerializeField]
+        private GameObject startRewards;
+
+        [SerializeField]
+        private StarForMulti starForMulti;
 
         [SerializeField]
         private TextMeshProUGUI bottomText;
@@ -136,26 +181,23 @@ namespace Nekoyume.UI
         private Button repeatButton;
 
         [SerializeField]
-        private StageProgressBar stageProgressBar;
+        private Button shopButton;
 
         [SerializeField]
-        private GameObject[] victoryResultTexts;
+        private Button craftButton;
+
+        [SerializeField]
+        private Button foodButton;
 
         [SerializeField]
         private ActionPoint actionPoint;
-
-        private BattleWin01VFX _battleWin01VFX;
-
-        private BattleWin02VFX _battleWin02VFX;
-
-        private BattleWin03VFX _battleWin03VFX;
-
-        private BattleWin04VFX _battleWin04VFX;
 
         private Coroutine _coUpdateBottomText;
 
         private readonly WaitForSeconds _battleWinVFXYield = new(0.2f);
         private static readonly int ClearedWave = Animator.StringToHash("ClearedWave");
+        private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
+        private const int Timer = 10;
 
         private Animator _victoryImageAnimator;
 
@@ -165,30 +207,21 @@ namespace Nekoyume.UI
 
         public Model ModelForMultiHackAndSlash { get; set; }
 
-        public StageProgressBar StageProgressBar => stageProgressBar;
-
         protected override void Awake()
         {
             base.Awake();
 
-            closeButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                var wi = States.Instance.CurrentAvatarState.worldInformation;
-                if (!wi.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-                {
-                    return;
-                }
+            closeButton.OnClickAsObservable()
+                .Subscribe(_ => StartCoroutine(OnClickClose()))
+                .AddTo(gameObject);
 
-                // NOTE: This `BattleResultPopup` cannot be closed when
-                //       the player is not cleared `Battle.RequiredStageForExitButton` stage yet.
-                var canExit = world.StageClearedId >= Battle.RequiredStageForExitButton;
-                if (canExit)
-                {
-                    StartCoroutine(OnClickClose());
-                }
-            }).AddTo(gameObject);
+            stagePreparationButton.OnClickAsObservable()
+                .Subscribe(_ => OnClickStage())
+                .AddTo(gameObject);
 
-            stagePreparationButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
+            shopButton.OnClickAsObservable().Subscribe(_ => GoToProduct()).AddTo(gameObject);
+            craftButton.OnClickAsObservable().Subscribe(_ => GoToCraft()).AddTo(gameObject);
+            foodButton.OnClickAsObservable().Subscribe(_ => GoToFood()).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
@@ -200,7 +233,6 @@ namespace Nekoyume.UI
 
             CloseWidget = closeButton.onClick.Invoke;
             SubmitWidget = nextButton.onClick.Invoke;
-            defeatTextArea.root.SetActive(false);
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
@@ -343,7 +375,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Show(Model model, bool isBoosted)
+        public void Show(Model model, bool isBoosted, List<TableData.EquipmentItemRecipeSheet.Row> newRecipes)
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
@@ -383,12 +415,6 @@ namespace Nekoyume.UI
             actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.gameObject.SetActive(false);
-            }
-            rewardsArea.rewardForMulti.gameObject.SetActive(false);
-
             base.Show();
             closeButton.gameObject.SetActive(
                 model.StageID >= Battle.RequiredStageForExitButton ||
@@ -397,24 +423,45 @@ namespace Nekoyume.UI
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
+            if(newRecipes != null && newRecipes.Count > 0)
+            {
+                recipeItems.gameObject.SetActive(true);
+                for (int i = 0; i < recipeItems.items.Length; i++)
+                {
+                    if(i < newRecipes.Count)
+                    {
+                        recipeItems.items[i].transform.parent.gameObject.SetActive(true);
+                        recipeItems.items[i].Show(newRecipes[i], false);
+
+                        var resultItem = newRecipes[i].GetResultEquipmentItemRow();
+                        recipeItems.itemNames[i].text = resultItem.GetLocalizedName(true);
+                        recipeItems.itemMainStats[i].text = resultItem.GetUniqueStat().DecimalStatToString();
+                    }
+                    else
+                    {
+                        recipeItems.items[i].transform.parent.gameObject.SetActive(false);
+                    }
+                }
+            }
+            else
+            {
+                recipeItems.gameObject.SetActive(false);
+            }
+
             UpdateView(isBoosted);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            StopVFX();
-
-            foreach (var obj in victoryResultTexts)
-            {
-                obj.SetActive(false);
-            }
-
-            stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateView(bool isBoosted)
         {
+            expText.text = $"EXP + {SharedModel.Exp}";
+
+            rewardItems.Set(SharedModel.Rewards);
+
             switch (SharedModel.State)
             {
                 case BattleLog.Result.Win:
@@ -454,41 +501,56 @@ namespace Nekoyume.UI
                     : SharedModel.ClearedWaveNumber);
 
             defeatImageContainer.SetActive(false);
-            topArea.SetActive(true);
-            defeatTextArea.root.SetActive(false);
-            stageProgressBar.Show();
-            stageProgressBar.SetStarProgress(SharedModel.ClearedWaveNumber);
+
+            foreach (var item in enableVictorys)
+            {
+                item.SetActive(true);
+            }
+
+            foreach (var item in enableDefeats)
+            {
+                item.SetActive(false);
+            }
+
+            if(SharedModel.ClearedWaveNumber == 1 && !isBoosted)
+            {
+                cpUp.SetActive(true);
+                rewardArea.SetActive(false);
+            }
+            else
+            {
+                cpUp.SetActive(false);
+                rewardArea.SetActive(true);
+            }
+
+            if (SharedModel.ClearedCountForEachWaves[3] <= 0 && (SharedModel.ClearedWaveNumber == 2 || isBoosted))
+            {
+                startRewards.SetActive(true);
+                Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
+                            SharedModel.StageID, out var row);
+                var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
+                var maxStarCount = row?.MaxStar ?? 0;
+
+                starForMulti.StarCountText.text = $"{starCount}/{maxStarCount}";
+                for (int i = 0; i < starForMulti.WaveStarTexts.Length; i++)
+                {
+                    starForMulti.WaveStarTexts[i].text = SharedModel.ClearedCountForEachWaves[i].ToString();
+                }
+            }
+            else
+            {
+                startRewards.SetActive(false);
+            }
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
-            yield return StartCoroutine(CoUpdateRewards());
+
+            yield return null;
         }
 
         private IEnumerator EmitBattleWinVFX()
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-
-            switch (SharedModel.ClearedWaveNumber)
-            {
-                case 1:
-                    _battleWin01VFX =
-                        VFXController.instance.CreateAndChase<BattleWin01VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
-                    break;
-                case 2:
-                    _battleWin02VFX =
-                        VFXController.instance.CreateAndChase<BattleWin02VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
-                    break;
-                case 3:
-                    _battleWin03VFX =
-                        VFXController.instance.CreateAndChase<BattleWin03VFX>(
-                            ActionCamera.instance.transform,
-                            VfxBattleWinOffset);
-                    break;
-            }
         }
 
         private void UpdateViewAsDefeat(BattleLog.Result result)
@@ -497,97 +559,30 @@ namespace Nekoyume.UI
 
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
-            topArea.SetActive(false);
-            defeatTextArea.root.SetActive(true);
-            var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
-            if (result == BattleLog.Result.TimeOver)
+
+            cpUp.SetActive(true);
+            rewardArea.SetActive(false);
+
+            foreach (var item in enableVictorys)
             {
-                key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
+                item.SetActive(false);
+            }
+
+            foreach (var item in enableDefeats)
+            {
+                item.SetActive(true);
             }
 
             var stageText = StageInformation.GetStageIdString(
                 SharedModel.StageType,
                 SharedModel.StageID,
                 true);
-            defeatTextArea.worldStageId.text = $"{SharedModel.WorldName} {stageText}";
-            defeatTextArea.defeatText.text = L10nManager.Localize(key);
-            defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
+
+            worldStageId.text = $"{SharedModel.WorldName} {stageText}";
+
             bottomText.enabled = false;
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
-            StartCoroutine(CoUpdateRewards());
-        }
-
-        private IEnumerator CoUpdateRewards()
-        {
-            rewardsArea.root.SetActive(true);
-            var isNotClearedInMulti = SharedModel.ClearedCountForEachWaves[3] <= 0 &&
-                                      SharedModel.ClearedCountForEachWaves.Sum() > 1;
-            for (var i = 0; i < rewardsArea.rewards.Length; i++)
-            {
-                var view =
-                    i == 2 &&
-                    isNotClearedInMulti
-                        ? rewardsArea.rewardForMulti
-                        : rewardsArea.rewards[i];
-
-                view.StartShowAnimation();
-
-                var sum = 0;
-                for (var j = i; j < 3; j++)
-                {
-                    sum += SharedModel.ClearedCountForEachWaves[j + 1];
-                }
-
-                var cleared = sum > 0;
-                switch (i)
-                {
-                    case 0:
-                        view.Set(SharedModel.Exp, cleared);
-                        break;
-                    case 1:
-                        view.Set(SharedModel.Rewards, cleared);
-                        break;
-                    case 2:
-                        if (isNotClearedInMulti)
-                        {
-                            Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(
-                                SharedModel.StageID, out var row);
-                            var starCount = States.Instance.CrystalRandomSkillState?.StarCount ?? 0;
-                            var maxStarCount = row?.MaxStar ?? 0;
-
-                            view.Set(SharedModel.ClearedCountForEachWaves, starCount, maxStarCount);
-                        }
-                        else
-                        {
-                            view.Set(cleared);
-                        }
-
-                        break;
-                }
-
-                yield return new WaitForSeconds(0.5f);
-
-                view.gameObject.SetActive(true);
-                if (i < 2 || !isNotClearedInMulti)
-                {
-                    view.EnableStar(cleared);
-                }
-
-                yield return null;
-                AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            }
-
-            yield return new WaitForSeconds(0.5f);
-
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.StopShowAnimation();
-                reward.StartScaleTween();
-            }
-
-            rewardsArea.rewardForMulti.StopShowAnimation();
-            rewardsArea.rewardForMulti.StartScaleTween();
         }
 
         private IEnumerator CoUpdateBottom(int limitSeconds)
@@ -596,26 +591,27 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
+            var canExit = SharedModel.IsClear &&
+                          (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+                           SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
             if (!SharedModel.IsClear)
             {
-                stagePreparationButton.gameObject.SetActive(true);
-                stagePreparationButton.interactable = true;
+                closeButton.gameObject.SetActive(true);
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
             }
 
             var isActionPointEnough = !SharedModel.ActionPointNotEnough ||
                                       SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
-                var value = SharedModel.IsClear &&
-                            (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
-                             SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
-                repeatButton.gameObject.SetActive(value);
-                repeatButton.interactable = value;
+                repeatButton.gameObject.SetActive(canExit);
+                repeatButton.interactable = canExit;
             }
             else
             {
-                stagePreparationButton.gameObject.SetActive(true);
-                stagePreparationButton.interactable = true;
+                stagePreparationButton.gameObject.SetActive(canExit);
+                stagePreparationButton.interactable = canExit;
             }
 
             if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
@@ -649,8 +645,10 @@ namespace Nekoyume.UI
             if (SharedModel.StageID == SharedModel.LastClearedStageId &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                if (SharedModel.StageID is Battle.RequiredStageForExitButton or 5 or 10)
+                if (SharedModel.StageID is Battle.RequiredStageForExitButton ||
+                    TutorialController.TutorialStageArray.Any(stageId => stageId == SharedModel.StageID))
                 {
+                    closeButton.gameObject.SetActive(true);
                     stagePreparationButton.gameObject.SetActive(false);
                     nextButton.gameObject.SetActive(false);
                     repeatButton.gameObject.SetActive(false);
@@ -680,7 +678,6 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            StopVFX();
             switch (SharedModel.NextState)
             {
                 case NextState.GoToMain:
@@ -725,8 +722,6 @@ namespace Nekoyume.UI
                 SharedModel.StageID + 1,
                 true, SharedModel.StageID);
             Find<Status>().Close();
-
-            StopVFX();
             var player = stage.RunPlayerForNextStage();
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
@@ -766,7 +761,6 @@ namespace Nekoyume.UI
                 SharedModel.StageID);
             Find<Status>().Close();
 
-            StopVFX();
             var player = stage.RunPlayerForNextStage();
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
@@ -985,6 +979,49 @@ namespace Nekoyume.UI
             });
         }
 
+        private void GoToProduct()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                Find<ShopBuy>().Show();
+            });
+        }
+
+        private void GoToCraft()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Widget.Find<Menu>().GoToCraftEquipment();
+            });
+        }
+
+        private void GoToFood()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Widget.Find<Menu>().GoToFood();
+            });
+        }
+
         private void StopCoUpdateBottomText()
         {
             if (_coUpdateBottomText != null)
@@ -1004,38 +1041,6 @@ namespace Nekoyume.UI
 
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
-        }
-
-        private void StopVFX()
-        {
-            if (_battleWin01VFX)
-            {
-                _battleWin01VFX.Stop();
-                _battleWin01VFX = null;
-            }
-
-            if (_battleWin02VFX)
-            {
-                _battleWin02VFX.Stop();
-                _battleWin02VFX = null;
-            }
-
-            if (_battleWin03VFX)
-            {
-                _battleWin03VFX.Stop();
-                _battleWin03VFX = null;
-            }
-
-            if (_battleWin04VFX)
-            {
-                _battleWin04VFX.Stop();
-                _battleWin04VFX = null;
-            }
-
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.StopVFX();
-            }
         }
     }
 }

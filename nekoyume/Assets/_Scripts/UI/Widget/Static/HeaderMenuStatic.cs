@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -15,11 +16,11 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Game;
-    using Nekoyume.Game.Controller;
-    using Nekoyume.Helper;
-    using Nekoyume.UI.Module.WorldBoss;
-    using Nekoyume.UI.Scroller;
+    using Game;
+    using Game.Controller;
+    using Helper;
+    using WorldBoss;
+    using Scroller;
     using System.Globalization;
     using UniRx;
 
@@ -76,9 +77,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Crystal crystal;
-
-        [SerializeField]
-        private GameObject dailyBonus;
 
         [SerializeField]
         private Hourglass hourglass;
@@ -146,7 +144,6 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public bool ChargingAP => actionPoint.NowCharging;
         public Gold Gold => ncg;
         public ActionPoint ActionPoint => actionPoint;
         public Crystal Crystal => crystal;
@@ -275,7 +272,7 @@ namespace Nekoyume.UI.Module
                                 var stage = Game.instance.Stage;
                                 if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                                 {
-                                    widget.ShowNotFilterd(() => { toggleInfo.Toggle.isOn = false; });
+                                    widget.ShowNotFiltered(() => { toggleInfo.Toggle.isOn = false; });
                                 }
                             }
                             else
@@ -365,9 +362,8 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
 
-            var liveAsset = Nekoyume.Game.LiveAsset.LiveAssetManager.instance;
-            _toggleNotifications[ToggleType.Notice].Value = liveAsset.HasUnreadEvent || liveAsset.HasUnreadNotice;
-            liveAsset.ObservableHasUnread
+            _toggleNotifications[ToggleType.Notice].Value = LiveAssetManager.instance.HasUnread;
+            LiveAssetManager.instance.ObservableHasUnread
                 .SubscribeTo(_toggleNotifications[ToggleType.Notice])
                 .AddTo(gameObject);
 
@@ -450,7 +446,7 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isDailyBonusActive: true);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Combination:
                     SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
@@ -486,7 +482,6 @@ namespace Nekoyume.UI.Module
         private void SetActiveAssets(
             bool isNcgActive = false,
             bool isActionPointActive = false,
-            bool isDailyBonusActive = false,
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
@@ -498,7 +493,6 @@ namespace Nekoyume.UI.Module
             ncg.gameObject.SetActive(isNcgActive);
             crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
-            dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
@@ -681,6 +675,12 @@ namespace Nekoyume.UI.Module
                 menuToggleDropdown.isOn = false;
             }
             UpdatePortalReward(false);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointHeaderMenu()
+        {
+            actionPoint.OnClickSlider();
         }
 
         public void UpdatePortalRewardByLevel(int level)
