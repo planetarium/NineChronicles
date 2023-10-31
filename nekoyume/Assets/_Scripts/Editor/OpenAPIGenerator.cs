@@ -711,6 +711,7 @@ namespace Nekoyume
                         if (parameters != null)
                         {
                             List<string> queryParameters = new List<string>();
+                            List<string> headerParameters = new List<string>();
 
                             foreach (var parameter in parameters as JsonArray)
                             {
@@ -718,9 +719,14 @@ namespace Nekoyume
                                 string parameterType = ConvertToCSharpType(parameter["schema"]);
                                 parameterDefinitions.Append($"{parameterType} {parameterName}, ");
 
-                                if (parameter["in"].ToString() == "query")
+                                switch (parameter["in"].ToString())
                                 {
-                                    queryParameters.Add($"{parameterName}={{{parameterName}}}");
+                                    case "query":
+                                        queryParameters.Add($"{parameterName}={{{parameterName}}}");
+                                        break;
+                                    case "header":
+                                        headerParameters.Add(parameterName);
+                                        break;
                                 }
                             }
 
@@ -731,8 +737,12 @@ namespace Nekoyume
                             }
 
                             parameterUsages.AppendLine("            request.RequestUri = new Uri(url);");
-                        }
 
+                            foreach (var headerName in headerParameters)
+                            {
+                                parameterUsages.AppendLine($"            request.Headers.Add(\"{headerName}\", {headerName}.ToString());");
+                            }
+                        }
 
                         var requestBody = method.Value["requestBody"];
                         if (requestBody != null)
