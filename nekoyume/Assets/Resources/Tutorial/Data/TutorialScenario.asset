@@ -1366,10 +1366,10 @@ MonoBehaviour:
           actionType: 30000
           guideType: 1
           emojiType: 2
-          dialogPositionType: 0
+          dialogPositionType: 2
           scriptKey: TUTORIAL_03_001
           arrowAdditionalDelay: 0
-          fullScreenButton: 0
+          fullScreenButton: 1
           noArrow: 0
           guideSprite: {fileID: 0}
       - id: 30001
@@ -1538,7 +1538,7 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 10000, y: 10000}
-          targetPositionOffset: {x: 3, y: 17}
+          targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 19
@@ -1717,7 +1717,7 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
-          targetPositionOffset: {x: 0, y: 25}
+          targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 30, y: 50}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000018
@@ -1994,8 +1994,8 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
-          targetPositionOffset: {x: -10, y: 10}
-          targetSizeOffset: {x: 10, y: 10}
+          targetPositionOffset: {x: -5, y: 5}
+          targetSizeOffset: {x: 25, y: 25}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000004
           actionType: 1000002
@@ -2013,8 +2013,8 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
-          targetPositionOffset: {x: -10, y: 10}
-          targetSizeOffset: {x: 10, y: 10}
+          targetPositionOffset: {x: -5, y: 5}
+          targetSizeOffset: {x: 25, y: 25}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000005
           actionType: 1000003
