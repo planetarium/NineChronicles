@@ -1194,7 +1194,7 @@ MonoBehaviour:
         guideSprite: {fileID: 0}
   tutorialScenarioWithComments:
   - title: Stage 1
-    description: 
+    description: Enter Stage
     tutorialScenario:
       scenario:
       - id: 1
@@ -1217,7 +1217,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 3
-    description: 
+    description: Combination
     tutorialScenario:
       scenario:
       - id: 2
@@ -1411,7 +1411,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Statge 5
-    description: 
+    description: Summon
     tutorialScenario:
       scenario:
       - id: 50000
@@ -1510,7 +1510,7 @@ MonoBehaviour:
           noArrow: 1
           guideSprite: {fileID: 0}
   - title: Stage 7
-    description: 
+    description: PortalReward
     tutorialScenario:
       scenario:
       - id: 70000
@@ -1609,7 +1609,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 10
-    description: 
+    description: PatrolReward
     tutorialScenario:
       scenario:
       - id: 100000
@@ -1708,7 +1708,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 23
-    description: 
+    description: Action point and rune stone
     tutorialScenario:
       scenario:
       - id: 230000
@@ -1826,7 +1826,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 25
-    description: 
+    description: Arena
     tutorialScenario:
       scenario:
       - id: 250000
@@ -1947,7 +1947,7 @@ MonoBehaviour:
           guideSprite: {fileID: 21300000, guid: 3ac611567131ed14dab76707ad0e9c27,
             type: 3}
   - title: Stage 35
-    description: 
+    description: Upgrade
     tutorialScenario:
       scenario:
       - id: 350000
@@ -2065,7 +2065,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 40
-    description: 
+    description: Grind
     tutorialScenario:
       scenario:
       - id: 400000
@@ -2147,7 +2147,7 @@ MonoBehaviour:
           guideSprite: {fileID: 21300000, guid: 4008bac146480ee409803ae0df3651c4,
             type: 3}
   - title: Stage 45
-    description: 
+    description: Craft Recipe - Premium and SuperCraft
     tutorialScenario:
       scenario:
       - id: 450000
@@ -2284,7 +2284,7 @@ MonoBehaviour:
           noArrow: 0
           guideSprite: {fileID: 0}
   - title: Stage 50
-    description: 
+    description: WorldBoss
     tutorialScenario:
       scenario:
       - id: 500000
