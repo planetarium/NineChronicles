@@ -19,10 +19,10 @@ namespace Editor
 
             if (GUILayout.Button("Export to JSON"))
             {
-                if (tutorialScenario.tutorialScenario != null)
+                if (tutorialScenario.tutorialScenarioForJson != null)
                 {
                     var settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-                    var jsonStr = JsonConvert.SerializeObject(tutorialScenario.tutorialScenario, Formatting.Indented, settings);
+                    var jsonStr = JsonConvert.SerializeObject(tutorialScenario.tutorialScenarioForJson, Formatting.Indented, settings);
 
                     if (tutorialScenario.json)
                     {
@@ -46,7 +46,7 @@ namespace Editor
             {
                 if (tutorialScenario.json != null)
                 {
-                    tutorialScenario.tutorialScenario = JsonConvert.DeserializeObject<TutorialScenario>(tutorialScenario.json.text);
+                    tutorialScenario.tutorialScenarioForJson = JsonConvert.DeserializeObject<TutorialScenario>(tutorialScenario.json.text);
 
                     EditorUtility.SetDirty(tutorialScenario);
                     EditorUtility.DisplayDialog("Success", "Import Complete!", "ok");
