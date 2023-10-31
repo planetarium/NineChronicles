@@ -91,6 +91,9 @@ namespace Nekoyume.UI
 
                     _rectTransform.anchoredPosition += d.targetPositionOffset;
                     _rectTransform.sizeDelta += d.targetSizeOffset;
+                    var zeroZPosition = _rectTransform.anchoredPosition3D;
+                    zeroZPosition.z = 0;
+                    _rectTransform.anchoredPosition3D = zeroZPosition;
 
                     if (d.guideType == GuideType.Outline)
                     {
