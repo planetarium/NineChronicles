@@ -779,8 +779,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3896485022891584367}
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
-  m_Value: 0.6666667
-  m_Size: 0.27607262
+  m_Value: 0.66666675
+  m_Size: 0.27614674
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4629,7 +4629,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 58.020264, y: 0}
+  m_AnchoredPosition: {x: 58.18518, y: 0}
   m_SizeDelta: {x: 3338, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993
@@ -10203,6 +10203,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 426aa6ce414d53b4c93571ad093bbbf7,
         type: 3}
+    - target: {fileID: 8928492100869035181, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2319532879278382693}
+    - target: {fileID: 8928492100869035181, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowSeasonPassPremiumPopup
+      objectReference: {fileID: 0}
+    - target: {fileID: 8928492100869035181, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Nekoyume.UI.SeasonPass, Nekoyume
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5423cf792096944a3884ee1f4b0d4183, type: 3}
 --- !u!1 &1256621147745764403 stripped
