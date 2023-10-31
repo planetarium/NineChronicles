@@ -6,78 +6,108 @@
       "checkPointId": -1,
       "data": {
         "presetId": 1,
-        "targetType": 1,
-        "actionType": 1,
-        "emojiType": 2,
-        "guideType": 3,
-        "scriptKey": "TUTORIAL_01_001"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "HackAndSlashButton",
+        "actionType": "TutorialActionHackAndSlash",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_01_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
       "id": 2,
-      "nextId": 3,
-      "checkPointId": 2,
-      "data": {
-        "presetId": 2,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_001"
-      }
-    },
-    {
-      "id": 3,
-      "nextId": 4,
-      "checkPointId": 2,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_002"
-      }
-    },
-    {
-      "id": 4,
-      "nextId": 6,
-      "checkPointId": 2,
-      "data": {
-        "presetId": 8,
-        "targetType": 2,
-        "actionType": 2,
-        "emojiType": 3,
-        "guideType": 3,
-        "scriptKey": "TUTORIAL_02_003"
-      }
-    },
-    {
-      "id": 6,
-      "nextId": 8,
-      "checkPointId": 2,
+      "nextId": 30000,
+      "checkPointId": 12,
       "data": {
         "presetId": 1,
-        "targetType": 4,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 1,
-        "targetSizeOffset": { "x": 0, "y": 20 },
-        "scriptKey": "TUTORIAL_02_005",
-        "fullScreenButton" : true
-      }
-    },
-    {
-      "id": 8,
-      "nextId": 9,
-      "checkPointId": 2,
-      "data": {
-        "presetId": 9,
-        "targetType": 9,
-        "actionType": 3,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_007"
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 50.0,
+          "sqrMagnitude": 2500.0
+        },
+        "targetPositionOffset": {
+          "x": -20.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 20.0,
+          "sqrMagnitude": 400.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 20.0,
+          "normalized": {
+            "x": 0.7808688,
+            "y": 0.624695063,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 32.01562,
+          "sqrMagnitude": 1025.0
+        },
+        "buttonRaycastPadding": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0,
+          "w": -20.0,
+          "normalized": {
+            "x": -0.5,
+            "y": -0.5,
+            "z": -0.5,
+            "w": -0.5,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 40.0,
+          "sqrMagnitude": 1600.0
+        },
+        "targetType": "GuidedQuestButton",
+        "actionType": "TutorialActionClickGuidedQuestWorldStage2",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_02_027",
+        "arrowAdditionalDelay": 1.5,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -85,14 +115,41 @@
       "nextId": 11,
       "checkPointId": 2,
       "data": {
-        "presetId": 5,
-        "targetType": 9,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_008",
-        "fullScreenButton" : true,
-        "noArrow": true
+        "presetId": 9,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "EquipmentRecipeCellView",
+        "actionType": "TutorialActionClickFirstRecipeCellView",
+        "guideType": "None",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_02_009",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
       }
     },
     {
@@ -101,11 +158,40 @@
       "checkPointId": 2,
       "data": {
         "presetId": 9,
-        "targetType": 8,
-        "actionType": 4,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_010"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineWithCostButton",
+        "actionType": "TutorialActionClickCombinationSubmitButton",
+        "guideType": "Square",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_02_010",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -114,548 +200,508 @@
       "checkPointId": 12,
       "data": {
         "presetId": 2,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_011"
-      }
-    },
-    {
-      "id": 13,
-      "nextId": 14,
-      "data": {
-        "presetId": 9,
-        "targetType": 6,
-        "actionType": 5,
-        "emojiType": 3,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_012"
-      }
-    },
-    {
-      "id": 14,
-      "nextId": 15,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 2,
-        "targetType": 16,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_013"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_02_011",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
       "id": 15,
-      "nextId": 26,
+      "nextId": 27,
       "checkPointId": 12,
       "data": {
         "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_013_L01"
-      }
-    },
-    {
-      "id": 16,
-      "nextId": 17,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L02"
-      }
-    },
-    {
-      "id": 17,
-      "nextId": 18,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L03"
-      }
-    },
-    {
-      "id": 18,
-      "nextId": 19,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L04"
-      }
-    },
-    {
-      "id": 19,
-      "nextId": 20,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L05"
-      }
-    },
-    {
-      "id": 20,
-      "nextId": 21,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L06"
-      }
-    },
-    {
-      "id": 21,
-      "nextId": 22,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L07"
-      }
-    },
-    {
-      "id": 22,
-      "nextId": 23,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L08"
-      }
-    },
-    {
-      "id": 23,
-      "nextId": 24,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L09"
-      }
-    },
-    {
-      "id": 24,
-      "nextId": 15,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_013_L10"
-      }
-    },
-    {
-      "id": 25,
-      "nextId": 26,
-      "data": {
-        "presetId": 2,
-        "targetType": 16,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_014"
-      }
-    },
-    {
-      "id": 26,
-      "nextId": 27,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_014_L01"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_02_013_L01",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
       "id": 27,
-      "nextId": 48,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L02"
-      }
-    },
-    {
-      "id": 28,
-      "nextId": 29,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L03"
-      }
-    },
-    {
-      "id": 29,
-      "nextId": 30,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L04"
-      }
-    },
-    {
-      "id": 30,
-      "nextId": 31,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L05"
-      }
-    },
-    {
-      "id": 31,
-      "nextId": 32,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L06"
-      }
-    },
-    {
-      "id": 32,
-      "nextId": 33,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L07"
-      }
-    },
-    {
-      "id": 33,
-      "nextId": 48,
-      "checkPointId": 12,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L08"
-      }
-    },
-    {
-      "id": 34,
-      "nextId": 35,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L09"
-      }
-    },
-    {
-      "id": 35,
-      "nextId": 36,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L10"
-      }
-    },
-    {
-      "id": 36,
-      "nextId": 26,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_014_L11"
-      }
-    },
-    {
-      "id": 37,
-      "nextId": 38,
-      "data": {
-        "presetId": 2,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_015"
-      }
-    },
-    {
-      "id": 38,
-      "nextId": 39,
-      "data": {
-        "presetId": 9,
-        "targetType": 7,
-        "actionType": 6,
-        "emojiType": 1,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_016"
-      }
-    },
-    {
-      "id": 39,
-      "nextId": 40,
-      "data": {
-        "presetId": 3,
-        "targetType": 15,
-        "actionType": 9,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_017"
-      }
-    },
-    {
-      "id": 40,
-      "nextId": 41,
-      "data": {
-        "presetId": 4,
-        "targetType": 0,
-        "actionType": 10,
-        "emojiType": 2,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_018"
-      }
-    },
-    {
-      "id": 41,
-      "nextId": 42,
-      "data": {
-        "presetId": 4,
-        "targetType": 12,
-        "actionType": 0,
-        "emojiType": 3,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_019"
-      }
-    },
-    {
-      "id": 42,
-      "nextId": 43,
-      "data": {
-        "presetId": 9,
-        "targetType": 12,
-        "actionType": 7,
-        "emojiType": 2,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_020"
-      }
-    },
-    {
-      "id": 43,
-      "nextId": 44,
-      "data": {
-        "presetId": 3,
-        "targetType": 10,
-        "actionType": 11,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_021"
-      }
-    },
-    {
-      "id": 44,
-      "nextId": 45,
-      "data": {
-        "presetId": 6,
-        "targetType": 14,
-        "actionType": 12,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_022",
-        "fullScreenButton" : true
-      }
-    },
-    {
-      "id": 45,
-      "nextId": 46,
-      "data": {
-        "presetId": 4,
-        "targetType": 11,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_023",
-        "fullScreenButton" : true
-      }
-    },
-    {
-      "id": 46,
-      "nextId": 47,
-      "data": {
-        "presetId": 4,
-        "targetType": 11,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_02_024",
-        "fullScreenButton" : true
-      }
-    },
-    {
-      "id": 47,
-      "nextId": 48,
-      "data": {
-        "presetId": 9,
-        "targetType": 0,
-        "actionType": 13,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_02_025"
-      }
-    },
-    {
-      "id": 48,
       "nextId": 49,
-      "checkPointId": 48,
+      "checkPointId": 12,
       "data": {
         "presetId": 10,
-        "targetType": 13,
-        "actionType": 8,
-        "emojiType": 1,
-        "guideType": 2,
-        "scriptKey": "TUTORIAL_02_026"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "BackButton",
+        "actionType": "TutorialActionCloseCombination",
+        "guideType": "Circle",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_02_014_L02",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
       "id": 49,
       "nextId": 30000,
-      "checkPointId": 48,
+      "checkPointId": 12,
       "data": {
         "presetId": 1,
-        "targetType": 17,
-        "actionType": 14,
-        "emojiType": 2,
-        "guideType": 1,
-        "arrowPositionOffset": { "x": -50, "y": 0 },
-        "targetSizeOffset": { "x": 25, "y": 20 },
-        "targetPositionOffset": { "x": -20, "y": 0 },
-        "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 50.0,
+          "sqrMagnitude": 2500.0
+        },
+        "targetPositionOffset": {
+          "x": -20.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 20.0,
+          "sqrMagnitude": 400.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 20.0,
+          "normalized": {
+            "x": 0.7808688,
+            "y": 0.624695063,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 32.01562,
+          "sqrMagnitude": 1025.0
+        },
+        "buttonRaycastPadding": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0,
+          "w": -20.0,
+          "normalized": {
+            "x": -0.5,
+            "y": -0.5,
+            "z": -0.5,
+            "w": -0.5,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 40.0,
+          "sqrMagnitude": 1600.0
+        },
+        "targetType": "GuidedQuestButton",
+        "actionType": "TutorialActionClickGuidedQuestWorldStage2",
+        "guideType": "Square",
+        "emojiType": "Reaction",
         "scriptKey": "TUTORIAL_02_027",
-        "arrowAdditionalDelay" : 1.5
+        "arrowAdditionalDelay": 1.5,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
-      "id": 50000,
-      "nextId": 50001,
-      "checkPointId": 50000,
+      "id": 70000,
+      "nextId": 70001,
+      "checkPointId": 70000,
       "data": {
         "presetId": 2,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 0,
-        "scriptKey": "TUTORIAL_05_001",
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_07_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
         "noArrow": true
       }
     },
     {
-      "id": 50001,
-      "nextId": 50002,
-      "checkPointId": 50000,
+      "id": 70001,
+      "nextId": 70002,
+      "checkPointId": 70000,
       "data": {
         "presetId": 1,
-        "targetType": 19,
-        "actionType": 15,
-        "emojiType": 1,
-        "guideType": 2,
-        "arrowPositionOffset": { "x": 10000, "y": 10000 },
-        "targetPositionOffset": { "x": 3, "y": 17 },
-        "scriptKey": "TUTORIAL_05_002"
+        "arrowPositionOffset": {
+          "x": 10000.0,
+          "y": 10000.0,
+          "normalized": {
+            "x": 0.707106769,
+            "y": 0.707106769,
+            "magnitude": 1.0,
+            "sqrMagnitude": 0.99999994
+          },
+          "magnitude": 14142.1357,
+          "sqrMagnitude": 2E+08
+        },
+        "targetPositionOffset": {
+          "x": 3.0,
+          "y": 17.0,
+          "normalized": {
+            "x": 0.173785344,
+            "y": 0.9847836,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.00000012
+          },
+          "magnitude": 17.2626762,
+          "sqrMagnitude": 298.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "MenuButton",
+        "actionType": "TutorialActionClickMenuButton",
+        "guideType": "Circle",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_07_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
-      "id": 50002,
-      "nextId": 50003,
-      "checkPointId": 50000,
+      "id": 70002,
+      "nextId": 70003,
+      "checkPointId": 70000,
       "data": {
         "presetId": 1,
-        "targetType": 50001,
-        "actionType": 50001,
-        "emojiType": 1,
-        "guideType": 1,
-        "arrowPositionOffset": { "x": -50, "y": 0 },
-        "targetSizeOffset": { "x": 25, "y": 60 },
-        "targetPositionOffset": { "x": -133, "y": -97 },
-        "buttonRaycastPadding": { "x": 122, "y": 90, "z": -130, "w": -95 },
-        "scriptKey": "TUTORIAL_05_003"
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 50.0,
+          "sqrMagnitude": 2500.0
+        },
+        "targetPositionOffset": {
+          "x": -133.0,
+          "y": -97.0,
+          "normalized": {
+            "x": -0.8079473,
+            "y": -0.5892548,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 164.6147,
+          "sqrMagnitude": 27098.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 60.0,
+          "normalized": {
+            "x": 0.3846154,
+            "y": 0.9230769,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 65.0,
+          "sqrMagnitude": 4225.0
+        },
+        "buttonRaycastPadding": {
+          "x": 122.0,
+          "y": 90.0,
+          "z": -130.0,
+          "w": -95.0,
+          "normalized": {
+            "x": 0.5516523,
+            "y": 0.4069566,
+            "z": -0.587826252,
+            "w": -0.4295653,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 221.1538,
+          "sqrMagnitude": 48909.0
+        },
+        "targetType": "PortalReward",
+        "actionType": "TutorialActionClickPortalRewardButton",
+        "guideType": "Square",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_07_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
-      "id": 50003,
+      "id": 70003,
+      "nextId": 70004,
+      "checkPointId": 70000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 50.0,
+          "sqrMagnitude": 2500.0
+        },
+        "targetPositionOffset": {
+          "x": -20.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 20.0,
+          "sqrMagnitude": 400.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 20.0,
+          "normalized": {
+            "x": 0.7808688,
+            "y": 0.624695063,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 32.01562,
+          "sqrMagnitude": 1025.0
+        },
+        "buttonRaycastPadding": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0,
+          "w": -20.0,
+          "normalized": {
+            "x": -0.5,
+            "y": -0.5,
+            "z": -0.5,
+            "w": -0.5,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 40.0,
+          "sqrMagnitude": 1600.0
+        },
+        "targetType": "GuidedQuestButton",
+        "actionType": "TutorialActionClickGuidedQuestWorldStage2",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_07_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 70004,
       "nextId": 0,
-      "checkPointId": -5,
+      "checkPointId": -7,
       "data": {
         "presetId": 1,
-        "targetType": 17,
-        "actionType": 14,
-        "emojiType": 2,
-        "guideType": 1,
-        "arrowPositionOffset": { "x": -50, "y": 0 },
-        "targetSizeOffset": { "x": 25, "y": 20 },
-        "targetPositionOffset": { "x": -20, "y": 0 },
-        "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
-        "scriptKey": "TUTORIAL_05_004"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "BattlePreparationStartButton",
+        "actionType": "TutorialActionClickBattlePreparationHackAndSlash",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_07_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
       "id": 30000,
       "nextId": 30001,
-      "checkPointId": 48,
+      "checkPointId": 12,
       "data": {
         "presetId": 1,
-        "targetType": 10,
-        "actionType": 30000,
-        "emojiType": 2,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_03_001"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "InventoryFirstCell",
+        "actionType": "TutorialActionClickBattlePreparationFirstInventoryCellView",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_03_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -664,11 +710,40 @@
       "checkPointId": 48,
       "data": {
         "presetId": 1,
-        "targetType": 30000,
-        "actionType": 12,
-        "emojiType": 2,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_03_002"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "ItemTooltipEquipButton",
+        "actionType": "TutorialActionClickItemInformationTooltipSubmitButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_03_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -677,12 +752,250 @@
       "checkPointId": -3,
       "data": {
         "presetId": 1,
-        "targetType": 30001,
-        "actionType": 30001,
-        "emojiType": 2,
-        "guideType": 1,
-        "fullScreenButton" : true,
-        "scriptKey": "TUTORIAL_03_003"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "BattlePreparationStartButton",
+        "actionType": "TutorialActionClickBattlePreparationHackAndSlash",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_03_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 50000,
+      "nextId": 50001,
+      "checkPointId": 50000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationButton",
+        "actionType": "TutorialActionGoToWorkShop",
+        "guideType": "Outline",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_05_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 50001,
+      "nextId": 50002,
+      "checkPointId": 50000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "SummonEnteringButton",
+        "actionType": "None",
+        "guideType": "Outline",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_05_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 50002,
+      "nextId": 50003,
+      "checkPointId": 50000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "SummonEnteringButton",
+        "actionType": "TutorialActionClickSummonEnteringButton",
+        "guideType": "Outline",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_05_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 50003,
+      "nextId": 50004,
+      "checkPointId": 50000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "Normal1SummonButton",
+        "actionType": "TutorialActionClickNormal1SummonButton",
+        "guideType": "Square",
+        "emojiType": "Idle",
+        "scriptKey": "TUTORIAL_05_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 50004,
+      "nextId": 0,
+      "checkPointId": -5,
+      "data": {
+        "presetId": 2,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_05_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": true
       }
     },
     {
@@ -691,11 +1004,40 @@
       "checkPointId": 100000,
       "data": {
         "presetId": 1,
-        "targetType": 2,
-        "actionType": 100000,
-        "emojiType": 1,
-        "guideType": 3,
-        "scriptKey": "TUTORIAL_10_001"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "PatrolRewardMenu",
+        "actionType": "TutorialActionClickPatrolRewardMenu",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_10_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -704,12 +1046,40 @@
       "checkPointId": 100000,
       "data": {
         "presetId": 1,
-        "targetType": 100000,
-        "actionType": 0,
-        "emojiType": 1,
-        "guideType": 3,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "PatrolTimeText",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
         "scriptKey": "TUTORIAL_10_002",
-        "fullScreenButton" : true
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
       }
     },
     {
@@ -718,11 +1088,40 @@
       "checkPointId": 100000,
       "data": {
         "presetId": 1,
-        "targetType": 100000,
-        "actionType": 100001,
-        "emojiType": 1,
-        "guideType": 3,
-        "scriptKey": "TUTORIAL_10_003"
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "ClaimPatrolRewardButton",
+        "actionType": "TutorialActionClickClaimPatrolRewardButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_10_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -731,11 +1130,66 @@
       "checkPointId": 100000,
       "data": {
         "presetId": 1,
-        "targetType": 100001,
-        "actionType": 100002,
-        "emojiType": 1,
-        "guideType": 1,
-        "scriptKey": "TUTORIAL_10_004"
+        "arrowPositionOffset": {
+          "x": -50.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 50.0,
+          "sqrMagnitude": 2500.0
+        },
+        "targetPositionOffset": {
+          "x": -20.0,
+          "y": 0.0,
+          "normalized": {
+            "x": -1.0,
+            "y": 0.0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 20.0,
+          "sqrMagnitude": 400.0
+        },
+        "targetSizeOffset": {
+          "x": 25.0,
+          "y": 20.0,
+          "normalized": {
+            "x": 0.7808688,
+            "y": 0.624695063,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 32.01562,
+          "sqrMagnitude": 1025.0
+        },
+        "buttonRaycastPadding": {
+          "x": -20.0,
+          "y": -20.0,
+          "z": -20.0,
+          "w": -20.0,
+          "normalized": {
+            "x": -0.5,
+            "y": -0.5,
+            "z": -0.5,
+            "w": -0.5,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1.0
+          },
+          "magnitude": 40.0,
+          "sqrMagnitude": 1600.0
+        },
+        "targetType": "GuidedQuestButton",
+        "actionType": "TutorialActionClickGuidedQuestWorldStage2",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_10_004",
+        "arrowAdditionalDelay": 1.5,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     },
     {
@@ -743,13 +1197,1301 @@
       "nextId": 0,
       "checkPointId": -10,
       "data": {
-        "presetId": 2,
-        "targetType": 0,
-        "actionType": 0,
-        "emojiType": 2,
-        "guideType": 0,
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "BattlePreparationStartButton",
+        "actionType": "TutorialActionClickBattlePreparationHackAndSlash",
+        "guideType": "Square",
+        "emojiType": "Reaction",
         "scriptKey": "TUTORIAL_10_005",
-        "noArrow": true
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150000,
+      "nextId": 150001,
+      "checkPointId": 150000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "ArenaMenu",
+        "actionType": "TutorialActionClickArenaMenu",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_001 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150001,
+      "nextId": 150002,
+      "checkPointId": 150000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "ArenaSeasonText",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_002 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150002,
+      "nextId": 150003,
+      "checkPointId": 150000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "ArenaTicket",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150003,
+      "nextId": 150004,
+      "checkPointId": 150000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150004,
+      "nextId": 150005,
+      "checkPointId": 150000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 150005,
+      "nextId": 0,
+      "checkPointId": -15,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_15_006",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350000,
+      "nextId": 350001,
+      "checkPointId": 350000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationButton",
+        "actionType": "TutorialActionGoToWorkShop",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_001 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350001,
+      "nextId": 350002,
+      "checkPointId": 350000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationUpgradeButton",
+        "actionType": "TutorialActionClickCombinationUpgradeButton",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_002 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350002,
+      "nextId": 350003,
+      "checkPointId": 350000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationInventoryFirstCell",
+        "actionType": "TutorialActionClickCombinationInventoryFirstCell",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_003 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350003,
+      "nextId": 350004,
+      "checkPointId": 350000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationInventorySecondCell",
+        "actionType": "TutorialActionClickCombinationInventorySecondCell",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350004,
+      "nextId": 350005,
+      "checkPointId": 350000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationInventoryGaugebar",
+        "actionType": "None",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 350005,
+      "nextId": 0,
+      "checkPointId": -35,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationDeleteButton",
+        "actionType": "TutorialActionClickCombinationDeleteButton",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_35_006",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 400000,
+      "nextId": 400001,
+      "checkPointId": 400000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationButton",
+        "actionType": "TutorialActionGoToWorkShop",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_40_001 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 400001,
+      "nextId": 400002,
+      "checkPointId": 400000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationGrindButton",
+        "actionType": "TutorialActionClickCombinationGrindButton",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_40_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 400002,
+      "nextId": 400003,
+      "checkPointId": 400000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_40_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 400003,
+      "nextId": 0,
+      "checkPointId": -40,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_40_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450000,
+      "nextId": 450001,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombinationButton",
+        "actionType": "TutorialActionGoToWorkShop",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_001",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450001,
+      "nextId": 450002,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineEquipmentCategoryButton",
+        "actionType": "TutorialActionClickBottomMenuWorkShopButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450002,
+      "nextId": 450003,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineEquipmentSuperCraftGauge",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450003,
+      "nextId": 450004,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineEquipmentSuperCraft",
+        "actionType": "TutorialActionClickCombineEquipmentSuperCraft",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450004,
+      "nextId": 450005,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineEquipmentSuperCraftPopupClose",
+        "actionType": "TutorialActionClickCombineEquipmentSuperCraftPopupClose",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450005,
+      "nextId": 450006,
+      "checkPointId": 450000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "CombineEquipmentPremiumRecipeButton",
+        "actionType": "TutorialActionClickCombineEquipmentPremiumRecipeButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_006",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 450006,
+      "nextId": 0,
+      "checkPointId": -45,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_45_007",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500000,
+      "nextId": 500001,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "WorldBossButton",
+        "actionType": "TutorialActionClickWorldBossButton",
+        "guideType": "Outline",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_001 ",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500001,
+      "nextId": 500002,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_002",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500002,
+      "nextId": 500003,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "WorldBossSeasonInformation",
+        "actionType": "None",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_003",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500003,
+      "nextId": 500004,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "WorldBossRewardsButton",
+        "actionType": "TutorialActionClickWorldBossSeasonRewardsButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_004",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500004,
+      "nextId": 500005,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "WorldBossRewardsButton",
+        "actionType": "TutorialActionClickWorldBossRewardsButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_005",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500005,
+      "nextId": 500006,
+      "checkPointId": 500000,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "None",
+        "actionType": "None",
+        "guideType": "None",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_006",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": true,
+        "noArrow": false
+      }
+    },
+    {
+      "id": 500006,
+      "nextId": 0,
+      "checkPointId": -50,
+      "data": {
+        "presetId": 1,
+        "arrowPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetPositionOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetSizeOffset": {
+          "x": 0.0,
+          "y": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "buttonRaycastPadding": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "w": 0.0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0.0
+        },
+        "targetType": "WorldBossEnterPracticeButton",
+        "actionType": "TutorialActionClickWorldBossEnterPracticeButton",
+        "guideType": "Square",
+        "emojiType": "Reaction",
+        "scriptKey": "TUTORIAL_50_007",
+        "arrowAdditionalDelay": 0.0,
+        "fullScreenButton": false,
+        "noArrow": false
       }
     }
   ]

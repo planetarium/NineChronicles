@@ -442,7 +442,8 @@ namespace Nekoyume.Game
 
             UpdateScreenResolution();
             _isStaticRatio = true;
-            GL.Clear(true, true, Color.black);
+
+            ScreenClear.ClearScreen(scaleheight < 1).Forget();
         }
 
         void OnPreCull() => GL.Clear(true, true, Color.black);
