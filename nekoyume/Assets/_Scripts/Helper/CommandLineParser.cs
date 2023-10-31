@@ -78,6 +78,10 @@ namespace Nekoyume.Helper
 
         private string _seasonPassServiceHost;
 
+        private string _googleMarketUrl;
+
+        private string _appleMarketUrl;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -450,6 +454,28 @@ namespace Nekoyume.Helper
             set
             {
                 _seasonPassServiceHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("google-market-url", Required = false, HelpText = "google market url")]
+        public string GoogleMarketUrl
+        {
+            get => _googleMarketUrl;
+            set
+            {
+                _googleMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("apple-market-url", Required = false, HelpText = "apple market url")]
+        public string AppleMarketUrl
+        {
+            get => _appleMarketUrl;
+            set
+            {
+                _appleMarketUrl = value;
                 Empty = false;
             }
         }

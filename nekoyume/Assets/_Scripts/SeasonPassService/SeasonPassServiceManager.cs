@@ -24,6 +24,9 @@ namespace Nekoyume
         public ReactiveProperty<DateTime> SeasonEndDate = new(DateTime.MinValue);
         public ReactiveProperty<string> RemainingDateTime = new("");
 
+        public string GoogleMarketURL = "https://play.google.com/store/search?q=Nine%20Chronicles&c=apps&hl=en-EN";// default
+        public string AppleMarketURL = "https://nine-chronicles.com/";// default
+
         public SeasonPassServiceManager(string url)
         {
             if(url == null)

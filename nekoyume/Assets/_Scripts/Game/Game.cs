@@ -347,6 +347,10 @@ namespace Nekoyume.Game
                 new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
 
             SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+            if(!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
+                SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
+            if(!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
+                SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
 
             GL.Clear(true, true, Color.black);
             // Initialize Agent

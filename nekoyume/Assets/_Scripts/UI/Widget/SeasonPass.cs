@@ -100,13 +100,14 @@ namespace Nekoyume.UI
             var confirm = Widget.Find<ConfirmPopup>();
             confirm.CloseCallback = result =>
             {
+                var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
                 switch (result)
                 {
                     case ConfirmResult.Yes:
-                        //Application.OpenURL("");
+                        Application.OpenURL(seasonPassManager.GoogleMarketURL);
                         break;
                     case ConfirmResult.No:
-                        //Application.OpenURL("");
+                        Application.OpenURL(seasonPassManager.AppleMarketURL);
                         break;
                     default:
                         break;
