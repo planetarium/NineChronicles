@@ -13,6 +13,12 @@ namespace Nekoyume
     {
         public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
+            if(mail.Memo != null && mail.Memo.Contains("season_pass"))
+            {
+                //L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS_ENDED");
+                return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
+            }
+
             var game = Game.Game.instance;
             var iapServiceManager = game.IAPServiceManager;
             if (iapServiceManager is null)

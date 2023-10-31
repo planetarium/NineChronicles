@@ -2459,7 +2459,7 @@ namespace Nekoyume.Blockchain
             var tableSheets = TableSheets.Instance;
             var (myDigest, enemyDigest) =
                 GetArenaPlayerDigest(
-					eval.PreviousState,
+                    eval.PreviousState,
                     eval.OutputState,
                     eval.Action.myAvatarAddress,
                     eval.Action.enemyAvatarAddress);
@@ -2968,11 +2968,6 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
-                action.FungibleIdAndCounts is not null)
-            {
-                UpdateCurrentAvatarInventory(eval);
-            }
 
             var avatarValue = StateGetter.GetState(avatarAddr, states);
             if (avatarValue is not Dictionary avatarDict)
@@ -3006,6 +3001,13 @@ namespace Nekoyume.Blockchain
                 Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
                                  $"the render context of UnloadFromMyGarages action.\n" +
                                  $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+            }
+
+            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                action.FungibleIdAndCounts is not null && 
+                !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+            {
+                UpdateCurrentAvatarInventory(eval);
             }
         }
     }
