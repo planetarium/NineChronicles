@@ -97,6 +97,8 @@ public class SeasonPassServiceClient
         public string AvatarAddr { get; set; }
         [JsonPropertyName("is_premium")]
         public bool IsPremium { get; set; }
+        [JsonPropertyName("is_premium_plus")]
+        public bool IsPremiumPlus { get; set; }
     }
 
     public class RegisterRequestSchema
@@ -135,6 +137,20 @@ public class SeasonPassServiceClient
         public string EndDate { get; set; }
         [JsonPropertyName("reward_list")]
         public List<RewardSchema> RewardList { get; set; }
+    }
+
+    public class UpgradeRequestSchema
+    {
+        [JsonPropertyName("agent_addr")]
+        public string AgentAddr { get; set; }
+        [JsonPropertyName("avatar_addr")]
+        public string AvatarAddr { get; set; }
+        [JsonPropertyName("season_id")]
+        public int SeasonId { get; set; }
+        [JsonPropertyName("is_premium")]
+        public bool IsPremium { get; set; }
+        [JsonPropertyName("is_premium_plus")]
+        public bool IsPremiumPlus { get; set; }
     }
 
     public class UserSeasonPassSchema
@@ -216,6 +232,29 @@ public class SeasonPassServiceClient
         {
             url += $"?season_id={season_id}&avatar_addr={avatar_addr}";
             request.RequestUri = new Uri(url);
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                UserSeasonPassSchema result = System.Text.Json.JsonSerializer.Deserialize<UserSeasonPassSchema>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task PostUserUpgradeAsync(string authorization, UpgradeRequestSchema requestBody, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/user/upgrade";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("POST"), url))
+        {
+            request.RequestUri = new Uri(url);
+            request.Headers.Add("authorization", authorization.ToString());
+            request.Content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
             try
             {
                 var response = await _client.SendAsync(request);
