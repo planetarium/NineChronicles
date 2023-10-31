@@ -2238,7 +2238,7 @@ MonoBehaviour:
   - type: 13
     rectTransform: {fileID: 0}
   - type: 19
-    rectTransform: {fileID: 1694633225111495849}
+    rectTransform: {fileID: 6008205653664660626}
   - type: 70001
     rectTransform: {fileID: 5015842198834861827}
   - type: 1000002
@@ -3333,11 +3333,11 @@ RectTransform:
   m_Father: {fileID: 6534002942384647456}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -110, y: -25}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 458, y: -40}
   m_SizeDelta: {x: 140, y: 22}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2586454786068006226
 GameObject:
   m_ObjectHideFlags: 0
