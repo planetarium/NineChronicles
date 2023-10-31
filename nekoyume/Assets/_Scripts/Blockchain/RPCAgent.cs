@@ -807,7 +807,7 @@ namespace Nekoyume.Blockchain
                     var popup = Widget.Find<IconAndButtonSystem>();
                     popup.Show(L10nManager.Localize("UI_ERROR"),
                         errorMsg, L10nManager.Localize("UI_OK"), false);
-                    popup.SetCancelCallbackToExit();
+                    popup.SetConfirmCallbackToExit();
                 });
 
         }
