@@ -1062,7 +1062,7 @@ namespace Nekoyume.UI
                 int playCount = 0;
                 try
                 {
-                    playCount = SharedModel.ClearedCountForEachWaves.Skip(1).Sum();
+                    playCount = SharedModel.ClearedCountForEachWaves.Sum();
                 }
                 catch
                 {
