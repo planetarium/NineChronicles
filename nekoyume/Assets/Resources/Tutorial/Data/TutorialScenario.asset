@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8969fc87a3dd45a098effb1eebcf9200, type: 3}
   m_Name: TutorialScenario
   m_EditorClassIdentifier: 
-  tutorialScenario:
+  tutorialScenarioForJson:
     scenario:
     - id: 1
       nextId: 0

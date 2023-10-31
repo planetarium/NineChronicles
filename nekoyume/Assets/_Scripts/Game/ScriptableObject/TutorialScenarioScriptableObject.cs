@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -8,9 +9,21 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class TutorialScenarioScriptableObject : ScriptableObject
     {
-        public TutorialScenario tutorialScenario;
+        public TutorialScenario tutorialScenarioForJson;
 
         public TutorialScenarioWithComment[] tutorialScenarioWithComments;
+
+        public TutorialScenario tutorialScenario
+        {
+            get
+            {
+                return new TutorialScenario
+                {
+                    scenario = tutorialScenarioWithComments
+                        .SelectMany(e => e.tutorialScenario.scenario).ToArray()
+                };
+            }
+        }
 
         public ScenarioTemplate[] scenarioTemplates;
 
