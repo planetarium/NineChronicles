@@ -242,7 +242,7 @@ namespace Nekoyume.L10n
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             {
                 WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
                 while (!directory.isDone)
@@ -250,12 +250,18 @@ namespace Nekoyume.L10n
                     // wait for load
                 }
 
-                String[] fileNames = directory.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
-                foreach (String fileName in fileNames)
+                var fileNames = directory.text
+                    .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                    .Where(line => !string.IsNullOrEmpty(line))
+                    .Select(line => line.Trim())
+                    .ToArray();
+                foreach (var fileName in fileNames)
                 {
-                    String fullName = CsvFilesRootDirectoryPath + "/" + fileName;
+#if TEST_LOG
+                    Debug.Log($"[L10nManager] GetDictionary()... fileName: {fileName}");
+#endif
+                    var fullName = CsvFilesRootDirectoryPath + "/" + fileName;
                     WWW csvFile = new WWW(fullName);
                     while (!csvFile.isDone)
                     {
@@ -281,7 +287,7 @@ namespace Nekoyume.L10n
                         foreach (var record in records)
                         {
 #if TEST_LOG
-                        Debug.Log($"{fileName}: {recordsIndex}");
+                            Debug.Log($"[L10nManager] GetDictionary()... record.Key: {record.Key}");
 #endif
                             var key = record.Key;
                             if (string.IsNullOrEmpty(key))
