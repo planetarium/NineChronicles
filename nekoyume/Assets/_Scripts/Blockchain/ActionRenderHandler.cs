@@ -540,7 +540,15 @@ namespace Nekoyume.Blockchain
                 .AddTo(_disposables);
 
             _actionRenderer.EveryRender<BattleArena>()
+                .ObserveOn(Scheduler.ThreadPool)
                 .Where(ValidateEvaluationForCurrentAgent)
+                .Where(eval => ActionManager.IsLastBattleActionId(eval.Action.Id) &&
+                    eval.Action.myAvatarAddress == States.Instance.CurrentAvatarState.address)
+                .ObserveOnMainThread()
+                .Select(PreResponseBattleArenaAsync)
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(args => args.Evaluation.Exception is null)
+                .Select(PrepareBattleArena)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArenaAsync)
                 .AddTo(_disposables);
@@ -2626,14 +2634,9 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private async void ResponseBattleArenaAsync(ActionEvaluation<BattleArena> eval)
+        private (ActionEvaluation<BattleArena> Evaluation, ArenaBattlePreparation ArenaBattlePreparation)
+            PreResponseBattleArenaAsync(ActionEvaluation<BattleArena> eval)
         {
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
-                eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
             var arenaBattlePreparation = Widget.Find<ArenaBattlePreparation>();
             if (eval.Exception != null)
             {
@@ -2643,23 +2646,37 @@ namespace Nekoyume.Blockchain
                 }
 
                 Game.Game.BackToMainAsync(eval.Exception.InnerException ?? eval.Exception).Forget();
-
-                return;
             }
 
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Arena),
-                States.Instance.UpdateRuneSlotStates(BattleType.Arena));
+            return (eval, arenaBattlePreparation);
+        }
+
+        private (ActionEvaluation<BattleArena> Evaluation, ArenaBattlePreparation ArenaBattlePreparation, ArenaPlayerDigest MyDigest, ArenaPlayerDigest EnemyDigest)
+            PrepareBattleArena((ActionEvaluation<BattleArena> Evaluation, ArenaBattlePreparation ArenaBattlePreparation) args)
+        {
+            States.Instance.UpdateItemSlotStates(BattleType.Arena).GetAwaiter().GetResult();
+            States.Instance.UpdateRuneSlotStates(BattleType.Arena).GetAwaiter().GetResult();
+            var (myDigest, enemyDigest) =
+                GetArenaPlayerDigest(
+                    args.Evaluation.PreviousState,
+                    args.Evaluation.OutputState,
+                    args.Evaluation.Action.myAvatarAddress,
+                    args.Evaluation.Action.enemyAvatarAddress);
+            return (args.Evaluation, args.ArenaBattlePreparation, myDigest, enemyDigest);
+        }
+
+        private void ResponseBattleArenaAsync(
+            (ActionEvaluation<BattleArena> Evaluation, ArenaBattlePreparation ArenaBattlePreparation, ArenaPlayerDigest MyDigest, ArenaPlayerDigest EnemyDigest) renderArgs)
+        {
+            var eval = renderArgs.Evaluation;
+            var arenaBattlePreparation = renderArgs.ArenaBattlePreparation;
+            var myDigest = renderArgs.MyDigest;
+            var enemyDigest = renderArgs.EnemyDigest;
+
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
             var tableSheets = TableSheets.Instance;
-            var (myDigest, enemyDigest) =
-                GetArenaPlayerDigest(
-                    eval.PreviousState,
-                    eval.OutputState,
-                    eval.Action.myAvatarAddress,
-                    eval.Action.enemyAvatarAddress);
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
 
@@ -2701,7 +2718,6 @@ namespace Nekoyume.Blockchain
                     ? (Integer)((List)outputMyScoreList)[1]
                     : ArenaScore.ArenaScoreDefault;
             }).ToObservable().ObserveOnMainThread();
-
 
             prepareObserve.Subscribe(_ =>
             {
