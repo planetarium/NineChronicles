@@ -10,7 +10,17 @@ namespace Nekoyume.Planet
         public bool IsSkipped;
         public string Error = string.Empty;
         public Planets? Planets;
-        public PlanetInfo? CurrentPlanetInfo;
+        public PlanetInfo? SelectedPlanetInfo;
+        public PlanetAccountInfo[]? PlanetAccountInfos;
+        public PlanetAccountInfo? SelectedPlanetAccountInfo;
+
+        // NOTE: This is not kind of planet context, it is authentication context.
+        //       But we have no idea where to put this yet.
+        public bool? NeedToAutoLogin;
+
+        // NOTE: This is not kind of planet context, it is authentication context.
+        //       But we have no idea where to put this yet.
+        public bool? NeedToPledge;
 
         public bool HasError => !string.IsNullOrEmpty(Error);
 

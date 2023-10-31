@@ -268,7 +268,7 @@ namespace Nekoyume.Game
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
-            yield return PlanetSelector.InitializeAsync(planetContext).ToCoroutine();
+            yield return PlanetSelector.InitializePlanetsAsync(planetContext).ToCoroutine();
             if (planetContext.HasError)
             {
                 Debug.LogError(planetContext.Error);
@@ -361,7 +361,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => agentInitialized);
 
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            if (planetContext.CurrentPlanetInfo is null)
+            if (planetContext.SelectedPlanetInfo is null)
             {
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
@@ -405,7 +405,7 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
-            yield return StartCoroutine(CoCheckPledge(planetContext.CurrentPlanetInfo.ID));    
+            yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));    
 #endif
 
 #if UNITY_EDITOR_WIN
