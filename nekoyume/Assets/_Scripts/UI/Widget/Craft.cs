@@ -754,12 +754,11 @@ namespace Nekoyume.UI
 
         public void TutorialActionCloseCombination()
         {
-            if (!isActiveAndEnabled)
+            if (isActiveAndEnabled)
             {
-                return;
+                Close(true);
             }
 
-            Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
 
