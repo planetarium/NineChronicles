@@ -408,12 +408,12 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"Retry rpc connection. (count: {tuple.retryCount})");
-                    var message =
-                        L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
-                        RpcConnectionRetryCount - tuple.retryCount + 1,
-                        RpcConnectionRetryCount);
-                    Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
+                    Debug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
+                    var tryCount = RpcConnectionRetryCount - tuple.retryCount;
+                    if (tryCount > 0)
+                    {
+                        Widget.Find<DimmedLoadingScreen>()?.Show();
+                    }
                 })
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
