@@ -666,8 +666,8 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: -10, y: 10}
-        targetSizeOffset: {x: 10, y: 10}
+        targetPositionOffset: {x: -5, y: 5}
+        targetSizeOffset: {x: 25, y: 25}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000004
         actionType: 1000002
@@ -685,8 +685,8 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: -10, y: 10}
-        targetSizeOffset: {x: 10, y: 10}
+        targetPositionOffset: {x: -5, y: 5}
+        targetSizeOffset: {x: 25, y: 25}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000005
         actionType: 1000003
@@ -1084,7 +1084,7 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 25}
+        targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 30, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000018
