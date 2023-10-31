@@ -56,33 +56,51 @@ namespace Nekoyume
         {
             #region character costume slot
 
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_FullCostumeSlot")]
             public const int CharacterFullCostumeSlot = 2;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_HairCostumeSlot")]
             public const int CharacterHairCostumeSlot = 2;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EarCostumeSlot")]
             public const int CharacterEarCostumeSlot = 2;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EyeCostumeSlot")]
             public const int CharacterEyeCostumeSlot = 2;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_TailCostumeSlot")]
             public const int CharacterTailCostumeSlot = 2;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_TitleSlot")]
             public const int CharacterTitleSlot = 1;
 
             #endregion
 
             #region character equipment slot
 
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotWeapon")]
             public const int CharacterEquipmentSlotWeapon = 1;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotArmor")]
             public const int CharacterEquipmentSlotArmor = 3;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotBelt")]
             public const int CharacterEquipmentSlotBelt = 5;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotNecklace")]
             public const int CharacterEquipmentSlotNecklace = 8;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotRing1")]
             public const int CharacterEquipmentSlotRing1 = 13;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotRing2")]
             public const int CharacterEquipmentSlotRing2 = 46;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_EquipmentSlotAura")]
             public const int CharacterEquipmentSlotAura = 1;
 
             #endregion
 
             #region character consumable slot
 
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_ConsumableSlot1")]
             public const int CharacterConsumableSlot1 = 1;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_ConsumableSlot2")]
             public const int CharacterConsumableSlot2 = 35;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_ConsumableSlot3")]
             public const int CharacterConsumableSlot3 = 100;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_ConsumableSlot4")]
             public const int CharacterConsumableSlot4 = 200;
+            [Obsolete("Use GameConfigState.RequireCharacterLevel_ConsumableSlot5")]
             public const int CharacterConsumableSlot5 = 350;
 
             #endregion
