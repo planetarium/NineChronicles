@@ -24,13 +24,14 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventDungeonBattle : GameAction, IEventDungeonBattleV2
+    public class EventDungeonBattleV5 : GameAction, IEventDungeonBattleV2
     {
-        private const string ActionTypeText = "event_dungeon_battle6";
+        private const string ActionTypeText = "event_dungeon_battle5";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;

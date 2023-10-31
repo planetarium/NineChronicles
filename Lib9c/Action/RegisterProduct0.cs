@@ -17,6 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("register_product")]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     public class RegisterProduct0 : GameAction
     {
         public const int CostAp = 5;

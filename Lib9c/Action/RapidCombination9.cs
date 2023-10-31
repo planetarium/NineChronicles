@@ -20,11 +20,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination10")]
-    public class RapidCombination : GameAction, IRapidCombinationV1
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("rapid_combination9")]
+    public class RapidCombination9 : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
         public int slotIndex;

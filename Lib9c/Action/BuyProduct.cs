@@ -21,7 +21,7 @@ using Log = Serilog.Log;
 
 namespace Nekoyume.Action
 {
-    [ActionType("buy_product2")]
+    [ActionType("buy_product3")]
     public class BuyProduct : GameAction
     {
         // Capacity from Buy limits in NineChronicles

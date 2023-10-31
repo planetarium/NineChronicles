@@ -24,11 +24,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment17")]
-    public class CombinationEquipment : GameAction, ICombinationEquipmentV4
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("combination_equipment16")]
+    public class CombinationEquipment16 : GameAction, ICombinationEquipmentV4
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -703,7 +704,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment16.GetSkill(optionRow, skillSheet, random);
                     if (!(skill is null))
                     {
                         equipment.Skills.Add(skill);

@@ -23,11 +23,12 @@ using Skill = Nekoyume.Model.Skill.Skill;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash22")]
-    public class HackAndSlash : GameAction, IHackAndSlashV10
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("hack_and_slash21")]
+    public class HackAndSlash21 : GameAction, IHackAndSlashV10
     {
         public const int UsableApStoneCount = 10;
 

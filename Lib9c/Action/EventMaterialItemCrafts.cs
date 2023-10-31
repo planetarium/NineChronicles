@@ -20,11 +20,14 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
     public class EventMaterialItemCrafts : GameAction, IEventMaterialItemCraftsV1
     {
-        private const string ActionTypeText = "event_material_item_crafts";
+        private const string ActionTypeText = "event_material_item_crafts1";
         public Address AvatarAddress;
         public int EventScheduleId;
         public int EventMaterialItemRecipeId;

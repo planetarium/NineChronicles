@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType("buy12")]
     public class Buy : GameAction, IBuy5, IBuyV2
     {

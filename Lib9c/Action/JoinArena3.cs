@@ -21,11 +21,12 @@ using Serilog;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/2195
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("join_arena4")]
-    public class JoinArena : GameAction, IJoinArenaV1
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("join_arena3")]
+    public class JoinArena3 : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;

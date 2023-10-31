@@ -22,11 +22,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1858
     /// </summary>
     [Serializable]
-    [ActionType("raid7")]
-    public class Raid : GameAction, IRaidV2
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("raid6")]
+    public class Raid6 : GameAction, IRaidV2
     {
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;

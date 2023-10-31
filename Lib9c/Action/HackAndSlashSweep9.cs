@@ -21,11 +21,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep10")]
-    public class HackAndSlashSweep : GameAction, IHackAndSlashSweepV3
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep9")]
+    public class HackAndSlashSweep9 : GameAction, IHackAndSlashSweepV3
     {
         public const int UsableApStoneCount = 10;
 

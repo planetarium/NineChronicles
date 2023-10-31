@@ -20,14 +20,12 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
-    /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventConsumableItemCrafts : GameAction, IEventConsumableItemCraftsV1
+    public class EventConsumableItemCrafts0 : GameAction, IEventConsumableItemCraftsV1
     {
-        private const string ActionTypeText = "event_consumable_item_crafts1";
+        private const string ActionTypeText = "event_consumable_item_crafts";
 
         public Address AvatarAddress;
         public int EventScheduleId;
