@@ -10,6 +10,7 @@ using System.Linq;
 using Nekoyume.Model.Mail;
 using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
+using DG.Tweening;
 
 namespace Nekoyume.UI
 {
@@ -45,13 +46,14 @@ namespace Nekoyume.UI
         private GameObject premiumPlusIcon;
 
         private bool isLastCellShow;
+        private bool isPageEffectComplete;
 
         protected override void Awake()
         {
             base.Awake();
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
             seasonPassManager.AvatarInfo.Subscribe((seasonPassInfo) => {
-                if(seasonPassInfo == null)
+                if (seasonPassInfo == null)
                     return;
 
                 levelText.text = seasonPassInfo.Level.ToString();
@@ -61,7 +63,7 @@ namespace Nekoyume.UI
 
                 receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim;
 
-                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count-1);
+                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
 
                 premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);
                 premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
@@ -78,7 +80,7 @@ namespace Nekoyume.UI
             {
                 for (int i = 0; i < rewardCells.Length; i++)
                 {
-                    if(i < seasonPassManager.CurrentSeasonPassData.RewardList.Count)
+                    if (i < seasonPassManager.CurrentSeasonPassData.RewardList.Count)
                     {
                         rewardCells[i].gameObject.SetActive(true);
                         rewardCells[i].SetData(seasonPassManager.CurrentSeasonPassData.RewardList[i]);
@@ -90,6 +92,7 @@ namespace Nekoyume.UI
                 }
                 lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList.Last());
             }).AddTo(gameObject);
+            rewardCellScrollbar.value = 0;
         }
 
         public void ShowSeasonPassPremiumPopup()
@@ -123,12 +126,88 @@ namespace Nekoyume.UI
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
             seasonPassManager.AvatarStateRefresh().AsUniTask().Forget();
 
-            rewardCellScrollbar.value = (float)(seasonPassManager.AvatarInfo.Value.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
+            if(!ignoreShowAnimation)
+                PageEffect();
         }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            rewardCellScrollbar.value = 0;
+        }
+
+        [SerializeField]
+        private int betweenCellViewDuration = 60;
+        [SerializeField]
+        private float scrollDuration = 1f;
+        [SerializeField]
+        private int scrollWaitDuration = 300;
+        [SerializeField]
+        private int miniumDurationCount = 400;
+        [ContextMenu("ShowEffect")]
+        public void PageEffect()
+        {
+            isPageEffectComplete = false;
+            lastRewardAnim.Play("SeasonPassLastReward@Close", -1, 1);
+            isLastCellShow = false;
+            rewardCellScrollbar.value = 0;
+
+            async UniTaskVoid ShowCellEffect()
+            {
+
+                var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+                var cellIndex = seasonPassManager.AvatarInfo.Value.Level - 1;
+
+                var tween = DOTween.To(() => rewardCellScrollbar.value,
+                    value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(), scrollDuration).SetEase(Ease.OutQuart);
+                tween.Play();
+
+                for (int i = cellIndex; i < rewardCells.Length; i++)
+                {
+                    rewardCells[i].SetTweeningStarting();
+                }
+
+                await UniTask.Delay(scrollWaitDuration);
+
+                int durationCount = 0;
+                for (int i = cellIndex; i < rewardCells.Length; i++)
+                {
+                    rewardCells[i].ShowTweening();
+                    await UniTask.Delay(betweenCellViewDuration);
+                    durationCount += betweenCellViewDuration;
+                    if(durationCount > miniumDurationCount)
+                        isPageEffectComplete = true;
+                }
+                isPageEffectComplete = true;
+            }
+            ShowCellEffect().Forget();
+        }
+
+        public float CalculateScrollerStartPosition()
+        {
+            var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
+            float totalScrollbarLength = 3338f;
+            float paddingLeft = 20f;
+            float viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
+            int currentLevel = seasonPassManager.AvatarInfo.Value.Level - 1;
+            float levelWidth = 110;
+            float usableLength = totalScrollbarLength - viewSize;
+
+            float currentPosition = paddingLeft + (levelWidth * currentLevel) - 10;
+
+            float value = currentPosition / usableLength;
+
+            return value;
+        }
+
 
         protected override void Update()
         {
             base.Update();
+
+            if (!isPageEffectComplete)
+                return;
+
             if(rewardCellScrollbar.value > 0.95f)
             {
                 if (isLastCellShow)

@@ -779,8 +779,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3896485022891584367}
   m_HandleRect: {fileID: 2405230519495336861}
   m_Direction: 0
-  m_Value: -0.000000050237134
-  m_Size: 0.27502126
+  m_Value: 0.6666667
+  m_Size: 0.27607262
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1104,6 +1104,10 @@ MonoBehaviour:
   premiumUnlockBtn: {fileID: 5618137876446749482}
   premiumPlusUnlockBtn: {fileID: 1256621147745764403}
   premiumPlusIcon: {fileID: 6591002473820812945}
+  betweenCellViewDuration: 60
+  scrollDuration: 1
+  scrollWaitDuration: 300
+  miniumDurationCount: 400
 --- !u!1 &1768276291492597949
 GameObject:
   m_ObjectHideFlags: 0
@@ -4625,8 +4629,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 1675.83, y: 0}
-  m_SizeDelta: {x: 3351.66, y: 360}
+  m_AnchoredPosition: {x: 58.020264, y: 0}
+  m_SizeDelta: {x: 3338, y: 360}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8029291072304469993
 GameObject:

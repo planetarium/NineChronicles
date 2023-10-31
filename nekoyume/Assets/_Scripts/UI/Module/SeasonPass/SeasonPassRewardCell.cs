@@ -9,6 +9,7 @@ using Nekoyume.Model.Item;
 using UnityEngine.UI;
 using Nekoyume.Game.Controller;
 using System.Numerics;
+using DG.Tweening;
 
 namespace Nekoyume.UI.Module
 {
@@ -120,6 +121,11 @@ namespace Nekoyume.UI.Module
                     });
                 }
             }
+
+            public void ShowTweening()
+            {
+                Root.transform.DOScale(UnityEngine.Vector3.one, 0.7f).SetEase(Ease.OutBack);
+            }
         }
 
         [SerializeField]
@@ -205,6 +211,25 @@ namespace Nekoyume.UI.Module
             for (; index < premiums.Length; index++)
             {
                 premiums[index].SetData(null, null, rewardSchema.Level, false);
+            }
+        }
+
+        public void SetTweeningStarting()
+        {
+            normal.Root.transform.localScale = UnityEngine.Vector3.zero;
+            foreach (var item in premiums)
+            {
+                item.Root.transform.localScale = UnityEngine.Vector3.zero;
+            }
+        }
+
+        public void ShowTweening()
+        {
+            normal.ShowTweening();
+
+            foreach (var item in premiums)
+            {
+                item.ShowTweening();
             }
         }
     }
