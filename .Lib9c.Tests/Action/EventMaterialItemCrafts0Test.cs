@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class EventMaterialItemCraftsTest
+    public class EventMaterialItemCrafts0Test
     {
         private readonly IAccount _initialStates;
         private readonly TableSheets _tableSheets;
@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public EventMaterialItemCraftsTest()
+        public EventMaterialItemCrafts0Test()
         {
             _initialStates = new MockStateDelta();
             var sheets = TableSheetsImporter.ImportSheets();
@@ -252,7 +252,7 @@ namespace Lib9c.Tests.Action
                 .Sum(i => i.item.Id == recipeRow.ResultMaterialItemId ? i.count : 0);
             var previousMailCount = previousAvatarState.mailBox.Count;
 
-            var action = new EventMaterialItemCrafts
+            var action = new EventMaterialItemCrafts0
             {
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,

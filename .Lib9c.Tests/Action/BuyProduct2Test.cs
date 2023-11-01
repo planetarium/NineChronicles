@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class BuyProductTest
+    public class BuyProduct2Test
     {
         private static readonly Address BuyerAgentAddress = new Address("47d082a115c63e7b58b1532d20e631538eafadde");
         private static readonly Address BuyerAvatarAddress = new Address("340f110b91d0577a9ae0ea69ce15269436f217da");
@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _orderId;
         private IAccount _initialState;
 
-        public BuyProductTest(ITestOutputHelper outputHelper)
+        public BuyProduct2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -296,7 +296,7 @@ namespace Lib9c.Tests.Action
 
                 foreach (var productInfo in validateMember.ProductInfos)
                 {
-                    var action = new BuyProduct
+                    var action = new BuyProduct2
                     {
                         AvatarAddress = BuyerAvatarAddress,
                         ProductInfos = new[] { productInfo },
@@ -315,12 +315,12 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_ArgumentOutOfRangeException()
         {
             var productInfos = new List<ItemProductInfo>();
-            for (int i = 0; i < BuyProduct.Capacity + 1; i++)
+            for (int i = 0; i < BuyProduct2.Capacity + 1; i++)
             {
                 productInfos.Add(new ItemProductInfo());
             }
 
-            var action = new BuyProduct
+            var action = new BuyProduct2
             {
                 AvatarAddress = _sellerAvatarAddress2,
                 ProductInfos = productInfos,

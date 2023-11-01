@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class CancelProductRegistrationTest
+    public class CancelProductRegistration0Test
     {
         private readonly IAccount _initialState;
         private readonly Address _agentAddress;
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly GameConfigState _gameConfigState;
 
-        public CancelProductRegistrationTest(ITestOutputHelper outputHelper)
+        public CancelProductRegistration0Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Action
             bool invalidAgentAddress
         )
         {
-            var action = new CancelProductRegistration
+            var action = new CancelProductRegistration0
             {
                 AvatarAddress = _avatarAddress,
                 ProductInfos = new List<IProductInfo>
@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action
         {
             var context = new ActionContext();
             var prevState = _initialState.MintAsset(context, _avatarAddress, 1 * RuneHelper.StakeRune);
-            var registerProduct = new RegisterProduct
+            var registerProduct = new RegisterProduct2
             {
                 AvatarAddress = _avatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action
                     (List)nexState.GetState(ProductsState.DeriveAddress(_avatarAddress)));
             var productId = Assert.Single(productsState.ProductIds);
 
-            var action = new CancelProductRegistration
+            var action = new CancelProductRegistration0
             {
                 AvatarAddress = _avatarAddress,
                 ProductInfos = new List<IProductInfo>
@@ -196,12 +196,12 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_ArgumentOutOfRangeException()
         {
             var productInfos = new List<IProductInfo>();
-            for (int i = 0; i < CancelProductRegistration.Capacity + 1; i++)
+            for (int i = 0; i < CancelProductRegistration0.Capacity + 1; i++)
             {
                 productInfos.Add(new ItemProductInfo());
             }
 
-            var action = new CancelProductRegistration
+            var action = new CancelProductRegistration0
             {
                 AvatarAddress = _avatarAddress,
                 ProductInfos = productInfos,
