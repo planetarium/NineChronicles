@@ -584,7 +584,7 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
-                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                if (itemEnhanceMail.attachment is ItemEnhancement13.ResultModel result)
                 {
                     await LocalLayerModifier.ModifyAgentCrystalAsync(
                         States.Instance.AgentState.address,
