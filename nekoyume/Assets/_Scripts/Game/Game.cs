@@ -17,7 +17,10 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Lib9c.Formatters;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using LruCacheNet;
@@ -29,6 +32,7 @@ using Nekoyume.Planet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.Game.OAuth;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.IAPStore;
@@ -250,8 +254,19 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeIntro();
         }
 
+        private static async void TestAsync()
+        {
+            var agentAddr = new Address("0x6132331720A774274d6E51CaeAd375068cC00505");
+            var jsonSerializer = new NewtonsoftJsonSerializer();
+            using var client = new GraphQLHttpClient("https://9c-internal-rpc-1.nine-chronicles.com/graphql", jsonSerializer);
+            var agentGraphType = await client.QueryAgentAsync(agentAddr);
+            Debug.Log(agentGraphType.ToString());
+        }
+
         private IEnumerator Start()
         {
+            // TestAsync();
+            // yield break;
 #if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
@@ -276,7 +291,6 @@ namespace Nekoyume.Game
             yield return PlanetSelector.InitializePlanetsAsync(planetContext).ToCoroutine();
             if (planetContext.HasError)
             {
-                Debug.LogError(planetContext.Error);
                 QuitWithMessage(
                     L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
                     planetContext.Error);
@@ -371,9 +385,14 @@ namespace Nekoyume.Game
             );
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
+            if (!agentInitializeSucceed)
+            {
+                QuitWithAgentConnectionError(null);
+                yield break;
+            }
 
 #if RUN_ON_MOBILE
-            if (planetContext.CurrentPlanetInfo is null)
+            if (planetContext.SelectedPlanetInfo is null)
             {
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
@@ -397,17 +416,7 @@ namespace Nekoyume.Game
             PatrolRewardServiceClient = new NineChroniclesAPIClient(
                 _commandLineOptions.PatrolRewardServiceHost);
 
-#if UNITY_ANDROID
-            // Only use on Android or...
-            IEnumerator InitializeIAP()
-            {
-                grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
-                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
-                Debug.Log("[Game] Start() IAPStoreManager initialize start");
-            }
-
+#if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
 #endif
 
@@ -417,7 +426,10 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            yield return StartCoroutine(CoCheckPledge(planetContext.CurrentPlanetInfo.ID));    
+            if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
+            {
+                yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
+            }
 #endif
 
 #if UNITY_EDITOR_WIN
@@ -451,8 +463,20 @@ namespace Nekoyume.Game
             ReservePushNotifications();
 
             yield return new WaitForSeconds(GrayLoadingScreen.SliderAnimationDuration);
-            ShowNext(agentInitializeSucceed);
+            IsInitialized = true;
+            Widget.Find<IntroScreen>().Close();
+            EnterNext();
             yield break;
+
+            // Only use on Android or...
+            IEnumerator InitializeIAP()
+            {
+                grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+                yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+                IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
+                Debug.Log("[Game] Start() IAPStoreManager initialize start");
+            }
 
             IEnumerator InitializeWithAgent()
             {
@@ -698,9 +722,12 @@ namespace Nekoyume.Game
             popup.SetCancelCallbackToExit();
         }
 
-#if RUN_ON_MOBILE
+        /// <summary>
+        /// This method must be called after <see cref="Game.Agent"/> initialized.
+        /// </summary>
         private IEnumerator CoCheckPledge(PlanetId planetId)
         {
+            Debug.Log("[Game] CoCheckPledge() invoked.");
             if (!States.PledgeRequested || !States.PledgeApproved)
             {
                 if (!States.PledgeRequested)
@@ -783,7 +810,6 @@ namespace Nekoyume.Game
                 }
             }
         }
-#endif
 
         // FIXME: Leave one between this or CoSyncTableSheets()
         private IEnumerator CoInitializeTableSheets()
@@ -850,23 +876,9 @@ namespace Nekoyume.Game
             return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
-        private void ShowNext(bool succeed)
-        {
-            Debug.Log($"[Game]ShowNext({succeed}) invoked");
-            if (succeed)
-            {
-                IsInitialized = true;
-                Widget.Find<IntroScreen>().Close();
-                EnterNext();
-            }
-            else
-            {
-                QuitWithAgentConnectionError(null);
-            }
-        }
-
         private static async void EnterNext()
         {
+            Debug.Log("[Game] EnterNext() invoked");
             if (!GameConfig.IsEditor)
             {
                 if (States.Instance.AgentState.avatarAddresses.Any() &&
@@ -920,6 +932,7 @@ namespace Nekoyume.Game
 
         private static void EnterLogin()
         {
+            Debug.Log("[Game] EnterLogin() invoked");
             Widget.Find<Login>().Show();
             Event.OnNestEnter.Invoke();
         }
@@ -1052,6 +1065,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoLogin(PlanetContext planetContext, Action<bool> callback)
         {
+            Debug.Log("[Game] CoLogin() invoked");
             if (_commandLineOptions.Maintenance)
             {
                 var w = Widget.Create<IconAndButtonSystem>();
@@ -1099,28 +1113,243 @@ namespace Nekoyume.Game
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_commandLineOptions.PrivateKey);
 
-            var loginPopup = Widget.Find<LoginSystem>();
+            var introScreen = Widget.Find<IntroScreen>();
+            var loginSystem = Widget.Find<LoginSystem>();
 
             if (Application.isBatchMode)
             {
-                loginPopup.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                loginSystem.Show(_commandLineOptions.KeyStorePath, _commandLineOptions.PrivateKey);
+                yield return Agent.Initialize(
+                    _commandLineOptions,
+                    loginSystem.GetPrivateKey(),
+                    callback);
+                yield break;
+            }
+
+            if (planetContext is null)
+            {
+                Debug.Log("[Game] CoLogin()... planetContext is null.");
+                if (loginSystem.CheckLocalPassphrase())
+                {
+                    Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is true.");
+                }
+                else
+                {
+                    Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is false.");
+                    introScreen.Show(
+                        _commandLineOptions.KeyStorePath,
+                        _commandLineOptions.PrivateKey,
+                        planetContext: null);
+                }
+
+                Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
+                yield return new WaitUntil(() => loginSystem.Login);
+                Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
+
+                yield return Agent.Initialize(
+                    _commandLineOptions,
+                    loginSystem.GetPrivateKey(),
+                    callback);
+                yield break;
+            }
+
+            // NOTE: Initialize current planet info.
+            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(
+                planetContext,
+                resetIfCachedPlanetNotFoundInPlanets: true);
+            if (planetContext.HasError)
+            {
+                QuitWithMessage(
+                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                    planetContext.Error);
+                yield break;
+            }
+
+            // NOTE: Check local passphrase.
+            if (loginSystem.CheckLocalPassphrase())
+            {
+                Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is true.");
+                if (!PlanetSelector.HasCachedPlanetIdString)
+                {
+                    Debug.Log("[Game] CoLogin()... HasSelectedPlanetBefore is false." +
+                              " Show planet selector.");
+                    planetContext.NeedToAutoLogin = false;
+                    introScreen.Show(
+                        _commandLineOptions.KeyStorePath,
+                        ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
+                        planetContext);
+                }
             }
             else
             {
-                if (!loginPopup.CheckLocalPassphrase())
-                {
-                    var intro = Widget.Find<IntroScreen>();
-                    intro.Show(
-                        _commandLineOptions.KeyStorePath,
-                        _commandLineOptions.PrivateKey,
-                        planetContext);
-                }
-                yield return new WaitUntil(() => loginPopup.Login);
+                Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is false.");
+                planetContext.NeedToAutoLogin = false;
+                introScreen.Show(
+                    _commandLineOptions.KeyStorePath,
+                    _commandLineOptions.PrivateKey,
+                    planetContext);
             }
+
+            // NOTE: Check auto login!
+            if (planetContext.NeedToAutoLogin.HasValue && planetContext.NeedToAutoLogin.Value)
+            {
+                var pk = loginSystem.GetPrivateKey(); 
+                if (pk is not null)
+                {
+                    Debug.Log("[Game] CoLogin()... planetContext.NeedToAutoLogin is true." +
+                              " And loginSystem.GetPrivateKey() is not null." +
+                              " Try to auto login.");
+                    yield return Agent.Initialize(
+                        _commandLineOptions,
+                        pk,
+                        callback);
+                    yield break;
+                }
+
+                // NOTE: Not expected to reach here.
+                Debug.LogError("[Game] CoLogin()... planetContext.NeedToAutoLogin is true." +
+                               " But loginSystem.GetPrivateKey() is null." +
+                               " We don't quit here but show intro screen UI again.");
+                introScreen.Show(
+                    _commandLineOptions.KeyStorePath,
+                    _commandLineOptions.PrivateKey,
+                    planetContext);
+            }
+
+            var loadingScreen = Widget.Find<DimmedLoadingScreen>();
+            Address? agentAddr = null;
+            // NOTE: Wait until social logged in if intro screen is active.
+            if (introScreen.IsActive())
+            {
+                introScreen.OnClickGoogleSignIn.AsObservable()
+                    .First()
+                    .Subscribe(_ => loadingScreen.Show(
+                        L10nManager.Localize("LOADING_TO_SIGNIN_PORTAL"),
+                        true));
+
+                (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
+                    onGoogleSignInTuple = null;
+                introScreen.OnGoogleSignedIn.AsObservable()
+                    .First()
+                    .Subscribe(tuple => onGoogleSignInTuple = tuple);
+
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn.");
+                yield return new WaitUntil(() => onGoogleSignInTuple.HasValue);
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn. Done.");
+
+                var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
+
+                Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
+                yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
+                Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
+
+                if (googleSigninBehaviour.AgentAddress is null)
+                {
+                    loginSystem.Show(connectedAddress: null);
+                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
+                              $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
+                }
+                else
+                {
+                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null." +
+                              $" {googleSigninBehaviour.AgentAddress.Value}");
+                    agentAddr = googleSigninBehaviour.AgentAddress.Value;
+                    // NOTE: Don't show login popup when google signed in.
+                    //       Because introScreen.ShowForQrCodeGuide() will be called
+                    //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
+                    // loginSystem.Show(connectedAddress: agentAddr);
+                }
+            }
+
+            if (agentAddr.HasValue)
+            {
+                yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
+                    planetContext,
+                    agentAddr.Value).ToCoroutine();
+                if (planetContext.HasError)
+                {
+                    QuitWithMessage(
+                        L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                        planetContext.Error);
+                    yield break;
+                }
+            }
+            else
+            {
+                // NOTE: Initialize planet account infos as default(empty) value
+                //       when agent address is not set.
+                planetContext.PlanetAccountInfos = planetContext.Planets?.PlanetInfos
+                    .Select(planetInfo => new PlanetAccountInfo(
+                        planetInfo.ID,
+                        agentAddress: null))
+                    .ToArray();
+            }
+
+            if (loadingScreen.IsActive())
+            {
+                loadingScreen.Close();
+            }
+
+            // NOTE: Check if the planets have at least one agent.
+            if (planetContext.PlanetAccountInfos!.Any(e => e.AgentAddress is not null))
+            {
+                Debug.Log("[Game] CoLogin()... account exists. Show planet account infos popup.");
+                introScreen.ShowPlanetAccountInfosPopup(planetContext);
+
+                Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
+                          " is not null.");
+                yield return new WaitUntil(() => planetContext.SelectedPlanetAccountInfo is not null);
+                Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
+                          $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
+
+                var info = planetContext.SelectedPlanetAccountInfo!;
+                if (info.AgentAddress is null)
+                {
+                    // NOTE: Player selected the planet that has no agent.
+                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
+                              " Player may have to make a pledge.");
+                    planetContext.NeedToPledge = true;
+
+                    // NOTE: Complex logic here...
+                    //       - LoginSystem.Login is false.
+                    //       - Portal has player's account.
+                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
+                    //         - Create a new agent in a new planet.
+                    if (!loginSystem.Login)
+                    {
+                        // NOTE: QR code import sets loginSystem.Login to true.
+                        introScreen.ShowForQrCodeGuide();
+                    }
+                }
+                else
+                {
+                    // NOTE: Player selected the planet that has agent.
+                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
+                              " Player don't have to make a pledge.");
+                    planetContext.NeedToPledge = false;
+
+                    // NOTE: QR code import sets loginSystem.Login to true.
+                    introScreen.ShowForQrCodeGuide();
+                }
+            }
+            else
+            {
+                Debug.Log("[Game] CoLogin()... account does not exist." +
+                          " Player have to make a pledge.");
+                planetContext.NeedToPledge = true;
+                Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
+                          " w/ planetContext.SelectedPlanetInfo.ID.");
+                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos.First(e =>
+                    e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
+            }
+
+            Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
+            yield return new WaitUntil(() => loginSystem.Login);
+            Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
 
             yield return Agent.Initialize(
                 _commandLineOptions,
-                loginPopup.GetPrivateKey(),
+                loginSystem.GetPrivateKey(),
                 callback);
         }
 
