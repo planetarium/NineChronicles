@@ -93,7 +93,7 @@ namespace Nekoyume.UI
 
         public void TogglePetPopup(int slotIndex)
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
 #else
