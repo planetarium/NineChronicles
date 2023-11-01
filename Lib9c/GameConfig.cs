@@ -100,6 +100,7 @@ namespace Nekoyume
             public const int ItemEnhancementAction = 9;
             [Obsolete("Not used anymore since v200092")]
             public const int ActionsInShop = 17;
+            [Obsolete("Not used anymore since v200092")]
             public const int ActionsInRankingBoard = 25;
             public const int ActionsInMimisbrunnr = 100;
             public const int ActionsInRaid = 50;

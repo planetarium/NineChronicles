@@ -118,21 +118,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                throw new NotEnoughClearedStageLevelException(
-                    $"{addressesHex}Aborted as NotEnoughClearedStageLevelException");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
-            {
-                throw new NotEnoughClearedStageLevelException(
-                    addressesHex,
-                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
-                    world.StageClearedId);
-            }
-
             var sheets = states.GetSheets(
                 containArenaSimulatorSheets: true,
                 sheetTypes: new[]
