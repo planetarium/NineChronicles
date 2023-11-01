@@ -2332,7 +2332,7 @@ MonoBehaviour:
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 2
           actionType: 50000
-          guideType: 1
+          guideType: 3
           emojiType: 2
           dialogPositionType: 0
           scriptKey: TUTORIAL_45_001
@@ -2350,10 +2350,10 @@ MonoBehaviour:
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 3
-          actionType: 5
-          guideType: 1
+          actionType: 2
+          guideType: 3
           emojiType: 2
-          dialogPositionType: 0
+          dialogPositionType: 1
           scriptKey: TUTORIAL_45_002
           arrowAdditionalDelay: 0
           fullScreenButton: 0

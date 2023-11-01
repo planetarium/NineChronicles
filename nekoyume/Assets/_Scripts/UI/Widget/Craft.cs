@@ -771,7 +771,9 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombineEquipmentSuperCraft()
         {
-            // Fill this
+            Find<SuperCraftPopup>().Show(
+                (EquipmentItemRecipeSheet.Row)SharedModel.SelectedRow.Value,
+                false);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
