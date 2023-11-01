@@ -9,11 +9,11 @@ namespace Nekoyume.Game.LiveAsset
 
         #region action
 
-        public const int CombinationEquipmentAction = 3;
-        public const int CombinationConsumableAction = 6;
-        public const int ItemEnhancementAction = 9;
+        public const int CombinationEquipmentAction = 1;
+        public const int CombinationConsumableAction = 1;
+        public const int ItemEnhancementAction = 1;
         public const int ActionsInShop = 17;
-        public const int ActionsInRankingBoard = 25;
+        public const int ActionsInRankingBoard = 15;
         public const int ActionsInMimisbrunnr = 100;
         public const int ActionsInRaid = 50;
 
