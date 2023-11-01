@@ -76,12 +76,6 @@ namespace Nekoyume.Action
                 throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
             }
 
-            if(!avatarState.worldInformation.IsStageCleared(slotState.UnlockStage))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex, slotState.UnlockStage, current);
-            }
-
             var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
             if (diff <= 0)
             {

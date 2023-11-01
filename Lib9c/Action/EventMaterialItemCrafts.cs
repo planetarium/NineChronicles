@@ -145,21 +145,6 @@ namespace Nekoyume.Action
                 sw.Elapsed);
             // ~Get sheets
 
-            // Validate Requirements
-            sw.Restart();
-            avatarState.worldInformation.ValidateFromAction(
-                GameConfig.RequireClearedStageLevel.CombinationConsumableAction,
-                ActionTypeText,
-                addressesHex);
-            sw.Stop();
-
-            Log.Verbose(
-                "[{ActionTypeString}][{AddressesHex}] Validate requirements: {Elapsed}",
-                ActionTypeText,
-                addressesHex,
-                sw.Elapsed);
-            // ~Validate Requirements
-
             // Validate fields
             sw.Restart();
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();

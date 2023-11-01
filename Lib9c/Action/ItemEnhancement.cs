@@ -151,7 +151,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (!slotState.Validate(avatarState, ctx.BlockIndex))
+            if (!slotState.ValidateV2(avatarState, ctx.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
                     $"{addressesHex} Aborted as the slot state was failed to invalid. #{slotIndex}"

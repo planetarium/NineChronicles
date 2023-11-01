@@ -113,18 +113,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            // Validate Required Cleared Tutorial Stage
-            if (!avatarState.worldInformation.IsStageCleared(
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(
-                    addressesHex,
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction,
-                    current);
-            }
-            // ~Validate Required Cleared Tutorial Stage
-
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState is null)
@@ -133,7 +121,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is failed to load: # {slotIndex}");
             }
 
-            if (!slotState.Validate(avatarState, context.BlockIndex))
+            if (!slotState.ValidateV2(avatarState, context.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
@@ -703,7 +691,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment16.GetSkill(optionRow, skillSheet, random);
                     if (!(skill is null))
                     {
                         equipment.Skills.Add(skill);

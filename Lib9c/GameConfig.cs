@@ -92,8 +92,11 @@ namespace Nekoyume
         {
             #region action
 
+            [Obsolete("Not used anymore since v200092")]
             public const int CombinationEquipmentAction = 3;
+            [Obsolete("Not used anymore since v200092")]
             public const int CombinationConsumableAction = 6;
+            [Obsolete("Not used anymore since v200092")]
             public const int ItemEnhancementAction = 9;
             public const int ActionsInShop = 17;
             public const int ActionsInRankingBoard = 25;
