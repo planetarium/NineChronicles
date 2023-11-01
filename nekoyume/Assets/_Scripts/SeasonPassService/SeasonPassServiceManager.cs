@@ -90,6 +90,8 @@ namespace Nekoyume
             {
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassExpAsync] error: {error}");
             }).AsUniTask().Forget();
+
+            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefresh().AsUniTask().Forget());
         }
 
         private void RefreshRemainingTime()
