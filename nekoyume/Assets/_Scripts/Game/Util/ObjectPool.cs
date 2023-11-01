@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Util
                 foreach (var poolData in list)
                 {
                     _dict.Add(poolData.Prefab.name, poolData);
-#if !UNITY_ANDOIRD && !UNITY_IOS
+#if !UNITY_ANDROID && !UNITY_IOS
                     Add(poolData.Prefab, poolData.InitCount);
 #endif
                 }
