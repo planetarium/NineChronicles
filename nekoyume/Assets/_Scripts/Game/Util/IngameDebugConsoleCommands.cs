@@ -7,24 +7,37 @@ namespace Nekoyume.Game.Util
 {
     public static class ScreenClear
     {
-        public static async UniTaskVoid ClearScreen(bool isHorizontal)
+        public static void ClearScreen()
         {
-            await UniTask.WaitForEndOfFrame();
-            GameObject screenBoader;
-            if (isHorizontal)
-            {
-                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
-            }
-            else
-            {
-                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
-            }
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+            if (screenBoaderH != null)
+                screenBoaderH.SetActive(false);
+            if (screenBoaderV != null)
+                screenBoaderV.SetActive(false);
+        }
+        public static void ClearScreen(bool isHorizontal)
+        {
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
 
-            if (screenBoader != null)
+            if (screenBoaderH != null)
+                screenBoaderH.SetActive(isHorizontal);
+
+            if (screenBoaderV != null)
+                screenBoaderV.SetActive(!isHorizontal);
+
+            BlackScreenClearing().Forget();
+
+            async UniTaskVoid BlackScreenClearing()
             {
-                screenBoader.gameObject.SetActive(true);
-                await UniTask.WaitForEndOfFrame();
-                screenBoader.gameObject.SetActive(false);
+                var blackscreenImageH = screenBoaderH.GetComponent<UnityEngine.UI.Image>();
+                var blackscreenImageV = screenBoaderV.GetComponent<UnityEngine.UI.Image>();
+                blackscreenImageH.color = Color.black;
+                blackscreenImageV.color = Color.black;
+                await UniTask.DelayFrame(2);
+                blackscreenImageH.color = new Color(0, 0, 0, 0);
+                blackscreenImageV.color = new Color(0, 0, 0, 0);
             }
         }
     }
