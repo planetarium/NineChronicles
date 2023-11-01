@@ -122,7 +122,7 @@ namespace Nekoyume
                 return;
             }
 
-            if(level > LevelInfos.Count)
+            if(level >= LevelInfos.Count)
             {
                 minExp = LevelInfos[LevelInfos.Count - 2].Exp;
                 maxExp = LevelInfos[LevelInfos.Count - 1].Exp;

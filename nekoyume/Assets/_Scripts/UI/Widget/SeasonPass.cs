@@ -56,13 +56,23 @@ namespace Nekoyume.UI
                 if (seasonPassInfo == null)
                     return;
 
-                levelText.text = seasonPassInfo.Level.ToString();
                 seasonPassManager.GetExp(seasonPassInfo.Level, out var minExp, out var maxExp);
-                expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
-                expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
 
-                receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim
-                    || (seasonPassInfo.IsPremium && seasonPassInfo.Level > seasonPassInfo.LastPremiumClaim);
+                if (seasonPassInfo.Level == seasonPassManager.LevelInfos.Count)
+                {
+                    levelText.text = "MAX";
+                    expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
+                    expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
+                    receiveBtn.Interactable = seasonPassInfo.Exp >= seasonPassManager.LevelInfos.Last().Exp;
+                }
+                else
+                {
+                    levelText.text = seasonPassInfo.Level.ToString();
+                    expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
+                    expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
+                    receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim
+                        || (seasonPassInfo.IsPremium && seasonPassInfo.Level > seasonPassInfo.LastPremiumClaim);
+                }
 
                 lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
 
@@ -198,7 +208,7 @@ namespace Nekoyume.UI
 
             float value = currentPosition / usableLength;
 
-            return value;
+            return Mathf.Min(value, 1);
         }
 
 
