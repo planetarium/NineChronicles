@@ -12,6 +12,7 @@ namespace Nekoyume
     public class SeasonPassServiceManager : IDisposable
     {
         public int AdventureCourageAmount = 10;
+        public int AdventureSweepCourageAmount = 10;
         public int ArenaCourageAmount = 10;
         public int WorldBossCourageAmount = 10;
 
@@ -61,6 +62,33 @@ namespace Nekoyume
             }, (error) =>
             {
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassLevelAsync] error: {error}");
+            }).AsUniTask().Forget();
+
+            Client.GetSeasonpassExpAsync((result) =>
+            {
+                foreach (var item in result)
+                {
+                    switch (item.ActionType)
+                    {
+                        case SeasonPassServiceClient.ActionType.hack_and_slash:
+                            AdventureCourageAmount = item.Exp;
+                            break;
+                        case SeasonPassServiceClient.ActionType.hack_and_slash_sweep:
+                            AdventureSweepCourageAmount = item.Exp;
+                            break;
+                        case SeasonPassServiceClient.ActionType.battle_arena:
+                            ArenaCourageAmount = item.Exp;
+                            break;
+                        case SeasonPassServiceClient.ActionType.raid:
+                            WorldBossCourageAmount = item.Exp;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            },(error) =>
+            {
+                Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassExpAsync] error: {error}");
             }).AsUniTask().Forget();
         }
 

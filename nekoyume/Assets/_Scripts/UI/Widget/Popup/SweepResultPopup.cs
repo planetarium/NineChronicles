@@ -289,7 +289,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureSweepCourageAmount * playCount}";
             }
             else
             {
