@@ -24,6 +24,8 @@ namespace Nekoyume.IAPStore
 
         private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
 
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
+
         private async void Awake()
         {
             try
@@ -55,6 +57,13 @@ namespace Nekoyume.IAPStore
                 foreach (var product in category.ProductList)
                 {
                     _initailizedProductSchema.TryAdd(product.GoogleSku, product);
+                }
+                if(category.Name == "NoShow")
+                {
+                    foreach (var product in category.ProductList)
+                    {
+                        SeasonPassProduct.Add(product.Name, product);
+                    }
                 }
             }
 

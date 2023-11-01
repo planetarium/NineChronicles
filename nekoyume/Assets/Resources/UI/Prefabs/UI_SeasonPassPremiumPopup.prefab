@@ -2246,7 +2246,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2097738214126505603}
+        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPassPremiumPopup, Nekoyume
+        m_MethodName: PurchaseSeasonPassPremiumButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &542823127444457350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2352,7 +2364,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2097738214126505603}
+        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPassPremiumPopup, Nekoyume
+        m_MethodName: PurchaseSeasonPassPremiumPlusButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2273717873850951160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19502,14 +19526,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  IsPremiumObj:
+  isPremiumObj:
   - {fileID: 9165066833440005539}
-  NotPremiumObj:
+  notPremiumObj:
   - {fileID: 2084559709787862640}
-  IsPremiumPlusObj:
+  isPremiumPlusObj:
   - {fileID: 7603748938399224217}
-  NotPremiumPlusObj:
+  notPremiumPlusObj:
   - {fileID: 9137023064778126327}
+  premiumPurchaseButtonDisabledObj: {fileID: 9165066833440005539}
+  premiumPurchaseButtonPriceObj: {fileID: 8738880147813364286}
+  premiumPurchaseButtonLoadingObj: {fileID: 5222216437023002360}
+  premiumPlusPurchaseButtonDisabledObj: {fileID: 7603748938399224217}
+  premiumPlusPurchaseButtonPriceObj: {fileID: 6210669484638616337}
+  premiumPlusPurchaseButtonLoadingObj: {fileID: 5278163416259217199}
 --- !u!1 &9020521209372489568
 GameObject:
   m_ObjectHideFlags: 0
