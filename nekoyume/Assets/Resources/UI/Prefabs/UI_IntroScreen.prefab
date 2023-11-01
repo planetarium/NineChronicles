@@ -2268,8 +2268,6 @@ MonoBehaviour:
   startButton: {fileID: 7438619689180984905}
   signinButton: {fileID: 636972386927832638}
   guestButton: {fileID: 2625083233429593727}
-  planetButton: {fileID: 231605217515246203}
-  planetText: {fileID: 1224978541094035838}
   qrCodeGuideContainer: {fileID: 7187465292496931806}
   qrCodeGuideBackground: {fileID: 630988183707688679}
   qrCodeGuideImages:
@@ -2282,9 +2280,6 @@ MonoBehaviour:
   videoPlayer: {fileID: 8606067998831991754}
   videoSkipButton: {fileID: 2267575148265824976}
   googleSignInButton: {fileID: 8212068774305286406}
-  selectPlanetPopup: {fileID: 8186733251249421295}
-  heimdallButton: {fileID: 9016432275968831349}
-  odinButton: {fileID: 2528496315441386273}
 --- !u!1 &1103510228977098036
 GameObject:
   m_ObjectHideFlags: 0
@@ -19579,7 +19574,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2078029651489728636}
     - target: {fileID: 7657312722897278047, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
