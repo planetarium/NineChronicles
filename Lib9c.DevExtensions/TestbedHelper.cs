@@ -53,7 +53,7 @@ namespace Lib9c.DevExtensions
                 worldInformation = new WorldInformation(
                     0,
                     worldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop),
+                    0),
             };
 
             return avatarState;

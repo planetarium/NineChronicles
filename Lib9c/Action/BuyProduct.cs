@@ -71,15 +71,6 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("failed load to buyer avatar state.");
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
-
-            if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
-            {
-                buyerAvatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop, current);
-            }
-
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             foreach (var productInfo in ProductInfos.OrderBy(p => p.ProductId).ThenBy(p =>p.Price))
             {

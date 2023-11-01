@@ -58,16 +58,6 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("failed to load avatar state.");
             }
 
-            if (!avatarState.worldInformation.IsStageCleared(
-                    GameConfig.RequireClearedStageLevel.ActionsInShop))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(
-                    AvatarAddress.ToHex(),
-                    GameConfig.RequireClearedStageLevel.ActionsInShop,
-                    current);
-            }
-
             avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());
             var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
