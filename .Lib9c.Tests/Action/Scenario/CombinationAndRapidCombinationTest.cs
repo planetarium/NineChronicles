@@ -145,7 +145,7 @@
                 e.RequiredGold == 0);
             var recipeRow =
                 _tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e => e.SubRecipeIds.Contains(subRecipeRow.Id));
-            var combinationEquipmentAction = new CombinationEquipment
+            var combinationEquipmentAction = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,

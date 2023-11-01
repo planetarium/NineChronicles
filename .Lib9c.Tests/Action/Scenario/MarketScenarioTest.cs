@@ -135,7 +135,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             var random = new TestRandom();
             var productInfoList = new List<IProductInfo>();
-            var action = new RegisterProduct
+            var action = new RegisterProduct2
             {
                 AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
@@ -166,7 +166,7 @@ namespace Lib9c.Tests.Action.Scenario
             });
             var nextAvatarState = nextState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp, nextAvatarState.actionPoint);
 
             var productsState =
                 new ProductsState((List)nextState.GetState(ProductsState.DeriveAddress(_sellerAvatarAddress)));
@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action.Scenario
                 }
             }
 
-            var action2 = new RegisterProduct
+            var action2 = new RegisterProduct2
             {
                 AvatarAddress = _sellerAvatarAddress2,
                 RegisterInfos = new List<IRegisterInfo>
@@ -240,7 +240,7 @@ namespace Lib9c.Tests.Action.Scenario
             });
             var nextAvatarState2 = nextState2.GetAvatarStateV2(_sellerAvatarAddress2);
             Assert.Empty(nextAvatarState2.inventory.Items);
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState2.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp, nextAvatarState2.actionPoint);
 
             var productList2 =
                 new ProductsState((List)nextState2.GetState(ProductsState.DeriveAddress(_sellerAvatarAddress2)));
@@ -283,7 +283,7 @@ namespace Lib9c.Tests.Action.Scenario
                 }
             }
 
-            var action3 = new BuyProduct
+            var action3 = new BuyProduct2
             {
                 AvatarAddress = _buyerAvatarAddress,
                 ProductInfos = productInfoList,
@@ -358,7 +358,7 @@ namespace Lib9c.Tests.Action.Scenario
             _initialState = _initialState
                     .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize())
                     .MintAsset(context, _sellerAvatarAddress, 1 * RuneHelper.StakeRune);
-            var action = new RegisterProduct
+            var action = new RegisterProduct2
             {
                 AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
@@ -398,7 +398,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             var nextAvatarState = nextState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp, nextAvatarState.actionPoint);
 
             var marketState = new MarketState(nextState.GetState(Addresses.Market));
             Assert.Contains(_sellerAvatarAddress, marketState.AvatarAddresses);
@@ -441,7 +441,7 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             Assert.All(new[] { nonFungibleProductId, fungibleProductId, assetProductId }, productId => Assert.NotEqual(default, productId));
-            var action2 = new CancelProductRegistration
+            var action2 = new CancelProductRegistration0
             {
                 AvatarAddress = _sellerAvatarAddress,
                 ProductInfos = new List<IProductInfo>
@@ -493,7 +493,7 @@ namespace Lib9c.Tests.Action.Scenario
                 );
             }
 
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp - CancelProductRegistration.CostAp, latestAvatarState.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp - CancelProductRegistration0.CostAp, latestAvatarState.actionPoint);
 
             var sellProductList = new ProductsState((List)latestState.GetState(productsStateAddress));
             Assert.Empty(sellProductList.ProductIds);
@@ -530,7 +530,7 @@ namespace Lib9c.Tests.Action.Scenario
             _initialState = _initialState
                 .MintAsset(context, _sellerAvatarAddress, 2 * RuneHelper.StakeRune)
                 .SetState(_sellerAvatarAddress, _sellerAvatarState.Serialize());
-            var action = new RegisterProduct
+            var action = new RegisterProduct2
             {
                 AvatarAddress = _sellerAvatarAddress,
                 RegisterInfos = new List<IRegisterInfo>
@@ -570,7 +570,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             var nextAvatarState = nextState.GetAvatarStateV2(_sellerAvatarAddress);
             Assert.Empty(nextAvatarState.inventory.Items);
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp, nextAvatarState.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp, nextAvatarState.actionPoint);
 
             var marketState = new MarketState(nextState.GetState(Addresses.Market));
             Assert.Contains(_sellerAvatarAddress, marketState.AvatarAddresses);
@@ -693,7 +693,7 @@ namespace Lib9c.Tests.Action.Scenario
             });
 
             var latestAvatarState = latestState.GetAvatarStateV2(_sellerAvatarAddress);
-            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct.CostAp - ReRegisterProduct.CostAp, latestAvatarState.actionPoint);
+            Assert.Equal(_gameConfigState.ActionPointMax - RegisterProduct2.CostAp - ReRegisterProduct.CostAp, latestAvatarState.actionPoint);
             var inventoryItem = Assert.Single(latestAvatarState.inventory.Items);
             Assert.Equal(1, inventoryItem.count);
             Assert.IsType<TradableMaterial>(inventoryItem.item);
@@ -960,7 +960,7 @@ namespace Lib9c.Tests.Action.Scenario
                 },
             };
             //Cancel
-            var cancelAction = new CancelProductRegistration
+            var cancelAction = new CancelProductRegistration0
             {
                 AvatarAddress = _sellerAvatarAddress,
                 ProductInfos = productInfos,
@@ -1057,7 +1057,7 @@ namespace Lib9c.Tests.Action.Scenario
             }));
 
             //Buy
-            var buyAction = new BuyProduct
+            var buyAction = new BuyProduct2
             {
                 AvatarAddress = _buyerAvatarAddress,
                 ProductInfos = productInfos,
