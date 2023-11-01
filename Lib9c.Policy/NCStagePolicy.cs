@@ -64,7 +64,7 @@ namespace Nekoyume.Blockchain
                     {
                         // update txQuotaPerSigner if ACS returns a value for the signer.
                         int? acsTxQuota = _accessControlService.GetTxQuota(tx.Signer);
-                        if (acsTxQuota != null)
+                        if (acsTxQuota.HasValue)
                         {
                             txQuotaPerSigner = (int)acsTxQuota;
                         }
