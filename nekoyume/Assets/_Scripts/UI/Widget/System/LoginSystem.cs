@@ -1,3 +1,11 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
+#endif
+
 using System;
 using System.IO;
 using System.Linq;
@@ -455,7 +463,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-#if UNITY_ANDROID
+#if RUN_ON_MOBILE
             Login = false;
 
             // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
