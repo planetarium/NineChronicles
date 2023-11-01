@@ -34,6 +34,7 @@ namespace Nekoyume.Planet
         public static async UniTask<PlanetContext> InitializePlanetsAsync(
             PlanetContext context)
         {
+            Debug.Log("[PlanetSelector] Initializing Planets...");
 #if UNITY_EDITOR
             if (string.IsNullOrEmpty(context.CommandLineOptions.PlanetRegistryUrl))
             {
@@ -84,6 +85,7 @@ namespace Nekoyume.Planet
                 return context;
             }
 
+            Debug.Log("[PlanetSelector] Planets initialized successfully.");
             return context;
         }
 
@@ -224,6 +226,7 @@ namespace Nekoyume.Planet
 
         public static PlanetContext SelectPlanetById(PlanetContext context, PlanetId planetId)
         {
+            Debug.Log($"[PlanetSelector] Selecting planet by id({planetId})...");
             if (context.Planets is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
@@ -281,6 +284,7 @@ namespace Nekoyume.Planet
 
         public static PlanetContext SelectPlanetByName(PlanetContext context, string planetName)
         {
+            Debug.Log($"[PlanetSelector] Selecting planet by name({planetName})...");
             if (context.Planets is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
