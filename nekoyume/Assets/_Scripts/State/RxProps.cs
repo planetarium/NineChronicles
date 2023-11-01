@@ -38,7 +38,7 @@ namespace Nekoyume.State
                 throw new ArgumentNullException(nameof(tableSheets));
             }
 
-            Debug.Log($"{nameof(RxProps)} start");
+            Debug.Log("[RxProps] Start");
             _agent = agent;
             _states = states;
             _tableSheets = tableSheets;
