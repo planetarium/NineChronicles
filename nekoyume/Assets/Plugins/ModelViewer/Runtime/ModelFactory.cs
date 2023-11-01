@@ -214,7 +214,7 @@ namespace ModelViewer.Runtime
                 };
             }
 
-            if (type == typeof(ItemEnhancement.ResultModel))
+            if (type == typeof(ItemEnhancement13.ResultModel))
             {
                 var row = _tableSheets.EquipmentItemSheet.First!;
                 var preItemUsable = (Equipment)ItemFactory.CreateItemUsable(
@@ -223,14 +223,14 @@ namespace ModelViewer.Runtime
                     0L);
                 var itemUsable = new Equipment((Dictionary)preItemUsable.Serialize());
                 itemUsable.LevelUpV1();
-                return new ItemEnhancement.ResultModel
+                return new ItemEnhancement13.ResultModel
                 {
                     id = Guid.NewGuid(),
                     preItemUsable = preItemUsable,
                     itemUsable = itemUsable,
                     materialItemIdList = new[] { Guid.NewGuid() },
                     actionPoint = 0,
-                    enhancementResult = ItemEnhancement.EnhancementResult.Success,
+                    enhancementResult = ItemEnhancement13.EnhancementResult.Success,
                     gold = 0,
                     CRYSTAL = new FungibleAssetValue(
                         Currency.Legacy("CRYSTAL", 18, minters: null),
@@ -315,7 +315,7 @@ namespace ModelViewer.Runtime
 
                             if (type == typeof(ItemEnhanceMail))
                             {
-                                return typeof(ItemEnhancement.ResultModel);
+                                return typeof(ItemEnhancement13.ResultModel);
                             }
 
                             if (type == typeof(MonsterCollectionMail))

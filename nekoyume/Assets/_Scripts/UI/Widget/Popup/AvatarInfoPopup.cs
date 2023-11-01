@@ -262,6 +262,8 @@ namespace Nekoyume.UI
             arenaButton.HasNotification.Value = false;
             raidButton.HasNotification.Value = false;
 
+            var clearedStageId = States.Instance.CurrentAvatarState
+                .worldInformation.TryGetLastClearedStageId(out var id) ? id : 1;
             var adventure = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
             var arena = States.Instance.CurrentItemSlotStates[BattleType.Arena];
             var raid = States.Instance.CurrentItemSlotStates[BattleType.Raid];
@@ -275,12 +277,14 @@ namespace Nekoyume.UI
 
                 if (!arena.Equipments.Exists(x => x == guid))
                 {
-                    arenaButton.HasNotification.Value = true;
+                    arenaButton.HasNotification.Value =
+                        clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRankingBoard;
                 }
 
                 if (!raid.Equipments.Exists(x => x == guid))
                 {
-                    raidButton.HasNotification.Value = true;
+                    raidButton.HasNotification.Value =
+                        clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRaid;
                 }
             }
 
@@ -299,10 +303,12 @@ namespace Nekoyume.UI
                                 adventureButton.HasNotification.Value = true;
                                 break;
                             case BattleType.Arena:
-                                arenaButton.HasNotification.Value = true;
+                                arenaButton.HasNotification.Value =
+                                    clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRankingBoard;
                                 break;
                             case BattleType.Raid:
-                                raidButton.HasNotification.Value = true;
+                                raidButton.HasNotification.Value =
+                                    clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRaid;
                                 break;
                         }
                     }
