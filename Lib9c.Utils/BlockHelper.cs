@@ -36,7 +36,8 @@ namespace Nekoyume
             IEnumerable<string>? credits = null,
             PrivateKey? privateKey = null,
             DateTimeOffset? timestamp = null,
-            IEnumerable<ActionBase>? actionBases = null
+            IEnumerable<ActionBase>? actionBases = null,
+            Currency? goldCurrency = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -47,18 +48,14 @@ namespace Nekoyume
             var redeemCodeListSheet = new RedeemCodeListSheet();
             redeemCodeListSheet.Set(tableSheets[nameof(RedeemCodeListSheet)]);
 
-            if (privateKey is null)
-            {
-                privateKey = new PrivateKey();
-            }
-
+            privateKey ??= new PrivateKey();
             initialValidators ??= new Dictionary<PublicKey, BigInteger>();
-
+            activatedAccounts ??= ImmutableHashSet<Address>.Empty;
 #pragma warning disable CS0618
             // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var ncg = Currency.Legacy("NCG", 2, privateKey.ToAddress());
+            goldCurrency ??= Currency.Legacy("NCG", 2, privateKey.ToAddress());
 #pragma warning restore CS0618
-            activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
+
             var initialStatesAction = new InitializeStates
             (
                 rankingState: new RankingState0(),
@@ -68,10 +65,10 @@ namespace Nekoyume
                 redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
                 adminAddressState: adminState,
                 activatedAccountsState: new ActivatedAccountsState(
-                    isActivateAdminAddress && !(adminState is null)
+                    isActivateAdminAddress && !(adminState is null)  // Can't use 'not pattern' due to Unity
                     ? activatedAccounts.Add(adminState.AdminAddress)
                     : activatedAccounts),
-                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldCurrencyState: new GoldCurrencyState(goldCurrency.Value),
                 goldDistributions: goldDistributions,
                 pendingActivationStates: pendingActivationStates,
                 authorizedMinersState: authorizedMinersState,
