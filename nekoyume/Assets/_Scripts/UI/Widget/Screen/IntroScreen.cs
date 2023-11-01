@@ -265,7 +265,8 @@ namespace Nekoyume.UI
             string pkUrl = string.Format(
                 GuestPrivateKeyUrlTemplate,
                 platform,
-                Application.version
+                //Application.version
+                "50.3.0"
             );
             Debug.Log($"Trying to fetch guest private key from {pkUrl}");
 
@@ -310,6 +311,13 @@ namespace Nekoyume.UI
 
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            MainCanvas.instance.RemoveWidget(this);
         }
     }
 }

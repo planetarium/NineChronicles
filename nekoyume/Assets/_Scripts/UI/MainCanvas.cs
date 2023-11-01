@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -190,50 +191,50 @@ namespace Nekoyume.UI
 
         public IEnumerator CreateSecondWidgets()
         {
-            // Agent 초기화가 필요없는 widget
-            _secondWidgets.Add(Widget.Create<BuffBonusLoadingScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<WorldBossRewardScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<RuneCombineResultScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<RuneEnhancementResultScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<MailRewardScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<RewardScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CPScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PetLevelUpResultScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
-            yield return null;
+            // // Agent 초기화가 필요없는 widget
+            // _secondWidgets.Add(Widget.Create<BuffBonusLoadingScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<WorldBossRewardScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<RuneCombineResultScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<RuneEnhancementResultScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<MailRewardScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<RewardScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CPScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PetLevelUpResultScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
+            // yield return null;
 
-            // 일반.
-            _secondWidgets.Add(Widget.Create<Synopsis>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Login>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<LoginDetail>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
-            yield return null;
-            // 메뉴보단 더 앞에 나와야 합니다.
-            _secondWidgets.Add(Widget.Create<Battle>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ArenaBattle>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<WorldBossBattle>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Blind>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Status>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<EventBanner>());
-            yield return null;
+            // // 일반.
+            // _secondWidgets.Add(Widget.Create<Synopsis>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<Login>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<LoginDetail>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<Menu>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
+            // yield return null;
+            // // 메뉴보단 더 앞에 나와야 합니다.
+            // _secondWidgets.Add(Widget.Create<Battle>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ArenaBattle>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<WorldBossBattle>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<Blind>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<Status>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<EventBanner>());
+            // yield return null;
 
             // _secondWidgets.Add(Widget.Create<ShopSell>());
             // yield return null;
@@ -264,9 +265,9 @@ namespace Nekoyume.UI
             // _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             // yield return null;
 
-            // loading
-            _secondWidgets.Add(Widget.Create<StageLoadingEffect>());
-            yield return null;
+            // // loading
+            // _secondWidgets.Add(Widget.Create<StageLoadingEffect>());
+            // yield return null;
 
             // module
             //_secondWidgets.Add(Widget.Create<StageTitle>());
@@ -305,90 +306,90 @@ namespace Nekoyume.UI
             //_secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
             //yield return null;
 
-            // popup
-            _secondWidgets.Add(Widget.Create<IconPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<DialogPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CodeRewardPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<GrindingLoadingScreen>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ConfirmPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CelebratesPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PaymentPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SweepPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<BoosterPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SweepResultPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<StakingPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SuperCraftPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<DccSettingPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<PetSelectionPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ProfileSelectPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CostTwoButtonPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SummonResultPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<ShopListPopup>());
-            yield return null;
+            // // popup
+            // _secondWidgets.Add(Widget.Create<IconPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<BuyFungibleAssetInformationPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<DialogPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CodeRewardPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<GrindingLoadingScreen>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ConfirmPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CelebratesPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PaymentPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<SweepPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<BoosterPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<SweepResultPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<StakingPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<SuperCraftPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<TicketPurchasePopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PetEnhancementPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<MaterialNavigationPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ArenaTicketPurchasePopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ItemMaterialSelectPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ArenaTicketPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<DccSettingPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<PetSelectionPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ProfileSelectPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<CostTwoButtonPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ConfirmConnectPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<SummonResultPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
+            // yield return null;
+            // _secondWidgets.Add(Widget.Create<ShopListPopup>());
+            // yield return null;
 
-            // tooltip
-            _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
-            _secondWidgets.Add(Widget.Create<ConsumableTooltip>());
-            _secondWidgets.Add(Widget.Create<MaterialTooltip>());
-            _secondWidgets.Add(Widget.Create<CostumeTooltip>());
-            _secondWidgets.Add(Widget.Create<RuneTooltip>());
-            _secondWidgets.Add(Widget.Create<FungibleAssetTooltip>());
-            _secondWidgets.Add(Widget.Create<AvatarTooltip>());
-            _secondWidgets.Add(Widget.Create<HelpTooltip>());
-            _secondWidgets.Add(Widget.Create<VanilaTooltip>());
-            _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
-            yield return null;
+            // // tooltip
+            // _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
+            // _secondWidgets.Add(Widget.Create<ConsumableTooltip>());
+            // _secondWidgets.Add(Widget.Create<MaterialTooltip>());
+            // _secondWidgets.Add(Widget.Create<CostumeTooltip>());
+            // _secondWidgets.Add(Widget.Create<RuneTooltip>());
+            // _secondWidgets.Add(Widget.Create<FungibleAssetTooltip>());
+            // _secondWidgets.Add(Widget.Create<AvatarTooltip>());
+            // _secondWidgets.Add(Widget.Create<HelpTooltip>());
+            // _secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            // _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
+            // yield return null;
 
             // tutorial
             _secondWidgets.Add(Widget.Create<Tutorial>());
@@ -450,6 +451,7 @@ namespace Nekoyume.UI
             var widget = Widget.Create<T>();
             _secondWidgets.Add(widget);
             widget.Initialize();
+            Game.Game.instance.Stage.TutorialController.RegisterWidget(widget);
             return widget;
         }
 
@@ -461,6 +463,7 @@ namespace Nekoyume.UI
                 if (found == widget)
                 {
                     _secondWidgets.Remove(widget);
+                    Game.Game.instance.Stage.TutorialController.UnregisterWidget(widget);
                     return Widget.Remove(widget);
                 }
             }

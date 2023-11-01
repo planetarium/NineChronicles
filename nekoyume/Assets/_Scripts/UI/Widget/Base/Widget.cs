@@ -291,6 +291,8 @@ namespace Nekoyume.UI
 
             Animator.enabled = true;
             Animator.Play("Show", 0, 0);
+
+            transform.SetAsLastSibling();
         }
 
         public void ForceClose(bool ignoreCloseAnimation = false)
