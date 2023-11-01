@@ -102,7 +102,9 @@ namespace Nekoyume
             public const int ActionsInShop = 17;
             [Obsolete("Not used anymore since v200092")]
             public const int ActionsInRankingBoard = 25;
+            [Obsolete("Not used anymore since v200092")]
             public const int ActionsInMimisbrunnr = 100;
+            [Obsolete("Not used anymore since v200092")]
             public const int ActionsInRaid = 50;
 
             #endregion
