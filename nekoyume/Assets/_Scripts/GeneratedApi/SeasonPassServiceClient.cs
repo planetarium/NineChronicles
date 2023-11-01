@@ -31,6 +31,39 @@ public class SeasonPassServiceClient
         _client.Dispose();
     }
 
+    [JsonConverter(typeof(ActionTypeTypeConverter))]
+    public enum ActionType
+    {
+        hack_and_slash,
+        hack_and_slash_sweep,
+        battle_arena,
+        raid,
+    }
+
+    public class ActionTypeTypeConverter : JsonConverter<ActionType>
+    {
+        public override ActionType Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            return reader.TokenType switch
+            {
+                JsonTokenType.Number => (ActionType)reader.GetInt32(),
+                JsonTokenType.String => Enum.Parse<ActionType>(reader.GetString()),
+                _ => throw new JsonException(
+                    $"Expected token type to be {string.Join(" or ", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}")
+            };
+        }
+        public override void Write(
+            Utf8JsonWriter writer,
+            ActionType value,
+            JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue((int)value);
+        }
+    }
+
     public class ClaimRequestSchema
     {
         [JsonPropertyName("agent_addr")]
@@ -57,6 +90,14 @@ public class SeasonPassServiceClient
         public string Ticker { get; set; }
         [JsonPropertyName("amount")]
         public decimal Amount { get; set; }
+    }
+
+    public class ExpInfoSchema
+    {
+        [JsonPropertyName("action_type")]
+        public ActionType ActionType { get; set; }
+        [JsonPropertyName("exp")]
+        public int Exp { get; set; }
     }
 
     public class HTTPValidationError
@@ -216,6 +257,26 @@ public class SeasonPassServiceClient
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 LevelInfoSchema[] result = System.Text.Json.JsonSerializer.Deserialize<LevelInfoSchema[]>(responseBody);
+                onSuccess?.Invoke(result);
+            }
+            catch (Exception ex)
+            {
+                onError?.Invoke(ex.Message);
+            }
+        }
+    }
+
+    public async Task GetSeasonpassExpAsync(Action<ExpInfoSchema[]> onSuccess, Action<string> onError)
+    {
+        string url = Url + "/api/season-pass/exp";
+        using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
+        {
+            try
+            {
+                var response = await _client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                ExpInfoSchema[] result = System.Text.Json.JsonSerializer.Deserialize<ExpInfoSchema[]>(responseBody);
                 onSuccess?.Invoke(result);
             }
             catch (Exception ex)
