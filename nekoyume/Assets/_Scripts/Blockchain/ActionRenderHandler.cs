@@ -2654,12 +2654,9 @@ namespace Nekoyume.Blockchain
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
             var tableSheets = TableSheets.Instance;
-            var (myDigest, enemyDigest) =
-                GetArenaPlayerDigest(
-                    eval.PreviousState,
-                    eval.OutputState,
-                    eval.Action.myAvatarAddress,
-                    eval.Action.enemyAvatarAddress);
+            ArenaPlayerDigest? myDigest = null;
+            ArenaPlayerDigest? enemyDigest = null;
+
             var championshipId = eval.Action.championshipId;
             var round = eval.Action.round;
 
@@ -2700,6 +2697,11 @@ namespace Nekoyume.Blockchain
                     out var outputMyScoreList)
                     ? (Integer)((List)outputMyScoreList)[1]
                     : ArenaScore.ArenaScoreDefault;
+                (myDigest, enemyDigest) = GetArenaPlayerDigest(
+                    eval.PreviousState,
+                    eval.OutputState,
+                    eval.Action.myAvatarAddress,
+                    eval.Action.enemyAvatarAddress);
             }).ToObservable().ObserveOnMainThread();
 
 
@@ -2722,15 +2724,15 @@ namespace Nekoyume.Blockchain
                 {
                     var simulator = new ArenaSimulator(random);
                     var log = simulator.Simulate(
-                        myDigest,
-                        enemyDigest,
+                        myDigest.Value,
+                        enemyDigest.Value,
                         arenaSheets);
 
                     var reward = RewardSelector.Select(
                         random,
                         tableSheets.WeeklyArenaRewardSheet,
                         tableSheets.MaterialItemSheet,
-                        myDigest.Level,
+                        myDigest.Value.Level,
                         ArenaHelper.GetRewardCount(previousMyScore));
 
                     if (log.Result.Equals(ArenaLog.ArenaResult.Win))
@@ -2759,8 +2761,8 @@ namespace Nekoyume.Blockchain
                     Game.Game.instance.Arena.Enter(
                         logs.First(),
                         rewards,
-                        myDigest,
-                        enemyDigest,
+                        myDigest.Value,
+                        enemyDigest.Value,
                         eval.Action.myAvatarAddress,
                         eval.Action.enemyAvatarAddress,
                         winCount + defeatCount > 1 ? (winCount, defeatCount) : null);
