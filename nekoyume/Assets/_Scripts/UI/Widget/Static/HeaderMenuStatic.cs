@@ -111,6 +111,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<Image> menuToggleNotifications;
 
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
+
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         private readonly Dictionary<ToggleType, Widget> _toggleWidgets =
@@ -453,6 +456,7 @@ namespace Nekoyume.UI.Module
                     break;
                 case AssetVisibleState.Shop:
                     SetActiveAssets(isNcgActive: true, isCrystalActive: true, isMaterialActiveCount: 1); // isMaterialActiveCount : Golden dust
+                    SetMaterial(0, CostType.GoldDust);
                     break;
                 case AssetVisibleState.Battle:
                     SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
@@ -479,6 +483,15 @@ namespace Nekoyume.UI.Module
                     SetActiveAssets(isNcgActive: true, isMaterialActiveCount: Summon.SummonGroup);
                     break;
             }
+        }
+
+        public void SetMaterial(int index, CostType costType)
+        {
+            var icon = costIconData.GetIcon(costType);
+            var count = States.Instance.CurrentAvatarState.inventory
+                .GetMaterialCount((int)costType);
+
+            MaterialAssets[index].SetMaterial(icon, count);
         }
 
         private void SetActiveAssets(
