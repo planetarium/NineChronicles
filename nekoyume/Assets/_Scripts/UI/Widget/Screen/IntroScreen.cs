@@ -265,8 +265,7 @@ namespace Nekoyume.UI
             string pkUrl = string.Format(
                 GuestPrivateKeyUrlTemplate,
                 platform,
-                //Application.version
-                "50.3.0"
+                Application.version
             );
             Debug.Log($"Trying to fetch guest private key from {pkUrl}");
 
