@@ -517,7 +517,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowMaterialNavigatorPopup(
+        public static void ShowMaterialNavigatorPopup(
             RuneCostType costType,
             RuneItem item, Sprite icon)
         {
@@ -527,22 +527,14 @@ namespace Nekoyume.UI
             switch (costType)
             {
                 case RuneCostType.RuneStone:
-                    var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
                     var runeStoneId = item.Row.Id;
-                    var isExist = RuneFrontHelper.TryGetRunStoneInformation(
-                        currentBlockIndex,
-                        runeStoneId,
-                        out var info,
-                        out var canObtain);
                     name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
                     var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
                     count = States.Instance.CurrentAvatarBalances[ticker].GetQuantityString();
                     content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
-                    buttonText = canObtain
-                        ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
-                        : L10nManager.Localize("UI_SHOP");
-                    popup.SetInfo(isExist, (info, canObtain));
-                    callback = () =>
+
+                    // Adventure's Rune
+                    if (runeStoneId == 30001)
                     {
                         buttonText = L10nManager.Localize("UI_CHARGE_AP");
                         callback = () => Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
@@ -564,17 +556,19 @@ namespace Nekoyume.UI
                         popup.SetInfo(isExist, (info, canObtain));
 
                         callback = () =>
-                        base.Close(true);
-                        if (canObtain)
                         {
-                            Find<WorldBoss>().ShowAsync().Forget();
-                        }
-                        else
-                        {
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                            Find<ShopBuy>().Show();
-                        }
-                    };
+                            Find<Rune>().Close(true);
+                            if (canObtain)
+                            {
+                                Find<WorldBoss>().ShowAsync().Forget();
+                            }
+                            else
+                            {
+                                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                                Find<ShopBuy>().Show();
+                            }
+                        };
+                    }
                     break;
                 case RuneCostType.Crystal:
                     name = L10nManager.Localize("ITEM_NAME_9999998");
@@ -583,7 +577,7 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
-                        base.Close(true);
+                        Find<Rune>().Close(true);
                         Game.Event.OnRoomEnter.Invoke(true);
                         Find<Grind>().Show();
                     };
@@ -596,7 +590,7 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("UI_SHOP");
                     callback = () =>
                     {
-                        base.Close(true);
+                        Find<Rune>().Close(true);
                         Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         Find<ShopBuy>().Show();
                     };
