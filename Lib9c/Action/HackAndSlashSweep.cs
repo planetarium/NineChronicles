@@ -164,8 +164,16 @@ namespace Nekoyume.Action
                 );
             }
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(costumes);
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the game config state was failed to load.");
+            }
+
+            var equipmentList = avatarState.ValidateEquipmentsV3(
+                equipments, context.BlockIndex, gameConfigState);
+            var costumeIds = avatarState.ValidateCostumeV2(costumes, gameConfigState);
             var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
             avatarState.ValidateItemRequirement(
@@ -265,13 +273,6 @@ namespace Nekoyume.Action
                     throw new NotEnoughMaterialException(
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
                 }
-            }
-
-            var gameConfigState = states.GetGameConfigState();
-            if (gameConfigState is null)
-            {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
             if (actionPoint > avatarState.actionPoint)

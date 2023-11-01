@@ -274,9 +274,17 @@ namespace Nekoyume.Action
                 addressesHex, source, "Validate World", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
-            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, blockIndex);
-            var foodIds = avatarState.ValidateConsumable(Foods, blockIndex);
-            var costumeIds = avatarState.ValidateCostume(Costumes);
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the game config state was failed to load.");
+            }
+
+            var equipmentList = avatarState.ValidateEquipmentsV3(
+                Equipments, blockIndex, gameConfigState);
+            var foodIds = avatarState.ValidateConsumableV2(Foods, blockIndex, gameConfigState);
+            var costumeIds = avatarState.ValidateCostumeV2(Costumes, gameConfigState);
             sw.Stop();
             Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
                 addressesHex, source, "Validate Items", blockIndex, sw.Elapsed.TotalMilliseconds);
@@ -294,13 +302,6 @@ namespace Nekoyume.Action
 
             if (ApStoneCount > 0)
             {
-                var gameConfigState = states.GetGameConfigState();
-                if (gameConfigState is null)
-                {
-                    throw new FailedLoadStateException(
-                        $"{addressesHex}Aborted as the game config state was failed to load.");
-                }
-
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
                 if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, blockIndex,

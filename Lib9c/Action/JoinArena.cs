@@ -97,12 +97,13 @@ namespace Nekoyume.Action
                     typeof(RuneListSheet),
                 });
 
-            avatarState.ValidEquipmentAndCostume(costumes, equipments,
+            var gameConfigState = states.GetGameConfigState();
+            avatarState.ValidEquipmentAndCostumeV2(costumes, equipments,
                 sheets.GetSheet<ItemRequirementSheet>(),
                 sheets.GetSheet<EquipmentItemRecipeSheet>(),
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
-                context.BlockIndex, addressesHex);
+                context.BlockIndex, addressesHex, gameConfigState);
 
             // update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena);

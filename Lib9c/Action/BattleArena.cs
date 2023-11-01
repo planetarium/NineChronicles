@@ -131,12 +131,13 @@ namespace Nekoyume.Action
                     typeof(RuneListSheet),
                 });
 
-            avatarState.ValidEquipmentAndCostume(costumes, equipments,
+            var gameConfigState = states.GetGameConfigState();
+            avatarState.ValidEquipmentAndCostumeV2(costumes, equipments,
                 sheets.GetSheet<ItemRequirementSheet>(),
                 sheets.GetSheet<EquipmentItemRecipeSheet>(),
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
-                context.BlockIndex, addressesHex);
+                context.BlockIndex, addressesHex, gameConfigState);
 
             // update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
@@ -205,7 +206,6 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
-            var gameConfigState = states.GetGameConfigState();
             var battleArenaInterval = roundData.ArenaType == ArenaType.OffSeason
                 ? 1
                 : gameConfigState.BattleArenaInterval;

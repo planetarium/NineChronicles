@@ -202,9 +202,11 @@ namespace Nekoyume.Action
                 ActionTypeText,
                 addressesHex);
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(Costumes);
-            var foodIds = avatarState.ValidateConsumable(Foods, context.BlockIndex);
+            var gameConfigState = states.GetGameConfigState();
+            var equipmentList = avatarState.ValidateEquipmentsV3(
+                Equipments, context.BlockIndex, gameConfigState);
+            var costumeIds = avatarState.ValidateCostumeV2(Costumes, gameConfigState);
+            var foodIds = avatarState.ValidateConsumableV2(Foods, context.BlockIndex, gameConfigState);
             var equipmentAndCostumes = Equipments.Concat(Costumes);
             avatarState.EquipItems(equipmentAndCostumes);
             avatarState.ValidateItemRequirement(

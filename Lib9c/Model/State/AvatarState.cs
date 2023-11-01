@@ -696,6 +696,88 @@ namespace Nekoyume.Model.State
             return list;
         }
 
+        public List<Equipment> ValidateEquipmentsV3(List<Guid> equipmentIds, long blockIndex, GameConfigState gameConfigState)
+        {
+            var countMap = new Dictionary<ItemSubType, int>();
+            var list = new List<Equipment>();
+            foreach (var itemId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Equipment)outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > blockIndex)
+                {
+                    throw new RequiredBlockIndexException($"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
+                }
+
+                var type = equipment.ItemSubType;
+                if (!countMap.ContainsKey(type))
+                {
+                    countMap[type] = 0;
+                }
+
+                countMap[type] += 1;
+
+                var requiredLevel = 0;
+                var isSlotEnough = true;
+                switch (equipment.ItemSubType)
+                {
+                    case ItemSubType.Weapon:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Weapon;
+                        requiredLevel = isSlotEnough ?
+                            gameConfigState.RequireCharacterLevel_EquipmentSlotWeapon : int.MaxValue;
+                        break;
+                    case ItemSubType.Armor:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Armor;
+                        requiredLevel = isSlotEnough ?
+                            gameConfigState.RequireCharacterLevel_EquipmentSlotArmor : int.MaxValue;
+                        break;
+                    case ItemSubType.Belt:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Belt;
+                        requiredLevel = isSlotEnough ?
+                            gameConfigState.RequireCharacterLevel_EquipmentSlotBelt : int.MaxValue;
+                        break;
+                    case ItemSubType.Necklace:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Necklace;
+                        requiredLevel = isSlotEnough ?
+                            gameConfigState.RequireCharacterLevel_EquipmentSlotNecklace : int.MaxValue;
+                        break;
+                    case ItemSubType.Ring:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Ring;
+                        requiredLevel = countMap[ItemSubType.Ring] == 1
+                            ? gameConfigState.RequireCharacterLevel_EquipmentSlotRing1
+                            : countMap[ItemSubType.Ring] == 2
+                                ? gameConfigState.RequireCharacterLevel_EquipmentSlotRing2
+                                : int.MaxValue;
+                        break;
+                    case ItemSubType.Aura:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Aura;
+                        requiredLevel = isSlotEnough ?
+                            gameConfigState.RequireCharacterLevel_EquipmentSlotAura : int.MaxValue;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"{equipment.ItemSubType} / invalid equipment type");
+                }
+
+                if (!isSlotEnough)
+                {
+                    throw new DuplicateEquipmentException($"Equipment slot of {equipment.ItemSubType} is full, but tried to equip {equipment.Id}");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new EquipmentSlotUnlockException($"{equipment.ItemSubType} / not enough level. required: {requiredLevel}");
+                }
+
+                list.Add(equipment);
+            }
+
+            return list;
+        }
+
         public List<int> ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
         {
             var list = new List<int>();
@@ -732,6 +814,58 @@ namespace Nekoyume.Model.State
                         break;
                     case 4:
                         requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot5;
+                        break;
+                    default:
+                        throw new ConsumableSlotOutOfRangeException();
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new ConsumableSlotUnlockException($"not enough level. required: {requiredLevel}");
+                }
+
+                list.Add(equipment.Id);
+            }
+
+            return list;
+        }
+
+        public List<int> ValidateConsumableV2(List<Guid> consumableIds, long currentBlockIndex, GameConfigState gameConfigState)
+        {
+            var list = new List<int>();
+            for (var slotIndex = 0; slotIndex < consumableIds.Count; slotIndex++)
+            {
+                var consumableId = consumableIds[slotIndex];
+
+                if (!inventory.TryGetNonFungibleItem(consumableId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Consumable) outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > currentBlockIndex)
+                {
+                    throw new RequiredBlockIndexException(
+                        $"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
+                }
+
+                int requiredLevel;
+                switch (slotIndex)
+                {
+                    case 0:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_ConsumableSlot1;
+                        break;
+                    case 1:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_ConsumableSlot2;
+                        break;
+                    case 2:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_ConsumableSlot3;
+                        break;
+                    case 3:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_ConsumableSlot4;
+                        break;
+                    case 4:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_ConsumableSlot5;
                         break;
                     default:
                         throw new ConsumableSlotOutOfRangeException();
@@ -786,6 +920,61 @@ namespace Nekoyume.Model.State
                         break;
                     case ItemSubType.Title:
                         requiredLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                        break;
+                    default:
+                        throw new InvalidItemTypeException(
+                            $"Costume[id: {costumeId}] isn't expected type. [type: {costume.ItemSubType}]");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new CostumeSlotUnlockException($"not enough level. required: {requiredLevel}");
+                }
+
+                list.Add(costume.Id);
+            }
+
+            return list;
+        }
+
+        public List<int> ValidateCostumeV2(IEnumerable<Guid> costumeIds, GameConfigState gameConfigState)
+        {
+            var subTypes = new List<ItemSubType>();
+            var list = new List<int>();
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
+                {
+                    continue;
+                }
+
+                if (subTypes.Contains(costume.ItemSubType))
+                {
+                    throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
+                }
+
+                subTypes.Add(costume.ItemSubType);
+
+                int requiredLevel;
+                switch (costume.ItemSubType)
+                {
+                    case ItemSubType.FullCostume:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_FullCostumeSlot;
+                        break;
+                    case ItemSubType.HairCostume:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_HairCostumeSlot;
+                        break;
+                    case ItemSubType.EarCostume:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_EarCostumeSlot;
+                        break;
+                    case ItemSubType.EyeCostume:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_EyeCostumeSlot;
+                        break;
+                    case ItemSubType.TailCostume:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_TailCostumeSlot;
+                        break;
+                    case ItemSubType.Title:
+                        requiredLevel = gameConfigState.RequireCharacterLevel_TitleSlot;
                         break;
                     default:
                         throw new InvalidItemTypeException(

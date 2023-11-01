@@ -148,9 +148,11 @@ namespace Nekoyume.Action
             }
 
             // Validate equipment, costume.
-            var equipmentList = avatarState.ValidateEquipmentsV2(EquipmentIds, context.BlockIndex);
-            var foodIds = avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(CostumeIds);
+            var equipmentList = avatarState.ValidateEquipmentsV3(
+                EquipmentIds, context.BlockIndex, gameConfigState);
+            var foodIds = avatarState.ValidateConsumableV2(
+                FoodIds, context.BlockIndex, gameConfigState);
+            var costumeIds = avatarState.ValidateCostumeV2(CostumeIds, gameConfigState);
 
             // Update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Raid);
