@@ -1,5 +1,9 @@
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
 #define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
 #endif
 
 using System;
@@ -263,8 +267,9 @@ namespace Nekoyume.Game
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
-
-            // NOTE: Initialize planets
+            
+#if RUN_ON_MOBILE
+            // NOTE: Initialize planets.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
@@ -277,6 +282,13 @@ namespace Nekoyume.Game
                     planetContext.Error);
                 yield break;
             }
+#else
+            // NOTE: We expect that the _commandLineOptions is contains
+            //       the endpoints(hosts, urls) of a specific planet
+            //       when run on standalone.
+            PlanetContext planetContext = null;
+            Debug.Log("PlanetContext is null on non-mobile platform.");
+#endif
 
             OnLoadCommandlineOptions();
             // ~Initialize planets
@@ -360,7 +372,7 @@ namespace Nekoyume.Game
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#if RUN_ON_MOBILE
             if (planetContext.SelectedPlanetInfo is null)
             {
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
@@ -404,7 +416,7 @@ namespace Nekoyume.Game
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
-#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#if RUN_ON_MOBILE
             yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));    
 #endif
 
@@ -686,7 +698,7 @@ namespace Nekoyume.Game
             popup.SetConfirmCallbackToExit();
         }
 
-#if UNITY_ANDROID
+#if RUN_ON_MOBILE
         private IEnumerator CoCheckPledge(PlanetId planetId)
         {
             if (!States.PledgeRequested || !States.PledgeApproved)

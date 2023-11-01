@@ -1,3 +1,11 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
+#endif
+
 using System;
 using System.Collections;
 using System.Globalization;
@@ -321,7 +329,7 @@ namespace Nekoyume.UI
             _privateKey = privateKey;
             _planetContext = planetContext;
 
-#if UNITY_ANDROID
+#if RUN_ON_MOBILE
             ApplyCurrentPlanetInfo(_planetContext);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
