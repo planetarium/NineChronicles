@@ -10,6 +10,10 @@ using UnityEngine.UI;
 using Nekoyume.Game.Controller;
 using System.Numerics;
 using DG.Tweening;
+using Nekoyume.Model.Mail;
+using Nekoyume.L10n;
+using Cysharp.Threading.Tasks;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI.Module
 {
@@ -149,6 +153,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject Light;
 
+        [SerializeField]
+        private Button ReceiveBtn;
+
         private SeasonPassServiceClient.RewardSchema rewardSchema;
 
         public void Awake()
@@ -157,6 +164,21 @@ namespace Nekoyume.UI.Module
             {
                 RefreshWithAvatarInfo(avatarInfo);
             });
+
+            ReceiveBtn.onClick.AddListener(() =>
+            {
+                ReceiveBtn.gameObject.SetActive(false);
+                Game.Game.instance.SeasonPassServiceManager.ReceiveAll(
+                    (result) =>
+                    {
+                        OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"), NotificationCell.NotificationType.Notification);
+                        Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
+                    },
+                    (error) =>
+                    {
+                        OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_FAIL"), NotificationCell.NotificationType.Notification);
+                    });
+            });
         }
 
         private void RefreshWithAvatarInfo(SeasonPassServiceClient.UserSeasonPassSchema avatarInfo)
@@ -164,9 +186,11 @@ namespace Nekoyume.UI.Module
             if (avatarInfo == null || rewardSchema == null)
                 return;
 
-            bool isUnrReceived = rewardSchema.Level > avatarInfo.LastNormalClaim && rewardSchema.Level <= avatarInfo.Level;
-            Light.SetActive(isUnrReceived);
-            levelLast.SetActive(isUnrReceived);
+            bool isUnReceived = rewardSchema.Level > avatarInfo.LastNormalClaim && rewardSchema.Level <= avatarInfo.Level;
+            Light.SetActive(isUnReceived);
+            bool isUnReceivedPremium = (rewardSchema.Level > avatarInfo.LastPremiumClaim && avatarInfo.IsPremium && rewardSchema.Level <= avatarInfo.Level);
+            ReceiveBtn.gameObject.SetActive(isUnReceived || isUnReceivedPremium);
+            levelLast.SetActive(isUnReceived);
             levelNormal.SetActive(rewardSchema.Level > avatarInfo.Level);
             levelReceived.SetActive(rewardSchema.Level <= avatarInfo.LastNormalClaim);
         }
