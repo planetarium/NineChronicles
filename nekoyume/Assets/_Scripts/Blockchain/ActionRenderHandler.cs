@@ -181,6 +181,7 @@ namespace Nekoyume.Blockchain
 
             // GARAGE
             UnloadFromMyGarages();
+            MintAssets();
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
@@ -628,7 +629,7 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<MintAssets>()
                 .Where(eval =>
-                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval))
+                    HasUpdatedAssetsForCurrentAgent(eval) || HasUpdatedAssetsForCurrentAvatar(eval) || ValidateEvaluationForCurrentAvatarState(eval))
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMintAssets)
                 .AddTo(_disposables);
@@ -2328,50 +2329,49 @@ namespace Nekoyume.Blockchain
         {
             if (eval.Exception is not null)
             {
+                Debug.Log(eval.Exception.Message);
                 return;
             }
 
-            var senderAddress = eval.Signer;
-            foreach (var (recipient, amount) in eval.Action.FungibleAssetValues)
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            foreach (var (recipient, fav, item) in eval.Action.MintSpecs)
             {
-                var currentAgentAddress = States.Instance.AgentState.address;
-                var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                if (senderAddress == currentAgentAddress)
+                if (fav.HasValue)
                 {
-                    OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize(
-                        "UI_TRANSFERASSET_NOTIFICATION_SENDER",
-                        amount,
-                        recipient),
-                    NotificationCell.NotificationType.Notification);
+                    var currency = fav.Value.Currency;
+                    var balance = states.GetBalance(recipient, currency);
+                    if (recipient.Equals(agentAddr))
+                    {
+                        if (currency.Equals(GoldCurrency))
+                        {
+                            var goldState = new GoldBalanceState(recipient, balance);
+                            gameStates.SetGoldBalanceState(goldState);
+                        }
+                        else if (currency.Equals(Currencies.Crystal))
+                        {
+                            gameStates.SetCrystalBalance(balance);
+                        }
+                        else if (currency.Equals(Currencies.Garage))
+                        {
+                            AgentStateSubject.OnNextGarage(fav.Value);
+                        }
+                    }
+                    else if (recipient.Equals(avatarAddr))
+                    {
+                        gameStates.SetCurrentAvatarBalance(balance);
+                    }
                 }
-                else if (recipient == currentAgentAddress)
-                {
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize(
-                            "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
-                            amount,
-                            senderAddress),
-                        NotificationCell.NotificationType.Notification);
-                }
-                else if (recipient == currentAvatarAddress)
-                {
-                    var currency = amount.Currency;
-                    States.Instance.CurrentAvatarBalances[currency.Ticker] =
-                        eval.OutputState.GetBalance(
-                            currentAvatarAddress,
-                            amount.Currency
-                        );
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize(
-                            "UI_TRANSFERASSET_NOTIFICATION_RECIPIENT",
-                            amount,
-                            senderAddress),
-                        NotificationCell.NotificationType.Notification);
-                }
+            }
+            bool itemExist = eval.Action.MintSpecs.Any(m => m.Items is not null);
+            if (itemExist)
+            {
+                var inventoryAddr = avatarAddr.Derive(SerializeKeys.LegacyInventoryKey);
+                var inventory = states.GetInventory(inventoryAddr);
+                gameStates.CurrentAvatarState.inventory = inventory;
+                ReactiveAvatarState.UpdateInventory(inventory);
             }
 
             UpdateAgentStateAsync(eval).Forget();
