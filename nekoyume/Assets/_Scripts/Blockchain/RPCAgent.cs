@@ -534,13 +534,14 @@ namespace Nekoyume.Blockchain
                 {
                     continue;
                 }
-                Debug.Log($"[ActionDebug] before MakeTransaction {++i}");
+                Debug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
                 Task task = Task.Run(async () =>
                 {
                     await MakeTransaction(new List<ActionBase> { action });
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
-
+                Debug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
+                          $" task completed({task.IsCompleted})");
                 if (task.IsFaulted)
                 {
                     Debug.LogException(task.Exception);
@@ -558,7 +559,7 @@ namespace Nekoyume.Blockchain
         private async Task MakeTransaction(List<ActionBase> actions)
         {
             var nonce = await GetNonceAsync();
-            long gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
+            var gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
             var tx = NCTx.Create(
                 nonce: nonce,
                 privateKey: PrivateKey,
@@ -569,23 +570,27 @@ namespace Nekoyume.Blockchain
                 gasLimit: gasLimit
             );
 
-            string actionsName = default;
-            foreach (var action in actions)
+            var actionsText = string.Join(", ", actions.Select(action =>
             {
-                actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
-            }
-            Debug.Log("[Transaction]" +
-                      $"\nnonce={nonce}" +
-                      $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                      $"\nHash={_genesis?.Hash}" +
-                      $"\nactionsName={actionsName}");
+                if (action is GameAction gameAction)
+                {
+                    return $"{action.GetActionTypeAttribute().TypeIdentifier}" +
+                           $"({gameAction.Id.ToString()})";
+                }
+
+                return action.GetActionTypeAttribute().TypeIdentifier.ToString();
+            }));
+            Debug.Log("[RPCAgent] MakeTransaction()... w/" +
+                      $" nonce={nonce}" +
+                      $" PrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                      $" GenesisBlockHash={_genesis?.Hash}" +
+                      $" TxId={tx.Id}" +
+                      $" Actions=[{actionsText}]");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
             foreach (var action in actions)
             {
-                Debug.Log($"[Transaction] action = {action}");
-
                 if (action is GameAction gameAction)
                 {
                     _transactions.TryAdd(gameAction.Id, tx.Id);

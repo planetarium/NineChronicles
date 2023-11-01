@@ -357,25 +357,25 @@ namespace Nekoyume.Game
                 .Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language))
                 .ToYieldInstruction();
 #endif
-            Debug.Log("[Game] Start() L10nManager initialized");
+            Debug.Log("[Game] Start()... L10nManager initialized");
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
-            Debug.Log("[Game] Start() TableSheets initialized");
+            Debug.Log("[Game] Start()... TableSheets initialized");
             ResourcesHelper.Initialize();
-            Debug.Log("[Game] Start() ResourcesHelper initialized");
+            Debug.Log("[Game] Start()... ResourcesHelper initialized");
             AudioController.instance.Initialize();
-            Debug.Log("[Game] Start() AudioController initialized");
+            Debug.Log("[Game] Start()... AudioController initialized");
 
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             yield return StartCoroutine(CoLogin(planetContext, succeed =>
                     {
-                        Debug.Log($"Agent initialized. {succeed}");
+                        Debug.Log($"[Game] Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
                         Analyzer.SetAgentAddress(Agent.Address.ToString());
@@ -1701,10 +1701,11 @@ namespace Nekoyume.Game
             Address? agentAddr = null,
             string rpcServerHost = null)
         {
+            Debug.Log("[Game] InitializeAnalyzer() invoked");
             var uniqueId = agentAddr?.ToString();
 #if UNITY_EDITOR
-            Debug.Log("This is editor mode.");
-            Analyzer = new Analyzer(uniqueId, rpcServerHost);
+            Debug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
+            Analyzer = new Analyzer(uniqueId, rpcServerHost, isTrackable: false);
             return;
 #endif
 
