@@ -726,7 +726,7 @@ namespace Nekoyume.UI
         public void TutorialActionGoToFirstRecipeCellView()
         {
             var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
-                .FirstOrDefault(row => row.UnlockStage == 3);
+                .FirstOrDefault();
             if (firstRecipeRow is null)
             {
                 Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
@@ -734,7 +734,17 @@ namespace Nekoyume.UI
             }
 
             Craft.SharedModel.DummyLockedRecipes.Add(firstRecipeRow.Id);
-            GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
+
+            if (combinationExclamationMark.gameObject.activeSelf)
+            {
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            Close();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            Find<Craft>().ShowWithEquipmentRecipeId(firstRecipeRow.Id);
         }
 
         // Invoke from TutorialController.PlayAction()

@@ -759,6 +759,12 @@ namespace Nekoyume.UI
                 Close(true);
             }
 
+            var combinationMain = Find<CombinationMain>();
+            if (combinationMain.isActiveAndEnabled)
+            {
+                combinationMain.Close(true);
+            }
+
             Game.Event.OnRoomEnter.Invoke(true);
         }
 
