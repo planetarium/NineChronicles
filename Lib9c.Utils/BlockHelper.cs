@@ -19,7 +19,6 @@ using Nekoyume.Action.Loader;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Serilog;
 
 namespace Nekoyume
 {
@@ -29,15 +28,15 @@ namespace Nekoyume
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
-            AdminState adminState = null,
-            AuthorizedMinersState authorizedMinersState = null,
-            IImmutableSet<Address> activatedAccounts = null,
-            Dictionary<PublicKey, BigInteger> initialValidators = null,
+            AdminState? adminState = null,
+            AuthorizedMinersState? authorizedMinersState = null,
+            IImmutableSet<Address>? activatedAccounts = null,
+            Dictionary<PublicKey, BigInteger>? initialValidators = null,
             bool isActivateAdminAddress = false,
-            IEnumerable<string> credits = null,
-            PrivateKey privateKey = null,
+            IEnumerable<string>? credits = null,
+            PrivateKey? privateKey = null,
             DateTimeOffset? timestamp = null,
-            IEnumerable<ActionBase> actionBases = null
+            IEnumerable<ActionBase>? actionBases = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
