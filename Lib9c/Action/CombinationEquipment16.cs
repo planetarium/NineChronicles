@@ -24,11 +24,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment17")]
-    public class CombinationEquipment : GameAction, ICombinationEquipmentV4
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("combination_equipment16")]
+    public class CombinationEquipment16 : GameAction, ICombinationEquipmentV4
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -113,6 +114,18 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
+            // Validate Required Cleared Tutorial Stage
+            if (!avatarState.worldInformation.IsStageCleared(
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
+            {
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction,
+                    current);
+            }
+            // ~Validate Required Cleared Tutorial Stage
+
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState is null)
@@ -121,7 +134,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is failed to load: # {slotIndex}");
             }
 
-            if (!slotState.ValidateV2(avatarState, context.BlockIndex))
+            if (!slotState.Validate(avatarState, context.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");

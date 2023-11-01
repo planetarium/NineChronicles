@@ -8,6 +8,8 @@ using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,15 +17,15 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("re_register_product2")]
-    public class ReRegisterProduct : GameAction
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("cancel_product_registration")]
+    public class CancelProductRegistration0 : GameAction
     {
         public const int CostAp = 5;
         public const int Capacity = 100;
         public Address AvatarAddress;
-        public List<(IProductInfo, IRegisterInfo)> ReRegisterInfos;
+        public List<IProductInfo> ProductInfos;
         public bool ChargeAp;
-
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
@@ -33,22 +35,18 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!ReRegisterInfos.Any())
+            if (!ProductInfos.Any())
             {
-                throw new ListEmptyException($"ReRegisterInfos was empty.");
+                throw new ListEmptyException("ProductInfos was empty.");
             }
 
-            if (ReRegisterInfos.Count > Capacity)
+            if (ProductInfos.Count > Capacity)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(ReRegisterInfos)} must be less than or equal {Capacity}.");
+                throw new ArgumentOutOfRangeException($"{nameof(ProductInfos)} must be less than or equal {Capacity}.");
             }
 
-            var ncg = states.GetGoldCurrency();
-            foreach (var (productInfo, registerInfo) in ReRegisterInfos)
+            foreach (var productInfo in ProductInfos)
             {
-                registerInfo.ValidateAddress(AvatarAddress);
-                registerInfo.ValidatePrice(ncg);
-                registerInfo.Validate();
                 productInfo.ValidateType();
                 if (productInfo.AvatarAddress != AvatarAddress ||
                     productInfo.AgentAddress != context.Signer)
@@ -63,6 +61,13 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("failed to load avatar state");
             }
 
+            if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
+            {
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(AvatarAddress.ToHex(),
+                    GameConfig.RequireClearedStageLevel.ActionsInShop, current);
+            }
+
             avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());
             var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
@@ -72,6 +77,7 @@ namespace Nekoyume.Action
             }
             else
             {
+                // cancel order before product registered case.
                 var marketState = states.TryGetState(Addresses.Market, out List rawMarketList)
                     ? new MarketState(rawMarketList)
                     : new MarketState();
@@ -79,30 +85,12 @@ namespace Nekoyume.Action
                 marketState.AvatarAddresses.Add(AvatarAddress);
                 states = states.SetState(Addresses.Market, marketState.Serialize());
             }
-            foreach (var (productInfo, info) in ReRegisterInfos.OrderBy(tuple => tuple.Item2.Type).ThenBy(tuple => tuple.Item2.Price))
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+            foreach (var productInfo in ProductInfos)
             {
-                var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
                 if (productInfo is ItemProductInfo {Legacy: true})
                 {
-                    // if product is order. it move to products state from sharded shop state.
                     var productType = productInfo.Type;
-                    var avatarAddress = avatarState.address;
-                    if (productType == ProductType.FungibleAssetValue)
-                    {
-                        // 잘못된 타입
-                        throw new InvalidProductTypeException(
-                            $"Order not support {productType}");
-                    }
-
-                    var digestListAddress =
-                        OrderDigestListState.DeriveAddress(avatarAddress);
-                    if (!states.TryGetState(digestListAddress, out Dictionary rawList))
-                    {
-                        throw new FailedLoadStateException(
-                            $"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
-                    }
-
-                    var digestList = new OrderDigestListState(rawList);
                     var orderAddress = Order.DeriveAddress(productInfo.ProductId);
                     if (!states.TryGetState(orderAddress, out Dictionary rawOrder))
                     {
@@ -111,23 +99,19 @@ namespace Nekoyume.Action
                     }
 
                     var order = OrderFactory.Deserialize(rawOrder);
-                    var itemCount = 1;
                     switch (order)
                     {
-                        case FungibleOrder fungibleOrder:
-                            itemCount = fungibleOrder.ItemCount;
+                        case FungibleOrder _:
                             if (productInfo.Type == ProductType.NonFungible)
                             {
-                                throw new InvalidProductTypeException(
-                                    $"FungibleOrder not support {productType}");
+                                throw new InvalidProductTypeException($"FungibleOrder not support {productType}");
                             }
 
                             break;
                         case NonFungibleOrder _:
                             if (productInfo.Type == ProductType.Fungible)
                             {
-                                throw new InvalidProductTypeException(
-                                    $"NoneFungibleOrder not support {productType}");
+                                throw new InvalidProductTypeException($"NoneFungibleOrder not support {productType}");
                             }
 
                             break;
@@ -135,35 +119,18 @@ namespace Nekoyume.Action
                             throw new ArgumentOutOfRangeException(nameof(order));
                     }
 
-                    if (order.SellerAvatarAddress != avatarAddress ||
-                        order.SellerAgentAddress != context.Signer)
-                    {
-                        throw new InvalidAddressException();
-                    }
-
-                    if (!order.Price.Equals(productInfo.Price))
-                    {
-                        throw new InvalidPriceException($"order price does not match information. expected: {order.Price} actual: {productInfo.Price}");
-                    }
-
-                    var updateSellInfo = new UpdateSellInfo(productInfo.ProductId,
-                        productInfo.ProductId, order.TradableId,
-                        order.ItemSubType, productInfo.Price, itemCount);
-                    states = UpdateSell.Cancel(states, updateSellInfo, addressesHex,
-                        avatarState, digestList, context,
-                        avatarState.address);
+                    states = SellCancellation.Cancel(context, states, avatarState, addressesHex,
+                        order);
                 }
                 else
                 {
-                    states = CancelProductRegistration0.Cancel(productsState, productInfo,
-                        states, avatarState, context);
+                    states = Cancel(productsState, productInfo, states, avatarState, context);
                 }
-                states = RegisterProduct2.Register(context, info, avatarState, productsState, states);
             }
 
             states = states
-                .SetState(AvatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(AvatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(productsStateAddress, productsState.Serialize());
 
             if (migrationRequired)
@@ -174,33 +141,71 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress.Derive(LegacyWorldInformationKey),
                         avatarState.worldInformation.Serialize());
             }
+
             return states;
         }
+
+        public static IAccount Cancel(ProductsState productsState, IProductInfo productInfo, IAccount states,
+            AvatarState avatarState, IActionContext context)
+        {
+            var productId = productInfo.ProductId;
+            if (!productsState.ProductIds.Contains(productId))
+            {
+                throw new ProductNotFoundException($"can't find product {productId}");
+            }
+
+            productsState.ProductIds.Remove(productId);
+
+            var productAddress = Product.DeriveAddress(productId);
+            var product = ProductFactory.DeserializeProduct((List) states.GetState(productAddress));
+            product.Validate(productInfo);
+
+            switch (product)
+            {
+                case FavProduct favProduct:
+                    states = states.TransferAsset(context, productAddress, avatarState.address,
+                        favProduct.Asset);
+                    break;
+                case ItemProduct itemProduct:
+                    switch (itemProduct.TradableItem)
+                    {
+                        case Costume costume:
+                            avatarState.UpdateFromAddCostume(costume, true);
+                            break;
+                        case ItemUsable itemUsable:
+                            avatarState.UpdateFromAddItem(itemUsable, true);
+                            break;
+                        case TradableMaterial tradableMaterial:
+                        {
+                            avatarState.UpdateFromAddItem(tradableMaterial, itemProduct.ItemCount, true);
+                            break;
+                        }
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(product));
+            }
+
+            var mail = new ProductCancelMail(context.BlockIndex, productId, context.BlockIndex, productId);
+            avatarState.Update(mail);
+            states = states.SetState(productAddress, Null.Value);
+            return states;
+        }
+
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
                 ["a"] = AvatarAddress.Serialize(),
-                ["r"] = new List(ReRegisterInfos.Select(tuple =>
-                    List.Empty.Add(tuple.Item1.Serialize()).Add(tuple.Item2.Serialize()))),
+                ["p"] = new List(ProductInfos.Select(p => p.Serialize())),
                 ["c"] = ChargeAp.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
-            ReRegisterInfos = new List<(IProductInfo, IRegisterInfo)>();
-            var serialized = (List) plainValue["r"];
-            foreach (var value in serialized)
-            {
-                var innerList = (List) value;
-                var productList = (List) innerList[0];
-                var registerList = (List) innerList[1];
-                IRegisterInfo info = ProductFactory.DeserializeRegisterInfo(registerList);
-                IProductInfo productInfo = ProductFactory.DeserializeProductInfo(productList);
-                ReRegisterInfos.Add((productInfo, info));
-            }
-
+            ProductInfos = plainValue["p"].ToList(s => ProductFactory.DeserializeProductInfo((List) s));
             ChargeAp = plainValue["c"].ToBoolean();
         }
     }

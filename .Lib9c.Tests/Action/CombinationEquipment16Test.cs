@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class CombinationEquipmentTest
+    public class CombinationEquipment16Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
 
-        public CombinationEquipmentTest(ITestOutputHelper outputHelper)
+        public CombinationEquipment16Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
 
             var combinationSlotState = new CombinationSlotState(
                 _slotAddress,
-                GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
+                0);
 
             _initialState = new MockStateDelta()
                 .SetState(_slotAddress, combinationSlotState.Serialize())
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
             Assert.Null(state.GetState(dailyCostAddress));
             Assert.Null(state.GetState(weeklyCostAddress));
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = slotIndex,
@@ -460,7 +460,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -520,7 +520,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment16.AddAndUnlockOption(
                 _agentState,
                 null,
                 equipment,

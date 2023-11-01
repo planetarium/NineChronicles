@@ -21,11 +21,12 @@ using Serilog;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/2195
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("join_arena4")]
-    public class JoinArena : GameAction, IJoinArenaV1
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("join_arena3")]
+    public class JoinArena3 : GameAction, IJoinArenaV1
     {
         public Address avatarAddress;
         public int championshipId;
@@ -86,6 +87,21 @@ namespace Nekoyume.Action
                     $"[{nameof(JoinArena)}] Aborted as the avatar state of the signer failed to load.");
             }
 
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
+                throw new NotEnoughClearedStageLevelException(
+                    $"{addressesHex}Aborted as NotEnoughClearedStageLevelException");
+            }
+
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
+            {
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
+                    world.StageClearedId);
+            }
+
             var sheets = states.GetSheets(
                 sheetTypes: new[]
                 {
@@ -97,13 +113,12 @@ namespace Nekoyume.Action
                     typeof(RuneListSheet),
                 });
 
-            var gameConfigState = states.GetGameConfigState();
-            avatarState.ValidEquipmentAndCostumeV2(costumes, equipments,
+            avatarState.ValidEquipmentAndCostume(costumes, equipments,
                 sheets.GetSheet<ItemRequirementSheet>(),
                 sheets.GetSheet<EquipmentItemRecipeSheet>(),
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
-                context.BlockIndex, addressesHex, gameConfigState);
+                context.BlockIndex, addressesHex);
 
             // update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Arena);

@@ -21,8 +21,9 @@ using Log = Serilog.Log;
 
 namespace Nekoyume.Action
 {
-    [ActionType("buy_product3")]
-    public class BuyProduct : GameAction
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("buy_product2")]
+    public class BuyProduct2 : GameAction
     {
         // Capacity from Buy limits in NineChronicles
         // https://github.com/planetarium/NineChronicles/blob/v100372-1/nekoyume/Assets/_Scripts/UI/Shop/BuyView.cs#L127
@@ -69,6 +70,15 @@ namespace Nekoyume.Action
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out var buyerAvatarState, out var migrationRequired))
             {
                 throw new FailedLoadStateException("failed load to buyer avatar state.");
+            }
+
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+
+            if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
+            {
+                buyerAvatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();

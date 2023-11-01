@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action.Scenario
             var itemSlotStateAddress = ItemSlotState.DeriveAddress(_avatarAddress, BattleType.Adventure);
             Assert.Null(_initialState.GetState(itemSlotStateAddress));
 
-            var has = new HackAndSlash
+            var has = new HackAndSlash21
             {
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
@@ -154,7 +154,7 @@ namespace Lib9c.Tests.Action.Scenario
                 avatarState.worldInformation.Serialize()
             );
 
-            var raid = new Raid
+            var raid = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action.Scenario
                     avatarState.worldInformation.Serialize()
                 );
 
-                var join = new JoinArena
+                var join = new JoinArena3
                 {
                     avatarAddress = avatarAddress,
                     championshipId = 1,
@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var enemyAvatarAddress = avatarAddress.Equals(_avatarAddress)
                     ? _enemyAvatarAddress
                     : _avatarAddress;
-                var battle = new BattleArena
+                var battle = new BattleArena13
                 {
                     myAvatarAddress = avatarAddress,
                     enemyAvatarAddress = enemyAvatarAddress,
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action.Scenario
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 avatarState.worldInformation.Serialize());
 
-            var register = new RegisterProduct
+            var register = new RegisterProduct2
             {
                 AvatarAddress = _avatarAddress,
                 RegisterInfos = new List<IRegisterInfo>

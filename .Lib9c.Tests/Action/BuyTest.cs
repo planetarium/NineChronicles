@@ -351,7 +351,7 @@ namespace Lib9c.Tests.Action
                 Signer = _buyerAgentAddress,
             });
 
-            var buyProductAction = new BuyProduct
+            var buyProductAction = new BuyProduct2
             {
                 AvatarAddress = _buyerAvatarAddress,
                 ProductInfos = productInfos,
@@ -630,7 +630,7 @@ namespace Lib9c.Tests.Action
                 action.errors.Select(r => r.errorCode)
             );
 
-            var buyProductAction = new BuyProduct
+            var buyProductAction = new BuyProduct2
             {
                 AvatarAddress = _buyerAvatarAddress,
                 ProductInfos = new[] { productInfo },
