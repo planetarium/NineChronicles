@@ -412,6 +412,7 @@ namespace Nekoyume.Game
             UpdateScreenResolution();
             _isStaticRatio = false;
             GL.Clear(true, true, Color.black);
+            ScreenClear.ClearScreen();
         }
 
         public void UpdateStaticRatioWithLetterBox()
@@ -442,8 +443,8 @@ namespace Nekoyume.Game
 
             UpdateScreenResolution();
             _isStaticRatio = true;
-
-            ScreenClear.ClearScreen(scaleheight < 1).Forget();
+            ScreenClear.ClearScreen(scaleheight < 1);
+            GL.Clear(true, true, Color.black);
         }
 
         void OnPreCull() => GL.Clear(true, true, Color.black);

@@ -18,14 +18,14 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Game;
-    using Nekoyume.UI.Scroller;
+    using Game;
+    using Scroller;
     using UniRx;
 
     public class CombinationSlot : MonoBehaviour
     {
         private const int UnlockStage =
-            GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+            Nekoyume.Game.LiveAsset.GameConfig.CombinationEquipmentAction;
 
         public enum SlotType
         {

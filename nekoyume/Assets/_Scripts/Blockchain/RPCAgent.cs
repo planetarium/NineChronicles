@@ -45,7 +45,7 @@ namespace Nekoyume.Blockchain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const int RpcConnectionRetryCount = 50;
+        private const int RpcConnectionRetryCount = 6;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<ActionBase> _queuedActions = new ConcurrentQueue<ActionBase>();
 
@@ -408,12 +408,12 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"Retry rpc connection. (count: {tuple.retryCount})");
-                    var message =
-                        L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
-                        RpcConnectionRetryCount - tuple.retryCount + 1,
-                        RpcConnectionRetryCount);
-                    Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
+                    Debug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
+                    var tryCount = RpcConnectionRetryCount - tuple.retryCount;
+                    if (tryCount > 0)
+                    {
+                        Widget.Find<DimmedLoadingScreen>()?.Show();
+                    }
                 })
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
@@ -807,7 +807,7 @@ namespace Nekoyume.Blockchain
                     var popup = Widget.Find<IconAndButtonSystem>();
                     popup.Show(L10nManager.Localize("UI_ERROR"),
                         errorMsg, L10nManager.Localize("UI_OK"), false);
-                    popup.SetCancelCallbackToExit();
+                    popup.SetConfirmCallbackToExit();
                 });
 
         }
