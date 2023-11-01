@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class EventMaterialItemCrafts : GameAction, IEventMaterialItemCraftsV1
     {
-        private const string ActionTypeText = "event_material_item_crafts1";
+        private const string ActionTypeText = "event_material_item_crafts2";
         public Address AvatarAddress;
         public int EventScheduleId;
         public int EventMaterialItemRecipeId;

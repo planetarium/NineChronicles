@@ -27,7 +27,7 @@ namespace Nekoyume.Action
     [ActionType(ActionTypeText)]
     public class EventConsumableItemCrafts : GameAction, IEventConsumableItemCraftsV1
     {
-        private const string ActionTypeText = "event_consumable_item_crafts1";
+        private const string ActionTypeText = "event_consumable_item_crafts2";
 
         public Address AvatarAddress;
         public int EventScheduleId;

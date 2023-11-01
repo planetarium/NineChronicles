@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("cancel_product_registration1")]
+    [ActionType("cancel_product_registration2")]
     public class CancelProductRegistration : GameAction
     {
         public const int CostAp = 5;
