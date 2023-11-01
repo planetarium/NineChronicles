@@ -779,7 +779,7 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombineEquipmentPremiumRecipeButton()
         {
-            // Fill this
+            equipmentSubRecipeView.ChangeTabToPremiumForTutorial();
         }
     }
 }
