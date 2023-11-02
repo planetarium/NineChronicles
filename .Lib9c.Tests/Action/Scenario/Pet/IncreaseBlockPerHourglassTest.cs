@@ -52,13 +52,13 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         }
 
         [Theory]
-        [InlineData(1, 10113000, null)] // No Pet
-        [InlineData(1, 10113000, 1)] // Lv.1 increases 1 block per HG: 3 -> 4
-        [InlineData(1, 10113000, 30)] // Lv.30 increases 30 blocks per HG: 3 -> 33
-        [InlineData(1, 10120000, 30)] // Test for min. Hourglass is 1
+        [InlineData(1, 155, null)] // No Pet
+        [InlineData(1, 155, 1)] // Lv.1 increases 1 block per HG: 3 -> 4
+        [InlineData(1, 155, 30)] // Lv.30 increases 30 blocks per HG: 3 -> 33
+        [InlineData(1, 37, 30)] // Test for min. Hourglass is 1
         public void RapidCombinationTest_Equipment(
             int randomSeed,
-            int targetItemId,
+            int requiredBlock,
             int? petLevel
         )
         {
@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             // Get recipe
             var recipe =
                 _tableSheets.EquipmentItemRecipeSheet.Values.First(
-                    recipe => recipe.ResultEquipmentId == targetItemId
+                    recipe => recipe.RequiredBlockIndex >= requiredBlock
                 );
             Assert.NotNull(recipe);
 
