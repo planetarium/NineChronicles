@@ -171,10 +171,12 @@ namespace Nekoyume.UI
             var type = typeof(T);
             if (!Pool.TryGetValue(type, out var model))
             {
-                // DevCra - iOS Memory Optimization
-                //throw new WidgetNotFoundException(type.Name);
-                MainCanvas.instance.AddWidget<T>();
-                Pool.TryGetValue(type, out model);
+#if UNITY_ANDROID || UNITY_IOS
+                // Memory optimization
+                return MainCanvas.instance.AddWidget<T>();
+#else
+                throw new WidgetNotFoundException(type.Name);
+#endif
             }
 
             return (T)model.widget;
@@ -283,7 +285,9 @@ namespace Nekoyume.UI
             AnimationState.Value = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
+#if UNITY_ANDROID || UNITY_IOS
             transform.SetAsLastSibling();
+#endif
 
             if (!Animator || ignoreShowAnimation)
             {
