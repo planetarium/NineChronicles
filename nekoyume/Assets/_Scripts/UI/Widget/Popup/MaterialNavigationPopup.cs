@@ -19,7 +19,6 @@ namespace Nekoyume.UI
         {
             public GameObject container;
             public Image icon;
-            public TextMeshProUGUI nameText;
             public TextMeshProUGUI countText;
         }
 
@@ -51,6 +50,9 @@ namespace Nekoyume.UI
             public UIHsvModifier hsvModifier;
             public TextMeshProUGUI infoText;
         }
+
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
 
         [SerializeField]
         private Image itemImage;
@@ -89,6 +91,8 @@ namespace Nekoyume.UI
         private ConditionalButton conditionalButtonYellow;
 
         private System.Action _callback;
+        private System.Action _chargeAP;
+        private System.Action _getDailyReward;
 
         protected override void Awake()
         {
@@ -160,44 +164,44 @@ namespace Nekoyume.UI
             infoText.hsvModifier.enabled = isPositive;
         }
 
-        private const string ActionPointTicker = "ACTIONPOINT";
-        private const int ActionPointItemId = 9999996;
-        private const string AdventureRuneTicker = "RUNE_ADVENTURE";
-        private const int ItemId = 500000;
-
-        private System.Action _chargeAP;
-        private System.Action _getDailyReward;
-
         public void ShowAP(
             string itemCount,
             int subItemCount,
             long blockRange,
-            long maxBlockRange, //
+            long maxBlockRange,
             bool isInteractable,
-            System.Action chargeAP, //
+            System.Action chargeAP,
             System.Action getDailyReward,
-            bool ignoreShowAnimation = false) //
+            bool ignoreShowAnimation = false)
         {
-            itemImage.sprite = SpriteHelper.GetFavIcon(ActionPointTicker);
-            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{ActionPointItemId}");
+            const CostType costType = CostType.ActionPoint;
+            const int itemId = 9999996;
+            itemImage.sprite = costIconData.GetIcon(costType);
             itemCountText.text = itemCount;
-            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{ActionPointItemId}");;
+            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
             infoText.container.SetActive(false); // set default
 
             actionButton.gameObject.SetActive(false);
             conditionalButtonBrown.gameObject.SetActive(true);
             conditionalButtonYellow.gameObject.SetActive(true);
 
+            const int subItemId = 500000;  // APStone
             subItem.container.SetActive(true);
-            subItem.icon.sprite = SpriteHelper.GetItemIcon(ItemId);
-            subItem.nameText.text = $"{L10nManager.Localize($"ITEM_NAME_{ItemId}")} :";
-            subItem.countText.text = subItemCount.ToString();
+            subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
+            subItem.countText.text =
+                $"{L10nManager.Localize($"ITEM_NAME_{subItemId}")} : {subItemCount}";
 
-            blockGauge.minText.text = 0.ToString();
+            const string bonusItemTicker = "RUNE_ADVENTURE";
+            const int bonusItemCount = 1;
             blockGauge.maxText.text = maxBlockRange.ToString();
-            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(AdventureRuneTicker);
-            blockGauge.bonusItem.countText.text = 1.ToString();
-            blockGauge.bonusItem.button.onClick.RemoveAllListeners();  // Todo Fill this
+            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(bonusItemTicker);
+            blockGauge.bonusItem.countText.text = bonusItemCount.ToString();
+            blockGauge.bonusItem.button.onClick.RemoveAllListeners();
+            blockGauge.bonusItem.button.onClick.AddListener(() =>
+            {
+                Close();
+            });
 
             var remainBlockRange = maxBlockRange - blockRange;
             blockGauge.container.SetActive(true);

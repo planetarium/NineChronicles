@@ -1301,7 +1301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6532000161652422014
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1317,10 +1317,10 @@ RectTransform:
   m_Father: {fileID: 184058445560754051}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 25.56}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80.365005, y: -15}
+  m_SizeDelta: {x: 92.73, y: 25.56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2523161330349383145
 CanvasRenderer:
@@ -1688,6 +1688,7 @@ MonoBehaviour:
   - type: 1000019
     rectTransform: {fileID: 7578906857067571999}
   tutorialActions: 50420f00
+  costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
   itemImage: {fileID: 6817434740769365206}
   itemNameText: {fileID: 3103039326954476331}
   itemCountText: {fileID: 161680920514306476}
@@ -3400,7 +3401,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 123
+  m_text: 'AP Potion : 123'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
