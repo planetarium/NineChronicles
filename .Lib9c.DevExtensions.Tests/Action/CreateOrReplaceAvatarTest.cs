@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Action;
+using Lib9c.Tests;
 using Lib9c.Tests.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
@@ -24,6 +25,7 @@ namespace Lib9c.DevExtensions.Tests.Action
     public class CreateOrReplaceAvatarTest
     {
         private readonly IAccount _initialStates;
+        private readonly TableSheets _tableSheets;
 
         public CreateOrReplaceAvatarTest()
         {
@@ -36,6 +38,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 GoldCurrencyState.Address,
                 new GoldCurrencyState(ncgCurrency).Serialize());
             var sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(sheets);
             foreach (var (key, value) in sheets)
             {
                 _initialStates = _initialStates.SetState(
@@ -69,16 +72,8 @@ namespace Lib9c.DevExtensions.Tests.Action
                 int.MaxValue,
                 new[]
                 {
-                    (10111000, 0),
-                    (10111000, 21), // 21: See also EnhancementCostSheetV2.csv
-                    (10211000, 0),
-                    (10211000, 21),
-                    (10311000, 0),
-                    (10311000, 21),
-                    (10411000, 0),
-                    (10411000, 21),
-                    (10511000, 0),
-                    (10511000, 21),
+                    (ItemSubType.Weapon, 0),
+                    (ItemSubType.Weapon, 21), // 21: See also EnhancementCostSheetV2.csv
                 },
                 new[]
                 {
@@ -291,12 +286,22 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int equipmentId, int level)[]? equipments,
+            (ItemSubType itemSubType, int level)[]? equipmentData,
             (int consumableId, int count)[]? foods,
             int[]? costumeIds,
             (int runeId, int level)[]? runes,
             (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
+            var equipments = new List<(int, int)>();
+            if (!(equipmentData is null))
+            {
+                foreach (var data in equipmentData)
+                {
+                    var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r =>
+                        r.ItemSubType == data.itemSubType);
+                    equipments.Add((row.ResultEquipmentId, data.level));
+                }
+            }
             var action = new CreateOrReplaceAvatar(
                 avatarIndex,
                 name,
@@ -305,7 +310,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments,
+                equipments.ToArray(),
                 foods,
                 costumeIds,
                 runes,
@@ -348,12 +353,22 @@ namespace Lib9c.DevExtensions.Tests.Action
             int ear,
             int tail,
             int level,
-            (int equipmentId, int level)[]? equipments,
+            (ItemSubType itemSubType, int level)[]? equipmentData,
             (int consumableId, int count)[]? foods,
             int[]? costumeIds,
             (int runeId, int level)[]? runes,
             (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
+            var equipments = new List<(int, int)>();
+            if (!(equipmentData is null))
+            {
+                foreach (var data in equipmentData)
+                {
+                    var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r =>
+                        r.ItemSubType == data.itemSubType);
+                    equipments.Add((row.ResultEquipmentId, data.level));
+                }
+            }
             var agentAddr = new PrivateKey().ToAddress();
             Execute(
                 _initialStates,
@@ -366,7 +381,7 @@ namespace Lib9c.DevExtensions.Tests.Action
                 ear,
                 tail,
                 level,
-                equipments,
+                equipments.ToArray(),
                 foods,
                 costumeIds,
                 runes,

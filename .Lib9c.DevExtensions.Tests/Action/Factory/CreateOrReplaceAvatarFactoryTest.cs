@@ -1,14 +1,24 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lib9c.DevExtensions.Action.Factory;
+using Lib9c.Tests;
+using Nekoyume.Model.Item;
 using Xunit;
 
 namespace Lib9c.DevExtensions.Tests.Action.Factory
 {
     public class CreateOrReplaceAvatarFactoryTest
     {
+        private readonly TableSheets _tableSheets;
+
+        public CreateOrReplaceAvatarFactoryTest()
+        {
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+        }
+
         [Theory]
         [MemberData(
             nameof(CreateOrReplaceAvatarTest.Get_Execute_Success_MemberData),
@@ -22,12 +32,23 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
             int ear,
             int tail,
             int level,
-            (int equipmentId, int level)[]? equipments,
+            (ItemSubType itemSubType, int level)[]? equipmentData,
             (int consumableId, int count)[]? foods,
             int[]? costumeIds,
             (int runeId, int level)[]? runes,
             (int stageId, int[] crystalRandomBuffIds)? crystalRandomBuff)
         {
+            var equipments = new List<(int, int)>();
+            if (!(equipmentData is null))
+            {
+                foreach (var data in equipmentData)
+                {
+                    var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r =>
+                        r.ItemSubType == data.itemSubType);
+                    equipments.Add((row.ResultEquipmentId, data.level));
+                }
+            }
+
             var (e, r) = CreateOrReplaceAvatarFactory
                 .TryGetByBlockIndex(
                     blockIndex,
@@ -38,7 +59,7 @@ namespace Lib9c.DevExtensions.Tests.Action.Factory
                     ear,
                     tail,
                     level,
-                    equipments,
+                    equipments.ToArray(),
                     foods,
                     costumeIds,
                     runes,

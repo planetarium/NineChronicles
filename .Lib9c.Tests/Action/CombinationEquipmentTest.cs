@@ -94,7 +94,7 @@ namespace Lib9c.Tests.Action
         // Migration AvatarState.
         [InlineData(null, false, false, true, true, true, 3, 0, true, 1L, 1, null, true, false, false, false)]
         // SubRecipe
-        [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 1, true, false, false, false)]
+        [InlineData(null, true, true, true, true, false, 27, 0, true, 1L, 6, 376, true, false, false, false)]
         // 3rd sub recipe, not Mimisbrunnr Equipment.
         [InlineData(null, true, true, true, true, false, 349, 0, true, 1L, 28, 101520003, true, false, false, false)]
         // Purchase CRYSTAL.
@@ -104,9 +104,9 @@ namespace Lib9c.Tests.Action
         // Arena round not found
         [InlineData(null, false, false, true, true, false, 3, 0, true, 0L, 1, null, true, false, false, false)]
         // UnlockEquipmentRecipe not executed.
-        [InlineData(typeof(FailedLoadStateException), false, true, true, true, false, 11, 0, true, 0L, 2, 1, true, false, false, false)]
+        [InlineData(typeof(FailedLoadStateException), false, true, true, true, false, 11, 0, true, 0L, 6, 1, true, false, false, false)]
         // CRYSTAL not paid.
-        [InlineData(typeof(InvalidRecipeIdException), true, false, true, true, false, 11, 0, true, 0L, 2, 1, true, false, false, false)]
+        [InlineData(typeof(InvalidRecipeIdException), true, false, true, true, false, 11, 0, true, 0L, 6, 1, true, false, false, false)]
         // AgentState not exist.
         [InlineData(typeof(FailedLoadStateException), true, true, false, true, false, 3, 0, true, 0L, 1, null, true, false, false, false)]
         // AvatarState not exist.
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
         // CombinationSlotState locked.
         [InlineData(typeof(CombinationSlotUnlockException), true, true, true, true, false, 3, 0, false, 0L, 1, null, true, false, false, false)]
         // Stage not cleared.
-        [InlineData(typeof(NotEnoughClearedStageLevelException), true, true, true, true, false, 3, 0, true, 0L, 2, null, true, false, false, false)]
+        [InlineData(typeof(NotEnoughClearedStageLevelException), true, true, true, true, false, 3, 0, true, 0L, 6, null, true, false, false, false)]
         // Not enough material.
         [InlineData(typeof(NotEnoughMaterialException), true, true, true, true, false, 3, 0, true, 0L, 1, null, false, false, false, false)]
         public void Execute(

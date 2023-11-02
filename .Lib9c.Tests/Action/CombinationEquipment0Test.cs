@@ -137,15 +137,28 @@ namespace Lib9c.Tests.Action
                 _avatarState.inventory.AddItem2(material, count: materialInfo.Count);
             }
 
-            for (var i = 1; i < row.UnlockStage + 1; i++)
+            var worldSheet = _tableSheets.WorldSheet;
+            var worldId = 1;
+            foreach (var worldRow in worldSheet.OrderedList)
             {
-                _avatarState.worldInformation.ClearStage(
-                    1,
-                    i,
-                    0,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.WorldUnlockSheet
-                );
+                if (worldRow.StageBegin <= row.UnlockStage && row.UnlockStage <= worldRow.StageEnd)
+                {
+                    worldId = worldRow.Id;
+                }
+            }
+
+            for (int j = 1; j < worldId + 1; j++)
+            {
+                for (var i = 1; i < row.UnlockStage + 1; i++)
+                {
+                    _avatarState.worldInformation.ClearStage(
+                        j,
+                        i,
+                        0,
+                        _tableSheets.WorldSheet,
+                        _tableSheets.WorldUnlockSheet
+                    );
+                }
             }
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
