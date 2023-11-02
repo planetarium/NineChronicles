@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CsvHelper;
@@ -536,19 +537,16 @@ namespace Nekoyume.L10n
 
         public static async UniTask AdditionalL10nTableDownload(string url)
         {
+            var client = new HttpClient();
             if(_initializedURLs.TryGetValue(url, out bool initialized))
             {
                 return;
             }
 
-            var www = UnityWebRequest.Get(url);
-            await www.SendWebRequest();
-
-            if(www.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Failed!!!");
-            }
-            using var streamReader = new StreamReader(new MemoryStream(www.downloadHandler.data), System.Text.Encoding.Default);
+            var resp = await client.GetAsync(url);
+            resp.EnsureSuccessStatusCode();
+            var data = await resp.Content.ReadAsByteArrayAsync();
+            using var streamReader = new StreamReader(new MemoryStream(data), System.Text.Encoding.Default);
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 PrepareHeaderForMatch = args => args.Header.ToLower(),
