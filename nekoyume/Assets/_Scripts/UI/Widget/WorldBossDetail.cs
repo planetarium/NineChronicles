@@ -157,5 +157,17 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossRewardsButton()
+        {
+            UpdateView(ToggleType.Rune);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionCloseWorldBossDetail()
+        {
+            Close(true);
+        }
     }
 }

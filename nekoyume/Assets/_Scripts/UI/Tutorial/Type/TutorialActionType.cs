@@ -49,7 +49,8 @@ namespace Nekoyume.UI
 	    TutorialActionClickWorldBossButton,
 	    TutorialActionClickWorldBossSeasonRewardsButton,
 	    TutorialActionClickWorldBossRewardsButton,
-	    TutorialActionClickWorldBossEnterPracticeButton,
+        TutorialActionClickWorldBossEnterPracticeButton,
+        TutorialActionCloseWorldBossDetail,
         // Action point and rune stone - 23
         TutorialActionClickCombinationRuneButton,
         TutorialActionClickCombinationRuneCombineButton,
