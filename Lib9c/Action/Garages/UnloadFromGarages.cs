@@ -26,15 +26,29 @@ namespace Nekoyume.Action.Garages
                 string? memo)>
             UnloadData { get; private set; }
 
-        public UnloadFromGarages(
-            IReadOnlyList<(
+        public UnloadFromGarages()
+        {
+            UnloadData = new List<(
                 Address recipientAvatarAddress,
                 IOrderedEnumerable<(Address balanceAddress, FungibleAssetValue value)>?
                 fungibleAssetValues,
-                IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
+                IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>?
+                fungibleIdAndCounts, string? memo)>();
+        }
+
+        public UnloadFromGarages(
+            IReadOnlyList<(
+                Address recipientAvatarAddress,
+                IEnumerable<(Address balanceAddress, FungibleAssetValue value)>?
+                fungibleAssetValues,
+                IEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
                 string? memo)> unloadData)
         {
-            UnloadData = unloadData;
+            UnloadData = unloadData.Select(data => (
+                data.recipientAvatarAddress,
+                GarageUtils.MergeAndSort(data.fungibleAssetValues),
+                GarageUtils.MergeAndSort(data.fungibleIdAndCounts),
+                data.memo)).ToImmutableList();
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -108,11 +122,9 @@ namespace Nekoyume.Action.Garages
             if (fungibleAssetValues is null) return Null.Value;
 
             return new List(
-                fungibleAssetValues.Select(tuple => new List
-                {
+                fungibleAssetValues.Select(tuple => new List(
                     tuple.balanceAddress.Serialize(),
-                    tuple.value.Serialize(),
-                }));
+                    tuple.value.Serialize())));
         }
 
         private static IValue SerializeFungibleIdAndCounts(
@@ -121,11 +133,9 @@ namespace Nekoyume.Action.Garages
             if (fungibleIdAndCounts is null) return Null.Value;
 
             return new List(
-                fungibleIdAndCounts.Select(tuple => new List
-                {
+                fungibleIdAndCounts.Select(tuple => new List(
                     tuple.fungibleId.Serialize(),
-                    (Integer)tuple.count,
-                }));
+                    (Integer)tuple.count)));
         }
     }
 }
