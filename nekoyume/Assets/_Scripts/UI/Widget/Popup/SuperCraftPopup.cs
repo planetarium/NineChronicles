@@ -235,5 +235,11 @@ namespace Nekoyume.UI
             var quote = string.Format(format, SuperCraftIndex);
             loadingScreen.AnimateNPC(itemBase.ItemType, quote);
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombineEquipmentSuperCraftPopupClose()
+        {
+            // Fill this
+        }
     }
 }

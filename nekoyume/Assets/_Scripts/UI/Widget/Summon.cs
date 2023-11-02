@@ -34,7 +34,6 @@ namespace Nekoyume.UI
             public SimpleCostButton draw10Button;
         }
 
-        [SerializeField] private CostIconDataScriptableObject costIconData;
         [SerializeField] private Button closeButton;
         [SerializeField] private DrawItems[] drawItems;
         public int normalSummonId;
@@ -108,7 +107,7 @@ namespace Nekoyume.UI
             }
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
         }
 
         private void AuraSummonAction(int groupId, int summonCount)
@@ -133,13 +132,13 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
             foreach (var drawItem in drawItems)
             {
                 drawItem.draw1Button.UpdateObjects();
@@ -175,25 +174,18 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        private void SetMaterialAssets(Inventory inventory)
+        private void SetMaterialAssets()
         {
             if (!gameObject.activeSelf)
             {
                 return;
             }
 
-            var materials = _summonRows.Select(row =>
-            {
-                var icon = costIconData.GetIcon((CostType)row.CostMaterial);
-                var count = inventory.GetMaterialCount(row.CostMaterial);
-                return (icon, count);
-            }).ToArray();
-
             var headerMenu = Find<HeaderMenuStatic>();
             for (var i = 0; i < SummonGroup; i++)
             {
-                var (icon, count) = materials[i];
-                headerMenu.MaterialAssets[i].SetMaterial(icon, count);
+                var material = (CostType)_summonRows[i].CostMaterial;
+                headerMenu.SetMaterial(i, material);
             }
         }
 

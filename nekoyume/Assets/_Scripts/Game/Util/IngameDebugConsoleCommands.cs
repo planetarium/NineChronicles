@@ -5,6 +5,43 @@ using Nekoyume.UI;
 
 namespace Nekoyume.Game.Util
 {
+    public static class ScreenClear
+    {
+        public static void ClearScreen()
+        {
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+            if (screenBoaderH != null)
+                screenBoaderH.SetActive(false);
+            if (screenBoaderV != null)
+                screenBoaderV.SetActive(false);
+        }
+        public static void ClearScreen(bool isHorizontal)
+        {
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+
+            if (screenBoaderH != null)
+                screenBoaderH.SetActive(isHorizontal);
+
+            if (screenBoaderV != null)
+                screenBoaderV.SetActive(!isHorizontal);
+
+            BlackScreenClearing().Forget();
+
+            async UniTaskVoid BlackScreenClearing()
+            {
+                var blackscreenImageH = screenBoaderH.GetComponent<UnityEngine.UI.Image>();
+                var blackscreenImageV = screenBoaderV.GetComponent<UnityEngine.UI.Image>();
+                blackscreenImageH.color = Color.black;
+                blackscreenImageV.color = Color.black;
+                await UniTask.DelayFrame(2);
+                blackscreenImageH.color = new Color(0, 0, 0, 0);
+                blackscreenImageV.color = new Color(0, 0, 0, 0);
+            }
+        }
+    }
+
     public class IngameDebugConsoleCommands
     {
         public static GameObject IngameDebugConsoleObj;
@@ -16,21 +53,6 @@ namespace Nekoyume.Game.Util
                 var raidCam = Component.FindObjectOfType<RaidCamera>();
                 if (raidCam != null)
                     raidCam.ChangeRatioState();
-
-                ClearScreen().Forget();
-                async UniTaskVoid ClearScreen()
-                {
-                    if(IngameDebugConsoleObj != null)
-                    {
-                        var blackClearingImg = IngameDebugConsoleObj.transform.Find("BlackClearingImg");
-                        if(blackClearingImg != null)
-                        {
-                            blackClearingImg.gameObject.SetActive(true);
-                            await UniTask.WaitForEndOfFrame();
-                            blackClearingImg.gameObject.SetActive(false);
-                        }
-                    }
-                }
             });
 
             DebugLogConsole.AddCommand("clo","show current commandline option", ()=>{

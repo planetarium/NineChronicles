@@ -762,5 +762,17 @@ namespace Nekoyume.UI
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombineEquipmentSuperCraft()
+        {
+            // Fill this
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickCombineEquipmentPremiumRecipeButton()
+        {
+            // Fill this
+        }
     }
 }

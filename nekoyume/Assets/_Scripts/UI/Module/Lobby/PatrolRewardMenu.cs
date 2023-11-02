@@ -49,6 +49,12 @@ namespace Nekoyume.UI.Module.Lobby
                 return;
             }
 
+            if (!popup.PatrolReward.Initialized)
+            {
+                Debug.LogError("PatrolReward is not initialized.");
+                return;
+            }
+
             popup.PatrolReward.PatrolTime
                 .Select(time => time < popup.PatrolReward.Interval)
                 .Where(_ => !popup.Claiming.Value)

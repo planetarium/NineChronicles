@@ -91,13 +91,15 @@ namespace Nekoyume.UI
                 {
                     google.OnSignIn();
                     startButtonContainer.SetActive(false);
+                    googleSignInButton.gameObject.SetActive(false);
                     google.State
                         .SkipLatestValueOnSubscribe()
                         .First()
                         .Subscribe(state =>
                         {
-                            startButtonContainer.SetActive(
-                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                            var isCanceled = state is GoogleSigninBehaviour.SignInState.Canceled;
+                            startButtonContainer.SetActive(isCanceled);
+                            googleSignInButton.gameObject.SetActive(isCanceled);
                         });
                 }
             });
@@ -149,7 +151,12 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
             googleSignInButton.interactable = true;
+#if UNITY_IOS
+            appleSignInButton.gameObject.SetActive(true);
             appleSignInButton.interactable = true;
+#else
+            appleSignInButton.gameObject.SetActive(false);
+#endif
             GetGuestPrivateKey();
         }
 

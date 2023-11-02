@@ -11,7 +11,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class CombinationSlotsPopup : XTweenPopupWidget
+    public class CombinationSlotsPopup : PopupWidget
     {
         [SerializeField]
         private List<CombinationSlot> slots;

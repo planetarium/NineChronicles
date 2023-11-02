@@ -95,7 +95,7 @@ namespace Nekoyume.UI
         [Header("Editor Properties For Test")]
         [Space(10)]
         [SerializeField]
-        private ItemEnhancement.EnhancementResult _editorEnhancementResult;
+        private ItemEnhancement13.EnhancementResult _editorEnhancementResult;
 
         [SerializeField]
         private List<EditorStatOption> _editorStatOptions;
@@ -173,7 +173,7 @@ namespace Nekoyume.UI
 
         public void Show(ItemEnhanceMail mail)
         {
-            if (!(mail.attachment is ItemEnhancement.ResultModel result))
+            if (!(mail.attachment is ItemEnhancement13.ResultModel result))
             {
                 Debug.LogError("mail.attachment is not ItemEnhancement.ResultModel");
                 return;
@@ -195,7 +195,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            ItemEnhancement.EnhancementResult enhancementResult,
+            ItemEnhancement13.EnhancementResult enhancementResult,
             Equipment preEquipment,
             Equipment equipment,
             string crystal = "0")
@@ -286,7 +286,7 @@ namespace Nekoyume.UI
                     _titleFailSuccessObject.SetActive(false);
                     Animator.SetTrigger(AnimatorHashGreatSuccess);
                     break;*/
-                case ItemEnhancement.EnhancementResult.Success:
+                case ItemEnhancement13.EnhancementResult.Success:
                     _titleSuccessObject.SetActive(true);
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(false);

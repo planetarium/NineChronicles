@@ -441,7 +441,6 @@ namespace Nekoyume.Game
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
-            Widget.Find<BattleResultPopup>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(StageType, stageId);
             IsShowHud = false;
@@ -506,12 +505,16 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Tutorial>().Close(true);
 
+            List<TableData.EquipmentItemRecipeSheet.Row> newRecipes = null;
+
             if (newlyClearedStage)
             {
                 yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
-                yield return StartCoroutine(CoUnlockRecipe(stageId));
-                yield return new WaitForSeconds(1f);
+                newRecipes = TableSheets.Instance.EquipmentItemRecipeSheet.OrderedList
+                    .Where(row => row.UnlockStage == stageId)
+                    .Distinct()
+                    .ToList();
             }
 
             IsShowHud = false;
@@ -638,7 +641,7 @@ namespace Nekoyume.Game
             }
 
             _battleResultModel.ClearedCountForEachWaves[log.clearedWaveNumber] = 1;
-            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti);
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, isMulti, newRecipes);
             yield return null;
 
             var characterSheet = TableSheets.Instance.CharacterSheet;
@@ -1294,27 +1297,27 @@ namespace Nekoyume.Game
         {
             var menuNames = new List<string>();
 
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
+            if (stageId == LiveAsset.GameConfig.UIMainMenuCombination)
             {
                 menuNames.Add("UI_MAIN_MENU_COMBINATION");
             }
 
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+            if (stageId == LiveAsset.GameConfig.UIMainMenuShop)
             {
                 menuNames.Add("UI_MAIN_MENU_SHOP");
             }
 
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+            if (stageId == LiveAsset.GameConfig.UIMainMenuRankingBoard)
             {
                 menuNames.Add("UI_MAIN_MENU_RANKING");
             }
 
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)
+            if (stageId == LiveAsset.GameConfig.UIMainMenuMimisbrunnr)
             {
                 menuNames.Add("UI_MAIN_MENU_MIMISBRUNNR");
             }
 
-            if (stageId == GameConfig.RequireClearedStageLevel.ActionsInRaid)
+            if (stageId == LiveAsset.GameConfig.ActionsInRaid)
             {
                 menuNames.Add("UI_WORLD_BOSS");
             }

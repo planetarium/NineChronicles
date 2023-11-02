@@ -248,12 +248,12 @@ MonoBehaviour:
     m_Top: 30
     m_Bottom: 5
   m_ChildAlignment: 1
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
+  m_Spacing: -20
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
-  m_ChildScaleWidth: 1
+  m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
 --- !u!1 &8591900906579416445
@@ -880,6 +880,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RuneListItem (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5775121569249207505, guid: 1a54ae11a7d8341068b57fc8e9db8f20,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067863242313252262, guid: 1a54ae11a7d8341068b57fc8e9db8f20,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9084984474329594785, guid: 1a54ae11a7d8341068b57fc8e9db8f20,
         type: 3}
