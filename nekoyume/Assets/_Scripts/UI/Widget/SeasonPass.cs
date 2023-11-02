@@ -47,6 +47,7 @@ namespace Nekoyume.UI
 
         private bool isLastCellShow;
         private bool isPageEffectComplete;
+        public const int SeasonPassMaxLevel = 30;
 
         protected override void Awake()
         {
@@ -58,7 +59,7 @@ namespace Nekoyume.UI
 
                 seasonPassManager.GetExp(seasonPassInfo.Level, out var minExp, out var maxExp);
 
-                if (seasonPassInfo.Level == seasonPassManager.LevelInfos.Count)
+                if (seasonPassInfo.Level >= SeasonPassMaxLevel)
                 {
                     levelText.text = "MAX";
                     expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
