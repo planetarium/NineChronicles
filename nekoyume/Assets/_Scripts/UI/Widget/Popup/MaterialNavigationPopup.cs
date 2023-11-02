@@ -218,6 +218,140 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        public void ShowCurrency(CostType costType)
+        {
+            int itemId;
+            string count, buttonText;
+            System.Action callback;
+            switch (costType)
+            {
+                case CostType.NCG:
+                    itemId = 9999999;
+                    count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
+                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
+                    callback = () =>
+                    {
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Game.Event.OnRoomEnter.Invoke(true);
+                        Find<Grind>().Show();
+                    };
+                    break;
+                case CostType.Crystal:
+                    itemId = 9999998;
+                    count = States.Instance.CrystalBalance.GetQuantityString();
+                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
+                    callback = () =>
+                    {
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Game.Event.OnRoomEnter.Invoke(true);
+                        Find<Grind>().Show();
+                    };
+                    break;
+                case CostType.Hourglass:
+                    itemId = 9999997;
+                    var hourglassCount = Util.GetHourglassCount(
+                        States.Instance.CurrentAvatarState.inventory,
+                        Game.Game.instance.Agent.BlockIndex);
+                    count = hourglassCount.ToString();
+                    buttonText = L10nManager.Localize("UI_COMBINATION");
+                    callback = () => { Find<CombinationSlotsPopup>().Show(); };
+                    break;
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                    itemId = (int)costType;
+                    var materialCount =
+                        States.Instance.CurrentAvatarState.inventory.GetMaterialCount(itemId);
+                    count = materialCount.ToString();
+
+                    if (costType == CostType.SilverDust)
+                    {
+                        buttonText = L10nManager.Localize("UI_PATROL_REWARD");
+                        callback = () =>
+                        {
+                            Find<HeaderMenuStatic>()
+                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
+                            Game.Event.OnRoomEnter.Invoke(true);
+                            Find<PatrolRewardPopup>().Show();
+                        };
+                    }
+                    else  // CostType.GoldDust
+                    {
+                        buttonText = L10nManager.Localize("UI_SHOP");
+                        callback = () =>
+                        {
+                            Find<HeaderMenuStatic>()
+                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                            Game.Event.OnRoomEnter.Invoke(true);
+                            Find<ShopBuy>().Show();
+                        };
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(costType), costType, null);
+            }
+
+            var icon = costIconData.GetIcon(costType);
+            var itemName = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
+
+            SetInfo(false);
+            Show(callback, icon, itemName, count, content, buttonText);
+        }
+
+        public void ShowRuneStone(int runeStoneId)
+        {
+            var itemName = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
+            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
+
+            var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
+            var icon = SpriteHelper.GetFavIcon(ticker);
+            var count = States.Instance.CurrentAvatarBalances[ticker].GetQuantityString();
+
+            string buttonText;
+            System.Action callback;
+            // Adventure's Rune
+            if (runeStoneId == 30001)
+            {
+                buttonText = L10nManager.Localize("UI_CHARGE_AP");
+                callback = () => Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
+                SetInfo(false);
+            }
+            // Golden leaf Rune(=> Shop), World Boss Rune
+            else
+            {
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var isExist = RuneFrontHelper.TryGetRunStoneInformation(
+                    currentBlockIndex,
+                    runeStoneId,
+                    out var info,
+                    out var canObtain);
+
+                buttonText = canObtain
+                    ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
+                    : L10nManager.Localize("UI_SHOP");
+                SetInfo(isExist, (info, canObtain));
+
+                callback = () =>
+                {
+                    Find<Rune>().Close(true);
+                    if (canObtain)
+                    {
+                        Find<WorldBoss>().ShowAsync().Forget();
+                    }
+                    else
+                    {
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                        Find<ShopBuy>().Show();
+                    }
+                };
+            }
+
+            Show(callback, icon, itemName, count, content, buttonText);
+        }
+
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionActionPointChargeButton()
         {
