@@ -544,6 +544,26 @@ namespace Nekoyume.UI
                     popup.SetInfo(isExist, (info, canObtain));
                     callback = () =>
                     {
+                        buttonText = L10nManager.Localize("UI_CHARGE_AP");
+                        callback = () => Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
+                        popup.SetInfo(false);
+                    }
+                    // Golden leaf Rune(=> Shop), World Boss Rune
+                    else
+                    {
+                        var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                        var isExist = RuneFrontHelper.TryGetRunStoneInformation(
+                            currentBlockIndex,
+                            runeStoneId,
+                            out var info,
+                            out var canObtain);
+
+                        buttonText = canObtain
+                            ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
+                            : L10nManager.Localize("UI_SHOP");
+                        popup.SetInfo(isExist, (info, canObtain));
+
+                        callback = () =>
                         base.Close(true);
                         if (canObtain)
                         {

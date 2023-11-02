@@ -593,7 +593,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 5754555543490644276}
           m_TargetAssemblyTypeName: Nekoyume.UI.Module.ActionPoint, Nekoyume
-          m_MethodName: OnClickSlider
+          m_MethodName: ShowMaterialNavigationPopup
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

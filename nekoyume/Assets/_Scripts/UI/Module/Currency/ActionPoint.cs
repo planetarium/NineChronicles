@@ -238,7 +238,7 @@ namespace Nekoyume.UI.Module
         }
 
         // Call at Event Trigger Component
-        public void OnClickSlider()
+        public void ShowMaterialNavigationPopup()
         {
             const int requiredStage = 23;
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))

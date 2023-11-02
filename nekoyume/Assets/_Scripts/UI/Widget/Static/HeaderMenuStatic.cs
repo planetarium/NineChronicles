@@ -696,7 +696,7 @@ namespace Nekoyume.UI.Module
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionActionPointHeaderMenu()
         {
-            actionPoint.OnClickSlider();
+            actionPoint.ShowMaterialNavigationPopup();
         }
 
         public void UpdatePortalRewardByLevel(int level)
