@@ -311,5 +311,14 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
         }
+
+#if UNITY_ANDROID || UNITY_IOS
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            MainCanvas.instance.RemoveWidget(this);
+        }
+#endif
     }
 }

@@ -192,5 +192,12 @@ namespace Nekoyume.UI
             }
             iAPShopDynamicGridLayout.Refresh();
         }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            MainCanvas.instance.RemoveWidget(this);
+        }
     }
 }
