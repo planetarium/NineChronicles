@@ -491,7 +491,7 @@ namespace Nekoyume.UI.Module
             var count = States.Instance.CurrentAvatarState.inventory
                 .GetMaterialCount((int)costType);
 
-            MaterialAssets[index].SetMaterial(icon, count);
+            MaterialAssets[index].SetMaterial(icon, count, costType);
         }
 
         private void SetActiveAssets(
