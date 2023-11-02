@@ -357,7 +357,7 @@ namespace Nekoyume.UI.Scroller
             if (recipeRow is null)
                 return;
 
-            UnlockStage = Game.LiveAsset.GameConfig.CombinationConsumableAction;
+            UnlockStage = Game.LiveAsset.GameConfig.RequiredStage.CraftConsumable;
             var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
             if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
                 return;

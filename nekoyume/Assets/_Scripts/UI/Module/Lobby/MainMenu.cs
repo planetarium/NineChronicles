@@ -56,25 +56,25 @@ namespace Nekoyume.UI.Module.Lobby
             switch (type)
             {
                 case MenuType.Combination:
-                    _requireStage = Game.LiveAsset.GameConfig.UIMainMenuCombination;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.WorkShop;
 
                     break;
                 case MenuType.Ranking:
-                    _requireStage = Game.LiveAsset.GameConfig.UIMainMenuRankingBoard;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Arena;
                     break;
                 case MenuType.Shop:
                     _requireStage = Platform.IsMobilePlatform()
                         ? 1
-                        : Game.LiveAsset.GameConfig.UIMainMenuShop;
+                        : Game.LiveAsset.GameConfig.RequiredStage.Shop;
                     break;
                 case MenuType.Quest:
-                    _requireStage = Game.LiveAsset.GameConfig.UIMainMenuStage;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Adventure;
                     break;
                 case MenuType.Mimisbrunnr:
-                    _requireStage = Game.LiveAsset.GameConfig.UIBottomMenuMimisbrunnr;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Mimisbrunnr;
                     break;
                 case MenuType.WorldBoss:
-                    _requireStage = Game.LiveAsset.GameConfig.ActionsInRaid;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.WorldBoss;
                     break;
                 // always allow
                 case MenuType.Staking:
