@@ -134,7 +134,7 @@ namespace Nekoyume.UI.Module
             {
                 { ToggleType.Quest, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
                 { ToggleType.AvatarInfo, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
-                { ToggleType.CombinationSlots, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
+                { ToggleType.CombinationSlots, 0 },
                 { ToggleType.Mail, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
                 { ToggleType.Rank, 1 },
                 { ToggleType.Chat, 1 },
@@ -291,6 +291,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    requiredStage != 0 &&
                                     !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                                 {
                                     OneLineSystem.Push(MailType.System,
@@ -350,7 +351,9 @@ namespace Nekoyume.UI.Module
                     }
 
                     var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                    var isLock = !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
+                    var isLock = requiredStage != 0 &&
+                                 !States.Instance.CurrentAvatarState.worldInformation
+                                     .IsStageCleared(requiredStage);
                     toggleInfo.Lock.SetActive(isLock);
                     toggleInfo.LockText.text = L10nManager.Localize("UI_STAGE") + requiredStage;
                 }

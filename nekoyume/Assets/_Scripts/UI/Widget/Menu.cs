@@ -659,7 +659,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 0;
             Game.Game.instance.Stage.TutorialController.Run(clearedStageId);
         }
 

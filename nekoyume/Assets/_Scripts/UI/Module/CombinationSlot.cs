@@ -29,7 +29,6 @@ namespace Nekoyume.UI.Module
 
         public enum SlotType
         {
-            Lock,
             Empty,
             Appraise,
             Working,
@@ -208,12 +207,6 @@ namespace Nekoyume.UI.Module
 
             switch (type)
             {
-                case SlotType.Lock:
-                    SetContainer(true, false, false, false);
-                    var text = L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE");
-                    lockText.text = string.Format(text, UnlockStage);
-                    break;
-
                 case SlotType.Empty:
                     SetContainer(false, false, true, false);
                     itemView.Clear();
@@ -278,13 +271,6 @@ namespace Nekoyume.UI.Module
             long currentBlockIndex,
             bool isCached)
         {
-            var isLock = !States.Instance
-                .CurrentAvatarState?.worldInformation.IsStageCleared(UnlockStage) ?? true;
-            if (isLock)
-            {
-                return SlotType.Lock;
-            }
-
             if (isCached)
             {
                 return _cachedType == CacheType.Appraise
