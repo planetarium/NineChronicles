@@ -294,6 +294,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPassNewPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<SeasonPass>());

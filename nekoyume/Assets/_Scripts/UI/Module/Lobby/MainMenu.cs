@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private Vector3 _originLocalScale;
         private string _messageForCat;
-        private int _requireStage;
+        protected int _requireStage;
         private const int TutorialEndStage = 10;
 
         public bool IsUnlocked { get; private set; }
@@ -82,9 +82,6 @@ namespace Nekoyume.UI.Module.Lobby
                 case MenuType.Dcc:
                 case MenuType.PatrolReward:
                     _requireStage = TutorialEndStage;
-                    break;
-                case MenuType.SeasonPass:
-                    _requireStage = 1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

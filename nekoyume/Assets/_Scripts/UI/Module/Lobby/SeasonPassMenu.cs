@@ -18,8 +18,11 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject notificationObj;
 
+        private const int SeasonPassNewPopupLimitClearedStageId = 30;
+
         private void Awake()
         {
+            _requireStage = SeasonPassNewPopupLimitClearedStageId;
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
             seasonPassService.AvatarInfo.Subscribe((info)=> {
                 if (info == null)

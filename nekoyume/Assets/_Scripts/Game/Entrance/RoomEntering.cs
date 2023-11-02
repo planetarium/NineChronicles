@@ -10,6 +10,9 @@ namespace Nekoyume.Game.Entrance
 {
     public class RoomEntering : MonoBehaviour
     {
+
+        private const int SeasonPassNewPopupLimitClearedStageId = 30;
+
         private void Start()
         {
             StartCoroutine(Act());
@@ -91,6 +94,13 @@ namespace Nekoyume.Game.Entrance
             {
                 var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
                 const int requiredStageId = LiveAsset.GameConfig.RequiredStage.ShowPopupRoomEntering;
+
+                var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
+                if(seasonPassNewPopup.HasUnread &&
+                    clearedStageId >= SeasonPassNewPopupLimitClearedStageId)
+                {
+                    seasonPassNewPopup.Show();
+                }
 
                 var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
                 if (eventReleaseNotePopup.HasUnread && clearedStageId >= requiredStageId)
