@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Libplanet.Common;
 using Libplanet.Crypto;
@@ -10,11 +11,10 @@ public interface IUnloadFromGaragesV1
 {
     public IReadOnlyList<(
         Address recipientAvatarAddress,
-        IReadOnlyList<(Address balanceAddress, FungibleAssetValue value)>? fungibleAssetValues,
-        IReadOnlyList<(HashDigest<SHA256> fungibleId, int count)>? FungibleIdAndCounts)> UnloadData
+        IOrderedEnumerable<(Address balanceAddress, FungibleAssetValue value)>? fungibleAssetValues,
+        IOrderedEnumerable<(HashDigest<SHA256> fungibleId, int count)>? fungibleIdAndCounts,
+        string? memo)> UnloadData
     {
         get;
     }
-
-    string? Memo { get; }
 }
