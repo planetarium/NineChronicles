@@ -201,6 +201,11 @@ namespace Nekoyume.UI
             blockGauge.bonusItem.button.onClick.AddListener(() =>
             {
                 Close();
+                if (!RuneFrontHelper.TryGetRuneData(bonusItemTicker, out var runeData))
+                {
+                    return;
+                }
+                Find<MaterialNavigationPopup>().ShowRuneStone(runeData.id);
             });
 
             var remainBlockRange = maxBlockRange - blockRange;
@@ -231,9 +236,13 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
-                        Find<HeaderMenuStatic>()
-                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Game.Event.OnRoomEnter.Invoke(true);
+                        if (Game.Game.instance.IsInWorld)
+                        {
+                            return;
+                        }
+
+                        CloseWithOtherWidgets();
+                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
                         Find<Grind>().Show();
                     };
                     break;
@@ -243,9 +252,13 @@ namespace Nekoyume.UI
                     buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
                     callback = () =>
                     {
-                        Find<HeaderMenuStatic>()
-                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
-                        Game.Event.OnRoomEnter.Invoke(true);
+                        if (Game.Game.instance.IsInWorld)
+                        {
+                            return;
+                        }
+
+                        CloseWithOtherWidgets();
+                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
                         Find<Grind>().Show();
                     };
                     break;
@@ -270,9 +283,14 @@ namespace Nekoyume.UI
                         buttonText = L10nManager.Localize("UI_PATROL_REWARD");
                         callback = () =>
                         {
-                            Find<HeaderMenuStatic>()
-                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
+                            if (Game.Game.instance.IsInWorld)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();
                             Game.Event.OnRoomEnter.Invoke(true);
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
                             Find<PatrolRewardPopup>().Show();
                         };
                     }
@@ -281,9 +299,13 @@ namespace Nekoyume.UI
                         buttonText = L10nManager.Localize("UI_SHOP");
                         callback = () =>
                         {
-                            Find<HeaderMenuStatic>()
-                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                            Game.Event.OnRoomEnter.Invoke(true);
+                            if (Game.Game.instance.IsInWorld)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                             Find<ShopBuy>().Show();
                         };
                     }
