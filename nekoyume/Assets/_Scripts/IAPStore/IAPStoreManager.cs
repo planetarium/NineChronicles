@@ -128,6 +128,7 @@ namespace Nekoyume.IAPStore
             }
 
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
@@ -177,6 +178,7 @@ namespace Nekoyume.IAPStore
                         states.CurrentAvatarState.address);
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
                 if (result is null)
                 {
@@ -214,6 +216,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception exc)
             {
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }
