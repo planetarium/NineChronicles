@@ -206,7 +206,9 @@ namespace Nekoyume.UI.Module
 
             RefreshWithAvatarInfo(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
 
-            normal.SetData(rewardSchema.Normal.Item.First(), rewardSchema.Normal.Currency.First(), rewardSchema.Level, true);
+            normal.SetData(rewardSchema.Normal.Item.Count > 0 ? rewardSchema.Normal.Item.First() : null,
+                rewardSchema.Normal.Currency.Count > 0 ? rewardSchema.Normal.Currency.First() : null,
+                rewardSchema.Level, true);
 
             int index = 0;
 

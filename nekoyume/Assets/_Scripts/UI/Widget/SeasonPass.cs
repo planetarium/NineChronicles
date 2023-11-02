@@ -167,7 +167,7 @@ namespace Nekoyume.UI
             {
 
                 var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
-                var cellIndex = seasonPassManager.AvatarInfo.Value.Level - 1;
+                var cellIndex = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
 
                 var tween = DOTween.To(() => rewardCellScrollbar.value,
                     value => rewardCellScrollbar.value = value, CalculateScrollerStartPosition(), scrollDuration).SetEase(Ease.OutQuart);
@@ -200,7 +200,7 @@ namespace Nekoyume.UI
             float totalScrollbarLength = 3338f;
             float paddingLeft = 20f;
             float viewSize = rewardCellScrollbar.GetComponent<RectTransform>().rect.width;
-            int currentLevel = seasonPassManager.AvatarInfo.Value.Level - 1;
+            int currentLevel = Mathf.Max(0, seasonPassManager.AvatarInfo.Value.Level - 1);
             float levelWidth = 110;
             float usableLength = totalScrollbarLength - viewSize;
 
