@@ -59,7 +59,16 @@ namespace Nekoyume.Blockchain
                     }
 
                     s.Add(tx);
-                    if (s.Count > _quotaPerSigner)
+                    int txQuotaPerSigner = _quotaPerSigner;
+
+                    // update txQuotaPerSigner if ACS returns a value for the signer.
+                    if (_accessControlService?.GetTxQuota(tx.Signer) is { } acsTxQuota)
+                    {
+                        txQuotaPerSigner = acsTxQuota;
+                    }
+
+
+                    if (s.Count > txQuotaPerSigner)
                     {
                         s.Remove(s.Max);
                     }
@@ -77,7 +86,8 @@ namespace Nekoyume.Blockchain
 
         public bool Stage(BlockChain blockChain, Transaction transaction)
         {
-            if (_accessControlService != null && _accessControlService.IsAccessDenied(transaction.Signer))
+            if (_accessControlService?.GetTxQuota(transaction.Signer) is { } acsTxQuota
+                && acsTxQuota == 0)
             {
                 return false;
             }
