@@ -240,7 +240,7 @@ namespace Nekoyume.UI.Module
         // Call at Event Trigger Component
         public void OnClickSlider()
         {
-            const int requiredStage = 23;
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.ChargeAP;
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 return;
