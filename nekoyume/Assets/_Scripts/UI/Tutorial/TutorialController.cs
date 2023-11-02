@@ -80,22 +80,16 @@ namespace Nekoyume.UI
 
         public void Run(int clearedStageId)
         {
-            if (clearedStageId == 0)
+            var checkPoint = GetCheckPoint(clearedStageId);
+            if (checkPoint > 0)
             {
-                Play(1);
-            }
-            else
-            {
-                var checkPoint = GetCheckPoint(clearedStageId);
-                if (checkPoint > 0)
-                {
-                    Play(checkPoint);
-                }
+                Play(checkPoint);
             }
         }
 
         public void Play(int id)
         {
+            Debug.Log($"[TutorialController] Play({id})");
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show(true);
@@ -207,8 +201,12 @@ namespace Nekoyume.UI
                 }
             }
 
+            if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
+            {
+                Check(clearedStageId);
+            }
             // If PlayerPrefs doesn't exist
-            if (clearedStageId == 0)
+            else if (clearedStageId == 0 && checkPoint != -1)
             {
                 checkPoint = 1;
             }
@@ -228,10 +226,6 @@ namespace Nekoyume.UI
                 {
                     checkPoint = 230000;
                 }
-            }
-            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
-            {
-                Check(clearedStageId);
             }
 
             return checkPoint;
