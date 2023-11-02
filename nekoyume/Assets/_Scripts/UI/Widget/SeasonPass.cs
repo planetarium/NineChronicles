@@ -101,7 +101,9 @@ namespace Nekoyume.UI
                         rewardCells[i].gameObject.SetActive(false);
                     }
                 }
-                lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList.Last());
+
+                var lastIndex = Mathf.Max(0, seasonPassManager.CurrentSeasonPassData.RewardList.Count - 2);
+                lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[lastIndex]);
             }).AddTo(gameObject);
             rewardCellScrollbar.value = 0;
         }

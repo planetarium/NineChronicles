@@ -11,7 +11,7 @@ namespace Nekoyume.Game.Entrance
     public class RoomEntering : MonoBehaviour
     {
 
-        private const int SeasonPassNewPopupLimitClearedStageId = 30;
+        private const int SeasonPassNewPopupLimitClearedStageId = 15;
 
         private void Start()
         {

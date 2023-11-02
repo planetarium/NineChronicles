@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject notificationObj;
 
-        private const int SeasonPassNewPopupLimitClearedStageId = 30;
+        private const int SeasonPassNewPopupLimitClearedStageId = 15;
 
         private void Awake()
         {
