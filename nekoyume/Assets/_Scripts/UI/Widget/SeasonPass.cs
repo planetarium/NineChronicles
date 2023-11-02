@@ -65,6 +65,7 @@ namespace Nekoyume.UI
                     expText.text = $"{seasonPassInfo.Exp - minExp} / {maxExp - minExp}";
                     expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
                     receiveBtn.Interactable = seasonPassInfo.Exp >= seasonPassManager.LevelInfos.Last().Exp;
+                    lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[SeasonPassMaxLevel]);
                 }
                 else
                 {
@@ -73,6 +74,8 @@ namespace Nekoyume.UI
                     expLineImage.fillAmount = (float)(seasonPassInfo.Exp - minExp) / (float)(maxExp - minExp);
                     receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim
                         || (seasonPassInfo.IsPremium && seasonPassInfo.Level > seasonPassInfo.LastPremiumClaim);
+
+                    lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[SeasonPassMaxLevel-1]);
                 }
 
                 lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
@@ -81,6 +84,8 @@ namespace Nekoyume.UI
                 premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
                 premiumPlusUnlockBtn.SetActive(seasonPassInfo.IsPremium && !seasonPassInfo.IsPremiumPlus);
                 premiumPlusIcon.SetActive(seasonPassInfo.IsPremiumPlus);
+
+
             }).AddTo(gameObject);
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
@@ -102,9 +107,6 @@ namespace Nekoyume.UI
                         rewardCells[i].gameObject.SetActive(false);
                     }
                 }
-
-                var lastIndex = Mathf.Max(0, seasonPassManager.CurrentSeasonPassData.RewardList.Count - 2);
-                lastRewardCell.SetData(seasonPassManager.CurrentSeasonPassData.RewardList[lastIndex]);
             }).AddTo(gameObject);
             rewardCellScrollbar.value = 0;
         }
@@ -222,7 +224,7 @@ namespace Nekoyume.UI
             if (!isPageEffectComplete)
                 return;
 
-            if(rewardCellScrollbar.value > 0.95f)
+            if(rewardCellScrollbar.value > 0.95f && Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.Level < SeasonPassMaxLevel)
             {
                 if (isLastCellShow)
                 {

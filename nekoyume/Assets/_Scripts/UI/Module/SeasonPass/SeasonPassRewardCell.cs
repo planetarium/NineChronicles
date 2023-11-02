@@ -201,7 +201,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in levels)
             {
-                item.text = rewardSchema.Level.ToString();
+                item.text = rewardSchema.Level > SeasonPass.SeasonPassMaxLevel ? "MAX" : rewardSchema.Level.ToString();
             }
 
             RefreshWithAvatarInfo(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
