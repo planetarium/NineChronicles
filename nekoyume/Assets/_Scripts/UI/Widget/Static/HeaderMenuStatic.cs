@@ -491,7 +491,7 @@ namespace Nekoyume.UI.Module
             var count = States.Instance.CurrentAvatarState.inventory
                 .GetMaterialCount((int)costType);
 
-            MaterialAssets[index].SetMaterial(icon, count);
+            MaterialAssets[index].SetMaterial(icon, count, costType);
         }
 
         private void SetActiveAssets(
@@ -696,7 +696,7 @@ namespace Nekoyume.UI.Module
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionActionPointHeaderMenu()
         {
-            actionPoint.OnClickSlider();
+            actionPoint.ShowMaterialNavigationPopup();
         }
 
         public void UpdatePortalRewardByLevel(int level)
