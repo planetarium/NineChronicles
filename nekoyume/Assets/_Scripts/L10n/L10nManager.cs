@@ -154,7 +154,12 @@ namespace Nekoyume.L10n
             {
                 languageType = LanguageType.English;
             }
-
+#if UNITY_STANDALONE
+            if (languageType == LanguageType.Korean)
+            {
+                languageType = LanguageType.English;
+            }
+#endif
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
