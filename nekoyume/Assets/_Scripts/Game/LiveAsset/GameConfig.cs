@@ -15,7 +15,7 @@ namespace Nekoyume.Game.LiveAsset
         public const int ActionsInShop = 17;
         public const int ActionsInRankingBoard = 15;
         public const int ActionsInMimisbrunnr = 100;
-        public const int ActionsInRaid = 50;
+        public const int ActionsInRaid = 49;
 
         #endregion
 

@@ -1299,7 +1299,7 @@ MonoBehaviour:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
           targetPositionOffset: {x: 0, y: 0}
-          targetSizeOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 10, y: 10}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 6
           actionType: 5
@@ -2340,13 +2340,13 @@ MonoBehaviour:
           fullScreenButton: 1
           noArrow: 0
           guideSprite: {fileID: 0}
-  - title: Stage 50
+  - title: Stage 49
     description: WorldBoss
     tutorialScenario:
       scenario:
-      - id: 500000
+      - id: 490000
         nextId: 500001
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2365,7 +2365,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500001
         nextId: 500002
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2384,7 +2384,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500002
         nextId: 500003
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2403,7 +2403,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500003
         nextId: 500004
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
           arrowPositionOffset: {x: 5, y: 0}
@@ -2422,10 +2422,10 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500004
         nextId: 500005
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
-          arrowPositionOffset: {x: 5, y: 0}
+          arrowPositionOffset: {x: 15, y: 0}
           targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -2441,7 +2441,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500005
         nextId: 500006
-        checkPointId: 500000
+        checkPointId: 490000
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2460,7 +2460,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 500006
         nextId: 0
-        checkPointId: -50
+        checkPointId: -49
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
