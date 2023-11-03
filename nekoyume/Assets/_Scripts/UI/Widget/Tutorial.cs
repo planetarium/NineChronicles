@@ -36,6 +36,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Sprite transparentSprite;
 
+        [SerializeField]
+        private Button skipButton;
+
         private Coroutine _coroutine;
         private System.Action _callback;
         private const int ItemCount = 3;
@@ -52,6 +55,7 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             TutorialController = new BattleTutorialController();
+            skipButton.onClick.AddListener(SkipSession);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -172,6 +176,12 @@ namespace Nekoyume.UI
             {
                 item.Item.Stop(() => PlayEnd(callback));
             }
+        }
+
+        private void SkipSession()
+        {
+            var controller = Game.Game.instance.Stage.TutorialController;
+            controller.Skip(controller.LastPlayedTutorialId);
         }
 
         private void RunStopwatch()

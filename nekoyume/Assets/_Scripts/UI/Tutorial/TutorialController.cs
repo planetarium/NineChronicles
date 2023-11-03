@@ -35,6 +35,8 @@ namespace Nekoyume.UI
         public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
+
+        public int LastPlayedTutorialId { get; private set; }
         private Coroutine _rewardScreenCoroutine;
 
         public TutorialController(IEnumerable<Widget> widgets)
@@ -101,6 +103,7 @@ namespace Nekoyume.UI
             {
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
+                LastPlayedTutorialId = id;
                 var viewData = GetTutorialData(scenario.data);
                 _tutorial.Play(viewData, scenario.data.presetId, scenario.data.guideSprite, () =>
                 {
@@ -121,6 +124,34 @@ namespace Nekoyume.UI
                     WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
                 });
             }
+        }
+
+        public void Skip(int tutorialId)
+        {
+            var id = tutorialId;
+            while (id != 0)
+            {
+                var nowScenario = _scenario.FirstOrDefault(scenario => scenario.id == id);
+                if (nowScenario is null)
+                {
+                    break;
+                }
+
+                id = nowScenario.nextId;
+                if (id == 0)
+                {
+                    var checkPointId = nowScenario.checkPointId;
+                    SetCheckPoint(checkPointId);
+                    break;
+                }
+            }
+
+            _tutorial.Stop(() =>
+            {
+                _tutorial.gameObject.SetActive(false);
+                WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
+            });
+
         }
 
         private void PlayAction(TutorialActionType actionType)
