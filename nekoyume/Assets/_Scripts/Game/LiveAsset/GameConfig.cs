@@ -18,6 +18,7 @@ namespace Nekoyume.Game.LiveAsset
             public const int WorldBoss = 50;
             public const int Adventure = 0;
             public const int ChargeAP = 23;
+            public const int ShowPopupRoomEntering = 51;
         }
     }
 }
