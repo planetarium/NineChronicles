@@ -17,7 +17,7 @@ namespace Nekoyume.Game.LiveAsset
             public const int Mimisbrunnr = 100;
             public const int WorldBoss = 49;
             public const int Adventure = 0;
-            public const int ChargeAP = 23;
+            public const int ChargeAP = 24;
             public const int ShowPopupRoomEntering = 51;
         }
     }
