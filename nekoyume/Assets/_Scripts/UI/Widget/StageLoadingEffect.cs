@@ -131,6 +131,7 @@ namespace Nekoyume.UI
             loadingModule.Close();
             dialogEnd = true;
             System.Func<IEnumerator> coroutine = null;
+            AudioController.instance.PlayMusic(AudioController.MusicCode.BattleLoading);
             if (isNext)
             {
                 if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
