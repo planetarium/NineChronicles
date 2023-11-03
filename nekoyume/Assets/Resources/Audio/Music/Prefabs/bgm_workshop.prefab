@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8726305555275592411}
   - component: {fileID: 8281167374394780233}
   m_Layer: 0
-  m_Name: bgm_combination
+  m_Name: bgm_workshop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -42,7 +43,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243079531108902290, guid: f84234ca553c443c69f5457997eda065,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 1293edc105c0f4af49b6a4d5f3ed3422, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5accf48febf4f47faae94bcab1a93ac3, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.6
   m_Pitch: 1

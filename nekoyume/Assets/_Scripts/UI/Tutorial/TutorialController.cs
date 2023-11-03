@@ -80,7 +80,7 @@ namespace Nekoyume.UI
 
         public void Run(int clearedStageId)
         {
-            if (clearedStageId < Game.LiveAsset.GameConfig.CombinationEquipmentAction)
+            if (clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.WorkShop)
             {
                 Play(1);
             }
@@ -208,12 +208,12 @@ namespace Nekoyume.UI
             }
 
             // If PlayerPrefs doesn't exist
-            if (clearedStageId < Game.LiveAsset.GameConfig.CombinationEquipmentAction)
+            if (clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.WorkShop)
             {
                 checkPoint = 1;
             }
-            else if (clearedStageId == Game.LiveAsset.GameConfig.CombinationEquipmentAction &&
-                     checkPoint != Game.LiveAsset.GameConfig.CombinationEquipmentAction * -1)
+            else if (clearedStageId == Game.LiveAsset.GameConfig.RequiredStage.WorkShop &&
+                     checkPoint != Game.LiveAsset.GameConfig.RequiredStage.WorkShop * -1)
             {
                 checkPoint = 2;
             }
