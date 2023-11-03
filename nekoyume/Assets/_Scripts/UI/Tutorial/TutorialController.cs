@@ -232,17 +232,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
-            {
-                Check(clearedStageId);
-            }
-            // If PlayerPrefs doesn't exist
-            else if (clearedStageId == 0 && checkPoint != -1)
-            {
-                checkPoint = 1;
-            }
-            // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 5 && checkPoint != -5)
+            if (clearedStageId == 5 && checkPoint != -5)
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
@@ -257,6 +247,15 @@ namespace Nekoyume.UI
                 {
                     checkPoint = 230000;
                 }
+            }
+            else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
+            {
+                Check(clearedStageId);
+            }
+            // If PlayerPrefs doesn't exist
+            else if (clearedStageId == 0 && checkPoint != -1)
+            {
+                checkPoint = 1;
             }
 
             return checkPoint;
