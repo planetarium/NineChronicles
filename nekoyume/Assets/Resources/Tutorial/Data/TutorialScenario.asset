@@ -1778,7 +1778,7 @@ MonoBehaviour:
           targetSizeOffset: {x: 30, y: 50}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000018
-          actionType: 1000015
+          actionType: 1000016
           guideType: 1
           emojiType: 2
           dialogPositionType: 0
@@ -1789,7 +1789,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 230001
         nextId: 230002
-        checkPointId: 230000
+        checkPointId: 230002
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -1797,7 +1797,7 @@ MonoBehaviour:
           targetSizeOffset: {x: 30, y: 30}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000019
-          actionType: 1000016
+          actionType: 1000017
           guideType: 1
           emojiType: 2
           dialogPositionType: 1
@@ -1835,7 +1835,7 @@ MonoBehaviour:
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000020
-          actionType: 1000013
+          actionType: 1000014
           guideType: 3
           emojiType: 2
           dialogPositionType: 1
@@ -1854,7 +1854,7 @@ MonoBehaviour:
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000021
-          actionType: 1000014
+          actionType: 1000015
           guideType: 1
           emojiType: 2
           dialogPositionType: 1
