@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 24, 35, 40, 45, 49 };
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
