@@ -14,8 +14,9 @@ namespace Lib9c.Tests.Action.Garages
 
     public class UnloadFromGaragesTest
     {
+        private const int AvatarIndex = 0;
+
         private static readonly Address AgentAddress = new PrivateKey().ToAddress();
-        private static readonly int AvatarIndex = 0;
 
         public static IEnumerable<object[]> Get_Sample_PlainValue()
         {
