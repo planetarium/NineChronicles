@@ -16,16 +16,32 @@ namespace Nekoyume.Game.Util
             if (screenBoaderV != null)
                 screenBoaderV.SetActive(false);
         }
-        public static void ClearScreen(bool isHorizontal)
+        public static void ClearScreen(bool isHorizontal, float letterBoxSize)
         {
             var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
             var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
 
             if (screenBoaderH != null)
+            {
                 screenBoaderH.SetActive(isHorizontal);
+                if (isHorizontal)
+                {
+                    RectTransform rt = screenBoaderH.GetComponent<RectTransform>();
+                    rt.offsetMax = new Vector2(rt.offsetMax.x, -letterBoxSize);
+                    rt.offsetMin = new Vector2(rt.offsetMin.x, letterBoxSize);
+                }
+            }
 
             if (screenBoaderV != null)
+            {
                 screenBoaderV.SetActive(!isHorizontal);
+                if (!isHorizontal)
+                {
+                    RectTransform rt = screenBoaderV.GetComponent<RectTransform>();
+                    rt.offsetMax = new Vector2(-letterBoxSize, rt.offsetMax.y);
+                    rt.offsetMin = new Vector2(letterBoxSize, rt.offsetMin.y);
+                }
+            }
 
             BlackScreenClearing().Forget();
 
