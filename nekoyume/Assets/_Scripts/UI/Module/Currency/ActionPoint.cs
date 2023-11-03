@@ -242,7 +242,8 @@ namespace Nekoyume.UI.Module
         public void ShowMaterialNavigationPopup()
         {
             const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.ChargeAP;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage) &&
+                IsRemained)
             {
                 return;
             }
