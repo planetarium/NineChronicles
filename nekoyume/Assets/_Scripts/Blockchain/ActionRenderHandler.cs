@@ -694,7 +694,7 @@ namespace Nekoyume.Blockchain
 
                         break;
                     }
-                    case ItemEnhancement.ResultModel enhancementResultModel:
+                    case ItemEnhancement13.ResultModel enhancementResultModel:
                     {
                         LocalLayerModifier.AddNewResultAttachmentMail(
                             avatarAddress,
@@ -706,7 +706,7 @@ namespace Nekoyume.Blockchain
                             /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                                 break;*/
-                            case Action.ItemEnhancement.EnhancementResult.Success:
+                            case ItemEnhancement13.EnhancementResult.Success:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             /*case Action.ItemEnhancement.EnhancementResult.Fail:
@@ -1042,7 +1042,7 @@ namespace Nekoyume.Blockchain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = StateGetter.GetCombinationSlotState(avatarAddress, slotIndex, eval.OutputState);
-                var result = (ItemEnhancement.ResultModel)slot.Result;
+                var result = (ItemEnhancement13.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!StateGetter.TryGetAvatarState(
                         agentAddress,
@@ -1121,7 +1121,7 @@ namespace Nekoyume.Blockchain
                     /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;*/
-                    case Action.ItemEnhancement.EnhancementResult.Success:
+                    case Action.ItemEnhancement13.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     /*case Action.ItemEnhancement.EnhancementResult.Fail:

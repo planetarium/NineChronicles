@@ -118,6 +118,7 @@ namespace Nekoyume.UI
         {
             _innerState = InnerState.Idle;
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
             UpdateScrolls();
             UpdateInfo();
 

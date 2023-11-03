@@ -10620,10 +10620,10 @@ RectTransform:
   m_Father: {fileID: 5164636024007562620}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0.28800002, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.10998535, y: 0}
+  m_SizeDelta: {x: 0.22000122, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5934450182258732214
 GameObject:
@@ -12759,9 +12759,9 @@ MonoBehaviour:
   - type: 1000014
     rectTransform: {fileID: 8501216273664973214}
   - type: 1000015
-    rectTransform: {fileID: 3538347476854172147}
+    rectTransform: {fileID: 7903251042564877810}
   - type: 1000017
-    rectTransform: {fileID: 7945120194178489490}
+    rectTransform: {fileID: 3433289255265536337}
   tutorialActions: 4a420f004c420f00
   season: {fileID: 3712373159297673171}
   backButton: {fileID: 4656612568814026336}
