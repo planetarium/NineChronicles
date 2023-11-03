@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
     public class CombinationSlot : MonoBehaviour
     {
         private const int UnlockStage =
-            Nekoyume.Game.LiveAsset.GameConfig.CombinationEquipmentAction;
+            Nekoyume.Game.LiveAsset.GameConfig.RequiredStage.WorkShop;
 
         public enum SlotType
         {

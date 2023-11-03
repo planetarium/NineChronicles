@@ -1294,27 +1294,27 @@ namespace Nekoyume.Game
         {
             var menuNames = new List<string>();
 
-            if (stageId == LiveAsset.GameConfig.UIMainMenuCombination)
+            if (stageId == LiveAsset.GameConfig.RequiredStage.WorkShop)
             {
                 menuNames.Add("UI_MAIN_MENU_COMBINATION");
             }
 
-            if (stageId == LiveAsset.GameConfig.UIMainMenuShop)
+            if (stageId == LiveAsset.GameConfig.RequiredStage.Shop)
             {
                 menuNames.Add("UI_MAIN_MENU_SHOP");
             }
 
-            if (stageId == LiveAsset.GameConfig.UIMainMenuRankingBoard)
+            if (stageId == LiveAsset.GameConfig.RequiredStage.Arena)
             {
                 menuNames.Add("UI_MAIN_MENU_RANKING");
             }
 
-            if (stageId == LiveAsset.GameConfig.UIMainMenuMimisbrunnr)
+            if (stageId == LiveAsset.GameConfig.RequiredStage.Mimisbrunnr)
             {
                 menuNames.Add("UI_MAIN_MENU_MIMISBRUNNR");
             }
 
-            if (stageId == LiveAsset.GameConfig.ActionsInRaid)
+            if (stageId == LiveAsset.GameConfig.RequiredStage.WorldBoss)
             {
                 menuNames.Add("UI_WORLD_BOSS");
             }

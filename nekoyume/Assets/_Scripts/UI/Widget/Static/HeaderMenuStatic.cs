@@ -135,10 +135,10 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
             new Dictionary<ToggleType, int>()
             {
-                { ToggleType.Quest, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
-                { ToggleType.AvatarInfo, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
-                { ToggleType.CombinationSlots, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
-                { ToggleType.Mail, Nekoyume.Game.LiveAsset.GameConfig.UIBottomMenuCharacter },
+                { ToggleType.Quest, 1 },
+                { ToggleType.AvatarInfo, 1 },
+                { ToggleType.CombinationSlots, 1 },
+                { ToggleType.Mail, 1 },
                 { ToggleType.Rank, 1 },
                 { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
