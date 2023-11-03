@@ -746,7 +746,7 @@ namespace Nekoyume.State
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var states = _slotStates[CurrentAvatarState.address].States;
-            return states.Where(x => !x.Value.Validate(CurrentAvatarState, blockIndex))
+            return states.Where(x => !x.Value.ValidateV2(CurrentAvatarState, blockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
@@ -760,7 +760,7 @@ namespace Nekoyume.State
             }
 
             var states = _slotStates[avatarState.address].States;
-            return states.Where(x => !x.Value.Validate(avatarState, currentBlockIndex))
+            return states.Where(x => !x.Value.ValidateV2(avatarState, currentBlockIndex))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 

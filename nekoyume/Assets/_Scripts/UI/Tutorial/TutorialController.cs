@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
         private Coroutine _rewardScreenCoroutine;
@@ -80,22 +80,16 @@ namespace Nekoyume.UI
 
         public void Run(int clearedStageId)
         {
-            if (clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.WorkShop)
+            var checkPoint = GetCheckPoint(clearedStageId);
+            if (checkPoint > 0)
             {
-                Play(1);
-            }
-            else
-            {
-                var checkPoint = GetCheckPoint(clearedStageId);
-                if (checkPoint > 0)
-                {
-                    Play(checkPoint);
-                }
+                Play(checkPoint);
             }
         }
 
         public void Play(int id)
         {
+            Debug.Log($"[TutorialController] Play({id})");
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show(true);
@@ -207,18 +201,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            // If PlayerPrefs doesn't exist
-            if (clearedStageId < Game.LiveAsset.GameConfig.RequiredStage.WorkShop)
-            {
-                checkPoint = 1;
-            }
-            else if (clearedStageId == Game.LiveAsset.GameConfig.RequiredStage.WorkShop &&
-                     checkPoint != Game.LiveAsset.GameConfig.RequiredStage.WorkShop * -1)
-            {
-                checkPoint = 2;
-            }
-            // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 5 && checkPoint != -5)
+            if (clearedStageId == 5 && checkPoint != -5)
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
@@ -237,6 +220,11 @@ namespace Nekoyume.UI
             else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 Check(clearedStageId);
+            }
+            // If PlayerPrefs doesn't exist
+            else if (clearedStageId == 0 && checkPoint != -1)
+            {
+                checkPoint = 1;
             }
 
             return checkPoint;

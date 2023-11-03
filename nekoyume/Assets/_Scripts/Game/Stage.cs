@@ -1294,11 +1294,6 @@ namespace Nekoyume.Game
         {
             var menuNames = new List<string>();
 
-            if (stageId == LiveAsset.GameConfig.RequiredStage.WorkShop)
-            {
-                menuNames.Add("UI_MAIN_MENU_COMBINATION");
-            }
-
             if (stageId == LiveAsset.GameConfig.RequiredStage.Shop)
             {
                 menuNames.Add("UI_MAIN_MENU_SHOP");
