@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.State.Subjects;
+    using State.Subjects;
     using UniRx;
 
     public class Crystal : AlphaAnimateModule
@@ -23,9 +23,12 @@ namespace Nekoyume.UI.Module
         private Transform iconTransform;
 
         [SerializeField]
-        private Image _image;
+        private Image image;
 
-        public Image IconImage => _image;
+        [SerializeField]
+        private Button button;
+
+        public Image IconImage => image;
 
         public bool NowLoading => loadingObject.activeSelf;
 
@@ -34,6 +37,11 @@ namespace Nekoyume.UI.Module
         private IDisposable _disposable;
 
         private int _loadingCount = 0;
+
+        private void Awake()
+        {
+            button.onClick.AddListener(ShowMaterialNavigationPopup);
+        }
 
         protected override void OnEnable()
         {
@@ -69,6 +77,11 @@ namespace Nekoyume.UI.Module
         private void SetCrystal(FungibleAssetValue crystal)
         {
             text.text = crystal.ToCurrencyNotation();
+        }
+
+        private void ShowMaterialNavigationPopup()
+        {
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(CostType.Crystal);
         }
     }
 }

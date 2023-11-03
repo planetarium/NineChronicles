@@ -600,7 +600,7 @@ namespace Nekoyume.UI.Module
             var info = SharedViewModel.avatarState?.worldInformation;
             if (info is null ||
                 !info.TryGetLastClearedStageId(out var lastClearedStageId) ||
-                lastClearedStageId < Game.LiveAsset.GameConfig.CombinationEquipmentAction)
+                lastClearedStageId < Game.LiveAsset.GameConfig.RequiredStage.WorkShop)
             {
                 return null;
             }

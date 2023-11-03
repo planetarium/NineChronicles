@@ -278,13 +278,13 @@ namespace Nekoyume.UI
                 if (!arena.Equipments.Exists(x => x == guid))
                 {
                     arenaButton.HasNotification.Value =
-                        clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRankingBoard;
+                        clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena;
                 }
 
                 if (!raid.Equipments.Exists(x => x == guid))
                 {
                     raidButton.HasNotification.Value =
-                        clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRaid;
+                        clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.WorldBoss;
                 }
             }
 
@@ -304,11 +304,11 @@ namespace Nekoyume.UI
                                 break;
                             case BattleType.Arena:
                                 arenaButton.HasNotification.Value =
-                                    clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRankingBoard;
+                                    clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.Arena;
                                 break;
                             case BattleType.Raid:
                                 raidButton.HasNotification.Value =
-                                    clearedStageId >= Game.LiveAsset.GameConfig.ActionsInRaid;
+                                    clearedStageId >= Game.LiveAsset.GameConfig.RequiredStage.WorldBoss;
                                 break;
                         }
                     }

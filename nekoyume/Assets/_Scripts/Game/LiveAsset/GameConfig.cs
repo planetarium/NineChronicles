@@ -7,34 +7,18 @@ namespace Nekoyume.Game.LiveAsset
     {
         public int SecondsPerBlock { get; set; }
 
-        #region action
-
-        public const int CombinationEquipmentAction = 0;
-        public const int CombinationConsumableAction = 1;
-        public const int ItemEnhancementAction = 1;
-        public const int ActionsInShop = 17;
-        public const int ActionsInRankingBoard = 15;
-        public const int ActionsInMimisbrunnr = 100;
-        public const int ActionsInRaid = 49;
-
-        #endregion
-
-        #region ui
-
-        public const int UIMainMenuStage = 0;
-        public const int UIMainMenuCombination = CombinationEquipmentAction;
-        public const int UIMainMenuShop = ActionsInShop;
-        public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
-        public const int UIMainMenuMimisbrunnr = ActionsInMimisbrunnr;
-
-        public const int UIBottomMenuInBattle = 1;
-        public const int UIBottomMenuCharacter = 1;
-        public const int UIBottomMenuMail = CombinationEquipmentAction;
-        public const int UIBottomMenuChat = 7;
-        public const int UIBottomMenuQuest = 1;
-        public const int UIBottomMenuMimisbrunnr = ActionsInMimisbrunnr;
-        public const int UIBottomMenuRanking = 3;
-
-        #endregion
+        public class RequiredStage
+        {
+            public const int WorkShop = 0;
+            public const int CraftConsumable = 0;
+            public const int Enhancement = 0;
+            public const int Shop = 17;
+            public const int Arena = 15;
+            public const int Mimisbrunnr = 100;
+            public const int WorldBoss = 49;
+            public const int Adventure = 0;
+            public const int ChargeAP = 23;
+            public const int ShowPopupRoomEntering = 51;
+        }
     }
 }
