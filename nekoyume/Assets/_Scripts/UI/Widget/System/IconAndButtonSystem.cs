@@ -136,9 +136,9 @@ namespace Nekoyume.UI
 #endif
         }
 
-        public void SetCancelCallbackToExit()
+        public void SetConfirmCallbackToExit()
         {
-            CancelCallback = () =>
+            ConfirmCallback = () =>
             {
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();

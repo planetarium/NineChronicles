@@ -193,7 +193,7 @@ namespace Nekoyume.Blockchain
             {
                 var popup = Widget.Find<IconAndButtonSystem>();
                 popup.Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
-                popup.SetCancelCallbackToExit();
+                popup.SetConfirmCallbackToExit();
             }
 
 #if BLOCK_LOG_USE

@@ -87,7 +87,6 @@ namespace Nekoyume.UI
         {
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
             { RankCategory.Stage, ("UI_STAGE", null)},
-            { RankCategory.Mimisburnnr, ("UI_STAGE", null) },
             { RankCategory.Crafting, ("UI_COUNTS_CRAFTED", null) },
             { RankCategory.EquipmentWeapon, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
@@ -252,9 +251,6 @@ namespace Nekoyume.UI
                     break;
                 case RankCategory.Stage:
                     SetScroll(SharedModel.AgentStageRankingInfos, SharedModel.StageRankingInfos);
-                    break;
-                case RankCategory.Mimisburnnr:
-                    SetScroll(SharedModel.AgentMimisbrunnrRankingInfos, SharedModel.MimisbrunnrRankingInfos);
                     break;
                 case RankCategory.Crafting:
                     SetScroll(SharedModel.AgentCraftRankingInfos, SharedModel.CraftRankingInfos);

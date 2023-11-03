@@ -111,6 +111,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<Image> menuToggleNotifications;
 
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
+
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         private readonly Dictionary<ToggleType, Widget> _toggleWidgets =
@@ -132,10 +135,10 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
             new Dictionary<ToggleType, int>()
             {
-                { ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest },
-                { ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter },
-                { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
-                { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
+                { ToggleType.Quest, 1 },
+                { ToggleType.AvatarInfo, 1 },
+                { ToggleType.CombinationSlots, 0 },
+                { ToggleType.Mail, 1 },
                 { ToggleType.Rank, 1 },
                 { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
@@ -291,6 +294,7 @@ namespace Nekoyume.UI.Module
                             if (value)
                             {
                                 if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    requiredStage != 0 &&
                                     !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                                 {
                                     OneLineSystem.Push(MailType.System,
@@ -350,7 +354,9 @@ namespace Nekoyume.UI.Module
                     }
 
                     var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                    var isLock = !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
+                    var isLock = requiredStage != 0 &&
+                                 !States.Instance.CurrentAvatarState.worldInformation
+                                     .IsStageCleared(requiredStage);
                     toggleInfo.Lock.SetActive(isLock);
                     toggleInfo.LockText.text = L10nManager.Localize("UI_STAGE") + requiredStage;
                 }
@@ -446,41 +452,54 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Combination:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isMaterialActiveCount: 1); // isMaterialActiveCount : Golden dust
+                    SetMaterial(0, CostType.GoldDust);
+                    break;
                 case AssetVisibleState.Battle:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Arena:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isArenaTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isArenaTicketsActive: true);
                     break;
                 case AssetVisibleState.EventDungeon:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventDungeonTicketsActive: true);
                     break;
                 case AssetVisibleState.WorldBoss:
-                    SetActiveAssets(isNcgActive: true, isEventWorldBossTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventWorldBossTicketsActive: true);
                     break;
                 case AssetVisibleState.CurrencyOnly:
-                    SetActiveAssets(isNcgActive:true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true);
                     break;
                 case AssetVisibleState.RuneStone:
-                    SetActiveAssets(isNcgActive:true, isRuneStoneActive:true );
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isRuneStoneActive: true);
                     break;
                 case AssetVisibleState.Mileage:
-                    SetActiveAssets(isNcgActive:true, isMileageActive:true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive:true, isMaterialActiveCount: Summon.SummonGroup);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: Summon.SummonGroup);
                     break;
             }
         }
 
+        public void SetMaterial(int index, CostType costType)
+        {
+            var icon = costIconData.GetIcon(costType);
+            var count = States.Instance.CurrentAvatarState.inventory
+                .GetMaterialCount((int)costType);
+
+            MaterialAssets[index].SetMaterial(icon, count, costType);
+        }
+
         private void SetActiveAssets(
             bool isNcgActive = false,
+            bool isCrystalActive = false,
             bool isActionPointActive = false,
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false,
@@ -491,7 +510,7 @@ namespace Nekoyume.UI.Module
             int isMaterialActiveCount = 0)
         {
             ncg.gameObject.SetActive(isNcgActive);
-            crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
+            crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
@@ -680,7 +699,7 @@ namespace Nekoyume.UI.Module
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionActionPointHeaderMenu()
         {
-            actionPoint.OnClickSlider();
+            actionPoint.ShowMaterialNavigationPopup();
         }
 
         public void UpdatePortalRewardByLevel(int level)

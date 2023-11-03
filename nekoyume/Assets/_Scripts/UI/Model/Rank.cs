@@ -1,13 +1,9 @@
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
 using System.Diagnostics;
-using Nekoyume.Battle;
 using System.Threading.Tasks;
 using Nekoyume.GraphQL;
-using Libplanet;
 
 using Debug = UnityEngine.Debug;
 using Nekoyume.Model.Item;
@@ -22,8 +18,6 @@ namespace Nekoyume.UI.Model
 
         public List<StageRankingModel> StageRankingInfos = null;
 
-        public List<StageRankingModel> MimisbrunnrRankingInfos = null;
-
         public List<CraftRankingModel> CraftRankingInfos = null;
 
         public Dictionary<ItemSubType, List<EquipmentRankingModel>> EquipmentRankingInfosMap = null;
@@ -31,8 +25,6 @@ namespace Nekoyume.UI.Model
         public Dictionary<int, AbilityRankingModel> AgentAbilityRankingInfos = new Dictionary<int, AbilityRankingModel>();
 
         public Dictionary<int, StageRankingModel> AgentStageRankingInfos = new Dictionary<int, StageRankingModel>();
-
-        public Dictionary<int, StageRankingModel> AgentMimisbrunnrRankingInfos = new Dictionary<int, StageRankingModel>();
 
         public Dictionary<int, CraftRankingModel> AgentCraftRankingInfos = new Dictionary<int, CraftRankingModel>();
 
@@ -53,7 +45,6 @@ namespace Nekoyume.UI.Model
                     await Task.WhenAll(
                         LoadAbilityRankingInfos(apiClient, displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
-                        LoadMimisbrunnrRankingInfos(apiClient, displayCount),
                         LoadCraftRankingInfos(apiClient, displayCount),
                         LoadEquipmentRankingInfos(apiClient, displayCount)
                     );
@@ -228,90 +219,6 @@ namespace Nekoyume.UI.Model
                     ArmorId = myRecord.ArmorId,
                     TitleId = myRecord.TitleId,
                     ClearedStageId = myRecord.ClearedStageId,
-                };
-            }
-        }
-
-        private async Task LoadMimisbrunnrRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
-        {
-            var query =
-                $@"query {{
-                        stageRanking(limit: {displayCount}, mimisbrunnr: true) {{
-                            ranking
-                            avatarAddress
-                            name
-                            avatarLevel
-                            armorId
-                            titleId
-                            clearedStageId
-                        }}
-                    }}";
-
-            var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
-            if (response is null)
-            {
-                Debug.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
-                return;
-            }
-
-            MimisbrunnrRankingInfos = response.StageRanking
-                .Select(e =>
-                {
-                    return new StageRankingModel
-                    {
-                        Rank = e.Ranking,
-                        AvatarAddress = e.AvatarAddress,
-                        Name = e.Name,
-                        AvatarLevel = e.AvatarLevel,
-                        ArmorId = e.ArmorId,
-                        TitleId = e.TitleId,
-                        ClearedStageId = e.ClearedStageId > 0 ?
-                            e.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
-                    };
-                })
-                .Select(t => t)
-                .Where(e => e != null)
-                .ToList();
-
-            var avatarStates = States.Instance.AvatarStates.ToList();
-            foreach (var pair in avatarStates)
-            {
-                var myInfoQuery =
-                    $@"query {{
-                            stageRanking(avatarAddress: ""{pair.Value.address}"", mimisbrunnr: true) {{
-                                ranking
-                                avatarAddress
-                                name
-                                avatarLevel
-                                armorId
-                                titleId
-                                clearedStageId
-                            }}
-                        }}";
-
-                var myInfoResponse = await apiClient.GetObjectAsync<StageRankingResponse>(myInfoQuery);
-                if (myInfoResponse is null)
-                {
-                    Debug.LogError("Failed getting my ranking record.");
-                    continue;
-                }
-
-                var myRecord = myInfoResponse.StageRanking.FirstOrDefault();
-                if (myRecord is null)
-                {
-                    Debug.LogWarning($"Mimisbrunnr {nameof(StageRankingRecord)} not exists.");
-                    continue;
-                }
-
-                AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
-                {
-                    Rank = myRecord.Ranking,
-                    AvatarAddress = myRecord.AvatarAddress,
-                    Name = myRecord.Name,
-                    AvatarLevel = myRecord.AvatarLevel,
-                    ArmorId = myRecord.ArmorId,
-                    TitleId = myRecord.TitleId,
-                    ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                 };
             }
         }
