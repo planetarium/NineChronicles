@@ -131,16 +131,16 @@ namespace Nekoyume.UI
             var id = tutorialId;
             while (id != 0)
             {
-                var next = _scenario.FirstOrDefault(scenario => scenario.id == id);
-                if (next is null)
+                var nowScenario = _scenario.FirstOrDefault(scenario => scenario.id == id);
+                if (nowScenario is null)
                 {
                     break;
                 }
 
-                id = next.id;
-                if (next.nextId == 0)
+                id = nowScenario.nextId;
+                if (id == 0)
                 {
-                    var checkPointId = next.checkPointId;
+                    var checkPointId = nowScenario.checkPointId;
                     SetCheckPoint(checkPointId);
                     break;
                 }
