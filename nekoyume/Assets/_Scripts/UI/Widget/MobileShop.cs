@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -66,13 +67,7 @@ namespace Nekoyume.UI
             {
                 if (!_isInitailizedObj)
                 {
-                    MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
-
-                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
-                    await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
-
-                    var categorySchemas = await Game.Game.instance.IAPServiceManager
-                        .GetProductsAsync(States.Instance.AgentState.address);
+                    var categorySchemas = await GetCategorySchemas();
 
                     if(categorySchemas.Count == 0)
                     {
@@ -157,7 +152,20 @@ namespace Nekoyume.UI
                 _lastSelectedCategory = _recommendedString;
             }
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             loading.Close();
+        }
+
+        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        {
+            MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
+
+            await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
+            await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
+
+            var categorySchemas = await Game.Game.instance.IAPServiceManager
+                .GetProductsAsync(States.Instance.AgentState.address);
+            return categorySchemas;
         }
 
         public void RefreshGrid()

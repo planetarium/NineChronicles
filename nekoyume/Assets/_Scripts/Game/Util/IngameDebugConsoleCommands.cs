@@ -7,24 +7,53 @@ namespace Nekoyume.Game.Util
 {
     public static class ScreenClear
     {
-        public static async UniTaskVoid ClearScreen(bool isHorizontal)
+        public static void ClearScreen()
         {
-            await UniTask.WaitForEndOfFrame();
-            GameObject screenBoader;
-            if (isHorizontal)
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+            if (screenBoaderH != null)
+                screenBoaderH.SetActive(false);
+            if (screenBoaderV != null)
+                screenBoaderV.SetActive(false);
+        }
+        public static void ClearScreen(bool isHorizontal, float letterBoxSize)
+        {
+            var screenBoaderH = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
+            var screenBoaderV = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+
+            if (screenBoaderH != null)
             {
-                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("HorizontalLetterbox").gameObject;
-            }
-            else
-            {
-                screenBoader = GameObject.Find("BackGroundClearing").transform.Find("VerticalLetterBox").gameObject;
+                screenBoaderH.SetActive(isHorizontal);
+                if (isHorizontal)
+                {
+                    RectTransform rt = screenBoaderH.GetComponent<RectTransform>();
+                    rt.offsetMax = new Vector2(rt.offsetMax.x, -letterBoxSize);
+                    rt.offsetMin = new Vector2(rt.offsetMin.x, letterBoxSize);
+                }
             }
 
-            if (screenBoader != null)
+            if (screenBoaderV != null)
             {
-                screenBoader.gameObject.SetActive(true);
-                await UniTask.WaitForEndOfFrame();
-                screenBoader.gameObject.SetActive(false);
+                screenBoaderV.SetActive(!isHorizontal);
+                if (!isHorizontal)
+                {
+                    RectTransform rt = screenBoaderV.GetComponent<RectTransform>();
+                    rt.offsetMax = new Vector2(-letterBoxSize, rt.offsetMax.y);
+                    rt.offsetMin = new Vector2(letterBoxSize, rt.offsetMin.y);
+                }
+            }
+
+            BlackScreenClearing().Forget();
+
+            async UniTaskVoid BlackScreenClearing()
+            {
+                var blackscreenImageH = screenBoaderH.GetComponent<UnityEngine.UI.Image>();
+                var blackscreenImageV = screenBoaderV.GetComponent<UnityEngine.UI.Image>();
+                blackscreenImageH.color = Color.black;
+                blackscreenImageV.color = Color.black;
+                await UniTask.DelayFrame(2);
+                blackscreenImageH.color = new Color(0, 0, 0, 0);
+                blackscreenImageV.color = new Color(0, 0, 0, 0);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class QuestPopup : XTweenPopupWidget
+    public class QuestPopup : PopupWidget
     {
         [SerializeField]
         private CategoryTabButton adventureButton = null;

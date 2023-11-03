@@ -11,7 +11,6 @@ using Nekoyume.UI.Module.Common;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -44,13 +43,13 @@ namespace Nekoyume.UI.Module
         private bool syncWithAvatarState = true;
 
         [SerializeField]
-        private EventTrigger eventTrigger = null;
-
-        [SerializeField]
         private GameObject loading;
 
         [SerializeField]
-        private Animator animator = null;
+        private Animator animator;
+
+        [SerializeField]
+        private Button button;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private int _currentActionPoint;
@@ -97,6 +96,8 @@ namespace Nekoyume.UI.Module
             GameConfigStateSubject.ActionPointState.ObserveRemove()
                 .Where(x => x.Key == States.Instance.CurrentAvatarState.address)
                 .Subscribe(x => Charger(false)).AddTo(gameObject);
+
+            button.onClick.AddListener(ShowMaterialNavigationPopup);
         }
 
         protected override void OnEnable()
@@ -228,7 +229,7 @@ namespace Nekoyume.UI.Module
 
         public void SetEventTriggerEnabled(bool value)
         {
-            eventTrigger.enabled = value;
+            button.interactable = value;
         }
 
         private void Charger(bool isCharging)
@@ -238,10 +239,11 @@ namespace Nekoyume.UI.Module
         }
 
         // Call at Event Trigger Component
-        public void OnClickSlider()
+        public void ShowMaterialNavigationPopup()
         {
-            const int requiredStage = 23;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.ChargeAP;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage) &&
+                IsRemained)
             {
                 return;
             }
