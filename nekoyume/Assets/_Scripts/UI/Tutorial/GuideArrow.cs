@@ -101,6 +101,13 @@ namespace Nekoyume.UI
                     zeroZPosition.z = 0;
                     _rectTransform.anchoredPosition3D = zeroZPosition;
 
+                    var arrowCount = arrowTransform.Count;
+                    for (var i = 0; i < arrowCount; i++)
+                    {
+                        arrowTransform[i].anchoredPosition =
+                            _arrowDefaultPositionOffset[i] + d.arrowPositionOffset;
+                    }
+
                     if (d.guideType == GuideType.Outline)
                     {
                         ApplyOutline(d.target);
