@@ -81,10 +81,10 @@ namespace Nekoyume.UI
 
         public SynopsisScene[] scripts;
         [Tooltip("대사가 사라질때 걸리는 시간")]
-        public float textFadeOutTime = 0.5f;
+        public float textFadeOutTime = 0.3f;
         public bool prolgueEnd;
 
-        private int _part1EndIndex = 4;
+        private int _part1EndIndex = 3;
         private bool skipSynopsis;
         private bool skipAll;
 
