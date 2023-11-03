@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement13Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccount _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement13Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -292,7 +292,7 @@ namespace Lib9c.Tests.Action
                 )
                 .SetState(_avatarAddress, _avatarState.SerializeV2());
 
-            var action = new ItemEnhancement
+            var action = new ItemEnhancement13
             {
                 itemId = default,
                 materialIds = materialIds,
@@ -331,7 +331,7 @@ namespace Lib9c.Tests.Action
 
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement13.ResultModel)slot.Result;
             if (startLevel != expectedLevel)
             {
                 var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;

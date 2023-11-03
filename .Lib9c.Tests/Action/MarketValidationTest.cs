@@ -203,7 +203,7 @@ namespace Lib9c.Tests.Action
             {
                 foreach (var registerInfo in validateMember.RegisterInfos)
                 {
-                    var registerProduct = new RegisterProduct
+                    var registerProduct = new RegisterProduct2
                     {
                         AvatarAddress = AvatarAddress,
                         RegisterInfos = new[] { registerInfo },
@@ -237,7 +237,7 @@ namespace Lib9c.Tests.Action
             {
                 foreach (var productInfo in validateMember.ProductInfos)
                 {
-                    var buyProduct = new BuyProduct
+                    var buyProduct = new BuyProduct2
                     {
                         AvatarAddress = AvatarAddress,
                         ProductInfos = new[] { productInfo },
@@ -245,7 +245,7 @@ namespace Lib9c.Tests.Action
 
                     Assert.Throws(validateMember.Exc, () => buyProduct.Execute(actionContext));
 
-                    var cancelRegister = new CancelProductRegistration
+                    var cancelRegister = new CancelProductRegistration0
                     {
                         AvatarAddress = AvatarAddress,
                         ProductInfos = new List<IProductInfo>() { productInfo },

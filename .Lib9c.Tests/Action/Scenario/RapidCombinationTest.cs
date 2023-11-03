@@ -136,7 +136,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 // Do combination action
                 var recipe = recipeList[i];
-                var action = new CombinationEquipment
+                var action = new CombinationEquipment16
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
@@ -161,7 +161,7 @@ namespace Lib9c.Tests.Action.Scenario
             // Do RapidCombination
             for (var i = 0; i < recipeList.Count; i++)
             {
-                var action = new RapidCombination
+                var action = new RapidCombination9
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,

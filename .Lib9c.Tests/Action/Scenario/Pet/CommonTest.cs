@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             );
 
             // Combination1
-            var action1 = new CombinationEquipment
+            var action1 = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,
@@ -121,7 +121,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             });
 
             // Combination2: Raises error
-            var action2 = new CombinationEquipment
+            var action2 = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 1,

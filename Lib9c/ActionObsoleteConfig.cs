@@ -84,6 +84,8 @@ namespace Nekoyume
 
         public const long V200090ObsoleteIndex = 8_070_865L;
 
+        public const long V200092ObsoleteIndex = 8_324_909L;
+
         // While v200020, the action obsolete wasn't work well.
         // So other previous `V*ObsoletedIndex`s lost its meaning and
         // this block index will replace them.

@@ -21,11 +21,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash_sweep10")]
-    public class HackAndSlashSweep : GameAction, IHackAndSlashSweepV3
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep9")]
+    public class HackAndSlashSweep9 : GameAction, IHackAndSlashSweepV3
     {
         public const int UsableApStoneCount = 10;
 
@@ -164,16 +165,8 @@ namespace Nekoyume.Action
                 );
             }
 
-            var gameConfigState = states.GetGameConfigState();
-            if (gameConfigState is null)
-            {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the game config state was failed to load.");
-            }
-
-            var equipmentList = avatarState.ValidateEquipmentsV3(
-                equipments, context.BlockIndex, gameConfigState);
-            var costumeIds = avatarState.ValidateCostumeV2(costumes, gameConfigState);
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
             var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
             avatarState.ValidateItemRequirement(
@@ -273,6 +266,13 @@ namespace Nekoyume.Action
                     throw new NotEnoughMaterialException(
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
                 }
+            }
+
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
             if (actionPoint > avatarState.actionPoint)

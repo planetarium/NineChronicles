@@ -117,7 +117,7 @@ namespace Lib9c.Tests.Action.Scenario
                 );
 
                 // Do Combination Action
-                var action = new CombinationEquipment
+                var action = new CombinationEquipment16
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
@@ -205,7 +205,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 // Do combination action
                 var recipe = recipeList[i];
-                var action = new CombinationConsumable
+                var action = new CombinationConsumable8
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
@@ -288,7 +288,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var eventRow = _tableSheets.EventScheduleSheet[eventScheduleId];
                 // Do combination action
                 var recipe = recipeList[i];
-                var action = new EventConsumableItemCrafts
+                var action = new EventConsumableItemCrafts0
                 {
                     AvatarAddress = _avatarAddr,
                     EventScheduleId = eventScheduleId,
@@ -386,7 +386,7 @@ namespace Lib9c.Tests.Action.Scenario
                     }
                 }
 
-                var action = new EventMaterialItemCrafts
+                var action = new EventMaterialItemCrafts0
                 {
                     AvatarAddress = _avatarAddr,
                     EventScheduleId = eventScheduleId,

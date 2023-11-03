@@ -23,11 +23,12 @@ using Skill = Nekoyume.Model.Skill.Skill;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash22")]
-    public class HackAndSlash : GameAction, IHackAndSlashV10
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("hack_and_slash21")]
+    public class HackAndSlash21 : GameAction, IHackAndSlashV10
     {
         public const int UsableApStoneCount = 10;
 
@@ -274,17 +275,9 @@ namespace Nekoyume.Action
                 addressesHex, source, "Validate World", blockIndex, sw.Elapsed.TotalMilliseconds);
 
             sw.Restart();
-            var gameConfigState = states.GetGameConfigState();
-            if (gameConfigState is null)
-            {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the game config state was failed to load.");
-            }
-
-            var equipmentList = avatarState.ValidateEquipmentsV3(
-                Equipments, blockIndex, gameConfigState);
-            var foodIds = avatarState.ValidateConsumableV2(Foods, blockIndex, gameConfigState);
-            var costumeIds = avatarState.ValidateCostumeV2(Costumes, gameConfigState);
+            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, blockIndex);
+            var foodIds = avatarState.ValidateConsumable(Foods, blockIndex);
+            var costumeIds = avatarState.ValidateCostume(Costumes);
             sw.Stop();
             Log.Verbose("{AddressesHex} {Source} HAS {Process} from #{BlockIndex}: {Elapsed}",
                 addressesHex, source, "Validate Items", blockIndex, sw.Elapsed.TotalMilliseconds);
@@ -302,6 +295,13 @@ namespace Nekoyume.Action
 
             if (ApStoneCount > 0)
             {
+                var gameConfigState = states.GetGameConfigState();
+                if (gameConfigState is null)
+                {
+                    throw new FailedLoadStateException(
+                        $"{addressesHex}Aborted as the game config state was failed to load.");
+                }
+
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
                 if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, blockIndex,

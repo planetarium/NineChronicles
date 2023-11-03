@@ -22,11 +22,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1858
     /// </summary>
     [Serializable]
-    [ActionType("raid7")]
-    public class Raid : GameAction, IRaidV2
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
+    [ActionType("raid6")]
+    public class Raid6 : GameAction, IRaidV2
     {
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
@@ -60,6 +61,13 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(
                     $"Aborted as the avatar state of the signer was failed to load.");
+            }
+            // Check stage level.
+            if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInRaid))
+            {
+                avatarState.worldInformation.TryGetLastClearedStageId(out int current);
+                throw new NotEnoughClearedStageLevelException(AvatarAddress.ToHex(),
+                    GameConfig.RequireClearedStageLevel.ActionsInRaid, current);
             }
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
@@ -148,11 +156,9 @@ namespace Nekoyume.Action
             }
 
             // Validate equipment, costume.
-            var equipmentList = avatarState.ValidateEquipmentsV3(
-                EquipmentIds, context.BlockIndex, gameConfigState);
-            var foodIds = avatarState.ValidateConsumableV2(
-                FoodIds, context.BlockIndex, gameConfigState);
-            var costumeIds = avatarState.ValidateCostumeV2(CostumeIds, gameConfigState);
+            var equipmentList = avatarState.ValidateEquipmentsV2(EquipmentIds, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(CostumeIds);
 
             // Update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(AvatarAddress, BattleType.Raid);

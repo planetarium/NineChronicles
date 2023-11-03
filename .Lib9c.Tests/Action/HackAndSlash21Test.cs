@@ -191,7 +191,7 @@ namespace Lib9c.Tests.Action
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -262,7 +262,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -335,7 +335,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -397,7 +397,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = equipments,
@@ -424,7 +424,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -460,7 +460,7 @@ namespace Lib9c.Tests.Action
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -484,7 +484,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -511,7 +511,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -551,7 +551,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 51, true)]
         public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -584,7 +584,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -625,7 +625,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -662,7 +662,7 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
@@ -710,7 +710,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>
@@ -745,7 +745,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = ap,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -813,7 +813,7 @@ namespace Lib9c.Tests.Action
                     _avatarAddress.Derive(LegacyQuestListKey),
                     previousAvatarState.questList.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments,
@@ -883,7 +883,7 @@ namespace Lib9c.Tests.Action
                             avatarState.address.Derive(LegacyInventoryKey),
                             avatarState.inventory.Serialize());
 
-                    var action = new HackAndSlash
+                    var action = new HackAndSlash21
                     {
                         Costumes = costumes,
                         Equipments = equipments,
@@ -916,7 +916,7 @@ namespace Lib9c.Tests.Action
             };
 
             var state = _initialState;
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -953,7 +953,7 @@ namespace Lib9c.Tests.Action
             };
 
             var state = _initialState;
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -980,7 +980,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowUsageLimitExceedException()
         {
             var state = _initialState;
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -1007,7 +1007,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowNotEnoughMaterialException()
         {
             var state = _initialState;
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -1115,7 +1115,7 @@ namespace Lib9c.Tests.Action
                 Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -1281,7 +1281,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.EquipItems(costumes.Concat(equipments.Select(e => e.ItemId)));
             }
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = clear ? costumes : new List<Guid>(),
                 Equipments = clear
@@ -1406,7 +1406,7 @@ namespace Lib9c.Tests.Action
             var expectedAp = previousAvatarState.actionPoint -
                              _tableSheets.StakeActionPointCoefficientSheet.GetActionPointByStaking(
                                  _tableSheets.StageSheet[stageId].CostAP, playCount, level);
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -1485,7 +1485,7 @@ namespace Lib9c.Tests.Action
             var itemCount = previousAvatarState.inventory.Items
                 .FirstOrDefault(i => i.item.Id == itemId)?.count ?? 0;
             var expectedItemCount = itemCount + totalRepeatCount;
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -1538,7 +1538,7 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     _avatarAddress.Derive(LegacyQuestListKey),
                     avatarState.questList.Serialize());
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = new List<Guid>(),
                 Equipments = new List<Guid>(),
@@ -1631,7 +1631,7 @@ namespace Lib9c.Tests.Action
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -1655,7 +1655,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = ActionObsoleteConfig.V100301ExecutedBlockIndex,
             });
 
-            var action2 = new HackAndSlash
+            var action2 = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -1770,7 +1770,7 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             });
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash21
             {
                 Costumes = costumes,
                 Equipments = equipments.Select(e => e.NonFungibleId).ToList(),

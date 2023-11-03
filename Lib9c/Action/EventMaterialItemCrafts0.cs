@@ -20,14 +20,12 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
-    /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType(ActionTypeText)]
-    public class EventMaterialItemCrafts : GameAction, IEventMaterialItemCraftsV1
+    public class EventMaterialItemCrafts0 : GameAction, IEventMaterialItemCraftsV1
     {
-        private const string ActionTypeText = "event_material_item_crafts2";
+        private const string ActionTypeText = "event_material_item_crafts";
         public Address AvatarAddress;
         public int EventScheduleId;
         public int EventMaterialItemRecipeId;
@@ -144,6 +142,21 @@ namespace Nekoyume.Action
                 addressesHex,
                 sw.Elapsed);
             // ~Get sheets
+
+            // Validate Requirements
+            sw.Restart();
+            avatarState.worldInformation.ValidateFromAction(
+                GameConfig.RequireClearedStageLevel.CombinationConsumableAction,
+                ActionTypeText,
+                addressesHex);
+            sw.Stop();
+
+            Log.Verbose(
+                "[{ActionTypeString}][{AddressesHex}] Validate requirements: {Elapsed}",
+                ActionTypeText,
+                addressesHex,
+                sw.Elapsed);
+            // ~Validate Requirements
 
             // Validate fields
             sw.Restart();

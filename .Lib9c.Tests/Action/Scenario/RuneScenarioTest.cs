@@ -91,7 +91,7 @@ namespace Lib9c.Tests.Action.Scenario
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(avatarAddress, BattleType.Adventure);
             Assert.Null(state.GetState(runeSlotStateAddress));
 
-            var has = new HackAndSlash
+            var has = new HackAndSlash21
             {
                 StageId = 1,
                 AvatarAddress = avatarAddress,

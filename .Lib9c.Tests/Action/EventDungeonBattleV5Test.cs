@@ -456,7 +456,7 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
             }
 
-            var action = new EventDungeonBattle
+            var action = new EventDungeonBattleV5
             {
                 AvatarAddress = _avatarAddress,
                 EventScheduleId = eventScheduleId,

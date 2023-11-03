@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Extensions
 
             if (!(subRecipeRow is null))
             {
-                CombinationEquipment.AddAndUnlockOption(
+                CombinationEquipment16.AddAndUnlockOption(
                     new AgentState(new PrivateKey().ToAddress()),
                     null,
                     equipment,
