@@ -435,19 +435,13 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickWorldBossSeasonRewardsButton()
         {
-            // Fill this
-        }
-
-        // Invoke from TutorialController.PlayAction() by TutorialTargetType
-        public void TutorialActionClickWorldBossRewardsButton()
-        {
-            // Fill this
+            ShowDetail(WorldBossDetail.ToggleType.Reward);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickWorldBossEnterPracticeButton()
         {
-            // Fill this
+            OnClickEnter();
         }
     }
 }

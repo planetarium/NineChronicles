@@ -51,6 +51,11 @@ namespace Nekoyume.Game.OAuth
                     Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
                     StartCoroutine(CoSendGoogleIdToken(_idToken));
                 }
+
+                if (state is SignInState.Canceled)
+                {
+                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                }
             });
         }
 

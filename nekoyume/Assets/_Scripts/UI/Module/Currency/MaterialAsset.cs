@@ -13,10 +13,26 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI countText;
 
-        public void SetMaterial(Sprite icon, int quantity)
+        [SerializeField]
+        private Button button;
+
+        private CostType _costType;
+
+        private void Awake()
+        {
+            button.onClick.AddListener(ShowMaterialNavigationPopup);
+        }
+
+        public void SetMaterial(Sprite icon, int quantity, CostType costType)
         {
             iconImage.sprite = icon;
             countText.text = quantity.ToString("N0");
+            _costType = costType;
+        }
+
+        public void ShowMaterialNavigationPopup()
+        {
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(_costType);
         }
     }
 }

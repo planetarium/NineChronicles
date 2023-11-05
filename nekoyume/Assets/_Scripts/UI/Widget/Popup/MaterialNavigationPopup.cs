@@ -19,7 +19,6 @@ namespace Nekoyume.UI
         {
             public GameObject container;
             public Image icon;
-            public TextMeshProUGUI nameText;
             public TextMeshProUGUI countText;
         }
 
@@ -51,6 +50,9 @@ namespace Nekoyume.UI
             public UIHsvModifier hsvModifier;
             public TextMeshProUGUI infoText;
         }
+
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
 
         [SerializeField]
         private Image itemImage;
@@ -89,6 +91,8 @@ namespace Nekoyume.UI
         private ConditionalButton conditionalButtonYellow;
 
         private System.Action _callback;
+        private System.Action _chargeAP;
+        private System.Action _getDailyReward;
 
         protected override void Awake()
         {
@@ -160,44 +164,49 @@ namespace Nekoyume.UI
             infoText.hsvModifier.enabled = isPositive;
         }
 
-        private const string ActionPointTicker = "ACTIONPOINT";
-        private const int ActionPointItemId = 9999996;
-        private const string AdventureRuneTicker = "RUNE_ADVENTURE";
-        private const int ItemId = 500000;
-
-        private System.Action _chargeAP;
-        private System.Action _getDailyReward;
-
         public void ShowAP(
             string itemCount,
             int subItemCount,
             long blockRange,
-            long maxBlockRange, //
+            long maxBlockRange,
             bool isInteractable,
-            System.Action chargeAP, //
+            System.Action chargeAP,
             System.Action getDailyReward,
-            bool ignoreShowAnimation = false) //
+            bool ignoreShowAnimation = false)
         {
-            itemImage.sprite = SpriteHelper.GetFavIcon(ActionPointTicker);
-            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{ActionPointItemId}");
+            const CostType costType = CostType.ActionPoint;
+            const int itemId = 9999996;
+            itemImage.sprite = costIconData.GetIcon(costType);
             itemCountText.text = itemCount;
-            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{ActionPointItemId}");;
+            itemNameText.text = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            contentText.text = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
             infoText.container.SetActive(false); // set default
 
             actionButton.gameObject.SetActive(false);
             conditionalButtonBrown.gameObject.SetActive(true);
             conditionalButtonYellow.gameObject.SetActive(true);
 
+            const int subItemId = 500000;  // APStone
             subItem.container.SetActive(true);
-            subItem.icon.sprite = SpriteHelper.GetItemIcon(ItemId);
-            subItem.nameText.text = $"{L10nManager.Localize($"ITEM_NAME_{ItemId}")} :";
-            subItem.countText.text = subItemCount.ToString();
+            subItem.icon.sprite = SpriteHelper.GetItemIcon(subItemId);
+            subItem.countText.text =
+                $"{L10nManager.Localize($"ITEM_NAME_{subItemId}")} : {subItemCount}";
 
-            blockGauge.minText.text = 0.ToString();
+            const string bonusItemTicker = "RUNE_ADVENTURE";
+            const int bonusItemCount = 1;
             blockGauge.maxText.text = maxBlockRange.ToString();
-            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(AdventureRuneTicker);
-            blockGauge.bonusItem.countText.text = 1.ToString();
-            blockGauge.bonusItem.button.onClick.RemoveAllListeners();  // Todo Fill this
+            blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(bonusItemTicker);
+            blockGauge.bonusItem.countText.text = bonusItemCount.ToString();
+            blockGauge.bonusItem.button.onClick.RemoveAllListeners();
+            blockGauge.bonusItem.button.onClick.AddListener(() =>
+            {
+                Close();
+                if (!RuneFrontHelper.TryGetRuneData(bonusItemTicker, out var runeData))
+                {
+                    return;
+                }
+                Find<MaterialNavigationPopup>().ShowRuneStone(runeData.id);
+            });
 
             var remainBlockRange = maxBlockRange - blockRange;
             blockGauge.container.SetActive(true);
@@ -212,6 +221,157 @@ namespace Nekoyume.UI
             _getDailyReward = getDailyReward;
 
             base.Show(ignoreShowAnimation);
+        }
+
+        public void ShowCurrency(CostType costType)
+        {
+            int itemId;
+            string count, buttonText;
+            System.Action callback;
+            switch (costType)
+            {
+                case CostType.NCG:
+                    itemId = 9999999;
+                    count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
+                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
+                    callback = () =>
+                    {
+                        if (Game.Game.instance.IsInWorld)
+                        {
+                            return;
+                        }
+
+                        CloseWithOtherWidgets();
+                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Find<Grind>().Show();
+                    };
+                    break;
+                case CostType.Crystal:
+                    itemId = 9999998;
+                    count = States.Instance.CrystalBalance.GetQuantityString();
+                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
+                    callback = () =>
+                    {
+                        if (Game.Game.instance.IsInWorld)
+                        {
+                            return;
+                        }
+
+                        CloseWithOtherWidgets();
+                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+                        Find<Grind>().Show();
+                    };
+                    break;
+                case CostType.Hourglass:
+                    itemId = 9999997;
+                    var hourglassCount = Util.GetHourglassCount(
+                        States.Instance.CurrentAvatarState.inventory,
+                        Game.Game.instance.Agent.BlockIndex);
+                    count = hourglassCount.ToString();
+                    buttonText = L10nManager.Localize("UI_COMBINATION");
+                    callback = () => { Find<CombinationSlotsPopup>().Show(); };
+                    break;
+                case CostType.SilverDust:
+                case CostType.GoldDust:
+                    itemId = (int)costType;
+                    var materialCount =
+                        States.Instance.CurrentAvatarState.inventory.GetMaterialCount(itemId);
+                    count = materialCount.ToString();
+
+                    if (costType == CostType.SilverDust)
+                    {
+                        buttonText = L10nManager.Localize("UI_PATROL_REWARD");
+                        callback = () =>
+                        {
+                            if (Game.Game.instance.IsInWorld)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();
+                            Game.Event.OnRoomEnter.Invoke(true);
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Main);
+                            Find<PatrolRewardPopup>().Show();
+                        };
+                    }
+                    else  // CostType.GoldDust
+                    {
+                        buttonText = L10nManager.Localize("UI_SHOP");
+                        callback = () =>
+                        {
+                            if (Game.Game.instance.IsInWorld)
+                            {
+                                return;
+                            }
+
+                            CloseWithOtherWidgets();
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                            Find<ShopBuy>().Show();
+                        };
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(costType), costType, null);
+            }
+
+            var icon = costIconData.GetIcon(costType);
+            var itemName = L10nManager.Localize($"ITEM_NAME_{itemId}");
+            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{itemId}");
+
+            SetInfo(false);
+            Show(callback, icon, itemName, count, content, buttonText);
+        }
+
+        public void ShowRuneStone(int runeStoneId)
+        {
+            var itemName = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
+            var content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
+
+            var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
+            var icon = SpriteHelper.GetFavIcon(ticker);
+            var count = States.Instance.CurrentAvatarBalances[ticker].GetQuantityString();
+
+            string buttonText;
+            System.Action callback;
+            // Adventure's Rune
+            if (runeStoneId == 30001)
+            {
+                buttonText = L10nManager.Localize("UI_CHARGE_AP");
+                callback = () => Find<HeaderMenuStatic>().ActionPoint.ShowMaterialNavigationPopup();
+                SetInfo(false);
+            }
+            // Golden leaf Rune(=> Shop), World Boss Rune
+            else
+            {
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var isExist = RuneFrontHelper.TryGetRunStoneInformation(
+                    currentBlockIndex,
+                    runeStoneId,
+                    out var info,
+                    out var canObtain);
+
+                buttonText = canObtain
+                    ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
+                    : L10nManager.Localize("UI_SHOP");
+                SetInfo(isExist, (info, canObtain));
+
+                callback = () =>
+                {
+                    Find<Rune>().Close(true);
+                    if (canObtain)
+                    {
+                        Find<WorldBoss>().ShowAsync().Forget();
+                    }
+                    else
+                    {
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                        Find<ShopBuy>().Show();
+                    }
+                };
+            }
+
+            Show(callback, icon, itemName, count, content, buttonText);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

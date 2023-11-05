@@ -93,13 +93,15 @@ namespace Nekoyume.UI
                 {
                     google.OnSignIn();
                     startButtonContainer.SetActive(false);
+                    googleSignInButton.gameObject.SetActive(false);
                     google.State
                         .SkipLatestValueOnSubscribe()
                         .First()
                         .Subscribe(state =>
                         {
-                            startButtonContainer.SetActive(
-                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                            var isCanceled = state is GoogleSigninBehaviour.SignInState.Canceled;
+                            startButtonContainer.SetActive(isCanceled);
+                            googleSignInButton.gameObject.SetActive(isCanceled);
                         });
                 }
             });
