@@ -195,6 +195,10 @@ namespace Nekoyume.UI
         public IEnumerator CreateSecondWidgets()
         {
 #if UNITY_ANDROID || UNITY_IOS
+            _secondWidgets.Add(Widget.Create<Login>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
             
