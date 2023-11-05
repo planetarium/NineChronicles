@@ -112,6 +112,8 @@ namespace Nekoyume.Action.Garages
 
         public override IAccount Execute(IActionContext context)
         {
+            context.UseGas(1);
+
             throw new System.NotImplementedException();
         }
 
