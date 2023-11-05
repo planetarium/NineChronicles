@@ -95,6 +95,10 @@ namespace Nekoyume.Game
         protected void Awake()
         {
             InitScreenResolution();
+
+#if UNITY_IOS
+            Cam.clearFlags = CameraClearFlags.SolidColor;
+#endif
         }
 
         private void Update()
@@ -119,7 +123,7 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             UpdateStaticRatioWithLetterBox();
 #else
             UpdateDynamicRatio();
