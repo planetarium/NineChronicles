@@ -238,6 +238,8 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
+
+            Application.lowMemory += OnLowMemory;
         }
 
         private IEnumerator Start()
@@ -1461,6 +1463,11 @@ namespace Nekoyume.Game
         public void ShowCLO()
         {
             Debug.Log(_commandLineOptions.ToString());
+        }
+
+        private void OnLowMemory()
+        {
+            System.GC.Collect();
         }
     }
 }

@@ -195,12 +195,40 @@ namespace Nekoyume.UI
         public IEnumerator CreateSecondWidgets()
         {
 #if UNITY_ANDROID || UNITY_IOS
+            _secondWidgets.Add(Widget.Create<Login>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
+            
+            _secondWidgets.Add(Widget.Create<MobileShop>());
+            yield return null;
+            Task.Run(async () =>
+            {
+                var categorySchemas = await MobileShop.GetCategorySchemas();
+                foreach (var category in categorySchemas)
+                {
+                    await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+
+                    foreach (var product in category.ProductList)
+                    {
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                    }
+                }
+            });
+            
             _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
+
+            // tooltip
+            _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
+            yield return null;
+
             _secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
 #else
@@ -249,25 +277,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
 
-#if UNITY_ANDROID
-            _secondWidgets.Add(Widget.Create<MobileShop>());
-            yield return null;
-            Task.Run(async () =>
-            {
-                var categorySchemas = await MobileShop.GetCategorySchemas();
-                foreach (var category in categorySchemas)
-                {
-                    await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
-
-                    foreach (var product in category.ProductList)
-                    {
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
-                    }
-                }
-            });
-#endif
             _secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopBuy>());
@@ -484,7 +493,7 @@ namespace Nekoyume.UI
             var widget = Widget.Create<T>();
             _secondWidgets.Add(widget);
             widget.Initialize();
-            Game.Game.instance.Stage.TutorialController.RegisterWidget(widget);
+            Game.Game.instance.Stage.TutorialController?.RegisterWidget(widget);
             return widget;
         }
 
@@ -496,7 +505,7 @@ namespace Nekoyume.UI
                 if (found == widget)
                 {
                     _secondWidgets.Remove(widget);
-                    Game.Game.instance.Stage.TutorialController.UnregisterWidget(widget);
+                    Game.Game.instance.Stage.TutorialController?.UnregisterWidget(widget);
                     return Widget.Remove(widget);
                 }
             }
