@@ -27,6 +27,7 @@ namespace Nekoyume.UI
 {
     using Nekoyume.Helper;
     using UniRx;
+    using UnityEngine.Serialization;
 
     public class BattleResultPopup : PopupWidget
     {
@@ -187,7 +188,8 @@ namespace Nekoyume.UI
         private Button craftButton;
 
         [SerializeField]
-        private Button foodButton;
+        [FormerlySerializedAs("foodButton")]
+        private Button starButton;
 
         [SerializeField]
         private ActionPoint actionPoint;
@@ -226,7 +228,7 @@ namespace Nekoyume.UI
 
             shopButton.OnClickAsObservable().Subscribe(_ => GoToProduct()).AddTo(gameObject);
             craftButton.OnClickAsObservable().Subscribe(_ => GoToCraft()).AddTo(gameObject);
-            foodButton.OnClickAsObservable().Subscribe(_ => GoToFood()).AddTo(gameObject);
+            starButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
