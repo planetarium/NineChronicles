@@ -329,7 +329,7 @@ namespace Lib9c.Tests.Action
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement13.ResultModel)slot.Result;
-            if (startLevel != expectedLevel)
+            if (startLevel != level)
             {
                 var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;
                 var baseMaxAtk = (decimal)preItemUsable.StatsMap.BaseATK;

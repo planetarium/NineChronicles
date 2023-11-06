@@ -100,6 +100,7 @@ namespace Nekoyume.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return context.PreviousState;
@@ -109,7 +110,7 @@ namespace Nekoyume.Action
                 context.PreviousState,
                 context.Signer,
                 context.BlockIndex,
-                context.Random);
+                random);
         }
 
         public IAccount Execute(

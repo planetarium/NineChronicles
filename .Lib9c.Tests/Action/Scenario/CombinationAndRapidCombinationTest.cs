@@ -79,7 +79,7 @@
             _worldInformationAddress = _avatarAddress.Derive(LegacyWorldInformationKey);
             _questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
 
-            _initialState = new Tests.Action.MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
@@ -189,7 +189,7 @@
             {
                 PreviousState = nextState,
                 BlockIndex = 0,
-                Random = random,
+                RandomSeed = randomSeed,
                 Signer = _agentAddress,
             });
 
@@ -285,7 +285,7 @@
             {
                 PreviousState = nextState,
                 BlockIndex = GameConfig.RequiredAppraiseBlock,
-                Random = random,
+                RandomSeed = randomSeed,
                 Signer = _agentAddress,
             });
             inventoryValue = nextState.GetState(_inventoryAddress);

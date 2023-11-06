@@ -120,6 +120,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return states;
@@ -333,7 +334,7 @@ namespace Nekoyume.Action
             }
 
             var simulator = new StageSimulator(
-                context.Random,
+                random,
                 avatarState,
                 Foods,
                 runeStates,
@@ -348,7 +349,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulator.GetWaveRewards(
-                    context.Random,
+                    random,
                     stageRow,
                     sheets.GetSheet<MaterialItemSheet>(),
                     PlayCount));

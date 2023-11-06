@@ -91,6 +91,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return states;
@@ -392,7 +393,7 @@ namespace Nekoyume.Action
             var rewards = new List<ItemBase>();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(context.Random);
+                var simulator = new ArenaSimulator(random);
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
@@ -407,7 +408,7 @@ namespace Nekoyume.Action
                 }
 
                 var reward = RewardSelector.Select(
-                    context.Random,
+                    random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
                     myArenaPlayerDigest.Level,
