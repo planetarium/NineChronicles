@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action.Garages
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
+    using Bencodex.Types;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Common;
@@ -15,6 +16,7 @@ namespace Lib9c.Tests.Action.Garages
     using Nekoyume.Action.Garages;
     using Nekoyume.Model.Garages;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Xunit;
 
     public class UnloadFromGaragesTest
@@ -149,6 +151,20 @@ namespace Lib9c.Tests.Action.Garages
                     Assert.True(inventory.HasFungibleItem(fungibleId, blockIndex: 0, count));
                 }
             }
+
+            // Test Mailing
+            var avatarDict = (Dictionary)states.GetState(unloadData[0].recipientAvatarAddress)!;
+            var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey]);
+            Assert.Single(mailBox);
+
+            var mail = Assert.IsType<UnloadFromMyGaragesRecipientMail>(mailBox.First());
+            Assert.Equal(blockIndex, mail.blockIndex);
+            Assert.Equal(blockIndex, mail.requiredBlockIndex);
+            Assert.True(action.UnloadData[0].fungibleAssetValues?.SequenceEqual(mail.FungibleAssetValues!) ??
+                        mail.FungibleAssetValues is null);
+            Assert.True(action.UnloadData[0].fungibleIdAndCounts?.SequenceEqual(mail.FungibleIdAndCounts!) ??
+                        mail.FungibleIdAndCounts is null);
+            Assert.Equal(action.UnloadData[0].memo, mail.Memo);
         }
 
         private static (Address balanceAddr, FungibleAssetValue value)[]
