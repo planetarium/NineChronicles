@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,9 @@ namespace Nekoyume.Helper
         private static readonly List<int> CrystalEquipmentRecipes = new() { 158, 159, 160 };
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private static Dictionary<string, Sprite> CachedDownloadTextures = new Dictionary<string, Sprite>();
+
+        private static Dictionary<string, byte[]> CachedDownloadTexturesRaw =
+            new Dictionary<string, byte[]>();
 
         public static async Task<Order> GetOrder(Guid orderId)
         {
@@ -528,44 +532,86 @@ namespace Nekoyume.Helper
                 return cachedTexture;
             }
 
-            var www = UnityWebRequestTexture.GetTexture(url);
-            try
+            if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTextureRaw))
             {
-                await www.SendWebRequest();
+                var myTexture = new Texture2D(2, 2);
+                myTexture.LoadImage(cachedTextureRaw);
+                var result = Sprite.Create(
+                    myTexture,
+                    new Rect(0, 0, myTexture.width, myTexture.height),
+                    Pivot);
+                CachedDownloadTextures.Add(url, result);
+                return result;
             }
-            catch
+            else
             {
+                var www = UnityWebRequestTexture.GetTexture(url);
+                try
+                {
+                    await www.SendWebRequest();
+                }
+                catch
+                {
+                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                    {
+                        return cachedTexture;
+                    }
+                    Debug.LogError($"[DownloadTexture] {url}");
+                    return null;
+                }
+
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                    {
+                        return cachedTexture;
+                    }
+                    Debug.LogError($"[Util.DownloadTexture]{www.error}");
+                    return null;
+                }
+
                 if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
                 {
                     return cachedTexture;
                 }
-                Debug.LogError($"[DownloadTexture] {url}");
-                return null;
-            }
 
-            if (www.result != UnityWebRequest.Result.Success)
-            {
-                if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
-                {
-                    return cachedTexture;
-                }
-                Debug.LogError($"[Util.DownloadTexture]{www.error}");
-                return null;
-            }
+                var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                var result = Sprite.Create(
+                    myTexture,
+                    new Rect(0, 0, myTexture.width, myTexture.height),
+                    Pivot);
+                CachedDownloadTextures.Add(url, result);
 
-            if (CachedDownloadTextures.TryGetValue(url, out cachedTexture))
+                return result;
+            }
+        }
+
+        public static async UniTask<byte[]> DownloadTextureRaw(string url)
+        {
+            if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTexture))
             {
                 return cachedTexture;
             }
 
-            var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            var result = Sprite.Create(
-                    myTexture,
-                    new Rect(0, 0, myTexture.width, myTexture.height),
-                    Pivot);
-            CachedDownloadTextures.Add(url, result);
+            var client = new HttpClient();
+            var resp = await client.GetAsync(url);
+            try
+            {
+                resp.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                if (CachedDownloadTexturesRaw.TryGetValue(url, out cachedTexture))
+                {
+                    return cachedTexture;
+                }
+                Debug.LogError($"[DownloadTextureRaw] {url}");
+                return null;
+            }
 
-            return result;
+            var data = await resp.Content.ReadAsByteArrayAsync();
+            CachedDownloadTexturesRaw.TryAdd(url, data);
+            return data;
         }
     }
 }

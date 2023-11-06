@@ -148,6 +148,7 @@ namespace Nekoyume.Game
             UpdateScreenResolution();
             _isStaticRatio = false;
             GL.Clear(true, true, Color.black);
+            ScreenClear.ClearScreen();
         }
 
         public void UpdateStaticRatioWithLetterBox()
@@ -162,15 +163,18 @@ namespace Nekoyume.Game
             Rect rect = Cam.rect;
             float scaleheight = currentAspectRatio / fixedAspectRatio;
             float scalewidth = 1f / scaleheight;
+            float letterboxSize = 0;
             if (scaleheight < 1)
             {
                 rect.height = scaleheight;
                 rect.y = (1f - scaleheight) / 2f;
+                letterboxSize = (1f - scaleheight) * Screen.height / 2;
             }
             else
             {
                 rect.width = scalewidth;
                 rect.x = (1f - scalewidth) / 2f;
+                letterboxSize = (1f - scalewidth) * Screen.width / 2;
             }
             Cam.rect = rect;
 
@@ -178,7 +182,8 @@ namespace Nekoyume.Game
 
             UpdateScreenResolution();
             _isStaticRatio = true;
-            ScreenClear.ClearScreen(scaleheight < 1).Forget();
+            ScreenClear.ClearScreen(scaleheight < 1, letterboxSize);
+            GL.Clear(true, true, Color.black);
         }
 
         void OnPreCull() => GL.Clear(true, true, Color.black);

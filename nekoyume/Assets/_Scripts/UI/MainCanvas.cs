@@ -2,7 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -249,8 +252,22 @@ namespace Nekoyume.UI
 #if UNITY_ANDROID
             _secondWidgets.Add(Widget.Create<MobileShop>());
             yield return null;
-#endif
+            Task.Run(async () =>
+            {
+                var categorySchemas = await MobileShop.GetCategorySchemas();
+                foreach (var category in categorySchemas)
+                {
+                    await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
 
+                    foreach (var product in category.ProductList)
+                    {
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                    }
+                }
+            });
+#endif
             _secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopBuy>());

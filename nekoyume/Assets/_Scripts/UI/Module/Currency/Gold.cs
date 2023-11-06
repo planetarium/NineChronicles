@@ -20,17 +20,21 @@ namespace Nekoyume.UI.Module
         private Button onlineShopButton = null;
 
         [SerializeField]
-        private Image _iconImage;
+        private Image iconImage;
+
+        [SerializeField]
+        private Button button;
 
         private IDisposable _disposable;
 
         private const string OnlineShopLink = "https://shop.nine-chronicles.com/";
 
-        public Image IconImage => _iconImage;
+        public Image IconImage => iconImage;
 
         protected void Awake()
         {
             onlineShopButton.onClick.AddListener(OnClickOnlineShopButton);
+            button.onClick.AddListener(ShowMaterialNavigationPopup);
         }
 
         protected override void OnEnable()
@@ -65,6 +69,11 @@ namespace Nekoyume.UI.Module
         private void OnClickOnlineShopButton()
         {
             Application.OpenURL(OnlineShopLink);
+        }
+
+        private void ShowMaterialNavigationPopup()
+        {
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(CostType.NCG);
         }
     }
 }

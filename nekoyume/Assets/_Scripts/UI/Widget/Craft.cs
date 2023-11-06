@@ -754,25 +754,32 @@ namespace Nekoyume.UI
 
         public void TutorialActionCloseCombination()
         {
-            if (!isActiveAndEnabled)
+            if (isActiveAndEnabled)
             {
-                return;
+                Close(true);
             }
 
-            Close(true);
+            var combinationMain = Find<CombinationMain>();
+            if (combinationMain.isActiveAndEnabled)
+            {
+                combinationMain.Close(true);
+            }
+
             Game.Event.OnRoomEnter.Invoke(true);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombineEquipmentSuperCraft()
         {
-            // Fill this
+            Find<SuperCraftPopup>().Show(
+                (EquipmentItemRecipeSheet.Row)SharedModel.SelectedRow.Value,
+                false);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickCombineEquipmentPremiumRecipeButton()
         {
-            // Fill this
+            equipmentSubRecipeView.ChangeTabToPremiumForTutorial();
         }
     }
 }

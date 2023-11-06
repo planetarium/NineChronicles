@@ -18,6 +18,7 @@ namespace Nekoyume.UI
         private Animator _arrow;
         private Coroutine _coroutine;
         private Image _cachedImage;
+        private Camera _camera;
 
         private readonly Dictionary<GuideType, int> _guideTypes =
             new Dictionary<GuideType, int>(new GuideTypeEqualityComparer());
@@ -28,6 +29,7 @@ namespace Nekoyume.UI
         {
             _rectTransform = GetComponent<RectTransform>();
             _arrow = GetComponent<Animator>();
+            _camera = Camera.main;
 
             for (var i = 0; i < (int) GuideType.End; ++i)
             {
@@ -66,18 +68,46 @@ namespace Nekoyume.UI
 
                 if (d.guideType != GuideType.Stop)
                 {
-                    for (var i = 0; i < arrowTransform.Count; i++)
+                    var targetWorldCorners = new Vector3[4];
+                    var thisWorldCorners = new Vector3[4];
+
+                    d.target.GetWorldCorners(targetWorldCorners);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        // 타겟의 각 모서리 월드 좌표를 화면 좌표로 변환
+                        // Convert A.worldCorners to screen position
+                        Vector2 screenPos = _camera.WorldToScreenPoint(targetWorldCorners[i]);
+
+                        // 변환된 화면 좌표를 B의 월드 좌표로 다시 변환
+                        // Convert screenPos to world position about _rectTransform
+                        RectTransformUtility.ScreenPointToWorldPointInRectangle(_rectTransform,
+                            screenPos, _camera, out thisWorldCorners[i]);
+                    }
+
+                    Vector2 newCenter = (thisWorldCorners[0] + thisWorldCorners[2]) * 0.5f;
+                    _rectTransform.position = newCenter;
+
+                    _rectTransform.SetSizeWithCurrentAnchors(
+                        RectTransform.Axis.Horizontal,
+                        d.target.rect.width);
+                    _rectTransform.SetSizeWithCurrentAnchors(
+                        RectTransform.Axis.Vertical,
+                        d.target.rect.height);
+
+                    _rectTransform.anchoredPosition += d.targetPositionOffset;
+                    _rectTransform.sizeDelta += d.targetSizeOffset;
+                    var zeroZPosition = _rectTransform.anchoredPosition3D;
+                    zeroZPosition.z = 0;
+                    _rectTransform.anchoredPosition3D = zeroZPosition;
+
+                    var arrowCount = arrowTransform.Count;
+                    for (var i = 0; i < arrowCount; i++)
                     {
                         arrowTransform[i].anchoredPosition =
                             _arrowDefaultPositionOffset[i] + d.arrowPositionOffset;
                     }
-                    _rectTransform.anchoredPosition = d.target.anchoredPosition;
-                    _rectTransform.anchorMin = d.target.anchorMin;
-                    _rectTransform.anchorMax = d.target.anchorMax;
-                    _rectTransform.pivot = d.target.pivot;
-                    _rectTransform.position = d.target.position;
-                    _rectTransform.anchoredPosition += d.targetPositionOffset;
-                    _rectTransform.sizeDelta = d.target.sizeDelta + d.targetSizeOffset;
+
                     if (d.guideType == GuideType.Outline)
                     {
                         ApplyOutline(d.target);
