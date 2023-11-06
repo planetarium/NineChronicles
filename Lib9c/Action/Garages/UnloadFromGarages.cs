@@ -14,6 +14,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Exceptions;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action.Garages
@@ -158,8 +159,10 @@ namespace Nekoyume.Action.Garages
                 if (fungibleIdAndCounts is not null)
                     states = TransferFungibleItems(states, context.Signer, recipientAvatarAddress,
                         fungibleIdAndCounts);
-                // TODO: Send mail to each data
             }
+
+            // Mailing
+            states = BulkSendMail(context.BlockIndex, context.GetRandom(), states);
 
             return states;
         }
@@ -199,6 +202,49 @@ namespace Nekoyume.Action.Garages
             }
 
             return states.SetState(inventoryAddress, inventory.Serialize());
+        }
+
+        private IAccount BulkSendMail(
+            long blockIndex,
+            IRandom random,
+            IAccount states)
+        {
+            foreach (var tuple in UnloadData)
+            {
+                var (
+                    recipientAvatarAddress,
+                    fungibleAssetValues,
+                    fungibleIdAndCounts,
+                    memo) = tuple;
+                var avatarValue = states.GetState(recipientAvatarAddress);
+                if (!(avatarValue is Dictionary avatarDict))
+                {
+                    throw new FailedLoadStateException(recipientAvatarAddress, typeof(AvatarState));
+                }
+
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey))
+                {
+                    throw new KeyNotFoundException(
+                        $"Dictionary key is not found: {SerializeKeys.MailBoxKey}");
+                }
+
+                var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey])
+                {
+                    new UnloadFromMyGaragesRecipientMail(
+                        blockIndex,
+                        random.GenerateRandomGuid(),
+                        blockIndex,
+                        fungibleAssetValues,
+                        fungibleIdAndCounts,
+                        memo)
+                };
+                mailBox.CleanUp();
+                avatarDict = avatarDict.SetItem(SerializeKeys.MailBoxKey, mailBox.Serialize());
+
+                return states.SetState(recipientAvatarAddress, avatarDict);
+            }
+
+            return states;
         }
 
         private static IValue SerializeFungibleAssetValues(
