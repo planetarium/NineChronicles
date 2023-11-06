@@ -89,26 +89,26 @@ namespace Lib9c.Tests.Action
             var state = new GameConfigState();
             state.Set(sheet);
 
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, state.RequireCharacterLevel_FullCostumeSlot);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot, state.RequireCharacterLevel_HairCostumeSlot);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot, state.RequireCharacterLevel_EarCostumeSlot);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot, state.RequireCharacterLevel_EyeCostumeSlot);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot, state.RequireCharacterLevel_TailCostumeSlot);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterTitleSlot, state.RequireCharacterLevel_TitleSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_FullCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_HairCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_EarCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_EyeCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_TailCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_TitleSlot);
 
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon, state.RequireCharacterLevel_EquipmentSlotWeapon);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor, state.RequireCharacterLevel_EquipmentSlotArmor);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt, state.RequireCharacterLevel_EquipmentSlotBelt);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace, state.RequireCharacterLevel_EquipmentSlotNecklace);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1, state.RequireCharacterLevel_EquipmentSlotRing1);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2, state.RequireCharacterLevel_EquipmentSlotRing2);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura, state.RequireCharacterLevel_EquipmentSlotAura);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotWeapon);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotArmor);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotBelt);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotNecklace);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotRing1);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotRing2);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotAura);
 
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot1, state.RequireCharacterLevel_ConsumableSlot1);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot2, state.RequireCharacterLevel_ConsumableSlot2);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot3, state.RequireCharacterLevel_ConsumableSlot3);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot4, state.RequireCharacterLevel_ConsumableSlot4);
-            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot5, state.RequireCharacterLevel_ConsumableSlot5);
+            Assert.Equal(1, state.RequireCharacterLevel_ConsumableSlot1);
+            Assert.Equal(35, state.RequireCharacterLevel_ConsumableSlot2);
+            Assert.Equal(100, state.RequireCharacterLevel_ConsumableSlot3);
+            Assert.Equal(200, state.RequireCharacterLevel_ConsumableSlot4);
+            Assert.Equal(350, state.RequireCharacterLevel_ConsumableSlot5);
         }
 
         [Fact]
