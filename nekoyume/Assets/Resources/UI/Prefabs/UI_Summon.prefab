@@ -8841,6 +8841,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7044753788946299455, guid: 752992a8c1833a0448ce003351a84445,
+        type: 3}
+      propertyPath: ShapeModule.donutRadius
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7044753788946299455, guid: 752992a8c1833a0448ce003351a84445,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.0001
+      objectReference: {fileID: 0}
     - target: {fileID: 7245260370716958040, guid: 752992a8c1833a0448ce003351a84445,
         type: 3}
       propertyPath: m_Name
