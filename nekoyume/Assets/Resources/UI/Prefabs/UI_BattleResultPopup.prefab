@@ -5183,7 +5183,7 @@ MonoBehaviour:
   repeatButton: {fileID: 7118180269659475256}
   shopButton: {fileID: 8096079432234858783}
   craftButton: {fileID: 4515205457691240890}
-  foodButton: {fileID: 312660734249327581}
+  starButton: {fileID: 312660734249327581}
   actionPoint: {fileID: 6755360473609218157}
   seasonPassObjs:
   - {fileID: 5917785602048159282}
@@ -49069,6 +49069,7 @@ GameObject:
   - component: {fileID: 473779116853553440}
   - component: {fileID: 8794876651915099195}
   - component: {fileID: 6635707154745881692}
+  - component: {fileID: 4728950406766763698}
   m_Layer: 0
   m_Name: VictoryImageContainer
   m_TagString: Untagged
@@ -49160,6 +49161,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4728950406766763698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4078483671067153580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ae24aed10bb59c4baf2b95477378bd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4165797894961911053
 GameObject:
   m_ObjectHideFlags: 0
@@ -114136,17 +114149,17 @@ PrefabInstance:
     - target: {fileID: 6874257359851379873, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6874257359851379873, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6874257359851379873, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6874257359851379873, guid: 516b24743c7c6354aa41fe2f6fbb6a9e,
         type: 3}
@@ -118204,17 +118217,17 @@ PrefabInstance:
     - target: {fileID: 6329341122959083225, guid: e234ee3a8fe95cd419cc9b1941901879,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6329341122959083225, guid: e234ee3a8fe95cd419cc9b1941901879,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6329341122959083225, guid: e234ee3a8fe95cd419cc9b1941901879,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 160
+      value: 0.5925926
       objectReference: {fileID: 0}
     - target: {fileID: 6329341122959083225, guid: e234ee3a8fe95cd419cc9b1941901879,
         type: 3}
