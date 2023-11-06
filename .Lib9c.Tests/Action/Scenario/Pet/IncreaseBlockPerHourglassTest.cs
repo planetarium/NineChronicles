@@ -149,7 +149,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             );
 
             // Do combination
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,
@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             });
 
             // Do rapid combination
-            var rapidAction = new RapidCombination
+            var rapidAction = new RapidCombination9
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,

@@ -23,11 +23,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2166
-    /// Updated at https://github.com/planetarium/lib9c/pull/2166
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar10")]
+    [ActionType("create_avatar11")]
     public class CreateAvatar : GameAction, ICreateAvatarV2
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -159,8 +158,7 @@ namespace Nekoyume.Action
 
             foreach (var address in avatarState.combinationSlotAddresses)
             {
-                var slotState =
-                    new CombinationSlotState(address, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
+                var slotState = new CombinationSlotState(address, 0);
                 states = states.SetState(address, slotState.Serialize());
             }
 

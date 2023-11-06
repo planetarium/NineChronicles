@@ -185,7 +185,7 @@ namespace Lib9c.DevExtensions.Action
             {
                 var slotState =
                     new CombinationSlotState(address,
-                        GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
+                        0);
                 states = states.SetState(address, slotState.Serialize());
             }
 

@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
                 })
                 .StartedBlockIndex;
 
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -419,7 +419,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Reward()
         {
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -574,7 +574,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Free_Crystal_Fee()
         {
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),

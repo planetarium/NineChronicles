@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class RapidCombinationTest
+    public class RapidCombination9Test
     {
         private readonly IAccount _initialState;
 
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public RapidCombinationTest()
+        public RapidCombination9Test()
         {
             _initialState = new Account(MockState.Empty);
 
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
             var tempState = _initialState
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -274,7 +274,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -350,7 +350,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -386,7 +386,7 @@ namespace Lib9c.Tests.Action
 
             var state = new Account(MockState.Empty);
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -465,6 +465,71 @@ namespace Lib9c.Tests.Action
             };
 
             Assert.Equal(result.Serialize(), result2.Serialize());
+        }
+
+        [Fact]
+        public void Execute_Throw_RequiredAppraiseBlockException()
+        {
+            const int slotStateUnlockStage = 1;
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _initialState.GetSheet<WorldSheet>(),
+                slotStateUnlockStage);
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), count: 22);
+
+            var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(firstEquipmentRow);
+
+            var gameConfigState = _initialState.GetGameConfigState();
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 40;
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                firstEquipmentRow,
+                Guid.NewGuid(),
+                requiredBlockIndex);
+            avatarState.inventory.AddItem(equipment);
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                actionPoint = 0,
+                gold = 0,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+                recipeId = 0,
+                itemType = ItemType.Equipment,
+            };
+
+            var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
+            result.id = mail.id;
+            avatarState.Update(mail);
+
+            var slotAddress = _avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                0));
+            var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
+            slotState.Update(result, 0, 0);
+
+            var tempState = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(slotAddress, slotState.Serialize());
+
+            var action = new RapidCombination9
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<AppraiseBlockNotReachedException>(() => action.Execute(new ActionContext
+            {
+                PreviousState = tempState,
+                Signer = _agentAddress,
+                BlockIndex = 1,
+            }));
         }
 
         [Theory]
@@ -624,7 +689,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new RapidCombination
+            var action = new RapidCombination9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,

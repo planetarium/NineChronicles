@@ -20,11 +20,14 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
     public class EventConsumableItemCrafts : GameAction, IEventConsumableItemCraftsV1
     {
-        private const string ActionTypeText = "event_consumable_item_crafts";
+        private const string ActionTypeText = "event_consumable_item_crafts2";
 
         public Address AvatarAddress;
         public int EventScheduleId;
@@ -132,20 +135,6 @@ namespace Nekoyume.Action
                 sw.Elapsed);
             // ~Get sheets
 
-            // Validate Requirements.
-            sw.Restart();
-            avatarState.worldInformation.ValidateFromAction(
-                GameConfig.RequireClearedStageLevel.CombinationConsumableAction,
-                ActionTypeText,
-                addressesHex);
-            sw.Stop();
-            Log.Verbose(
-                "[{ActionTypeString}][{AddressesHex}] Validate requirements: {Elapsed}",
-                ActionTypeText,
-                addressesHex,
-                sw.Elapsed);
-            // ~Validate Requirements.
-
             // Validate fields.
             sw.Restart();
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
@@ -169,7 +158,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is failed to load: # {SlotIndex}");
             }
 
-            if (!slotState.Validate(avatarState, context.BlockIndex))
+            if (!slotState.ValidateV2(avatarState, context.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {SlotIndex}");

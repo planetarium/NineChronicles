@@ -81,6 +81,37 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_GameConfigSheet()
+        {
+            var sheetCsv = _initialState.GetSheetCsv<GameConfigSheet>();
+            var sheet = new GameConfigSheet();
+            sheet.Set(sheetCsv);
+            var state = new GameConfigState();
+            state.Set(sheet);
+
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, state.RequireCharacterLevel_FullCostumeSlot);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot, state.RequireCharacterLevel_HairCostumeSlot);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot, state.RequireCharacterLevel_EarCostumeSlot);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot, state.RequireCharacterLevel_EyeCostumeSlot);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot, state.RequireCharacterLevel_TailCostumeSlot);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterTitleSlot, state.RequireCharacterLevel_TitleSlot);
+
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon, state.RequireCharacterLevel_EquipmentSlotWeapon);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor, state.RequireCharacterLevel_EquipmentSlotArmor);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt, state.RequireCharacterLevel_EquipmentSlotBelt);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace, state.RequireCharacterLevel_EquipmentSlotNecklace);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1, state.RequireCharacterLevel_EquipmentSlotRing1);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2, state.RequireCharacterLevel_EquipmentSlotRing2);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura, state.RequireCharacterLevel_EquipmentSlotAura);
+
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot1, state.RequireCharacterLevel_ConsumableSlot1);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot2, state.RequireCharacterLevel_ConsumableSlot2);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot3, state.RequireCharacterLevel_ConsumableSlot3);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot4, state.RequireCharacterLevel_ConsumableSlot4);
+            Assert.Equal(GameConfig.RequireCharacterLevel.CharacterConsumableSlot5, state.RequireCharacterLevel_ConsumableSlot5);
+        }
+
+        [Fact]
         public void CheckPermission()
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");

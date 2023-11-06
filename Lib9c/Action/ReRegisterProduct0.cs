@@ -157,7 +157,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    states = CancelProductRegistration.Cancel(productsState, productInfo,
+                    states = CancelProductRegistration0.Cancel(productsState, productInfo,
                         states, avatarState, context);
                 }
 

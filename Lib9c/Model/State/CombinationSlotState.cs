@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Nekoyume.Model.State
     {
         public const string DeriveFormat = "combination-slot-{0}";
         public long UnlockBlockIndex { get; private set; }
+        [Obsolete("Not used anymore since v200092")]
         public int UnlockStage { get; private set; }
         public long StartBlockIndex { get; private set; }
         public AttachmentActionResult Result { get; private set; }
@@ -49,6 +51,7 @@ namespace Nekoyume.Model.State
             }
         }
 
+        [Obsolete("Use ValidateV2")]
         public bool Validate(AvatarState avatarState, long blockIndex)
         {
             if (avatarState is null)
@@ -59,6 +62,16 @@ namespace Nekoyume.Model.State
             return avatarState.worldInformation != null &&
                    avatarState.worldInformation.IsStageCleared(UnlockStage) &&
                    blockIndex >= UnlockBlockIndex;
+        }
+
+        public bool ValidateV2(AvatarState avatarState, long blockIndex)
+        {
+            if (avatarState is null)
+            {
+                return false;
+            }
+
+            return blockIndex >= UnlockBlockIndex;
         }
 
         public void Update(AttachmentActionResult result, long blockIndex, long unlockBlockIndex, int? petId = null)
