@@ -37,7 +37,6 @@ character_consumable_slot_1,1
 character_consumable_slot_2,35
 character_consumable_slot_3,100
 character_consumable_slot_4,200
-character_consumable_slot_5,350
-";
+character_consumable_slot_5,350";
     }
 }

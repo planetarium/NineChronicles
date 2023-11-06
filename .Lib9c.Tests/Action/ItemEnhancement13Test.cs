@@ -5,6 +5,10 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
+    using Lib9c.Tests.Fixtures.TableCSV.Cost;
+    using Lib9c.Tests.Fixtures.TableCSV.Item;
+    using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -28,8 +32,24 @@ namespace Lib9c.Tests.Action
 
         public ItemEnhancement13Test()
         {
-            var sheets = TableSheetsImporter.ImportSheets();
+            _initialState = new Account(MockState.Empty);
+            Dictionary<string, string> sheets;
+            (_initialState, sheets) = InitializeUtil.InitializeTableSheets(
+                _initialState,
+                sheetsOverride: new Dictionary<string, string>
+                {
+                    {
+                        "EnhancementCostSheetV3",
+                        EnhancementCostSheetFixtures.V3
+                    },
+                });
             _tableSheets = new TableSheets(sheets);
+            foreach (var (key, value) in sheets)
+            {
+                _initialState =
+                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
             var agentState = new AgentState(_agentAddress);
@@ -58,7 +78,7 @@ namespace Lib9c.Tests.Action
             ));
 
             var context = new ActionContext();
-            _initialState = new Account(MockState.Empty)
+            _initialState = _initialState
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
@@ -79,12 +99,6 @@ namespace Lib9c.Tests.Action
                 gold.Currency * 3_000_000,
                 _initialState.GetBalance(_agentAddress, gold.Currency)
             );
-
-            foreach (var (key, value) in sheets)
-            {
-                _initialState =
-                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
         }
 
         [Theory]

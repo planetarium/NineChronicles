@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action.Scenario
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV.Item;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -38,7 +39,18 @@ namespace Lib9c.Tests.Action.Scenario
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = InitializeUtil.InitializeStates();
+            ) = InitializeUtil.InitializeStates(
+                sheetsOverride: new Dictionary<string, string>
+                {
+                    {
+                        "EquipmentItemRecipeSheet",
+                        EquipmentItemRecipeSheetFixtures.Default
+                    },
+                    {
+                        "EquipmentItemSubRecipeSheetV2",
+                        EquipmentItemSubRecipeSheetFixtures.V2
+                    },
+                });
             _inventoryAddr = _avatarAddr.Derive(LegacyInventoryKey);
             _worldInformationAddr = _avatarAddr.Derive(LegacyWorldInformationKey);
         }
