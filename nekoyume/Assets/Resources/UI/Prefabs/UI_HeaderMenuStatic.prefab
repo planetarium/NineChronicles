@@ -2230,9 +2230,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets:
   - type: 6
-    rectTransform: {fileID: 5945134861687082252}
+    rectTransform: {fileID: 3560442561599726796}
   - type: 7
-    rectTransform: {fileID: 617940936355003169}
+    rectTransform: {fileID: 7744846711258845921}
   - type: 12
     rectTransform: {fileID: 7207184561882084239}
   - type: 13
@@ -2245,7 +2245,7 @@ MonoBehaviour:
     rectTransform: {fileID: 5576564636939272136}
   - type: 1000018
     rectTransform: {fileID: 2559994358801009650}
-  tutorialActions: 0500000006000000070000000f000000711101004f420f00
+  tutorialActions: 0500000006000000070000000f00000051420f0050420f00
   toggles:
   - Type: 0
     Toggle: {fileID: 6700164880138307927}

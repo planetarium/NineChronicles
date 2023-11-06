@@ -152,6 +152,7 @@ namespace Nekoyume.UI
                 _lastSelectedCategory = _recommendedString;
             }
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             loading.Close();
         }
 

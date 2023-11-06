@@ -312,7 +312,7 @@ namespace Nekoyume.Helper
                     if (States.Instance.CurrentAvatarState.worldInformation
                         .TryGetLastClearedStageId(out var lastClearedStage))
                     {
-                        return lastClearedStage >= Game.LiveAsset.GameConfig.UIMainMenuShop;
+                        return lastClearedStage >= Game.LiveAsset.GameConfig.RequiredStage.Shop;
                     }
 
                     return false;
@@ -323,7 +323,7 @@ namespace Nekoyume.Helper
                     if (States.Instance.CurrentAvatarState.worldInformation
                         .TryGetLastClearedStageId(out var lastClearedStage))
                     {
-                        return lastClearedStage >= Game.LiveAsset.GameConfig.UIMainMenuRankingBoard;
+                        return lastClearedStage >= Game.LiveAsset.GameConfig.RequiredStage.Arena;
                     }
 
                     return false;
