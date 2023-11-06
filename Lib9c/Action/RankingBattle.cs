@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1135
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType("ranking_battle12")]
     public class RankingBattle : GameAction, IRankingBattleV2
     {

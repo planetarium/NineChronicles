@@ -5,6 +5,10 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
+    using Lib9c.Tests.Fixtures.TableCSV.Cost;
+    using Lib9c.Tests.Fixtures.TableCSV.Item;
+    using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -17,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement13Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
@@ -26,10 +30,26 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccount _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement13Test()
         {
-            var sheets = TableSheetsImporter.ImportSheets();
+            _initialState = new Account(MockState.Empty);
+            Dictionary<string, string> sheets;
+            (_initialState, sheets) = InitializeUtil.InitializeTableSheets(
+                _initialState,
+                sheetsOverride: new Dictionary<string, string>
+                {
+                    {
+                        "EnhancementCostSheetV3",
+                        EnhancementCostSheetFixtures.V3
+                    },
+                });
             _tableSheets = new TableSheets(sheets);
+            foreach (var (key, value) in sheets)
+            {
+                _initialState =
+                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
             var agentState = new AgentState(_agentAddress);
@@ -58,7 +78,7 @@ namespace Lib9c.Tests.Action
             ));
 
             var context = new ActionContext();
-            _initialState = new Account(MockState.Empty)
+            _initialState = _initialState
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
@@ -79,12 +99,6 @@ namespace Lib9c.Tests.Action
                 gold.Currency * 3_000_000,
                 _initialState.GetBalance(_agentAddress, gold.Currency)
             );
-
-            foreach (var (key, value) in sheets)
-            {
-                _initialState =
-                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
         }
 
         [Theory]
@@ -283,7 +297,7 @@ namespace Lib9c.Tests.Action
                 )
                 .SetState(_avatarAddress, _avatarState.SerializeV2());
 
-            var action = new ItemEnhancement
+            var action = new ItemEnhancement13
             {
                 itemId = default,
                 materialIds = materialIds,
@@ -328,7 +342,7 @@ namespace Lib9c.Tests.Action
 
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement13.ResultModel)slot.Result;
             if (startLevel != level)
             {
                 var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;

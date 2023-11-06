@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             );
 
             // Do Combination
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,

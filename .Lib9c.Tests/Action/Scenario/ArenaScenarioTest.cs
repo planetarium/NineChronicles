@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action.Scenario
             var preCurrency = roundData.EntranceFee * _crystal;
             _state = _state.MintAsset(context, signer, preCurrency);
 
-            var action = new JoinArena()
+            var action = new JoinArena3()
             {
                 championshipId = roundData.ChampionshipId,
                 round = roundData.Round,

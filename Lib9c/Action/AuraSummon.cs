@@ -321,7 +321,7 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment16.GetSkill(optionRow, skillSheet, random);
                     if (skill is null) continue;
 
                     equipment.Skills.Add(skill);

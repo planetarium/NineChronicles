@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Action
         [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, 5, false, 0, 10002, 1, 30001)]
         [InlineData(null, true, true, true, false, 0, 0L, false, false, 0, false, false, false, 5, true, 0, 10002, 1, 30001)]
         // Refill by interval.
-        [InlineData(null, true, true, false, true, 0, -WorldBossHelper.RefillInterval, false, false, 0, false, false, false, 5, true, 0, 10002, 1, 30001)]
+        [InlineData(null, true, true, false, true, 0, -8640, false, false, 0, false, false, false, 5, true, 0, 10002, 1, 30001)]
         // Refill by NCG.
         [InlineData(null, true, true, false, true, 0, 200L, true, true, 0, false, false, false, 5, true, 0, 10002, 1, 30001)]
         [InlineData(null, true, true, false, true, 0, 200L, true, true, 1, false, false, false, 5, true, 0, 10002, 1, 30001)]
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
                 })
                 .StartedBlockIndex;
 
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -419,7 +419,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Reward()
         {
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),
@@ -574,7 +574,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Free_Crystal_Fee()
         {
-            var action = new Raid
+            var action = new Raid6
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = new List<Guid>(),

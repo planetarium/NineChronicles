@@ -20,10 +20,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1711
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination9")]
+    [ActionType("rapid_combination10")]
     public class RapidCombination : GameAction, IRapidCombinationV1
     {
         public Address avatarAddress;
@@ -74,12 +74,6 @@ namespace Nekoyume.Action
             if (slotState?.Result is null)
             {
                 throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
-            }
-
-            if(!avatarState.worldInformation.IsStageCleared(slotState.UnlockStage))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex, slotState.UnlockStage, current);
             }
 
             var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;

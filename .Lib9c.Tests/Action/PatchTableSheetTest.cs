@@ -81,6 +81,37 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_GameConfigSheet()
+        {
+            var sheetCsv = _initialState.GetSheetCsv<GameConfigSheet>();
+            var sheet = new GameConfigSheet();
+            sheet.Set(sheetCsv);
+            var state = new GameConfigState();
+            state.Set(sheet);
+
+            Assert.Equal(1, state.RequireCharacterLevel_FullCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_HairCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_EarCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_EyeCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_TailCostumeSlot);
+            Assert.Equal(1, state.RequireCharacterLevel_TitleSlot);
+
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotWeapon);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotArmor);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotBelt);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotNecklace);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotRing1);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotRing2);
+            Assert.Equal(1, state.RequireCharacterLevel_EquipmentSlotAura);
+
+            Assert.Equal(1, state.RequireCharacterLevel_ConsumableSlot1);
+            Assert.Equal(35, state.RequireCharacterLevel_ConsumableSlot2);
+            Assert.Equal(100, state.RequireCharacterLevel_ConsumableSlot3);
+            Assert.Equal(200, state.RequireCharacterLevel_ConsumableSlot4);
+            Assert.Equal(350, state.RequireCharacterLevel_ConsumableSlot5);
+        }
+
+        [Fact]
         public void CheckPermission()
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");

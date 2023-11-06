@@ -21,6 +21,7 @@ using Log = Serilog.Log;
 
 namespace Nekoyume.Action
 {
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType("buy_product")]
     public class BuyProduct0 : GameAction
     {
