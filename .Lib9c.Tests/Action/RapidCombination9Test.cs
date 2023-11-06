@@ -6,7 +6,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Lib9c.Tests.Fixtures.TableCSV.Cost;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Lib9c.Tests.Fixtures.TableCSV.Item;
     using Lib9c.Tests.Util;
     using Libplanet.Action;
@@ -47,6 +47,10 @@ namespace Lib9c.Tests.Action
                     {
                         "EquipmentItemSubRecipeSheet",
                         EquipmentItemSubRecipeSheetFixtures.V1
+                    },
+                    {
+                        "GameConfigSheet",
+                        GameConfigSheetFixtures.Default
                     },
                 });
             _tableSheets = new TableSheets(sheets);
