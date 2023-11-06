@@ -103,89 +103,88 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // from 0 to 0 using one level 0 material
-        [InlineData(0, false, 0, 0, false, 1)]
-        [InlineData(0, false, 0, 0, true, 1)]
-        [InlineData(0, true, 0, 0, false, 1)]
-        [InlineData(0, true, 0, 0, true, 1)]
+        [InlineData(0, false, 0, false, 1)]
+        [InlineData(0, false, 0, true, 1)]
+        [InlineData(0, true, 0, false, 1)]
+        [InlineData(0, true, 0, true, 1)]
         // from 0 to 1 using two level 0 material
-        [InlineData(0, false, 1, 0, false, 3)]
-        [InlineData(0, false, 1, 0, true, 3)]
-        [InlineData(0, true, 1, 0, false, 3)]
-        [InlineData(0, true, 1, 0, true, 3)]
+        [InlineData(0, false, 0, false, 3)]
+        [InlineData(0, false, 0, true, 3)]
+        [InlineData(0, true, 0, false, 3)]
+        [InlineData(0, true, 0, true, 3)]
         // // Duplicated > from 0 to 0
-        [InlineData(0, false, 0, 0, false, 3, true)]
-        [InlineData(0, false, 0, 0, true, 3, true)]
-        [InlineData(0, true, 0, 0, false, 3, true)]
-        [InlineData(0, true, 0, 0, true, 3, true)]
+        [InlineData(0, false, 0, false, 3, true)]
+        [InlineData(0, false, 0, true, 3, true)]
+        [InlineData(0, true, 0, false, 3, true)]
+        [InlineData(0, true, 0, true, 3, true)]
         // from 0 to N using multiple level 0 materials
-        [InlineData(0, false, 2, 0, false, 7)]
-        [InlineData(0, false, 4, 0, false, 31)]
-        [InlineData(0, false, 2, 0, true, 7)]
-        [InlineData(0, false, 4, 0, true, 31)]
-        [InlineData(0, true, 2, 0, false, 7)]
-        [InlineData(0, true, 4, 0, false, 31)]
-        [InlineData(0, true, 2, 0, true, 7)]
-        [InlineData(0, true, 4, 0, true, 31)]
+        [InlineData(0, false, 0, false, 7)]
+        [InlineData(0, false, 0, false, 31)]
+        [InlineData(0, false, 0, true, 7)]
+        [InlineData(0, false, 0, true, 31)]
+        [InlineData(0, true, 0, false, 7)]
+        [InlineData(0, true, 0, false, 31)]
+        [InlineData(0, true, 0, true, 7)]
+        [InlineData(0, true, 0, true, 31)]
         // // Duplicated > from 0 to 0
-        [InlineData(0, false, 0, 0, false, 7, true)]
-        [InlineData(0, false, 0, 0, false, 31, true)]
-        [InlineData(0, false, 0, 0, true, 7, true)]
-        [InlineData(0, false, 0, 0, true, 31, true)]
-        [InlineData(0, true, 0, 0, false, 7, true)]
-        [InlineData(0, true, 0, 0, false, 31, true)]
-        [InlineData(0, true, 0, 0, true, 7, true)]
-        [InlineData(0, true, 0, 0, true, 31, true)]
+        [InlineData(0, false, 0, false, 7, true)]
+        [InlineData(0, false, 0, false, 31, true)]
+        [InlineData(0, false, 0, true, 7, true)]
+        [InlineData(0, false, 0, true, 31, true)]
+        [InlineData(0, true, 0, false, 7, true)]
+        [InlineData(0, true, 0, false, 31, true)]
+        [InlineData(0, true, 0, true, 7, true)]
+        [InlineData(0, true, 0, true, 31, true)]
         // from K to K with material(s). Check requiredBlock == 0
-        [InlineData(10, false, 10, 0, false, 1)]
-        [InlineData(10, false, 10, 0, true, 1)]
-        [InlineData(10, true, 10, 0, false, 1)]
-        [InlineData(10, true, 10, 0, true, 1)]
+        [InlineData(10, false, 0, false, 1)]
+        [InlineData(10, false, 0, true, 1)]
+        [InlineData(10, true, 0, false, 1)]
+        [InlineData(10, true, 0, true, 1)]
         // from K to N using one level X material
-        [InlineData(5, false, 6, 6, false, 1)]
-        [InlineData(5, false, 6, 6, true, 1)]
-        [InlineData(5, true, 6, 6, false, 1)]
-        [InlineData(5, true, 6, 6, true, 1)]
+        [InlineData(5, false, 6, false, 1)]
+        [InlineData(5, false, 6, true, 1)]
+        [InlineData(5, true, 6, false, 1)]
+        [InlineData(5, true, 6, true, 1)]
         // from K to N using multiple materials
-        [InlineData(5, false, 7, 4, false, 6)]
-        [InlineData(5, false, 9, 7, false, 5)]
-        [InlineData(5, false, 7, 4, true, 6)]
-        [InlineData(5, false, 9, 7, true, 5)]
-        [InlineData(5, true, 7, 4, false, 6)]
-        [InlineData(5, true, 9, 7, false, 5)]
-        [InlineData(5, true, 7, 4, true, 6)]
-        [InlineData(5, true, 9, 7, true, 5)]
+        [InlineData(5, false, 4, false, 6)]
+        [InlineData(5, false, 7, false, 5)]
+        [InlineData(5, false, 4, true, 6)]
+        [InlineData(5, false, 7, true, 5)]
+        [InlineData(5, true, 4, false, 6)]
+        [InlineData(5, true, 7, false, 5)]
+        [InlineData(5, true, 4, true, 6)]
+        [InlineData(5, true, 7, true, 5)]
         // // Duplicated: from K to K
-        [InlineData(5, true, 5, 4, true, 6, true)]
-        [InlineData(5, true, 7, 7, true, 5, true)]
-        [InlineData(5, true, 5, 4, false, 6, true)]
-        [InlineData(5, true, 7, 7, false, 5, true)]
-        [InlineData(5, false, 5, 4, true, 6, true)]
-        [InlineData(5, false, 7, 7, true, 5, true)]
-        [InlineData(5, false, 5, 4, false, 6, true)]
-        [InlineData(5, false, 7, 7, false, 5, true)]
+        [InlineData(5, true, 4, true, 6, true)]
+        [InlineData(5, true, 7, true, 5, true)]
+        [InlineData(5, true, 4, false, 6, true)]
+        [InlineData(5, true, 7, false, 5, true)]
+        [InlineData(5, false, 4, true, 6, true)]
+        [InlineData(5, false, 7, true, 5, true)]
+        [InlineData(5, false, 4, false, 6, true)]
+        [InlineData(5, false, 7, false, 5, true)]
         // from 20 to 21 (just to reach level 21 exp)
-        [InlineData(20, false, 21, 20, false, 1)]
-        [InlineData(20, false, 21, 20, true, 1)]
-        [InlineData(20, true, 21, 20, false, 1)]
-        [InlineData(20, true, 21, 20, true, 1)]
+        [InlineData(20, false, 20, false, 1)]
+        [InlineData(20, false, 20, true, 1)]
+        [InlineData(20, true, 20, false, 1)]
+        [InlineData(20, true, 20, true, 1)]
         // from 20 to 21 (over level 21)
-        [InlineData(20, false, 21, 20, false, 2)]
-        [InlineData(20, false, 21, 20, true, 2)]
-        [InlineData(20, true, 21, 20, false, 2)]
-        [InlineData(20, true, 21, 20, true, 2)]
+        [InlineData(20, false, 20, false, 2)]
+        [InlineData(20, false, 20, true, 2)]
+        [InlineData(20, true, 20, false, 2)]
+        [InlineData(20, true, 20, true, 2)]
         // from 21 to 21 (no level up)
-        [InlineData(21, false, 21, 1, false, 1)]
-        [InlineData(21, false, 21, 21, false, 1)]
-        [InlineData(21, false, 21, 1, true, 1)]
-        [InlineData(21, false, 21, 21, true, 1)]
-        [InlineData(21, true, 21, 1, false, 1)]
-        [InlineData(21, true, 21, 21, false, 1)]
-        [InlineData(21, true, 21, 1, true, 1)]
-        [InlineData(21, true, 21, 21, true, 1)]
+        [InlineData(21, false, 1, false, 1)]
+        [InlineData(21, false, 21, false, 1)]
+        [InlineData(21, false, 1, true, 1)]
+        [InlineData(21, false, 21, true, 1)]
+        [InlineData(21, true, 1, false, 1)]
+        [InlineData(21, true, 21, false, 1)]
+        [InlineData(21, true, 1, true, 1)]
+        [InlineData(21, true, 21, true, 1)]
         public void Execute(
             int startLevel,
             bool oldStart,
-            int expectedLevel,
             int materialLevel,
             bool oldMaterial,
             int materialCount,
@@ -213,17 +212,9 @@ namespace Lib9c.Tests.Action
 
             _avatarState.inventory.AddItem(equipment, count: 1);
 
-            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(
-                r =>
-                    r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
-                    r.Level == expectedLevel);
             var startRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(r =>
                 r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
                 r.Level == startLevel);
-            var expectedCost = (expectedTargetRow?.Cost ?? 0) - (startRow?.Cost ?? 0);
-            var expectedBlockIndex =
-                (expectedTargetRow?.RequiredBlockIndex ?? 0) - (startRow?.RequiredBlockIndex ?? 0);
-
             var expectedExpIncrement = 0L;
             var materialIds = new List<Guid>();
             var duplicatedGuid = Guid.NewGuid();
@@ -324,9 +315,15 @@ namespace Lib9c.Tests.Action
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
+            var level = resultEquipment.level;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var expectedTargetRow = _tableSheets.EnhancementCostSheetV3.OrderedList.FirstOrDefault(
+                r => r.Grade == equipment.Grade && r.ItemSubType == equipment.ItemSubType &&
+                     r.Level == level);
+            var expectedCost = (expectedTargetRow?.Cost ?? 0) - (startRow?.Cost ?? 0);
+            var expectedBlockIndex =
+                (expectedTargetRow?.RequiredBlockIndex ?? 0) - (startRow?.RequiredBlockIndex ?? 0);
             Assert.Equal(default, resultEquipment.ItemId);
-            Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(startExp + expectedExpIncrement, resultEquipment.Exp);
             Assert.Equal(
                 (3_000_000 - expectedCost) * _currency,
@@ -346,14 +343,14 @@ namespace Lib9c.Tests.Action
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement13.ResultModel)slot.Result;
-            if (startLevel != expectedLevel)
+            if (startLevel != level)
             {
                 var baseMinAtk = (decimal)preItemUsable.StatsMap.BaseATK;
                 var baseMaxAtk = (decimal)preItemUsable.StatsMap.BaseATK;
                 var extraMinAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
                 var extraMaxAtk = (decimal)preItemUsable.StatsMap.AdditionalATK;
 
-                for (var i = startLevel + 1; i <= expectedLevel; i++)
+                for (var i = startLevel + 1; i <= level; i++)
                 {
                     var currentRow = _tableSheets.EnhancementCostSheetV3.OrderedList
                         .First(x =>
