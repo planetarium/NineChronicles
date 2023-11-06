@@ -599,8 +599,7 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
-            var canExit = SharedModel.IsClear &&
-                          (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+            var canExit = (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
                            SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
             if (!SharedModel.IsClear)
             {
@@ -618,8 +617,8 @@ namespace Nekoyume.UI
             }
             else
             {
-                stagePreparationButton.gameObject.SetActive(canExit);
-                stagePreparationButton.interactable = canExit;
+                stagePreparationButton.gameObject.SetActive(canExit && !SharedModel.IsClear);
+                stagePreparationButton.interactable = canExit && !SharedModel.IsClear;
             }
 
             if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
