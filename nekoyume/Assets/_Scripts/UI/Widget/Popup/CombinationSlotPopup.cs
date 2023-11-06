@@ -158,7 +158,7 @@ namespace Nekoyume.UI
                 case ItemEnhancement7.ResultModel ie7:
                     SetEnhancementOption(GetInformation(type), ie7);
                     break;
-                case ItemEnhancement.ResultModel ie:
+                case ItemEnhancement13.ResultModel ie:
                     SetEnhancementOption(GetInformation(type), ie);
                     break;
                 default:
@@ -315,7 +315,7 @@ namespace Nekoyume.UI
 
         private static void SetEnhancementOption(
             Information information,
-            ItemEnhancement.ResultModel resultModel)
+            ItemEnhancement13.ResultModel resultModel)
         {
             if (resultModel.itemUsable is not Equipment equipment)
             {
@@ -449,7 +449,7 @@ namespace Nekoyume.UI
                 case ItemEnhancement7.ResultModel _:
                 case ItemEnhancement9.ResultModel _:
                 case ItemEnhancement10.ResultModel _:
-                case ItemEnhancement.ResultModel _:
+                case ItemEnhancement13.ResultModel _:
                     return CraftType.Enhancement;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state.Result), state.Result, null);

@@ -430,21 +430,23 @@ namespace Nekoyume.UI
 
             successRateText.text = $"{item.Cost.LevelUpSuccessRate / 100}%";
 
+            var popup = Find<MaterialNavigationPopup>();
+
             _costItems[RuneCostType.RuneStone].Set(
                 item.Cost.RuneStoneQuantity,
                 item.EnoughRuneStone,
-                () => ShowMaterialNavigatorPopup(RuneCostType.RuneStone, item, runeStoneIcon),
+                () => popup.ShowRuneStone(item.Row.Id),
                 runeStoneIcon);
 
             _costItems[RuneCostType.Crystal].Set(
                 item.Cost.CrystalQuantity,
                 item.EnoughCrystal,
-                () => ShowMaterialNavigatorPopup(RuneCostType.Crystal, item, _costItems[RuneCostType.Crystal].Icon));
+                () => popup.ShowCurrency(CostType.Crystal));
 
             _costItems[RuneCostType.Ncg].Set(
                 item.Cost.NcgQuantity,
                 item.EnoughNcg,
-                () => ShowMaterialNavigatorPopup(RuneCostType.Ncg, item, _costItems[RuneCostType.Ncg].Icon));
+                () => popup.ShowCurrency(CostType.NCG));
 
             foreach (var costItem in eachCostItems)
             {
@@ -471,7 +473,8 @@ namespace Nekoyume.UI
             }
             var headerMenu = Find<HeaderMenuStatic>();
             headerMenu.UpdateAssets(HeaderMenuStatic.AssetVisibleState.RuneStone);
-            headerMenu.RuneStone.SetRuneStone(runeStoneIcon, runeStone.GetQuantityString());
+            headerMenu.RuneStone.SetRuneStone(
+                runeStoneIcon, runeStone.GetQuantityString(), runeStone.Currency.Ticker);
         }
 
         private void UpdateSlider(RuneItem item)
@@ -515,78 +518,6 @@ namespace Nekoyume.UI
                     _maxTryCount > 0,
                     true);
             }
-        }
-
-        private void ShowMaterialNavigatorPopup(
-            RuneCostType costType,
-            RuneItem item, Sprite icon)
-        {
-            var popup = Find<MaterialNavigationPopup>();
-            string name, count, content, buttonText;
-            System.Action callback;
-            switch (costType)
-            {
-                case RuneCostType.RuneStone:
-                    var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                    var runeStoneId = item.Row.Id;
-                    var isExist = RuneFrontHelper.TryGetRunStoneInformation(
-                        currentBlockIndex,
-                        runeStoneId,
-                        out var info,
-                        out var canObtain);
-                    name = L10nManager.Localize($"ITEM_NAME_{runeStoneId}");
-                    var ticker = Game.Game.instance.TableSheets.RuneSheet[runeStoneId].Ticker;
-                    count = States.Instance.CurrentAvatarBalances[ticker].GetQuantityString();
-                    content = L10nManager.Localize($"ITEM_DESCRIPTION_{runeStoneId}");
-                    buttonText = canObtain
-                        ? L10nManager.Localize("UI_MAIN_MENU_WORLDBOSS")
-                        : L10nManager.Localize("UI_SHOP");
-                    popup.SetInfo(isExist, (info, canObtain));
-                    callback = () =>
-                    {
-                        base.Close(true);
-                        if (canObtain)
-                        {
-                            Find<WorldBoss>().ShowAsync().Forget();
-                        }
-                        else
-                        {
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                            Find<ShopBuy>().Show();
-                        }
-                    };
-                    break;
-                case RuneCostType.Crystal:
-                    name = L10nManager.Localize("ITEM_NAME_9999998");
-                    count = States.Instance.CrystalBalance.GetQuantityString();
-                    content = L10nManager.Localize("ITEM_DESCRIPTION_9999998");
-                    buttonText = L10nManager.Localize("GRIND_UI_BUTTON");
-                    callback = () =>
-                    {
-                        base.Close(true);
-                        Game.Event.OnRoomEnter.Invoke(true);
-                        Find<Grind>().Show();
-                    };
-                    popup.SetInfo(false);
-                    break;
-                case RuneCostType.Ncg:
-                    name = L10nManager.Localize("ITEM_NAME_9999999");
-                    count = States.Instance.GoldBalanceState.Gold.GetQuantityString();
-                    content = L10nManager.Localize("ITEM_DESCRIPTION_9999999");
-                    buttonText = L10nManager.Localize("UI_SHOP");
-                    callback = () =>
-                    {
-                        base.Close(true);
-                        Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                        Find<ShopBuy>().Show();
-                    };
-                    popup.SetInfo(false);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(costType), costType, null);
-            }
-
-            popup.Show(callback, icon, name, count, content, buttonText);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

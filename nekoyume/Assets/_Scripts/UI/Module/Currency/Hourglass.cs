@@ -21,11 +21,19 @@ namespace Nekoyume.UI.Module
         private RectTransform tooltipArea = null;
 
         [SerializeField]
-        private Image _iconImage;
+        private Image iconImage;
+
+        [SerializeField]
+        private Button button;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public Image IconImage => _iconImage;
+        public Image IconImage => iconImage;
+
+        private void Awake()
+        {
+            button.onClick.AddListener(ShowMaterialNavigationPopup);
+        }
 
         protected override void OnEnable()
         {
@@ -45,16 +53,9 @@ namespace Nekoyume.UI.Module
             countText.text = count.ToString("N0", CultureInfo.CurrentCulture);
         }
 
-        // Call at Event Trigger Component
-        public void ShowTooltip()
+        private void ShowMaterialNavigationPopup()
         {
-            Widget.Find<VanilaTooltip>()
-                .Show("ITEM_NAME_400000", "UI_HOURGLASS_DESCRIPTION", tooltipArea.position);
-        }
-
-        public void HideTooltip()
-        {
-            Widget.Find<VanilaTooltip>().Close();
+            Widget.Find<MaterialNavigationPopup>().ShowCurrency(CostType.Hourglass);
         }
     }
 }

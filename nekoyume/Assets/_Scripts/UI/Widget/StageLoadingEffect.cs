@@ -131,23 +131,24 @@ namespace Nekoyume.UI
             loadingModule.Close();
             dialogEnd = true;
             System.Func<IEnumerator> coroutine = null;
+            AudioController.instance.PlayMusic(AudioController.MusicCode.BattleLoading);
             if (isNext)
             {
-                if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
-                {
-                    switch (stageId)
-                    {
-                        // case VideoPlayStage:
-                        //     coroutine = PlayVideo;
-                        //     LoadingEnd = false;
-                        //     break;
-                        case WorkshopDialogStage:
-                            coroutine = PlaySmallDialog;
-                            LoadingEnd = false;
-                            break;
-                        default: break;
-                    }
-                }
+                // if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+                // {
+                //     switch (stageId)
+                //     {
+                //         case VideoPlayStage:
+                //             coroutine = PlayVideo;
+                //             LoadingEnd = false;
+                //             break;
+                //         case WorkshopDialogStage:
+                //             coroutine = PlaySmallDialog;
+                //             LoadingEnd = false;
+                //             break;
+                //         default: break;
+                //     }
+                // }
 
                 yield return CoDialog(clearedStageId);
             }
@@ -158,10 +159,10 @@ namespace Nekoyume.UI
                 StageInformation.GetStageIdString(stageType, stageId, true));
             loadingModule.Show(message);
 
-            if (coroutine != null)
-            {
-                StartCoroutine(coroutine());
-            }
+            // if (coroutine != null)
+            // {
+            //     StartCoroutine(coroutine());
+            // }
         }
 
         private IEnumerator CoDialog(int worldStage)

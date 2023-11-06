@@ -32,9 +32,11 @@ namespace Nekoyume.UI
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
+        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
+
+        public int LastPlayedTutorialId { get; private set; }
         private Coroutine _rewardScreenCoroutine;
 
         public TutorialController(IEnumerable<Widget> widgets)
@@ -80,22 +82,16 @@ namespace Nekoyume.UI
 
         public void Run(int clearedStageId)
         {
-            if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            var checkPoint = GetCheckPoint(clearedStageId);
+            if (checkPoint > 0)
             {
-                Play(1);
-            }
-            else
-            {
-                var checkPoint = GetCheckPoint(clearedStageId);
-                if (checkPoint > 0)
-                {
-                    Play(checkPoint);
-                }
+                Play(checkPoint);
             }
         }
 
         public void Play(int id)
         {
+            Debug.Log($"[TutorialController] Play({id})");
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show(true);
@@ -107,6 +103,7 @@ namespace Nekoyume.UI
             {
                 SendMixPanel(id);
                 SetCheckPoint(scenario.checkPointId);
+                LastPlayedTutorialId = id;
                 var viewData = GetTutorialData(scenario.data);
                 _tutorial.Play(viewData, scenario.data.presetId, scenario.data.guideSprite, () =>
                 {
@@ -127,6 +124,34 @@ namespace Nekoyume.UI
                     WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
                 });
             }
+        }
+
+        public void Skip(int tutorialId)
+        {
+            var id = tutorialId;
+            while (id != 0)
+            {
+                var nowScenario = _scenario.FirstOrDefault(scenario => scenario.id == id);
+                if (nowScenario is null)
+                {
+                    break;
+                }
+
+                id = nowScenario.nextId;
+                if (id == 0)
+                {
+                    var checkPointId = nowScenario.checkPointId;
+                    SetCheckPoint(checkPointId);
+                    break;
+                }
+            }
+
+            _tutorial.Stop(() =>
+            {
+                _tutorial.gameObject.SetActive(false);
+                WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
+            });
+
         }
 
         private void PlayAction(TutorialActionType actionType)
@@ -178,8 +203,6 @@ namespace Nekoyume.UI
             return Resources.Load<T>(path);
         }
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 25, 35, 40, 23 };
-
         private static int GetCheckPoint(int clearedStageId)
         {
             /*
@@ -209,18 +232,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            // If PlayerPrefs doesn't exist
-            if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
-            {
-                checkPoint = 1;
-            }
-            else if (clearedStageId == GameConfig.RequireClearedStageLevel.CombinationEquipmentAction &&
-                     checkPoint != GameConfig.RequireClearedStageLevel.CombinationEquipmentAction * -1)
-            {
-                checkPoint = 2;
-            }
-            // playing tutorial id = clearedStageId * 100000
-            else if (clearedStageId == 5 && checkPoint != -5)
+            if (clearedStageId == 5 && checkPoint != -5)
             {
                 var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
                 if (summonRow is not null && SimpleCostButton.CheckCostOfType(
@@ -229,16 +241,14 @@ namespace Nekoyume.UI
                     checkPoint = 50000;
                 }
             }
-            else if (clearedStageId == 23 && checkPoint != -23)
-            {
-                if (ActionPoint.IsInteractableMaterial())
-                {
-                    checkPoint = 230000;
-                }
-            }
             else if (TutorialStageArray.Any(stageId => stageId == clearedStageId))
             {
                 Check(clearedStageId);
+            }
+            // If PlayerPrefs doesn't exist
+            else if (clearedStageId == 0 && checkPoint != -1)
+            {
+                checkPoint = 1;
             }
 
             return checkPoint;
@@ -251,7 +261,9 @@ namespace Nekoyume.UI
 
         private void SendMixPanel(int id)
         {
-            if (!_mixpanelTargets.Exists(x => x == id))
+            // tutorial start point (id <= 2 : before stage 5)
+            // in playing stage3 tutorial, id 30000 is played. (duplicate tutorial)
+            if (TutorialStageArray.All(x => x * 10000 != id) || id <= 2 || id != 30000)
             {
                 return;
             }

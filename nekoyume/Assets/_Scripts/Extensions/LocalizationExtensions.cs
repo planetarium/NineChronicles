@@ -100,10 +100,10 @@ namespace Nekoyume
                     bool failAndGainCrystal = false;
                     switch (itemEnhanceMail.attachment)
                     {
-                        case ItemEnhancement.ResultModel result:
+                        case ItemEnhancement13.ResultModel result:
                             switch (result.enhancementResult)
                             {
-                                case ItemEnhancement.EnhancementResult.Success:
+                                case ItemEnhancement13.EnhancementResult.Success:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
                                 default:
@@ -132,7 +132,7 @@ namespace Nekoyume
                     {
                         return L10nManager.Localize(formatKey,
                             GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable),
-                            ((ItemEnhancement.ResultModel)itemEnhanceMail.attachment).CRYSTAL);
+                            ((ItemEnhancement13.ResultModel)itemEnhanceMail.attachment).CRYSTAL);
                     }
 
                     return L10nManager.Localize(formatKey,

@@ -19,20 +19,10 @@ AnimationClip:
   m_FloatCurves:
   - curve:
       serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_AnchoredPosition.x
-    path: Buttons_Top
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: -8
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -41,7 +31,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.083333336
-        value: -10
+        value: -18
         inSlope: -60
         outSlope: -60
         tangentMode: 136
@@ -50,7 +40,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.25
-        value: -15
+        value: -23
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -200,20 +190,10 @@ AnimationClip:
   m_EditorCurves:
   - curve:
       serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_AnchoredPosition.x
-    path: Buttons_Top
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: -8
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -222,7 +202,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.083333336
-        value: -10
+        value: -18
         inSlope: -60
         outSlope: -60
         tangentMode: 136
@@ -231,7 +211,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.25
-        value: -15
+        value: -23
         inSlope: 0
         outSlope: 0
         tangentMode: 136
