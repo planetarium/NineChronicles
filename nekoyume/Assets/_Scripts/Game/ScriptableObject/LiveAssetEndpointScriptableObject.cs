@@ -13,6 +13,12 @@ namespace Nekoyume.Game.ScriptableObject
         public string NoticeJsonUrl { get; private set; }
 
         [field: SerializeField]
+        public string NoticeJsonKoreanUrl { get; private set; }
+
+        [field: SerializeField]
+        public string NoticeJsonJapaneseUrl { get; private set; }
+
+        [field: SerializeField]
         public string ImageRootUrl { get; private set; }
 
         [field: SerializeField]
