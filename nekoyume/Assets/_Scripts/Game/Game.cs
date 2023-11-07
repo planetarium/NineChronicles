@@ -254,19 +254,8 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeIntro();
         }
 
-        private static async void TestAsync()
-        {
-            var agentAddr = new Address("0x6132331720A774274d6E51CaeAd375068cC00505");
-            var jsonSerializer = new NewtonsoftJsonSerializer();
-            using var client = new GraphQLHttpClient("https://9c-internal-rpc-1.nine-chronicles.com/graphql", jsonSerializer);
-            var agentGraphType = await client.QueryAgentAsync(agentAddr);
-            Debug.Log(agentGraphType.ToString());
-        }
-
         private IEnumerator Start()
         {
-            // TestAsync();
-            // yield break;
 #if LIB9C_DEV_EXTENSIONS && UNITY_ANDROID
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
