@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
                 PreviousState = stateV2,
                 Signer = _agentAddr,
                 BlockIndex = 0L,
-                Random = random,
+                RandomSeed = random.Seed,
             });
 
             // TEST: All given crystals are used

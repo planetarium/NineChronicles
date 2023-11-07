@@ -223,7 +223,8 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
+            var random = ctx.GetRandom();
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, random.GenerateRandomGuid(), requiredBlockIndex);
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);

@@ -97,7 +97,8 @@ namespace Nekoyume.Action
 
             Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
-            var productId = context.Random.GenerateRandomGuid();
+            var random = context.GetRandom();
+            var productId = random.GenerateRandomGuid();
             ShopItem shopItem;
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.

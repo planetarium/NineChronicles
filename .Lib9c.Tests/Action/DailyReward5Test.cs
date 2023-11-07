@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -69,8 +69,8 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new MockStateDelta(),
-                Random = new TestRandom(),
+                PreviousState = new Account(MockState.Empty),
+                RandomSeed = 0,
                 Rehearsal = true,
                 Signer = _agentAddress,
             });
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var nextState = ExecuteInternal(previousStates, 1800);
+            var nextState = ExecuteInternal(previousStates, 2040);
             var nextGameConfigState = nextState.GetGameConfigState();
             var nextAvatarState = avatarStateSerializedVersion switch
             {
@@ -118,15 +118,15 @@ namespace Lib9c.Tests.Action
 
         [Fact]
         public void Execute_Throw_FailedLoadStateException() =>
-            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new MockStateDelta()));
+            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new Account(MockState.Empty)));
 
         [Theory]
         [InlineData(0, 0, true)]
-        [InlineData(0, 1799, true)]
-        [InlineData(0, 1800, false)]
-        [InlineData(1800, 1800, true)]
-        [InlineData(1800, 1800 + 1799, true)]
-        [InlineData(1800, 1800 + 1800, false)]
+        [InlineData(0, 2039, true)]
+        [InlineData(0, 2040, false)]
+        [InlineData(2040, 2040, true)]
+        [InlineData(2040, 2040 + 2039, true)]
+        [InlineData(2040, 2040 + 2040, false)]
         public void Execute_Throw_RequiredBlockIndexException(
             long dailyRewardReceivedIndex,
             long executeBlockIndex,
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousState = previousStates,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = _agentAddress,
             });

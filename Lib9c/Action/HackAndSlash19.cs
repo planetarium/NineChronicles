@@ -101,11 +101,12 @@ namespace Nekoyume.Action
 
             CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 
+            var random = context.GetRandom();
             return Execute(
                 context.PreviousState,
                 context.Signer,
                 context.BlockIndex,
-                context.Random);
+                random);
         }
 
         public IAccount Execute(

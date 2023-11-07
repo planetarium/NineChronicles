@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action.Scenario
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -46,11 +47,11 @@ namespace Lib9c.Tests.Action.Scenario
                 _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Aura);
             _aura = (Aura)ItemFactory.CreateItemUsable(auraRow, Guid.NewGuid(), 0L);
             _aura.StatsMap.AddStatAdditionalValue(StatType.CRI, 1);
-            var skillRow = _tableSheets.SkillSheet[800001];
+            var skillRow = _tableSheets.SkillSheet[210011];
             var skill = SkillFactory.Get(skillRow, 0, 100, 0, StatType.NONE);
             _aura.Skills.Add(skill);
             var addresses = new[] { _avatarAddress, _enemyAvatarAddress };
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             for (int i = 0; i < addresses.Length; i++)
             {
                 var avatarAddress = addresses[i];
@@ -116,7 +117,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 2,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             }));
 
@@ -130,7 +131,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 3,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             });
 
@@ -170,7 +171,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 BlockIndex = 5045201,
                 PreviousState = prevState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Signer = _agentAddress,
             });
             Assert_Player(avatarState, nextState, _avatarAddress, itemSlotStateAddress);
@@ -247,7 +248,7 @@ namespace Lib9c.Tests.Action.Scenario
                     Signer = _agentAddress,
                     PreviousState = prevState,
                     BlockIndex = 2,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
                 var avatarState = prevState.GetAvatarStateV2(avatarAddress);
                 var enemyAvatarState = prevState.GetAvatarStateV2(enemyAvatarAddress);
@@ -275,7 +276,7 @@ namespace Lib9c.Tests.Action.Scenario
                 foreach (var spawn in log.OfType<ArenaSpawnCharacter>())
                 {
                     ArenaCharacter character = spawn.Character;
-                    Assert.Equal(21, character.ATK);
+                    Assert.Equal(100, character.HIT);
                     Assert.Equal(11, character.CRI);
                 }
 
@@ -361,9 +362,11 @@ namespace Lib9c.Tests.Action.Scenario
             Assert_ItemSlot(state, itemSlotStateAddress);
             var player = new Player(avatarState, _tableSheets.GetSimulatorSheets());
             var equippedPlayer = new Player(nextAvatarState, _tableSheets.GetSimulatorSheets());
+            int diffLevel = equippedPlayer.Level - player.Level;
+            var row = _tableSheets.CharacterSheet[player.CharacterId];
             Assert.Null(player.aura);
             Assert.NotNull(equippedPlayer.aura);
-            Assert.Equal(player.ATK + 1, equippedPlayer.ATK);
+            Assert.Equal(player.HIT + 10 + (int)(row.LvHIT * diffLevel), equippedPlayer.HIT);
             Assert.Equal(player.CRI + 1, equippedPlayer.CRI);
         }
 

@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
 
         public EventMaterialItemCrafts0Test()
         {
-            _initialStates = new MockStateDelta();
+            _initialStates = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -83,43 +83,12 @@ namespace Lib9c.Tests.Action
             {
                 1002,
                 10020001,
-                new Dictionary<int, int>
-                {
-                    [700000] = 5,
-                    [700001] = 5,
-                    [700002] = 5,
-                },
             };
-            yield return new object[]
-            {
-                1002,
-                10020001,
-                new Dictionary<int, int>
-                {
-                    [700102] = 5,
-                    [700104] = 5,
-                    [700106] = 5,
-                },
-            };
-            yield return new object[]
-            {
-                1002,
-                10020001,
-                new Dictionary<int, int>
-                {
-                    [700202] = 10,
-                    [700204] = 5,
-                },
-            };
+
             yield return new object[]
             {
                 1002,
                 10020002,
-                new Dictionary<int, int>
-                {
-                    [700108] = 5,
-                    [700206] = 5,
-                },
             };
         }
 
@@ -171,11 +140,27 @@ namespace Lib9c.Tests.Action
         [MemberData(nameof(GetExecuteSuccessMemberData))]
         public void Execute_Success(
             int eventScheduleId,
-            int eventMaterialItemRecipeId,
-            Dictionary<int, int> materialsToUse)
+            int eventMaterialItemRecipeId)
         {
             Assert.True(_tableSheets.EventScheduleSheet
                 .TryGetValue(eventScheduleId, out var scheduleRow));
+            var materialsToUse = new Dictionary<int, int>();
+            var totalCount = 0;
+            var row = _tableSheets.EventMaterialItemRecipeSheet[eventMaterialItemRecipeId];
+            while (totalCount < row.RequiredMaterialsCount)
+            {
+                foreach (var materialId in row.RequiredMaterialsId)
+                {
+                    materialsToUse.TryAdd(materialId, 0);
+                    materialsToUse[materialId] += 1;
+                    totalCount++;
+                    if (totalCount == row.RequiredMaterialsCount)
+                    {
+                        break;
+                    }
+                }
+            }
+
             var contextBlockIndex = scheduleRow.StartBlockIndex;
             Execute(
                 _initialStates,
@@ -264,7 +249,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = previousStates,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });

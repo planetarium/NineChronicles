@@ -260,10 +260,11 @@ namespace Lib9c.Tests.Action.Garages
         public void Execute_Throws_Exception()
         {
             // Balance does not enough to pay cost.
+            var balance = _previousStates.GetBalance(AgentAddr, Currencies.Garage);
             var previousStatesWithNotEnoughCost = _previousStates.BurnAsset(
                 new ActionContext { Signer = AgentAddr },
                 AgentAddr,
-                new FungibleAssetValue(Currencies.Garage, 1, 0));
+                balance);
             Assert.Throws<InsufficientBalanceException>(() => Execute(
                 AgentAddr,
                 0,
@@ -416,7 +417,7 @@ namespace Lib9c.Tests.Action.Garages
                 BlockIndex = blockIndex,
                 Rehearsal = false,
                 PreviousState = previousState,
-                Random = random,
+                RandomSeed = random.Seed,
             };
             return (action, action.Execute(context));
         }
@@ -435,13 +436,15 @@ namespace Lib9c.Tests.Action.Garages
                     fav.Sign > 0)
                 .Select(fav =>
                 {
+                    // CRYSTAL's minorUnit is not actually used in network, avoid cost calculate exception in test.
+                    var value = 1 * fav.Currency;
                     if (Currencies.IsRuneTicker(fav.Currency.Ticker) ||
                         Currencies.IsSoulstoneTicker(fav.Currency.Ticker))
                     {
-                        return (avatarAddr, fav);
+                        return (avatarAddr, value);
                     }
 
-                    return (agentAddr, fav);
+                    return (agentAddr, value);
                 })
                 .ToArray();
         }

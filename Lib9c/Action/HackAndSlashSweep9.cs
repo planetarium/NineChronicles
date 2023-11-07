@@ -79,6 +79,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return states;
@@ -316,7 +317,7 @@ namespace Nekoyume.Action
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
 
             var rewardItems = HackAndSlashSweep6.GetRewardItems(
-                context.Random,
+                random,
                 playCount,
                 stageRow,
                 materialItemSheet);

@@ -38,7 +38,7 @@ id,_name,item_sub_type,grade,elemental_type
 800107,Candy_Cane,FoodMaterial,2,Normal
 800108,Aurora_Powder,FoodMaterial,3,Normal
 800109,Fluffy_Marshmallow,FoodMaterial,4,Normal
-800201,황금 고기,FoodMaterial,4,Normal
+800201,Silver Dust,FoodMaterial,4,Normal
 303000,녹슨 칼,EquipmentMaterial,1,Normal
 303001,버려진 검,EquipmentMaterial,2,Normal
 303002,단단한 검,EquipmentMaterial,3,Normal
@@ -164,8 +164,12 @@ id,_name,item_sub_type,grade,elemental_type
 600102,Special Crystal Lump,EquipmentMaterial,2,Normal
 600103,Special Crystal Ore,EquipmentMaterial,3,Normal
 600104,Special Crystal Jewel,EquipmentMaterial,4,Normal
-600201,황금 가루,EquipmentMaterial,4,Normal
-600202,Aura 가루,EquipmentMaterial,4,Normal
+600201,golden dust,EquipmentMaterial,4,Normal
+600301,망치 커먼,EquipmentMaterial,1,Normal
+600302,망치 레어,EquipmentMaterial,2,Normal
+600303,망치 에픽,EquipmentMaterial,3,Normal
+600304,망치 유니크,EquipmentMaterial,4,Normal
+600305,망치 레전더리,EquipmentMaterial,5,Normal
 700000,아레나 시즌0 메달,NormalMaterial,5,Normal
 700001,아레나 시즌1 메달,NormalMaterial,5,Normal
 700002,아레나 시즌2 메달,NormalMaterial,5,Normal
@@ -196,3 +200,15 @@ id,_name,item_sub_type,grade,elemental_type
 700602,시즌 15 메달,NormalMaterial,5,Normal
 700604,시즌 16 메달,NormalMaterial,5,Normal
 700606,챔피언 쉽 6 메달,NormalMaterial,5,Normal
+700702,시즌 17 메달,NormalMaterial,5,Normal
+700704,시즌 18 메달,NormalMaterial,5,Normal
+700706,챔피언 쉽 7 메달,NormalMaterial,5,Normal
+700802,시즌 19 메달,NormalMaterial,5,Normal
+700804,시즌 20 메달,NormalMaterial,5,Normal
+700806,챔피언 쉽 8 메달,NormalMaterial,5,Normal
+700902,시즌 21 메달,NormalMaterial,5,Normal
+700904,시즌 22 메달,NormalMaterial,5,Normal
+700906,챔피언 쉽 9 메달,NormalMaterial,5,Normal
+701002,시즌 23 메달,NormalMaterial,5,Normal
+701004,시즌 24 메달,NormalMaterial,5,Normal
+701006,챔피언 쉽 10 메달,NormalMaterial,5,Normal

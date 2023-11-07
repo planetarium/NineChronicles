@@ -37,7 +37,7 @@
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -183,7 +183,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = previousStates,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                     Signer = _buyerAgentAddress,
                 });
@@ -231,8 +231,8 @@
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousState = new MockStateDelta(),
-                    Random = new TestRandom(),
+                    PreviousState = new Account(MockState.Empty),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -252,8 +252,8 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousState = new MockStateDelta(),
-                    Random = new TestRandom(),
+                    PreviousState = new Account(MockState.Empty),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -284,7 +284,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -305,7 +305,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -336,7 +336,7 @@
                 {
                     BlockIndex = 0,
                     PreviousState = _initialState,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Signer = _buyerAgentAddress,
                 })
             );

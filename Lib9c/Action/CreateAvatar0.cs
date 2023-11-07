@@ -73,6 +73,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IActionContext ctx = context;
+            var random = ctx.GetRandom();
             var states = ctx.PreviousState;
             if (ctx.Rehearsal)
             {
@@ -181,6 +182,7 @@ namespace Nekoyume.Action
             Address rankingMapAddress)
         {
             var state = ctx.PreviousState;
+            var random = ctx.GetRandom();
             var gameConfigState = state.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
@@ -197,9 +199,10 @@ namespace Nekoyume.Action
             var costumeItemSheet = ctx.PreviousState.GetSheet<CostumeItemSheet>();
             var equipmentItemSheet = ctx.PreviousState.GetSheet<EquipmentItemSheet>();
             var consumableItemSheet = ctx.PreviousState.GetSheet<ConsumableItemSheet>();
+
             AddItemsForTest(
                 avatarState: avatarState,
-                random: ctx.Random,
+                random: random,
                 costumeItemSheet: costumeItemSheet,
                 materialItemSheet: materialItemSheet,
                 equipmentItemSheet: equipmentItemSheet,
@@ -216,7 +219,7 @@ namespace Nekoyume.Action
             {
                 AddCustomEquipment(
                     avatarState: avatarState,
-                    random: ctx.Random,
+                    random: random,
                     skillSheet: skillSheet,
                     equipmentItemSheet: equipmentItemSheet,
                     equipmentItemOptionSheet: optionSheet,

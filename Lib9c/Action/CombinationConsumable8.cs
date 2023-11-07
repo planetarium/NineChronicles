@@ -63,6 +63,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
+            var random = context.GetRandom();
             var slotAddress = avatarAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -206,7 +207,7 @@ namespace Nekoyume.Action
             // Create Consumable
             var consumable = (Consumable) ItemFactory.CreateItemUsable(
                 consumableRow,
-                context.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 endBlockIndex
             );
             // ~Create Consumable
@@ -219,7 +220,7 @@ namespace Nekoyume.Action
             // ~Add or Update Consumable
 
             // Update Slot
-            var mailId = context.Random.GenerateRandomGuid();
+            var mailId = random.GenerateRandomGuid();
             var attachmentResult = new CombinationConsumable5.ResultModel
             {
                 id = mailId,

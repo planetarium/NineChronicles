@@ -27,7 +27,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -131,7 +131,7 @@
                     {
                         BlockIndex = 0,
                         PreviousState = previousStates,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });
@@ -161,7 +161,7 @@
                     {
                         BlockIndex = 0,
                         PreviousState = previousStates,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });

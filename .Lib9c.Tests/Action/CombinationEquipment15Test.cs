@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -17,6 +18,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
     using Serilog;
     using Xunit;
@@ -51,6 +53,8 @@ namespace Lib9c.Tests.Action
                 )
             );
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EquipmentItemRecipeSheet)] =
+                EquipmentItemSheetFixture.EquipmentItemRecipeSheetWithMimisbrunnr;
             _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
 
@@ -77,7 +81,7 @@ namespace Lib9c.Tests.Action
                 _slotAddress,
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_slotAddress, combinationSlotState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
@@ -295,7 +299,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var currency = nextState.GetGoldCurrency();
@@ -366,7 +370,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = blockIndex,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }
@@ -474,7 +478,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.True(nextState.TryGetState(hammerPointAddress, out List serialized));
@@ -502,7 +506,7 @@ namespace Lib9c.Tests.Action
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = _random,
+                        RandomSeed = _random.Seed,
                     });
                 });
             }

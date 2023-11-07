@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action.Snapshot
     using Libplanet.Action.State;
     using Libplanet.Common;
     using Libplanet.Crypto;
+    using Libplanet.Store.Trie;
     using Libplanet.Types.Assets;
     using Nekoyume.Action;
     using Nekoyume.Helper;
@@ -49,7 +50,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
-            IAccount state = new MockStateDelta().MintAsset(context, senderAddress, crystal * 100);
+            IAccount state = new Account(MockState.Empty).MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -66,6 +67,7 @@ namespace Lib9c.Tests.Action.Snapshot
                 .Verify(outputState)
                 .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
                 .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .IgnoreMembersWithType<ITrie>()
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
                 .UseMethodName($"{nameof(TransferCrystal)}.summary");
             var fungibles = Verifier
@@ -88,7 +90,7 @@ namespace Lib9c.Tests.Action.Snapshot
             var recipientAddress = recipientPrivateKey.ToAddress();
             var crystal = CrystalCalculator.CRYSTAL;
             var context = new ActionContext();
-            var state = new MockStateDelta().MintAsset(context, senderAddress, crystal * 100);
+            var state = new Account(MockState.Empty).MintAsset(context, senderAddress, crystal * 100);
             var actionContext = new ActionContext
             {
                 Signer = senderAddress,
@@ -106,6 +108,7 @@ namespace Lib9c.Tests.Action.Snapshot
                 .Verify(outputState)
                 .IgnoreMembersWithType<IImmutableSet<(Address, Currency)>>()
                 .IgnoreMembersWithType<IImmutableDictionary<(Address, Currency), BigInteger>>()
+                .IgnoreMembersWithType<ITrie>()
                 .UseTypeName((Text)GetActionTypeId<TransferAsset0>())
                 .UseMethodName($"{nameof(TransferWithMemo)}.summary");
             var fungibles = Verifier

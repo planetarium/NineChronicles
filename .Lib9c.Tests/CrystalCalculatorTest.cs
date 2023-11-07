@@ -33,10 +33,25 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(new[] { 2 }, 2)]
-        [InlineData(new[] { 2, 3 }, 4)]
-        public void CalculateRecipeUnlockCost(IEnumerable<int> recipeIds, int expected)
+        [InlineData(1)]
+        [InlineData(2)]
+        public void CalculateRecipeUnlockCost(int recipeCount)
         {
+            var recipeIds = new List<int>();
+            var expected = 0;
+            foreach (var row in _equipmentItemRecipeSheet.OrderedList)
+            {
+                if (recipeIds.Count < recipeCount)
+                {
+                    recipeIds.Add(row.Id);
+                    expected += row.CRYSTAL;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
             Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, _equipmentItemRecipeSheet));
         }
 

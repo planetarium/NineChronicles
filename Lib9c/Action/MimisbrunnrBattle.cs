@@ -335,8 +335,9 @@ namespace Nekoyume.Action
             itemSlotState.UpdateCostumes(Costumes);
             states = states.SetState(itemSlotStateAddress, itemSlotState.Serialize());
 
+            var random = context.GetRandom();
             var simulator = new StageSimulator(
-                context.Random,
+                random,
                 avatarState,
                 Foods,
                 runeStates,
@@ -350,7 +351,7 @@ namespace Nekoyume.Action
                 sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, PlayCount));
+                StageSimulator.GetWaveRewards(random, stageRow, materialSheet, PlayCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",

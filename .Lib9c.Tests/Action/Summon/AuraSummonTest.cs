@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action.Summon
             var gold = new GoldCurrencyState(_currency);
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
@@ -81,56 +81,56 @@ namespace Lib9c.Tests.Action.Summon
 
         [Theory]
         // success first group
-        [InlineData(10001, 1, 600201, 2, 1, new[] { 10620000 }, null)]
-        [InlineData(10001, 2, 600201, 4, 54, new[] { 10630000, 10640000 }, null)]
+        [InlineData(10001, 1, 800201, 1, 1, new[] { 10610000 }, null)]
+        [InlineData(10001, 2, 800201, 2, 54, new[] { 10620000, 10630000 }, null)]
         // success second group
-        [InlineData(10002, 1, 600202, 2, 1, new[] { 10620001 }, null)]
-        [InlineData(10002, 2, 600202, 4, 4, new[] { 10630001, 10640001 }, null)]
+        [InlineData(10002, 1, 600201, 1, 1, new[] { 10620001 }, null)]
+        [InlineData(10002, 2, 600201, 2, 4, new[] { 10620001, 10630001 }, null)]
         // Nine plus zero
         [InlineData(
             10001,
             9,
-            600201,
-            18,
+            800201,
+            9,
             0,
-            new[] { 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10630000, 10630000, 10630000 },
+            new[] { 10610000, 10610000, 10610000, 10610000, 10610000, 10610000, 10620000, 10620000, 10620000 },
             null
         )]
         [InlineData(
             10002,
             9,
-            600202,
-            18,
+            600201,
+            9,
             0,
-            new[] { 10620001, 10620001, 10620001, 10620001, 10630001, 10630001, 10630001, 10640001, 10640001 },
+            new[] { 10620001, 10620001, 10620001, 10620001, 10620001, 10630001, 10630001, 10630001, 10630001 },
             null
         )]
         // Ten plus one
         [InlineData(
             10001,
             10,
-            600201,
-            20,
+            800201,
+            10,
             0,
-            new[] { 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10620000, 10630000, 10630000, 10630000, 10630000 },
+            new[] { 10610000, 10610000, 10610000, 10610000, 10610000, 10610000, 10610000, 10610000, 10620000, 10620000, 10620000 },
             null
         )]
         [InlineData(
             10002,
             10,
-            600202,
-            20,
+            600201,
+            10,
             0,
-            new[] { 10620001, 10620001, 10620001, 10620001, 10630001, 10630001, 10630001, 10630001, 10640001, 10640001, 10640001 },
+            new[] { 10620001, 10620001, 10620001, 10620001, 10620001, 10620001, 10630001, 10620001, 10630001, 10630001, 10630001 },
             null
         )]
         // fail by invalid group
         [InlineData(100003, 1, null, 0, 0, new int[] { }, typeof(RowNotInTableException))]
         // fail by not enough material
-        [InlineData(10001, 1, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
-        [InlineData(10001, 2, 600201, 1, 0, new int[] { }, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 1, 800201, 0, 0, new int[] { }, typeof(NotEnoughMaterialException))]
+        [InlineData(10001, 2, 800201, 0, 0, new int[] { }, typeof(NotEnoughMaterialException))]
         // Fail by exceeding summon limit
-        [InlineData(10001, 11, 600201, 22, 1, new int[] { }, typeof(InvalidSummonCountException))]
+        [InlineData(10001, 11, 800201, 22, 1, new int[] { }, typeof(InvalidSummonCountException))]
         public void Execute(
             int groupId,
             int summonCount,
@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Action.Summon
                 var material = materialSheet.OrderedList.FirstOrDefault(m => m.Id == materialId);
                 _avatarState.inventory.AddItem(
                     ItemFactory.CreateItem(material, random),
-                    materialCount
+                    materialCount * _tableSheets.SummonSheet[groupId].CostMaterialCount
                 );
                 state = state
                         .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -178,13 +178,14 @@ namespace Lib9c.Tests.Action.Summon
             if (expectedExc == null)
             {
                 // Success
-                var nextState = action.Execute(new ActionContext
+                var ctx = new ActionContext
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = random,
-                });
+                };
+                ctx.SetRandom(random);
+                var nextState = action.Execute(ctx);
 
                 var equipments = nextState.GetAvatarStateV2(_avatarAddress).inventory.Equipments
                     .ToList();
@@ -217,7 +218,7 @@ namespace Lib9c.Tests.Action.Summon
                         PreviousState = state,
                         Signer = _agentAddress,
                         BlockIndex = 1,
-                        Random = random,
+                        RandomSeed = random.Seed,
                     });
                 });
             }

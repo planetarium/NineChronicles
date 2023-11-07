@@ -174,5 +174,8 @@ namespace Lib9c
 
         // Grand Finale
         public const string GrandFinaleIdKey = "gfi";
+
+        // ClaimItems
+        public const string ClaimDataKey = "cd";
     }
 }

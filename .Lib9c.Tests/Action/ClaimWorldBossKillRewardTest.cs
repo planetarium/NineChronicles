@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
             var tableSheets = new TableSheets(sheets);
             Address agentAddress = new PrivateKey().ToAddress();
             Address avatarAddress = new PrivateKey().ToAddress();
-            IAccount state = new MockStateDelta();
+            IAccount state = new Account(MockState.Empty);
 
             var runeWeightSheet = new RuneWeightSheet();
             runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                     Signer = agentAddress,
                     PreviousState = state,
-                    Random = new TestRandom(randomSeed),
+                    RandomSeed = randomSeed,
                 });
 
                 var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[10001]);
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = blockIndex,
                     Signer = default,
                     PreviousState = state,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
             }
         }

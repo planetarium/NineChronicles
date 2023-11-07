@@ -81,6 +81,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return states;
@@ -253,14 +254,14 @@ namespace Nekoyume.Action
             // Create and Add Consumable
             var consumable = ItemFactory.CreateItemUsable(
                 consumableRow,
-                context.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 endBlockIndex
             );
             avatarState.inventory.AddItem(consumable);
             // ~Create and Add Consumable
 
             // Update Slot
-            var mailId = context.Random.GenerateRandomGuid();
+            var mailId = random.GenerateRandomGuid();
             var attachmentResult = new CombinationConsumable5.ResultModel
             {
                 id = mailId,

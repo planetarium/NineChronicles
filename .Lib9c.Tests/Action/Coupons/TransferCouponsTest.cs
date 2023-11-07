@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action.Coupons
         [Fact]
         public void Execute()
         {
-            IAccount state = new Lib9c.Tests.Action.MockStateDelta();
+            IAccount state = new Account(MockState.Empty);
             IRandom random = new TestRandom();
 
             var coupon1 = new Coupon(CouponsFixture.Guid1, CouponsFixture.RewardSet1);

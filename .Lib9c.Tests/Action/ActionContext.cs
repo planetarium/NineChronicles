@@ -5,13 +5,13 @@ namespace Lib9c.Tests.Action
     using Libplanet.Action.State;
     using Libplanet.Common;
     using Libplanet.Crypto;
-    using Libplanet.Types.Assets;
     using Libplanet.Types.Blocks;
     using Libplanet.Types.Tx;
 
     public class ActionContext : IActionContext
     {
         private long _gasUsed;
+        private IRandom _random = null;
 
         public BlockHash? GenesisHash { get; set; }
 
@@ -31,39 +31,27 @@ namespace Lib9c.Tests.Action
 
         public IAccount PreviousState { get; set; }
 
-        public IRandom Random { get; set; }
+        public int RandomSeed { get; set; }
 
         public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
 
         public bool BlockAction { get; }
-
-        public bool IsNativeToken(Currency currency) => false;
 
         public void UseGas(long gas)
         {
             _gasUsed += gas;
         }
 
-        public IActionContext GetUnconsumedContext()
-        {
-            // Unable to determine if Random has ever been consumed...
-            return new ActionContext
-            {
-                Signer = Signer,
-                TxId = TxId,
-                Miner = Miner,
-                BlockHash = BlockHash,
-                BlockIndex = BlockIndex,
-                BlockProtocolVersion = BlockProtocolVersion,
-                Rehearsal = Rehearsal,
-                PreviousState = PreviousState,
-                Random = Random,
-                PreviousStateRootHash = PreviousStateRootHash,
-            };
-        }
+        public IRandom GetRandom() => _random ?? new TestRandom(RandomSeed);
 
         public long GasUsed() => _gasUsed;
 
         public long GasLimit() => 0;
+
+        // FIXME: Temporary measure to allow inheriting already mutated IRandom.
+        public void SetRandom(IRandom random)
+        {
+            _random = random;
+        }
     }
 }

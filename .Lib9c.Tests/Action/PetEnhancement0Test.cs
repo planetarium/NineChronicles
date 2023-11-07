@@ -378,7 +378,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = blockIndex,
                 PreviousState = prevStates,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 Signer = agentAddr,
             });

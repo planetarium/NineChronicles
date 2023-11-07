@@ -288,8 +288,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
+            var random = ctx.GetRandom();
             var simulator = new StageSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 foods,
                 skillsOnWaveStart,

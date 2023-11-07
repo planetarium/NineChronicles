@@ -8,6 +8,7 @@ namespace Lib9c.Tests.TestHelper
     using Lib9c.Renderers;
     using Lib9c.Tests.Action;
     using Libplanet.Action;
+    using Libplanet.Action.State;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Crypto;
@@ -46,7 +47,7 @@ namespace Lib9c.Tests.TestHelper
                 genesis,
                 new ActionEvaluator(
                     policyBlockActionGetter: _ => policy.BlockAction,
-                    blockChainStates: new BlockChainStates(store, stateStore),
+                    stateStore: stateStore,
                     actionTypeLoader: new NCActionLoader()
                 ),
                 renderers: blockRenderers);
@@ -97,7 +98,7 @@ namespace Lib9c.Tests.TestHelper
             var sheets = TableSheetsImporter.ImportSheets();
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(0);
             var context = new ActionContext();
-            var initialState = new Tests.Action.MockStateDelta()
+            var initialState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(
                     Addresses.GoldDistribution,
@@ -156,7 +157,7 @@ namespace Lib9c.Tests.TestHelper
             {
                 BlockIndex = 0,
                 PreviousState = initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 

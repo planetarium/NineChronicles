@@ -1,11 +1,12 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Formatters;
 using Lib9c.Renderers;
 using Libplanet.Crypto;
-using Libplanet.Action.State;
+using Libplanet.Common;
 using MessagePack;
 
 namespace Nekoyume.Action
@@ -27,16 +28,16 @@ namespace Nekoyume.Action
         public long BlockIndex { get; set; }
 
         [Key(3)]
-        [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccount OutputState { get; set; }
+        [MessagePackFormatter(typeof(HashDigestFormatter))]
+        public HashDigest<SHA256> OutputState { get; set; }
 
         [Key(4)]
         [MessagePackFormatter(typeof(ExceptionFormatter<Exception>))]
         public Exception? Exception { get; set; }
 
         [Key(5)]
-        [MessagePackFormatter(typeof(AccountStateDeltaFormatter))]
-        public IAccount PreviousState { get; set; }
+        [MessagePackFormatter(typeof(HashDigestFormatter))]
+        public HashDigest<SHA256> PreviousState { get; set; }
 
         [Key(6)]
         public int RandomSeed { get; set; }
@@ -50,9 +51,9 @@ namespace Nekoyume.Action
             ActionBase? action,
             Address signer,
             long blockIndex,
-            IAccount outputStates,
+            HashDigest<SHA256> outputStates,
             Exception? exception,
-            IAccount previousStates,
+            HashDigest<SHA256> previousStates,
             int randomSeed,
             Dictionary<string, IValue> extra
         )

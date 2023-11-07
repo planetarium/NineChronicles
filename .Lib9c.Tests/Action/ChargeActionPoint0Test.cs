@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(0, avatarState.actionPoint);
 
-            var state = new MockStateDelta()
+            var state = new Account(MockState.Empty)
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(agentAddress, agent.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
             });
 

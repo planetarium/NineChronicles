@@ -198,6 +198,7 @@ namespace Nekoyume.Action
             var skillSheet = states.GetSheet<SkillSheet>();
             var characterLevelSheet = states.GetSheet<CharacterLevelSheet>();
             var enhancementCostSheet = states.GetSheet<EnhancementCostSheetV2>();
+            var random = context.GetRandom();
 
             avatarState.level = 300;
             avatarState.exp = characterLevelSheet[300].Exp;
@@ -212,7 +213,7 @@ namespace Nekoyume.Action
 
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(
                     equipmentRow,
-                    context.Random.GenerateRandomGuid(),
+                    random.GenerateRandomGuid(),
                     0L,
                     madeWithMimisbrunnrRecipe: subRecipeRow.IsMimisbrunnrSubRecipe ?? false);
 
@@ -252,7 +253,7 @@ namespace Nekoyume.Action
                         .First(x => x.ItemSubType == subType &&
                                     x.Grade == grade &&
                                     x.Level == i);
-                    equipment.LevelUp(ctx.Random, costRow, true);
+                    equipment.LevelUp(random, costRow, true);
                 }
 
                 avatarState.inventory.AddItem(equipment);

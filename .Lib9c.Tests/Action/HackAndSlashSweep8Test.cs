@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Action
 #pragma warning restore CS0618
             var goldCurrencyState = new GoldCurrencyState(currency);
             _weeklyArenaState = new WeeklyArenaState(0);
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.SerializeV2())
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 var nextAvatarState = state.GetAvatarStateV2(_avatarAddress);
@@ -261,7 +261,7 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
             };
 
-            var state = backward ? new MockStateDelta() : _initialState;
+            var state = backward ? new Account(MockState.Empty) : _initialState;
             if (!backward)
             {
                 state = _initialState
@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -301,7 +301,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -373,7 +373,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -439,7 +439,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -494,7 +494,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -573,7 +573,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 }));
             }
         }
@@ -649,7 +649,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = state,
                         Signer = _agentAddress,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                     }));
             }
         }
@@ -725,7 +725,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = state,
                         Signer = _agentAddress,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                     }));
             }
         }
@@ -800,7 +800,7 @@ namespace Lib9c.Tests.Action
                     {
                         PreviousState = state,
                         Signer = _agentAddress,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                     }));
             }
         }
@@ -873,7 +873,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
                 var nextAvatar = nextState.GetAvatarStateV2(_avatarAddress);
                 Assert.Equal(expectedLevel, nextAvatar.level);

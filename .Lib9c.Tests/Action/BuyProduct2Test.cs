@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -304,7 +304,7 @@ namespace Lib9c.Tests.Action
                     Assert.Throws(validateMember.Exc, () => action.Execute(new ActionContext
                     {
                         PreviousState = previousState,
-                        Random = new TestRandom(),
+                        RandomSeed = 0,
                         Signer = BuyerAgentAddress,
                     }));
                 }

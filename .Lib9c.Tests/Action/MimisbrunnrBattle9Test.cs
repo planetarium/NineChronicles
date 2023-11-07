@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
@@ -157,7 +157,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -231,7 +231,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = previousState,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                     Rehearsal = false,
                 });
             });
@@ -255,7 +255,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousState = new MockStateDelta(),
+                    PreviousState = new Account(MockState.Empty),
                     Signer = _agentAddress,
                 });
             });
@@ -346,7 +346,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    RandomSeed = 0,
                 });
             });
         }
@@ -428,7 +428,7 @@ namespace Lib9c.Tests.Action
             {
                 action.Execute(new ActionContext
                 {
-                    PreviousState = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                    PreviousState = state, Signer = _agentAddress, RandomSeed = 0, Rehearsal = false,
                 });
             });
         }
@@ -512,7 +512,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = nextState,
                 Signer = _agentAddress,
                 Rehearsal = false,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             });
         }
 
@@ -601,7 +601,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousState = state,
                     Signer = avatarState.agentAddress,
-                    Random = random,
+                    RandomSeed = random.Seed,
                 }));
             }
         }
@@ -706,7 +706,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousState = state,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
                 Rehearsal = false,
                 BlockIndex = 1,
             });
@@ -754,7 +754,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyQuestListKey),
             };
 
-            var state = new MockStateDelta();
+            var state = new Account(MockState.Empty);
 
             var nextState = action.Execute(new ActionContext
             {

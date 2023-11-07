@@ -79,6 +79,8 @@ namespace Nekoyume.Action
                 marketState.AvatarAddresses.Add(AvatarAddress);
                 states = states.SetState(Addresses.Market, marketState.Serialize());
             }
+
+            var random = context.GetRandom();
             foreach (var (productInfo, info) in ReRegisterInfos.OrderBy(tuple => tuple.Item2.Type).ThenBy(tuple => tuple.Item2.Price))
             {
                 var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
@@ -158,7 +160,8 @@ namespace Nekoyume.Action
                     states = CancelProductRegistration0.Cancel(productsState, productInfo,
                         states, avatarState, context);
                 }
-                states = RegisterProduct0.Register(context, info, avatarState, productsState, states);
+
+                states = RegisterProduct0.Register(context, info, avatarState, productsState, states, random);
             }
 
             states = states

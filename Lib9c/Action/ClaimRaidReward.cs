@@ -68,6 +68,7 @@ namespace Nekoyume.Action
             var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             RaiderState raiderState = states.GetRaiderState(raiderAddress);
             int rank = WorldBossHelper.CalculateRank(bossRow, raiderState.HighScore);
+            var random = context.GetRandom();
             if (raiderState.LatestRewardRank < rank)
             {
                 for (int i = raiderState.LatestRewardRank; i < rank; i++)
@@ -78,7 +79,7 @@ namespace Nekoyume.Action
                         sheets.GetSheet<RuneWeightSheet>(),
                         sheets.GetSheet<WorldBossRankRewardSheet>(),
                         sheets.GetSheet<RuneSheet>(),
-                        context.Random
+                        random
                     );
 
                     foreach (var reward in rewards)

@@ -47,6 +47,7 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IAccount states = context.PreviousState;
+            var random = context.GetRandom();
             if (context.Rehearsal)
             {
                 return states;
@@ -215,7 +216,7 @@ namespace Nekoyume.Action
             // Simulate.
             var simulator = new RaidSimulator(
                 row.BossId,
-                context.Random,
+                random,
                 avatarState,
                 FoodIds,
                 runeStates,
@@ -309,7 +310,7 @@ namespace Nekoyume.Action
                         sheets.GetSheet<RuneWeightSheet>(),
                         sheets.GetSheet<WorldBossKillRewardSheet>(),
                         sheets.GetSheet<RuneSheet>(),
-                        context.Random,
+                        random,
                         AvatarAddress,
                         context.Signer
                     );

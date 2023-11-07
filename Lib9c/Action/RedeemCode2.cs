@@ -91,6 +91,7 @@ namespace Nekoyume.Action
             var row = states.GetSheet<RedeemRewardSheet>().Values.First(r => r.Id == redeemId);
             var itemSheets = states.GetItemSheet();
 
+            var random = context.GetRandom();
             foreach (RedeemRewardSheet.RewardInfo info in row.Rewards)
             {
                 switch (info.Type)
@@ -100,7 +101,7 @@ namespace Nekoyume.Action
                         {
                             if (info.ItemId is int itemId)
                             {
-                                ItemBase item = ItemFactory.CreateItem(itemSheets[itemId], context.Random);
+                                ItemBase item = ItemFactory.CreateItem(itemSheets[itemId], random);
                                 // We should fix count as 1 because ItemFactory.CreateItem
                                 // will create a new item every time.
                                 avatarState.inventory.AddItem2(item, count: 1);

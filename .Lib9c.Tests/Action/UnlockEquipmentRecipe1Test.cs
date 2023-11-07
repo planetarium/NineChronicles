@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action
 
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(Addresses.GetSheetAddress<EquipmentItemSheet>(), _tableSheets.EquipmentItemSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<EquipmentItemRecipeSheet>(), _tableSheets.EquipmentItemRecipeSheet.Serialize())
@@ -59,52 +59,67 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(new[] { 2, 3 }, true, false, false, true, 4, null)]
-        [InlineData(new[] { 2 }, true, false, false, true, 2, null)]
+        [InlineData(new[] { 6, 5 }, true, false, false, true, true, null)]
+        [InlineData(new[] { 6 }, true, false, false, true, true, null)]
         // Unlock Belt without Armor unlock.
-        [InlineData(new[] { 83 }, true, false, false, true, 1, null)]
+        [InlineData(new[] { 94 }, true, false, false, true, true, null)]
         // Unlock Weapon & Ring
-        [InlineData(new[] { 2, 133 }, true, false, false, true, 3, null)]
+        [InlineData(new[] { 6, 133 }, true, false, false, true, true, null)]
         // AvatarState migration.
-        [InlineData(new[] { 2 }, true, true, false, true, 2, null)]
+        [InlineData(new[] { 6 }, true, true, false, true, true, null)]
         // Invalid recipe id.
-        [InlineData(new[] { -1 }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
-        [InlineData(new[] { 1 }, true, false, false, true, 100, typeof(InvalidRecipeIdException))]
-        [InlineData(new int[] { }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
+        [InlineData(new[] { -1 }, true, false, false, false, false, typeof(InvalidRecipeIdException))]
+        [InlineData(new[] { 1 }, true, false, false, true, false, typeof(InvalidRecipeIdException))]
+        [InlineData(new int[] { }, true, false, false, false, false, typeof(InvalidRecipeIdException))]
         // AvatarState is null.
-        [InlineData(new[] { 2 }, false, true, false, true, 100, typeof(FailedLoadStateException))]
-        [InlineData(new[] { 2 }, false, false, false, true, 100, typeof(FailedLoadStateException))]
+        [InlineData(new[] { 6 }, false, true, false, true, true, typeof(FailedLoadStateException))]
+        [InlineData(new[] { 6 }, false, false, false, true, true, typeof(FailedLoadStateException))]
         // Already unlocked recipe.
-        [InlineData(new[] { 2 }, true, false, true, true, 100, typeof(AlreadyRecipeUnlockedException))]
+        [InlineData(new[] { 6 }, true, false, true, true, true, typeof(AlreadyRecipeUnlockedException))]
         // Skip prev recipe.
-        [InlineData(new[] { 3 }, true, false, false, true, 100, typeof(InvalidRecipeIdException))]
+        [InlineData(new[] { 5 }, true, false, false, true, false, typeof(InvalidRecipeIdException))]
         // Stage not cleared.
-        [InlineData(new[] { 2 }, true, false, false, false, 100, typeof(NotEnoughClearedStageLevelException))]
+        [InlineData(new[] { 6 }, true, false, false, false, true, typeof(NotEnoughClearedStageLevelException))]
         // Insufficient CRYSTAL.
-        [InlineData(new[] { 2 }, true, false, false, true, 1, typeof(NotEnoughFungibleAssetValueException))]
+        [InlineData(new[] { 6 }, true, false, false, true, false, typeof(NotEnoughFungibleAssetValueException))]
         public void Execute(
             IEnumerable<int> ids,
             bool stateExist,
             bool migrationRequired,
             bool alreadyUnlocked,
             bool stageCleared,
-            int balance,
+            bool balanceEnough,
             Type exc
         )
         {
             var context = new ActionContext();
-            var state = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             List<int> recipeIds = ids.ToList();
+            var rows = _tableSheets.EquipmentItemRecipeSheet.Values
+                .Where(r => recipeIds.Contains(r.Id)).ToList();
+            var balance = balanceEnough ? rows.Sum(r => r.CRYSTAL) : 1;
+            var state = _initialState.MintAsset(context, _agentAddress, balance * _currency);
             Address unlockedRecipeIdsAddress = _avatarAddress.Derive("recipe_ids");
             if (stateExist)
             {
+                var stage = rows.Any() ? rows.Max(r => r.UnlockStage) : 1;
+                var worldSheet = _tableSheets.WorldSheet;
+                var worldId = worldSheet.OrderedList
+                    .Last(r => r.StageBegin <= stage && stage <= r.StageEnd).Id;
                 var worldInformation = _avatarState.worldInformation;
                 if (stageCleared)
                 {
-                    var stage = _tableSheets.EquipmentItemRecipeSheet[recipeIds.Max()].UnlockStage;
-                    for (int i = 1; i < stage + 1; i++)
+                    for (int j = 1; j < worldId + 1; j++)
                     {
-                        worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+                        for (var i = 1; i < stage + 1; i++)
+                        {
+                            _avatarState.worldInformation.ClearStage(
+                                j,
+                                i,
+                                0,
+                                _tableSheets.WorldSheet,
+                                _tableSheets.WorldUnlockSheet
+                            );
+                        }
                     }
                 }
                 else
@@ -145,7 +160,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 });
 
                 Assert.True(nextState.TryGetState(unlockedRecipeIdsAddress, out List rawIds));
@@ -163,7 +178,7 @@ namespace Lib9c.Tests.Action
                     PreviousState = state,
                     Signer = _agentAddress,
                     BlockIndex = 1,
-                    Random = _random,
+                    RandomSeed = _random.Seed,
                 }));
             }
         }

@@ -188,6 +188,7 @@ namespace Nekoyume.Action
                 throw new WeeklyArenaStateAlreadyEndedException();
             }
 
+            var random = ctx.GetRandom();
             if (context.BlockIndex >= UpdateTargetBlockIndex)
             {
                 // Run updated model
@@ -233,7 +234,7 @@ namespace Nekoyume.Action
                 var player = new Player(avatarState, rankingSheets);
                 var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
                 var simulator = new RankingSimulatorV1(
-                    ctx.Random,
+                    random,
                     player,
                     enemyPlayerDigest,
                     new List<Guid>(),
@@ -319,6 +320,7 @@ namespace Nekoyume.Action
                 EnemyPlayerDigest = enemyPlayerDigest;
                 return states;
             }
+
             // Run Backward compatible
             return BackwardCompatibleExecute(rawWeeklyArenaState, sheets, avatarState, costumeStatSheet, sw, addressesHex, enemyAvatarState, ctx, states, inventoryAddress, questListAddress, migrationRequired, worldInformationAddress, started);
         }
@@ -378,8 +380,9 @@ namespace Nekoyume.Action
             var rankingSheets = sheets.GetRankingSimulatorSheetsV100291();
             var player = new Player(avatarState, rankingSheets);
             var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
+            var random = ctx.GetRandom();
             var simulator = new RankingSimulatorV1(
-                ctx.Random,
+                random,
                 player,
                 enemyPlayerDigest,
                 new List<Guid>(),

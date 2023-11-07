@@ -132,6 +132,7 @@ namespace Nekoyume.Action
             context.UseGas(1);
             var ctx = context;
             var states = ctx.PreviousState;
+            var random = context.GetRandom();
 
             if (ctx.Rehearsal)
             {
@@ -342,7 +343,7 @@ namespace Nekoyume.Action
                 ).Value;
             if (!(row is null) && row.Level > enhancementEquipment.level)
             {
-                enhancementEquipment.SetLevel(ctx.Random, row.Level, enhancementCostSheet);
+                enhancementEquipment.SetLevel(random, row.Level, enhancementCostSheet);
             }
 
             EnhancementCostSheetV3.Row targetCostRow;
@@ -401,7 +402,7 @@ namespace Nekoyume.Action
             };
 
             var mail = new ItemEnhanceMail(
-                result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex
+                result, ctx.BlockIndex, random.GenerateRandomGuid(), requiredBlockIndex
             );
             result.id = mail.id;
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);

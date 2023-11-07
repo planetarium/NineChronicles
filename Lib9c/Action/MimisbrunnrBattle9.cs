@@ -230,9 +230,10 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
+            var random = context.GetRandom();
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
             var simulator = new StageSimulatorV1(
-                ctx.Random,
+                random,
                 avatarState,
                 foods,
                 worldId,

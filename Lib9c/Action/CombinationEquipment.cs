@@ -389,9 +389,10 @@ namespace Nekoyume.Action
             // ~Transfer Required NCG
 
             // Create Equipment
+            var random = context.GetRandom();
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipmentRow,
-                context.Random.GenerateRandomGuid(),
+                random.GenerateRandomGuid(),
                 endBlockIndex,
                 madeWithMimisbrunnrRecipe: isMimisbrunnrSubRecipe
             );
@@ -402,7 +403,7 @@ namespace Nekoyume.Action
                     agentState,
                     petState,
                     equipment,
-                    context.Random,
+                    random,
                     subRecipeRow,
                     sheets.GetSheet<EquipmentItemOptionSheet>(),
                     petOptionSheet,
@@ -417,7 +418,7 @@ namespace Nekoyume.Action
                         AddSkillOption(
                             agentState,
                             equipment,
-                            context.Random,
+                            random,
                             subRecipeRow,
                             sheets.GetSheet<EquipmentItemOptionSheet>(),
                             sheets.GetSheet<SkillSheet>()
@@ -461,7 +462,7 @@ namespace Nekoyume.Action
             // ~Add or Update Equipment
 
             // Update Slot
-            var mailId = context.Random.GenerateRandomGuid();
+            var mailId = random.GenerateRandomGuid();
             var attachmentResult = new CombinationConsumable5.ResultModel
             {
                 id = mailId,

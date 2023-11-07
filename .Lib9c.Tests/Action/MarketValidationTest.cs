@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
 
         public MarketValidationTest()
         {
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(GoldCurrencyState.Address, new GoldCurrencyState(Gold).Serialize());
         }
 
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = AgentAddress,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             };
             foreach (var validateMember in validateMembers)
             {
@@ -231,7 +231,7 @@ namespace Lib9c.Tests.Action
             {
                 Signer = AgentAddress,
                 PreviousState = _initialState,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             };
             foreach (var validateMember in validateMembers)
             {

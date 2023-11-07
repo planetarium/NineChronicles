@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -32,6 +33,8 @@ namespace Lib9c.Tests.Action
         public ItemEnhancement11Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EnhancementCostSheetV2)] =
+                EquipmentItemSheetFixture.LegacyEnhancementCostSheetV2;
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
@@ -57,7 +60,7 @@ namespace Lib9c.Tests.Action
             var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             var context = new ActionContext();
-            _initialState = new MockStateDelta()
+            _initialState = new Account(MockState.Empty)
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
@@ -183,7 +186,7 @@ namespace Lib9c.Tests.Action
                 PreviousState = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = new TestRandom(randomSeed),
+                RandomSeed = randomSeed,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);

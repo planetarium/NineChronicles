@@ -32,7 +32,7 @@
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _initialState = new MockStateDelta();
+            _initialState = new Account(MockState.Empty);
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
@@ -128,14 +128,15 @@
                     sellerAvatarAddress = _avatarAddress,
                 };
 
-                var nextState = sellAction.Execute(new ActionContext
+                var ctx = new ActionContext
                 {
                     BlockIndex = 0,
                     PreviousState = previousStates,
                     Rehearsal = false,
                     Signer = _agentAddress,
-                    Random = random,
-                });
+                };
+                ctx.SetRandom(random);
+                var nextState = sellAction.Execute(ctx);
 
                 productCount++;
 
@@ -192,7 +193,7 @@
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousState = new MockStateDelta(),
+                PreviousState = new Account(MockState.Empty),
                 Signer = _agentAddress,
             }));
         }
@@ -241,7 +242,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
 
@@ -269,7 +270,7 @@
                 BlockIndex = 0,
                 PreviousState = _initialState,
                 Signer = _agentAddress,
-                Random = new TestRandom(),
+                RandomSeed = 0,
             }));
         }
     }

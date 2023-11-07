@@ -14,7 +14,7 @@ namespace Lib9c.Tests
 
     public class TableSheets
     {
-        public TableSheets(Dictionary<string, string> sheets, bool ignoreFailedGetProperty = false)
+        public TableSheets(Dictionary<string, string> sheets, bool ignoreFailedGetProperty = true)
         {
             foreach (var (key, value) in sheets)
             {

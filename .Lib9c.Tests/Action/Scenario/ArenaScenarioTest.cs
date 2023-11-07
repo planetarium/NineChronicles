@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _state = new Tests.Action.MockStateDelta();
+            _state = new Account(MockState.Empty);
 
             _sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(_sheets);
@@ -115,7 +115,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousState = _state,
                 Signer = signer,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = roundData.StartBlockIndex,
             });
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 PreviousState = _state,
                 Signer = signer,
-                Random = random,
+                RandomSeed = random.Seed,
                 Rehearsal = false,
                 BlockIndex = blockIndex,
             });
