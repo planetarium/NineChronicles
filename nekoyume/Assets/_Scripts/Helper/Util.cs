@@ -43,7 +43,7 @@ namespace Nekoyume.Helper
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
-            return await UniTask.Run(async () =>
+            return await UniTask.RunOnThreadPool(async () =>
             {
                 var state = await Game.Game.instance.Agent.GetStateAsync(address);
                 if (state is Dictionary dictionary)
@@ -52,7 +52,7 @@ namespace Nekoyume.Helper
                 }
 
                 return null;
-            });
+            }, configureAwait: false);
         }
 
         public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
@@ -64,7 +64,7 @@ namespace Nekoyume.Helper
             }
 
             var address = Addresses.GetItemAddress(order.TradableId);
-            return await UniTask.Run(async () =>
+            return await UniTask.RunOnThreadPool(async () =>
             {
                 var state = await Game.Game.instance.Agent.GetStateAsync(address);
                 if (state is Dictionary dictionary)
@@ -76,13 +76,13 @@ namespace Nekoyume.Helper
                 }
 
                 return string.Empty;
-            });
+            }, configureAwait: false);
         }
 
         public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
         {
             var address = Addresses.GetItemAddress(tradableId);
-            return await UniTask.Run(async () =>
+            return await UniTask.RunOnThreadPool(async () =>
             {
                 var state = await Game.Game.instance.Agent.GetStateAsync(address);
                 if (state is Dictionary dictionary)
@@ -94,7 +94,7 @@ namespace Nekoyume.Helper
                 }
 
                 return null;
-            });
+            }, configureAwait: false);
         }
 
         public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
