@@ -19,7 +19,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action.Garages
 {
-    [ActionType("unload_from_garages")]
+    [ActionType("bulk_unload_from_garages")]
     public class BulkUnloadFromGarages : GameAction, IBulkUnloadFromGaragesV1, IAction
     {
         public IReadOnlyList<(
