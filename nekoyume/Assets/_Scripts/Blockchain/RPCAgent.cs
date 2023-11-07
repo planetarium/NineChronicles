@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -12,18 +13,20 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c;
 using Lib9c.Renderers;
+using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Libplanet.Types.Blocks;
 using Libplanet.Types.Tx;
 using LruCacheNet;
+using MagicOnion;
 using MagicOnion.Client;
+using MagicOnion.Unity;
 using MessagePack;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Blockchain.Policy;
 using Nekoyume.Extensions;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Stake;
@@ -51,7 +54,7 @@ namespace Nekoyume.Blockchain
 
         private readonly TransactionMap _transactions = new TransactionMap(20);
 
-        private Channel _channel;
+        private GrpcChannelx _channel;
 
         private IActionEvaluationHub _hub;
 
@@ -94,13 +97,29 @@ namespace Nekoyume.Blockchain
         public BlockHash BlockTipHash { get; private set; }
 
         private readonly Subject<(NCTx tx, List<ActionBase> actions)> _onMakeTransactionSubject =
-                new Subject<(NCTx tx, List<ActionBase> actions)>();
+            new Subject<(NCTx tx, List<ActionBase> actions)>();
 
         public IObservable<(NCTx tx, List<ActionBase> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private readonly BlockHashCache _blockHashCache = new(100);
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void OnRuntimeInitialize()
+        {
+            // Initialize gRPC channel provider when the application is loaded.
+            GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
+                new DefaultGrpcChannelProvider(new[]
+                {
+                    // send keepalive ping every 5 second, default is 2 hours
+                    new ChannelOption("grpc.keepalive_time_ms", 5000),
+                    // keepalive ping time out after 5 seconds, default is 20 seconds
+                    new ChannelOption("grpc.keepalive_timeout_ms", 5 * 1000),
+                    new ChannelOption("grpc.max_receive_message_length", -1)
+                })
+            ));
+        }
 
         /// <summary>
         /// Initialize without private key.
@@ -110,15 +129,7 @@ namespace Nekoyume.Blockchain
         public IEnumerator InitializeWithoutPrivateKey(
             CommandLineOptions options)
         {
-            _channel = new Grpc.Core.Channel(
-                options.RpcServerHost,
-                options.RpcServerPort,
-                ChannelCredentials.Insecure,
-                new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
-                }
-            );
+            _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             var connect = StreamingHubClient
                 .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
@@ -130,7 +141,7 @@ namespace Nekoyume.Blockchain
             _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
-            }).WithCancellationToken(_channel.ShutdownToken);
+            });
 
             // Android Mono only support arm7(32bit) backend in unity engine.
             // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
@@ -150,15 +161,9 @@ namespace Nekoyume.Blockchain
             Action<bool> callback)
         {
             PrivateKey = privateKey;
-            _channel ??= new Grpc.Core.Channel(
-                options.RpcServerHost,
-                options.RpcServerPort,
-                ChannelCredentials.Insecure,
-                new[]
-                {
-                    new ChannelOption("grpc.max_receive_message_length", -1)
-                }
-            );
+            _channel ??= GrpcChannelx.ForTarget(
+                new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
+
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             if (_hub == null)
             {
@@ -174,7 +179,7 @@ namespace Nekoyume.Blockchain
             _service ??= MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
             {
                 new ClientFilter()
-            }).WithCancellationToken(_channel.ShutdownToken);
+            });
 
             IEnumerator GetTip()
             {
@@ -223,6 +228,15 @@ namespace Nekoyume.Blockchain
             return _codec.Decode(raw);
         }
 
+        public IValue GetState(Address address, HashDigest<SHA256> stateRootHash)
+        {
+            var raw = _service.GetStateBySrh(
+                address.ToByteArray(),
+                stateRootHash.ToByteArray()
+            ).ResponseAsync.Result;
+            return _codec.Decode(raw);
+        }
+
         public async Task<IValue> GetStateAsync(Address address, long? blockIndex = null)
         {
             var game = Game.Game.instance;
@@ -264,6 +278,24 @@ namespace Nekoyume.Blockchain
             return decoded;
         }
 
+        public async Task<IValue> GetStateAsync(Address address, HashDigest<SHA256> stateRootHash)
+        {
+            var bytes = await _service.GetStateBySrh(address.ToByteArray(), stateRootHash.ToByteArray());
+            var decoded = _codec.Decode(bytes);
+            var game = Game.Game.instance;
+            if (game.CachedStateAddresses.ContainsKey(address))
+            {
+                game.CachedStateAddresses[address] = true;
+            }
+
+            if (game.CachedStates.ContainsKey(address))
+            {
+                game.CachedStates.AddOrUpdate(address, decoded);
+            }
+
+            return decoded;
+        }
+
         public FungibleAssetValue GetBalance(Address addr, Currency currency)
         {
             return GetBalanceAsync(addr, currency).Result;
@@ -290,7 +322,8 @@ namespace Nekoyume.Blockchain
                 return 0 * currency;
             }
 
-            var balance = await GetBalanceAsync(addr, currency, blockHash.Value);
+            var balance = await GetBalanceAsync(addr, currency, blockHash.Value)
+                .ConfigureAwait(false);
             if (addr.Equals(Address))
             {
                 if (!game.CachedBalance.ContainsKey(currency))
@@ -320,6 +353,21 @@ namespace Nekoyume.Blockchain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public async Task<FungibleAssetValue> GetBalanceAsync(
+            Address address,
+            Currency currency,
+            HashDigest<SHA256> stateRootHash)
+        {
+            var raw = await _service.GetBalanceBySrh(
+                address.ToByteArray(),
+                _codec.Encode(currency.Serialize()),
+                stateRootHash.ToByteArray());
+            var serialized = (List) _codec.Decode(raw);
+            return FungibleAssetValue.FromRawValue(
+                new Currency(serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger());
+        }
+
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
             IEnumerable<Address> addressList,
             long? blockIndex = null)
@@ -342,11 +390,42 @@ namespace Nekoyume.Blockchain
             return result;
         }
 
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStatesAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash)
+        {
+            Dictionary<byte[], byte[]> raw = await _service.GetAvatarStatesBySrh(
+                addressList.Select(a => a.ToByteArray()),
+                stateRootHash.ToByteArray());
+            var result = new Dictionary<Address, AvatarState>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+            }
+            return result;
+        }
+
         public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(IEnumerable<Address> addressList)
         {
             Dictionary<byte[], byte[]> raw =
                 await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()),
                     BlockTipHash.ToByteArray());
+            var result = new Dictionary<Address, IValue>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+            }
+            return result;
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulkAsync(
+            IEnumerable<Address> addressList,
+            HashDigest<SHA256> stateRootHash)
+        {
+            Dictionary<byte[], byte[]> raw =
+                await _service.GetStateBulkBySrh(
+                    addressList.Select(a => a.ToByteArray()),
+                    stateRootHash.ToByteArray());
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
@@ -615,10 +694,10 @@ namespace Nekoyume.Blockchain
                 actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
             }
             Debug.Log("[Transaction]" +
-                      $"\nnonce={nonce}" +
-                      $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                      $"\nHash={_genesis?.Hash}" +
-                      $"\nactionsName={actionsName}");
+                $"\nnonce={nonce}" +
+                $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                $"\nHash={_genesis?.Hash}" +
+                $"\nactionsName={actionsName}");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
