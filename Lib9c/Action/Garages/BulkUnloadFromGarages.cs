@@ -20,7 +20,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action.Garages
 {
     [ActionType("unload_from_garages")]
-    public class UnloadFromGarages : GameAction, IUnloadFromGaragesV1, IAction
+    public class BulkUnloadFromGarages : GameAction, IBulkUnloadFromGaragesV1, IAction
     {
         public IReadOnlyList<(
                 Address recipientAvatarAddress,
@@ -30,7 +30,7 @@ namespace Nekoyume.Action.Garages
                 string? memo)>
             UnloadData { get; private set; }
 
-        public UnloadFromGarages()
+        public BulkUnloadFromGarages()
         {
             UnloadData = new List<(
                 Address recipientAvatarAddress,
@@ -40,7 +40,7 @@ namespace Nekoyume.Action.Garages
                 fungibleIdAndCounts, string? memo)>();
         }
 
-        public UnloadFromGarages(
+        public BulkUnloadFromGarages(
             IReadOnlyList<(
                 Address recipientAvatarAddress,
                 IEnumerable<(Address balanceAddress, FungibleAssetValue value)>?
