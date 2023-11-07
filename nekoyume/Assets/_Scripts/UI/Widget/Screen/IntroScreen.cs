@@ -158,7 +158,7 @@ namespace Nekoyume.UI
 #else
             appleSignInButton.gameObject.SetActive(false);
 #endif
-            StartCoroutine(DownloadAssetBundle(GetGuestPrivateKey));
+            GetGuestPrivateKey();
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -254,18 +254,6 @@ namespace Nekoyume.UI
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
-        }
-
-        private IEnumerator DownloadAssetBundle(System.Action then)
-        {
-            var settings = Resources.Load<AssetBundleSettings>("AssetBundleSettings");
-            foreach (var bundleName in settings.AssetBundleNames)
-            {
-                yield return AssetBundleLoader.DownloadAssetBundles(
-                    settings.AssetBundleURL, bundleName,
-                    progress => { Debug.Log($"{bundleName} - {progress * 100}%"); });
-            }
-            then();
         }
 
         private async void GetGuestPrivateKey()
