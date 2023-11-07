@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex.Types;
-using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Action;
