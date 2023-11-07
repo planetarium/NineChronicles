@@ -4,6 +4,7 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Libplanet.Common;
 using Libplanet.KeyStore;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
@@ -157,7 +158,7 @@ namespace Nekoyume.UI
 #else
             appleSignInButton.gameObject.SetActive(false);
 #endif
-            GetGuestPrivateKey();
+            StartCoroutine(DownloadAssetBundle(GetGuestPrivateKey));
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -253,6 +254,18 @@ namespace Nekoyume.UI
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
+        }
+
+        private IEnumerator DownloadAssetBundle(System.Action then)
+        {
+            var settings = Resources.Load<AssetBundleSettings>("AssetBundleSettings");
+            foreach (var bundleName in settings.AssetBundleNames)
+            {
+                yield return AssetBundleLoader.DownloadAssetBundles(
+                    settings.AssetBundleURL, bundleName,
+                    progress => { Debug.Log($"{bundleName} - {progress * 100}%"); });
+            }
+            then();
         }
 
         private async void GetGuestPrivateKey()
