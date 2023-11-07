@@ -214,7 +214,7 @@ namespace Nekoyume.State
             var blockIndex = _agent.BlockIndex;
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
-            var response = await TxResultQuery.QueryArenaInfoAsync(new NineChroniclesAPIClient("http://localhost:50000/graphql"),
+            var response = await TxResultQuery.QueryArenaInfoAsync(Game.Game.instance.RpcClient,
                 currentAvatarAddr);
             var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             var arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;

@@ -381,11 +381,6 @@ namespace Nekoyume.UI
             {
                 AudioController.PlayClick();
                 _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
-                Close();
-                Find<ArenaBoard>().Show(
-                    _scroll.SelectedItemData.RoundData,
-                    RxProps.ArenaInformationOrderedWithScore.Value);
-                return;
                 var balance = States.Instance.CrystalBalance;
                 var cost = _paymentButton.CrystalCost;
                 var enoughMessageFormat = L10nManager.Localize("UI_ARENA_JOIN_WITH_CRYSTAL_Q");
