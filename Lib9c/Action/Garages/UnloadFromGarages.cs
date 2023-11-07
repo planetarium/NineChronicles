@@ -162,7 +162,8 @@ namespace Nekoyume.Action.Garages
             }
 
             // Mailing
-            states = BulkSendMail(context.BlockIndex, context.GetRandom(), states);
+            var random = context.GetRandom();
+            states = BulkSendMail(context.BlockIndex, random, states);
 
             return states;
         }
