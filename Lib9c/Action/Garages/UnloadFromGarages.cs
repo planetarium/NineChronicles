@@ -5,12 +5,15 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c;
 using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Exceptions;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action.Garages
@@ -114,7 +117,87 @@ namespace Nekoyume.Action.Garages
         {
             context.UseGas(1);
 
-            throw new System.NotImplementedException();
+            var states = context.PreviousState;
+            if (context.Rehearsal) return states;
+
+            // validate
+            var addressesHex = GetSignerAndOtherAddressesHex(context);
+            foreach (var unloadData in UnloadData)
+            {
+                if (unloadData.fungibleAssetValues is null &&
+                    unloadData.fungibleIdAndCounts is null)
+                {
+                    throw new InvalidActionFieldException(
+                        $"[{addressesHex}] Either FungibleAssetValues or FungibleIdAndCounts must be set.");
+                }
+
+                if (unloadData.fungibleAssetValues?.Any(fav => fav.value.Sign <= 0) ?? false)
+                {
+                    throw new InvalidActionFieldException(
+                        $"[{addressesHex}] FungibleAssetValue.Sign must be positive");
+                }
+
+                if (unloadData.fungibleIdAndCounts?.First(tuple => tuple.count <= 0) is { } invalid)
+                {
+                    throw new InvalidActionFieldException(
+                        $"[{addressesHex}] Count of fungible id must be positive. {invalid.fungibleId}, {invalid.count}");
+                }
+            }
+
+            // Execution
+            foreach (var (
+                         recipientAvatarAddress,
+                         fungibleAssetValues,
+                         fungibleIdAndCounts,
+                         memo)
+                     in UnloadData)
+            {
+                if (fungibleAssetValues is not null)
+                    states = TransferFungibleAssetValues(context, states, fungibleAssetValues);
+                if (fungibleIdAndCounts is not null)
+                    states = TransferFungibleItems(states, context.Signer, recipientAvatarAddress,
+                        fungibleIdAndCounts);
+                // TODO: Send mail to each data
+            }
+
+            return states;
+        }
+
+        private IAccount TransferFungibleAssetValues(
+            IActionContext context,
+            IAccount states,
+            IEnumerable<(Address balanceAddress, FungibleAssetValue value)> fungibleAssetValues)
+        {
+            var garageBalanceAddress = Addresses.GetGarageBalanceAddress(context.Signer);
+            foreach (var (balanceAddress, value) in fungibleAssetValues)
+            {
+                states = states.TransferAsset(context, garageBalanceAddress, balanceAddress, value);
+            }
+
+            return states;
+        }
+
+        private IAccount TransferFungibleItems(
+            IAccount states,
+            Address signer,
+            Address recipientAvatarAddress,
+            IEnumerable<(HashDigest<SHA256> fungibleId, int count)> fungibleIdAndCounts)
+        {
+            var inventoryAddress = recipientAvatarAddress.Derive(SerializeKeys.LegacyInventoryKey);
+            var inventory = states.GetInventory(inventoryAddress);
+
+            var fungibleItemTuples = GarageUtils.WithGarageTuples(
+                signer,
+                states,
+                fungibleIdAndCounts);
+            foreach (var (_, count, garageAddress, garage) in fungibleItemTuples)
+            {
+                garage.Unload(count);
+                inventory.AddFungibleItem((ItemBase)garage.Item, count);
+                states = states.SetState(garageAddress, garage.Serialize());
+            }
+
+            return states.SetState(inventoryAddress, inventory.Serialize());
         }
 
         private static IValue SerializeFungibleAssetValues(
