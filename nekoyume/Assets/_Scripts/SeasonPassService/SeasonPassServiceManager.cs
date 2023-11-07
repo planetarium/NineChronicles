@@ -91,7 +91,7 @@ namespace Nekoyume
                 Debug.LogError($"SeasonPassServiceManager Initialized Fail [GetSeasonpassExpAsync] error: {error}");
             }).AsUniTask().Forget();
 
-            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefresh().AsUniTask().Forget());
+            Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefreshAsync().AsUniTask().Forget());
         }
 
         private void RefreshRemainingTime()
@@ -104,7 +104,7 @@ namespace Nekoyume
             RemainingDateTime.SetValueAndForceNotify($"{dayText}{hourText}");
         }
 
-        public async Task AvatarStateRefresh()
+        public async Task AvatarStateRefreshAsync()
         {
             if(CurrentSeasonPassData == null || LevelInfos == null) {
                 return;

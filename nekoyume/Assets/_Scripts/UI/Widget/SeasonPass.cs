@@ -140,7 +140,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             var seasonPassManager = Game.Game.instance.SeasonPassServiceManager;
-            seasonPassManager.AvatarStateRefresh().AsUniTask().Forget();
+            seasonPassManager.AvatarStateRefreshAsync().AsUniTask().Forget();
 
             if(!ignoreShowAnimation)
                 PageEffect();
@@ -249,7 +249,7 @@ namespace Nekoyume.UI
                 (result) =>
                 {
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_REWARD_CLAIMED_AND_WAIT_PLEASE"),NotificationCell.NotificationType.Notification);
-                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefresh().AsUniTask().Forget();
+                    Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
                 },
                 (error) =>
                 {
