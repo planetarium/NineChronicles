@@ -206,21 +206,19 @@ namespace Nekoyume.UI
 
                     if (_useGrandFinale)
                     {
-                        Find<ArenaBattlePreparation>().Show(
-                            _grandFinaleScheduleRow?.Id ?? 0,
-                            _grandFinaleParticipants[index].AvatarState,
-                            new List<Equipment>(),
-                            new List<Costume>(),
-                            data.Cp);
-                    }
-                    else
-                    {
                         // Find<ArenaBattlePreparation>().Show(
-                        //     _roundData,
-                        //     _boundedData[index].AvatarState,
+                        //     _grandFinaleScheduleRow?.Id ?? 0,
+                        //     _grandFinaleParticipants[index].AvatarState,
                         //     new List<Equipment>(),
                         //     new List<Costume>(),
                         //     data.Cp);
+                    }
+                    else
+                    {
+                        Find<ArenaBattlePreparation>().Show(
+                            _roundData,
+                            _boundedData[index],
+                            data.Cp);
                     }
                 })
                 .AddTo(gameObject);
