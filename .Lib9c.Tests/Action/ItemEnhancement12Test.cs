@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -14,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static SerializeKeys;
 
@@ -29,6 +31,9 @@ namespace Lib9c.Tests.Action
         public ItemEnhancement12Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EquipmentItemSheet)] = EquipmentItemSheetFixture.LegacyEquipmentItemSheet;
+            sheets[nameof(EnhancementCostSheetV3)] =
+                EquipmentItemSheetFixture.LegacyEnhancementCostSheetV3;
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();

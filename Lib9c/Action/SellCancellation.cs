@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
+    [ActionObsolete(ActionObsoleteConfig.V200092ObsoleteIndex)]
     [ActionType("sell_cancellation9")]
     public class SellCancellation : GameAction, ISellCancellationV3
     {

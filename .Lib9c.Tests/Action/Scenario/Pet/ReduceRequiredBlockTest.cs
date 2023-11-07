@@ -43,14 +43,14 @@ namespace Lib9c.Tests.Action.Scenario.Pet
         }
 
         [Theory]
-        [InlineData(10114000, null)] // No Pet
-        [InlineData(10114000, 1)] // Lv.1 reduces 5.5%
-        [InlineData(10114000, 30)] // Lv.30 reduces 20%
+        [InlineData(null)] // No Pet
+        [InlineData(1)] // Lv.1 reduces 5.5%
+        [InlineData(30)] // Lv.30 reduces 20%
         public void CombinationEquipmentTest(
-            int targetItemId,
             int? petLevel
         )
         {
+            int targetItemId = 10114000;
             var random = new TestRandom();
 
             // Get Recipe
@@ -104,12 +104,12 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             );
 
             // Do Combination
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,
                 recipeId = recipe.Id,
-                subRecipeId = recipe.SubRecipeIds?[0],
+                subRecipeId = null,
                 petId = _petId,
             };
 

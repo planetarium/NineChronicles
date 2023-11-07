@@ -32,22 +32,6 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             _worldInfoAddr = _avatarAddr.Derive(LegacyWorldInformationKey);
         }
 
-        // Pet level range test (1~30)
-        [Theory]
-        [InlineData(0)] // Min. level of pet is 1
-        [InlineData(31)] // Max. level of pet is 30
-        public void PetLevelRangeTest(int petLevel)
-        {
-            foreach (var petOptionType in Enum.GetValues<PetOptionType>())
-            {
-                Assert.Throws<KeyNotFoundException>(
-                    () => _tableSheets.PetOptionSheet.Values.First(
-                        pet => pet.LevelOptionMap[petLevel].OptionType == petOptionType
-                    )
-                );
-            }
-        }
-
         // You cannot use one pet to the multiple slots at the same time
         [Fact]
         public void PetCannotBeUsedToTwoSlotsAtTheSameTime()
@@ -104,7 +88,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             );
 
             // Combination1
-            var action1 = new CombinationEquipment
+            var action1 = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 0,
@@ -121,7 +105,7 @@ namespace Lib9c.Tests.Action.Scenario.Pet
             });
 
             // Combination2: Raises error
-            var action2 = new CombinationEquipment
+            var action2 = new CombinationEquipment16
             {
                 avatarAddress = _avatarAddr,
                 slotIndex = 1,

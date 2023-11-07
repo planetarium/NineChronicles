@@ -24,13 +24,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1663
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeText)]
     public class EventDungeonBattle : GameAction, IEventDungeonBattleV2
     {
-        private const string ActionTypeText = "event_dungeon_battle5";
+        private const string ActionTypeText = "event_dungeon_battle6";
         public const int PlayCount = 1;
 
         public Address AvatarAddress;
@@ -202,9 +202,11 @@ namespace Nekoyume.Action
                 ActionTypeText,
                 addressesHex);
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(Costumes);
-            var foodIds = avatarState.ValidateConsumable(Foods, context.BlockIndex);
+            var gameConfigState = states.GetGameConfigState();
+            var equipmentList = avatarState.ValidateEquipmentsV3(
+                Equipments, context.BlockIndex, gameConfigState);
+            var costumeIds = avatarState.ValidateCostumeV2(Costumes, gameConfigState);
+            var foodIds = avatarState.ValidateConsumableV2(Foods, context.BlockIndex, gameConfigState);
             var equipmentAndCostumes = Equipments.Concat(Costumes);
             avatarState.EquipItems(equipmentAndCostumes);
             avatarState.ValidateItemRequirement(

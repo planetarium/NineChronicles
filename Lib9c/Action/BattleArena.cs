@@ -24,10 +24,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2094
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena13")]
+    [ActionType("battle_arena14")]
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
@@ -118,21 +118,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                throw new NotEnoughClearedStageLevelException(
-                    $"{addressesHex}Aborted as NotEnoughClearedStageLevelException");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
-            {
-                throw new NotEnoughClearedStageLevelException(
-                    addressesHex,
-                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
-                    world.StageClearedId);
-            }
-
             var sheets = states.GetSheets(
                 containArenaSimulatorSheets: true,
                 sheetTypes: new[]
@@ -146,12 +131,13 @@ namespace Nekoyume.Action
                     typeof(RuneListSheet),
                 });
 
-            avatarState.ValidEquipmentAndCostume(costumes, equipments,
+            var gameConfigState = states.GetGameConfigState();
+            avatarState.ValidEquipmentAndCostumeV2(costumes, equipments,
                 sheets.GetSheet<ItemRequirementSheet>(),
                 sheets.GetSheet<EquipmentItemRecipeSheet>(),
                 sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
-                context.BlockIndex, addressesHex);
+                context.BlockIndex, addressesHex, gameConfigState);
 
             // update rune slot
             var runeSlotStateAddress = RuneSlotState.DeriveAddress(myAvatarAddress, BattleType.Arena);
@@ -220,7 +206,6 @@ namespace Nekoyume.Action
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}");
             }
 
-            var gameConfigState = states.GetGameConfigState();
             var battleArenaInterval = roundData.ArenaType == ArenaType.OffSeason
                 ? 1
                 : gameConfigState.BattleArenaInterval;

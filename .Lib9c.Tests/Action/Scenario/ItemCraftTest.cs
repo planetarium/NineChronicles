@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action.Scenario
     using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV.Item;
     using Lib9c.Tests.Util;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -38,7 +39,18 @@ namespace Lib9c.Tests.Action.Scenario
                 _avatarAddr,
                 _initialStatesWithAvatarStateV1,
                 _initialStatesWithAvatarStateV2
-            ) = InitializeUtil.InitializeStates();
+            ) = InitializeUtil.InitializeStates(
+                sheetsOverride: new Dictionary<string, string>
+                {
+                    {
+                        "EquipmentItemRecipeSheet",
+                        EquipmentItemRecipeSheetFixtures.Default
+                    },
+                    {
+                        "EquipmentItemSubRecipeSheetV2",
+                        EquipmentItemSubRecipeSheetFixtures.V2
+                    },
+                });
             _inventoryAddr = _avatarAddr.Derive(LegacyInventoryKey);
             _worldInformationAddr = _avatarAddr.Derive(LegacyWorldInformationKey);
         }
@@ -117,7 +129,7 @@ namespace Lib9c.Tests.Action.Scenario
                 );
 
                 // Do Combination Action
-                var action = new CombinationEquipment
+                var action = new CombinationEquipment16
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
@@ -130,7 +142,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
-                    RandomSeed = random.Seed,
+                    RandomSeed = randomSeed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlock
@@ -205,7 +217,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 // Do combination action
                 var recipe = recipeList[i];
-                var action = new CombinationConsumable
+                var action = new CombinationConsumable8
                 {
                     avatarAddress = _avatarAddr,
                     slotIndex = i,
@@ -217,7 +229,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = 0L,
-                    RandomSeed = random.Seed,
+                    RandomSeed = randomSeed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex
@@ -288,7 +300,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var eventRow = _tableSheets.EventScheduleSheet[eventScheduleId];
                 // Do combination action
                 var recipe = recipeList[i];
-                var action = new EventConsumableItemCrafts
+                var action = new EventConsumableItemCrafts0
                 {
                     AvatarAddress = _avatarAddr,
                     EventScheduleId = eventScheduleId,
@@ -301,7 +313,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
-                    RandomSeed = random.Seed,
+                    RandomSeed = randomSeed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex
@@ -386,7 +398,7 @@ namespace Lib9c.Tests.Action.Scenario
                     }
                 }
 
-                var action = new EventMaterialItemCrafts
+                var action = new EventMaterialItemCrafts0
                 {
                     AvatarAddress = _avatarAddr,
                     EventScheduleId = eventScheduleId,
@@ -399,7 +411,7 @@ namespace Lib9c.Tests.Action.Scenario
                     PreviousState = stateV2,
                     Signer = _agentAddr,
                     BlockIndex = eventRow.StartBlockIndex,
-                    RandomSeed = random.Seed,
+                    RandomSeed = randomSeed,
                 });
                 var slotState = stateV2.GetCombinationSlotState(_avatarAddr, i);
                 // TEST: requiredBlockIndex

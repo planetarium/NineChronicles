@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("register_product2")]
+    [ActionType("register_product3")]
     public class RegisterProduct : GameAction
     {
         public const int CostAp = 5;
@@ -56,16 +56,6 @@ namespace Nekoyume.Action
                     out var migrationRequired))
             {
                 throw new FailedLoadStateException("failed to load avatar state.");
-            }
-
-            if (!avatarState.worldInformation.IsStageCleared(
-                    GameConfig.RequireClearedStageLevel.ActionsInShop))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(
-                    AvatarAddress.ToHex(),
-                    GameConfig.RequireClearedStageLevel.ActionsInShop,
-                    current);
             }
 
             avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());

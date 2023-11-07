@@ -22,12 +22,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/637
-    /// Updated at https://github.com/planetarium/lib9c/pull/861
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
     /// </summary>
     [Serializable]
-    [ActionType("combination_consumable8")]
+    [ActionType("combination_consumable9")]
     public class CombinationConsumable : GameAction, ICombinationConsumableV1
     {
         public const string AvatarAddressKey = "a";
@@ -93,18 +91,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            // Validate Required Cleared Stage
-            if (!avatarState.worldInformation.IsStageCleared(
-                GameConfig.RequireClearedStageLevel.CombinationConsumableAction))
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(
-                    addressesHex,
-                    GameConfig.RequireClearedStageLevel.CombinationConsumableAction,
-                    current);
-            }
-            // ~Validate Required Cleared Stage
-
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState is null)
@@ -113,7 +99,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is failed to load: # {slotIndex}");
             }
 
-            if (!slotState.Validate(avatarState, context.BlockIndex))
+            if (!slotState.ValidateV2(avatarState, context.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");

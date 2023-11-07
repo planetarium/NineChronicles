@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Fixtures.TableCSV;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -32,6 +33,8 @@ namespace Lib9c.Tests.Action
         public ItemEnhancement11Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(EnhancementCostSheetV2)] =
+                EquipmentItemSheetFixture.LegacyEnhancementCostSheetV2;
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();

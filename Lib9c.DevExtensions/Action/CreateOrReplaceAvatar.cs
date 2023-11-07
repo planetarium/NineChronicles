@@ -491,7 +491,7 @@ namespace Lib9c.DevExtensions.Action
                 var recipe = recipeSheet.OrderedList!
                     .First(e => e.ResultEquipmentId == equipmentId);
                 var subRecipe = subRecipeSheetV2[recipe.SubRecipeIds[1]];
-                CombinationEquipment.AddAndUnlockOption(
+                CombinationEquipment16.AddAndUnlockOption(
                     agent,
                     null,
                     equipment,

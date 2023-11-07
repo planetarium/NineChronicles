@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Util
                 initialStatesWithAvatarStateV2);
         }
 
-        private static (IAccount states, Dictionary<string, string> sheets)
+        public static (IAccount states, Dictionary<string, string> sheets)
             InitializeTableSheets(
                 IAccount states,
                 bool isDevEx = false,

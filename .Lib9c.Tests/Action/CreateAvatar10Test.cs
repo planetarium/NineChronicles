@@ -17,12 +17,12 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar10Test
     {
         private readonly Address _agentAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar10Test()
         {
             _agentAddress = default;
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         [InlineData(7_210_001L)]
         public void Execute(long blockIndex)
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = 0,
                 hair = 0,
@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = default(Address);
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = 0,
                 hair = 0,
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = 0,
                 hair = 0,
@@ -175,7 +175,7 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new Account(MockState.Empty).SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = index,
                 hair = 0,
@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[index] = avatarAddress;
             var state = new Account(MockState.Empty).SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = index,
                 hair = 0,
@@ -245,7 +245,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = index,
                 hair = 0,
@@ -299,7 +299,7 @@ namespace Lib9c.Tests.Action
         public void Serialize_With_DotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar10()
             {
                 index = 2,
                 hair = 1,
@@ -313,7 +313,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar10)formatter.Deserialize(ms);
 
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Action
 600201,2
 ");
             var avatarState = new AvatarState(default, default, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
-            CreateAvatar.AddItem(itemSheet, createAvatarItemSheet, avatarState, new TestRandom());
+            CreateAvatar10.AddItem(itemSheet, createAvatarItemSheet, avatarState, new TestRandom());
             foreach (var row in createAvatarItemSheet.Values)
             {
                 Assert.True(avatarState.inventory.HasItem(row.ItemId, row.Count));
@@ -359,7 +359,7 @@ RUNE_GOLDENLEAF,200000,Avatar
             var avatarAddress = new PrivateKey().ToAddress();
             var agentAddress = new PrivateKey().ToAddress();
             var avatarState = new AvatarState(avatarAddress, agentAddress, 0L, _tableSheets.GetAvatarSheets(), new GameConfigState(), default, "test");
-            var nextState = CreateAvatar.MintAsset(createAvatarFavSheet, avatarState, new Account(MockState.Empty), new ActionContext());
+            var nextState = CreateAvatar10.MintAsset(createAvatarFavSheet, avatarState, new Account(MockState.Empty), new ActionContext());
             foreach (var row in createAvatarFavSheet.Values)
             {
                 var targetAddress = row.Target == CreateAvatarFavSheet.Target.Agent
