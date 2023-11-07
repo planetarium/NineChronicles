@@ -131,13 +131,13 @@ namespace Nekoyume.Action.Garages
                         $"[{addressesHex}] Either FungibleAssetValues or FungibleIdAndCounts must be set.");
                 }
 
-                if (unloadData.fungibleAssetValues?.Any(fav => fav.value.Sign < 0) ?? false)
+                if (unloadData.fungibleAssetValues?.Any(fav => fav.value.Sign <= 0) ?? false)
                 {
                     throw new InvalidActionFieldException(
                         $"[{addressesHex}] FungibleAssetValue.Sign must be positive");
                 }
 
-                if (unloadData.fungibleIdAndCounts?.First(tuple => tuple.count < 0) is { } invalid)
+                if (unloadData.fungibleIdAndCounts?.First(tuple => tuple.count <= 0) is { } invalid)
                 {
                     throw new InvalidActionFieldException(
                         $"[{addressesHex}] Count of fungible id must be positive. {invalid.fungibleId}, {invalid.count}");
