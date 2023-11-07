@@ -89,12 +89,13 @@ namespace Nekoyume.UI
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var currentRound =
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-                var ticketCount = RxProps.PlayersArenaParticipant.HasValue
-                    ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
-                        blockIndex,
-                        currentRound.StartBlockIndex,
-                        States.Instance.GameConfigState.DailyArenaInterval)
-                    : 0;
+                var ticketCount = 0;
+                // var ticketCount = RxProps.PlayersArenaParticipant.HasValue
+                //     ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
+                //         blockIndex,
+                //         currentRound.StartBlockIndex,
+                //         States.Instance.GameConfigState.DailyArenaInterval)
+                //     : 0;
                 return ticketCount >= TicketCountToUse;
             }
         }
@@ -235,24 +236,24 @@ namespace Nekoyume.UI
             }
 
             var balance = States.Instance.GoldBalanceState.Gold;
-            var cost = ArenaHelper.GetTicketPrice(
-                _roundData,
-                RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
-                balance.Currency);
-            var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
+            // var cost = ArenaHelper.GetTicketPrice(
+            //     _roundData,
+            //     RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
+            //     balance.Currency);
+            // var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
 
-            Find<ArenaTicketPurchasePopup>().Show(
-                CostType.ArenaTicket,
-                CostType.NCG,
-                balance,
-                cost,
-                () => StartCoroutine(CoBattleStart(CostType.NCG)),
-                GoToMarket,
-                arenaInformation.PurchasedTicketCount,
-                _roundData.MaxPurchaseCount,
-                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-                _roundData.MaxPurchaseCountWithInterval
-            );
+            // Find<ArenaTicketPurchasePopup>().Show(
+            //     CostType.ArenaTicket,
+            //     CostType.NCG,
+            //     balance,
+            //     cost,
+            //     () => StartCoroutine(CoBattleStart(CostType.NCG)),
+            //     GoToMarket,
+            //     arenaInformation.PurchasedTicketCount,
+            //     _roundData.MaxPurchaseCount,
+            //     RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
+            //     _roundData.MaxPurchaseCountWithInterval
+            // );
         }
 
         private IEnumerator CoBattleStart(CostType costType)
@@ -291,7 +292,7 @@ namespace Nekoyume.UI
         private void SendBattleArenaAction(int ticket = TicketCountToUse)
         {
             startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            var playerAvatar = States.Instance.CurrentAvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
@@ -321,7 +322,7 @@ namespace Nekoyume.UI
         private void SendBattleGrandFinaleAction()
         {
             startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            var playerAvatar = States.Instance.CurrentAvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
@@ -412,7 +413,7 @@ namespace Nekoyume.UI
 
         private static bool IsIntervalValid(long blockIndex)
         {
-            var lastBattleBlockIndex = RxProps.PlayersArenaParticipant.Value.LastBattleBlockIndex;
+            var lastBattleBlockIndex = RxProps.LastBattleBlockIndex.Value;
             var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
 
             return blockIndex - lastBattleBlockIndex >= battleArenaInterval;

@@ -2613,7 +2613,7 @@ namespace Nekoyume.Blockchain
             {
                 await UniTask.WhenAll(
                     RxProps.ArenaInfoTuple.UpdateAsync(),
-                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
             }
             else
             {
@@ -2652,7 +2652,27 @@ namespace Nekoyume.Blockchain
                 States.Instance.UpdateRuneSlotStates(BattleType.Arena));
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            RxProps.ArenaInformationOrderedWithScore.UpdateAsync().Forget();
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    UniTask.Run(() =>
+                        {
+                            UpdateAgentStateAsync(eval).Forget();
+                            UpdateCurrentAvatarStateAsync().Forget();
+                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
+                        }).ToObservable()
+                        .First()
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
+                });
+
             var tableSheets = TableSheets.Instance;
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;

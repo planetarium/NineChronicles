@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using Libplanet.Common;
 using Libplanet.Crypto;
 using Nekoyume.Game;
+using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using NUnit.Framework;
@@ -49,6 +51,14 @@ namespace Tests.EditMode
             var random2 = new System.Random(seed);
             Assert.AreEqual(random1.Next(100), random2.Next(100));
             Assert.AreEqual(count, avatarState.Nonce);
+        }
+
+        [Test]
+        public async Task Test()
+        {
+            var client = new NineChroniclesAPIClient("http://localhost:50000/graphql");
+            await TxResultQuery.QueryArenaInfoAsync(client,
+                new Address("0xc86d734bd2d5857cd25887db7dbbe252f12087c6"));
         }
     }
 }
