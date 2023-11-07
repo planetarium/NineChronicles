@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8969fc87a3dd45a098effb1eebcf9200, type: 3}
   m_Name: TutorialScenario
   m_EditorClassIdentifier: 
-  tutorialScenario:
+  tutorialScenarioForJson:
     scenario:
     - id: 1
       nextId: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 10000, y: 10000}
-        targetPositionOffset: {x: 3, y: 17}
+        targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 0, y: 0}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 19
@@ -274,10 +274,10 @@ MonoBehaviour:
         actionType: 30000
         guideType: 1
         emojiType: 2
-        dialogPositionType: 0
+        dialogPositionType: 2
         scriptKey: TUTORIAL_03_001
         arrowAdditionalDelay: 0
-        fullScreenButton: 0
+        fullScreenButton: 1
         noArrow: 0
         guideSprite: {fileID: 0}
     - id: 30001
@@ -666,8 +666,8 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: -10, y: 10}
-        targetSizeOffset: {x: 10, y: 10}
+        targetPositionOffset: {x: -5, y: 5}
+        targetSizeOffset: {x: 25, y: 25}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000004
         actionType: 1000002
@@ -685,8 +685,8 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: -10, y: 10}
-        targetSizeOffset: {x: 10, y: 10}
+        targetPositionOffset: {x: -5, y: 5}
+        targetSizeOffset: {x: 25, y: 25}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000005
         actionType: 1000003
@@ -1084,7 +1084,7 @@ MonoBehaviour:
       data:
         presetId: 1
         arrowPositionOffset: {x: 0, y: 0}
-        targetPositionOffset: {x: 0, y: 25}
+        targetPositionOffset: {x: 0, y: 0}
         targetSizeOffset: {x: 30, y: 50}
         buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
         targetType: 1000018
@@ -1192,6 +1192,1291 @@ MonoBehaviour:
         fullScreenButton: 0
         noArrow: 0
         guideSprite: {fileID: 0}
+  tutorialScenarioWithComments:
+  - title: Stage 1
+    description: Craft and Enter Stage
+    tutorialScenario:
+      scenario:
+      - id: 1
+        nextId: 101
+        checkPointId: 1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_02_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 101
+        nextId: 102
+        checkPointId: 1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 3
+          actionType: 2
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_02_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 102
+        nextId: 103
+        checkPointId: 1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 4
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_02_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 103
+        nextId: 104
+        checkPointId: 1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_02_009
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 104
+        nextId: 105
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 8
+          actionType: 4
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_02_010
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 105
+        nextId: 106
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 10, y: 10}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 6
+          actionType: 5
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_02_012
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 106
+        nextId: 107
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_02_013
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 1
+          guideSprite: {fileID: 0}
+      - id: 107
+        nextId: 108
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_02_014_L08
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 1
+          guideSprite: {fileID: 0}
+      - id: 108
+        nextId: 109
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 8
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_02_026
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 1
+          guideSprite: {fileID: 0}
+      - id: 109
+        nextId: 0
+        checkPointId: -1
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1
+          actionType: 1
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_01_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 3
+    description: Equipment
+    tutorialScenario:
+      scenario:
+      - id: 30000
+        nextId: 30001
+        checkPointId: 3
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -50, y: 0}
+          targetPositionOffset: {x: -20, y: 0}
+          targetSizeOffset: {x: 25, y: 20}
+          buttonRaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+          targetType: 17
+          actionType: 14
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_02_027
+          arrowAdditionalDelay: 1.5
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 30001
+        nextId: 30002
+        checkPointId: 3
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 10
+          actionType: 30000
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_03_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 30002
+        nextId: 30003
+        checkPointId: 3
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30000
+          actionType: 12
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_03_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 30003
+        nextId: 0
+        checkPointId: -3
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30001
+          actionType: 30001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_03_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Statge 5
+    description: Summon
+    tutorialScenario:
+      scenario:
+      - id: 50000
+        nextId: 50001
+        checkPointId: 50000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_05_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 50001
+        nextId: 50002
+        checkPointId: 50000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 50000
+          actionType: 0
+          guideType: 3
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_05_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 50002
+        nextId: 50003
+        checkPointId: 50000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 50000
+          actionType: 50001
+          guideType: 3
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_05_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 50003
+        nextId: 50004
+        checkPointId: 50000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 50001
+          actionType: 50002
+          guideType: 1
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_05_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 50004
+        nextId: 0
+        checkPointId: -5
+        data:
+          presetId: 2
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_05_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 1
+          guideSprite: {fileID: 0}
+  - title: Stage 7
+    description: PortalReward
+    tutorialScenario:
+      scenario:
+      - id: 70000
+        nextId: 70001
+        checkPointId: 70000
+        data:
+          presetId: 2
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_07_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 1
+          guideSprite: {fileID: 0}
+      - id: 70001
+        nextId: 70002
+        checkPointId: 70000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 10000, y: 10000}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 19
+          actionType: 15
+          guideType: 2
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_07_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 70002
+        nextId: 70003
+        checkPointId: 70003
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -50, y: 0}
+          targetPositionOffset: {x: -133, y: -97}
+          targetSizeOffset: {x: 25, y: 60}
+          buttonRaycastPadding: {x: 122, y: 90, z: -130, w: -95}
+          targetType: 70001
+          actionType: 70001
+          guideType: 1
+          emojiType: 1
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_07_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 70003
+        nextId: 70004
+        checkPointId: 70003
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -50, y: 0}
+          targetPositionOffset: {x: -20, y: 0}
+          targetSizeOffset: {x: 25, y: 20}
+          buttonRaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+          targetType: 17
+          actionType: 14
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_07_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 70004
+        nextId: 0
+        checkPointId: -7
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30001
+          actionType: 30001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_07_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 10
+    description: PatrolReward
+    tutorialScenario:
+      scenario:
+      - id: 100000
+        nextId: 100001
+        checkPointId: 100000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 100000
+          actionType: 100000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 100001
+        nextId: 100002
+        checkPointId: 100000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 100001
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 100002
+        nextId: 100003
+        checkPointId: 100000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 100002
+          actionType: 100001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 100003
+        nextId: 100004
+        checkPointId: 100000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -50, y: 0}
+          targetPositionOffset: {x: -20, y: 0}
+          targetSizeOffset: {x: 25, y: 20}
+          buttonRaycastPadding: {x: -20, y: -20, z: -20, w: -20}
+          targetType: 17
+          actionType: 14
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_004
+          arrowAdditionalDelay: 1.5
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 100004
+        nextId: 0
+        checkPointId: -10
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30001
+          actionType: 30001
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_10_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 23
+    description: Action point and rune stone
+    tutorialScenario:
+      scenario:
+      - id: 230000
+        nextId: 230001
+        checkPointId: 230000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 50}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000018
+          actionType: 1000015
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_23_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 230001
+        nextId: 230002
+        checkPointId: 230000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 30}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000019
+          actionType: 1000016
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_23_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 230002
+        nextId: 230003
+        checkPointId: 230002
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_23_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 230003
+        nextId: 230004
+        checkPointId: 230002
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000020
+          actionType: 1000013
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_23_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 230004
+        nextId: 230005
+        checkPointId: -23
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000021
+          actionType: 1000014
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_23_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 230005
+        nextId: 0
+        checkPointId: -23
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_23_006
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 15
+    description: Arena
+    tutorialScenario:
+      scenario:
+      - id: 150000
+        nextId: 150001
+        checkPointId: 150000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000000
+          actionType: 1000000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_15_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 150001
+        nextId: 150002
+        checkPointId: 150000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: -20, y: 0}
+          targetSizeOffset: {x: 0, y: 10}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000001
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_15_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 150002
+        nextId: 150003
+        checkPointId: 150000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 20, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 15, y: 50}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000002
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_15_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 150003
+        nextId: 150004
+        checkPointId: 150000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_15_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 21300000, guid: b4530d0bc362eb14db3658df0c623f6f,
+            type: 3}
+      - id: 150004
+        nextId: 150005
+        checkPointId: 150000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_15_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 21300000, guid: 3ac611567131ed14dab76707ad0e9c27,
+            type: 3}
+      - id: 150005
+        nextId: 0
+        checkPointId: -15
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_15_006
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 21300000, guid: 3ac611567131ed14dab76707ad0e9c27,
+            type: 3}
+  - title: Stage 35
+    description: Upgrade
+    tutorialScenario:
+      scenario:
+      - id: 350000
+        nextId: 350001
+        checkPointId: 350000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_35_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 350001
+        nextId: 350002
+        checkPointId: 350000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000003
+          actionType: 1000001
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_35_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 350002
+        nextId: 350003
+        checkPointId: 350000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: -5, y: 5}
+          targetSizeOffset: {x: 25, y: 25}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000004
+          actionType: 1000002
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_35_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 350003
+        nextId: 350004
+        checkPointId: 350000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: -5, y: 5}
+          targetSizeOffset: {x: 25, y: 25}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000005
+          actionType: 1000003
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_35_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 350004
+        nextId: 350005
+        checkPointId: 350000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000006
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_35_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 350005
+        nextId: 0
+        checkPointId: -35
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000007
+          actionType: 1000004
+          guideType: 2
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_35_006
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 40
+    description: Grind
+    tutorialScenario:
+      scenario:
+      - id: 400000
+        nextId: 400001
+        checkPointId: 400000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_40_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 400001
+        nextId: 400002
+        checkPointId: 400000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000008
+          actionType: 1000005
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_40_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 400002
+        nextId: 400003
+        checkPointId: 400000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_40_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 21300000, guid: f9a6c79182124344dac48e5bcaba9383,
+            type: 3}
+      - id: 400003
+        nextId: 0
+        checkPointId: -40
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_40_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 21300000, guid: 4008bac146480ee409803ae0df3651c4,
+            type: 3}
+  - title: Stage 45
+    description: Craft Recipe - Premium and SuperCraft
+    tutorialScenario:
+      scenario:
+      - id: 450000
+        nextId: 450001
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 2
+          actionType: 50000
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_45_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450001
+        nextId: 450002
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 3
+          actionType: 2
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_45_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450002
+        nextId: 450003
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 5, y: 10}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000009
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_45_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450003
+        nextId: 450004
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000010
+          actionType: 1000006
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_45_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450004
+        nextId: 450005
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000011
+          actionType: 1000007
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_45_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450005
+        nextId: 450006
+        checkPointId: 450000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000012
+          actionType: 1000008
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_45_006
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 450006
+        nextId: 0
+        checkPointId: -45
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_45_007
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+  - title: Stage 49
+    description: WorldBoss
+    tutorialScenario:
+      scenario:
+      - id: 490000
+        nextId: 500001
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000013
+          actionType: 1000009
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_50_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 500001
+        nextId: 500002
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 0
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_50_002
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 500002
+        nextId: 500003
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 10}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000014
+          actionType: 0
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 1
+          scriptKey: TUTORIAL_50_003
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 500003
+        nextId: 500004
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: -30, y: -10}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000015
+          actionType: 1000010
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_50_004
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 500004
+        nextId: 500005
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 30, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000016
+          actionType: 1000011
+          guideType: 3
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_50_005
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 500005
+        nextId: 500006
+        checkPointId: 490000
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 0
+          actionType: 1000013
+          guideType: 0
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_50_006
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 1
+          guideSprite: {fileID: 0}
+      - id: 500006
+        nextId: 0
+        checkPointId: -49
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 1000017
+          actionType: 1000012
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 0
+          scriptKey: TUTORIAL_50_007
+          arrowAdditionalDelay: 0
+          fullScreenButton: 0
+          noArrow: 0
+          guideSprite: {fileID: 0}
   scenarioTemplates:
   - description: Guide Quest
     scenarioData:

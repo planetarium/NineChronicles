@@ -26,6 +26,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2364600052668684914}
   m_Father: {fileID: 0}
@@ -57,6 +58,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.7, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3661658197950210487}
   m_Father: {fileID: 8324085369610832337}
@@ -89,6 +91,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3831503983278100639}
   - {fileID: 1953807722211864991}
@@ -109,6 +112,7 @@ SpriteRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -175,6 +179,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: bg_lamp (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
@@ -266,6 +275,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: bg_lamp (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_RootOrder
@@ -356,6 +370,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: bg_lamp
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_RootOrder
@@ -440,6 +459,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4981336535374077194, guid: 8c2e24e75c0977c4cb864fac1fb082f6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4981475139761285518, guid: 8c2e24e75c0977c4cb864fac1fb082f6,
         type: 3}
@@ -585,6 +609,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: bg_lamp (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}

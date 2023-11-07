@@ -2230,15 +2230,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets:
   - type: 6
-    rectTransform: {fileID: 5945134861687082252}
+    rectTransform: {fileID: 3560442561599726796}
   - type: 7
-    rectTransform: {fileID: 617940936355003169}
+    rectTransform: {fileID: 7744846711258845921}
   - type: 12
     rectTransform: {fileID: 7207184561882084239}
   - type: 13
     rectTransform: {fileID: 0}
   - type: 19
-    rectTransform: {fileID: 1694633225111495849}
+    rectTransform: {fileID: 6008205653664660626}
   - type: 70001
     rectTransform: {fileID: 5015842198834861827}
   - type: 1000002
@@ -2337,6 +2337,7 @@ MonoBehaviour:
   menuToggleDropdown: {fileID: 2675707240859249681}
   menuToggleNotifications:
   - {fileID: 307261483510371295}
+  costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
 --- !u!1 &1706367277096955338
 GameObject:
   m_ObjectHideFlags: 0
@@ -3333,11 +3334,11 @@ RectTransform:
   m_Father: {fileID: 6534002942384647456}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -110, y: -25}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 458, y: -40}
   m_SizeDelta: {x: 140, y: 22}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2586454786068006226
 GameObject:
   m_ObjectHideFlags: 0
@@ -8630,7 +8631,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -20, y: 0}
+  m_AnchoredPosition: {x: -30, y: -8}
   m_SizeDelta: {x: 0, y: 76}
   m_Pivot: {x: 1, y: 1}
 --- !u!225 &866306027985971153

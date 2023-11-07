@@ -825,7 +825,7 @@ namespace Nekoyume.Blockchain
 
                     break;
                 }
-                case ItemEnhancement.ResultModel enhancementResultModel:
+                case ItemEnhancement13.ResultModel enhancementResultModel:
                 {
                     LocalLayerModifier.AddNewResultAttachmentMail(
                         avatarAddress,
@@ -837,7 +837,7 @@ namespace Nekoyume.Blockchain
                         /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                             formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                             break;*/
-                        case Action.ItemEnhancement.EnhancementResult.Success:
+                        case Action.ItemEnhancement13.EnhancementResult.Success:
                             formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                             break;
                         /*case Action.ItemEnhancement.EnhancementResult.Fail:
@@ -1227,7 +1227,7 @@ namespace Nekoyume.Blockchain
 
             var agentAddress = renderArgs.Evaluation.Signer;
             var avatarAddress = renderArgs.Evaluation.Action.avatarAddress;
-            var result = (ItemEnhancement.ResultModel)renderArgs.CombinationSlotState.Result;
+            var result = (ItemEnhancement13.ResultModel)renderArgs.CombinationSlotState.Result;
             var itemUsable = result.itemUsable;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -1295,7 +1295,7 @@ namespace Nekoyume.Blockchain
                 /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                     formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                     break;*/
-                case Action.ItemEnhancement.EnhancementResult.Success:
+                case Action.ItemEnhancement13.EnhancementResult.Success:
                     formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                     break;
                 /*case Action.ItemEnhancement.EnhancementResult.Fail:
