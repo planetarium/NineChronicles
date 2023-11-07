@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Lib9c;
+using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -69,6 +70,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private MainMenu btnPatrolReward;
+
+        [SerializeField]
+        private MainMenu btnSeasonPass;
 
         [SerializeField]
         private SpeechBubble[] speechBubbles;
@@ -159,6 +163,7 @@ namespace Nekoyume.UI
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
+                    btnSeasonPass.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -598,6 +603,16 @@ namespace Nekoyume.UI
             }
 
             Find<PatrolRewardPopup>().Show();
+        }
+
+        public void SeasonPassClick()
+        {
+            if (!btnSeasonPass.IsUnlocked || Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
+            {
+                return;
+            }
+
+            Find<SeasonPass>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

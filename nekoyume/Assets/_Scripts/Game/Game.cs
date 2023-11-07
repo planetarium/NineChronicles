@@ -118,6 +118,8 @@ namespace Nekoyume.Game
 
         public IAPServiceManager IAPServiceManager { get; private set; }
 
+        public SeasonPassServiceManager SeasonPassServiceManager { get; private set; }
+
         public Stage Stage => stage;
         public Arena Arena => arena;
         public RaidStage RaidStage => raidStage;
@@ -358,6 +360,17 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start()... ResourcesHelper initialized");
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start()... AudioController initialized");
+
+            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+            PatrolRewardServiceClient =
+                new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
+
+            SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+            if(!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
+                SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
+            if(!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
+                SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
 
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
