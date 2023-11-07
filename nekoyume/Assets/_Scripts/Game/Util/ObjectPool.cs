@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -20,13 +22,25 @@ namespace Nekoyume.Game.Util
     }
 
     [Serializable]
-    public struct PoolData
+    public class PoolData
     {
         public GameObject Prefab;
+        public string BundleName;
+        public string ResourcePath;
         public int InitCount;
         public int AddCount;
+
+        public GameObject GetPrefab()
+        {
+            if (!Prefab)
+            {
+                Prefab = AssetBundleLoader.LoadAssetBundle<GameObject>(BundleName, ResourcePath);
+            }
+            return Prefab;
+        }
     }
 
+    [ExecuteInEditMode]
     public class ObjectPool : MonoBehaviour, IObjectPool
     {
         public class Impl : IObjectPool
@@ -55,7 +69,7 @@ namespace Nekoyume.Game.Util
 
                 foreach (var poolData in list)
                 {
-                    _dict.Add(poolData.Prefab.name, poolData);
+                    _dict.Add(poolData.GetPrefab().name, poolData);
 #if !UNITY_ANDROID && !UNITY_IOS
                     Add(poolData.Prefab, poolData.InitCount);
 #endif
@@ -102,7 +116,7 @@ namespace Nekoyume.Game.Util
 
                 if (_dict.TryGetValue(name, out var poolData))
                 {
-                    var go = Add(poolData.Prefab, poolData.AddCount);
+                    var go = Add(poolData.GetPrefab(), poolData.AddCount);
                     go.transform.position = position;
                     go.SetActive(true);
                     return go.GetComponent<T>();
@@ -184,7 +198,7 @@ namespace Nekoyume.Game.Util
             private GameObject Create(string objName, Vector3 position)
             {
                 var go = _dict.TryGetValue(objName, out var poolData)
-                    ? Add(poolData.Prefab, poolData.AddCount)
+                    ? Add(poolData.GetPrefab(), poolData.AddCount)
                     : Add(objName);
 
                 if (!go)
