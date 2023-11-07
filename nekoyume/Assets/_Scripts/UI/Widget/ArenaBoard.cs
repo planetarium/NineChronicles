@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.GrandFinale;
@@ -169,7 +170,7 @@ namespace Nekoyume.UI
 
         private void InitializeScrolls()
         {
-            _playerScroll.OnClickCharacterView.Subscribe(index =>
+            _playerScroll.OnClickCharacterView.Subscribe(async index =>
                 {
 #if UNITY_EDITOR
                     if (_useSo && _so)
@@ -181,10 +182,10 @@ namespace Nekoyume.UI
                         return;
                     }
 #endif
-                    // var avatarState = _useGrandFinale
-                    //     ? _grandFinaleParticipants[index].AvatarState
-                    //     : _boundedData[index].AvatarState;
-                    // Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();
+                    var avatarStates = await Game.Game.instance.Agent.GetAvatarStatesAsync(new[]
+                        {_boundedData[index].AvatarAddr});
+                    var avatarState = avatarStates.Values.First();
+                    Find<FriendInfoPopup>().ShowAsync(avatarState, BattleType.Arena).Forget();
                 })
                 .AddTo(gameObject);
 

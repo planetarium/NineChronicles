@@ -216,7 +216,6 @@ namespace Nekoyume.State
             var currentAvatarAddr = currentAvatar.address;
             var response = await TxResultQuery.QueryArenaInfoAsync(Game.Game.instance.RpcClient,
                 currentAvatarAddr);
-            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             var arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;
             if (!arenaInfo.Any())
             {
@@ -226,40 +225,6 @@ namespace Nekoyume.State
                 // 따로 처리합니다.
                 return avatarAddrAndScoresWithRank;
             }
-
-            TxResultQuery.ArenaInformation playersArenaParticipant = null;
-            int playerScore;
-            try
-            {
-                var info = arenaInfo.First(a =>
-                    a.AvatarAddr.Equals(currentAvatarAddr));
-                playerScore = info.Score;
-                avatarAddrAndScoresWithRank = GetBoundsWithPlayerScore(
-                    avatarAddrAndScoresWithRank,
-                    currentRoundData.ArenaType,
-                    playerScore);
-            }
-            catch
-            {
-                playersArenaParticipant = new TxResultQuery.ArenaInformation
-                {
-                    AvatarAddr = currentAvatarAddr,
-                    Score = ArenaScore.ArenaScoreDefault,
-                    ArmorId = Util.GetPortraitId(BattleType.Arena),
-                    Rank = 0,
-                    Cp = Util.TotalCP(BattleType.Arena),
-                    Level = currentAvatar.level,
-                    Lose = 0,
-                    Win = 0,
-                    NameWithHash = currentAvatar.NameWithHash
-                };
-                playerScore = playersArenaParticipant.Score;
-                avatarAddrAndScoresWithRank = GetBoundsWithPlayerScore(
-                    avatarAddrAndScoresWithRank,
-                    currentRoundData.ArenaType,
-                    playerScore);
-            }
-
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             var purchasedCountDuringInterval = response.StateQuery.ArenaInfo.PurchasedCountDuringInterval;
             long lastBattleBlockIndex = response.StateQuery.ArenaInfo.LastBattleBlockIndex;
@@ -267,21 +232,6 @@ namespace Nekoyume.State
             _lastBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
             return arenaInfo;
-        }
-
-        private static List<TxResultQuery.ArenaInformation> GetBoundsWithPlayerScore(
-            List<TxResultQuery.ArenaInformation> arenaInformation,
-            ArenaType arenaType,
-            int playerScore)
-        {
-            var bounds = ArenaHelper.ScoreLimits.ContainsKey(arenaType)
-                ? ArenaHelper.ScoreLimits[arenaType]
-                : ArenaHelper.ScoreLimits.First().Value;
-
-            bounds = (bounds.upper + playerScore, bounds.lower + playerScore);
-            return arenaInformation
-                .Where(a => a.Score <= bounds.upper && a.Score >= bounds.lower)
-                .ToList();
         }
     }
 }
