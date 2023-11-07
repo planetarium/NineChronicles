@@ -26,7 +26,9 @@ namespace Nekoyume.UI.Module.Lobby
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
             seasonPassService.AvatarInfo.Subscribe((info)=> {
                 if (info == null)
+                {    
                     return;
+                }
 
                 premiumIcon.SetActive(info.IsPremium);
                 premiumPlusIcon.SetActive(info.IsPremiumPlus);
