@@ -245,6 +245,10 @@ namespace Nekoyume.UI
                             var isCanceled = state is GoogleSigninBehaviour.SignInState.Canceled;
                             startButtonContainer.SetActive(isCanceled);
                             googleSignInButton.gameObject.SetActive(isCanceled);
+                            if (state is GoogleSigninBehaviour.SignInState.Signed)
+                            {
+                                OnGoogleSignedIn.OnNext((this, google));    
+                            }
                         });
                 }
             });
