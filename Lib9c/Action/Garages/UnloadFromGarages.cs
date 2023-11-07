@@ -137,7 +137,7 @@ namespace Nekoyume.Action.Garages
                         $"[{addressesHex}] FungibleAssetValue.Sign must be positive");
                 }
 
-                if (unloadData.fungibleIdAndCounts?.First(tuple => tuple.count <= 0) is { } invalid)
+                if (unloadData.fungibleIdAndCounts?.Any(tuple => tuple.count <= 0) ?? false)
                 {
                     var invalid = unloadData.fungibleIdAndCounts.First(tuple => tuple.count < 0);
                     throw new InvalidActionFieldException(
