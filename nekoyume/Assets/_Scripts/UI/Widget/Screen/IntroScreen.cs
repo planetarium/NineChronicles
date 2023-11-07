@@ -133,7 +133,7 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);

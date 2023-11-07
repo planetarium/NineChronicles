@@ -211,9 +211,9 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             // Load CommandLineOptions at Start() after init
-#elif UNITY_IOS
+#elif UNITY_IOS && !UNITY_EDITOR
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
@@ -222,7 +222,7 @@ namespace Nekoyume.Game
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -261,7 +261,7 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
