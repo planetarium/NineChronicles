@@ -132,13 +132,13 @@ namespace Nekoyume.Action.Garages
                         $"[{addressesHex}] Either FungibleAssetValues or FungibleIdAndCounts must be set.");
                 }
 
-                if (unloadData.fungibleAssetValues?.Any(fav => fav.value.Sign < 0) ?? false)
+                if (unloadData.fungibleAssetValues?.Any(fav => fav.value.Sign <= 0) ?? false)
                 {
                     throw new InvalidActionFieldException(
                         $"[{addressesHex}] FungibleAssetValue.Sign must be positive");
                 }
 
-                if (unloadData.fungibleIdAndCounts?.Any(tuple => tuple.count < 0) ?? false)
+                if (unloadData.fungibleIdAndCounts?.Any(tuple => tuple.count <= 0) ?? false)
                 {
                     var invalid = unloadData.fungibleIdAndCounts.First(tuple => tuple.count < 0);
                     throw new InvalidActionFieldException(
@@ -162,7 +162,8 @@ namespace Nekoyume.Action.Garages
             }
 
             // Mailing
-            states = BulkSendMail(context.BlockIndex, context.GetRandom(), states);
+            var random = context.GetRandom();
+            states = BulkSendMail(context.BlockIndex, random, states);
 
             return states;
         }
