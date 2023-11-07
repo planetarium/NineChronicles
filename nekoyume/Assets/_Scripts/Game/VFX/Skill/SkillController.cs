@@ -23,10 +23,10 @@ namespace Nekoyume.Game.VFX.Skill
         {
             _pool = objectPool;
             AssetBundleLoader.LoadVFXCache();
-            var skills = AssetBundleLoader.LoadAllAssetBundle<SkillVFX>("vfx/skills");
+            var skills = AssetBundleLoader.LoadAllAssetBundle<GameObject>("vfx/skills");
             foreach (var skill in skills)
             {
-                _pool.Add(skill.gameObject, InitCount);
+                _pool.Add(skill, InitCount);
             }
         }
 

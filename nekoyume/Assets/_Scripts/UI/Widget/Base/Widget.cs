@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.EnumType;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -123,8 +124,9 @@ namespace Nekoyume.UI
         {
             var type = typeof(T);
             var names = type.ToString().Split('.');
-            var resName = $"UI/Prefabs/UI_{names[names.Length - 1]}";
-            var res = Resources.Load<GameObject>(resName);
+            var bundleName = "UI/Prefabs";
+            var resName = $"UI_{names[names.Length - 1]}";
+            var res = AssetBundleLoader.LoadAssetBundle<GameObject>(bundleName, resName);
             if (res is null)
                 throw new FailedToLoadResourceException<GameObject>(resName);
 
@@ -205,7 +207,8 @@ namespace Nekoyume.UI
             var type = typeof(T);
             var names = type.ToString().Split('.');
             var widgetName = $"UI_{names[names.Length - 1]}";
-            var resName = $"UI/Prefabs/{widgetName}";
+            var bundleName = "UI/Prefabs";
+            var resName = $"{widgetName}";
             var pool = Game.Game.instance.Stage.objectPool;
             var go = pool.Get(widgetName, false);
             if (go)
@@ -218,7 +221,7 @@ namespace Nekoyume.UI
             else
             {
                 Debug.Log("create new");
-                var prefab = Resources.Load<GameObject>(resName);
+                var prefab = AssetBundleLoader.LoadAssetBundle<GameObject>(bundleName, resName);
                 go = Instantiate(prefab, MainCanvas.instance.RectTransform);
                 go.name = widgetName;
                 pool.Add(go, 1);

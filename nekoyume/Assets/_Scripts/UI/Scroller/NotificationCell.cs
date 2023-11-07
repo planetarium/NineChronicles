@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using UnityEngine.UI.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -147,7 +148,7 @@ namespace Nekoyume.UI.Scroller
                 .SetActive(_viewModel.notificationType == NotificationType.RuneAcquisition);
 
             var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ?
-                Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") :
+                AssetBundleLoader.LoadAssetBundle<Sprite>("UI/Icons/Mail", "icon_mail_unlockCondition") :
                 SpriteHelper.GetMailIcon(_viewModel.mailType);
 
             switch (_viewModel.notificationType)

@@ -1,3 +1,4 @@
+using Nekoyume.AssetBundleHelper;
 using UnityEngine;
 
 
@@ -20,7 +21,7 @@ namespace Nekoyume.Game.Util
             _renderer = gameObject.GetComponent<SpriteRenderer>();
             _renderer.sortingOrder = DEFAULT_LAYER;
         }
-        
+
         private void Update()
         {
             if (_playing)
@@ -39,7 +40,7 @@ namespace Nekoyume.Game.Util
         {
             _updateTime = 0.0f;
             _playing = true;
-            _sprites = Resources.LoadAll<Sprite>(string.Format("images/{0}", name));
+            _sprites = AssetBundleLoader.LoadAllAssetBundle<Sprite>("images");
             SetFrame(0);
         }
 

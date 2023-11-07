@@ -5,6 +5,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
+using Nekoyume.AssetBundleHelper;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -176,8 +177,9 @@ namespace Nekoyume.TestScene
             }
             else if (IsPlayer(id))
             {
-                var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
-                var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
+                var cutsceneBundle = "UI/Prefabs";
+                var cutscenePath = $"UI_{nameof(AreaAttackCutscene)}";
+                var cutscenePrefab = AssetBundleLoader.LoadAssetBundle<AreaAttackCutscene>(cutsceneBundle, cutscenePath);
                 var cutscene = Instantiate(cutscenePrefab, transform);
                 var animationTime = cutscene.UpdateCutscene(armorId);
                 Destroy(cutscene.gameObject, animationTime);
@@ -227,8 +229,9 @@ namespace Nekoyume.TestScene
 
             try
             {
-                var path = $"Prefab/Background/{prefabName}";
-                var prefab = Resources.Load<GameObject>(path);
+                var bundle = "Prefab";
+                var path = $"{prefabName}";
+                var prefab = AssetBundleLoader.LoadAssetBundle<GameObject>(bundle, path);
                 if (!prefab)
                     throw new FailedToLoadResourceException<GameObject>(path);
                 _background = Instantiate(prefab, bgParent);

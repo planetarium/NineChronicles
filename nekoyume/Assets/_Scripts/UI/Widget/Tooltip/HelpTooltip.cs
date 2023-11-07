@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
 using System.Text.RegularExpressions;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.EnumType;
 
 namespace Nekoyume.UI
@@ -82,7 +83,8 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private const string JsonDataPath = "HelpPopupData/HelpPopupData";
+        private const string BundleName = "HelpPopupData";
+        private const string JsonDataPath = "HelpPopupData";
 
         private static HelpTooltip _instanceCache;
         private static List<ViewModel> _sharedViewModelsCache;
@@ -180,7 +182,7 @@ namespace Nekoyume.UI
 
         private static List<ViewModel> GetViewModels()
         {
-            var json = Resources.Load<TextAsset>(JsonDataPath)?.text;
+            var json = AssetBundleLoader.LoadAssetBundle<TextAsset>(BundleName, JsonDataPath)?.text;
             if (!string.IsNullOrEmpty(json))
             {
                 var jsonModel = JsonUtility.FromJson<JsonModel>(json);
@@ -459,7 +461,7 @@ namespace Nekoyume.UI
 
         private void ShowImage(PageImageModel imageModel, int index)
         {
-            var sprite = Resources.Load<Sprite>(imageModel.resourcePath);
+            var sprite = AssetBundleLoader.LoadAssetBundle<Sprite>(BundleName, imageModel.resourcePath.Split('/')[^1]);
             if (sprite is null)
             {
                 Debug.LogError($"Failed to load resource at {imageModel.resourcePath}");

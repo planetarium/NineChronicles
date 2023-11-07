@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Cysharp.Threading.Tasks;
+using Nekoyume.AssetBundleHelper;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -27,7 +28,8 @@ namespace Nekoyume.L10n
             InLanguageChanging,
         }
 
-        public const string SettingsAssetPathInResources = "L10nSettings/L10nSettings";
+        private const string SettingsAssetBundle = "font";
+        public const string SettingsAssetPathInResources = "L10nSettings";
 
         public static readonly string CsvFilesRootDirectoryPath =
             Path.Combine(Application.streamingAssetsPath, "Localization");
@@ -158,7 +160,7 @@ namespace Nekoyume.L10n
 
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
-            _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
+            _settings = AssetBundleLoader.LoadAssetBundle<L10nSettings>(SettingsAssetBundle, SettingsAssetPathInResources);
             CurrentState = State.Initialized;
             OnInitializeSubject.OnNext(CurrentLanguage);
         }

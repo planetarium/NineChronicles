@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            _iconDictionary ??= Resources.LoadAll<Sprite>("UI/Icons/Navigation/").ToDictionary(image => image.name);
+            _iconDictionary ??= AssetBundleLoader.LoadAllAssetBundle<Sprite>("UI/Icons/Navigation/").ToDictionary(image => image.name);
         }
     }
 }

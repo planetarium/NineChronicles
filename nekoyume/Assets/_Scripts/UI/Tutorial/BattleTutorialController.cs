@@ -3,13 +3,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvHelper;
+using Nekoyume.AssetBundleHelper;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class BattleTutorialController
     {
-        private const string BattleTutorialDataPath = "Tutorial/Data/BattleTutorial";
+        private const string TutorialBundle = "Tutorial";
+        private const string BattleTutorialDataPath = "BattleTutorial";
         public class BattleTutorialModel
         {
             public int Id { get; set; }
@@ -25,7 +27,7 @@ namespace Nekoyume.UI
 
         public BattleTutorialController()
         {
-            var rawData = Resources.Load<TextAsset>(BattleTutorialDataPath).text;
+            var rawData = AssetBundleLoader.LoadAssetBundle<TextAsset>(TutorialBundle, BattleTutorialDataPath).text;
             using var reader = new StringReader(rawData);
             using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
             csvReader.Read();

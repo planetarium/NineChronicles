@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.AssetBundleHelper;
 using Spine.Unity;
 using UnityEngine;
 
@@ -58,7 +59,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var spineResourcePath = $"Character/Pet/{Game.instance.SavedPetId}";
+            var spineResourceBundle = "Character/Pet";
+            var spineResourcePath = $"{Game.instance.SavedPetId}";
             if (Animator.Target is not null)
             {
                 if (Animator.Target.name.Contains(Game.instance.SavedPetId.ToString()))
@@ -69,10 +71,10 @@ namespace Nekoyume.Game.Character
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var origin = AssetBundleLoader.LoadAssetBundle<GameObject>(spineResourceBundle, spineResourcePath);
             if (!origin)
             {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+                throw new FailedToLoadResourceException<GameObject>($"{spineResourceBundle}/{spineResourcePath}");
             }
 
             var go = Instantiate(origin, container);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
@@ -10,11 +11,12 @@ namespace Nekoyume
 {
     static class ElementalTypeUIExtensions
     {
-        private const string FireIconResourcePath = "UI/Icons/ElementalType/icon_elemental_fire";
-        private const string WaterIconResourcePath = "UI/Icons/ElementalType/icon_elemental_water";
-        private const string LandIconResourcePath = "UI/Icons/ElementalType/icon_elemental_land";
-        private const string WindIconResourcePath = "UI/Icons/ElementalType/icon_elemental_wind";
-        private const string NormalIconResourcePath = "UI/Icons/ElementalType/icon_element_normal";
+        private const string IconResourceBundle = "UI/Icons/ElementalType";
+        private const string FireIconResourcePath = "icon_elemental_fire";
+        private const string WaterIconResourcePath = "icon_elemental_water";
+        private const string LandIconResourcePath = "icon_elemental_land";
+        private const string WindIconResourcePath = "icon_elemental_wind";
+        private const string NormalIconResourcePath = "icon_element_normal";
 
         private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
             new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);
@@ -74,15 +76,15 @@ namespace Nekoyume
             switch (type)
             {
                 case ElementalType.Normal:
-                    return Resources.Load<Sprite>(NormalIconResourcePath);
+                    return AssetBundleLoader.LoadAssetBundle<Sprite>(IconResourceBundle, NormalIconResourcePath);
                 case ElementalType.Fire:
-                    return Resources.Load<Sprite>(FireIconResourcePath);
+                    return AssetBundleLoader.LoadAssetBundle<Sprite>(IconResourceBundle, FireIconResourcePath);
                 case ElementalType.Water:
-                    return Resources.Load<Sprite>(WaterIconResourcePath);
+                    return AssetBundleLoader.LoadAssetBundle<Sprite>(IconResourceBundle, WaterIconResourcePath);
                 case ElementalType.Land:
-                    return Resources.Load<Sprite>(LandIconResourcePath);
+                    return AssetBundleLoader.LoadAssetBundle<Sprite>(IconResourceBundle, LandIconResourcePath);
                 case ElementalType.Wind:
-                    return Resources.Load<Sprite>(WindIconResourcePath);
+                    return AssetBundleLoader.LoadAssetBundle<Sprite>(IconResourceBundle, WindIconResourcePath);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Libplanet.Action;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -142,10 +143,11 @@ namespace Nekoyume.UI
                 Destroy(_titleDeco);
             }
 
-            var cutscenePath = $"UI/Prefabs/UI_WorldClear_{worldId:D2}";
+            var bundleName = "UI/Prefabs";
+            var cutscenePath = $"UI_WorldClear_{worldId:D2}";
             Debug.Log($"cutscenePath :{cutscenePath}");
-            var clone = Resources.Load<GameObject>(cutscenePath) ??
-                        Resources.Load<GameObject>("UI/Prefabs/UI_WorldClear_01");
+            var clone = AssetBundleLoader.LoadAssetBundle<GameObject>(bundleName, cutscenePath) ??
+                        AssetBundleLoader.LoadAssetBundle<GameObject>(bundleName, "UI_WorldClear_01");
             _titleDeco = Instantiate(clone, titleDecoContainer);
         }
 

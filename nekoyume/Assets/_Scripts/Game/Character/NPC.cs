@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -80,7 +81,8 @@ namespace Nekoyume.Game.Character
 
         public void ChangeSpineResource(string id)
         {
-            var spineResourcePath = $"Character/NPC/{id}";
+            var spineResourceBundle = "Character/NPC";
+            var spineResourcePath = $"{id}";
 
             if (!(Animator.Target is null))
             {
@@ -91,10 +93,10 @@ namespace Nekoyume.Game.Character
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var origin = AssetBundleLoader.LoadAssetBundle<GameObject>(spineResourceBundle, spineResourcePath);
             if (!origin)
             {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+                throw new FailedToLoadResourceException<GameObject>($"{spineResourceBundle}/{id}");
             }
 
             var go = Instantiate(origin, gameObject.transform);

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -18,6 +19,7 @@ namespace Nekoyume.AssetBundleHelper
         public static IEnumerator DownloadAssetBundles(string assetBundleURL, string bundleName,
             Action<float> onProgress)
         {
+            bundleName = bundleName.ToLower();
             if (loadedAssetBundleCache.ContainsKey(bundleName)) yield break;
 
             using var www =
@@ -44,12 +46,21 @@ namespace Nekoyume.AssetBundleHelper
 
         private static string GetPlatform()
         {
+#if UNITY_EDITOR
+            return EditorUserBuildSettings.activeBuildTarget switch
+            {
+                BuildTarget.StandaloneWindows => "Windows",
+                BuildTarget.iOS => "iOS",
+                BuildTarget.Android => "Android",
+            };
+#else
             return Application.platform switch
             {
                 RuntimePlatform.Android => "Android",
                 RuntimePlatform.IPhonePlayer => "iOS",
                 _ => "Windows",
             };
+#endif
         }
 
         #endregion
@@ -59,6 +70,7 @@ namespace Nekoyume.AssetBundleHelper
         public static IEnumerator LoadAllAssetBundleAsync<T>(string bundleName,
             Action<T[]> onFinished) where T : UnityEngine.Object
         {
+            bundleName = bundleName.ToLower();
             return LoadFromFileAsync(bundleName, assetBundle =>
             {
                 var assets = assetBundle.LoadAllAssets<T>();
@@ -69,6 +81,7 @@ namespace Nekoyume.AssetBundleHelper
         public static IEnumerator LoadAssetBundleAsync<T>(string bundleName, string objectName,
             Action<T> onFinished) where T : UnityEngine.Object
         {
+            bundleName = bundleName.ToLower();
             return LoadFromFileAsync(bundleName, assetBundle =>
             {
                 var asset = assetBundle.LoadAsset<T>(objectName);
@@ -79,6 +92,7 @@ namespace Nekoyume.AssetBundleHelper
         private static IEnumerator LoadFromFileAsync(string bundleName,
             Action<AssetBundle> onFinished)
         {
+            bundleName = bundleName.ToLower();
             if (useCache && loadedAssetBundleCache.TryGetValue(bundleName, out var value))
             {
                 onFinished(value);
@@ -122,6 +136,8 @@ namespace Nekoyume.AssetBundleHelper
         public static T LoadAssetBundle<T>(string bundleName, string objectName)
             where T : UnityEngine.Object
         {
+            Debug.Log($"Loading - ${bundleName}/${objectName}");
+            bundleName = bundleName.ToLower();
             if (!loadedAssetBundleCache.ContainsKey(bundleName))
             {
                 if (!LoadFromFile(bundleName))
@@ -136,6 +152,7 @@ namespace Nekoyume.AssetBundleHelper
 
         public static T[] LoadAllAssetBundle<T>(string bundleName) where T : UnityEngine.Object
         {
+            bundleName = bundleName.ToLower();
             if (!loadedAssetBundleCache.ContainsKey(bundleName))
             {
                 if (!LoadFromFile(bundleName))
@@ -150,6 +167,7 @@ namespace Nekoyume.AssetBundleHelper
 
         private static bool LoadFromFile(string bundleName)
         {
+            bundleName = bundleName.ToLower();
             var path = Path.Combine(Application.streamingAssetsPath, bundleName);
             var loadedBundle = AssetBundle.LoadFromFile(path);
             if (loadedBundle == null)

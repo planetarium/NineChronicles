@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace Nekoyume.AssetBundleHelper
 
         private IEnumerator Start()
         {
+            UnityEngine.Caching.ClearCache();
             foreach (var bundleName in assetBundleSettings.AssetBundleNames)
             {
                 yield return AssetBundleLoader.DownloadAssetBundles(

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
 using Nekoyume.State;
@@ -123,8 +124,8 @@ namespace Nekoyume.Game.Controller
             Idle
         }
 
-        private const string MusicContainerPath = "Audio/Music/Prefabs";
-        private const string SfxContainerPath = "Audio/Sfx/Prefabs";
+        private const string MusicContainerPath = "audio/music";
+        private const string SfxContainerPath = "audio/sfx";
 
         private State CurrentState { get; set; }
 
@@ -243,7 +244,7 @@ namespace Nekoyume.Game.Controller
             IDictionary<string, AudioSource> prefabs,
             IDictionary<string, Stack<AudioInfo>> pool)
         {
-            var assets = Resources.LoadAll<GameObject>(containerPath);
+            var assets = AssetBundleLoader.LoadAllAssetBundle<GameObject>(containerPath);
             foreach (var asset in assets)
             {
                 var audioSource = asset.GetComponent<AudioSource>();

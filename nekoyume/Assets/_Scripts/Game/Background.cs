@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -16,7 +17,8 @@ namespace Nekoyume.Game
         private float _lastCameraX;
         private int _leftIndex;
         private int _rightIndex;
-        private const string DefaultSpritePath = "UI/Textures/00_Common/8x8_rect_transparent";
+        private const string DefaultSpriteBundle = "UI/Textures";
+        private const string DefaultSpritePath = "8x8_rect_transparent";
 
         private void Awake ()
         {
@@ -34,7 +36,7 @@ namespace Nekoyume.Game
             var spriteRenderer = transform.GetComponent<SpriteRenderer>();
             if (spriteRenderer == null)
             {
-                var resource = Resources.Load<Sprite>(DefaultSpritePath);
+                var resource = AssetBundleLoader.LoadAssetBundle<Sprite>(DefaultSpriteBundle, DefaultSpritePath);
                 spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
                 spriteRenderer.sprite = resource;
                 spriteRenderer.sortingLayerName = "InGameBackground";

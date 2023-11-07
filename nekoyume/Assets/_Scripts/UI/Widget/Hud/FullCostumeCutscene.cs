@@ -1,5 +1,6 @@
 using Spine.Unity;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -16,8 +17,9 @@ namespace Nekoyume.UI
 
         private float UpdateCutscene(int costumeId)
         {
-            var assetPath = $"Character/FullCostumeCutscene/{costumeId}";
-            var asset = Resources.Load<GameObject>(assetPath);
+            var bundleName = "Character/FullCostumeCutscene";
+            var assetPath = $"{costumeId}";
+            var asset = AssetBundleLoader.LoadAssetBundle<GameObject>(bundleName, assetPath);
             if (asset == null)
             {
                 throw new FailedToLoadResourceException<GameObject>(assetPath);

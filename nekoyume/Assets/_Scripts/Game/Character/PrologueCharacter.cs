@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -34,7 +35,8 @@ namespace Nekoyume.Game.Character
 
         public void Set(int characterId, Player target)
         {
-            var spineResourcePath = $"Character/Monster/{characterId}";
+            var spineResourceBundle = "Character/Monster";
+            var spineResourcePath = $"{characterId}";
 
             if (!(Animator.Target is null))
             {
@@ -45,7 +47,7 @@ namespace Nekoyume.Game.Character
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var origin = AssetBundleLoader.LoadAssetBundle<GameObject>(spineResourceBundle, spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);

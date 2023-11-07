@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Blockchain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
@@ -40,7 +41,7 @@ namespace Nekoyume.Game.Entrance
                 bool active;
                 var beginPos = stage.SelectPositionBegin(i);
                 var endPos = stage.SelectPositionEnd(i);
-                var placeRes = Resources.Load<GameObject>("Prefab/PlayerPlace");
+                var placeRes = AssetBundleLoader.LoadAssetBundle<GameObject>("Prefab", "PlayerPlace");
                 if (i % 2 == 0)
                     endPos.y = -0.45f;
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))

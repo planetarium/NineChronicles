@@ -1,3 +1,4 @@
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
@@ -28,7 +29,7 @@ namespace Nekoyume.Game.Factory
             }
 
             npc.SetSortingLayer(layerType, sortingOrder);
-            var prefab = Resources.Load<GameObject>($"Character/NPC/{id}");
+            var prefab = AssetBundleLoader.LoadAssetBundle<GameObject>("Character/NPC", $"{id}");
             var go = Instantiate(prefab, npc.transform);
             npc.ResetAnimatorTarget(go);
             return npc.gameObject;
@@ -55,7 +56,7 @@ namespace Nekoyume.Game.Factory
             }
 
             npc.SetSortingLayer(layerType, sortingOrder);
-            var prefab = Resources.Load<GameObject>($"Character/NPC/{key}");
+            var prefab = AssetBundleLoader.LoadAssetBundle<GameObject>("Character/NPC", $"{key}");
             var go = Instantiate(prefab, npc.transform);
             npc.ResetAnimatorTarget(go);
             return npc.gameObject;

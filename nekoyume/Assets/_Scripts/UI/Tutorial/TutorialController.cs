@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.L10n;
@@ -26,8 +27,9 @@ namespace Nekoyume.UI
         private readonly Tutorial _tutorial;
         private readonly RectTransform _buttonRectTransform;
 
-        private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
-        private const string PresetPath = "Tutorial/Data/TutorialPreset";
+        private const string TutorialBundle = "Tutorial";
+        private const string ScenarioPath = "TutorialScenario";
+        private const string PresetPath = "TutorialPreset";
         private const int CreateAvatarRewardTutorialId = 2;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
@@ -76,8 +78,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            _scenario.AddRange(GetData<TutorialScenarioScriptableObject>(ScenarioPath).tutorialScenario.scenario);
-            _preset.AddRange(GetData<TutorialPresetScriptableObject>(PresetPath).tutorialPreset.preset);
+            _scenario.AddRange(GetData<TutorialScenarioScriptableObject>(TutorialBundle, ScenarioPath).tutorialScenario.scenario);
+            _preset.AddRange(GetData<TutorialPresetScriptableObject>(TutorialBundle, PresetPath).tutorialPreset.preset);
         }
 
         public void Run(int clearedStageId)
@@ -198,9 +200,9 @@ namespace Nekoyume.UI
             };
         }
 
-        private static T GetData<T>(string path) where T : ScriptableObject
+        private static T GetData<T>(string bundle, string path) where T : ScriptableObject
         {
-            return Resources.Load<T>(path);
+            return AssetBundleLoader.LoadAssetBundle<T>(bundle, path);
         }
 
         private static int GetCheckPoint(int clearedStageId)

@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -275,8 +276,9 @@ namespace Nekoyume.Game
                 DestroyBackground(fadeTime);
             }
 
-            var path = $"Prefab/Background/{prefabName}";
-            var prefab = Resources.Load<GameObject>(path);
+            var bundle = "Prefab";
+            var path = $"{prefabName}";
+            var prefab = AssetBundleLoader.LoadAssetBundle<GameObject>(bundle, path);
             if (!prefab)
                 throw new FailedToLoadResourceException<GameObject>(path);
 

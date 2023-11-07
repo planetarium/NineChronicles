@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.AssetBundleHelper;
 using UniRx;
 using UnityEngine;
 
@@ -145,7 +146,8 @@ namespace Nekoyume.Game.Character
 
         public void ChangeSpineResource(int id)
         {
-            var spineResourcePath = $"Character/Monster/{id}";
+            var spineResourceBundle = "Character/Monster";
+            var spineResourcePath = $"{id}";
 
             if (!(Animator.Target is null))
             {
@@ -156,10 +158,10 @@ namespace Nekoyume.Game.Character
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var origin = AssetBundleLoader.LoadAssetBundle<GameObject>(spineResourceBundle, spineResourcePath);
             if (!origin)
             {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+                throw new FailedToLoadResourceException<GameObject>($"{spineResourcePath}/{id}");
             }
 
             var go = Instantiate(origin, gameObject.transform);
@@ -185,7 +187,8 @@ namespace Nekoyume.Game.Character
 
         public void Set(int characterId)
         {
-            var spineResourcePath = $"Character/Monster/{characterId}";
+            var spineResourceBundle = "Character/Monster";
+            var spineResourcePath = $"{characterId}";
 
             if (!(Animator.Target is null))
             {
@@ -196,7 +199,7 @@ namespace Nekoyume.Game.Character
                 Animator.DestroyTarget();
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var origin = AssetBundleLoader.LoadAssetBundle<GameObject>(spineResourceBundle, spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);

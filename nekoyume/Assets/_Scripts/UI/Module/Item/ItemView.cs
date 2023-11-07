@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Coffee.UIEffects;
+using Nekoyume.AssetBundleHelper;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 
@@ -200,7 +201,7 @@ namespace Nekoyume.UI.Module
         {
             Clear();
             iconImage.enabled = true;
-            iconImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/UI_icon_item_question");
+            iconImage.overrideSprite = AssetBundleLoader.LoadAssetBundle<Sprite>("UI/Textures", "UI_icon_item_question");
             iconImage.SetNativeSize();
         }
 
