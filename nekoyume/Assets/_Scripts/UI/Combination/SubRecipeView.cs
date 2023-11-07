@@ -400,6 +400,12 @@ namespace Nekoyume.UI
             UpdateInformation(index);
         }
 
+        // *DO NOT USE AT NO TUTORIAL*
+        public void ChangeTabToPremiumForTutorial()
+        {
+            normalRecipeTabGroup.recipeTabs[1].toggle.isOn = true;
+        }
+
         private void UpdateInformation(int index)
         {
             long blockIndex = 0;
