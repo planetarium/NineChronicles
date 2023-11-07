@@ -468,7 +468,7 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-            // Only use on Android or...
+#if RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
@@ -477,6 +477,7 @@ namespace Nekoyume.Game
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
             }
+#endif
 
             IEnumerator InitializeWithAgent()
             {
