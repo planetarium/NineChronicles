@@ -128,6 +128,7 @@ namespace Nekoyume.UI
                     case ProductBuyerMail:
                     case ProductSellerMail:
                     case ProductCancelMail:
+                    case UnloadFromMyGaragesRecipientMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                         break;
                     case ItemEnhanceMail:
@@ -251,6 +252,27 @@ namespace Nekoyume.UI
                             false);
                     }
                     break;
+                case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
+                    if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        foreach (var (fungibleId, fungibleCount) in
+                                 unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                            if (row is null)
+                            {
+                                Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                                continue;
+                            }
+
+                            var material = ItemFactory.CreateMaterial(row);
+                            mailRewards.Add(new MailReward(material, fungibleCount));
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
             }
         }
 
@@ -356,7 +378,8 @@ namespace Nekoyume.UI
                        OrderExpirationMail or
                        CancelOrderMail or
                        CombinationMail or
-                       ItemEnhanceMail;
+                       ItemEnhanceMail or
+                       UnloadFromMyGaragesRecipientMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -700,6 +723,32 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 unloadFromMyGaragesRecipientMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            if (unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("season_pass"))
+            {
+                var mailRewards = new List<MailReward>();
+                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                {
+                    var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                    foreach (var (fungibleId, fungibleCount) in
+                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        mailRewards.Add(new MailReward(material, fungibleCount));
+                    }
+                }
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(mailRewards);
+                return;
+            }
 
             var showQueue = new Queue<System.Action>();
             if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)

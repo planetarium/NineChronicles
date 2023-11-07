@@ -114,6 +114,7 @@ namespace Nekoyume.Game.Controller
             public const string SuccessEffectSlot = "sfx_successeffect_slot";
             public const string UpgradeNumber = "sfx_upgrade_number";
             public const string Rewards = "sfx_rewards";
+            public const string Star = "sfx_star";
         }
 
         private enum State
