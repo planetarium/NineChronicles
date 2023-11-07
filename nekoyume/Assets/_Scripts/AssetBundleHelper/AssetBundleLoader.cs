@@ -79,9 +79,9 @@ namespace Nekoyume.AssetBundleHelper
         private static IEnumerator LoadFromFileAsync(string bundleName,
             Action<AssetBundle> onFinished)
         {
-            if (useCache && loadedAssetBundleCache.ContainsKey(bundleName))
+            if (useCache && loadedAssetBundleCache.TryGetValue(bundleName, out var value))
             {
-                onFinished(loadedAssetBundleCache[bundleName]);
+                onFinished(value);
                 yield break;
             }
 
