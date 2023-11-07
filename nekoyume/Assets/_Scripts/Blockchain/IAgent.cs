@@ -29,8 +29,6 @@ namespace Nekoyume.Blockchain
 
         Address Address { get; }
 
-        BlockPolicySource BlockPolicySource { get; }
-
         BlockRenderer BlockRenderer { get; }
 
         ActionRenderer ActionRenderer { get; }

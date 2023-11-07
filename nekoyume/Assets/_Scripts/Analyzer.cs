@@ -45,7 +45,6 @@ namespace Nekoyume
                 return;
             }
 
-            SetUniqueId(uniqueId);
             rpcServerHost ??= "no-rpc-host";
 
             // ReSharper disable Unity.UnknownResource
@@ -71,7 +70,7 @@ namespace Nekoyume
                 targetNetwork,
                 rpcServerHost);
 #endif
-
+            SetAgentAddress(uniqueId);
             UpdateAvatarAddress();
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
@@ -79,18 +78,26 @@ namespace Nekoyume
             Debug.Log($"Analyzer initialized: {uniqueId}");
         }
 
-        public static void SetUniqueId(string? uniqueId = null)
+        public static void SetAgentAddress(string? addressString = null)
         {
-            uniqueId ??= "none";
+            if (addressString is not null)
+            {
+                Mixpanel.Identify(addressString);
+            }
 
-            Mixpanel.Identify(uniqueId);
-            Mixpanel.Register("AgentAddress", uniqueId);
-            Mixpanel.People.Set("AgentAddress", uniqueId);
-            Mixpanel.People.Name = uniqueId;
+            addressString ??= "none";
+
+            Mixpanel.Register("AgentAddress", addressString);
+            Mixpanel.People.Set("AgentAddress", addressString);
+            Mixpanel.People.Name = addressString;
             // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
 #if ENABLE_FIREBASE
-            FirebaseAnalytics.SetUserId(uniqueId);
-            FirebaseAnalytics.SetUserProperty("AgentAddress", uniqueId);
+            if (addressString is not null)
+            {
+                FirebaseAnalytics.SetUserId(addressString);
+            }
+
+            FirebaseAnalytics.SetUserProperty("AgentAddress", addressString);
 #endif
         }
 

@@ -113,6 +113,12 @@ namespace Nekoyume.Blockchain
                                 ["AgentAddress"] = agentState.address.ToString(),
                             });
                     }
+
+                    var actionTypeName = actionType.TypeIdentifier.Inspect(false);
+                    if (actionTypeName.Contains("transfer_"))
+                        return;
+
+                    Widget.Find<HeaderMenuStatic>().UpdatePortalRewardDaily();
                 }
             }).AddTo(_disposables);
 
@@ -547,13 +553,14 @@ namespace Nekoyume.Blockchain
                                 value.Currency);
                             if (balanceAddr.Equals(agentAddr))
                             {
-                                if (value.Currency.Ticker == "NCG")
+                                if (value.Currency.Equals(GoldCurrency))
                                 {
-                                    AgentStateSubject.OnNextGold(value);
+                                    var goldState = new GoldBalanceState(balanceAddr, balance);
+                                    gameStates.SetGoldBalanceState(goldState);
                                 }
                                 else if (value.Currency.Equals(Currencies.Crystal))
                                 {
-                                    AgentStateSubject.OnNextCrystal(value);
+                                    gameStates.SetCrystalBalance(balance);
                                 }
                                 else if (value.Currency.Equals(Currencies.Garage))
                                 {
@@ -708,7 +715,7 @@ namespace Nekoyume.Blockchain
 
                         break;
                     }
-                    case ItemEnhancement.ResultModel enhancementResultModel:
+                    case ItemEnhancement13.ResultModel enhancementResultModel:
                     {
                         LocalLayerModifier.AddNewResultAttachmentMail(
                             avatarAddress,
@@ -720,7 +727,7 @@ namespace Nekoyume.Blockchain
                             /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                                 break;*/
-                            case Action.ItemEnhancement.EnhancementResult.Success:
+                            case ItemEnhancement13.EnhancementResult.Success:
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             /*case Action.ItemEnhancement.EnhancementResult.Fail:
@@ -903,6 +910,8 @@ namespace Nekoyume.Blockchain
                         expectedNotifiedTime,
                         PushNotifier.PushType.Workshop);
                 }
+
+                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -956,6 +965,7 @@ namespace Nekoyume.Blockchain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId);
+                Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
                 // ~Notify
 
                 Widget.Find<CombinationSlotsPopup>()
@@ -1003,6 +1013,7 @@ namespace Nekoyume.Blockchain
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
             Widget.Find<CombinationSlotsPopup>()
@@ -1039,6 +1050,7 @@ namespace Nekoyume.Blockchain
                 "NOTIFICATION_COMBINATION_COMPLETE",
                 resultItem.GetLocalizedName(false));
             NotificationSystem.Reserve(MailType.Workshop, format, 1, Guid.Empty);
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
         }
 
@@ -1051,7 +1063,7 @@ namespace Nekoyume.Blockchain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputState.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel)slot.Result;
+                var result = (ItemEnhancement13.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputState.TryGetAvatarStateV2(
                         agentAddress,
@@ -1065,30 +1077,57 @@ namespace Nekoyume.Blockchain
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit)
                     .Forget();
-                LocalLayerModifier.AddItem(
+
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.ItemId,
                     itemUsable.RequiredBlockIndex,
                     1);
+                }
+
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(
                             tradableId,
                             out ItemUsable materialItem))
                     {
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            tradableId,
-                            materialItem.RequiredBlockIndex,
-                            1);
+                        if(itemUsable.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(avatarAddress, tradableId);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                tradableId,
+                                materialItem.RequiredBlockIndex,
+                                1);
+                        }
                     }
                 }
 
-                LocalLayerModifier.RemoveItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1);
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal or add fails and an exception is handled.
+                    LocalLayerModifier.RemoveNonFungibleItem(avatarAddress, itemUsable.ItemId);
+                }
+                else
+                {
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1);
+                }
+
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(avatarAddress, slotIndex, slot);
@@ -1103,7 +1142,7 @@ namespace Nekoyume.Blockchain
                     /*case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;*/
-                    case Action.ItemEnhancement.EnhancementResult.Success:
+                    case Action.ItemEnhancement13.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     /*case Action.ItemEnhancement.EnhancementResult.Fail:
@@ -1525,6 +1564,8 @@ namespace Nekoyume.Blockchain
                         NotificationCell.NotificationType.Notification);
                 }
             }
+
+            Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationTradingKey);
 
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -2206,7 +2247,7 @@ namespace Nekoyume.Blockchain
 
         private void ResponseUnlockWorld(ActionEvaluation<UnlockWorld> eval)
         {
-            Widget.Find<UnlockWorldLoadingScreen>().Close();
+            Widget.Find<LoadingScreen>().Close();
 
             if (eval.Exception is not null)
             {
@@ -2252,16 +2293,8 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (addr, state, level, deposit) = GetStakeState(eval);
-            if (state != null)
-            {
-                States.Instance.SetStakeState(
-                    state.Value,
-                    new GoldBalanceState(addr, deposit),
-                    level);
-            }
-
             UpdateAgentStateAsync(eval).Forget();
+            UpdateStakeStateAsync(eval).Forget();
         }
 
         private void ResponseClaimStakeReward(ActionEvaluation<ActionBase> eval)
@@ -2277,6 +2310,7 @@ namespace Nekoyume.Blockchain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
+            UpdateStakeStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 

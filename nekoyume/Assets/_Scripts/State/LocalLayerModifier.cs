@@ -118,6 +118,19 @@ namespace Nekoyume.State
 
         #region Avatar / AddItem
 
+        public static async void AddNonFungibleItem(Address avatarAddress, Guid itemId, bool resetState = true)
+        {
+            var modifier = new AvatarInventoryNonFungibleItemRemover(itemId);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            await TryResetLoadedAvatarState(avatarAddress);
+        }
+
         public static async void AddItem(
             Address avatarAddress,
             Guid tradableId,
@@ -166,6 +179,13 @@ namespace Nekoyume.State
         #endregion
 
         #region Avatar / RemoveItem
+
+        public static void RemoveNonFungibleItem(Address avatarAddress, Guid itemId)
+        {
+            var modifier = new AvatarInventoryNonFungibleItemRemover(itemId);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+            RemoveItemInternal(avatarAddress, modifier);
+        }
 
         public static void RemoveItem(Address avatarAddress, Guid tradableId, long requiredBlockIndex, int count)
         {

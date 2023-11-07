@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class QuestPopup : XTweenPopupWidget
+    public class QuestPopup : PopupWidget
     {
         [SerializeField]
         private CategoryTabButton adventureButton = null;
@@ -83,8 +83,10 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType)state;
 
-            var list = _questList.Value.ToList()
+            var list = _questList.Value
+                .ToList()
                 .FindAll(e => e.QuestType == (QuestType)state)
+                .Where(quest => TableSheets.Instance.QuestSheet.ContainsKey(quest.Id))
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
             scroll.UpdateData(list, true);

@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Module.Lobby
         Staking,
         WorldBoss,
         Dcc,
+        PatrolReward,
     }
 
     public class MainMenu : MonoBehaviour
@@ -41,6 +42,7 @@ namespace Nekoyume.UI.Module.Lobby
         private Vector3 _originLocalScale;
         private string _messageForCat;
         private int _requireStage;
+        private const int TutorialEndStage = 10;
 
         public bool IsUnlocked { get; private set; }
 
@@ -54,29 +56,31 @@ namespace Nekoyume.UI.Module.Lobby
             switch (type)
             {
                 case MenuType.Combination:
-                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuCombination;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.WorkShop;
+
                     break;
                 case MenuType.Ranking:
-                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Arena;
                     break;
                 case MenuType.Shop:
                     _requireStage = Platform.IsMobilePlatform()
                         ? 1
-                        : GameConfig.RequireClearedStageLevel.UIMainMenuShop;
+                        : Game.LiveAsset.GameConfig.RequiredStage.Shop;
                     break;
                 case MenuType.Quest:
-                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuStage;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Adventure;
                     break;
                 case MenuType.Mimisbrunnr:
-                    _requireStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMimisbrunnr;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.Mimisbrunnr;
                     break;
                 case MenuType.WorldBoss:
-                    _requireStage = GameConfig.RequireClearedStageLevel.ActionsInRaid;
+                    _requireStage = Game.LiveAsset.GameConfig.RequiredStage.WorldBoss;
                     break;
                 // always allow
                 case MenuType.Staking:
                 case MenuType.Dcc:
-                    _requireStage = 0;
+                case MenuType.PatrolReward:
+                    _requireStage = TutorialEndStage;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
@@ -49,14 +49,19 @@ namespace Nekoyume.UI
 
         public readonly string PortalUrl;
         public const string GoogleAuthEndpoint = "/api/auth/login/google";
+        public const string AppleAuthEndpoint = "/api/auth/login/apple";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
+        private const string PortalRewardEndpoint = "/earn#Play";
         private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
 
         public PortalConnect(string url)
         {
+            if (string.IsNullOrEmpty(url))
+                url = "https://nine-chronicles.com";
+
             PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
 
             Application.deepLinkActivated += OnDeepLinkActivated;
@@ -226,6 +231,11 @@ namespace Nekoyume.UI
             Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
             ShowRequestErrorPopup(request.result, request.error);
             return false;
+        }
+
+        public void OpenPortalRewardUrl()
+        {
+            Application.OpenURL($"{PortalUrl}{PortalRewardEndpoint}");
         }
 
         public IEnumerator RequestPledge(Address address)

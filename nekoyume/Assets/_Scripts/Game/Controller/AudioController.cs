@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Controller
             public const string Main = "bgm_main";
             public const string Shop = "bgm_shop";
             public const string Ranking = "bgm_ranking";
-            public const string Combination = "bgm_combination";
+            public const string Combination = "bgm_workshop";
             public const string StageGreen = "bgm_stage_green";
             public const string StageBlue = "bgm_stage_blue";
             public const string StageOrange = "bgm_stage_orange";
@@ -52,6 +52,7 @@ namespace Nekoyume.Game.Controller
             public const string WorldBossBattleResult = "bgm_worldboss_battle_result";
             public const string WorldBossTitle = "bgm_worldboss_title";
             public const string Dcc = "bgm_dcc";
+            public const string BattleLoading = "bgm_battle_loading";
         }
 
         public class SfxCode
@@ -112,6 +113,7 @@ namespace Nekoyume.Game.Controller
             public const string SuccessEffectFadeIn = "sfx_successeffect_fadein";
             public const string SuccessEffectSlot = "sfx_successeffect_slot";
             public const string UpgradeNumber = "sfx_upgrade_number";
+            public const string Rewards = "sfx_rewards";
         }
 
         private enum State

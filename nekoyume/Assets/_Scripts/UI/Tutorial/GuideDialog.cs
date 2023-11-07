@@ -32,6 +32,36 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
+        public void Show(BattleTutorialController.BattleTutorialModel model,
+            System.Action callback = null)
+        {
+            gameObject.SetActive(true);
+            canvasGroup.alpha = 1;
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            var msg = L10nManager.Localize(model.L10NKey);
+            textTyper.TypeText(string.Empty);
+            textTyper.TypeText(msg);
+            _coroutine = StartCoroutine(PlaySmallDialog(model.NextId != 0, callback));
+        }
+
+        private IEnumerator PlaySmallDialog(bool hasNext, System.Action callback)
+        {
+            yield return new WaitWhile(() => textTyper.IsTyping);
+            yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+            if (!hasNext)
+            {
+                Stop(callback);
+            }
+            else
+            {
+                callback?.Invoke();
+            }
+        }
+
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
@@ -54,8 +84,15 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            var height = data.target ? data.target.anchoredPosition.y : 0;
-            transform.SetParent(height < 0 ? topContainer : bottomContainer);
+            var parent = data.positionType switch
+            {
+                DialogPositionType.None => (data.target ? data.target.anchoredPosition.y : 0) < 0 ? topContainer : bottomContainer,
+                DialogPositionType.Top => topContainer,
+                DialogPositionType.Bottom => bottomContainer,
+                _ => bottomContainer
+            };
+
+            transform.SetParent(parent);
             transform.localPosition = Vector3.zero;
             ShowEmoji(data.emojiType);
             PlaySound(data.emojiType);

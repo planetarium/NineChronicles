@@ -121,6 +121,30 @@ namespace Nekoyume.UI.Module.Common
                 buffObject.SetActive(true);
                 debuffObject.SetActive(true);
             }
+            else if(buffList.Count == 1)
+            {
+                var buff = sheets.StatBuffSheet[buffList[0]];
+                arg.Add(skillChance.ToString());
+                arg.Add(buff.Duration.ToString());
+                arg.Add((buff.Value + skillValue).ToString());
+                buffObject.SetActive(false);
+                debuffObject.SetActive(false);
+                if (skillRow.SkillType == SkillType.Buff)
+                {
+                    var buffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, false);
+                    buffIconImage.overrideSprite = buffIcon;
+                    buffStatTypeText.text = buff.StatType.GetAcronym();
+                    buffObject.SetActive(true);
+                }
+
+                if(skillRow.SkillType == SkillType.Debuff)
+                {
+                    var deBuffIcon = BuffHelper.GetStatBuffIcon(buff.StatType, true);
+                    debuffIconImage.overrideSprite = deBuffIcon;
+                    debuffStatTypeText.text = buff.StatType.GetAcronym();
+                    debuffObject.SetActive(true);
+                }
+            }
             else
             {
                 buffObject.SetActive(false);

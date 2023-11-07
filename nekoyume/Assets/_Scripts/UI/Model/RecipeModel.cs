@@ -176,7 +176,7 @@ namespace Nekoyume.UI.Model
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
                     out var lastClearedStageId))
             {
-                return;
+                lastClearedStageId = 1;
             }
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;

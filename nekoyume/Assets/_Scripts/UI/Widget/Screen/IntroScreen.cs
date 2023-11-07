@@ -18,7 +18,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class IntroScreen : LoadingScreen
+    public class IntroScreen : ScreenWidget
     {
         [SerializeField] private GameObject pcContainer;
         [Header("Mobile")]
@@ -44,18 +44,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button googleSignInButton;
 
+        [SerializeField]
+        private Button appleSignInButton;
+
         private int _guideIndex = 0;
         private const int GuideCount = 3;
 
         private string _keyStorePath;
         private string _privateKey;
 
-        private const string GuestPrivateKeyUrl =
-            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
+        private const string GuestPrivateKeyUrlTemplate =
+            "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk-{0}-{1}";
         protected override void Awake()
         {
             base.Awake();
-            indicator.Close();
 
             // videoPlayer.loopPointReached += _ => OnVideoEnd();
             // videoSkipButton.onClick.AddListener(OnVideoEnd);
@@ -89,13 +91,39 @@ namespace Nekoyume.UI
                 {
                     google.OnSignIn();
                     startButtonContainer.SetActive(false);
+                    googleSignInButton.gameObject.SetActive(false);
                     google.State
                         .SkipLatestValueOnSubscribe()
                         .First()
                         .Subscribe(state =>
                         {
+                            var isCanceled = state is GoogleSigninBehaviour.SignInState.Canceled;
+                            startButtonContainer.SetActive(isCanceled);
+                            googleSignInButton.gameObject.SetActive(isCanceled);
+                        });
+                }
+            });
+            appleSignInButton.onClick.AddListener(() =>
+            {
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
+                {
+                    apple = Game.Game.instance.gameObject.AddComponent<AppleSigninBehaviour>();
+                    apple.Initialize();
+                }
+
+                if (apple.State.Value is not (AppleSigninBehaviour.SignInState.Signed or
+                    AppleSigninBehaviour.SignInState.Waiting))
+                {
+                    apple.SignInWithApple();
+                    startButtonContainer.SetActive(false);
+                    apple.State
+                        .SkipLatestValueOnSubscribe()
+                        .First()
+                        .Subscribe(state =>
+                        {
                             startButtonContainer.SetActive(
-                                state is GoogleSigninBehaviour.SignInState.Canceled);
+                                state is AppleSigninBehaviour.SignInState.Canceled);
                         });
                 }
             });
@@ -123,6 +151,12 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
             googleSignInButton.interactable = true;
+#if UNITY_IOS
+            appleSignInButton.gameObject.SetActive(true);
+            appleSignInButton.interactable = true;
+#else
+            appleSignInButton.gameObject.SetActive(false);
+#endif
             GetGuestPrivateKey();
         }
 
@@ -132,7 +166,7 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             // videoImage.gameObject.SetActive(false);
@@ -185,8 +219,8 @@ namespace Nekoyume.UI
             // else
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-            startButtonContainer.SetActive(true);
-            signinButton.gameObject.SetActive(true);
+            // startButtonContainer.SetActive(true);  // Show in animation 'UI_IntroScreen/Mobile'
+            // signinButton.gameObject.SetActive(true);
         }
 
         private void OnVideoEnd()
@@ -224,9 +258,27 @@ namespace Nekoyume.UI
         private async void GetGuestPrivateKey()
         {
             string pk;
+            // We don't use Application.platform since want to check guest login
+            // even in UnityEditor.
+            // FIXME: Move these codes to more proper place to reuse.
+#if UNITY_ANDROID
+                RuntimePlatform platform = RuntimePlatform.Android;
+#elif UNITY_IOS
+                RuntimePlatform platform = RuntimePlatform.IPhonePlayer;
+#else
+                RuntimePlatform platform = Application.platform;
+#endif
+            // See also https://github.com/planetarium/NineChronicles.LiveAssets
+            string pkUrl = string.Format(
+                GuestPrivateKeyUrlTemplate,
+                platform,
+                Application.version
+            );
+            Debug.Log($"Trying to fetch guest private key from {pkUrl}");
+
             try
             {
-                var request = UnityWebRequest.Get(GuestPrivateKeyUrl);
+                var request = UnityWebRequest.Get(pkUrl);
                 await request.SendWebRequest();
                 pk = request.downloadHandler.text.Trim();
                 ByteUtil.ParseHex(pk);
@@ -243,7 +295,6 @@ namespace Nekoyume.UI
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
-                Find<GrayLoadingScreen>().ShowProgress(GameInitProgress.CompleteLogin);
             });
             guestButton.interactable = true;
         }
@@ -267,5 +318,14 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
         }
+
+#if UNITY_ANDROID || UNITY_IOS
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            MainCanvas.instance.RemoveWidget(this);
+        }
+#endif
     }
 }

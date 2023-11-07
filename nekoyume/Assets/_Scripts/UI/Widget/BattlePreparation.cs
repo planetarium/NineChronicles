@@ -37,69 +37,49 @@ namespace Nekoyume.UI
             public GameObject background;
         }
 
-        [SerializeField]
-        private AvatarInformation information;
+        [SerializeField] private AvatarInformation information;
 
-        [SerializeField]
-        private TextMeshProUGUI closeButtonText;
+        [SerializeField] private TextMeshProUGUI closeButtonText;
 
-        [SerializeField]
-        private ParticleSystem[] particles;
+        [SerializeField] private ParticleSystem[] particles;
 
-        [SerializeField]
-        private ConditionalCostButton startButton;
+        [SerializeField] private ConditionalCostButton startButton;
 
-        [SerializeField]
-        private BonusBuffButton randomBuffButton;
+        [SerializeField] private BonusBuffButton randomBuffButton;
 
-        [SerializeField]
-        private Button closeButton;
+        [SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private Transform buttonStarImageTransform;
+        [SerializeField] private Transform buttonStarImageTransform;
 
-        [SerializeField]
-        private Toggle repeatToggle; // It is not currently in use
+        [SerializeField] private Toggle repeatToggle; // It is not currently in use
 
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
+        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
 
-        [SerializeField]
-        private bool moveToLeft = false;
+        [SerializeField] private bool moveToLeft = false;
 
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField]
-        private GameObject coverToBlockClick = null;
+        [SerializeField] private GameObject coverToBlockClick = null;
 
-        [SerializeField]
-        private Button sweepPopupButton;
+        [SerializeField] private Button sweepPopupButton;
 
-        [SerializeField]
-        private TextMeshProUGUI sweepButtonText;
+        [SerializeField] private TextMeshProUGUI sweepButtonText;
 
-        [SerializeField]
-        private TextMeshProUGUI enemyCp;
+        [SerializeField] private TextMeshProUGUI enemyCp;
 
-        [SerializeField]
-        private Button boostPopupButton;
+        [SerializeField] private Button boostPopupButton;
 
-        [SerializeField]
-        private GameObject mimisbrunnrBg;
+        [SerializeField] private GameObject mimisbrunnrBg;
 
-        [SerializeField]
-        private EventDungeonBg[] eventDungeonBgs;
+        [SerializeField] private EventDungeonBg[] eventDungeonBgs;
 
-        [SerializeField]
-        private GameObject hasBg;
+        [SerializeField] private GameObject hasBg;
 
-        [SerializeField]
-        private GameObject blockStartingTextObject;
+        [SerializeField] private GameObject blockStartingTextObject;
 
-        [SerializeField]
-        private GameObject enemyCpContainer;
+        [SerializeField] private GameObject enemyCpContainer;
 
         private StageType _stageType;
         private int? _scheduleId;
@@ -162,7 +142,8 @@ namespace Nekoyume.UI
                 .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -235,6 +216,9 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+
+            // DevCra - iOS Memory Optimization
+            this.transform.SetAsLastSibling();
         }
 
         private int? UpdateCp()
@@ -304,6 +288,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBg.background.SetActive(false);
                     }
+
                     break;
                 case StageType.Mimisbrunnr:
                     hasBg.SetActive(false);
@@ -312,6 +297,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBg.background.SetActive(false);
                     }
+
                     break;
                 case StageType.EventDungeon:
                     hasBg.SetActive(false);
@@ -328,6 +314,7 @@ namespace Nekoyume.UI
                     {
                         eventDungeonBackground.SetActive(true);
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -427,7 +414,8 @@ namespace Nekoyume.UI
                         .GetDungeonTicketCost(
                             RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0,
                             States.Instance.GoldBalanceState.Gold.Currency);
-                    var purchasedCount = RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+                    var purchasedCount =
+                        RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
 
                     Find<TicketPurchasePopup>().Show(
                         CostType.EventDungeonTicket,
@@ -529,7 +517,7 @@ namespace Nekoyume.UI
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
 
             startButton.gameObject.SetActive(false);
             var itemSlotState = States.Instance.CurrentItemSlotStates[BattleType.Adventure];
@@ -712,8 +700,8 @@ namespace Nekoyume.UI
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
-                .Select(x=> x.RuneId).ToList();
-            var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
+                .Select(x => x.RuneId).ToList();
+            var consumables = information.GetEquippedConsumables().Select(x => x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
             startButton.gameObject.SetActive(canBattle);
 
@@ -749,6 +737,32 @@ namespace Nekoyume.UI
             return mimisbrunnrSheet.TryGetValue(_stageId, out var mimisbrunnrSheetRow)
                 ? mimisbrunnrSheetRow.ElementalTypes
                 : ElementalTypeExtension.GetAllTypes();
+        }
+
+        public void TutorialActionClickBattlePreparationFirstInventoryCellView()
+        {
+            try
+            {
+                if (information.TryGetFirstCell(out var item))
+                {
+                    item.Selected.Value = true;
+                }
+                else
+                {
+                    Debug.LogError($"TutorialActionClickBattlePreparationFirstInventoryCellView() throw error.");
+                }
+
+                Find<EquipmentTooltip>().OnEnterButtonArea(true);
+            }
+            catch
+            {
+                Debug.LogError($"TryGetFirstCell throw error.");
+            }
+        }
+
+        public void TutorialActionClickBattlePreparationHackAndSlash()
+        {
+            OnClickBattle();
         }
     }
 }

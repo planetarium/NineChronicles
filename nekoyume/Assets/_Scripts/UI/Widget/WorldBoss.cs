@@ -158,7 +158,7 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            var loading = Find<DataLoadingScreen>();
+            var loading = Find<LoadingScreen>();
             loading.Show();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
             loading.Close();
@@ -430,6 +430,18 @@ namespace Nekoyume.UI
             {
                 o.SetActive(value);
             }
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossSeasonRewardsButton()
+        {
+            ShowDetail(WorldBossDetail.ToggleType.Reward);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossEnterPracticeButton()
+        {
+            OnClickEnter();
         }
     }
 }

@@ -15,10 +15,29 @@ namespace Nekoyume.UI
     {
         public override WidgetType WidgetType => WidgetType.TutorialMask;
 
-        [SerializeField] private Button button;
-        [SerializeField] private List<ItemContainer> items;
-        [SerializeField] private Animator animator;
-        [SerializeField] private float playTime = 2;
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private List<ItemContainer> items;
+
+        [SerializeField]
+        private Animator animator;
+
+        [SerializeField]
+        private float playTime = 2;
+
+        [SerializeField]
+        private GuideDialog guideDialog;
+
+        [SerializeField]
+        private Image guideImage;
+
+        [SerializeField]
+        private Sprite transparentSprite;
+
+        [SerializeField]
+        private Button skipButton;
 
         private Coroutine _coroutine;
         private System.Action _callback;
@@ -28,10 +47,26 @@ namespace Nekoyume.UI
         private bool _isPlaying;
         private IDisposable _onClickDispose = null;
         private IDisposable _onClickWithSkipDispose = null;
+        public BattleTutorialController TutorialController { get; private set; }
 
         public Button NextButton => button;
 
-        public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
+        public override void Initialize()
+        {
+            base.Initialize();
+            TutorialController = new BattleTutorialController();
+            skipButton.onClick.AddListener(SkipSession);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            guideDialog.gameObject.SetActive(false);
+            items.ForEach(item => item.Item.gameObject.SetActive(false));
+            guideImage.sprite = transparentSprite;
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public void Play(List<ITutorialData> datas, int presetId, Sprite guideSprite = null, System.Action callback = null)
         {
             if(!(_onClickDispose is null))
             {
@@ -77,7 +112,54 @@ namespace Nekoyume.UI
                 item?.Item.gameObject.SetActive(true);
                 item?.Item.Play(data, () => PlayEnd());
             }
+
+            guideImage.sprite = guideSprite != null ? guideSprite : transparentSprite;
             _callback = callback;
+        }
+
+        public void PlaySmallGuide(int id)
+        {
+            void ShowGuideDialog(BattleTutorialController.BattleTutorialModel model)
+            {
+                Show();
+                guideDialog.Show(model, () =>
+                {
+                    if (model.NextId == 0)
+                    {
+                        Close(true);
+                    }
+                    else
+                    {
+                        ShowGuideDialog(TutorialController.GetBattleTutorialModel(model.NextId));
+                    }
+                });
+            }
+
+            if (TutorialController.TryGetBattleTutorialModel(id, out var model))
+            {
+                guideDialog.gameObject.SetActive(false);
+                ShowGuideDialog(model);
+            }
+        }
+
+        public void PlayOnlyGuideArrow(GuideType guideType,
+            RectTransform target,
+            Vector2 targetPositionOffset = default,
+            Vector2 targetSizeOffset = default,
+            Vector2 arrowPositionOffset = default)
+        {
+            Show(true);
+            var arrow = items.First(i => i.Type == TutorialItemType.Arrow).Item;
+            arrow.gameObject.SetActive(true);
+            arrow.Play(new GuideArrowData(
+                    guideType,
+                    target,
+                    targetPositionOffset,
+                    targetSizeOffset,
+                    arrowPositionOffset,
+                    0f,
+                    false),
+                null);
         }
 
         public void Stop(System.Action callback = null)
@@ -89,10 +171,17 @@ namespace Nekoyume.UI
             _finishRef = 0;
             _playTimeRef = 0;
             _isPlaying = true;
+            guideImage.sprite = transparentSprite;
             foreach (var item in items)
             {
                 item.Item.Stop(() => PlayEnd(callback));
             }
+        }
+
+        private void SkipSession()
+        {
+            var controller = Game.Game.instance.Stage.TutorialController;
+            controller.Skip(controller.LastPlayedTutorialId);
         }
 
         private void RunStopwatch()

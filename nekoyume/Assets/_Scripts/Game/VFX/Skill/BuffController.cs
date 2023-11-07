@@ -11,7 +11,11 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class BuffController
     {
+#if UNITY_ANDROID || UNITY_IOS
+        private const int InitCount = 1;
+#else
         private const int InitCount = 5;
+#endif
 
         private readonly ObjectPool _pool;
 

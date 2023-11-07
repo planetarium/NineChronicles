@@ -34,7 +34,6 @@ namespace Nekoyume.UI
             public SimpleCostButton draw10Button;
         }
 
-        [SerializeField] private CostIconDataScriptableObject costIconData;
         [SerializeField] private Button closeButton;
         [SerializeField] private DrawItems[] drawItems;
         public int normalSummonId;
@@ -98,12 +97,20 @@ namespace Nekoyume.UI
                     ButtonSubscribe(items.draw10Button, summonRow, 10, _disposables);
                 }
             }
+            else
+            {
+                foreach (var drawItem in drawItems)
+                {
+                    drawItem.draw1Button.UpdateObjects();
+                    drawItem.draw10Button.UpdateObjects();
+                }
+            }
 
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Summon);
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
         }
 
-        private void AuraSummonAction(int groupId, int drawCount)
+        private void AuraSummonAction(int groupId, int summonCount)
         {
             // Check material enough
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -111,7 +118,7 @@ namespace Nekoyume.UI
             var summonRow = tableSheets.SummonSheet[groupId];
             var materialRow = tableSheets.MaterialItemSheet[summonRow.CostMaterial];
 
-            var totalCost = summonRow.CostMaterialCount * drawCount;
+            var totalCost = summonRow.CostMaterialCount * summonCount;
             var count = inventory.TryGetFungibleItems(materialRow.ItemId, out var items)
                 ? items.Sum(x => x.count)
                 : 0;
@@ -123,21 +130,26 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ActionManager.Instance.AuraSummon(groupId, drawCount).Subscribe();
+            ActionManager.Instance.AuraSummon(groupId, summonCount).Subscribe();
             LoadingHelper.Summon.Value = new Tuple<int, int>(summonRow.CostMaterial, totalCost);
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
         }
 
         public void OnActionRender(ActionEvaluation<AuraSummon> eval)
         {
             LoadingHelper.Summon.Value = null;
-            SetMaterialAssets(States.Instance.CurrentAvatarState.inventory);
+            SetMaterialAssets();
+            foreach (var drawItem in drawItems)
+            {
+                drawItem.draw1Button.UpdateObjects();
+                drawItem.draw10Button.UpdateObjects();
+            }
 
             var summonRow = Game.Game.instance.TableSheets.SummonSheet[eval.Action.GroupId];
             var summonCount = eval.Action.SummonCount;
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             var resultList = SimulateEquipment(summonRow, summonCount, random, eval.BlockIndex);
-            Find<SummonResultPopup>().Show(summonRow, resultList);
+            Find<SummonResultPopup>().Show(summonRow, summonCount, resultList);
         }
 
         private static List<Equipment> SimulateEquipment(
@@ -147,43 +159,33 @@ namespace Nekoyume.UI
             long blockIndex)
         {
             var tableSheets = Game.Game.instance.TableSheets;
+            var addressHex = $"[{States.Instance.CurrentAvatarState.address.ToHex()}]";
             var dummyAgentState = new AgentState(new Address());
             return AuraSummon.SimulateSummon(
-                string.Empty,
-                dummyAgentState,
-                tableSheets.EquipmentItemRecipeSheet,
-                tableSheets.EquipmentItemSheet,
-                tableSheets.EquipmentItemSubRecipeSheetV2,
-                tableSheets.EquipmentItemOptionSheet,
-                tableSheets.SkillSheet,
-                summonRow,
-                summonCount,
-                random,
-                blockIndex)
+                    addressHex, dummyAgentState,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    tableSheets.SkillSheet,
+                    summonRow, summonCount, random, blockIndex)
                 .Select(tuple => tuple.Item2)
                 .OrderByDescending(row => row.Grade)
                 .ToList();
         }
 
-        private void SetMaterialAssets(Inventory inventory)
+        private void SetMaterialAssets()
         {
             if (!gameObject.activeSelf)
             {
                 return;
             }
 
-            var materials = _summonRows.Select(row =>
-            {
-                var icon = costIconData.GetIcon((CostType)row.CostMaterial);
-                var count = inventory.GetMaterialCount(row.CostMaterial);
-                return (icon, count);
-            }).ToArray();
-
             var headerMenu = Find<HeaderMenuStatic>();
             for (var i = 0; i < SummonGroup; i++)
             {
-                var (icon, count) = materials[i];
-                headerMenu.MaterialAssets[i].SetMaterial(icon, count);
+                var material = (CostType)_summonRows[i].CostMaterial;
+                headerMenu.SetMaterial(i, material);
             }
         }
 
@@ -223,11 +225,11 @@ namespace Nekoyume.UI
         }
 
         public static void ButtonSubscribe(
-            SimpleCostButton button, SummonSheet.Row summonRow, int count,
+            SimpleCostButton button, SummonSheet.Row summonRow, int summonCount,
             List<IDisposable> disposables)
         {
             var costType = (CostType)summonRow.CostMaterial;
-            var cost = summonRow.CostMaterialCount * count;
+            var cost = summonRow.CostMaterialCount * summonCount;
 
             button.SetCost(costType, cost);
             button.OnClickSubject.Subscribe(state =>
@@ -235,7 +237,7 @@ namespace Nekoyume.UI
                 switch (state)
                 {
                     case ConditionalButton.State.Normal:
-                        Find<Summon>().AuraSummonAction(summonRow.GroupId, count);
+                        Find<Summon>().AuraSummonAction(summonRow.GroupId, summonCount);
                         break;
                     case ConditionalButton.State.Conditional:
 #if UNITY_ANDROID || UNITY_IOS || UNITY_EDITOR
@@ -283,6 +285,13 @@ namespace Nekoyume.UI
 
                 return result;
             }
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickNormal1SummonButton()
+        {
+            var button = drawItems[0].draw1Button;
+            button.OnClickSubject.OnNext(button.CurrentState.Value);
         }
     }
 }

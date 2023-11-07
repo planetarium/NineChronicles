@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class Widget : MonoBehaviour
     {
         protected enum AnimationStateType
@@ -81,18 +82,6 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
             SubmitWidget = null;
 
-            AnimationState.Subscribe(stateType =>
-            {
-                var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
-                                                 System.Reflection.BindingFlags.Instance);
-                foreach (var selectable in fields
-                    .Select(field => field.GetValue(this))
-                    .OfType<UnityEngine.UI.Selectable>())
-                {
-                    selectable.interactable = stateType == AnimationStateType.Shown;
-                }
-            }).AddTo(gameObject);
-
             var blur = transform.GetComponentInChildren<Blur>();
             if (blur)
             {
@@ -144,7 +133,7 @@ namespace Nekoyume.UI
                 Debug.LogWarning($"Duplicated create widget: {type}");
                 Pool[type].gameObject.SetActive(activate);
 
-                return (T) Pool[type].widget;
+                return (T)Pool[type].widget;
             }
 
             var widgetType = res.GetComponent<T>().WidgetType;
@@ -158,6 +147,7 @@ namespace Nekoyume.UI
                 case WidgetType.Tooltip:
                 case WidgetType.Screen:
                 case WidgetType.System:
+                case WidgetType.TutorialMask:
                 case WidgetType.Development:
                     Pool.Add(type, new PoolElementModel
                     {
@@ -167,7 +157,6 @@ namespace Nekoyume.UI
                     break;
                 case WidgetType.Hud:
                 case WidgetType.Animation:
-                case WidgetType.TutorialMask:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -182,10 +171,15 @@ namespace Nekoyume.UI
             var type = typeof(T);
             if (!Pool.TryGetValue(type, out var model))
             {
+#if UNITY_ANDROID || UNITY_IOS
+                // Memory optimization
+                return MainCanvas.instance.AddWidget<T>();
+#else
                 throw new WidgetNotFoundException(type.Name);
+#endif
             }
 
-            return (T) model.widget;
+            return (T)model.widget;
         }
 
         public static bool TryFind<T>(out T widget) where T : Widget
@@ -197,7 +191,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            widget = (T) model.widget;
+            widget = (T)model.widget;
             return true;
         }
 
@@ -217,7 +211,8 @@ namespace Nekoyume.UI
             if (go)
             {
                 var widget = go.GetComponent<T>();
-                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                go.transform.SetParent(
+                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
                 return widget;
             }
             else
@@ -228,7 +223,8 @@ namespace Nekoyume.UI
                 go.name = widgetName;
                 pool.Add(go, 1);
                 var widget = go.GetComponent<T>();
-                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                go.transform.SetParent(
+                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
 
                 return widget;
             }
@@ -289,6 +285,10 @@ namespace Nekoyume.UI
             AnimationState.Value = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
+#if UNITY_ANDROID || UNITY_IOS
+            transform.SetAsLastSibling();
+#endif
+
             if (!Animator || ignoreShowAnimation)
             {
                 AnimationState.Value = AnimationStateType.Shown;
@@ -304,6 +304,7 @@ namespace Nekoyume.UI
             _isClosed = false;
             Close(ignoreCloseAnimation);
         }
+
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
             if (WidgetStack.Count > 0 &&
@@ -506,6 +507,12 @@ namespace Nekoyume.UI
                 WidgetHandler.Instance.HideAllMessageCat();
                 CloseWidget?.Invoke();
             }
+        }
+
+        public static bool Remove<T>(T widget) where T : Widget
+        {
+            Destroy(widget.gameObject);
+            return Pool.Remove(typeof(T));
         }
     }
 }

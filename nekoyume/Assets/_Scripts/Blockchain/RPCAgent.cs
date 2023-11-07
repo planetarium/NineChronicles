@@ -31,6 +31,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace Nekoyume.Blockchain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const int RpcConnectionRetryCount = 50;
+        private const int RpcConnectionRetryCount = 6;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<ActionBase> _queuedActions = new ConcurrentQueue<ActionBase>();
 
@@ -62,12 +63,9 @@ namespace Nekoyume.Blockchain
 
         private DateTimeOffset _lastTipChangedAt;
 
-        // Rendering logs will be recorded in NineChronicles.Standalone
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
+        public BlockRenderer BlockRenderer { get; } = new BlockRenderer();
 
-        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
-
-        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
+        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
@@ -410,12 +408,12 @@ namespace Nekoyume.Blockchain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"Retry rpc connection. (count: {tuple.retryCount})");
-                    var message =
-                        L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
-                        RpcConnectionRetryCount - tuple.retryCount + 1,
-                        RpcConnectionRetryCount);
-                    Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
+                    Debug.Log($"Retry rpc connection. (remain count: {tuple.retryCount})");
+                    var tryCount = RpcConnectionRetryCount - tuple.retryCount;
+                    if (tryCount > 0)
+                    {
+                        Widget.Find<DimmedLoadingScreen>()?.Show();
+                    }
                 })
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
@@ -462,10 +460,10 @@ namespace Nekoyume.Blockchain
             // 에이전트의 상태를 한 번 동기화 한다.
             Task currencyTask = Task.Run(async () =>
             {
-                var state = await GetStateAsync(GoldCurrencyState.Address);
                 var goldCurrency = new GoldCurrencyState(
-                    (Dictionary)state
+                    (Dictionary)await GetStateAsync(GoldCurrencyState.Address)
                 ).Currency;
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Dictionary agentDict
@@ -478,36 +476,6 @@ namespace Nekoyume.Blockchain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, Currencies.Crystal));
 
-                var stakeAddr = StakeStateV2.DeriveAddress(Address);
-                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
-                {
-                    if (!StakeStateUtilsForClient.TryMigrate(
-                            serializedStakeState,
-                            States.Instance.GameConfigState,
-                            out var stakeStateV2))
-                    {
-                        States.Instance.SetStakeState(null, null, 0);
-                    }
-
-                    var balance = new FungibleAssetValue(goldCurrency);
-                    var level = 0;
-                    try
-                    {
-                        balance = await GetBalanceAsync(stakeAddr, goldCurrency);
-                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
-                            .FindLevelByStakedAmount(Address, balance);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-
-                    States.Instance.SetStakeState(
-                        stakeStateV2,
-                        new GoldBalanceState(stakeAddr, balance),
-                        level);
-                }
-
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
@@ -517,7 +485,55 @@ namespace Nekoyume.Blockchain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+                // NOTE: Initialize staking states after setting GameConfigState.
+                var stakeAddr = StakeStateV2.DeriveAddress(Address);
+                if (await GetStateAsync(stakeAddr) is { } serializedStakeState)
+                {
+                    if (!StakeStateUtilsForClient.TryMigrate(
+                            serializedStakeState,
+                            States.Instance.GameConfigState,
+                            out var stakeStateV2))
+                    {
+                        States.Instance.SetStakeState(null, null, 0, null, null);
+                    }
+                    else
+                    {
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        var stakeRegularFixedRewardSheet = new StakeRegularFixedRewardSheet();
+                        var stakeRegularRewardSheet = new StakeRegularRewardSheet();
+                        try
+                        {
+                            balance = await GetBalanceAsync(stakeAddr, goldCurrency);
+                            var sheetAddrArr = new[]
+                            {
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularFixedRewardSheetTableName),
+                                Addresses.GetSheetAddress(
+                                    stakeStateV2.Contract.StakeRegularRewardSheetTableName),
+                            };
+                            var sheetStates = await GetStateBulkAsync(sheetAddrArr);
+                            stakeRegularFixedRewardSheet.Set(
+                                sheetStates[sheetAddrArr[0]].ToDotnetString());
+                            stakeRegularRewardSheet.Set(
+                                sheetStates[sheetAddrArr[1]].ToDotnetString());
+                            level = stakeRegularFixedRewardSheet.FindLevelByStakedAmount(
+                                Address,
+                                balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
+                        States.Instance.SetStakeState(
+                            stakeStateV2,
+                            new GoldBalanceState(stakeAddr, balance),
+                            level,
+                            stakeRegularFixedRewardSheet,
+                            stakeRegularRewardSheet);
+                    }
+                }
 
                 var agentAddress = Address;
                 var pledgeAddress = agentAddress.GetPledgeAddress();
@@ -791,7 +807,7 @@ namespace Nekoyume.Blockchain
                     var popup = Widget.Find<IconAndButtonSystem>();
                     popup.Show(L10nManager.Localize("UI_ERROR"),
                         errorMsg, L10nManager.Localize("UI_OK"), false);
-                    popup.SetCancelCallbackToExit();
+                    popup.SetConfirmCallbackToExit();
                 });
 
         }
@@ -834,7 +850,7 @@ namespace Nekoyume.Blockchain
                 game.CachedStateAddresses[address] = false;
                 if (!game.CachedStates.ContainsKey(address))
                 {
-                    game.CachedStates.Add(address, new Null());
+                    game.CachedStates.Add(address, Null.Value);
                 }
             }
 
@@ -852,7 +868,9 @@ namespace Nekoyume.Blockchain
             return blockIndex.HasValue
                 ? _blockHashCache.TryGetBlockHash(blockIndex.Value, out var outBlockHash)
                     ? outBlockHash
-                    : await Game.Game.instance.ApiClient.GetBlockHashAsync(blockIndex.Value)
+                    : _codec.Decode(await _service.GetBlockHash(blockIndex.Value)) is { } rawBlockHash
+                        ? new BlockHash(rawBlockHash)
+                        : (BlockHash?)null
                 : BlockTipHash;
         }
     }

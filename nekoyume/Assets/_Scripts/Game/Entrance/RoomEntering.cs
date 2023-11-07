@@ -1,6 +1,5 @@
 using System.Collections;
 using Nekoyume.Blockchain;
-using Nekoyume.Game.Character;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -81,11 +80,23 @@ namespace Nekoyume.Game.Entrance
             yield return new WaitForSeconds(1.0f);
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
-            Widget.Find<EventReleaseNotePopup>().Show();
             var headerMenu = Widget.Find<HeaderMenuStatic>();
             if (!headerMenu.isActiveAndEnabled)
             {
                 headerMenu.Show();
+            }
+
+            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
+            if (worldInfo is not null)
+            {
+                var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+                const int requiredStageId = LiveAsset.GameConfig.RequiredStage.ShowPopupRoomEntering;
+
+                var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
+                if (eventReleaseNotePopup.HasUnread && clearedStageId >= requiredStageId)
+                {
+                    eventReleaseNotePopup.Show();
+                }
             }
 
             Destroy(this);

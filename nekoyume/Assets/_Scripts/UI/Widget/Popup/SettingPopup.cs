@@ -95,6 +95,9 @@ namespace Nekoyume.UI
         private Toggle worldbossPushToggle;
 
         [SerializeField]
+        private Toggle patrolRewardPushToggle;
+
+        [SerializeField]
         private Image pushDisabledImage;
 
         [SerializeField]
@@ -170,8 +173,12 @@ namespace Nekoyume.UI
             workshopPushToggle.onValueChanged.AddListener(SetWorkshopPush);
             arenaPushToggle.onValueChanged.AddListener(SetArenaPush);
             worldbossPushToggle.onValueChanged.AddListener(SetWorldbossPush);
+            patrolRewardPushToggle.onValueChanged.AddListener(SetPatrolRewardPush);
 
             InitResolution();
+#if UNITY_IOS
+            redeemCodeText.transform.parent?.parent?.parent?.gameObject?.SetActive(false);
+#endif
         }
 
         protected override void OnEnable()
@@ -244,6 +251,7 @@ namespace Nekoyume.UI
             workshopPushToggle.isOn = settings.isWorkshopPushEnabled;
             arenaPushToggle.isOn = settings.isArenaPushEnabled;
             worldbossPushToggle.isOn = settings.isWorldbossPushEnabled;
+            patrolRewardPushToggle.isOn = settings.isPatrolRewardPushEnabled;
 
             base.Show(true);
 
@@ -399,6 +407,12 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.isWorldbossPushEnabled = value;
+        }
+
+        public void SetPatrolRewardPush(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isPatrolRewardPushEnabled = value;
         }
 
         public void ResetStore()

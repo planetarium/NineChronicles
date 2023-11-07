@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -57,8 +57,27 @@ namespace Nekoyume.UI
         private NoticeItem _selectedNoticeItem;
         private readonly ToggleGroup _tabGroup = new();
 
+        private System.Action _onClose;
+
         private const string LastReadingDayKey = "LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
+        public bool HasUnread
+        {
+            get
+            {
+                var hasUnreadContents = LiveAssetManager.instance.HasUnread;
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(LastReadingDayKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return hasUnreadContents || notReadAtToday;
+            }
+        }
 
         public override void Initialize()
         {
@@ -124,39 +143,23 @@ namespace Nekoyume.UI
             RenderNotice(_selectedEventBannerItem.Data);
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            _onClose?.Invoke();
+        }
+
+        public void ShowNotFiltered(System.Action onClose)
+        {
+            _onClose = onClose;
+            Show();
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
-            if (worldInfo is null)
-            {
-                return;
-            }
-
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (clearedStageId <= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
-            {
-                return;
-            }
-
-            var hasUnreadContents = LiveAssetManager.instance.HasUnreadEvent ||
-                                    LiveAssetManager.instance.HasUnreadNotice;
-            var notReadAtToday = true;
-            if (PlayerPrefs.HasKey(LastReadingDayKey) &&
-                DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
-                    DateTimeFormat,
-                    null,
-                    DateTimeStyles.None,
-                    out var result))
-            {
-                notReadAtToday = DateTime.Today != result.Date;
-            }
-
-            if (hasUnreadContents || notReadAtToday)
-            {
-                base.Show(ignoreShowAnimation);
-                _tabGroup.SetToggledOn(eventTabButton);
-                PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
-            }
+            base.Show(ignoreShowAnimation);
+            _tabGroup.SetToggledOn(eventTabButton);
+            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
         }
 
         public void Show(EventNoticeData eventNotice, bool ignoreStartAnimation = false)

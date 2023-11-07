@@ -46,76 +46,62 @@ namespace Nekoyume.UI
         private const string FirstOpenMimisbrunnrKeyFormat =
             "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
-        [SerializeField]
-        private MainMenu btnQuest;
+        [SerializeField] private MainMenu btnQuest;
+
+        [SerializeField] private MainMenu btnCombination;
+
+        [SerializeField] private MainMenu btnShop;
+
+        [SerializeField] private MainMenu btnRanking;
+
+        [SerializeField] private MainMenu btnStaking;
+
+        [SerializeField] private MainMenu btnWorldBoss;
+
+        [SerializeField] private MainMenu btnDcc;
 
         [SerializeField]
-        private MainMenu btnCombination;
-
-        [SerializeField]
-        private MainMenu btnShop;
-
-        [SerializeField]
-        private MainMenu btnRanking;
-
-        [SerializeField]
-        private MainMenu btnStaking;
-
-        [SerializeField]
-        private MainMenu btnWorldBoss;
-
-        [SerializeField]
-        private MainMenu btnDcc;
+        private MainMenu btnPatrolReward;
 
         [SerializeField]
         private SpeechBubble[] speechBubbles;
 
-        [SerializeField]
-        private GameObject shopExclamationMark;
+        [SerializeField] private GameObject shopExclamationMark;
 
-        [SerializeField]
-        private GameObject combinationExclamationMark;
+        [SerializeField] private GameObject combinationExclamationMark;
 
-        [SerializeField]
-        private GameObject questExclamationMark;
+        [SerializeField] private GameObject questExclamationMark;
 
-        [SerializeField]
-        private GameObject mimisbrunnrExclamationMark;
+        [SerializeField] private GameObject mimisbrunnrExclamationMark;
 
-        [SerializeField]
-        private GameObject eventDungeonExclamationMark;
+        [SerializeField] private GameObject eventDungeonExclamationMark;
 
-        [SerializeField]
-        private TextMeshProUGUI eventDungeonTicketsText;
+        [SerializeField] private TextMeshProUGUI eventDungeonTicketsText;
 
-        [SerializeField]
-        private Image stakingLevelIcon;
+        [SerializeField] private Image stakingLevelIcon;
 
-        [SerializeField]
-        private GuidedQuest guidedQuest;
+        [SerializeField] private GuidedQuest guidedQuest;
 
-        [SerializeField]
-        private Button playerButton;
+        [SerializeField] private Button playerButton;
 
-        [SerializeField]
-        private Button petButton;
+        [SerializeField] private Button petButton;
 
-        [SerializeField]
-        private StakeIconDataScriptableObject stakeIconData;
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
 
-        [SerializeField]
-        private RectTransform player;
+        [SerializeField] private RectTransform player;
 
-        [SerializeField]
-        private RectTransform playerPosition;
+        [SerializeField] private RectTransform playerPosition;
 
-        [SerializeField]
-        private Transform titleSocket;
+        [SerializeField] private Transform titleSocket;
 
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
         private GameObject _cachedCharacterTitle;
+
+        public PatrolRewardMenu PatrolRewardMenu => (PatrolRewardMenu)btnPatrolReward;
+
+        public bool IsShown => AnimationState.Value == AnimationStateType.Shown;
 
         protected override void Awake()
         {
@@ -151,12 +137,13 @@ namespace Nekoyume.UI
                     btnStaking.GetComponent<Button>(),
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
+                    btnPatrolReward.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
 
-            StakingLevelSubject.Level
+            StakingSubject.Level
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
@@ -188,7 +175,7 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Adventure);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
@@ -267,6 +254,16 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
+        }
+
+        public void GoToCraftEquipment()
+        {
+            GoToCraftWithToggleType(0);
+        }
+
+        public void GoToFood()
+        {
+            GoToCraftWithToggleType(1);
         }
 
         private void GoToCraftWithToggleType(int toggleIndex)
@@ -425,6 +422,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.Workshop, null, true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
         }
@@ -514,12 +512,17 @@ namespace Nekoyume.UI
 
         public void StakingClick()
         {
+#if UNITY_ANDROID || UNITY_IOS
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             if (!btnStaking.IsUnlocked)
             {
                 return;
             }
 
             Find<StakingPopup>().Show();
+#endif
         }
 
         public void WorldBossClick()
@@ -552,14 +555,29 @@ namespace Nekoyume.UI
 
         public void DccClick()
         {
+            if (!btnStaking.IsUnlocked)
+            {
+                return;
+            }
+
             AudioController.PlayClick();
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
 #else
             Close(true);
             Find<DccMain>().Show();
 #endif
+        }
+
+        public void PatrolRewardClick()
+        {
+            if(!btnPatrolReward.IsUnlocked)
+            {
+                return;
+            }
+
+            Find<PatrolRewardPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
@@ -621,7 +639,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 0;
             Game.Game.instance.Stage.TutorialController.Run(clearedStageId);
         }
 
@@ -688,7 +706,7 @@ namespace Nekoyume.UI
         public void TutorialActionGoToFirstRecipeCellView()
         {
             var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
-                .FirstOrDefault(row => row.UnlockStage == 3);
+                .FirstOrDefault();
             if (firstRecipeRow is null)
             {
                 Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
@@ -696,7 +714,17 @@ namespace Nekoyume.UI
             }
 
             Craft.SharedModel.DummyLockedRecipes.Add(firstRecipeRow.Id);
-            GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
+
+            if (combinationExclamationMark.gameObject.activeSelf)
+            {
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            Close();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
+            Find<Craft>().ShowWithEquipmentRecipeId(firstRecipeRow.Id);
         }
 
         // Invoke from TutorialController.PlayAction()
@@ -705,6 +733,30 @@ namespace Nekoyume.UI
             var player = Game.Game.instance.Stage.GetPlayer();
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionGoToWorkShop()
+        {
+            CombinationClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickPatrolRewardMenu()
+        {
+            PatrolRewardClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickArenaMenu()
+        {
+            RankingClick();
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionClickWorldBossButton()
+        {
+            WorldBossClick();
         }
 
 #if UNITY_EDITOR

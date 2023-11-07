@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class MailPopup : XTweenPopupWidget, IMail
+    public class MailPopup : PopupWidget, IMail
     {
         public enum MailTabState : int
         {
@@ -327,9 +327,9 @@ namespace Nekoyume.UI
         {
             blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
-            var isNew = MailBox.Count(mail => mail.New && mail.requiredBlockIndex <= blockIndex) > 1;
+            var isNew = MailBox.Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
             allButton.HasNotification.Value = isNew;
-            receiveAllContainer.SetActive(isNew);
+            receiveAllContainer.SetActive(MailBox.Any(IsReceivableMail));
             Find<HeaderMenuStatic>().UpdateMailNotification(isNew);
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
@@ -343,6 +343,20 @@ namespace Nekoyume.UI
             list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
             recent = list?.FirstOrDefault();
             systemButton.HasNotification.Value = recent is { New: true };
+        }
+
+        private bool IsReceivableMail(Mail mail)
+        {
+            return mail.New &&
+                   mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex &&
+                   mail is ProductBuyerMail or
+                       ProductCancelMail or
+                       OrderBuyerMail or
+                       OrderSellerMail or
+                       OrderExpirationMail or
+                       CancelOrderMail or
+                       CombinationMail or
+                       ItemEnhanceMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -570,19 +584,31 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
-                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                if (itemEnhanceMail.attachment is ItemEnhancement13.ResultModel result)
                 {
                     await LocalLayerModifier.ModifyAgentCrystalAsync(
                         States.Instance.AgentState.address,
                         result.CRYSTAL.MajorUnit);
                 }
 
-                LocalLayerModifier.AddItem(
-                    avatarAddress,
-                    itemUsable.ItemId,
-                    itemUsable.RequiredBlockIndex,
-                    1,
-                    false);
+                if (itemUsable.ItemSubType == ItemSubType.Aura)
+                {
+                    //Because aura is a tradable item, local removal fails and an exception is handled.
+                    LocalLayerModifier.AddNonFungibleItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        false);
+                }
+                else
+                {
+                    LocalLayerModifier.AddItem(
+                        avatarAddress,
+                        itemUsable.ItemId,
+                        itemUsable.RequiredBlockIndex,
+                        1,
+                        false);
+                }
+
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
                     false);
                 var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);

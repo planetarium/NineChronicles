@@ -81,10 +81,10 @@ namespace Nekoyume.UI
 
         public SynopsisScene[] scripts;
         [Tooltip("대사가 사라질때 걸리는 시간")]
-        public float textFadeOutTime = 0.5f;
+        public float textFadeOutTime = 0.3f;
         public bool prolgueEnd;
 
-        private int _part1EndIndex = 4;
+        private int _part1EndIndex = 3;
         private bool skipSynopsis;
         private bool skipAll;
 
@@ -368,9 +368,10 @@ namespace Nekoyume.UI
             {
                 try
                 {
-                    var loadingScreen = Find<DataLoadingScreen>();
-                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
-                    loadingScreen.Show();
+                    var loadingScreen = Find<LoadingScreen>();
+                    loadingScreen.Show(
+                        LoadingScreen.LoadingType.Entering,
+                        L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                     await RxProps.SelectAvatarAsync(slotIndex);
                     loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
@@ -379,7 +380,7 @@ namespace Nekoyume.UI
                 catch (KeyNotFoundException e)
                 {
                     Debug.LogWarning(e.Message);
-                    Find<DataLoadingScreen>().Close();
+                    Find<LoadingScreen>().Close();
                     EnterLogin();
                 }
             }
@@ -399,6 +400,7 @@ namespace Nekoyume.UI
 
         public void SkipAll()
         {
+            Analyzer.Instance.Track("Unity/Synopsis Skip");
             skipAll = true;
             Skip();
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.LiveAsset;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -15,9 +16,12 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.Game;
-    using Nekoyume.Helper;
-    using Nekoyume.UI.Scroller;
+    using Game;
+    using Game.Controller;
+    using Helper;
+    using WorldBoss;
+    using Scroller;
+    using System.Globalization;
     using UniRx;
 
     public class HeaderMenuStatic : StaticWidget
@@ -32,6 +36,9 @@ namespace Nekoyume.UI.Module
             Chat,
             Settings,
             Quit,
+            PortalReward,
+            Notice,
+            InviteFriend,
         }
 
         public enum AssetVisibleState
@@ -54,7 +61,7 @@ namespace Nekoyume.UI.Module
         {
             public ToggleType Type;
             public Toggle Toggle;
-            public Image Notification;
+            public List<Image> Notification;
             public GameObject Lock;
             public TextMeshProUGUI LockText;
         }
@@ -70,9 +77,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Crystal crystal;
-
-        [SerializeField]
-        private GameObject dailyBonus;
 
         [SerializeField]
         private Hourglass hourglass;
@@ -102,7 +106,13 @@ namespace Nekoyume.UI.Module
         private VFX workshopVFX;
 
         [SerializeField]
-        private ToggleDropdown menuToggleDropdown;
+        private Toggle menuToggleDropdown;
+
+        [SerializeField]
+        private List<Image> menuToggleNotifications;
+
+        [SerializeField]
+        private CostIconDataScriptableObject costIconData;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -117,24 +127,26 @@ namespace Nekoyume.UI.Module
                 { ToggleType.CombinationSlots, new ReactiveProperty<bool>(false) },
                 { ToggleType.Mail, new ReactiveProperty<bool>(false) },
                 { ToggleType.Rank, new ReactiveProperty<bool>(false) },
+                { ToggleType.PortalReward, new ReactiveProperty<bool>(false) },
+                { ToggleType.Notice, new ReactiveProperty<bool>(false) },
+                { ToggleType.InviteFriend, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
             new Dictionary<ToggleType, int>()
             {
-                { ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest },
-                { ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter },
-                { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
-                { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
+                { ToggleType.Quest, 1 },
+                { ToggleType.AvatarInfo, 1 },
+                { ToggleType.CombinationSlots, 0 },
+                { ToggleType.Mail, 1 },
                 { ToggleType.Rank, 1 },
-                { ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat },
+                { ToggleType.Chat, 1 },
                 { ToggleType.Settings, 1 },
                 { ToggleType.Quit, 1 },
             };
 
         private long _blockIndex;
 
-        public bool ChargingAP => actionPoint.NowCharging;
         public Gold Gold => ncg;
         public ActionPoint ActionPoint => actionPoint;
         public Crystal Crystal => crystal;
@@ -147,6 +159,14 @@ namespace Nekoyume.UI.Module
 
         public override bool CanHandleInputEvent => false;
 
+        private const string PortalRewardNotificationKey = "PORTAL_REWARD_NOTIFICATION";
+
+        public const string PortalRewardNotificationCombineKey = "PORTAL_REWARD_NOTIFICATION_COMBINE_ACTION";
+        public const string PortalRewardNotificationTradingKey = "PORTAL_REWARD_NOTIFICATION_TRADING_ACTION";
+        public const string PortalRewardNotificationDailyKey = "PORTAL_REWARD_NOTIFICATION_DAILY_ACTION";
+
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
         public override void Initialize()
         {
             base.Initialize();
@@ -158,45 +178,148 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Rank, Find<RankPopup>());
             _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
-            _toggleWidgets.Add(ToggleType.Quit, Find<QuitSystem>());
 
             foreach (var toggleInfo in toggles)
             {
                 if (_toggleNotifications.ContainsKey(toggleInfo.Type))
                 {
-                    _toggleNotifications[toggleInfo.Type].SubscribeTo(toggleInfo.Notification)
-                        .AddTo(gameObject);
+                    foreach (var notiObj in toggleInfo.Notification)
+                    {
+                        _toggleNotifications[toggleInfo.Type].SubscribeTo(notiObj)
+                            .AddTo(gameObject);
+                    }
                 }
 
-                toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                switch (toggleInfo.Type)
                 {
-                    var widget = _toggleWidgets[toggleInfo.Type];
-                    if (value)
-                    {
-                        var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                    case ToggleType.InviteFriend:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
-                                NotificationCell.NotificationType.UnlockCondition);
+                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
                             toggleInfo.Toggle.isOn = false;
-                            return;
-                        }
+                        });
+                        break;
+                    case ToggleType.PortalReward:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        Game.instance.PortalConnect.OpenPortalRewardUrl();
+                                        confirm.Close();
+                                    };
+                                    confirm.Set("UI_INFORMATION_PORTAL_REWARD", "UI_DESCRIPTION_PORTAL_REWARD", true);
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
+                            UpdatePortalReward(false);
+                        });
+                        break;
+                    case ToggleType.Quit:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
+                        {
+                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    confirm.SubmitCallback = () =>
+                                    {
+                                        var address = States.Instance.CurrentAvatarState.address;
+                                        if (WorldBossStates.IsReceivingGradeRewards(address))
+                                        {
+                                            OneLineSystem.Push(
+                                                MailType.System,
+                                                L10nManager.Localize("UI_CAN_NOT_CHANGE_CHARACTER"),
+                                                NotificationCell.NotificationType.Alert);
+                                            return;
+                                        }
 
-                        var stage = Game.instance.Stage;
-                        if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                        Game.instance.BackToNest();
+                                        Close();
+                                        AudioController.PlayClick();
+                                    };
+                                    confirm.Set("UI_INFORMATION_CHARACTER_SELECT", "UI_DESCRIPTION_CHARACTER_SELECT", true);
+                                    confirm.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (confirm.isActiveAndEnabled)
+                                {
+                                    confirm.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                    case ToggleType.Notice:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            widget.Show(() => { toggleInfo.Toggle.isOn = false; });
-                        }
-                    }
-                    else
-                    {
-                        if (widget.isActiveAndEnabled)
+                            var widget = Find<EventReleaseNotePopup>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.ShowNotFiltered(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                    default:
+                        toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            widget.Close(true);
-                        }
-                    }
-                });
+                            var widget = _toggleWidgets[toggleInfo.Type];
+                            if (value)
+                            {
+                                if (_toggleUnlockStages.TryGetValue(toggleInfo.Type, out var requiredStage) &&
+                                    requiredStage != 0 &&
+                                    !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                                {
+                                    OneLineSystem.Push(MailType.System,
+                                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                        NotificationCell.NotificationType.UnlockCondition);
+                                    toggleInfo.Toggle.isOn = false;
+                                    return;
+                                }
+
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+                        });
+                        break;
+                }
             }
 
             menuToggleDropdown.onValueChanged.AddListener((value) =>
@@ -205,14 +328,17 @@ namespace Nekoyume.UI.Module
                 {
                     CloseWidget = () => { menuToggleDropdown.isOn = false; };
                     WidgetStack.Push(gameObject);
+                    Animator.Play("HamburgerMenu@Show");
                 }
                 else
                 {
+                    Animator.Play("HamburgerMenu@Close",-1,1);
                     CloseWidget = null;
                     Observable.NextFrame().Subscribe(_ =>
                     {
                         var list = WidgetStack.ToList();
                         list.Remove(gameObject);
+                        WidgetStack.Clear();
                         foreach (var go in list)
                         {
                             WidgetStack.Push(go);
@@ -228,7 +354,9 @@ namespace Nekoyume.UI.Module
                     }
 
                     var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                    var isLock = !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
+                    var isLock = requiredStage != 0 &&
+                                 !States.Instance.CurrentAvatarState.worldInformation
+                                     .IsStageCleared(requiredStage);
                     toggleInfo.Lock.SetActive(isLock);
                     toggleInfo.LockText.text = L10nManager.Localize("UI_STAGE") + requiredStage;
                 }
@@ -239,6 +367,29 @@ namespace Nekoyume.UI.Module
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            _toggleNotifications[ToggleType.Notice].Value = LiveAssetManager.instance.HasUnread;
+            LiveAssetManager.instance.ObservableHasUnread
+                .SubscribeTo(_toggleNotifications[ToggleType.Notice])
+                .AddTo(gameObject);
+
+            var mergedMenuNoti = Observable.CombineLatest(_toggleNotifications[ToggleType.Notice], _toggleNotifications[ToggleType.PortalReward], _toggleNotifications[ToggleType.Rank]);
+            foreach (var item in menuToggleNotifications)
+            {
+                mergedMenuNoti.Subscribe(notices=> {
+                    foreach (var noti in notices)
+                    {
+                        if (noti)
+                        {
+                            item.enabled = true;
+                            return;
+                        }
+                    }
+                    item.enabled = false;
+                }).AddTo(gameObject);
+            }
+
+            _toggleNotifications[ToggleType.PortalReward].Value = PlayerPrefs.GetInt(PortalRewardNotificationKey, 0) == 0 ? false : true;
         }
 
         protected override void OnEnable()
@@ -301,43 +452,55 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isDailyBonusActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Combination:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isMaterialActiveCount: 1); // isMaterialActiveCount : Golden dust
+                    SetMaterial(0, CostType.GoldDust);
+                    break;
                 case AssetVisibleState.Battle:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isActionPointActive: true);
                     break;
                 case AssetVisibleState.Arena:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isArenaTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isArenaTicketsActive: true);
                     break;
                 case AssetVisibleState.EventDungeon:
-                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventDungeonTicketsActive: true);
                     break;
                 case AssetVisibleState.WorldBoss:
-                    SetActiveAssets(isNcgActive: true, isEventWorldBossTicketsActive: true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isEventWorldBossTicketsActive: true);
                     break;
                 case AssetVisibleState.CurrencyOnly:
-                    SetActiveAssets(isNcgActive:true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true);
                     break;
                 case AssetVisibleState.RuneStone:
-                    SetActiveAssets(isNcgActive:true, isRuneStoneActive:true );
+                    SetActiveAssets(isNcgActive: true, isCrystalActive: true, isRuneStoneActive: true);
                     break;
                 case AssetVisibleState.Mileage:
-                    SetActiveAssets(isNcgActive:true, isMileageActive:true);
+                    SetActiveAssets(isNcgActive: true, isCrystalActive:true, isMileageActive: true);
                     break;
                 case AssetVisibleState.Summon:
-                    SetActiveAssets(isNcgActive:true, isMaterialActiveCount: Summon.SummonGroup);
+                    SetActiveAssets(isNcgActive: true, isMaterialActiveCount: Summon.SummonGroup);
                     break;
             }
         }
 
+        public void SetMaterial(int index, CostType costType)
+        {
+            var icon = costIconData.GetIcon(costType);
+            var count = States.Instance.CurrentAvatarState.inventory
+                .GetMaterialCount((int)costType);
+
+            MaterialAssets[index].SetMaterial(icon, count, costType);
+        }
+
         private void SetActiveAssets(
             bool isNcgActive = false,
+            bool isCrystalActive = false,
             bool isActionPointActive = false,
-            bool isDailyBonusActive = false,
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false,
             bool isEventDungeonTicketsActive = false,
@@ -347,9 +510,8 @@ namespace Nekoyume.UI.Module
             int isMaterialActiveCount = 0)
         {
             ncg.gameObject.SetActive(isNcgActive);
-            crystal.gameObject.SetActive(isNcgActive && !isMileageActive);
+            crystal.gameObject.SetActive(isCrystalActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
-            dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
@@ -477,6 +639,12 @@ namespace Nekoyume.UI.Module
             _toggleNotifications[ToggleType.Mail].Value = hasNotification;
         }
 
+        public void UpdatePortalReward(bool hasNotification)
+        {
+            _toggleNotifications[ToggleType.PortalReward].Value = hasNotification;
+            PlayerPrefs.SetInt(PortalRewardNotificationKey, hasNotification ? 1:0);
+        }
+
         public void SetActiveAvatarInfo(bool value)
         {
             var avatarInfo = toggles.FirstOrDefault(x => x.Type == ToggleType.AvatarInfo);
@@ -507,6 +675,71 @@ namespace Nekoyume.UI.Module
             if (info != null)
             {
                 info.Toggle.isOn = true;
+            }
+        }
+
+        public void TutorialActionClickMenuButton()
+        {
+            if(menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = true;
+            }
+        }
+
+        public void TutorialActionClickPortalRewardButton()
+        {
+            Game.instance.PortalConnect.OpenPortalRewardUrl();
+            if (menuToggleDropdown != null)
+            {
+                menuToggleDropdown.isOn = false;
+            }
+            UpdatePortalReward(false);
+        }
+
+        // Invoke from TutorialController.PlayAction() by TutorialTargetType
+        public void TutorialActionActionPointHeaderMenu()
+        {
+            actionPoint.ShowMaterialNavigationPopup();
+        }
+
+        public void UpdatePortalRewardByLevel(int level)
+        {
+            foreach (var noticePoint in ResourcesHelper.GetPortalRewardLevelTable())
+            {
+                if (noticePoint == level)
+                {
+                    UpdatePortalReward(true);
+                    return;
+                }
+            }
+        }
+
+        public void UpdatePortalRewardOnce(string key)
+        {
+            var count = PlayerPrefs.GetInt(key, 0);
+            if(count == 0) {
+                UpdatePortalReward(true);
+            }
+            PlayerPrefs.SetInt(key, ++count);
+        }
+
+        public void UpdatePortalRewardDaily()
+        {
+            var updateAtToday = true;
+            if (PlayerPrefs.HasKey(PortalRewardNotificationDailyKey) &&
+                DateTime.TryParseExact(PlayerPrefs.GetString(PortalRewardNotificationDailyKey),
+                    DateTimeFormat,
+                    null,
+                    DateTimeStyles.None,
+                    out var result))
+            {
+                updateAtToday = DateTime.Today != result.Date;
+            }
+
+            if (updateAtToday)
+            {
+                UpdatePortalReward(true);
+                PlayerPrefs.SetString(PortalRewardNotificationDailyKey, DateTime.Today.ToString(DateTimeFormat));
             }
         }
     }

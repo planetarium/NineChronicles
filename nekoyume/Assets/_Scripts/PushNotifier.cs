@@ -25,7 +25,8 @@ namespace Nekoyume
             Reward,
             Workshop,
             Arena,
-            Worldboss
+            Worldboss,
+            PatrolReward
         }
 
         public const string ChannelId = "NineChroniclesLocal";
@@ -39,14 +40,13 @@ namespace Nekoyume
 
         static PushNotifier()
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
             InitializeAndroid();
 #elif UNITY_IOS
-            
 #endif
         }
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
         private static void InitializeAndroid()
         {
             var androidInfo = SystemInfo.operatingSystem;
@@ -81,7 +81,7 @@ namespace Nekoyume
         /// </returns>
         public static string Push(string text, TimeSpan timespan, PushType pushType)
         {
-            if (!Settings.Instance.isPushEnabled)
+            if (!Settings.Instance.isPushEnabled || timespan.Ticks <= 0)
             {
                 return string.Empty;
             }
@@ -103,21 +103,31 @@ namespace Nekoyume
                     {
                         return string.Empty;
                     }
+
                     break;
                 case PushType.Workshop:
                     if (!Settings.Instance.isWorkshopPushEnabled)
                     {
                         return string.Empty;
                     }
+
                     break;
                 case PushType.Arena:
                     if (!Settings.Instance.isArenaPushEnabled)
                     {
                         return string.Empty;
                     }
+
                     break;
                 case PushType.Worldboss:
                     if (!Settings.Instance.isWorldbossPushEnabled)
+                    {
+                        return string.Empty;
+                    }
+
+                    break;
+                case PushType.PatrolReward:
+                    if (!Settings.Instance.isPatrolRewardPushEnabled)
                     {
                         return string.Empty;
                     }
@@ -157,7 +167,8 @@ namespace Nekoyume
                 Body = text,
                 Subtitle = title,
                 ShowInForeground = true,
-                ForegroundPresentationOption = (PresentationOption.Alert | PresentationOption.Sound | PresentationOption.Badge),
+                ForegroundPresentationOption =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             (PresentationOption.Alert | PresentationOption.Sound | PresentationOption.Badge),
                 CategoryIdentifier = "9c_local_push",
                 Trigger = timeTrigger,
             };

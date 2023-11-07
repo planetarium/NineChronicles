@@ -179,7 +179,7 @@ namespace Nekoyume.UI.Module
                         : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
                     break;
                 case ItemSubType.Aura:
-                    _requireLevel = 1;//GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura;
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura;
                     break;
                 case ItemSubType.Food:
                     switch (ItemSubTypeIndex)

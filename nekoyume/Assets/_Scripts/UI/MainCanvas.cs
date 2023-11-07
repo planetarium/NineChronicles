@@ -2,7 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -30,8 +34,8 @@ namespace Nekoyume.UI
                 root.sortingOrder = sortingOrder;
 
                 foreach (var childCanvas in root.GetComponentsInChildren<Canvas>(true)
-                    .Where(canvas => !canvas.Equals(root))
-                    .ToList())
+                             .Where(canvas => !canvas.Equals(root))
+                             .ToList())
                 {
                     childCanvas.sortingOrder =
                         sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
@@ -39,39 +43,27 @@ namespace Nekoyume.UI
             }
         }
 
-        [SerializeField]
-        private CanvasGroup canvasGroup = null;
+        [SerializeField] private CanvasGroup canvasGroup = null;
 
-        [SerializeField]
-        private CanvasLayer hudLayer = default;
+        [SerializeField] private CanvasLayer hudLayer = default;
 
-        [SerializeField]
-        private CanvasLayer widgetLayer = default;
+        [SerializeField] private CanvasLayer widgetLayer = default;
 
-        [SerializeField]
-        private CanvasLayer staticLayer = default;
+        [SerializeField] private CanvasLayer staticLayer = default;
 
-        [SerializeField]
-        private CanvasLayer popupLayer = default;
+        [SerializeField] private CanvasLayer popupLayer = default;
 
-        [SerializeField]
-        private CanvasLayer animationLayer = default;
+        [SerializeField] private CanvasLayer animationLayer = default;
 
-        [SerializeField]
-        private CanvasLayer tooltipLayer = default;
+        [SerializeField] private CanvasLayer tooltipLayer = default;
 
-        [SerializeField]
-        private CanvasLayer tutorialMaskLayer = default;
+        [SerializeField] private CanvasLayer tutorialMaskLayer = default;
 
-        [SerializeField]
-        private CanvasLayer screenLayer = default;
+        [SerializeField] private CanvasLayer screenLayer = default;
 
-        [SerializeField]
-        private CanvasLayer systemLayer = default;
+        [SerializeField] private CanvasLayer systemLayer = default;
 
-        [SerializeField]
-        private CanvasLayer developmentLayer = default;
-
+        [SerializeField] private CanvasLayer developmentLayer = default;
 
 
         private List<CanvasLayer> _layers;
@@ -107,7 +99,7 @@ namespace Nekoyume.UI
                     return tutorialMaskLayer;
                 case WidgetType.Screen:
                     return screenLayer;
-            // SystemUI
+                // SystemUI
                 case WidgetType.System:
                     return systemLayer;
                 case WidgetType.Development:
@@ -163,24 +155,13 @@ namespace Nekoyume.UI
 
         public void InitializeFirst()
         {
+            // Agent 초기화가 필요없는 widget && Agent 초기화 (로그인 포함)를 위해 필요한 widget
             var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<DimmedLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
-                Widget.Create<DataLoadingScreen>(),
-                Widget.Create<WorldMapLoadingScreen>(),
-                Widget.Create<UnlockWorldLoadingScreen>(),
-                Widget.Create<BuffBonusLoadingScreen>(),
-                Widget.Create<PreloadingScreen>(),
-                Widget.Create<WorldBossRewardScreen>(),
-                Widget.Create<RuneCombineResultScreen>(),
-                Widget.Create<RuneEnhancementResultScreen>(),
-                Widget.Create<MailRewardScreen>(),
-                Widget.Create<CPScreen>(),
-                Widget.Create<PetLevelUpResultScreen>(),
-                Widget.Create<PetSummonResultScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<SettingPopup>(),
@@ -205,6 +186,7 @@ namespace Nekoyume.UI
             {
                 value.Initialize();
             }
+
             Widgets.AddRange(firstWidgets);
 
             UpdateLayers();
@@ -212,6 +194,64 @@ namespace Nekoyume.UI
 
         public IEnumerator CreateSecondWidgets()
         {
+#if UNITY_ANDROID || UNITY_IOS
+            _secondWidgets.Add(Widget.Create<Login>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Menu>());
+            yield return null;
+            
+            _secondWidgets.Add(Widget.Create<MobileShop>());
+            yield return null;
+            Task.Run(async () =>
+            {
+                var categorySchemas = await MobileShop.GetCategorySchemas();
+                foreach (var category in categorySchemas)
+                {
+                    await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+
+                    foreach (var product in category.ProductList)
+                    {
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                    }
+                }
+            });
+            
+            _secondWidgets.Add(Widget.Create<WorldMap>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Craft>());
+            yield return null;
+
+            // tooltip
+            _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
+            yield return null;
+
+            _secondWidgets.Add(Widget.Create<Tutorial>());
+            yield return null;
+#else
+            // Agent 초기화가 필요없는 widget
+            _secondWidgets.Add(Widget.Create<BuffBonusLoadingScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<WorldBossRewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneCombineResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RuneEnhancementResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<MailRewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RewardScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CPScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PetLevelUpResultScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PetSummonResultScreen>());
+            yield return null;
+
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -237,11 +277,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
 
-#if UNITY_ANDROID
-            _secondWidgets.Add(Widget.Create<MobileShop>());
-            yield return null;
-#endif
-
             _secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopBuy>());
@@ -265,6 +300,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<ArenaJoin>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ArenaBoard>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
             yield return null;
@@ -379,6 +416,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<ShopListPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
@@ -396,34 +435,44 @@ namespace Nekoyume.UI
             // tutorial
             _secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
+#endif
         }
 
         public IEnumerator InitializeSecondWidgets()
         {
-            Widget last = null;
-            foreach (var value in _secondWidgets)
+            try
             {
-                if (value is null)
+                Widget last = null;
+                foreach (var value in _secondWidgets)
                 {
-                    Debug.LogWarning($"value is null. last is {last.name}");
-                    continue;
+                    if (value is null)
+                    {
+                        Debug.LogWarning($"value is null. last is {last.name}");
+                        continue;
+                    }
+
+                    value.Initialize();
+                    last = value;
                 }
 
-                value.Initialize();
-                yield return null;
-                last = value;
-            }
-            Widgets.AddRange(_secondWidgets);
-            UpdateLayers();
+                Widgets.AddRange(_secondWidgets);
+                UpdateLayers();
 
-            Widget.Find<SettingPopup>().transform.SetAsLastSibling();
-            EventManager.UpdateEventContainer(transform);
+                Widget.Find<SettingPopup>().transform.SetAsLastSibling();
+                EventManager.UpdateEventContainer(transform);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
+
+            yield return null;
         }
 
         public void InitWidgetInMain()
         {
             var layer = widgetLayer.root.transform;
-            for(int i = 0; i < layer.childCount; ++i)
+            for (int i = 0; i < layer.childCount; ++i)
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();
@@ -436,6 +485,32 @@ namespace Nekoyume.UI
                     widget.Close();
                 }
             }
+        }
+
+        // DevCra - iOS Memory Optimization
+        public T AddWidget<T>() where T : Widget
+        {
+            var widget = Widget.Create<T>();
+            _secondWidgets.Add(widget);
+            widget.Initialize();
+            Game.Game.instance.Stage.TutorialController?.RegisterWidget(widget);
+            return widget;
+        }
+
+        // DevCra - iOS Memory Optimization
+        public bool RemoveWidget<T>(T widget) where T : Widget
+        {
+            if (Widget.TryFind<T>(out var found))
+            {
+                if (found == widget)
+                {
+                    _secondWidgets.Remove(widget);
+                    Game.Game.instance.Stage.TutorialController?.UnregisterWidget(widget);
+                    return Widget.Remove(widget);
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -51,6 +51,11 @@ namespace Nekoyume.Game.OAuth
                     Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
                     StartCoroutine(CoSendGoogleIdToken(_idToken));
                 }
+
+                if (state is SignInState.Canceled)
+                {
+                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                }
             });
         }
 
@@ -89,6 +94,8 @@ namespace Nekoyume.Game.OAuth
                 {
                     Debug.Log("Got Unexpected Exception?!?" + task.Exception);
                 }
+
+                State.Value = SignInState.Canceled;
             }
             else if (task.IsCanceled)
             {

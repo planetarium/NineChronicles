@@ -12,6 +12,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    using Nekoyume.Helper;
     // NOTE: Avoid Ambiguous invocation:
     // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
     // System.ObservableExtensions and UniRx.ObservableExtensions
@@ -33,7 +34,7 @@ namespace Nekoyume.Game.Character
 
         public Pet Pet => appearance.Pet;
 
-        protected override float RunSpeedDefault => CharacterModel.RunSpeed;
+        protected override float RunSpeedDefault => CharacterModel.RunSpeed * Game.instance.Stage.AnimationTimeScaleWeight;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
@@ -58,7 +59,7 @@ namespace Nekoyume.Game.Character
 
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
-            Animator.TimeScale = 1;
+            Animator.TimeScale = Game.instance.Stage.AnimationTimeScaleWeight;
 
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
@@ -329,20 +330,24 @@ namespace Nekoyume.Game.Character
                 yield break;
             }
 
-            var level = Level;
+            var beforeLevel = Level;
             Model.GetExp(exp);
             EXP += exp;
 
-            if (Level != level)
+            if (Level != beforeLevel)
             {
                 Analyzer.Instance.Track("Unity/User Level Up", new Dictionary<string, Value>()
                 {
-                    ["code"] = level,
+                    ["code"] = beforeLevel,
                     ["AvatarAddress"] = Game.instance.States.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = Game.instance.States.AgentState.address.ToString(),
                 });
 
-                Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
+                Widget.Find<LevelUpCelebratePopup>()?.Show(beforeLevel, Level);
+                for (int interLevel = beforeLevel + 1; interLevel <= Level; interLevel++)
+                {
+                    Widget.Find<UI.Module.HeaderMenuStatic>().UpdatePortalRewardByLevel(interLevel);
+                }
                 InitStats(Model);
             }
 

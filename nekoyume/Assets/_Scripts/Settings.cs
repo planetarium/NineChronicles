@@ -23,6 +23,7 @@ namespace Nekoyume
         private const string PushWorkshopEnabledKey = "SETTINGS_PUSH_WORKSHOP_ENABLED";
         private const string PushArenaEnabledKey = "SETTINGS_PUSH_ARENA_ENABLED";
         private const string PushWorldbossEnabledKey = "SETTINGS_PUSH_WORLDBOSS_ENABLED";
+        private const string PushPatrolRewardEnabledKey = "SETTINGS_PUSH_PATROLREWARD_ENABLED";
 
         public float volumeMaster;
         public float volumeMusic;
@@ -40,6 +41,7 @@ namespace Nekoyume
         public bool isWorkshopPushEnabled = true;
         public bool isArenaPushEnabled = true;
         public bool isWorldbossPushEnabled = true;
+        public bool isPatrolRewardPushEnabled = true;
 
         public class Resolution
         {
@@ -89,6 +91,7 @@ namespace Nekoyume
             isWorkshopPushEnabled = PlayerPrefs.GetInt(PushWorkshopEnabledKey, 1) != 0;
             isArenaPushEnabled = PlayerPrefs.GetInt(PushArenaEnabledKey, 1) != 0;
             isWorldbossPushEnabled = PlayerPrefs.GetInt(PushWorldbossEnabledKey, 1) != 0;
+            isPatrolRewardPushEnabled = PlayerPrefs.GetInt(PushPatrolRewardEnabledKey, 1) != 0;
 
             SetResolution();
         }
@@ -109,6 +112,7 @@ namespace Nekoyume
             PlayerPrefs.SetInt(PushWorkshopEnabledKey, isWorkshopPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushArenaEnabledKey, isArenaPushEnabled ? 1 : 0);
             PlayerPrefs.SetInt(PushWorldbossEnabledKey, isWorldbossPushEnabled ? 1 : 0);
+            PlayerPrefs.SetInt(PushPatrolRewardEnabledKey, isPatrolRewardPushEnabled ? 1 : 0);
         }
 
         public void ApplyCurrentResolution()
