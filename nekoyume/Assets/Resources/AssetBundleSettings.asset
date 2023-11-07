@@ -15,6 +15,41 @@ MonoBehaviour:
   assetBundleURL: https://9c-test-bucket.s3.ap-northeast-2.amazonaws.com/AssetBundles
   assetBundleCredentials: 
   assetBundleNames:
+  - audio/music
+  - audio/sfx
+  - character/fullcostume
+  - character/fullcostumecutscene
+  - character/fullcostumetooltip
+  - character/monster
+  - character/npc
+  - character/pet
+  - character/player
+  - character/tail
+  - font
+  - helppopupdata
+  - images
+  - pfp
+  - prefab
+  - test
+  - tutorial
+  - ui/animations
+  - ui/icons/buff
+  - ui/icons/character
+  - ui/icons/elementaltype
+  - ui/icons/fungibleassetvalue
+  - ui/icons/item
+  - ui/icons/mail
+  - ui/icons/navigation
+  - ui/icons/push
+  - ui/icons/rewardgroup
+  - ui/icons/skill
+  - ui/icons/system
+  - ui/materials
+  - ui/prefabs
+  - ui/shaders
+  - ui/textures
   - vfx/materials
-  - vfx/skills
   - vfx/prefabs
+  - vfx/skills
+  - video
+  - worldboss

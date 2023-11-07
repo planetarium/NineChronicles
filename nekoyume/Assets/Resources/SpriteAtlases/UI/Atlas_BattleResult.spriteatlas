@@ -80,6 +80,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f0b38232b61014adfa66c545872360e1, type: 3}
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
+  - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
   - {fileID: 21300000, guid: b02b84925c3d8544cab59f9c098e263e, type: 3}
   - {fileID: 21300000, guid: a9e238a253e87d14c96bd7c73c25b4c1, type: 3}
@@ -201,8 +202,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e45a3e59f6b5dde4888d89f976ee2eac, type: 3}
   - {fileID: 21300000, guid: 093443892e6924920b499f4237e90c6f, type: 3}
   - {fileID: 21300000, guid: 2cd99a89c732f4748aa92f637a1b70d1, type: 3}
+  - {fileID: 21300000, guid: 2e5c9a896277b7f4aa09bda0bd3d4a6d, type: 3}
   - {fileID: 21300000, guid: 37185899cca25ca4b893aba7c427478f, type: 3}
   - {fileID: 21300000, guid: f9942d99bd4f04db9a3b99ecd51aca5f, type: 3}
+  - {fileID: 21300000, guid: a82d02a924ed5dd4cb6b7fe98543c79d, type: 3}
   - {fileID: 21300000, guid: 48bdf0b9424ad42998aeb6636afbc309, type: 3}
   - {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
@@ -218,6 +221,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 324e96ba60ab78b44aa35d6bb9fc34ce, type: 3}
   - {fileID: 21300000, guid: 6e975dba923262641b7abf6907fe7465, type: 3}
   - {fileID: 21300000, guid: cc08f1cae86154acebb5737994414f2f, type: 3}
+  - {fileID: 21300000, guid: 3a0377cafd982644ea213b321d79f4d7, type: 3}
   - {fileID: 21300000, guid: d5e1b4da7bc57a14781b6768739dcc45, type: 3}
   - {fileID: 21300000, guid: 9394f8da5938042989eb6405a94b396f, type: 3}
   - {fileID: 21300000, guid: 568239eace6e94a52b9841fb10ac6974, type: 3}
@@ -330,6 +334,7 @@ SpriteAtlas:
   - UI_Common_Slot
   - Common_gradiant_64
   - icon_combination_01_black
+  - DailyBonusGauge_Bg
   - button_Orange_03
   - UI_result_bg
   - UI_main_icon_quest_02
@@ -451,8 +456,10 @@ SpriteAtlas:
   - UI_icon_Block3
   - icon_Reregister
   - icon_buff_down
+  - Bonus_Bg
   - Icon_Ticket_WB
   - Icon_infinity
+  - DailyBonusGauge_Light
   - UI_main_icon_Goldfish
   - UI_icon_option_skill
   - Common_Gradiant_bg_01
@@ -468,6 +475,7 @@ SpriteAtlas:
   - UI_box_05
   - UI_stage_star_01
   - icon_costume_01_black
+  - DailyBonusGauge
   - Common_Prrogressbar_Line_1
   - 8x8_rect_transparent
   - UI_Common_Slot_Expired
