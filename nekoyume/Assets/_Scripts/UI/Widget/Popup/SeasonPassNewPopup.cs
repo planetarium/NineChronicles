@@ -11,11 +11,6 @@ namespace Nekoyume.UI
         private const string LastReadingDayKey = "SEASON_PASS_NEW_POPUP_LAST_READING_DAY";
         private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
 
-        protected override void Awake()
-        {
-
-        }
-
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
