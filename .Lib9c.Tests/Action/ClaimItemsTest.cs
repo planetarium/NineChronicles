@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
@@ -180,6 +181,26 @@ namespace Lib9c.Tests.Action
             Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[0]).count);
             Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[1]).count);
             Assert.Equal(1, inventory2.Items.First(x => x.item.Id == _itemIds[2]).count);
+        }
+
+        [Fact]
+        public void Execute_WithIncorrectClaimData()
+        {
+            var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
+
+            var action = new ClaimItems(Enumerable.Repeat(0, 101)
+                .Select(_ => (new PrivateKey().ToAddress(),
+                    (IReadOnlyList<FungibleAssetValue>)fungibleAssetValues))
+                .ToImmutableList());
+
+            Assert.Throws<ArgumentOutOfRangeException>("ClaimData", () =>
+                action.Execute(new ActionContext
+                {
+                    PreviousState = _initialState,
+                    Signer = _signerAddress,
+                    BlockIndex = 0,
+                    RandomSeed = 0,
+                }));
         }
 
         private IAccount GenerateAvatar(IAccount state, out Address avatarAddress)

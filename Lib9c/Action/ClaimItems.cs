@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     public class ClaimItems : GameAction, IClaimItems
     {
         private const string ActionTypeText = "claim_items";
+        private const int MaxClaimDataCount = 100;
 
         public IReadOnlyList<(Address address, IReadOnlyList<FungibleAssetValue> fungibleAssetValues)> ClaimData { get; private set; }
 
@@ -56,6 +57,14 @@ namespace Nekoyume.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
+
+            if (ClaimData.Count > MaxClaimDataCount)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(ClaimData),
+                    ClaimData.Count,
+                    $"ClaimData should be less than {MaxClaimDataCount}");
+            }
 
             var states = context.PreviousState;
             var random = context.GetRandom();
