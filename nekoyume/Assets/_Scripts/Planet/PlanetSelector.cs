@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+using Libplanet.Crypto;
+using Nekoyume.GraphQL.GraphTypes;
 using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,46 +14,40 @@ namespace Nekoyume.Planet
 {
     public static class PlanetSelector
     {
-        private const string CurrentPlanetIdHexKey = "CurrentPlanetIdHex";
+        /// <summary>
+        /// Selected planet id in player prefs.
+        /// format: <see cref="PlanetId.ToString()"/>
+        /// </summary>
+        private const string CachedPlanetIdStringKey = "CachedPlanetIdStringKey";
 
         private static PlanetId DefaultPlanetId => PlanetId.Heimdall;
+
+        public static bool HasCachedPlanetIdString =>
+            PlayerPrefs.HasKey(CachedPlanetIdStringKey);
+
+        public static string CachedPlanetIdString =>
+            PlayerPrefs.GetString(CachedPlanetIdStringKey);
 
         public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
             CurrentPlanetInfoSubject { get; } = new();
 
-        public static async UniTask<PlanetContext> InitializeAsync(
-            PlanetContext context)
-        {
-            context = await InitializePlanetsAsync(context);
-            if (context.IsSkipped ||
-                context.HasError)
-            {
-                return context;
-            }
-
-            context = InitializeCurrentPlanetInfo(context);
-            if (context.HasError)
-            {
-                return context;
-            }
-
-            return UpdateCommandLineOptions(context);
-        }
-
-        private static async UniTask<PlanetContext> InitializePlanetsAsync(
+        public static async UniTask<PlanetContext> InitializePlanetsAsync(
             PlanetContext context)
         {
 #if UNITY_EDITOR
             if (string.IsNullOrEmpty(context.CommandLineOptions.PlanetRegistryUrl))
             {
-                Debug.Log("Skip initializing Planets because PlanetRegistryUrl in" +
-                          " CommandLineOptions is null or empty in editor.");
+                Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+                          " PlanetRegistryUrl in CommandLineOptions is" +
+                          " null or empty in editor.");
                 context.IsSkipped = true;
                 return context;
             }
+
 #elif !UNITY_ANDROID && !UNITY_IOS
-            Debug.Log("Skip initializing Planets because `!UNITY_ANDROID && !UNITY_IOS`" +
-                      " is true in non-editor.");
+            Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+                      " the platform not supported in non-editor." +
+                      "(Only Android and iOS are supported)");
             context.IsSkipped = true;
             return context;
 #endif
@@ -56,88 +55,250 @@ namespace Nekoyume.Planet
             var clo = context.CommandLineOptions;
             if (!clo.RpcClient)
             {
-                Debug.Log("Skip initializing Planets because RpcClient is false.");
+                Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+                          " RpcClient is false.");
                 context.IsSkipped = true;
                 return context;
             }
 
             try
             {
+                Debug.Log("[PlanetSelector] Initializing Planets with" +
+                          $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
                 context.Planets = new Planets(clo.PlanetRegistryUrl);
             }
             catch (ArgumentException)
             {
-                context.Error = "Failed to initialize Planets. PlanetRegisterUrl in" +
-                                " CommandLineOptions must not be null or empty" +
-                                " when RpcClient is true.";
+                context.Error = "[PlanetSelector] Failed to initialize Planets." +
+                                " PlanetRegisterUrl in CommandLineOptions must" +
+                                " not be null or empty when RpcClient is true.";
+                Debug.LogError(context.Error);
                 return context;
             }
 
             await context.Planets.InitializeAsync();
             if (!context.Planets.IsInitialized)
             {
-                context.Error = "Failed to initialize Planets.";
+                context.Error = "[PlanetSelector] Failed to initialize Planets.";
+                Debug.LogError(context.Error);
                 return context;
             }
 
             return context;
         }
 
-        private static PlanetContext InitializeCurrentPlanetInfo(PlanetContext context)
+        public static PlanetContext InitializeSelectedPlanetInfo(
+            PlanetContext context,
+            bool resetIfCachedPlanetNotFoundInPlanets)
         {
-            if (context.CommandLineOptions.PlanetId.HasValue)
+            Debug.Log("[PlanetSelector] Initializing CurrentPlanetInfo...");
+            // Check cached planet id in player prefs.
+            if (HasCachedPlanetIdString)
             {
-                return SelectPlanet(context, context.CommandLineOptions.PlanetId.Value);
+                Debug.Log("[PlanetSelector] Cached planet id found in player prefs.");
+                if (context.Planets is null)
+                {
+                    context.Error = "[PlanetSelector] Planets is null." +
+                                    " Use InitializeAsync() before calling this method.";
+                    Debug.LogError(context.Error);
+                    return context;
+                }
+
+                if (context.Planets.TryGetPlanetInfoByIdString(
+                        CachedPlanetIdString,
+                        out var planetInfo))
+                {
+                    context = SelectPlanetById(context, planetInfo.ID);
+                    context.NeedToAutoLogin = !context.HasError;
+                    if (context.NeedToAutoLogin.Value)
+                    {
+                        Debug.Log("[PlanetSelector] Need to auto login.");
+                    }
+
+                    return context;
+                }
+
+                if (resetIfCachedPlanetNotFoundInPlanets)
+                {
+                    Debug.LogWarning("[PlanetSelector] There is no planet info for" +
+                                     $" planet id({CachedPlanetIdString})." +
+                                     " Resetting cached planet id...");
+                    PlayerPrefs.DeleteKey(CachedPlanetIdStringKey);
+                }
+                else
+                {
+                    context.Error = "[PlanetSelector] There is no planet info for" +
+                                    $" planet id({CachedPlanetIdString}).";
+                    Debug.LogError(context.Error);
+                    return context;
+                }
             }
 
-            var defaultPlanetIdHex = DefaultPlanetId.ToHexString();
-            var planetIdHex = PlayerPrefs.GetString(CurrentPlanetIdHexKey, defaultPlanetIdHex);
-            var planetId = new PlanetId(planetIdHex);
-            return SelectPlanet(context, planetId);
+            if (context.CommandLineOptions.DefaultPlanetId.HasValue)
+            {
+                // Use default planet id in command line options.
+                Debug.Log($"[PlanetSelector] Default planet id({context.CommandLineOptions.DefaultPlanetId})" +
+                          $" found in command line options.");
+                context = SelectPlanetById(context, context.CommandLineOptions.DefaultPlanetId.Value);
+            }
+            else
+            {
+                // Use default planet id in script.
+                Debug.Log($"[PlanetSelector] Using PlanetSelector.DefaultPlanetId({DefaultPlanetId}).");
+                context = SelectPlanetById(context, DefaultPlanetId);
+            }
+
+            if (context.HasError)
+            {
+                return context;
+            }
+
+            Debug.Log("[PlanetSelector] CurrentPlanetInfo initialized successfully.");
+            return context;
         }
 
-        public static PlanetContext SelectPlanet(PlanetContext context, string planetName)
+        public static async UniTask<PlanetContext> UpdatePlanetAccountInfosAsync(
+            PlanetContext context,
+            Address agentAddress)
+        {
+            Debug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
+            if (context.Planets is null)
+            {
+                context.Error = "[PlanetSelector] Planets is null." +
+                                " Use InitializeAsync() before calling this method.";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            if (!context.Planets.PlanetInfos?.Any() ?? true)
+            {
+                context.Error = "[PlanetSelector] Planets.PlanetInfos is null or empty." +
+                                " It cannot proceed without planet infos.";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            var planetAccountInfos = new List<PlanetAccountInfo>();
+            var jsonSerializer = new NewtonsoftJsonSerializer();
+            foreach (var planetInfo in context.Planets.PlanetInfos)
+            {
+                if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
+                {
+                    context.Error = $"[PlanetSelector] HeadlessGql is empty for planet({planetInfo.ID}).";
+                    Debug.LogError(context.Error);
+                    break;
+                }
+
+                var index = Random.Range(0, planetInfo.RPCEndpoints.HeadlessGql.Count);
+                var endpoint = planetInfo.RPCEndpoints.HeadlessGql[index];
+                if (string.IsNullOrEmpty(endpoint))
+                {
+                    context.Error = $"[PlanetSelector] endpoint(index: {index}) is null or empty" +
+                                    $" for planet({planetInfo.ID}).";
+                    Debug.LogError(context.Error);
+                    break;
+                }
+                
+                Debug.Log($"[PlanetSelector] Querying avatars for planet({planetInfo.ID})" +
+                          $" with endpoint({endpoint})...");
+                using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
+                var avatarsGraphTypes = await client.QueryAgentAsync(agentAddress);
+                Debug.Log($"[PlanetSelector] {avatarsGraphTypes}");
+                var info = new PlanetAccountInfo(
+                    planetInfo.ID,
+                    avatarsGraphTypes.Agent?.Address,
+                    avatarsGraphTypes.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
+                planetAccountInfos.Add(info);
+            }
+
+            if (context.HasError)
+            {
+                return context;
+            }
+
+            context.PlanetAccountInfos = planetAccountInfos.ToArray();
+            Debug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
+                      " updated successfully.");
+            return context;
+        }
+
+        public static PlanetContext SelectPlanetById(PlanetContext context, PlanetId planetId)
         {
             if (context.Planets is null)
             {
-                context.Error = "Planets is null." +
-                                "Use InitializeAsync() before calling this method.";
+                context.Error = "[PlanetSelector] Planets is null." +
+                                " Use InitializeAsync() before calling this method.";
+                Debug.LogError(context.Error);
                 return context;
             }
 
-            if (context.CurrentPlanetInfo is not null &&
-                context.CurrentPlanetInfo.Name == planetName)
+            if (context.SelectedPlanetInfo is not null &&
+                context.SelectedPlanetInfo.ID.Equals(planetId))
             {
                 return context;
             }
 
-            if (!context.Planets.TryGetPlanetInfo(planetName, out var planetInfo))
+            if (!context.Planets.TryGetPlanetInfoById(planetId, out var planetInfo))
             {
-                context.Error = $"There is no planet info for planet name({planetName}).";
+                context.Error = $"[PlanetSelector] There is no planet info for planet id({planetId}).";
+                Debug.LogError(context.Error);
                 return context;
             }
 
             return SelectPlanetInternal(context, planetInfo);
         }
 
-        public static PlanetContext SelectPlanet(PlanetContext context, PlanetId planetId)
+        public static PlanetContext SelectPlanetByIdString(
+            PlanetContext context,
+            string planetIdString)
+        {
+            Debug.Log($"[PlanetSelector] Selecting planet by id string({planetIdString})...");
+            if (context.Planets is null)
+            {
+                context.Error = "[PlanetSelector] Planets is null." +
+                                " Use InitializeAsync() before calling this method.";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            if (context.SelectedPlanetInfo is not null &&
+                context.SelectedPlanetInfo.ID.ToString().Equals(planetIdString))
+            {
+                return context;
+            }
+
+            if (!context.Planets.TryGetPlanetInfoByIdString(
+                    planetIdString,
+                    out var planetInfo))
+            {
+                context.Error = $"[PlanetSelector] There is no planet info for planet id({planetIdString}).";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            return SelectPlanetInternal(context, planetInfo);
+        }
+
+        public static PlanetContext SelectPlanetByName(PlanetContext context, string planetName)
         {
             if (context.Planets is null)
             {
-                context.Error = "Planets is null." +
-                                "Use InitializeAsync() before calling this method.";
+                context.Error = "[PlanetSelector] Planets is null." +
+                                " Use InitializeAsync() before calling this method.";
+                Debug.LogError(context.Error);
                 return context;
             }
 
-            if (context.CurrentPlanetInfo is not null &&
-                context.CurrentPlanetInfo.ID.Equals(planetId))
+            if (context.SelectedPlanetInfo is not null &&
+                context.SelectedPlanetInfo.Name == planetName)
             {
                 return context;
             }
 
-            if (!context.Planets.TryGetPlanetInfo(planetId, out var planetInfo))
+            if (!context.Planets.TryGetPlanetInfoByName(planetName, out var planetInfo))
             {
-                context.Error = $"There is no planet info for planet id({planetId}).";
+                context.Error = $"[PlanetSelector] There is no planet info for planet name({planetName}).";
+                Debug.LogError(context.Error);
                 return context;
             }
 
@@ -146,30 +307,69 @@ namespace Nekoyume.Planet
 
         private static PlanetContext SelectPlanetInternal(PlanetContext context, PlanetInfo planetInfo)
         {
-            context.CurrentPlanetInfo = planetInfo;
-            PlayerPrefs.SetString(CurrentPlanetIdHexKey, context.CurrentPlanetInfo!.ID.ToHexString());
+            context.SelectedPlanetInfo = planetInfo;
+            PlayerPrefs.SetString(CachedPlanetIdStringKey, context.SelectedPlanetInfo!.ID.ToString());
             context = UpdateCommandLineOptions(context);
-            CurrentPlanetInfoSubject.OnNext((context, context.CurrentPlanetInfo));
+            if (context.HasError)
+            {
+                Debug.LogError($"[PlanetSelector] Failed to select planet({planetInfo.ID}, {planetInfo.Name}).");
+                return context;
+            }
+
+            Debug.Log($"[PlanetSelector] Planet({planetInfo.ID}, {planetInfo.Name}) selected successfully.");
+            CurrentPlanetInfoSubject.OnNext((context, context.SelectedPlanetInfo));
+            return context;
+        }
+
+        public static PlanetContext SelectPlanetAccountInfo(PlanetContext context, PlanetId planetId)
+        {
+            Debug.Log($"[PlanetSelector] SelectPlanetAccountInfo() invoked. planet id({planetId})");
+            if (context.PlanetAccountInfos is null)
+            {
+                context.Error = "[PlanetSelector] PlanetAccountInfos is null." +
+                                " Use UpdatePlanetAccountInfosAsync() before calling this method.";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            if (context.SelectedPlanetAccountInfo is not null &&
+                context.SelectedPlanetAccountInfo.PlanetId.Equals(planetId))
+            {
+                return context;
+            }
+
+            var info = context.PlanetAccountInfos.FirstOrDefault(e => e.PlanetId.Equals(planetId));
+            if (info is null)
+            {
+                context.Error = $"[PlanetSelector] There is no planet account info for planet id({planetId}).";
+                Debug.LogError(context.Error);
+                return context;
+            }
+
+            context.SelectedPlanetAccountInfo = info;
             return context;
         }
 
         private static PlanetContext UpdateCommandLineOptions(PlanetContext context)
         {
-            var currentPlanetInfo = context.CurrentPlanetInfo;
+            var currentPlanetInfo = context.SelectedPlanetInfo;
             if (currentPlanetInfo is null)
             {
-                context.Error = "CurrentPlanetInfo is null.";
+                context.Error = "[PlanetSelector] CurrentPlanetInfo is null." +
+                                " Use SelectPlanet() before calling this method.";
+                Debug.LogError(context.Error);
                 return context;
             }
-            
+
             var clo = context.CommandLineOptions;
             clo.genesisBlockPath = currentPlanetInfo.GenesisUri;
             var rpcEndpoints = currentPlanetInfo.RPCEndpoints;
             if (rpcEndpoints.HeadlessGrpc.Count == 0)
             {
-                context.Error = "RPCEndpoints.HeadlessGrpc is empty." +
-                                "Check the planet registry url in command line options: " +
+                context.Error = "[PlanetSelector] RPCEndpoints.HeadlessGrpc is empty." +
+                                " Check the planet registry url in command line options: " +
                                 clo.PlanetRegistryUrl;
+                Debug.LogError(context.Error);
                 return context;
             }
 

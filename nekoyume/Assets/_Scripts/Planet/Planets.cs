@@ -72,6 +72,10 @@ namespace Nekoyume.Planet
                 }
 
                 _planetInfos = planetInfos;
+                var text = string.Join(", ", _planetInfos.Select(e =>
+                    $"{e.ID.ToString()}({e.Name})"));
+                Debug.Log($"[Planets] initialize succeeded: [{text}]");
+
                 IsInitialized = true;
             }
 
@@ -79,13 +83,21 @@ namespace Nekoyume.Planet
             return IsInitialized;
         }
 
-        public bool TryGetPlanetInfo(PlanetId planetId, out PlanetInfo planetInfo)
+        public bool TryGetPlanetInfoById(PlanetId planetId, out PlanetInfo planetInfo)
         {
             planetInfo = _planetInfos.FirstOrDefault(e => e.ID.Equals(planetId));
             return planetInfo is not null;
         }
-        
-        public bool TryGetPlanetInfo(string planetName, out PlanetInfo planetInfo)
+
+        public bool TryGetPlanetInfoByIdString(
+            string planetIdHexString,
+            out PlanetInfo planetInfo)
+        {
+            planetInfo = _planetInfos.FirstOrDefault(e => e.ID.ToString().Equals(planetIdHexString));
+            return planetInfo is not null;
+        }
+
+        public bool TryGetPlanetInfoByName(string planetName, out PlanetInfo planetInfo)
         {
             planetName = planetName.ToLower();
             planetInfo = _planetInfos.FirstOrDefault(e => e.Name.ToLower().Equals(planetName));

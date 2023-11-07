@@ -34,7 +34,7 @@ namespace Nekoyume.Helper
 
         private string _planetRegistryUrl;
 
-        private PlanetId? _planetId;
+        private PlanetId? _defaultPlanetId;
 
         private string privateKey;
 
@@ -112,13 +112,18 @@ namespace Nekoyume.Helper
             }
         }
 
-        [Option("planet-id", Required = false, HelpText = "planet id")]
-        public PlanetId? PlanetId
+        /// <summary>
+        /// Default Planet Id.
+        /// Use this if there is no selected planet id in the player prefs.
+        /// PlayerPrefs key: <see cref="PlanetSelector.SelectedPlanetIdHexStringKey"/>
+        /// </summary>
+        [Option("default-planet-id", Required = false, HelpText = "planet id")]
+        public PlanetId? DefaultPlanetId
         {
-            get => _planetId;
+            get => _defaultPlanetId;
             set
             {
-                _planetId = value;
+                _defaultPlanetId = value;
                 Empty = false;
             }
         }
@@ -396,6 +401,9 @@ namespace Nekoyume.Helper
             }
         }
 
+        /// <summary>
+        /// DataProvider Host.
+        /// </summary>
         [Option("api-server-host", Required = false, HelpText = "Host for the internal api client.")]
         public string ApiServerHost
         {

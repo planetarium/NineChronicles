@@ -129,7 +129,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             heimdallButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                _planetContext = PlanetSelector.SelectPlanet(_planetContext, heimdallButton.Text);
+                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, heimdallButton.Text);
                 selectPlanetPopup.SetActive(false);
             }).AddTo(gameObject);
             odinButton.OnClickSubject
@@ -137,7 +137,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             odinButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                _planetContext = PlanetSelector.SelectPlanet(_planetContext, odinButton.Text);
+                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, odinButton.Text);
                 selectPlanetPopup.SetActive(false);
             }).AddTo(gameObject);
             PlanetSelector.CurrentPlanetInfoSubject
@@ -280,7 +280,7 @@ namespace Nekoyume.UI
         private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {
             var planets = planetContext.Planets;
-            var planetInfo = planetContext.CurrentPlanetInfo;
+            var planetInfo = planetContext.SelectedPlanetInfo;
             if (planets is null ||
                 planetInfo is null)
             {
@@ -295,14 +295,14 @@ namespace Nekoyume.UI
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             planetText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (planets.TryGetPlanetInfo(PlanetId.Heimdall, out var heimdallInfo) ||
-                planets.TryGetPlanetInfo(PlanetId.HeimdallInternal, out heimdallInfo))
+            if (planets.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
+                planets.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
             {
                 heimdallButton.Text = textInfo.ToTitleCase(heimdallInfo.Name);
             }
 
-            if (planets.TryGetPlanetInfo(PlanetId.Odin, out var odinInfo) ||
-                planets.TryGetPlanetInfo(PlanetId.OdinInternal, out odinInfo))
+            if (planets.TryGetPlanetInfoById(PlanetId.Odin, out var odinInfo) ||
+                planets.TryGetPlanetInfoById(PlanetId.OdinInternal, out odinInfo))
             {
                 odinButton.Text = textInfo.ToTitleCase(odinInfo.Name);
             }
