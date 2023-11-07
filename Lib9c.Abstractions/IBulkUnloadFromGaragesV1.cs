@@ -7,7 +7,7 @@ using Libplanet.Types.Assets;
 
 namespace Lib9c.Abstractions
 {
-    public interface IUnloadFromGaragesV1
+    public interface IBulkUnloadFromGaragesV1
     {
         public IReadOnlyList<(
             Address recipientAvatarAddress,

@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action.Garages
     using Nekoyume.Model.Mail;
     using Xunit;
 
-    public class UnloadFromGaragesTest
+    public class BulkUnloadFromGaragesTest
     {
         private const int AvatarIndex = 0;
 
@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action.Garages
         private readonly Currency _ncg;
         private readonly IAccount _previousStates;
 
-        public UnloadFromGaragesTest()
+        public BulkUnloadFromGaragesTest()
         {
             var initializeStates = InitializeUtil.InitializeStates(
                 agentAddr: AgentAddress,
@@ -74,14 +74,14 @@ namespace Lib9c.Tests.Action.Garages
         {
             var actions = new[]
             {
-                new UnloadFromGarages(),
-                new UnloadFromGarages(new[] { unloadData }),
+                new BulkUnloadFromGarages(),
+                new BulkUnloadFromGarages(new[] { unloadData }),
             };
 
             foreach (var action in actions)
             {
                 var serialized = action.PlainValue;
-                var deserialized = new UnloadFromGarages();
+                var deserialized = new BulkUnloadFromGarages();
                 deserialized.LoadPlainValue(serialized);
 
                 Assert.Equal(action.UnloadData.Count, deserialized.UnloadData.Count);
@@ -113,7 +113,7 @@ namespace Lib9c.Tests.Action.Garages
         {
             const long blockIndex = 0L;
             var (states, unloadDataEnumerable) = RegisterPlainValue(_previousStates);
-            var action = new UnloadFromGarages(new[] { unloadDataEnumerable });
+            var action = new BulkUnloadFromGarages(new[] { unloadDataEnumerable });
             states = action.Execute(new ActionContext
             {
                 Signer = AgentAddress,
