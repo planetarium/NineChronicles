@@ -1223,9 +1223,7 @@ namespace Nekoyume.Game
             {
                 introScreen.OnClickGoogleSignIn.AsObservable()
                     .First()
-                    .Subscribe(_ => loadingScreen.Show(
-                        L10nManager.Localize("LOADING_TO_SIGNIN_PORTAL"),
-                        true));
+                    .Subscribe(_ => loadingScreen.Show());
 
                 (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
                     onGoogleSignInTuple = null;
