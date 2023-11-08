@@ -248,10 +248,35 @@ namespace Nekoyume
             return type.IsClass && type != typeof(string);
         }
 
+        private static Type FindTypeInAllAssemblies(string className)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.Name == className && HasField(type, "Url", typeof(string)) && HasField(type, "_client"))
+                    {
+                        return type;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static bool HasField(Type type, string fieldName, Type fieldType = null)
+        {
+            var field = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            if(fieldType == null)
+            {
+                return field != null;
+            }
+            return field != null && field.FieldType == fieldType;
+        }
+
         private void CreateClientInstance()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Type clientType = assembly.GetType(className);
+            Type clientType = FindTypeInAllAssemblies(className);
 
             if (clientType != null)
             {
