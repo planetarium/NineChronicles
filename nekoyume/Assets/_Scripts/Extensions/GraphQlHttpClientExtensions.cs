@@ -17,13 +17,20 @@ namespace Nekoyume
             this GraphQLHttpClient client,
             string query)
         {
-            Debug.Log("[GraphQl] StateQueryAsync()..." +
-                      $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"}" +
-                      $" Query: {query}");
+            if (client is null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var message = $" Endpoint: {client.Options.EndPoint?.AbsoluteUri ?? "null"}" +
+                          $" Query: {query}";
+            Debug.Log($"[GraphQl] StateQueryAsync()... {message}");
             var request = new GraphQLRequest(query);
             var response = await client.SendQueryAsync<StateQueryGraphType<T>>(request);
             if (response.Errors != null)
             {
+                Debug.LogError("[GraphQl] StateQueryAsync()... request has errors." +
+                               $" request: {message}");
                 foreach (var error in response.Errors)
                 {
                     Debug.LogError(error.Message);
