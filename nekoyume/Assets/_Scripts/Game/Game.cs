@@ -142,7 +142,7 @@ namespace Nekoyume.Game
 
         public NineChroniclesAPIClient ApiClient { get; private set; }
 
-        public NineChroniclesAPIClient RpcClient { get; private set; }
+        public NineChroniclesAPIClient RpcGraphQLClient { get; private set; }
 
         public MarketServiceClient MarketServiceClient { get; private set; }
 
