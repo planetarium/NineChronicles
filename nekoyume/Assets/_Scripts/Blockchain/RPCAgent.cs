@@ -116,46 +116,47 @@ namespace Nekoyume.Blockchain
                 })
             ));
         }
-
-        /// <summary>
-        /// Initialize without private key.
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public IEnumerator InitializeWithoutPrivateKey(
-            CommandLineOptions options)
-        {
-            _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
-            _lastTipChangedAt = DateTimeOffset.UtcNow;
-            var connect = StreamingHubClient
-                .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
-                    _channel,
-                    this)
-                .AsCoroutine();
-            yield return connect;
-            _hub = connect.Result;
-            _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
-            {
-                new ClientFilter()
-            });
-
-            // Android Mono only support arm7(32bit) backend in unity engine.
-            // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
-            // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
-            // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
-            // So I can only use normal ImportBlock() function when build in Android Mono backend :(
-            var task = Task.Run(async () =>
-            {
-                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
-        }
+        //
+        // /// <summary>
+        // /// Initialize without private key.
+        // /// </summary>
+        // /// <param name="options"></param>
+        // /// <returns></returns>
+        // public IEnumerator InitializeWithoutPrivateKey(
+        //     CommandLineOptions options)
+        // {
+        //     _channel = GrpcChannelx.ForTarget(new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
+        //     _lastTipChangedAt = DateTimeOffset.UtcNow;
+        //     var connect = StreamingHubClient
+        //         .ConnectAsync<IActionEvaluationHub, IActionEvaluationHubReceiver>(
+        //             _channel,
+        //             this)
+        //         .AsCoroutine();
+        //     yield return connect;
+        //     _hub = connect.Result;
+        //     _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
+        //     {
+        //         new ClientFilter()
+        //     });
+        //
+        //     // Android Mono only support arm7(32bit) backend in unity engine.
+        //     // 1. System.Net.WebClient is invaild when use Android Mono in currnet unity version.
+        //     // See this: https://issuetracker.unity3d.com/issues/system-dot-net-dot-webclient-not-working-when-building-on-android
+        //     // 2. If we use WWW class as a workaround, unfortunately, this class can't be used in aysnc function.
+        //     // So I can only use normal ImportBlock() function when build in Android Mono backend :(
+        //     var task = Task.Run(async () =>
+        //     {
+        //         _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
+        //     });
+        //     yield return new WaitUntil(() => task.IsCompleted);
+        // }
 
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[RPCAgent] Start initialization: {options.RpcServerHost}:{options.RpcServerPort}");
             PrivateKey = privateKey;
             _channel ??= GrpcChannelx.ForTarget(
                 new GrpcChannelTarget(options.RpcServerHost, options.RpcServerPort, true));
@@ -201,11 +202,11 @@ namespace Nekoyume.Blockchain
                 }
                 else
                 {
-                    var task = Task.Run(async () =>
+                    yield return UniTask.Run(async () =>
                     {
-                        _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath());
-                    });
-                    yield return new WaitUntil(() => task.IsCompleted);
+                        var genesisBlockPath = options.GenesisBlockPath ?? BlockManager.GenesisBlockPath();
+                        _genesis = await BlockManager.ImportBlockAsync(genesisBlockPath);
+                    }).ToCoroutine();
                 }
             }
 
@@ -213,6 +214,7 @@ namespace Nekoyume.Blockchain
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+            Debug.Log($"[RPCAgent] Finish initialization");
         }
 
         public IValue GetState(Address address)
@@ -649,13 +651,14 @@ namespace Nekoyume.Blockchain
                 {
                     continue;
                 }
-                Debug.Log($"[ActionDebug] before MakeTransaction {++i}");
+                Debug.Log($"[RPCAgent] CoTxProcessor()... before MakeTransaction.({++i})");
                 Task task = Task.Run(async () =>
                 {
                     await MakeTransaction(new List<ActionBase> { action });
                 });
                 yield return new WaitUntil(() => task.IsCompleted);
-
+                Debug.Log("[RPCAgent] CoTxProcessor()... after MakeTransaction." +
+                          $" task completed({task.IsCompleted})");
                 if (task.IsFaulted)
                 {
                     Debug.LogException(task.Exception);
@@ -673,7 +676,7 @@ namespace Nekoyume.Blockchain
         private async Task MakeTransaction(List<ActionBase> actions)
         {
             var nonce = await GetNonceAsync();
-            long gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
+            var gasLimit = actions.Any(a => a is ITransferAsset or ITransferAssets) ? 4L : 1L;
             var tx = NCTx.Create(
                 nonce: nonce,
                 privateKey: PrivateKey,
@@ -684,23 +687,27 @@ namespace Nekoyume.Blockchain
                 gasLimit: gasLimit
             );
 
-            string actionsName = default;
-            foreach (var action in actions)
+            var actionsText = string.Join(", ", actions.Select(action =>
             {
-                actionsName += $"\n#{action}, id={(action is GameAction gameAction ? gameAction.Id.ToString() : "is not GameAction")}";
-            }
-            Debug.Log("[Transaction]" +
-                $"\nnonce={nonce}" +
-                $"\nPrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
-                $"\nHash={_genesis?.Hash}" +
-                $"\nactionsName={actionsName}");
+                if (action is GameAction gameAction)
+                {
+                    return $"{action.GetActionTypeAttribute().TypeIdentifier}" +
+                           $"({gameAction.Id.ToString()})";
+                }
+
+                return action.GetActionTypeAttribute().TypeIdentifier.ToString();
+            }));
+            Debug.Log("[RPCAgent] MakeTransaction()... w/" +
+                      $" nonce={nonce}" +
+                      $" PrivateKeyAddr={PrivateKey.ToAddress().ToString()}" +
+                      $" GenesisBlockHash={_genesis?.Hash}" +
+                      $" TxId={tx.Id}" +
+                      $" Actions=[{actionsText}]");
 
             _onMakeTransactionSubject.OnNext((tx, actions));
             await _service.PutTransaction(tx.Serialize());
             foreach (var action in actions)
             {
-                Debug.Log($"[Transaction] action = {action}");
-
                 if (action is GameAction gameAction)
                 {
                     _transactions.TryAdd(gameAction.Id, tx.Id);
