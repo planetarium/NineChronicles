@@ -81,6 +81,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject enemyCpContainer;
 
+        [SerializeField] private RawImage lobbyCharacterRenderer;
+
         private StageType _stageType;
         private int? _scheduleId;
         private int _worldId;
@@ -120,6 +122,16 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
             base.Awake();
+
+            if (lobbyCharacterRenderer)
+            {
+                var camObj = GameObject.FindGameObjectWithTag("LobbyPlayerSpineCamera");
+                if (camObj)
+                {
+                    var urpCam = camObj.GetComponent<Camera>();
+                    lobbyCharacterRenderer.texture = urpCam.targetTexture;
+                }
+            }
         }
 
         public override void Initialize()

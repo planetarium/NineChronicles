@@ -27,6 +27,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using Nekoyume.UI.Module.WorldBoss;
 using TMPro;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -95,6 +96,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private Transform titleSocket;
 
+        [SerializeField] private RawImage lobbyCharacterRenderer;
+
         private Coroutine _coLazyClose;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
@@ -148,6 +151,16 @@ namespace Nekoyume.UI
                 .Subscribe(level =>
                     stakingLevelIcon.sprite = stakeIconData.GetIcon(level, IconType.Bubble))
                 .AddTo(gameObject);
+
+            if (lobbyCharacterRenderer)
+            {
+                var camObj = GameObject.FindGameObjectWithTag("LobbyPlayerSpineCamera");
+                if (camObj)
+                {
+                    var urpCam = camObj.GetComponent<Camera>();
+                    lobbyCharacterRenderer.texture = urpCam.targetTexture;
+                }
+            }
         }
 
         private static void HackAndSlashForTutorial(int stageId)
