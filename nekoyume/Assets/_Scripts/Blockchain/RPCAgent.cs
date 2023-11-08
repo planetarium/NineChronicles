@@ -112,10 +112,6 @@ namespace Nekoyume.Blockchain
             GrpcChannelProviderHost.Initialize(new LoggingGrpcChannelProvider(
                 new DefaultGrpcChannelProvider(new[]
                 {
-                    // send keepalive ping every 5 second, default is 2 hours
-                    new ChannelOption("grpc.keepalive_time_ms", 5000),
-                    // keepalive ping time out after 5 seconds, default is 20 seconds
-                    new ChannelOption("grpc.keepalive_timeout_ms", 5 * 1000),
                     new ChannelOption("grpc.max_receive_message_length", -1)
                 })
             ));
