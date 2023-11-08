@@ -402,6 +402,8 @@ namespace Nekoyume.Game
             }
         }
 
+        public System.Action Test;
+
         public void UpdateDynamicRatio()
         {
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
@@ -413,6 +415,7 @@ namespace Nekoyume.Game
             _isStaticRatio = false;
             GL.Clear(true, true, Color.black);
             ScreenClear.ClearScreen();
+            Test?.Invoke();
         }
 
         public void UpdateStaticRatioWithLetterBox()
