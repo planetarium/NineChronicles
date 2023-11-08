@@ -217,9 +217,9 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Load CommandLineOptions at Start() after init
-#elif UNITY_IOS && !UNITY_EDITOR
+#elif !UNITY_EDITOR && UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
@@ -493,7 +493,7 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if RUN_ON_MOBILE || UNITY_EDITOR
+#if UNITY_EDITOR || RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
 #endif
 
@@ -545,7 +545,7 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if RUN_ON_MOBILE || UNITY_EDITOR
+#if UNITY_EDITOR || RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
