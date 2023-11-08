@@ -93,22 +93,9 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var iapStoreManager = game.IAPStoreManager;
-            if (iapStoreManager is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
-            if (storeProduct is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
             var format = L10nManager.Localize(
                 "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
-            return string.Format(format, storeProduct.metadata.localizedTitle);
+            return string.Format(format, product.Name);
         }
 
         private static string GetCellContentsForException(
