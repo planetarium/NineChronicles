@@ -472,6 +472,7 @@ namespace Nekoyume.Game
             {
                 Debug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
                           " because of no SeasonPassServiceHost");
+                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
             }
             else
             {
