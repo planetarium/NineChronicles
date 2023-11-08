@@ -12,6 +12,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using UnityEngine;
 using static Lib9c.SerializeKeys;
 
@@ -28,7 +29,7 @@ namespace Nekoyume.State
 
         private static long _arenaInfoTupleUpdatedBlockIndex;
 
-        private static readonly ReactiveProperty<TxResultQuery.ArenaInformation> _playerArenaInfo =
+        private static readonly ReactiveProperty<ArenaParticipantModel> _playerArenaInfo =
             new(null);
 
         private static readonly ReactiveProperty<int> _purchasedDuringInterval = new();
@@ -39,7 +40,7 @@ namespace Nekoyume.State
 
         public static IReadOnlyReactiveProperty<long> LastBattleBlockIndex =>
             _lastBattleBlockIndex;
-        public static IReadOnlyReactiveProperty<TxResultQuery.ArenaInformation> PlayerArenaInfo =>
+        public static IReadOnlyReactiveProperty<ArenaParticipantModel> PlayerArenaInfo =>
             _playerArenaInfo;
         public static
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
@@ -53,12 +54,12 @@ namespace Nekoyume.State
 
         private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
 
-        private static readonly AsyncUpdatableRxProp<List<TxResultQuery.ArenaInformation>>
+        private static readonly AsyncUpdatableRxProp<List<ArenaParticipantModel>>
             _arenaInformationOrderedWithScore = new(
-                new List<TxResultQuery.ArenaInformation>(),
+                new List<ArenaParticipantModel>(),
                 UpdateArenaInformationOrderedWithScoreAsync);
 
-        public static IReadOnlyAsyncUpdatableRxProp<List<TxResultQuery.ArenaInformation>>
+        public static IReadOnlyAsyncUpdatableRxProp<List<ArenaParticipantModel>>
             ArenaInformationOrderedWithScore => _arenaInformationOrderedWithScore;
 
         public static void UpdateArenaInfoToNext()
@@ -191,12 +192,12 @@ namespace Nekoyume.State
             return (currentArenaInfo, nextArenaInfo);
         }
 
-        private static async Task<List<TxResultQuery.ArenaInformation>>
-            UpdateArenaInformationOrderedWithScoreAsync(List<TxResultQuery.ArenaInformation> previous)
+        private static async Task<List<ArenaParticipantModel>>
+            UpdateArenaInformationOrderedWithScoreAsync(List<ArenaParticipantModel> previous)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;
-            List<TxResultQuery.ArenaInformation> avatarAddrAndScoresWithRank =
-                new List<TxResultQuery.ArenaInformation>();
+            List<ArenaParticipantModel> avatarAddrAndScoresWithRank =
+                new List<ArenaParticipantModel>();
             if (!avatarAddress.HasValue)
             {
                 // TODO!!!!
@@ -213,13 +214,12 @@ namespace Nekoyume.State
 
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
-            var arenaInfo = new List<TxResultQuery.ArenaInformation>();
+            var arenaInfo = new List<ArenaParticipantModel>();
             int purchasedCountDuringInterval = 0;
             long lastBattleBlockIndex = 0L;
             try
             {
-                var response = await TxResultQuery.QueryArenaInfoAsync(Game.Game.instance.RpcClient,
-                    currentAvatarAddr);
+                var response = await Game.Game.instance.RpcClient.QueryArenaInfoAsync(currentAvatarAddr);
                 arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;
                 purchasedCountDuringInterval =
                     response.StateQuery.ArenaInfo.PurchasedCountDuringInterval;
@@ -231,18 +231,18 @@ namespace Nekoyume.State
             }
             if (!arenaInfo.Any())
             {
-                Debug.Log($"Failed to get {nameof(TxResultQuery.ArenaInformation)}");
+                Debug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
-                var playerArenaInf = new TxResultQuery.ArenaInformation
+                var playerArenaInf = new ArenaParticipantModel
                 {
                     AvatarAddr = currentAvatarAddr,
                     Score = ArenaScore.ArenaScoreDefault,
-                    Win = 0,
-                    Lose = 0,
+                    WinScore = 0,
+                    LoseScore = 0,
                     NameWithHash = currentAvatar.NameWithHash,
-                    ArmorId = Util.GetPortraitId(BattleType.Arena),
+                    PortraitId = Util.GetPortraitId(BattleType.Arena),
                     Cp = Util.TotalCP(BattleType.Arena),
                     Level = currentAvatar.level
                 };

@@ -16,6 +16,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.GrandFinale;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using Nekoyume.UI.Scroller;
@@ -53,7 +54,7 @@ namespace Nekoyume.UI
         private GameObject grandFinaleLogoObject;
 
         private ArenaSheet.RoundData _roundData;
-        private List<TxResultQuery.ArenaInformation> _boundedData;
+        private List<ArenaParticipantModel> _boundedData;
         private GrandFinaleScheduleSheet.Row _grandFinaleScheduleRow;
         private GrandFinaleStates.GrandFinaleParticipant[] _grandFinaleParticipants;
         private bool _useGrandFinale;
@@ -100,7 +101,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            List<TxResultQuery.ArenaInformation> arenaParticipants,
+            List<ArenaParticipantModel> arenaParticipants,
             bool ignoreShowAnimation = false) =>
             Show(_roundData,
                 arenaParticipants,
@@ -108,7 +109,7 @@ namespace Nekoyume.UI
 
         public void Show(
             ArenaSheet.RoundData roundData,
-            List<TxResultQuery.ArenaInformation> arenaParticipants,
+            List<ArenaParticipantModel> arenaParticipants,
             bool ignoreShowAnimation = false)
         {
             _useGrandFinale = false;
@@ -162,8 +163,8 @@ namespace Nekoyume.UI
             _billboard.SetData(
                 "season",
                 player.Rank,
-                player.Win,
-                player.Lose,
+                player.WinScore,
+                player.LoseScore,
                 cp,
                 player.Score);
         }
@@ -252,12 +253,12 @@ namespace Nekoyume.UI
                     {
                         name = e.NameWithHash,
                         level = e.Level,
-                        fullCostumeOrArmorId = e.ArmorId,
+                        fullCostumeOrArmorId = e.PortraitId,
                         titleId = null,
                         cp = e.Cp,
                         score = e.Score,
                         rank = e.Rank,
-                        expectWinDeltaScore = e.Win,
+                        expectWinDeltaScore = e.WinScore,
                         interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                         canFight = true,
                         address = e.AvatarAddr.ToHex(),

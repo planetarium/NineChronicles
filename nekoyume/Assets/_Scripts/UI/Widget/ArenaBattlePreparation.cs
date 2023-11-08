@@ -20,6 +20,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using TMPro;
 
 namespace Nekoyume.UI
@@ -73,7 +74,7 @@ namespace Nekoyume.UI
 
         private const int TicketCountToUse = 1;
         private ArenaSheet.RoundData _roundData;
-        private TxResultQuery.ArenaInformation _info;
+        private ArenaParticipantModel _info;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -140,7 +141,7 @@ namespace Nekoyume.UI
 
         public void Show(
             ArenaSheet.RoundData roundData,
-            TxResultQuery.ArenaInformation info,
+            ArenaParticipantModel info,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
@@ -156,7 +157,7 @@ namespace Nekoyume.UI
 
         public void Show(
             int grandFinaleId,
-            TxResultQuery.ArenaInformation info,
+            ArenaParticipantModel info,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
@@ -287,7 +288,7 @@ namespace Nekoyume.UI
                 playerAvatar.address,
                 _info.NameWithHash,
                 _info.Level,
-                _info.ArmorId,
+                _info.PortraitId,
                 _info.AvatarAddr);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
@@ -317,7 +318,7 @@ namespace Nekoyume.UI
                 playerAvatar.address,
                 _info.NameWithHash,
                 _info.Level,
-                _info.ArmorId,
+                _info.PortraitId,
                 _info.AvatarAddr);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;

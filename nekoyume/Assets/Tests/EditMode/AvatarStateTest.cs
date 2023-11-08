@@ -57,8 +57,7 @@ namespace Tests.EditMode
         public async Task Test()
         {
             var client = new NineChroniclesAPIClient("http://localhost:50000/graphql");
-            await TxResultQuery.QueryArenaInfoAsync(client,
-                new Address("0xc86d734bd2d5857cd25887db7dbbe252f12087c6"));
+            await client.QueryArenaInfoAsync(new Address("0xc86d734bd2d5857cd25887db7dbbe252f12087c6"));
         }
     }
 }
