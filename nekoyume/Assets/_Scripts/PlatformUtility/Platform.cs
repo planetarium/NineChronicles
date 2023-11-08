@@ -9,7 +9,7 @@ namespace Nekoyume
         {
             get
             {
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
                 return "storage/emulated/0/Documents/NineChronicles";
 #else
                 return Application.persistentDataPath;
@@ -19,33 +19,24 @@ namespace Nekoyume
 
         public static string GetPersistentDataPath(string fileName)
         {
-            return Path.Combine(Platform.PersistentDataPath, fileName);
+            return Path.Combine(PersistentDataPath, fileName);
         }
 
-        public static string StreamingAssetsPath
-        {
-            get { return Application.streamingAssetsPath; }
-        }
+        public static string StreamingAssetsPath => Application.streamingAssetsPath;
 
         public static string GetStreamingAssetsPath(string fileName)
         {
-            return Path.Combine(Platform.StreamingAssetsPath, fileName);
+            return Path.Combine(StreamingAssetsPath, fileName);
         }
 
-        public static string DataPath
-        {
-            get { return Application.dataPath; }
-        }
+        public static string DataPath => Application.dataPath;
 
         public static string GetDataPath(string fileName)
         {
-            return Path.Combine(Platform.DataPath, fileName);
+            return Path.Combine(DataPath, fileName);
         }
 
-        public static RuntimePlatform CurrentPlatform
-        {
-            get { return Application.platform; }
-        }
+        public static RuntimePlatform CurrentPlatform => Application.platform;
 
         public static bool IsTargetPlatform(RuntimePlatform platform)
         {
@@ -54,8 +45,8 @@ namespace Nekoyume
 
         public static bool IsMobilePlatform()
         {
-            return Platform.IsTargetPlatform(RuntimePlatform.Android) ||
-                   Platform.IsTargetPlatform(RuntimePlatform.IPhonePlayer);
+            return IsTargetPlatform(RuntimePlatform.Android) ||
+                   IsTargetPlatform(RuntimePlatform.IPhonePlayer);
         }
     }
 }

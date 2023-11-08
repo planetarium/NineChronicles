@@ -44,8 +44,7 @@ namespace Nekoyume.State
         private ModifierInfo<AvatarStateModifier> _avatarModifierInfo;
 
         private readonly Dictionary<Address, ModifierInfo<CombinationSlotStateModifier>>
-            _combinationSlotModifierInfos =
-                new Dictionary<Address, ModifierInfo<CombinationSlotStateModifier>>();
+            _combinationSlotModifierInfos = new();
 
         private ModifierInfo<WeeklyArenaStateModifier> _weeklyArenaModifierInfo;
 
@@ -523,6 +522,36 @@ namespace Nekoyume.State
             }
 
             return PostModify(state, _avatarModifierInfo);
+        }
+
+        public AvatarState ModifyInventoryOnly(AvatarState avatarState)
+        {
+            if (avatarState is null ||
+                _avatarModifierInfo is null)
+            {
+                return null;
+            }
+
+            var address = avatarState.address;
+            if (!_avatarModifierInfo.Address.Equals(address))
+            {
+                return null;
+            }
+
+            foreach (var m in _avatarModifierInfo.Modifiers)
+            {
+                if (m is not AvatarInventoryFungibleItemRemover &&
+                    m is not AvatarInventoryItemEquippedModifier &&
+                    m is not AvatarInventoryTradableItemRemover &&
+                    m is not AvatarInventoryNonFungibleItemRemover)
+                {
+                    continue;
+                }
+
+                avatarState = m.Modify(avatarState);
+            }
+
+            return avatarState;
         }
 
         public CombinationSlotState Modify(CombinationSlotState state)

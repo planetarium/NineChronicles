@@ -1,3 +1,4 @@
+using System;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -30,18 +31,26 @@ namespace Nekoyume.GraphQL
 
         public async Task<T> GetObjectAsync<T>(GraphQLRequest request) where T : class
         {
-            var graphQLResponse = await _client.SendQueryAsync<T>(request);
-            if (graphQLResponse.Errors != null && graphQLResponse.Errors.Length > 0)
+            try
             {
-                foreach (var error in graphQLResponse.Errors)
+                var graphQLResponse = await _client.SendQueryAsync<T>(request);
+                if (graphQLResponse.Errors != null && graphQLResponse.Errors.Length > 0)
                 {
-                    Debug.LogError(error.Message);
+                    foreach (var error in graphQLResponse.Errors)
+                    {
+                        Debug.LogError(error.Message);
+                    }
+
+                    return null;
                 }
 
+                return graphQLResponse.Data;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to get object with GraphQL Request.\n{e}");
                 return null;
             }
-
-            return graphQLResponse.Data;
         }
     }
 }
