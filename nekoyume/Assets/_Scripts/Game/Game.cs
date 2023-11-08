@@ -598,6 +598,16 @@ namespace Nekoyume.Game
 
         private void OnLoadCommandlineOptions()
         {
+            if (_commandLineOptions is null)
+            {
+                const string message = "CommandLineOptions is null.";
+                Debug.LogError(message);
+                QuitWithMessage(
+                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                    debugMessage: message);
+                return;
+            }
+
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
                 Debug.Log("[Game] InGameDebugConsole enabled");

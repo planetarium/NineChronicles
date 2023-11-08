@@ -81,10 +81,18 @@ namespace Nekoyume.Game.LiveAsset
 #endif
             var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
             Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
-            yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
+            yield return StartCoroutine(
+                RequestManager.instance.GetJson(
+                    cloEndpoint,
+                    SetCommandLineOptions));
 
-            if(CommandLineOptions == null)
-                yield return StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
+            if (CommandLineOptions == null)
+            {
+                yield return StartCoroutine(
+                    RequestManager.instance.GetJson(
+                        _endpoint.CommandLineOptionsJsonUrl,
+                        SetCommandLineOptions));
+            }
         }
 
         public void AddToCheckedList(string key)
