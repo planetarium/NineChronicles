@@ -361,17 +361,6 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start()... AudioController initialized");
 
-            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-            PatrolRewardServiceClient =
-                new NineChroniclesAPIClient(_commandLineOptions.PatrolRewardServiceHost);
-
-            SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
-            if(!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
-                SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
-            if(!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
-                SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
-
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -406,17 +395,102 @@ namespace Nekoyume.Game
 
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
-            ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
-            if (!string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
+            // NOTE: Initialize api client.
+            if (string.IsNullOrEmpty(_commandLineOptions.ApiServerHost))
             {
-                RpcClient = new NineChroniclesAPIClient(
+                ApiClient = new NineChroniclesAPIClient(string.Empty);
+                Debug.Log("[Game] Start()... ApiClient initialized with empty host url" +
+                          " because of no ApiServerHost");
+            }
+            else
+            {
+                ApiClient = new NineChroniclesAPIClient(_commandLineOptions.ApiServerHost);
+                Debug.Log("[Game] Start()... ApiClient initialized." +
+                          $" host: {_commandLineOptions.ApiServerHost}");
+            }
+
+            // NOTE: Initialize graphql client which is targeting to RPC server.
+            if (string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
+            {
+                RpcGraphQLClient = new NineChroniclesAPIClient(string.Empty);
+                Debug.Log("[Game] Start()... RpcGraphQLClient initialized with empty host url" +
+                          " because of no RpcServerHost");
+            }
+            else
+            {
+                RpcGraphQLClient = new NineChroniclesAPIClient(
                     $"http://{_commandLineOptions.RpcServerHost}/graphql");
             }
 
-            WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
-            MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
-            PatrolRewardServiceClient = new NineChroniclesAPIClient(
-                _commandLineOptions.PatrolRewardServiceHost);
+            // NOTE: Initialize world boss query.
+            if (string.IsNullOrEmpty(_commandLineOptions.OnBoardingHost))
+            {
+                WorldBossQuery.SetUrl(string.Empty);
+                Debug.Log($"[Game] Start()... WorldBossQuery initialized with empty host url" +
+                          " because of no OnBoardingHost." +
+                          $" url: {WorldBossQuery.Url}");
+            }
+            else
+            {
+                WorldBossQuery.SetUrl(_commandLineOptions.OnBoardingHost);
+                Debug.Log("[Game] Start()... WorldBossQuery initialized." +
+                          $" host: {_commandLineOptions.OnBoardingHost}" +
+                          $" url: {WorldBossQuery.Url}");
+            }
+
+            // NOTE: Initialize market service.
+            if (string.IsNullOrEmpty(_commandLineOptions.MarketServiceHost))
+            {
+                MarketServiceClient = new MarketServiceClient(string.Empty);
+                Debug.Log("[Game] Start()... MarketServiceClient initialized with empty host url" +
+                          " because of no MarketServiceHost");
+            }
+            else
+            {
+                MarketServiceClient = new MarketServiceClient(_commandLineOptions.MarketServiceHost);
+                Debug.Log("[Game] Start()... MarketServiceClient initialized." +
+                          $" host: {_commandLineOptions.MarketServiceHost}");
+            }
+
+            // NOTE: Initialize patrol reward service.
+            if (string.IsNullOrEmpty(_commandLineOptions.PatrolRewardServiceHost))
+            {
+                PatrolRewardServiceClient = new NineChroniclesAPIClient(string.Empty);
+                Debug.Log("[Game] Start()... PatrolRewardServiceClient initialized with empty host url" +
+                          " because of no PatrolRewardServiceHost");
+            }
+            else
+            {
+                PatrolRewardServiceClient = new NineChroniclesAPIClient(
+                    _commandLineOptions.PatrolRewardServiceHost);
+                Debug.Log("[Game] Start()... PatrolRewardServiceClient initialized." +
+                          $" host: {_commandLineOptions.PatrolRewardServiceHost}");
+            }
+
+            // NOTE: Initialize season pass service.
+            if (string.IsNullOrEmpty(_commandLineOptions.SeasonPassServiceHost))
+            {
+                Debug.Log("[Game] Start()... SeasonPassServiceManager not initialized" +
+                          " because of no SeasonPassServiceHost");
+            }
+            else
+            {
+                SeasonPassServiceManager = new SeasonPassServiceManager(_commandLineOptions.SeasonPassServiceHost);
+                if (!string.IsNullOrEmpty(_commandLineOptions.GoogleMarketUrl))
+                {
+                    SeasonPassServiceManager.GoogleMarketURL = _commandLineOptions.GoogleMarketUrl;
+                }
+
+                if (!string.IsNullOrEmpty(_commandLineOptions.AppleMarketUrl))
+                {
+                    SeasonPassServiceManager.AppleMarketURL = _commandLineOptions.AppleMarketUrl;
+                }
+
+                Debug.Log("[Game] Start()... SeasonPassServiceManager initialized." +
+                          $" host: {_commandLineOptions.SeasonPassServiceHost}" +
+                          $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
+                          $", apple: {SeasonPassServiceManager.AppleMarketURL}");
+            }
 
 #if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
@@ -526,15 +600,31 @@ namespace Nekoyume.Game
         {
             if (debugConsolePrefab != null && _commandLineOptions.IngameDebugConsole)
             {
+                Debug.Log("[Game] InGameDebugConsole enabled");
                 Util.IngameDebugConsoleCommands.IngameDebugConsoleObj = Instantiate(debugConsolePrefab);
                 Util.IngameDebugConsoleCommands.Initailize();
             }
 
             if (_commandLineOptions.RpcClient)
             {
-                _commandLineOptions.RpcServerHost = !string.IsNullOrEmpty(_commandLineOptions.RpcServerHost)
-                    ? _commandLineOptions.RpcServerHost
-                    : _commandLineOptions.RpcServerHosts.OrderBy(_ => Guid.NewGuid()).First();
+                if (string.IsNullOrEmpty(_commandLineOptions.RpcServerHost))
+                {
+                    if (_commandLineOptions.RpcServerHosts == null ||
+                        !_commandLineOptions.RpcServerHosts.Any())
+                    {
+                        const string message =
+                            "RPC client mode requires RPC server host(s).";
+                        Debug.LogError(message);
+                        QuitWithMessage(
+                            L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                            debugMessage: message);
+                        return;
+                    }
+
+                    _commandLineOptions.RpcServerHost = _commandLineOptions.RpcServerHosts
+                        .OrderBy(_ => Guid.NewGuid())
+                        .First();
+                }
             }
 
             Debug.Log("[Game] CommandLineOptions loaded");
