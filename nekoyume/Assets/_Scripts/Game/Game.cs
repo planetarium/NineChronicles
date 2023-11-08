@@ -267,13 +267,13 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
-            
+
 #if RUN_ON_MOBILE
             // NOTE: Initialize planets.
             //       It should do after load CommandLineOptions.
