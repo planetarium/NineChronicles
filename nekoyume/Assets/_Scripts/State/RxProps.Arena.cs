@@ -211,23 +211,51 @@ namespace Nekoyume.State
 
             _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = _agent.BlockIndex;
 
-            var blockIndex = _agent.BlockIndex;
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
-            var response = await TxResultQuery.QueryArenaInfoAsync(Game.Game.instance.RpcClient,
-                currentAvatarAddr);
-            var arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;
+            var arenaInfo = new List<TxResultQuery.ArenaInformation>();
+            int purchasedCountDuringInterval = 0;
+            long lastBattleBlockIndex = 0L;
+            try
+            {
+                var response = await TxResultQuery.QueryArenaInfoAsync(Game.Game.instance.RpcClient,
+                    currentAvatarAddr);
+                arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;
+                purchasedCountDuringInterval =
+                    response.StateQuery.ArenaInfo.PurchasedCountDuringInterval;
+                lastBattleBlockIndex = response.StateQuery.ArenaInfo.LastBattleBlockIndex;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
             if (!arenaInfo.Any())
             {
                 Debug.Log($"Failed to get {nameof(TxResultQuery.ArenaInformation)}");
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
+                var playerArenaInf = new TxResultQuery.ArenaInformation
+                {
+                    AvatarAddr = currentAvatarAddr,
+                    Score = ArenaScore.ArenaScoreDefault,
+                    Win = 0,
+                    Lose = 0,
+                    NameWithHash = currentAvatar.NameWithHash,
+                    ArmorId = Util.GetPortraitId(BattleType.Arena),
+                    Cp = Util.TotalCP(BattleType.Arena),
+                    Level = currentAvatar.level
+                };
+                _playerArenaInfo.SetValueAndForceNotify(playerArenaInf);
                 return avatarAddrAndScoresWithRank;
             }
+
+            var playerArenaInfo = arenaInfo.FirstOrDefault(p => p.AvatarAddr == currentAvatarAddr);
+            if (playerArenaInfo is { })
+            {
+                _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+            }
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
-            var purchasedCountDuringInterval = response.StateQuery.ArenaInfo.PurchasedCountDuringInterval;
-            long lastBattleBlockIndex = response.StateQuery.ArenaInfo.LastBattleBlockIndex;
             _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
             _lastBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
 
