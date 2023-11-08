@@ -313,11 +313,17 @@ namespace Nekoyume.L10n
 
                             if (dictionary.ContainsKey(key))
                             {
-                                throw new L10nAlreadyContainsKeyException(
-                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {fullName}");
+                                Debug.LogError("[L10nManager] L10n duplication Key." +
+                                               " Ignore duplicated key and use first value." +
+                                               $" key: {key}" +
+                                               $", recordsIndex: {recordsIndex}" +
+                                               $", csvFileInfo: {fullName}");
+                            }
+                            else
+                            {
+                                dictionary.Add(key, value);
                             }
 
-                            dictionary.Add(key, value);
                             recordsIndex++;
                         }
                     }
@@ -374,8 +380,11 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    Debug.LogError($"L10n duplication Key  key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
-                                    dictionary[key] = value;
+                                    Debug.LogError("[L10nManager] L10n duplication Key." +
+                                                   " Ignore duplicated key and use first value." +
+                                                   $" key: {key}" +
+                                                   $", recordsIndex: {recordsIndex}" +
+                                                   $", csvFileInfo: {csvFileInfo.FullName}");
                                 }
                                 else
                                 {
