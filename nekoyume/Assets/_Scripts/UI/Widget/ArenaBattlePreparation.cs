@@ -89,13 +89,12 @@ namespace Nekoyume.UI
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var currentRound =
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-                var ticketCount = 0;
-                // var ticketCount = RxProps.PlayersArenaParticipant.HasValue
-                //     ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
-                //         blockIndex,
-                //         currentRound.StartBlockIndex,
-                //         States.Instance.GameConfigState.DailyArenaInterval)
-                //     : 0;
+                var ticketCount = RxProps.ArenaInfoTuple.HasValue
+                    ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
+                        blockIndex,
+                        currentRound.StartBlockIndex,
+                        States.Instance.GameConfigState.DailyArenaInterval)
+                    : 0;
                 return ticketCount >= TicketCountToUse;
             }
         }
@@ -224,24 +223,24 @@ namespace Nekoyume.UI
             }
 
             var balance = States.Instance.GoldBalanceState.Gold;
-            // var cost = ArenaHelper.GetTicketPrice(
-            //     _roundData,
-            //     RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
-            //     balance.Currency);
-            // var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
+            var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
+            var cost = ArenaHelper.GetTicketPrice(
+                _roundData,
+                currentArenaInfo,
+                balance.Currency);
 
-            // Find<ArenaTicketPurchasePopup>().Show(
-            //     CostType.ArenaTicket,
-            //     CostType.NCG,
-            //     balance,
-            //     cost,
-            //     () => StartCoroutine(CoBattleStart(CostType.NCG)),
-            //     GoToMarket,
-            //     arenaInformation.PurchasedTicketCount,
-            //     _roundData.MaxPurchaseCount,
-            //     RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
-            //     _roundData.MaxPurchaseCountWithInterval
-            // );
+            Find<ArenaTicketPurchasePopup>().Show(
+                CostType.ArenaTicket,
+                CostType.NCG,
+                balance,
+                cost,
+                () => StartCoroutine(CoBattleStart(CostType.NCG)),
+                GoToMarket,
+                currentArenaInfo.PurchasedTicketCount,
+                _roundData.MaxPurchaseCount,
+                RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
+                _roundData.MaxPurchaseCountWithInterval
+            );
         }
 
         private IEnumerator CoBattleStart(CostType costType)
