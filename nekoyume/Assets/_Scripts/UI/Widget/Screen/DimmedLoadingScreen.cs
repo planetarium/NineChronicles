@@ -8,7 +8,7 @@ namespace Nekoyume.UI
 {
     public class DimmedLoadingScreen : ScreenWidget
     {
-        public enum Case
+        public enum ContentType
         {
             ConnectingToTheNetworks = 0,
             WaitingForSocialAuthenticating,
@@ -25,10 +25,10 @@ namespace Nekoyume.UI
         private TMP_Text subText;
 
         public void Show(
-            Case enumCase = Case.ConnectingToTheNetworks,
+            ContentType contentType = ContentType.ConnectingToTheNetworks,
             bool ignoreShowAnimation = false)
         {
-            UpdateContent(enumCase);
+            UpdateContent(contentType);
             if (IsActive())
             {
                 return;
@@ -37,28 +37,28 @@ namespace Nekoyume.UI
             Show(ignoreShowAnimation);
         }
 
-        private void UpdateContent(Case enumCase)
+        private void UpdateContent(ContentType contentType)
         {
-            switch (enumCase)
+            switch (contentType)
             {
-                case Case.ConnectingToTheNetworks:
+                case ContentType.ConnectingToTheNetworks:
                     titleText.text = L10nManager.Localize("LOADING_TO_CONNECT_TO_NETWORKS");
                     subText.text = L10nManager.Localize("LOADING_TO_CONNECT_TO_NETWORKS_DESC");
                     break;
-                case Case.WaitingForSocialAuthenticating:
+                case ContentType.WaitingForSocialAuthenticating:
                     titleText.text = L10nManager.Localize("LOADING_FOR_SOCIAL_AUTHENTICATION");
                     subText.text = string.Empty;
                     break;
-                case Case.WaitingForPortalAuthenticating:
+                case ContentType.WaitingForPortalAuthenticating:
                     titleText.text = L10nManager.Localize("LOADING_FOR_PORTAL_AUTHENTICATION");
                     subText.text = string.Empty;
                     break;
-                case Case.WaitingForPlanetAccountInfoSyncing:
+                case ContentType.WaitingForPlanetAccountInfoSyncing:
                     titleText.text = L10nManager.Localize("LOADING_TO_SYNCHRONIZE_PLANET_ACCOUNT_INFORMATION");
                     subText.text = string.Empty;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(enumCase), enumCase, null);
+                    throw new ArgumentOutOfRangeException(nameof(contentType), contentType, null);
             }
         }
     }

@@ -1327,7 +1327,7 @@ namespace Nekoyume.Game
             {
                 introScreen.OnClickGoogleSignIn.AsObservable()
                     .First()
-                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.Case.WaitingForSocialAuthenticating));
+                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
 
                 (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
                     onGoogleSignInTuple = null;
@@ -1342,7 +1342,7 @@ namespace Nekoyume.Game
                 var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
 
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
-                loadingScreen.Show(DimmedLoadingScreen.Case.WaitingForPortalAuthenticating);
+                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
 
@@ -1366,7 +1366,7 @@ namespace Nekoyume.Game
 
             if (agentAddr.HasValue)
             {
-                loadingScreen.Show(DimmedLoadingScreen.Case.WaitingForPlanetAccountInfoSyncing);
+                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     agentAddr.Value).ToCoroutine();
