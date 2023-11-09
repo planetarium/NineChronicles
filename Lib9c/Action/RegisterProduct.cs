@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -12,6 +13,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Market;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -27,6 +29,8 @@ namespace Nekoyume.Action
 
         public override IAccount Execute(IActionContext context)
         {
+            var sw = new Stopwatch();
+
             context.UseGas(1);
             var states = context.PreviousState;
             if (context.Rehearsal)
@@ -34,6 +38,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            sw.Start();
             if (!RegisterInfos.Any())
             {
                 throw new ListEmptyException("RegisterInfos was empty");
@@ -58,7 +63,17 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("failed to load avatar state.");
             }
 
+            sw.Stop();
+            Log.Debug("{Source} {Process} from #{BlockIndex}: {Elapsed}",
+                nameof(RegisterProduct), "Get States And Validate", context.BlockIndex, sw.Elapsed.TotalMilliseconds);
+
+            sw.Restart();
             avatarState.UseAp(CostAp, ChargeAp, states.GetSheet<MaterialItemSheet>(), context.BlockIndex, states.GetGameConfigState());
+            sw.Stop();
+            Log.Debug("{Source} {Process} from #{BlockIndex}: {Elapsed}",
+                nameof(RegisterProduct), "UseAp", context.BlockIndex, sw.Elapsed.TotalMilliseconds);
+
+            sw.Restart();
             var productsStateAddress = ProductsState.DeriveAddress(AvatarAddress);
             ProductsState productsState;
             if (states.TryGetState(productsStateAddress, out List rawProducts))
@@ -74,13 +89,21 @@ namespace Nekoyume.Action
                 marketState.AvatarAddresses.Add(AvatarAddress);
                 states = states.SetState(Addresses.Market, marketState.Serialize());
             }
+            sw.Stop();
+            Log.Debug("{Source} {Process} from #{BlockIndex}: {Elapsed}",
+                nameof(RegisterProduct), "Get productsState", context.BlockIndex, sw.Elapsed.TotalMilliseconds);
 
+            sw.Restart();
             var random = context.GetRandom();
             foreach (var info in RegisterInfos.OrderBy(r => r.Type).ThenBy(r => r.Price))
             {
                 states = Register(context, info, avatarState, productsState, states, random);
             }
+            sw.Stop();
+            Log.Debug("{Source} {Process} from #{BlockIndex}: {Elapsed}, ProductCount: {ProductCount}",
+                nameof(RegisterProduct), "Register Infos", context.BlockIndex, sw.Elapsed.TotalMilliseconds, RegisterInfos.Count());
 
+            sw.Restart();
             states = states
                 .SetState(AvatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(AvatarAddress, avatarState.SerializeV2())
@@ -91,6 +114,9 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                     .SetState(AvatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize());
             }
+            sw.Stop();
+            Log.Debug("{Source} {Process} from #{BlockIndex}: {Elapsed}",
+                nameof(RegisterProduct), "Set States", context.BlockIndex, sw.Elapsed.TotalMilliseconds);
 
             return states;
         }
