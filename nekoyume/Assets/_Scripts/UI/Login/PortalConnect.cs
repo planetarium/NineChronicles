@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         private string code;
         private string accessToken;
         private string txId;
+        private ReferralResult referralResult;
 
         public readonly string PortalUrl;
         public const string GoogleAuthEndpoint = "/api/auth/login/google";
@@ -72,14 +73,13 @@ namespace Nekoyume.UI
                 deeplinkURL = "[none]";
             }
 
-            Debug.Log($"[PortalConnect] constructed: PortalUrl({PortalUrl})," +
-                      $" deeplinkURL({deeplinkURL})");
+            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl}), deeplinkURL({deeplinkURL})");
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
         {
             var url = $"{PortalUrl}/mobile-signin?clientSecret={clientSecret}";
-            Debug.Log($"[PortalConnect] OpenPortal invoked: url({url})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortal)} invoked: url({url})");
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
@@ -87,9 +87,16 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/1");
         }
 
+        public void OpenPortalRewardUrl()
+        {
+            var url = $"{PortalUrl}{PortalRewardEndpoint}";
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortalRewardUrl)} invoked: url({url})");
+            Application.OpenURL(url);
+        }
+
         private void OnDeepLinkActivated(string url)
         {
-            Debug.Log($"[PortalConnect] OnDeepLinkActivated({url}) invoked.");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OnDeepLinkActivated)} invoked: url({url})");
             deeplinkURL = url;
 
             if (_onPortalEnd != null)
@@ -168,7 +175,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
-            Debug.Log($"[PortalConnect] RequestCode url: {url}");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
 
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
@@ -185,14 +192,14 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Debug.LogError($"[PortalConnect] AccessToken Deserialize Error: {json}");
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                Debug.LogError($"[PortalConnect] AccessToken Error: {request.error}" +
-                               $"\n{json}\nclientSecret: {clientSecret}");
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} " +
+                               $"Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
                 ShowRequestErrorPopup(request.result, request.error);
             }
         }
@@ -200,7 +207,8 @@ namespace Nekoyume.UI
         private async void AccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
-            Debug.Log($"[PortalConnect] AccessToken url: {url}");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(AccessToken)} invoked: " +
+                      $"url({url}), clientSecret({clientSecret}), code({code})");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -224,8 +232,8 @@ namespace Nekoyume.UI
         public bool HandleAccessTokenResult(UnityWebRequest request)
         {
             var json = request.downloadHandler.text;
-            Debug.Log("[PortalConnect] HandleAccessTokenResult() invoked w/ request." +
-                      $" result({request.result}), json({json})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)} invoked w/ request: " +
+                      $"result({request.result}), json({json})");
             if (request.result == UnityWebRequest.Result.Success)
             {
                 var data = JsonUtility.FromJson<AccessTokenResult>(json);
@@ -235,24 +243,15 @@ namespace Nekoyume.UI
                     return true;
                 }
 
-                Debug.LogError($"[PortalConnect] HandleAccessTokenResult()..." +
-                               $" json deserialize error.");
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... json deserialize error.");
                 ShowRequestErrorPopup(data);
                 return false;
             }
 
-            Debug.LogError($"[PortalConnect] HandleAccessTokenResult()..." +
-                           $" result failed: {request.error}" +
-                           $"\ncode: {code}\nclientSecret: {clientSecret}");
+            Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... " +
+                           $"result failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
             ShowRequestErrorPopup(request.result, request.error);
             return false;
-        }
-
-        public void OpenPortalRewardUrl()
-        {
-            var url = $"{PortalUrl}{PortalRewardEndpoint}";
-            Debug.Log($"[PortalConnect] OpenPortalRewardUrl: {url}");
-            Application.OpenURL(url);
         }
 
         public IEnumerator RequestPledge(PlanetId planetId, Address address)
@@ -265,8 +264,8 @@ namespace Nekoyume.UI
             os = "ios";
 #endif
 
-            Debug.Log($"[PortalConnect] RequestPledge invoked: url({url}), os({os})," +
-                      $" planetId({planetId}), address({address}), accessToken({accessToken})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} invoked: " +
+                      $"url({url}), os({os}), planetId({planetId}), address({address}), accessToken({accessToken})");
 
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
@@ -285,20 +284,20 @@ namespace Nekoyume.UI
             {
                 if (!string.IsNullOrEmpty(data.txId))
                 {
-                    Debug.Log($"[PortalConnect] RequestPledge Success: {json}");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Success: {json}");
                     txId = data.txId;
                     PlayerPrefs.DeleteKey(ClientSecretKey);
                 }
                 else
                 {
-                    Debug.LogError($"[PortalConnect] RequestPledge Deserialize Error: {json}");
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                Debug.LogError($"[PortalConnect] RequestPledge Error: {request.error}" +
-                               $"\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
+                               $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
                 ShowRequestErrorPopup(request.result, request.error);
             }
         }
