@@ -545,7 +545,7 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if UNITY_EDITOR || RUN_ON_MOBILE
+#if RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
@@ -1297,7 +1297,7 @@ namespace Nekoyume.Game
             // NOTE: Check auto login!
             if (planetContext.NeedToAutoLogin.HasValue && planetContext.NeedToAutoLogin.Value)
             {
-                var pk = loginSystem.GetPrivateKey(); 
+                var pk = loginSystem.GetPrivateKey();
                 if (pk is not null)
                 {
                     Debug.Log("[Game] CoLogin()... planetContext.NeedToAutoLogin is true." +
