@@ -92,28 +92,32 @@ UI_DELETE,Delete,삭제,Apagar,削除,Borrar,ลบ,Hapus,,删除,刪除,Tanggal
 UI_COMBINATION_ITEM,Combine,제작,Combinar,アイテム製作,Combinar,รวมกัน,Gabung,,合并,合併,Pagsamahin
 UI_COMBINATION_ERROR,Error,에러,Erro,製作エラー,Error,ข้อผิดพลาด,Error,,错误,錯誤,Mali
 UI_COMBINATION_SUCCESS,Success!,제작 성공!,Sucesso!,製作成功！,¡Éxito!,สำเร็จ!,Sukses!,,成功！,成功！,Tagumpay!
-UI_COMBINATION_NOTIFY_FORMAT,"<color=#FFA78B>[Workshop dvergr]</color>I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
+UI_COMBINATION_NOTIFY_FORMAT,"<color=#FFA78B>[Workshop dvergr]</color>
+I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
 {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
 {0} の製作が終わったぜ！",<color=#FFA78B>[Workshop dvergr]</color> He terminado de fabricar {0},<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color> ฉันสร้าง {0} เสร็จแล้ว,"<color=#FFA78B>[Workshop Cat]</color>
 Aku sudah selesai membuat {0}","<color=#FFA78B>[Практикум Cat]</color>
 Я закончил крафт {0}","<color=#FFA78B>[车间猫]</color>
 我已经完成了{0}的制作工作。",<color=#FFA78B>[Workshop dvergr]</color>我已完成了製作 {0},<color=#FFA78B>[Workshop dvergr]</color> Natapos ko ng likhain {0}
-UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<color=#FFA78B>[Workshop dvergr]</color>Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
+UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<color=#FFA78B>[Workshop dvergr]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
 대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
 大成功！！ {0} の製作が終わったぜ！",<color=#FFA78B>[Workshop dvergr]</color> He terminado de fabricar con ¡¡Gran éxito!! {0},<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color> ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว,"<color=#FFA78B>[Workshop Cat]</color>
 Sukses Besar !! Aku sudah selesai membuat {0}","<color=#FFA78B>[Практикум Cat]</color>
 Огромный успех!! Я закончил крафт {0}","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。",<color=#FFA78B>[Workshop dvergr]</color>巨大的成功！！我已完成了製作 {0},<color=#FFA78B>[Workshop dvergr]</color> Malaking Tagumpay!! Natapos ko ng likhain {0}
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop dverg]</color>Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop dverg]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
 대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
 大成功！！ {0} の製作が終わったぜ！",<color=#FFA78B>[Workshop dvergr]</color> He terminado de fabricar con ¡¡Gran éxito!! {0},<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color> ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว,"<color=#FFA78B>[Workshop Cat]</color>
 Sukses Besar !! Aku sudah selesai membuat {0}","<color=#FFA78B>[Практикум Cat]</color>
 Огромный успех!! Я закончил крафт {0}","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。",<color=#FFA78B>[Workshop dverg]</color> 巨大的成功！！我已完成了製作 {0},<color=#FFA78B>[Workshop dverg]</color> Malaking Tagumpay!! Natapos ko ng likhain {0}
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
+Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color><br>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ワークショップ猫]</color>
 申し訳ありませんが、{0}のアップグレードに失敗しました。","<color=#FFA78B>[Workshop dvergr]</color> Lo siento, no logré mejorar {0}",<color=#FFA78B>[เวิร์กชอป Dvergr]</color> ขออภัยการอัพเกรดล้มเหลว {0},"<color=#FFA78B>[Workshop Cat]</color>
@@ -265,11 +269,13 @@ UI_GO_MAIN,Main,메인,Principal,メイン,Principal,หน้าหลัก,Ut
 UI_QUIT,Quit,종료,Quit,終了,Salir,เลิกเล่น,Berhenti,,退出,退出,Umayaw
 UI_EXIT,Exit,나가기,Sair,退出,Salir,ออก,Keluar,,退出,退出,Labas
 UI_ERROR,Error,에러,Erro,エラー,Error,ข้อผิดพลาด,Error,,错误,錯誤,Kamalian
-UI_NICKNAME_CONDITION,"Nickname must be between 2-20 charactersand can only include alphanumeric characters.","닉네임은 2-20자여야 하며
+UI_NICKNAME_CONDITION,"Nickname must be between 2-20 characters
+and can only include alphanumeric characters.","닉네임은 2-20자여야 하며
 영문자, 숫자만 사용할 수 있습니다.","O apelido deve ter entre 2 e 20 caracteres
 e pode incluir apenas caracteres alfanuméricos.","ニックネームは2-20文字で、
 アルファベットのみ使用できます。",El nombre tu personaje debe tener entre 2 y 20 caracteres y solo puede incluir caracteres alfanuméricos.,ชื่อเล่นจะต้องมี 2-20 ตัวอักษรอนุญาตให้ใช้เฉพาะตัวอักษรและตัวเลขเท่านั้น,Nama panggilan harus diantara 2-20 karakter dan hanya dapat menyertakan karakter alfanumerik.,,昵称必须介于2到20个字符之间，并且只能包含字母、数字、字符。,暱稱必須在2-20個字符之間，並且只能包括字母數字字符。,Ang palayaw ay dapat nasa 2-20 karakter at kinakailangan na alphanumeric na karakter lamang ang ginamit.
-UI_ERROR_FORMAT,"Error occurred. ({0})Please restart the game.","오류가 발생했습니다. ({0})
+UI_ERROR_FORMAT,"Error occurred. ({0})
+Please restart the game.","오류가 발생했습니다. ({0})
 게임을 다시 실행해 주세요.","Ocorreu um erro.
 ({0})
 Por favor reinicie o jogo.","エラーが発生しました。
@@ -279,7 +285,8 @@ Por favor reinicie o jogo.","エラーが発生しました。
 Dimohon untuk menrestart game.",,"发生错误。
 （{0}）
 请重新启动游戏。",發生了錯誤。 （{0}）請重新啟動遊戲。,"May kamalian. ({0}) Pakiusap, simulan ulit ang laro."
-UI_ERROR_RPC_CONNECTION,"RPC server connection failed.Please make sure your decive is connected to the internet.","RPC 서버 연결 실패
+UI_ERROR_RPC_CONNECTION,"RPC server connection failed.
+Please make sure your decive is connected to the internet.","RPC 서버 연결 실패
 디바이스가 인터넷에 연결된 상태인지 확인해주세요.","Falha na conexão do servidor RPC.
 Verifique se o iniciador de jogos está executando
 e tente novamente.","サーバーへの接続に失敗しました。
@@ -319,26 +326,30 @@ UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0
 UI_RECEIVE,Receive,받기,Receber,受信,Recibir,รับ,Terima,,接收,收到,Tanggapin
 UI_RECEIVED,Received,수령 완료,Recebido,受信済,Recibido,ได้รับ,Diterima,,接收,已收到,Natanggap
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas,報酬の受けとり,Recibir las Recompensas,รับรางวัล,Terima Hadiah,,接收奖励,獲得獎勵,Tanggapin ang Gantimpala
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop dverg]</color>I've finished upgrading {0}","<color=#FFA78B>[대장장이 드베르그]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop dverg]</color>
+I've finished upgrading {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 {0} 강화를 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Concluí o upgrade do {0}","<color=#FFA78B>[ワークショップ猫]</color>
 {0} の強化が終わったぜ！",<color=#FFA78B>[Workshop dvergr]</color> He terminado de mejorar {0},<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color> ฉันอัพเกรด {0} เสร็จแล้ว,"<color=#FFA78B>[Workshop Cat]</color>
 Saya telah selesai meningkatkan {0}","<color=#FFA78B>[Практикум Cat]</color>
 Я закончил модернизацию {0}","<color=#FFA78B>[车间猫]</color>
 我已经完成升级{0}",<color=#FFA78B>[Workshop dverg]</color>我已經完成了升級{0},<color=#FFA78B>[Workshop dverg]</color> Tapos ko ng palakasin ang sandata {0}
-UI_SELL_CANCEL_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>I canceled the sales of {0}","<color=#FFA78B>[상점고양이 제이드]</color>
+UI_SELL_CANCEL_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+I canceled the sales of {0}","<color=#FFA78B>[상점고양이 제이드]</color>
 {0} 판매를 취소했어!","<color=#FFA78B>[Jade de mercado]</color>
 Cancelei as vendas do {0}","<color=#FFA78B>[マーケットジェイド]</color>
 {0} の販売をキャンセルしたわ。",<color=#FFA78B>[Market Jade]</color> He cancelado la venta de {0},<color=#FFA78B>[Markt Jade]</color> ฉันยกเลิกการขาย {0},"<color=#FFA78B>[Pasar Jade]</color>
 Saya telah membatalkan penjualan {0}",,"<color=#FFA78B>[市场玉]</color>
 我取消了{0}",<color=#FFA78B>[Market Jade]</color>我取消了{0}的銷售額,<color=#FFA78B>[Market Jade]</color> Aking kinansela ang pabenta ng {0}
-UI_BUYER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>Purchased! {0} is yours now!","<color=#FFA78B>[상점고양이 제이드]</color>
+UI_BUYER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+Purchased! {0} is yours now!","<color=#FFA78B>[상점고양이 제이드]</color>
 구매 완료! {0}는 이제 네거야!","<color=#FFA78B>[Jade de mercado]</color>
 Comprado! {0} agora é seu!","<color=#FFA78B>[マーケットジェイド]</color>
 購入完了！ {0} はあなたのものよ！",<color=#FFA78B>[Market Jade]</color> ¡Compra exitosa! ¡{0} ahora es tuyo!,<color=#FFA78B>[Markt Jade]</color> ซื้อ! {0} เป็นของคุณแล้ว!,"<color=#FFA78B>[Pasar Jade]</color>
 Terbeli! {0} milikmu sekarang!",,"<color=#FFA78B>[市场玉]</color>
 已购买！{0}现在是您的！",<color=#FFA78B>[Market Jade]</color>購買了！ {0}現在是您的！,<color=#FFA78B>[Market Jade]</color> Ang nabiling {0} ay sa iyo na!
-UI_SELLER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>You earned {0} by selling {1}","<color=#FFA78B>[상점고양이 제이드]</color>
+UI_SELLER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+You earned {0} by selling {1}","<color=#FFA78B>[상점고양이 제이드]</color>
 {1}을 팔아서 {0}를 얻었어!","<color=#FFA78B>[Jade de mercado]</color>
 Você ganhou {0} com a venda {1}","<color=#FFA78B>[マーケットジェイド]</color>
 {1} が {0} で売れたわよ。",<color=#FFA78B>[Market Jade]</color> Has ganado {0} por la venta de {1},<color=#FFA78B>[Markt Jade]</color> คุณได้รับ {0} จากการขาย {1},"<color=#FFA78B>[Pasar Jade]</color>
@@ -417,7 +428,8 @@ Revogação Privada não pode ser recuperada.","秘密鍵を破棄してナイ�
 Private key yang dihapus tidak dapat dipulihkan.",,撤消私钥并关闭Nine Chronicles。已撤消的私钥无法恢复。,撤回銷私鑰並關閉九個編年史。撤銷的私鑰無法恢復。,Bawiin ang pribadong susi at isara ang Nine Chronicles. Ang hindi tinanggap na pribadong susi ay hindi na makukuhang muli.
 UI_OPEN_LOG,Open Log,로그 열기,Abrir log,ログを開く,Abrir el Log del Juego,เปิดบันทึก,Buka log,,打开日志,打開日誌,Buksan ang Log
 UI_MAINTENANCE,System Maintenance,시스템 점검중,Manutenção de Sistema,システムメンテナンス,Mantenimiento del Sistema,ระบบอยู่ระหว่างการปรับปรุง,Sistem dalam maintenance,,系统维护,系統維​​護,Sistemang Pangkumpuni
-UI_MAINTENANCE_CONTENT,"We are undergoing system maintenance.During this time, please join our discord and check the maintenance schedule.","시스템 점검중입니다.
+UI_MAINTENANCE_CONTENT,"We are undergoing system maintenance.
+During this time, please join our discord and check the maintenance schedule.","시스템 점검중입니다.
 디스코드에 방문해서 점검 일정을 확인해 주세요.","Estamos em manutenção.
 Durante esse período, entre no nosso canal Discord e verifique o cronograma de manutenção.","システムメンテナンス中です。
 Discord でメンテナンススケジュールを確認できます。","Estamos realizando labores de mantenimiento en el sistema. Durante este tiempo, te invitamos a unirte a nuestro servidor de Discord y consultar el horario de mantenimiento.",ระบบกำลังปิดปรับปรุง ในช่วงเวลานี้โปรดเข้าร่วม discord และติดตาม อัพเดทและตารางการปรับปรุง,"Kami sedang menjalani maintenance sistem.
@@ -590,7 +602,11 @@ UI_TRANSACTION_HISTORY,History,거래 내역,História,歴史,Historia,ประ
 UI_NOT_ENOUGH_NCG,Insufficient balance.,잔액이 부족합니다.,Saldo insuficiente.,残高不足。,Saldo insuficiente,ยอดเงินไม่เพียงพอ,mencukupi.,Недостаточный баланс.,余额不足。,餘額不足。,Kulang ang pambili.
 UI_NOT_ENOUGH_AP,Insufficient action points.,행동력이 부족합니다.,Insufficient action point.,Insufficient action point.,Puntos de Acción insuficientes,จำนวน AP ไม่เพียงพอ,Insufficient action point.,Insufficient action point.,Insufficient action point.,行動點不足。,Kulang ang action point.
 UI_CLOSE_BUY_WISH_LIST,The shopping cart will be emptied. Do you want to proceed?,장바구니가 비워집니다. 계속 진행하시겠습니까?,O carrinho de compras será esvaziado. Você quer prosseguir?,ショッピングカートは空になります。続行しますか？,¿Deseas vaciar tu cesta de compras?,รถเข็นช้อปปิ้งว่างเปล่า คุณต้องการที่จะดำเนินการอย่างไร,Keranjang belanja akan dikosongkan. Apakah Anda ingin melanjutkan?,Корзина будет очищена. Вы хотите продолжить?,购物车将被清空。你想继续吗？,購物車將被清空。您想繼續嗎？,Ang kariton ng pinamili ay mawawalan ng laman. Gusto mo bang ipagpatuloy?
-UI_BUY_MULTIPLE_FORMAT,"<color=#FF9983><b>Try to purchase {0} items and pay {1}.</b></color>Items purchased will be sent by mail.NCG is not deducted for unsuccessful purchases.If your NCG balance is insufficient, the transaction will fail.","<color=#FF9983><b>{0}개 아이템을 구매하고 {1}를 지불합니다.</b></color>
+UI_BUY_MULTIPLE_FORMAT,"<color=#FF9983><b>Try to purchase {0} items and pay {1}.</b></color>
+
+Items purchased will be sent by mail.
+NCG is not deducted for unsuccessful purchases.
+If your NCG balance is insufficient, the transaction will fail.","<color=#FF9983><b>{0}개 아이템을 구매하고 {1}를 지불합니다.</b></color>
 
 구매에 성공한 아이템은 메일로 도착하고, 실패한 경우에는 차감하지 않습니다.
 NCG가 부족한 경우 구매는 실패합니다.","<color=#FF9983><b>Tente comprar {0} itens e pague {1}.</b></color>
@@ -642,7 +658,8 @@ UI_MONSTER_COLLECTION_MAIL_FORMAT,You've received your Monster Collection Reward
 UI_MONSTER_COLLECTION_REWARDS_POPUP_TITLE,Monster Collection Rewards,몬스터 콜렉션 보상,Recompensas Coleção do monstro,モンスターコレクション報酬,Recompensas de Colección de Monstruos,รางวัลมอนสเตอร์คอลเลกชั่น,Rakasa Hadiah Koleksi,Монстр Коллекция Rewards,怪物收集奖励,怪物收集獎勵,Gantimpala ng Monster Collection
 UI_SETTINGS_SCREEN_RESOLUTION,Screen Resolution,해상도,Resolução da tela,画面の解像度,Resolución de Pantalla,ความละเอียดหน้าจอ,Resolusi layar,Разрешение экрана,屏幕分辨率,屏幕分辨率,Resolusyon ng Screen
 UI_SETTINGS_WINDOWED,Windowed,윈도우 모드,Windowed,ウィンドウ表示,Ventana,หน้าต่าง,berjendela,Оконный,窗,開窗,Windowed
-UI_MARKET_MAINTENANCE,The market is temporarily closed to inspect the market state. The detailed reopening schedule will be announced on Discord.,"상태 점검을 위해 상점을 일시적으로 폐쇄합니다.자세한 재오픈 일정은 Discord에서 공지할 예정입니다.","The market is temporarily closed to inspect the market state.
+UI_MARKET_MAINTENANCE,The market is temporarily closed to inspect the market state. The detailed reopening schedule will be announced on Discord.,"상태 점검을 위해 상점을 일시적으로 폐쇄합니다.
+자세한 재오픈 일정은 Discord에서 공지할 예정입니다.","The market is temporarily closed to inspect the market state.
 The detailed reopening schedule will be announced on Discord.","The market is temporarily closed to inspect the market state.
 The detailed reopening schedule will be announced on Discord.",La tienda está temporalmente cerrada para inspeccionar el estado del mercado. El horario detallado de reapertura se anunciará en Discord.,ตลาดปิดชั่วคราวเพื่อตรวจสอบสถานะของตลาด โปรดดูประกาศกำหนดการเปิดใหม่ใน Discord,"The market is temporarily closed to inspect the market state.
 The detailed reopening schedule will be announced on Discord.","The market is temporarily closed to inspect the market state.
@@ -655,7 +672,8 @@ Por favor, altere o arquivo 'config' para ver a classificação.","あなたが�
 Silahkan ubah 'config' file untuk melihat ranking.","Вы не используете услугу '9c.gg', так что вы не можете увидеть рейтинг.
 Пожалуйста, измените файл 'config', чтобы увидеть рейтинг.","你是不是用'9c.gg'服务，所以你不能看到排名。
 请更改'config'文件中看到的排名。",您沒有使用“ 9C.GG”服務，因此您看不到排名。請更改“配置”文件以查看排名。,"Ikaw ay hindi gumamit ng serbisyo ng 9c.gg', kaya't hindi mo makita ang pagranggo. Pakiusap, palitan ang 'config' file para makita ang pagranggo."
-UI_RANKING_API_ERROR,An error occurred while loading the Rankings. Please restart to reload the data.,"랭킹 로딩 중 오류가 발생했습니다.데이터를 다시 불러오려면 게임을 재시작 하세요.","An error occurred while loading the ranking data.
+UI_RANKING_API_ERROR,An error occurred while loading the Rankings. Please restart to reload the data.,"랭킹 로딩 중 오류가 발생했습니다.
+데이터를 다시 불러오려면 게임을 재시작 하세요.","An error occurred while loading the ranking data.
 Press the refresh button to load the data again.","An error occurred while loading the ranking data.
 Press the refresh button to load the data again.",Se produjo un error al cargar los datos de clasificación. Presiona el botón de actualización para cargar los datos nuevamente.,เกิดข้อผิดพลาดขณะโหลดข้อมูลการจัดอันดับ กดปุ่มรีเฟรชเพื่อโหลดข้อมูลอีกครั้ง,"An error occurred while loading the ranking data.
 Press the refresh button to load the data again.","An error occurred while loading the ranking data.
@@ -705,7 +723,8 @@ UI_REMAINING_TIME_ONLY,Remaining Time,남은 시간,Remaning tempo,残り時間,
 UI_ABOUT,About {0}({1}/{2}),약 {0}({1}/{2}),cerca de {0}({1}/{2}),約 {0}({1}/{2}),Aproximadamente {0}({1}/{2}),เกี่ยวกับ {0} ({1} / {2}),Berkisar{0} ({1} / {2}),{0}({1}/{2}),大约 {0}({1}/{2}),大約{0}（{1}/{2}）,Mga {0}({1}/{2})
 UI_BOOSTER_BUTTON,Booster,부스터,Booster.,増幅器,Potenciador,เครื่องสนับสนุน,Pemacu,Бустер,助推器,加速器,Booster
 UI_BOOSTER_POPUP_TITLE,Battle Booster,전투 부스터,Battle Booster.,バトルブースター,Potenciador de Batalla,เครื่องสนับสนุุนในการต่อสู้,Battle Booster.,Боевой усилитель,战斗助推器,戰鬥加速器,Panlabang Booster
-UI_BOOSTER_POPUP_DESCRIPTION,"You can consume AP all at onceand receive rewards and experience points.","행동력을 한꺼번에 사용하여
+UI_BOOSTER_POPUP_DESCRIPTION,"You can consume AP all at once
+and receive rewards and experience points.","행동력을 한꺼번에 사용하여
 리워드와 경험치를 한꺼번에 받을 수 있습니다.","Você pode consumir AP de uma vez
 e receber recompensas e exp de uma só vez.","あなたは一度にAPを消費することができます、
 そして一度に報酬とexpを受け取ります。",Puedes consumir varios Puntos de Acción (AP) de una vez para recibir recompensas y experiencia al instante.,คุณสามารถใช้ AP ได้ทันที และรับรางวัลและประสบการณ์ในครั้งเดียว,"Anda dapat mengkonsumsi AP sekaligus,
@@ -727,7 +746,8 @@ UI_SYNCING_BLOCKS,Syncing blocks. Please wait for a while...,블록을 동기화
 UI_AP_IS_FULL,AP Potion is not available while the AP is full.,AP가 가득차 있을 때는 AP Potion을 사용할 수 없습니다.,AP Po Potion não está disponível enquanto o AP está cheio.,APがいっぱいになっている間は、APポーションはできません。,La poción de Puntos de Acción (PA) no está disponible cuando los Puntos de Acción (PA) está lleno.,AP Potion ไม่สามารถใช้ได้ในขณะที่ AP เต็ม,Ramuan AP tidak tersedia saat AP penuh.,"AP-зелье недоступна, пока AP заполнен.",AP完整时不可用AP药水。,AP滿時，AP藥水不可用。,Ang AP Potion ay hindi magagamit kung puno ang AP.
 UI_LOADING_STATES,Loading states...,상태를 불러오는 중입니다...,Estados de carregamento ...,積載状態...,Cargando estados...,กำลังโหลด ...,Memuat Negara ...,Загрузка состояний ...,加载状态......,加載狀態...,Inilalahad ang kalagayan...
 UI_REQUIRED_LEVEL,Required Lv : {0},요구 레벨 : {0},LV necessário: {0},必須LV：{0},Nivel requerido: {0},เลเวลที่จำเป็น : {0},Diperlukan lv: {0},Требуется LV: {0},必填lv：{0},要求等級：{0},Kinakailangan Lv : {0}
-UI_WARNING_CRAFT_RESULT_ITEM,"Check the level.Required level of result item : {0}","레벨을 확인해주세요.
+UI_WARNING_CRAFT_RESULT_ITEM,"Check the level.
+Required level of result item : {0}","레벨을 확인해주세요.
 제작할 아이템의 요구 레벨 : {0}","Verifique o nível.
 Nível requerido do item de resultado: {0}","レベルを確認してください。
 必要なレベル項目：{0}",Verificar el nivel del personaje. Nivel requerido del personaje para usar el objeto resultante: {0},โปรดตรวจสอบเลเวล เลเวลที่ต้องการสำหรับอุปกรณ์ : {0},"Periksa levelnya.
@@ -799,7 +819,8 @@ UI_HOLDING,Holding,대기,Segurando,ホールディング,Tenencia,การย�
 UI_LOADING_SWEEP_RESULT,Loading acquisition items...,획득 아이템을 확인중입니다.,Carregando itens de aquisição ...,取得アイテムの読み込み...,Cargando los objetos adquiridos...,กำลังโหลดรายการที่ได้มา ...,Memuat item akuisisi ...,Загрузка элементов приобретения ...,加载采集项目...,加載採集物品...,Inihahanda ang mga makukuhang materyales...
 UI_LOADING_SWEEP,Sweep in progress,소탕 진행중,Varrer em andamento,進行中のスイープ,Batalla automática en progreso,กำลังดำเนินการกวาดล้าง,Sapu sedang berlangsung,Развернуть в процессе,扫荡正在进行,掃蕩正在進行,Ang pag-sweep ay kasalukuyang ginagawa
 NO_LONGER_AVAILABLE,No longer available,더 이상 사용할 수 없습니다.,Não está mais disponível,利用できない,Ya no está disponible,ไม่สามารถใช้ได้อีก,Tidak lagi tersedia,Больше недоступно,不再可用,不再可用,HIndi na pwedeng piliin
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL,"<color=#FFA78B>[Workshop dverg]</color>Sorry, I failed to upgrade {0}. You got {1} as a reward.","<color=#FFA78B>[대장장이 드베르그]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL,"<color=#FFA78B>[Workshop dverg]</color>
+Sorry, I failed to upgrade {0}. You got {1} as a reward.","<color=#FFA78B>[대장장이 드베르그]</color>
 {0} 강화 실패 보상으로 {1} 을(를) 획득했습니다.","Workshop Dverg]
 Desculpe, não consegui atualizar {0}. Você tem {1} como uma recompensa.","ワークショップdverg]
 申し訳ありませんが、{0}のアップグレードに失敗しました。あなたは報酬として{1}を得ました。","<color=#FFA78B>[Workshop dvergr]</color> Lo siento, no pude mejorar {0}. Recibiste {1} como recompensa.",เวิร์กช็อป dverg] ขออภัยฉันล้มเหลวในการอัพเกรด {0} คุณได้รับ {1} เป็นรางวัล,"Workshop Dverg]
@@ -852,7 +873,8 @@ UI_LOBBY_ARENA_MENU_LOADING_DATA,Loading arena data...,아레나 데이터를 �
 UI_NOT_ENOUGH_ARENA_TICKETS,Not enough arena tickets.,아레나 티켓이 부족합니다.,Ingressos de arena insuficientes.,アリーナのチケットが十分ではありません。,No tienes suficientes tickets de arena,ตั๋วอารีน่าไม่เพียงพอ,Tiket arena tidak cukup.,Недостаточно билетов на арену.,没有足够的竞技场门票。,沒有足夠的競技場門票。,Hindi sapat ang arena tickets.
 UI_AVAILABLE_TO_USE,Available,사용 가능,Disponível,利用可能,Disponible,มีอยู่,Tersedia,Доступный,可用的,可用的,Pwedeng piliin
 UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA,Do you want to spend {0} to purchase and use the ticket?,{0}를 소비하여 티켓을 구매하시겠습니까?,Deseja gastar {0} para comprar e usar o ticket?,チケットを購入して使用するために{0}を費やしたいですか？,¿Deseas gastar {0} para comprar y usar el boleto?,คุณต้องการจ่าย {0} เพื่อซื้อและใช้ตั๋วหรือไม่?,Apakah Anda ingin menghabiskan {0} untuk membeli dan menggunakan tiket?,"Вы хотите потратить {0}, чтобы купить и использовать билет?",您要花费{0}购买和使用票吗？,您要花費{0}購買和使用票嗎？,Gusto mo bang gumastos ng {0} para bumili ng gagamiting ticket?
-UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO,"Insufficient NCG.Obtain more NCG from Portal NCG Voucher or Arena.","NCG가 부족합니다.
+UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO,"Insufficient NCG.
+Obtain more NCG from Portal NCG Voucher or Arena.","NCG가 부족합니다.
 NCG는 포털 NCG 바우처나 아레나 보상으로 획득할 수 있습니다.","Não é suficiente NCG.
 Os NCGs podem ser obtidos no mercado ou na arena.","NCGが十分ではありません。
 NCGは、市場またはアリーナから入手できます。","No tienes suficientes NCG. Los NCG se pueden obtener por medio del portal, tienda o en la arena.",NCG ไม่เพียงพอ NCG สามารถรับได้จากตลาดหรืออารีน่า,"Tidak cukup NCG.
@@ -883,12 +905,15 @@ NPC_32_NAME,Troll Aristocrat,트롤 귀족,aristocrata troll,トロール貴族,
 NPC_33_NAME,Laufey,라우페이,Laufey,ラウフェイ,Laufey,Laufey,Laufey,Лауфи,劳菲,勞菲,Laufey
 UI_SUPER_CRAFT_GUARANTEE,Get Skill-Equipment with crystals!,크리스탈로 스킬을 확정 획득하세요!,,,¡Obtén un Equipo con encantamiento usando cristales!,เก็บอุปกรณ์สกิวด้วยคริสตัล,,,,獲得水晶的技能裝備！,Makakuha ng kagamitang may kakayahan sa pamamagitan ng mga kristal!
 UI_SUPER_CRAFT_PROMOTION1,"100%
-Skill Guaranteed!","100%스킬 획득 보장!",,,"¡Garantía de encantamiento del
+Skill Guaranteed!","100%
+스킬 획득 보장!",,,"¡Garantía de encantamiento del
 100%!","100%
 การันตี",,,,"100％
 的技能保證","100%
 Garantisado ang Kakayahan"
-UI_SUPER_CRAFT_PROMOTION2,"Use crystals for premium equipmentwithin 20 blocks","크리스탈로 20블록만에고급 장비를 획득하세요!",,,"Paga con cristales, solo usa 20 bloques
+UI_SUPER_CRAFT_PROMOTION2,"Use crystals for premium equipment
+within 20 blocks","크리스탈로 20블록만에
+고급 장비를 획득하세요!",,,"Paga con cristales, solo usa 20 bloques
 para la fabricación del equipo",ชำระด้วยคริสตัลเพียง 20 บล็อค,,,,僅支付水晶僅使用20個塊,"Magbayad lamang ng Krystal
 at matatapos sa loob ng 20 Blocks"
 UI_STAKING_NCG,Staking NCG,스테이킹 NCG,,,Staking NCG,ฝากเหรียญ NCG,,,,Staging NCG,Staking NCG
@@ -911,21 +936,24 @@ UI_PRACTICE_EXPLAIN,Practice in advance before the world boss appears!,"월드 �
 UI_MY_RANK,My Rank,내 랭킹,Classificação,ランク,Mi rango,อันดับของฉัน,Peringkat saya,Мой ранг,我的等级,我的排名,Ang aking Ranko
 UI_BEST_RECORD,Best Record,최고 점수,Melhor registro,ベストレコード,Mejor puntaje,สติถิที่ดีที่สุด,Rekor Terbaik,Лучшая запись,最佳记录,最佳記錄,Pinakamagaling na Record
 UI_SEASON_TOTAL_SCORE,Season Total Score,시즌 점수 합계,pontuação total,合計スコア,Puntuación total de la temporada,คะแนนรวมฤดูกาล,Skor total musim,Сезон общий счет,季节总得分,賽季總得分,Kabuuang Puntos mula sa Season
-UI_BUY_TICKET_AND_START,"Not enough {0} tickets.Would you like to buy a ticket with NCG and start?","{0} 티켓이 부족합니다.
+UI_BUY_TICKET_AND_START,"Not enough {0} tickets.
+Would you like to buy a ticket with NCG and start?","{0} 티켓이 부족합니다.
 티켓을 NCG로 구입하시겠습니까?","Ingressos não suficientes {0}.
 Você gostaria de comprar um ingresso com o NCG e começar?","{0}チケットが十分ではありません。
 NCGでチケットを購入して開始しますか？",No hay suficientes tickets de {0}. ¿Te gustaría comprar un ticket con NCG y comenzar?,ตั๋ว {0} ไม่เพียงพอ คุณต้องการซื้อตั๋วกับ NCG และเริ่มต้นหรือไม่?,"Tiket tidak cukup {0}.
 Apakah Anda ingin membeli tiket dengan NCG dan mulai?","Недостаточно {0} билетов.
 Хотели бы вы купить билет с NCG и начать?","不够{0}门票。
 您想和NCG一起购买票吗？",不夠{0}門票。您想用NCG購買票嗎？,Hindi sapat ang {0} tickets. Gusto mo bang bumili ng ticket gamit ang ncg at magsimula?
-UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets. You have reached the purchase limit and can no longer buy tickets.","{0} 티켓이 부족합니다.
+UI_REACHED_TICKET_BUY_LIMIT,"Not enough {0} tickets. 
+You have reached the purchase limit and can no longer buy tickets.","{0} 티켓이 부족합니다.
 구매 횟수를 모두 소진하여 추가 구매를 할 수 없습니다.","Ingressos não suficientes {0}.
 Você atingiu seu limite de compra e não pode mais comprar ingressos.","{0}チケットが十分ではありません。
 購入制限に達し、チケットを購入できなくなりました。",No tienes suficientes tickets de {0}. Has alcanzado el límite de compra y ya no puedes comprar más tickets.,ตั๋ว {0} ไม่เพียงพอ คุณถึงขีด จำกัด การซื้อแล้วและไม่สามารถซื้อตั๋วได้อีกต่อไป,"Tiket tidak cukup {0}.
 Anda telah mencapai batas beli Anda dan tidak bisa lagi membeli tiket.","Недостаточно {0} билетов.
 Вы достигли своего лимита покупки и больше не можете покупать билеты.","不够{0}门票。
 您已经达到了购买限额，无法再购买门票。",不夠{0}門票。您已經達到了購買限額，無法再購買門票。,Hindi sapat ang {0} tickets. Naabot na ang sukdulan ng limitasyon para sa pagbili at hindi na pwede pang bumili ulit ng tickets.
-UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets. You have reached the purchase limit and can no longer buy tickets during the reset interval.","{0} 티켓이 부족합니다.
+UI_REACHED_TICKET_BUY_INTERVAL_LIMIT,"Not enough {0} tickets. 
+You have reached the purchase limit and can no longer buy tickets during the reset interval.","{0} 티켓이 부족합니다.
 이번 티켓 리필 구간에 최대로 구매가능한 수량을 구매하셨습니다.",,,No tienes suficientes tickets de {0}. Has alcanzado tu límite de compra y ya no puedes comprar más tickets en el intervalo de reinicio.,ตั๋ว {0} ไม่เพียงพอ คุณถึงขีด จำกัด การซื้อแล้วและคุณไม่สามารถซื้อทำการรีเซ็ต,,,,不夠{0}門票。您已經達到了購買限額，無法再按重置間隔購買門票。,Hindi sapat ang {0} tickets. Naabot na ang sukdulan ng limitasyon para sa pagbili at hindi na pwedeng bumili ng tickets sa reset interval.
 UI_WORLD_BOSS,WORLD BOSS,월드 보스,Chefe do mundo,ワールドボス,Jefe Mundial,เวิลด์ บอส,Bos dunia,Мировой босс,世界老板,世界BOSS,WORLD BOSS
 UI_CLAIM_REWARD,Claim Reward,보상 수령,Receba as recompensas,報酬の受けとり,Reclamar Recompensa,รับรางวัล,Terima Hadiah,получить награду,接收奖励,認領獎勵,Kunin ang Gantimpala
@@ -945,7 +973,8 @@ UI_GRADE_REWARDS,Grade Rewards,전투 등급 보상,Recompensas de grau,バト�
 UI_BOSS_KILL_BONUS,Boss kill bonus,보스 처치 보너스 보상,Bônus de matar chefe,ボスキルボーナス,Bono por matar al jefe,โบนัสฆ่าบอส,Bos bonus bonus,Босс убейте бонус,老板杀死奖金,BOSS殺死獎金,Bonus sa pagpatay sa Boss
 UI_BATTLE_REWARDS_EXPLAIN,Each battle will be rewarded based on the battle grade achieved.,매 전투마다 달성한 전투 등급을 기준으로 보상을 지급합니다.,Cada batalha será recompensada com base na nota de batalha alcançada.,各戦闘は、達成された戦闘グレードに基づいて報われます。,Cada batalla será recompensada en función de la calificación de daño de batalla alcanzado.,การต่อสู้แต่ละครั้งจะได้รับรางวัลตามเกรดการต่อสู้,Setiap pertempuran akan dihargai berdasarkan nilai pertempuran yang dicapai.,Каждая битва будет вознаграждена на основе достигнутого боевого класса.,每场战斗都将根据达到的战斗等级获得奖励。,每場戰鬥都將根據達到的戰斗等級獲得獎勵。,Bawat laban ay may gantimpalang makukuha base sa nakamtang grado sa pakikipaglaban.
 UI_BOSS_KILL_BONUS_EXPLAIN,"When a world boss is defeated, you receive a bonus reward based on your battle grade.","월드 보스가 처치되면, 내 전투 등급에 따라 보너스 보상을 받습니다. 보스가 처치 된 후, 1회 이상 전투를 수행해야 보상을 받을 수 있습니다.","Quando um chefe do mundo é morto, recebo uma recompensa de bônus com base na minha nota de batalha.",ワールドボスが殺されたとき、私のバトルグレードに基づいてボーナスワードを受け取ります。,"Cuando se mata a un jefe de mundo, obtengo una recompensa adicional basada en mi grado de daño de batalla.",เมื่อบอสโลกถูกฆ่า ฉันจะได้รับรางวัลโบนัสตามเกรดการต่อสู้ของฉัน,"Ketika bos dunia terbunuh, saya mendapatkan hadiah bonus berdasarkan nilai pertempuran saya.","Когда босс мира убит, я получаю бонусную награду на основе моего боевого класса.",当世界老板被杀时，我会根据自己的战斗等级获得奖励。,當世界BOSS被殺時，我會根據自己的戰斗等級獲得獎勵。,"Kapag may namatay na world boss, makakakuha ako ng gantimpala base sa aking grado sa pakikipaglaban."
-UI_BOSS_JOIN_THE_SEASON,"Would you like to join the season?The battle begins immediately after the entrance fee is paid.","시즌에 참가하시겠습니까?
+UI_BOSS_JOIN_THE_SEASON,"Would you like to join the season?
+The battle begins immediately after the entrance fee is paid.","시즌에 참가하시겠습니까?
 참가 비용 지불 후 바로 전투가 시작됩니다.","Você gostaria de participar da temporada?
 A batalha começa imediatamente após a pagamento da taxa de entrada.","シーズンに参加しますか？
 バトルは、入場料が支払われた直後に始まります。",¿Te gustaría unirte a la temporada? La batalla comienza inmediatamente después de que se pague la tarifa de entrada.,คุณต้องการเข้าร่วมซีซั่นนี้หรือไม่? การต่อสู้เริ่มต้นทันทีหลังจากชำระค่าธรรมเนียมแรกเข้า,"Apakah Anda ingin bergabung dengan musim ini?
@@ -990,7 +1019,8 @@ UI_RUNE_LEVEL_UP_SUCCESS_2,Success after {0} attempts!,{0}회 시도 끝에 성�
 UI_RUNE_LEVEL_UP_FAIL,Tried {0} times but failed..,{0}번 시도 했지만 실패하고 말았어..,"Tentei {0} vezes, mas falhou ..",{0}を試しましたが失敗しました。,Intenté {0} veces pero fallé...,ลอง {0} ครั้ง แต่ล้มเหลว ..,Mencoba {0} kali tetapi gagal ..,"Пробовал {0} раз, но не удалось ..",尝试{0}次，但失败了..,嘗試了{0}次，但失敗了..,Sumubok ng {0} beses pero hindi nagtagumpay..
 UI_SELECT_RUNE_SLOT,Please select a slot to equip the rune.,장착할 슬롯을 선택해 주세요,Please select a slot to equip the rune,Please select a slot to equip the rune,"Por favor, selecciona una ranura para equipar la runa.",โปรดเลือกช่องที่จะสวมใส่รูน,Please select a slot to equip the rune,Please select a slot to equip the rune,Please select a slot to equip the rune,請選擇一個插槽來裝備符文,"Pakiusap, pumili ng puwang na paglalagyan ng hiyas."
 UI_TICKET_RESET_REMAINING,Time until the ticket reset,티켓 리필 남은 시간,,,Restablecimiento de tickets restantes,รีเซ็ตตั๋วคงเหลือ,,,,剩餘的票重置,Natitira bago ang ticket reset
-UI_RAID_SEASON_REWARD_MAIL_FORMAT,"<color=#FFA78B>[World boss keeper]</color>You've got {2} {1} as Season {0} reward.","<color=#FFA78B>[월드보스 수호자]</color>
+UI_RAID_SEASON_REWARD_MAIL_FORMAT,"<color=#FFA78B>[World boss keeper]</color>
+You've got {2} {1} as Season {0} reward.","<color=#FFA78B>[월드보스 수호자]</color>
 시즌 {0} 보상으로 {2} {1}을 획득했다네.",,,<color=#FFA78B>[World boss keeper]</color> Has obtenido {2} {1} como recompensa de la Temporada {0}.,,,,,<color =＃ffa78b> [世界Boss飼養員] </color>您有{2} {1}作為季節{0}獎勵。,<color=#FFA78B>[World boss keeper]</color> Nakakuha ka ng {2} {1} bilang gantimpala sa Season {0}.
 UI_RUNESTONE_FENRIR1,Fenrir HP Rune Stone,펜리르 체력 룬조각,Fenrir HP Rune Stone,フェンリル HP ルーンストーン,Piedra de Runa de Vida de Fenrir,หินรูน HP เฟนเรียร์,Fenrir HP Rune Stone,Fenrir HP Rune Stone,芬里尔 HP 符文石,芬里爾生命符文石,Hiyas ng Buhay ni Fenrir
 UI_RUNESTONE_FENRIR2,Fenrir ATK Rune Stone,펜리르 공격 룬조각,Fenrir ATK Rune Stone,フェンリル ATK ルーンストーン,Piedra de Runa de Ataque de Fenrir,หินรููป ATK เฟนเรียร์,Fenrir ATK Rune Stone,Fenrir ATK Rune Stone,芬里尔 ATK 符文石,芬里爾攻擊符文石,Hiyas ng Atake ni Fenrir
@@ -1128,24 +1158,34 @@ UI_IAP_PURCHASE_FAILED,Purchase failed.,구매 실패,,,,,,,,,
 UI_ALERT_DELETE_APP,Deleting the app or clearing your data will result in permanent account loss.,앱을 삭제하거나 데이터를 초기화하면 계정이 영구적으로 손실됩니다.,,,,,,,,,
 UI_MS_BUT_LIMIT_MESSAGE_DAY,Purchase up to 3 times a day,1일 3회 구매 가능,,,,,,,,,
 UI_MS_BUT_LIMIT_MESSAGE_WEEK,Purchase up to 3 times a week,1주 3회 구매 가능,,,,,,,,,
-UI_MS_WITHDRAWN_MESSAGE,"By purchasing this product, you acknowledge and agree to the terms and conditions.This item is non-refundable due to immediate access upon purchase. A refund can be requested within 15 days of purchase if the item has not been consumed.",,,,,,,,,,
+UI_MS_WITHDRAWN_MESSAGE,"By purchasing this product, you acknowledge and agree to the terms and conditions.
+This item is non-refundable due to immediate access upon purchase. A refund can be requested within 15 days of purchase if the item has not been consumed.",,,,,,,,,,
 UI_RETRYING_PLEDGE,Retrying pledge...,언약을 재시도 하는 중…,,,,,,,,,
 UI_INVALID_CREATED_PASSWORD,"The entered password does not meet the requirements.
-Please use a stronger password.","조건에 부합하지 않는 비밀번호 입니다.더 강력한 비밀번호를 설정하세요.",,,,,,,,,
+Please use a stronger password.","조건에 부합하지 않는 비밀번호 입니다.
+더 강력한 비밀번호를 설정하세요.",,,,,,,,,
 UI_INVALID_RETYPE_PASSWORD,"The entered password is not incorrect.
-Please check your password.","잘못된 비밀번호입니다.비밀번호를 재확인 해주세요.",,,,,,,,,
+Please check your password.","잘못된 비밀번호입니다.
+비밀번호를 재확인 해주세요.",,,,,,,,,
 UI_LOGIN_ON_BROWSER_TITLE,Please login through your browser.,브라우저에서 로그인 해주세요.,,,,,,,,,
-UI_LOGIN_ON_BROWSER_CONTENT,"To proceed with social logins, you'll be redirected to an external browser.After signing in, you'll be redirected back to the app automatically.","소셜 로그인 진행을 위해 외부 브라우저로 이동합니다.로그인을 완료하면 앱으로 자동으로 복귀합니다.",,,,,,,,,
+UI_LOGIN_ON_BROWSER_CONTENT,"To proceed with social logins, you'll be redirected to an external browser.
+After signing in, you'll be redirected back to the app automatically.","소셜 로그인 진행을 위해 외부 브라우저로 이동합니다.
+로그인을 완료하면 앱으로 자동으로 복귀합니다.",,,,,,,,,
 UI_LOGIN_SHOW_CONTENT,"It is a fantasy world on the blockchain.
 
-To start the game, you need to create your account.","블록체인 위에 그려지는 판타지 세계.게임을 시작하려면 계정을 생성하세요.",,,,,,,,,
+To start the game, you need to create your account.","블록체인 위에 그려지는 판타지 세계.
+
+게임을 시작하려면 계정을 생성하세요.",,,,,,,,,
 UI_CONNECTED_ADDRESS_CONTENT,"You already have Nine Chronicles Address!
-Please import your keystore file from the PC.","이미 나인 크로니클 계정이 있습니다.PC에서 키스토어를 가져오세요.",,,,,,,,,
+Please import your keystore file from the PC.","이미 나인 크로니클 계정이 있습니다.
+PC에서 키스토어를 가져오세요.",,,,,,,,,
 UI_IMPORT,Import,가져오기,,,,,,,,,
 UI_COMPLETE,Complete,완료,,,,,,,,,
 UI_CREATE_PASSWORD_NOTI,"Your account has been successfully created,
 but we need to set a password for your private key.
-It will only take a moment.","계정 생성이 완료되었습니다.프라이빗 키를 보호하기 위해 비밀번호를 생성합니다.그리 오래 걸리지 않을거예요.",,,,,,,,,
+It will only take a moment.","계정 생성이 완료되었습니다.
+프라이빗 키를 보호하기 위해 비밀번호를 생성합니다.
+그리 오래 걸리지 않을거예요.",,,,,,,,,
 UI_PROCEED,Let's proceed.,시작합시다.,,,,,,,,,
 UI_LOADING_GAME_START_1,Preparing your avatar...,아바타를 준비하는 중…,,,,,,,,,
 UI_LOADING_GAME_START_2,Making a covenant with Freya...,프레이야 여신과 언약을 맺는 중…,,,,,,,,,
@@ -1195,7 +1235,8 @@ UI_BATTLE_RESULT_BUFF_DESCRIPTION,Collect Stars and try Bonus Buffs!,별을 모�
 UI_BATTLE_RESULT_LEVEL_DESCRIPTION,Level up your character.,당신의 캐릭터 레벨을 올려보세요.,Subir o seu personagem.,あなたのキャラクターをレベルアップします。,Nivela tu personaje.,ยกระดับตัวละครของคุณ,Level karakter Anda.,Уровень вашего персонажа.,升级您的角色。,升級您的角色。,I -level up ang iyong character.
 UI_CONNECTING_TO_THE_NETWORKS,Connecting to the networks...,네트워크에 연결하는 중…,,,,,,,,,
 UI_CONNECTING_TO_THE_NETWORKS_DESC,"Slow or no internet connections.
-Please ensure your decive is connected to the internet.","인터넷 연결이 느리거나 없습니다.기기가 인터넷에 연결되어 있는지 확인하세요.",,,,,,,,,
+Please ensure your decive is connected to the internet.","인터넷 연결이 느리거나 없습니다.
+기기가 인터넷에 연결되어 있는지 확인하세요.",,,,,,,,,
 UI_USE_AP_POTION,Use AP Potion,AP 포션 사용,,,,,,,,,
 SEASONPASS,Season Pass,시즌 패스,Passe de temporada,シーズンパス,Pase de temporada,ฤดูกาลที่ผ่านมา,Season,Сезонный билет,semainpass,semainpass,SeasonPass
 SEASONPASS_PREMIUM_NAME,Brave Cat's Journey Premium,용감한 고양이의 여행 프리미엄,Brave Cat's Journey Premium,勇敢な猫の旅のプレミアム,Brave Cat's Journey Premium,พรีเมี่ยมการเดินทางของ Brave Cat,Premium Perjalanan Kucing Berani,Премиум,勇敢的猫的旅程高级,勇敢的貓的旅程高級,Brave Cat's Paglalakbay Premium
@@ -1234,12 +1275,14 @@ UI_YOUR_PLANET,Your Planet,당신의 행성,Seu planeta,あなたの惑星,Tu pl
 UI_SELECT_YOUR_PLANET,Select your planet.,당신의 행성을 선택하세요.,Selecione seu planeta.,あなたの惑星を選択してください。,Selecciona tu planeta.,เลือกโลกของคุณ,Planet Anda.,Выберите свою планету.,选择你的星球。,選擇你的星球。,Piliin ang iyong planeta.
 UI_INVITE_FRIENDS,Invite Friends,친구 초대,,,,,,,,,
 UI_INVITE_FRIENDS_BANNER_TITLE,Invite your friends and earn NCG!,친구를 초대하고 NCG를 얻으세요!,,,,,,,,,
-UI_INVITE_FRIENDS_BANNER_DESC,"Inviter gets {0} NCG instantly.Invitee gets {1} NCG now, and {3} NCG more at lv.{4}.","초대한 사람은 즉시 {0} NCG를 받습니다.
+UI_INVITE_FRIENDS_BANNER_DESC,"Inviter gets {0} NCG instantly.
+Invitee gets {1} NCG now, and {3} NCG more at lv.{4}.","초대한 사람은 즉시 {0} NCG를 받습니다.
 초대받은 사람은 즉시 {1} NCG를 받고, 레벨 {4}에서 추가로 {3} NCG를 받습니다.",,,,,,,,,
 UI_MY_REFERRAL_CODE,My Referral Code,나의 추천인 코드,,,,,,,,,
 UI_SHARE_REFERRAL_CODE,Invite Friends,친구 초대하기,,,,,,,,,
 UI_ENTER_REFERRAL_CODE,Enter Referral Code,초대코드 입력,,,,,,,,,
-UI_ENTER_REFERRAL_CODE_DESC,"Enter the referral code who introduced you to Nine Chronicles M.Only 1 referral code can be registered. Register it now get a reward!","나인 크로니클 M을 소개해준 친구의 추천인 코드를 입력하세요.
+UI_ENTER_REFERRAL_CODE_DESC,"Enter the referral code who introduced you to Nine Chronicles M.
+Only 1 referral code can be registered. Register it now get a reward!","나인 크로니클 M을 소개해준 친구의 추천인 코드를 입력하세요.
 추천 코드는 한 번만 등록할 수 있습니다. 지금 등록하고 보상을 받으세요!",,,,,,,,,
 ,,"계정 생성이 완료되었습니다.
 프라이빗 키를 보호하기 위해 비밀번호를 생성합니다.
