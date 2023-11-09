@@ -493,7 +493,7 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if UNITY_EDITOR || RUN_ON_MOBILE
+#if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
 #endif
 
