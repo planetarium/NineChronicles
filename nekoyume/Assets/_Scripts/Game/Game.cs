@@ -217,9 +217,9 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Load CommandLineOptions at Start() after init
-#elif UNITY_IOS
+#elif !UNITY_EDITOR && UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
@@ -267,13 +267,13 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
-            
+
 #if RUN_ON_MOBILE
             // NOTE: Initialize planets.
             //       It should do after load CommandLineOptions.
@@ -1297,7 +1297,7 @@ namespace Nekoyume.Game
             // NOTE: Check auto login!
             if (planetContext.NeedToAutoLogin.HasValue && planetContext.NeedToAutoLogin.Value)
             {
-                var pk = loginSystem.GetPrivateKey(); 
+                var pk = loginSystem.GetPrivateKey();
                 if (pk is not null)
                 {
                     Debug.Log("[Game] CoLogin()... planetContext.NeedToAutoLogin is true." +
@@ -1327,7 +1327,7 @@ namespace Nekoyume.Game
             {
                 introScreen.OnClickGoogleSignIn.AsObservable()
                     .First()
-                    .Subscribe(_ => loadingScreen.Show());
+                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
 
                 (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
                     onGoogleSignInTuple = null;
@@ -1342,6 +1342,7 @@ namespace Nekoyume.Game
                 var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
 
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
+                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
                 yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
 
@@ -1365,6 +1366,7 @@ namespace Nekoyume.Game
 
             if (agentAddr.HasValue)
             {
+                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     agentAddr.Value).ToCoroutine();

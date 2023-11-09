@@ -119,11 +119,7 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-#if UNITY_ANDROID
-            UpdateStaticRatioWithLetterBox();
-#else
             UpdateDynamicRatio();
-#endif
         }
 
         public void ChangeRatioState()

@@ -158,7 +158,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_CONNECTING_TO_THE_NETWORKS_DESC
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -340,7 +340,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 26
-  l10nKey: UI_CONNECTING_TO_THE_NETWORKS
+  l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -491,7 +491,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  messageText: {fileID: 6808901225498358680}
+  titleText: {fileID: 6808901225498358680}
+  subText: {fileID: 8199369678082140412}
 --- !u!1 &8210374878441876297
 GameObject:
   m_ObjectHideFlags: 0
