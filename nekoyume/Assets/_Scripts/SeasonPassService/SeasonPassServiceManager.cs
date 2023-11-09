@@ -28,6 +28,8 @@ namespace Nekoyume
         public string GoogleMarketURL = "https://play.google.com/store/search?q=Nine%20Chronicles&c=apps&hl=en-EN";// default
         public string AppleMarketURL = "https://nine-chronicles.com/";// default
 
+        private string currentPlanetId;
+
         public SeasonPassServiceManager(string url)
         {
             if(url == null)
@@ -36,6 +38,7 @@ namespace Nekoyume
                 return;
             }
             Client = new SeasonPassServiceClient(url);
+            currentPlanetId = Nekoyume.Planet.PlanetSelector.DefaultPlanetId.ToString();
             Initialize();
         }
 
@@ -92,6 +95,10 @@ namespace Nekoyume
             }).AsUniTask().Forget();
 
             Game.Event.OnRoomEnter.AddListener(_ => AvatarStateRefreshAsync().AsUniTask().Forget());
+
+            Nekoyume.Planet.PlanetSelector.CurrentPlanetInfoSubject.Subscribe(_ => {
+                currentPlanetId = _.planetInfo.ID.ToString();
+            });
         }
 
         private void RefreshRemainingTime()
@@ -110,7 +117,8 @@ namespace Nekoyume
                 return;
             }
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(),
+            
+            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), currentPlanetId,
                 (result) =>
                 {
                     AvatarInfo.SetValueAndForceNotify(result);
@@ -129,7 +137,8 @@ namespace Nekoyume
             {
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.Value.SeasonPassId
+                SeasonId = AvatarInfo.Value.SeasonPassId,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>(currentPlanetId)
             },
                 (result) =>
                 {

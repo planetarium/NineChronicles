@@ -20,7 +20,7 @@ namespace Nekoyume.Planet
         /// </summary>
         private const string CachedPlanetIdStringKey = "CachedPlanetIdStringKey";
 
-        private static PlanetId DefaultPlanetId => PlanetId.Heimdall;
+        public static PlanetId DefaultPlanetId => PlanetId.Heimdall;
 
         public static bool HasCachedPlanetIdString =>
             PlayerPrefs.HasKey(CachedPlanetIdStringKey);
