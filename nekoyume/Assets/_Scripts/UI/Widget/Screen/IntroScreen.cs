@@ -267,18 +267,26 @@ namespace Nekoyume.UI
                     apple.Initialize();
                 }
 
+                OnClickAppleSignIn.OnNext((this, apple));
+
                 if (apple.State.Value is not (AppleSigninBehaviour.SignInState.Signed or
                     AppleSigninBehaviour.SignInState.Waiting))
                 {
                     apple.SignInWithApple();
                     startButtonContainer.SetActive(false);
+                    appleSignInButton.gameObject.SetActive(false);
                     apple.State
                         .SkipLatestValueOnSubscribe()
                         .First()
                         .Subscribe(state =>
                         {
-                            startButtonContainer.SetActive(
-                                state is AppleSigninBehaviour.SignInState.Canceled);
+                            var isCanceled = state is AppleSigninBehaviour.SignInState.Canceled;
+                            startButtonContainer.SetActive(isCanceled);
+                            appleSignInButton.gameObject.SetActive(isCanceled);
+                            if (state is AppleSigninBehaviour.SignInState.Signed)
+                            {
+                                OnAppleSignedIn.OnNext((this, apple));    
+                            }
                         });
                 }
             });
@@ -360,6 +368,8 @@ namespace Nekoyume.UI
             base.OnDestroy();
             OnClickGoogleSignIn.Dispose();
             OnGoogleSignedIn.Dispose();
+            OnClickAppleSignIn.Dispose();
+            OnAppleSignedIn.Dispose();
         }
 
         public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
