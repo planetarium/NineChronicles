@@ -82,7 +82,7 @@ namespace Nekoyume.UI
                             IconAndButtonSystem.SystemType.Information);
                     }
 
-                    var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
+                    var renderCategory = categorySchemas.Where(c => c.Active && c.Name != "NoShow").OrderBy(c => c.Order);
                     foreach (var category in renderCategory)
                     {
                         var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);

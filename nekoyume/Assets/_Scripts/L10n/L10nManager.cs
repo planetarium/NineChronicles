@@ -155,7 +155,12 @@ namespace Nekoyume.L10n
             {
                 languageType = LanguageType.English;
             }
-
+#if UNITY_STANDALONE
+            if (languageType == LanguageType.Korean)
+            {
+                languageType = LanguageType.English;
+            }
+#endif
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
@@ -243,7 +248,7 @@ namespace Nekoyume.L10n
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             {
                 WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
                 while (!directory.isDone)
@@ -251,12 +256,18 @@ namespace Nekoyume.L10n
                     // wait for load
                 }
 
-                String[] fileNames = directory.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
-                foreach (String fileName in fileNames)
+                var fileNames = directory.text
+                    .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                    .Where(line => !string.IsNullOrEmpty(line))
+                    .Select(line => line.Trim())
+                    .ToArray();
+                foreach (var fileName in fileNames)
                 {
-                    String fullName = CsvFilesRootDirectoryPath + "/" + fileName;
+#if TEST_LOG
+                    Debug.Log($"[L10nManager] GetDictionary()... fileName: {fileName}");
+#endif
+                    var fullName = CsvFilesRootDirectoryPath + "/" + fileName;
                     WWW csvFile = new WWW(fullName);
                     while (!csvFile.isDone)
                     {
@@ -282,7 +293,7 @@ namespace Nekoyume.L10n
                         foreach (var record in records)
                         {
 #if TEST_LOG
-                        Debug.Log($"{fileName}: {recordsIndex}");
+                            Debug.Log($"[L10nManager] GetDictionary()... record.Key: {record.Key}");
 #endif
                             var key = record.Key;
                             if (string.IsNullOrEmpty(key))
@@ -302,11 +313,17 @@ namespace Nekoyume.L10n
 
                             if (dictionary.ContainsKey(key))
                             {
-                                throw new L10nAlreadyContainsKeyException(
-                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {fullName}");
+                                Debug.LogError("[L10nManager] L10n duplication Key." +
+                                               " Ignore duplicated key and use first value." +
+                                               $" key: {key}" +
+                                               $", recordsIndex: {recordsIndex}" +
+                                               $", csvFileInfo: {fullName}");
+                            }
+                            else
+                            {
+                                dictionary.Add(key, value);
                             }
 
-                            dictionary.Add(key, value);
                             recordsIndex++;
                         }
                     }
@@ -363,8 +380,11 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    Debug.LogError($"L10n duplication Key  key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
-                                    dictionary[key] = value;
+                                    Debug.LogError("[L10nManager] L10n duplication Key." +
+                                                   " Ignore duplicated key and use first value." +
+                                                   $" key: {key}" +
+                                                   $", recordsIndex: {recordsIndex}" +
+                                                   $", csvFileInfo: {csvFileInfo.FullName}");
                                 }
                                 else
                                 {

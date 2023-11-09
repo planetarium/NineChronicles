@@ -100,7 +100,7 @@ $@"query {{
                     return timeSpan > Interval ? Interval : timeSpan;
                 })
                 .ToReactiveProperty();
-            LastRewardTime.Subscribe(_ => SetPushNotification());
+            LastRewardTime.ObserveOnMainThread().Subscribe(_ => SetPushNotification());
         }
 
         public async Task LoadAvatarInfo(string avatarAddress, string agentAddress)

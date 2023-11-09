@@ -195,15 +195,19 @@ namespace Nekoyume.UI.Module
                     case ToggleType.InviteFriend:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+#if UNITY_EDITOR && !UNITY_ANDROID
+                            Find<InviteFriendsPopup>().Show();
+#else
+                            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
                             toggleInfo.Toggle.isOn = false;
+#endif
                         });
                         break;
                     case ToggleType.PortalReward:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
@@ -231,7 +235,7 @@ namespace Nekoyume.UI.Module
                     case ToggleType.Quit:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
                                 var stage = Game.instance.Stage;

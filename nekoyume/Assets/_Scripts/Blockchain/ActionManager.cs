@@ -56,12 +56,14 @@ namespace Nekoyume.Blockchain
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        public Exception HandleException(Guid actionId, Exception e)
+        public Exception HandleException(Guid? actionId, Exception e)
         {
             if (e is TimeoutException)
             {
-                var txId = _actionIdToTxIdBridge.ContainsKey(actionId)
-                    ? (TxId?)_actionIdToTxIdBridge[actionId].txId
+                var txId = actionId.HasValue
+                    ? _actionIdToTxIdBridge.TryGetValue(actionId.Value, out var value)
+                        ? (TxId?)value.txId
+                        : null
                     : null;
                 e = new ActionTimeoutException(e.Message, txId, actionId);
             }
@@ -836,7 +838,7 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
-            
+
             var action = new ItemEnhancement
             {
                 itemId = baseEquipment.NonFungibleId,
@@ -1512,9 +1514,9 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
+                .DoOnError(_ =>
                 {
-
+                    // NOTE: Handle exception outside of this method.
                 });
         }
 
@@ -1556,7 +1558,51 @@ namespace Nekoyume.Blockchain
                 });
         }
 
-#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+        public IObservable<ActionEvaluation<ClaimItems>> ClaimItems(
+            params (Address, IReadOnlyList<FungibleAssetValue>)[] claimData)
+        {
+            var action = new ClaimItems(claimData);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<ClaimItems>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionEvaluation<TransferAsset>> TransferAsset(
+            Address sender,
+            Address recipient,
+            FungibleAssetValue amount)
+        {
+            var action = new TransferAsset(sender, recipient, amount);
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<TransferAsset>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+        public IObservable<ActionEvaluation<TransferAssets>> TransferAssets(
+            Address sender,
+            params (Address, FungibleAssetValue)[] recipients)
+        {
+            var action = new TransferAssets(sender, recipients.ToList());
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<TransferAssets>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.PlainValue.Equals(action.PlainValue))
+                .First()
+                .ObserveOnMainThread()
+                // .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => { });
+        }
+
+#if UNITY_EDITOR || LIB9C_DEV_EXTENSIONS
         public IObservable<ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
             var action = new CreateTestbed

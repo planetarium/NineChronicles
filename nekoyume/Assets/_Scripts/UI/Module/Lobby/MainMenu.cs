@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module.Lobby
         WorldBoss,
         Dcc,
         PatrolReward,
+        SeasonPass,
     }
 
     public class MainMenu : MonoBehaviour
@@ -41,7 +42,7 @@ namespace Nekoyume.UI.Module.Lobby
 
         private Vector3 _originLocalScale;
         private string _messageForCat;
-        private int _requireStage;
+        protected int _requireStage;
         private const int TutorialEndStage = 10;
 
         public bool IsUnlocked { get; private set; }
