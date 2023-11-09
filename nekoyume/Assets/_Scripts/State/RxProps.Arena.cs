@@ -217,35 +217,43 @@ namespace Nekoyume.State
             var arenaInfo = new List<ArenaParticipantModel>();
             int purchasedCountDuringInterval = 0;
             long lastBattleBlockIndex = 0L;
+            int playerWinScore = 0;
+            int playerLoseScore = 0;
             try
             {
+                // var client = new NineChroniclesAPIClient("http://localhost:50000/graphql");
+                // var response = await client.QueryArenaInfoAsync(currentAvatarAddr);
                 var response = await Game.Game.instance.RpcClient.QueryArenaInfoAsync(currentAvatarAddr);
-                arenaInfo = response.StateQuery.ArenaInfo.ArenaParticipants;
-                purchasedCountDuringInterval =
-                    response.StateQuery.ArenaInfo.PurchasedCountDuringInterval;
-                lastBattleBlockIndex = response.StateQuery.ArenaInfo.LastBattleBlockIndex;
+                var graphqlData = response.StateQuery.ArenaInfo;
+                arenaInfo = graphqlData.ArenaParticipants;
+                purchasedCountDuringInterval = graphqlData.PurchasedCountDuringInterval;
+                lastBattleBlockIndex = graphqlData.LastBattleBlockIndex;
+                var arenaInformationModel = graphqlData.ArenaInformation;
+                playerWinScore = arenaInformationModel.Win;
+                playerLoseScore = arenaInformationModel.Lose;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
+            ArenaParticipantModel playerArenaInf = new ArenaParticipantModel
+            {
+                AvatarAddr = currentAvatarAddr,
+                Score = ArenaScore.ArenaScoreDefault,
+                WinScore = 0,
+                LoseScore = 0,
+                NameWithHash = currentAvatar.NameWithHash,
+                PortraitId = Util.GetPortraitId(BattleType.Arena),
+                Cp = Util.TotalCP(BattleType.Arena),
+                Level = currentAvatar.level
+            };
+
             if (!arenaInfo.Any())
             {
                 Debug.Log($"Failed to get {nameof(ArenaParticipantModel)}");
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
-                var playerArenaInf = new ArenaParticipantModel
-                {
-                    AvatarAddr = currentAvatarAddr,
-                    Score = ArenaScore.ArenaScoreDefault,
-                    WinScore = 0,
-                    LoseScore = 0,
-                    NameWithHash = currentAvatar.NameWithHash,
-                    PortraitId = Util.GetPortraitId(BattleType.Arena),
-                    Cp = Util.TotalCP(BattleType.Arena),
-                    Level = currentAvatar.level
-                };
                 _playerArenaInfo.SetValueAndForceNotify(playerArenaInf);
                 return avatarAddrAndScoresWithRank;
             }
@@ -253,8 +261,16 @@ namespace Nekoyume.State
             var playerArenaInfo = arenaInfo.FirstOrDefault(p => p.AvatarAddr == currentAvatarAddr);
             if (playerArenaInfo is { })
             {
-                _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
+                playerArenaInfo.WinScore = playerWinScore;
+                playerArenaInfo.LoseScore = playerLoseScore;
             }
+            else
+            {
+                playerArenaInf.Rank = arenaInfo.Max(r => r.Rank);
+                playerArenaInfo = playerArenaInf;
+                arenaInfo.Add(playerArenaInfo);
+            }
+            _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             _purchasedDuringInterval.SetValueAndForceNotify(purchasedCountDuringInterval);
             _lastBattleBlockIndex.SetValueAndForceNotify(lastBattleBlockIndex);
