@@ -217,9 +217,9 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             // Load CommandLineOptions at Start() after init
-#elif UNITY_IOS
+#elif !UNITY_EDITOR && UNITY_IOS
             _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
             OnLoadCommandlineOptions();
 #else
@@ -267,13 +267,13 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if UNITY_ANDROID
+#if !UNITY_EDITOR && UNITY_ANDROID
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
             OnLoadCommandlineOptions();
 #endif
-            
+
 #if RUN_ON_MOBILE
             // NOTE: Initialize planets.
             //       It should do after load CommandLineOptions.
@@ -493,7 +493,7 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if RUN_ON_MOBILE
+#if UNITY_EDITOR || RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
 #endif
 
@@ -545,7 +545,7 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if RUN_ON_MOBILE
+#if UNITY_EDITOR || RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
