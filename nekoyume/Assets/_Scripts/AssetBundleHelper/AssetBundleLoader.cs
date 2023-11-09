@@ -46,13 +46,10 @@ namespace Nekoyume.AssetBundleHelper
 
         private static string GetPlatform()
         {
-#if UNITY_EDITOR
-            return EditorUserBuildSettings.activeBuildTarget switch
-            {
-                BuildTarget.StandaloneWindows => "Windows",
-                BuildTarget.iOS => "iOS",
-                BuildTarget.Android => "Android",
-            };
+#if UNITY_EDITOR_WIN
+            return "Windows";
+#elif UNITY_EDITOR_OSX
+            return "iOS";
 #else
             return Application.platform switch
             {
@@ -136,7 +133,6 @@ namespace Nekoyume.AssetBundleHelper
         public static T LoadAssetBundle<T>(string bundleName, string objectName)
             where T : UnityEngine.Object
         {
-            Debug.Log($"Loading - ${bundleName}/${objectName}");
             bundleName = bundleName.ToLower();
             if (!loadedAssetBundleCache.ContainsKey(bundleName))
             {
