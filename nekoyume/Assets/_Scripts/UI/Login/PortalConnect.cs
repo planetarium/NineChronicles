@@ -47,6 +47,7 @@ namespace Nekoyume.UI
         private string clientSecret;
         private string code;
         private string accessToken;
+        private string refreshToken;
         private string txId;
         private ReferralResult referralResult;
 
@@ -55,6 +56,8 @@ namespace Nekoyume.UI
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
+        private const string RefreshTokenEndpoint = "api/auth/mobile/refresh";
+
         private const string PortalRewardEndpoint = "/earn#Play";
         private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
@@ -229,6 +232,31 @@ namespace Nekoyume.UI
             HandleAccessTokenResult(request);
         }
 
+        private async void RefreshAccessToken()
+        {
+            var url = $"{PortalUrl}{RefreshTokenEndpoint}";
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RefreshAccessToken)} invoked: " +
+                      $"url({url}), refreshToken({refreshToken})");
+
+            var form = new WWWForm();
+            form.AddField("refreshToken", refreshToken);
+
+            var request = UnityWebRequest.Post(url, form);
+            request.timeout = Timeout;
+
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
+            }
+
+            HandleAccessTokenResult(request);
+        }
+
         public bool HandleAccessTokenResult(UnityWebRequest request)
         {
             var json = request.downloadHandler.text;
@@ -240,6 +268,7 @@ namespace Nekoyume.UI
                 if (!string.IsNullOrEmpty(data.accessToken))
                 {
                     accessToken = data.accessToken;
+                    refreshToken = data.refreshToken;
                     return true;
                 }
 
