@@ -41,6 +41,18 @@ namespace Nekoyume.UI
             public string txId;
         }
 
+        [Serializable]
+        public class ReferralResult : RequestResult
+        {
+            public string referralCode;
+            public int inviterReward;
+            public int inviteeReward;
+            public int requiredLevel;
+            public int inviteeLevelReward;
+            public bool isRegistered;
+            public string referralUrl;
+        }
+
         private System.Action _onPortalEnd;
         private string deeplinkURL;
 
@@ -57,6 +69,7 @@ namespace Nekoyume.UI
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
         private const string RefreshTokenEndpoint = "api/auth/mobile/refresh";
+        private const string ReferralEndpoint = "/api/invitations/mobile/referral";
 
         private const string PortalRewardEndpoint = "/earn#Play";
         private const string ClientSecretKey = "Cached_ClientSecret";
@@ -327,6 +340,79 @@ namespace Nekoyume.UI
             {
                 Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
                                $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                ShowRequestErrorPopup(request.result, request.error);
+            }
+        }
+
+        public async void GetReferralInformation()
+        {
+            var url = $"{PortalUrl}{ReferralEndpoint}";
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} invoked: " +
+                      $"url({url}), accessToken({accessToken})");
+
+            var request = UnityWebRequest.Get(url);
+            request.timeout = Timeout;
+            request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+
+            await request.SendWebRequest();
+
+            var json = request.downloadHandler.text;
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                var data = JsonUtility.FromJson<ReferralResult>(json);
+                if (!string.IsNullOrEmpty(data.referralCode))
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Success: {json}");
+                    // Todo : Save referralCode
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
+            }
+            else
+            {
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Error: {request.error}\n{json}\n");
+                ShowRequestErrorPopup(request.result, request.error);
+            }
+        }
+
+        public IEnumerator EnterReferralCode(string referralCode, System.Action onSuccess)
+        {
+            var url = $"{PortalUrl}{ReferralEndpoint}";
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} invoked: " +
+                      $"url({url}), referralCode({referralCode}) accessToken({accessToken})");
+
+            var form = new WWWForm();
+            form.AddField("referralCode", referralCode);
+
+            var request = UnityWebRequest.Post(url, form);
+            request.timeout = Timeout;
+            request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+
+            yield return request.SendWebRequest();
+
+            var json = request.downloadHandler.text;
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                var data = JsonUtility.FromJson<ReferralResult>(json);
+                if (data.message == "Success")
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Success: {json}");
+                    onSuccess?.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
+            }
+            else
+            {
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Error: {request.error}\n{json}\n");
                 ShowRequestErrorPopup(request.result, request.error);
             }
         }
