@@ -301,7 +301,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> {resultEquipment});
+            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> {resultEquipment},
+                () =>
+                {
+                    Game.Game.instance.Stage.TutorialController.Play(50005);
+                });
         }
     }
 }
