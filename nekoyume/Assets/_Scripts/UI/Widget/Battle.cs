@@ -109,7 +109,6 @@ namespace Nekoyume.UI
             stage.UpdateTimeScale();
             accelerationToggle.gameObject.SetActive(false);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
-            Find<HeaderMenuStatic>().Close();
             base.Close(ignoreCloseAnimation);
         }
 
