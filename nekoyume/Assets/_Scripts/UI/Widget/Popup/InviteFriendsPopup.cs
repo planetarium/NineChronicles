@@ -96,6 +96,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private ErrorPopup errorPopup;
 
+        private string _referralCode;
+        private string _referralUrl;
+
         protected override void Awake()
         {
             base.Awake();
@@ -106,16 +109,17 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("NOTIFICATION_REFERRAL_CODE_COPY"),
                     NotificationCell.NotificationType.Notification);
+                Debug.LogError($"CopyReferralCodeButton: {_referralCode}");
             });
 
             shareReferralCodeButton.onClick.AddListener(() =>
             {
-                Debug.LogError("ShareReferralCodeButton");
+                Debug.LogError($"ShareReferralCodeButton: {_referralUrl}");
             });
 
             enterReferralCodeButton.onClick.AddListener(() =>
             {
-                enterReferralCodePopup.Show(OnEnterReferralCode);
+                enterReferralCodePopup.Show(EnterReferralCode);
             });
 
             enterReferralCodePopup.Init();
@@ -124,25 +128,31 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            var inviterReward = 5;
-            var inviteeReward = 1;
-            var inviteeReward2 = 4;
-            var inviteeRewardLevel = 50;
-            referralRewardText.text = L10nManager.Localize("UI_INVITE_FRIENDS_BANNER_DESC",
-                inviterReward, inviteeReward, inviteeReward2, inviteeRewardLevel);
+            ShowAsync();
+        }
 
-            var referralCode = "123456";
-            referralCodeText.text = referralCode;
+        private async void ShowAsync(bool ignoreShowAnimation = false)
+        {
+            var referralInfo = await Game.Game.instance.PortalConnect.GetReferralInformation();
 
-            var isReferralCodeEntered = false;
-            enterReferralCodeButton.gameObject.SetActive(!isReferralCodeEntered);
+            referralRewardText.text = L10nManager.Localize(
+                "UI_INVITE_FRIENDS_BANNER_DESC",
+                referralInfo.inviterReward,
+                referralInfo.inviteeReward,
+                referralInfo.inviteeLevelReward,
+                referralInfo.requiredLevel);
+            referralCodeText.text = referralInfo.referralCode;
+            enterReferralCodeButton.gameObject.SetActive(!referralInfo.isRegistered);
+
+            _referralCode = referralInfo.referralCode;
+            _referralUrl = referralInfo.referralUrl;
 
             base.Show(ignoreShowAnimation);
         }
 
-        private void OnEnterReferralCode(string referralCode)
+        private async void EnterReferralCode(string referralCode)
         {
-            var success = true;
+            var success = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
             if (success)
             {
                 enterReferralCodeButton.gameObject.SetActive(false);
@@ -153,7 +163,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                errorPopup.Show(L10nManager.Localize(""));
+                errorPopup.Show("enter referral code failed");
             }
         }
     }
