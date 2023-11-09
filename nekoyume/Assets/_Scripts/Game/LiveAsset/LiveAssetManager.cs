@@ -11,6 +11,7 @@ using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using Nekoyume.Planet;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset
@@ -80,10 +81,18 @@ namespace Nekoyume.Game.LiveAsset
 #endif
             var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
             Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
-            yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
+            yield return StartCoroutine(
+                RequestManager.instance.GetJson(
+                    cloEndpoint,
+                    SetCommandLineOptions));
 
-            if(CommandLineOptions == null)
-                yield return StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
+            if (CommandLineOptions == null)
+            {
+                yield return StartCoroutine(
+                    RequestManager.instance.GetJson(
+                        _endpoint.CommandLineOptionsJsonUrl,
+                        SetCommandLineOptions));
+            }
         }
 
         public void AddToCheckedList(string key)
@@ -128,20 +137,9 @@ namespace Nekoyume.Game.LiveAsset
                 CommandLineOptions = options;
             }
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                AllowTrailingCommas = true,
-                Converters =
-                {
-                    new CommandLineOptions.StringEnumerableConverter(),
-                },
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
-
-            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(response, jsonOptions);
+            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(
+                response,
+                CommandLineOptions.JsonOptions);
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)

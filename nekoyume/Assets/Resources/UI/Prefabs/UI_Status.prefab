@@ -1759,6 +1759,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1125226414223366619}
+  - component: {fileID: 8535600809487023694}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1792,6 +1793,18 @@ RectTransform:
   m_AnchoredPosition: {x: 20, y: -8}
   m_SizeDelta: {x: -20, y: -8}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &8535600809487023694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7217059410893542773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7861919807460005189
 GameObject:
   m_ObjectHideFlags: 0
