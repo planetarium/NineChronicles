@@ -73,11 +73,11 @@ namespace Nekoyume.Action
             else
             {
                 var marketState = states.TryGetState(Addresses.Market, out List rawMarketList)
-                    ? new MarketState(rawMarketList)
-                    : new MarketState();
+                    ? rawMarketList
+                    : List.Empty;
                 productsState = new ProductsState();
-                marketState.AvatarAddresses.Add(AvatarAddress);
-                states = states.SetState(Addresses.Market, marketState.Serialize());
+                marketState = marketState.Add(AvatarAddress.Serialize());
+                states = states.SetState(Addresses.Market, marketState);
             }
 
             var random = context.GetRandom();
