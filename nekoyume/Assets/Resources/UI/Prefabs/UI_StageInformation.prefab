@@ -379,6 +379,7 @@ GameObject:
   - component: {fileID: 8803786307878641063}
   - component: {fileID: 137274962955633558}
   - component: {fileID: 7715594918881318035}
+  - component: {fileID: 283699955086708948}
   m_Layer: 5
   m_Name: ExpText
   m_TagString: Untagged
@@ -403,8 +404,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 110.1, y: 40}
+  m_AnchoredPosition: {x: 51.77, y: 0}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &8803786307878641063
 CanvasRenderer:
@@ -534,6 +535,20 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!114 &283699955086708948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1278844751846390296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 0
 --- !u!1 &2231493379330568476
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,6 +1423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5352767601061922230}
   - component: {fileID: 7082493236363841392}
+  - component: {fileID: 648902921999403006}
   m_Layer: 5
   m_Name: StageInfoArea
   m_TagString: Untagged
@@ -1432,11 +1448,11 @@ RectTransform:
   m_Father: {fileID: 9188718381687000709}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.7014034, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.3757019, y: 0}
-  m_SizeDelta: {x: 0.7514763, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -169.87573, y: 0}
+  m_SizeDelta: {x: 339.75146, y: 0}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!225 &7082493236363841392
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1449,6 +1465,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &648902921999403006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4226431650079094325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 3
 --- !u!1 &4227430273084696746
 GameObject:
   m_ObjectHideFlags: 0
@@ -1978,7 +2007,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 187.285, y: 0}
+  m_AnchoredPosition: {x: 180.725, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6371291253555809408
