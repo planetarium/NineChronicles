@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 688452911084739666}
   - component: {fileID: 411954315895112361}
   - component: {fileID: 8349080353897409843}
+  - component: {fileID: 895397029797577024}
   m_Layer: 5
   m_Name: UI_Battle
   m_TagString: Untagged
@@ -209,6 +210,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688452911084739676}
   m_CullTransparentMesh: 1
+--- !u!114 &895397029797577024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 688452911084739676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 0
 --- !u!1 &688452911185082625
 GameObject:
   m_ObjectHideFlags: 0
