@@ -21,19 +21,6 @@ namespace Nekoyume.Action
     public class MintAssets : ActionBase
     {
         public const string TypeIdentifier = "mint_assets";
-        public override IValue PlainValue =>
-            new Dictionary(
-                new[]
-                {
-                    new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
-                    new KeyValuePair<IKey, IValue>(
-                        (Text)"values",
-                        MintSpecs is { }
-                            ? new List(MintSpecs.Select(s => s.Serialize()))
-                            : Null.Value
-                    )
-                }
-            );
 
         public MintAssets()
         {
@@ -96,6 +83,20 @@ namespace Nekoyume.Action
                 return new MintSpec((List)v);
             }).ToList();
         }
+
+        public override IValue PlainValue =>
+            new Dictionary(
+                new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
+                    new KeyValuePair<IKey, IValue>(
+                        (Text)"values",
+                        MintSpecs is { }
+                            ? new List(MintSpecs.Select(s => s.Serialize()))
+                            : Null.Value
+                    )
+                }
+            );
 
         public List<MintSpec>? MintSpecs
         {

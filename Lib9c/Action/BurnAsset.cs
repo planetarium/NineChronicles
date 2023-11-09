@@ -28,25 +28,6 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        public override IValue PlainValue =>
-            new Dictionary(
-                new[]
-                {
-                    new KeyValuePair<IKey, IValue>(
-                        (Text)"type_id",
-                        (Text)TypeIdentifier
-                    ),
-                    new KeyValuePair<IKey, IValue>(
-                        (Text)"values",
-                        new List(
-                            Owner.Serialize(),
-                            Amount.Serialize(),
-                            (Text)Memo
-                        )
-                    ),
-                }
-            );
-
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
@@ -75,6 +56,25 @@ namespace Nekoyume.Action
             Amount = values[1].ToFungibleAssetValue();
             Memo = (Text)values[2];
         }
+
+        public override IValue PlainValue =>
+            new Dictionary(
+                new[]
+                {
+                    new KeyValuePair<IKey, IValue>(
+                        (Text)"type_id",
+                        (Text)TypeIdentifier
+                    ),
+                    new KeyValuePair<IKey, IValue>(
+                        (Text)"values",
+                        new List(
+                            Owner.Serialize(),
+                            Amount.Serialize(),
+                            (Text)Memo
+                        )
+                    ),
+                }
+            );
 
         public FungibleAssetValue Amount { get; private set; }
 
