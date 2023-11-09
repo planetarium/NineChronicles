@@ -1651,8 +1651,8 @@ MonoBehaviour:
           targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-          targetType: 10
-          actionType: 30000
+          targetType: 20
+          actionType: 50003
           guideType: 1
           emojiType: 2
           dialogPositionType: 2

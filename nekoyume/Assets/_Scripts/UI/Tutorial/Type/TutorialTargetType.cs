@@ -26,6 +26,7 @@ namespace Nekoyume.UI
         GuidedQuestButton = 17, // 좌표 안맞음
         CombinationResultPopupButton = 18, // 좌표 안맞음
         MenuButton = 19,
+        InventorySecondCell = 20,
         // 가독성을 더하기 위해 튜토리얼이 진행되는 stage id * 10000 부터 1씩 더함
         PortalReward = 70001,
         ItemTooltipEquipButton = 30000,
