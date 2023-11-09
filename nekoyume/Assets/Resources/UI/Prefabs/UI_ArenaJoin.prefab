@@ -294,7 +294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -166.86304, y: -31}
+  m_AnchoredPosition: {x: 477, y: 0.00012207031}
   m_SizeDelta: {x: 414, y: 72.77344}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &5743282859793066883
@@ -1437,7 +1437,7 @@ PrefabInstance:
     - target: {fileID: 801584910548760658, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1434793155216603422, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -1448,6 +1448,11 @@ PrefabInstance:
         type: 3}
       propertyPath: l10nKey
       value: UI_ARENA_JOIN_BACK_BUTTON
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: helpId
+      value: 100015
       objectReference: {fileID: 0}
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
