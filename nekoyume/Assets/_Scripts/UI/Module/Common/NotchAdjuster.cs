@@ -11,7 +11,9 @@ namespace Nekoyume.UI.Module.Common
         public enum NotchUIType
         {
             Normal,
-            EventBanner
+            EventBanner,
+            Left,
+            Right,
         }
 
         [SerializeField]
@@ -32,6 +34,12 @@ namespace Nekoyume.UI.Module.Common
                     RefreshNotchByScreenState();
                     break;
                 case NotchUIType.EventBanner:
+                    break;
+                case NotchUIType.Left:
+                    RefreshNotchByScreenState();
+                    break;
+                case NotchUIType.Right:
+                    RefreshNotchByScreenState();
                     break;
                 default:
                     break;
@@ -64,8 +72,13 @@ namespace Nekoyume.UI.Module.Common
                     anchorMax.x = (safeArea.x + safeArea.width) / Screen.width;
                     break;
                 case NotchUIType.EventBanner:
-                    anchorMax.x = (safeArea.x + safeArea.width) / Screen.width;
-                    anchorMin.x = anchorMax.x;
+                    anchorMin.x = anchorMax.x = (safeArea.x + safeArea.width) / Screen.width;
+                    break;
+                case NotchUIType.Left:
+                    anchorMin.x = anchorMax.x = safeArea.x / Screen.width;
+                    break;
+                case NotchUIType.Right:
+                    anchorMin.x = anchorMax.x = (safeArea.x + safeArea.width) / Screen.width;
                     break;
                 default:
                     break;
