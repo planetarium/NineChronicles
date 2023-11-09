@@ -1651,17 +1651,36 @@ MonoBehaviour:
           targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-          targetType: 30001
-          actionType: 30001
+          targetType: 10
+          actionType: 30000
+          guideType: 1
+          emojiType: 2
+          dialogPositionType: 2
+          scriptKey: TUTORIAL_03_001
+          arrowAdditionalDelay: 0
+          fullScreenButton: 1
+          noArrow: 0
+          guideSprite: {fileID: 0}
+      - id: 50010
+        nextId: 50011
+        checkPointId: 50005
+        data:
+          presetId: 1
+          arrowPositionOffset: {x: 0, y: 0}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 0, y: 0}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+          targetType: 30000
+          actionType: 12
           guideType: 1
           emojiType: 2
           dialogPositionType: 0
-          scriptKey: TUTORIAL_03_003
+          scriptKey: TUTORIAL_03_002
           arrowAdditionalDelay: 0
           fullScreenButton: 0
           noArrow: 0
           guideSprite: {fileID: 0}
-      - id: 50010
+      - id: 50011
         nextId: 0
         checkPointId: -5
         data:
