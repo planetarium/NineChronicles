@@ -15,13 +15,13 @@ namespace Nekoyume.Game.OAuth
     {
         public enum SignInState
         {
-            NotSigned,
+            Undefined,
             Signed,
             Canceled,
             Waiting
         }
 
-        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
         private const string WebClientId =
             "449111430622-hu1uin72e3n3727rmab7e9sslbvnimrr.apps.googleusercontent.com";
