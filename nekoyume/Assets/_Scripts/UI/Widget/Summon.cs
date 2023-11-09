@@ -290,8 +290,18 @@ namespace Nekoyume.UI
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
         public void TutorialActionClickNormal1SummonButton()
         {
-            var button = drawItems[0].draw1Button;
-            button.OnClickSubject.OnNext(button.CurrentState.Value);
+            var summonRow = Game.Game.instance.TableSheets.SummonSheet.First;
+            var resultEquipment =
+                States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
+                    e is Aura);
+            if (resultEquipment is null)
+            {
+                var button = drawItems[0].draw1Button;
+                button.OnClickSubject.OnNext(button.CurrentState.Value);
+                return;
+            }
+
+            Find<SummonResultPopup>().Show(summonRow, 1, new List<Equipment> {resultEquipment});
         }
     }
 }
