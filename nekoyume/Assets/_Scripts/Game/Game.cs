@@ -1328,10 +1328,6 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
-                introScreen.OnClickGoogleSignIn.AsObservable()
-                    .First()
-                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
-
                 (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
                     onGoogleSignInTuple = null;
                 introScreen.OnGoogleSignedIn.AsObservable()
