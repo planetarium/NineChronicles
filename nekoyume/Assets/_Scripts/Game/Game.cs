@@ -104,6 +104,8 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
+        public PlanetId? CurrentPlanetId { get; private set; }
+
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
@@ -388,6 +390,8 @@ namespace Nekoyume.Game
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
             }
+
+            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
 #endif
 
             // NOTE: Create ActionManager after Agent initialized.
