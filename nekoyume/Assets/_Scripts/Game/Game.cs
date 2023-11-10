@@ -51,10 +51,10 @@ using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
 #if UNITY_ANDROID
-using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 using UnityEngine.Android;
 #endif
+using Nekoyume.Model.Mail;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
 #endif
@@ -498,9 +498,7 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
-#endif
 
             yield return StartCoroutine(InitializeWithAgent());
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
@@ -550,7 +548,6 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
@@ -559,7 +556,6 @@ namespace Nekoyume.Game
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
             }
-#endif
 
             IEnumerator InitializeWithAgent()
             {
