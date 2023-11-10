@@ -215,17 +215,34 @@ namespace Nekoyume.State
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
             var arenaInfo = new List<ArenaParticipantModel>();
-            int purchasedCountDuringInterval = 0;
-            long lastBattleBlockIndex = 0L;
+            var agent = Game.Game.instance.Agent;
+            var blockIndex = agent.BlockIndex;
+            var currentRoundData = Game.Game.instance.TableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var playerArenaInfoAddr = ArenaInformation.DeriveAddress(
+                currentAvatarAddr,
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
+            var purchasedCountAddress =
+                playerArenaInfoAddr.Derive(BattleArena.PurchasedCountKey);
+            var arenaAvatarAddress =
+                ArenaAvatarState.DeriveAddress(currentAvatarAddr);
+            var addrBulk = new List<Address>
+            {
+                purchasedCountAddress,
+                arenaAvatarAddress,
+            };
+            var stateBulk = await agent.GetStateBulkAsync(addrBulk);
+            var purchasedCountDuringInterval = stateBulk[purchasedCountAddress] is Integer iValue
+                ? (int)iValue
+                : 0;
+            var arenaAvatarState = stateBulk[arenaAvatarAddress] is List iValue2
+                ? new ArenaAvatarState(iValue2)
+                : null;
+            long lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                // var client = new NineChroniclesAPIClient("http://localhost:50000/graphql");
-                // var response = await client.QueryArenaInfoAsync(currentAvatarAddr);
                 var response = await Game.Game.instance.RpcClient.QueryArenaInfoAsync(currentAvatarAddr);
-                var graphqlData = response.StateQuery.ArenaInfo;
-                arenaInfo = graphqlData.ArenaParticipants;
-                purchasedCountDuringInterval = graphqlData.PurchasedCountDuringInterval;
-                lastBattleBlockIndex = graphqlData.LastBattleBlockIndex;
+                arenaInfo = response.StateQuery.ArenaParticipants;
             }
             catch (Exception e)
             {

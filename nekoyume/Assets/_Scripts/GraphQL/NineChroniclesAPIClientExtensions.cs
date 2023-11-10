@@ -53,20 +53,16 @@ query {{
 
             var query = @"query($avatarAddress: Address!) {
                 stateQuery {
-                    arenaInfo(avatarAddress: $avatarAddress) {
-                        arenaParticipants {
-                            score
-                            rank
-                            avatarAddr
-                            winScore
-                            loseScore
-                            level
-                            cp
-                            nameWithHash
-                            portraitId
-                        }
-                        lastBattleBlockIndex
-                        purchasedCountDuringInterval
+                    arenaParticipants(avatarAddress: $avatarAddress) {
+                        score
+                        rank
+                        avatarAddr
+                        winScore
+                        loseScore
+                        level
+                        cp
+                        nameWithHash
+                        portraitId
                     }
                 }
             }";
@@ -90,14 +86,7 @@ query {{
 
         public class StateQuery
         {
-            public ArenaInfo ArenaInfo;
-        }
-
-        public class ArenaInfo
-        {
             public List<ArenaParticipantModel> ArenaParticipants;
-            public int PurchasedCountDuringInterval;
-            public long LastBattleBlockIndex;
         }
     }
 }
