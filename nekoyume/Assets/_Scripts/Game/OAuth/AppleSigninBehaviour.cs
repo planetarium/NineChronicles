@@ -123,7 +123,7 @@ namespace Nekoyume.Game.OAuth
                 {
                     var authorizationErrorCode = error.GetAuthorizationErrorCode();
                     Debug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
-                    State.Value = SignInState.NotSigned;
+                    State.Value = SignInState.Canceled;
                 });
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
