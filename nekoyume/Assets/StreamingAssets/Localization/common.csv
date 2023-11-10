@@ -1181,11 +1181,6 @@ Please import your keystore file from the PC.","이미 나인 크로니클 계�
 PC에서 키스토어를 가져오세요.",,,,,,,,,
 UI_IMPORT,Import,가져오기,,,,,,,,,
 UI_COMPLETE,Complete,완료,,,,,,,,,
-UI_CREATE_PASSWORD_NOTI,"Your account has been successfully created,
-but we need to set a password for your private key.
-It will only take a moment.","계정 생성이 완료되었습니다.
-프라이빗 키를 보호하기 위해 비밀번호를 생성합니다.
-그리 오래 걸리지 않을거예요.",,,,,,,,,
 UI_PROCEED,Let's proceed.,시작합시다.,,,,,,,,,
 UI_LOADING_GAME_START_1,Preparing your avatar...,아바타를 준비하는 중…,,,,,,,,,
 UI_LOADING_GAME_START_2,Making a covenant with Freya...,프레이야 여신과 언약을 맺는 중…,,,,,,,,,
@@ -1252,8 +1247,8 @@ UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_ANDROID,Android,Android,Android,Android,Androi
 UI_CONFIRM_SEASONPASS_UNLOCK_FAIL_IOS,iOS,iOS,iOS,iOS,iOS,iOS,iOS,iOS,iOS,iOS,iOS
 UI_COURAGE,Courage,용기,Coragem,勇気,Coraje,ความกล้าหาญ,Keberanian,Храбрость,勇气,勇氣,Lakas ng loob
 SEASONPASS_NAME,Brave Cat's Journey,용감한 고양이의 여행,Jornada de gato corajoso,勇敢な猫の旅,Viaje de Brave Cat,การเดินทางของแมวที่กล้าหาญ,Perjalanan Kucing Berani,Путешествие храброй кошки,勇敢的猫的旅程,勇敢的貓的旅程,Paglalakbay ni Brave Cat
-UI_SEASONPASS_NEW_DISCOUNT_RATE,700%,700%,700%,700%,700%,700%,700%,700%,700%,700%,700%
-UI_SEASONPASS_NEW_DISCOUNT_TEXT,efficiency,효율,eficiência,効率,eficiencia,ประสิทธิภาพ,efisiensi,эффективность,效率,效率,kahusayan
+UI_SEASONPASS_NEW_DISCOUNT_RATE,HIT,HIT,HIT,HIT,HIT,HIT,HIT,HIT,HIT,HIT,HIT
+UI_SEASONPASS_NEW_DISCOUNT_TEXT,Season Limited,기간 한정,eficiência,効率,eficiencia,ประสิทธิภาพ,efisiensi,эффективность,效率,效率,kahusayan
 UI_SEASONPASS_NEW_TITLE,New Season Pass Opened,신규 시즌패스 오픈,Novo passe de temporada aberto,新しいシーズンが開きます,Nuevo pase de temporada abierto,ใหม่ Season Pass เปิด,Lulus Musim Baru Terbuka,Новый сезон открыт,新季通行证,新季通行證,Buksan ang bagong panahon
 UI_SEASONPASS_NEW_CONTENT,"Get the courage to level up.
 -Get rewards at each level!","용기를 획득해 레벨을 올리세요.
@@ -1284,6 +1279,8 @@ UI_ENTER_REFERRAL_CODE,Enter Referral Code,초대코드 입력,,,,,,,,,
 UI_ENTER_REFERRAL_CODE_DESC,"Enter the referral code who introduced you to Nine Chronicles M.
 Only 1 referral code can be registered. Register it now get a reward!","나인 크로니클 M을 소개해준 친구의 추천인 코드를 입력하세요.
 추천 코드는 한 번만 등록할 수 있습니다. 지금 등록하고 보상을 받으세요!",,,,,,,,,
-,,"계정 생성이 완료되었습니다.
+UI_CREATE_PASSWORD_NOTI,"Your account has been successfully created,
+but we need to set a password for your private key.
+It will only take a moment.","계정 생성이 완료되었습니다.
 프라이빗 키를 보호하기 위해 비밀번호를 생성합니다.
 그리 오래 걸리지 않을거예요.",,,,,,,,,
