@@ -33,9 +33,9 @@ namespace Nekoyume.Helper
 
         private string _planetRegistryUrl;
 
-        private PlanetId? _defaultPlanetId;
+        private string _defaultPlanetId;
 
-        private PlanetId? _selectedPlanetId;
+        private string _selectedPlanetId;
 
         private string privateKey;
 
@@ -126,7 +126,7 @@ namespace Nekoyume.Helper
         /// PlayerPrefs key: <see cref="PlanetSelector.CachedPlanetIdStringKey"/>
         /// </summary>
         [Option("default-planet-id", Required = false, HelpText = "planet id")]
-        public PlanetId? DefaultPlanetId
+        public string DefaultPlanetId
         {
             get => _defaultPlanetId;
             set
@@ -141,7 +141,7 @@ namespace Nekoyume.Helper
         /// It is usually used for standalone platforms with the launcher.
         /// </summary>
         [Option("selected-planet-id", Required = false, HelpText = "planet id")]
-        public PlanetId? SelectedPlanetId
+        public string SelectedPlanetId
         {
             get => _selectedPlanetId;
             set
