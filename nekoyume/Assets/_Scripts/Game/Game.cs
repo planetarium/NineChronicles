@@ -50,14 +50,11 @@ using UnityEngine.Playables;
 using Currency = Libplanet.Types.Assets.Currency;
 using Menu = Nekoyume.UI.Menu;
 using Random = UnityEngine.Random;
-#if UNITY_ANDROID || UNITY_IOS
-using Nekoyume.Model.Mail;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
-#endif
-
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
+using Nekoyume.Model.Mail;
+using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 #if ENABLE_FIREBASE
 using NineChronicles.GoogleServices.Firebase.Runtime;
 #endif
@@ -95,6 +92,8 @@ namespace Nekoyume.Game
         [SerializeField] private Prologue prologue;
 
         [SerializeField] private GameObject debugConsolePrefab;
+
+        public PlanetId? CurrentPlanetId { get; private set; }
 
         public States States { get; private set; }
 
@@ -382,6 +381,9 @@ namespace Nekoyume.Game
             }
 #endif
 
+            yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
+            Debug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
+
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
 
@@ -485,14 +487,14 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
-#endif
 
             yield return StartCoroutine(InitializeWithAgent());
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
+
+            PortalConnect.RefreshTokens(States.AgentState.address);
 
 #if RUN_ON_MOBILE
             if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
@@ -537,7 +539,6 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
@@ -550,7 +551,6 @@ namespace Nekoyume.Game
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
             }
-#endif
 
             IEnumerator InitializeWithAgent()
             {
@@ -1254,9 +1254,7 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Initialize current planet info.
-            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(
-                planetContext,
-                resetIfCachedPlanetNotFoundInPlanets: true);
+            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
             if (planetContext.HasError)
             {
                 QuitWithMessage(
@@ -1321,21 +1319,11 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
-                // google signin
-                introScreen.OnClickGoogleSignIn.AsObservable()
-                    .First()
-                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
-
                 (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
                     onGoogleSignInTuple = null;
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
                     .Subscribe(tuple => onGoogleSignInTuple = tuple);
-                
-                // apple signin
-                introScreen.OnClickAppleSignIn.AsObservable()
-                    .First()
-                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
 
                 (IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)?
                     onAppleSignInTuple = null;
@@ -1902,6 +1890,67 @@ namespace Nekoyume.Game
         private void OnLowMemory()
         {
             System.GC.Collect();
+        }
+
+        private async UniTask UpdateCurrentPlanetIdAsync(PlanetContext planetContext)
+        {
+#if RUN_ON_MOBILE
+            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
+            return;
+#endif
+            Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
+            if (_commandLineOptions.SelectedPlanetId.HasValue)
+            {
+                Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
+                CurrentPlanetId = _commandLineOptions.SelectedPlanetId.Value;
+                return;
+            }
+
+            Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is null." +
+                             " Try to get planet id from planet registry.");
+            if (planetContext is null)
+            {
+                if (string.IsNullOrEmpty(_commandLineOptions.PlanetRegistryUrl))
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " CommandLineOptions.PlanetRegistryUrl is null.");
+                    return;
+                }
+
+                planetContext = new PlanetContext(_commandLineOptions);
+                await PlanetSelector.InitializePlanetsAsync(planetContext);
+                if (planetContext.IsSkipped)
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " planetContext.IsSkipped is true." +
+                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    return;
+                }
+
+                if (planetContext.HasError)
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " planetContext.HasError is true." +
+                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    return;
+                }
+            }
+
+            if (planetContext.Planets!.TryGetPlanetInfoByHeadlessGrpc(
+                    _commandLineOptions.RpcServerHost,
+                    out var planetInfo))
+            {
+                Debug.Log("[Game] UpdateCurrentPlanetIdAsync()..." +
+                          " planet id is found in planet registry.");
+                CurrentPlanetId = planetInfo.ID;
+            }
+            else
+            {
+                Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                 " planet id is not found in planet registry." +
+                                 " Check CommandLineOptions.PlaneRegistryUrl and" +
+                                 " CommandLineOptions.RpcServerHost.");
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Nekoyume.Game.OAuth
     {
         public enum SignInState
         {
-            NotSigned,
+            Undefined,
             Signed,
             Canceled,
             Waiting
@@ -29,7 +29,7 @@ namespace Nekoyume.Game.OAuth
 
         private IAppleAuthManager _appleAuthManager;
 
-        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
         public string IDToken { get; private set; } = string.Empty;
         public Address? AgentAddress { get; private set; } = null;
@@ -90,7 +90,7 @@ namespace Nekoyume.Game.OAuth
                         case CredentialState.NotFound:
                             // this.SetupLoginMenuForSignInWithApple();
                             PlayerPrefs.DeleteKey(AppleUserIdKey);
-                            State.Value = SignInState.NotSigned;
+                            State.Value = SignInState.Undefined;
                             return;
                     }
                 },
@@ -128,14 +128,14 @@ namespace Nekoyume.Game.OAuth
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 Debug.Log($"[AppleSigninBehaviour] State changed: {state}");
-                if (state is SignInState.Signed)
+                switch (state)
                 {
-                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
-                }
-
-                if (state is SignInState.Canceled)
-                {
-                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
+                    case SignInState.Signed:
+                        Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
+                        break;
+                    case SignInState.Canceled:
+                        Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
+                        break;
                 }
             });
         }
@@ -161,7 +161,7 @@ namespace Nekoyume.Game.OAuth
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
 
-            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
+            if (Game.instance.PortalConnect.HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
                 var accessTokenResult =

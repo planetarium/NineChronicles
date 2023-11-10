@@ -124,5 +124,28 @@ namespace Nekoyume.UI.Module
             base.SetState(state);
             disabledObject.SetActive(CurrentState.Value == State.Disabled);
         }
+
+        // It works like SetCost() and UpdateObjects().
+        // But, this method update *Only UI*.
+        // and, Not recommend to use it.
+        public void SetFakeUI(CostType type, long cost)
+        {
+            base.UpdateObjects();
+
+            foreach (var costObject in costObjects)
+            {
+                costObject.parent.SetActive(true);
+            }
+
+            var costEnough = CheckCostOfType(type, cost);
+            foreach (var costObject in costObjects)
+            {
+                costObject.icon.sprite = costIconData.GetIcon(type);
+                costObject.text.text = cost.ToString();
+                costObject.text.color = costEnough ?
+                    Palette.GetColor(ColorType.ButtonEnabled) :
+                    Palette.GetColor(ColorType.TextDenial);
+            }
+        }
     }
 }

@@ -15,13 +15,13 @@ namespace Nekoyume.Game.OAuth
     {
         public enum SignInState
         {
-            NotSigned,
+            Undefined,
             Signed,
             Canceled,
             Waiting
         }
 
-        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
         private const string WebClientId =
             "449111430622-hu1uin72e3n3727rmab7e9sslbvnimrr.apps.googleusercontent.com";
@@ -48,14 +48,14 @@ namespace Nekoyume.Game.OAuth
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 Debug.Log($"[GoogleSigninBehaviour] State changed: {state}");
-                if (state is SignInState.Signed)
+                switch (state)
                 {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
-                }
-
-                if (state is SignInState.Canceled)
-                {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                    case SignInState.Signed:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
+                        break;
+                    case SignInState.Canceled:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                        break;
                 }
             });
         }
@@ -85,7 +85,7 @@ namespace Nekoyume.Game.OAuth
             Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished() invoked.");
             if (task.IsFaulted)
             {
-                Debug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                Debug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                                " task is faulted.");
                 using var enumerator =
                     task.Exception?.InnerExceptions.GetEnumerator();
@@ -140,7 +140,7 @@ namespace Nekoyume.Game.OAuth
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
 
-            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
+            if (Game.instance.PortalConnect.HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
                 var accessTokenResult =

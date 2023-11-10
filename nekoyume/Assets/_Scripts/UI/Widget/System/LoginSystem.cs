@@ -317,7 +317,7 @@ namespace Nekoyume.UI
                    passPhrase == retyped;
         }
 
-        private void SetPassPhrase(string address, string passPhrase)
+        private static void SetPassPhrase(string address, string passPhrase)
         {
             PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", Util.AesEncrypt(passPhrase));
         }
