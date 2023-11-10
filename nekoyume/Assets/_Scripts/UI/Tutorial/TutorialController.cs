@@ -294,8 +294,11 @@ namespace Nekoyume.UI
                 {
                     for (var i = 0; i < count; i++)
                     {
-                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                        mailRewards.Add(new MailReward(item, 1));
+                        if (itemRow.ItemSubType != ItemSubType.Aura)
+                        {
+                            var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                            mailRewards.Add(new MailReward(item, 1));
+                        }
                     }
                 }
             }
