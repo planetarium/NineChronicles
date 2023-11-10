@@ -1,4 +1,4 @@
-﻿Shader "Custom/Distortion_Additive"
+Shader "Custom/Distortion_Additive"
 {
     Properties
     {
@@ -15,6 +15,13 @@
         Tags {"Queue"="Transparent" }
         ZWrite Off
 		Blend SrcAlpha One
+
+        // Stencil for Unity UI masking support
+        Stencil
+        {
+            Ref 1
+            Comp Equal
+        }
           
         Pass
         {

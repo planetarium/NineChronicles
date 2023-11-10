@@ -36,6 +36,7 @@ namespace Nekoyume.UI
                     StopCoroutine(_coroutine);
                 }
 
+                background.gameObject.SetActive(d.target != null);
                 _coroutine = StartCoroutine(LatePlay(d, callback));
             }
         }

@@ -18,7 +18,7 @@ PlayerSettings:
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_ShowUnitySplashScreen: 1
-  m_ShowUnitySplashLogo: 1
+  m_ShowUnitySplashLogo: 0
   m_SplashScreenOverlayOpacity: 0.5
   m_SplashScreenAnimation: 0
   m_SplashScreenLogoStyle: 1
@@ -67,7 +67,7 @@ PlayerSettings:
   preserveFramebufferAlpha: 0
   disableDepthAndStencilBuffers: 0
   androidStartInFullscreen: 1
-  androidRenderOutsideSafeArea: 0
+  androidRenderOutsideSafeArea: 1
   androidUseSwappy: 1
   androidBlitType: 0
   androidResizableWindow: 0
@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 71.1.0
+  bundleVersion: 90.0.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -165,7 +165,7 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 83
+  AndroidBundleVersionCode: 87
   AndroidMinSdkVersion: 22
   AndroidTargetSdkVersion: 33
   AndroidPreferredInstallLocation: 2

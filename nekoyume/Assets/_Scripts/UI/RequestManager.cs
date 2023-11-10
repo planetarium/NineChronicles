@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Nekoyume.Pattern;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Nekoyume.UI
@@ -12,17 +13,23 @@ namespace Nekoyume.UI
         private int _isExistSeasonRewardRetryCount;
         private int _getSeasonRewardRetryCount;
 
-        public IEnumerator GetJson(string url, Action<string> onSuccess, Action<UnityWebRequest> onFailed = null)
+        public IEnumerator GetJson(
+            string url,
+            Action<string> onSuccess,
+            Action<UnityWebRequest> onFailed = null)
         {
+            Debug.Log($"[RequestManager] GetJson: {url}");
             using var request = MakeRequestWithTimeout(url);
             request.SetRequestHeader("Cache-Control", "no-cache");
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
             {
+                Debug.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
                 onSuccess(request.downloadHandler.text);
             }
             else
             {
+                Debug.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
                 onFailed?.Invoke(request);
             }
         }
@@ -34,15 +41,18 @@ namespace Nekoyume.UI
             Action<string> onSuccess,
             Action<UnityWebRequest> onFailed = null)
         {
+            Debug.Log($"[RequestManager] GetJson: {url}, {headerName}, {headerValue}");
             using var request = MakeRequestWithTimeout(url);
             request.SetRequestHeader(headerName, headerValue);
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)
             {
+                Debug.Log($"[RequestManager] GetJson Success: {url}, {request.downloadHandler.text}");
                 onSuccess(request.downloadHandler.text);
             }
             else
             {
+                Debug.LogError($"[RequestManager] GetJson Failed: {url}, {request.error}");
                 onFailed?.Invoke(request);
             }
         }

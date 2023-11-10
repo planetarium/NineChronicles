@@ -1820,6 +1820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 701251474520023787}
   - component: {fileID: 1799724831123950476}
+  - component: {fileID: 2381888670498826609}
   m_Layer: 15
   m_Name: Left
   m_TagString: Untagged
@@ -1863,6 +1864,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2381888670498826609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568447531576433187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 0
 --- !u!1 &1770540949586527142
 GameObject:
   m_ObjectHideFlags: 0
@@ -10789,6 +10803,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4666800722368859010}
   - component: {fileID: 1757555736932589063}
+  - component: {fileID: 6647220183110107040}
   m_Layer: 15
   m_Name: Right
   m_TagString: Untagged
@@ -10830,6 +10845,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &6647220183110107040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6284276563643618161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 0
 --- !u!1 &6337087138486281207
 GameObject:
   m_ObjectHideFlags: 0
@@ -13749,7 +13777,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: 
+  l10nKey: UI_COURAGE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0

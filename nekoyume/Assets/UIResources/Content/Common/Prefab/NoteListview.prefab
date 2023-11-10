@@ -591,7 +591,7 @@ PrefabInstance:
     - target: {fileID: 5649428620302461272, guid: da299e8c9c5924485b362b00cd5b6df6,
         type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.25
       objectReference: {fileID: 0}
     - target: {fileID: 5786100188410675977, guid: da299e8c9c5924485b362b00cd5b6df6,
         type: 3}
@@ -626,12 +626,49 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 5689157057453406365}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1755970246057094712}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1755970246057094712 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6245797315752875685, guid: da299e8c9c5924485b362b00cd5b6df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5689157057453406365}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6369049075481741239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755970246057094712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &2215675653726976916 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5786100188410675977, guid: da299e8c9c5924485b362b00cd5b6df6,
@@ -644,7 +681,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 5689157057453406365}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8349073233581721162}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -712,6 +749,43 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &8349073233581721162 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4408513782003203799, guid: da299e8c9c5924485b362b00cd5b6df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5689157057453406365}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6268514899818824391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8349073233581721162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!224 &8969562386941394237 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3641647675791771040, guid: da299e8c9c5924485b362b00cd5b6df6,

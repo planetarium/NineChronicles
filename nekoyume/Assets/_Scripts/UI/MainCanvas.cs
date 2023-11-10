@@ -224,6 +224,9 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
+            
+            _secondWidgets.Add(Widget.Create<SweepPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
@@ -303,7 +306,11 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPassNewPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPass>());
             yield return null;
 
             // loading
@@ -417,6 +424,10 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<SummonDetailPopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
             yield return null;
 
             // tooltip

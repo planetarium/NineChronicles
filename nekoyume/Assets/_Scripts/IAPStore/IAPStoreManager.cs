@@ -24,6 +24,8 @@ namespace Nekoyume.IAPStore
 
         private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
 
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
+
         private async void Awake()
         {
             try
@@ -55,6 +57,13 @@ namespace Nekoyume.IAPStore
                 foreach (var product in category.ProductList)
                 {
                     _initailizedProductSchema.TryAdd(product.Sku, product);
+                }
+                if(category.Name == "NoShow")
+                {
+                    foreach (var product in category.ProductList)
+                    {
+                        SeasonPassProduct.Add(product.Name, product);
+                    }
                 }
             }
 
@@ -119,6 +128,7 @@ namespace Nekoyume.IAPStore
             }
 
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
@@ -168,6 +178,7 @@ namespace Nekoyume.IAPStore
                         states.CurrentAvatarState.address);
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
                 if (result is null)
                 {
@@ -205,6 +216,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception exc)
             {
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }

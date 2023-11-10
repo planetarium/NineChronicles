@@ -40,9 +40,10 @@ namespace Nekoyume
 
         static PushNotifier()
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             InitializeAndroid();
-#elif UNITY_IOS
+#elif !UNITY_EDITOR && UNITY_IOS
+            
 #endif
         }
 

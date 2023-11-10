@@ -37,6 +37,11 @@ namespace Nekoyume.Game
             public float magnitudeY;
         }
 
+        //should move
+        public bool IsResolutionDynamic = true;
+        public System.Action OnResolutionDynamic;
+        public System.Action OnResolutionStatic;
+
         [Header("Screen Resolution")]
         [SerializeField,
          Tooltip("기준이 될 스크린 해상도를 설정한다.(`CanvasScaler`의 `ReferenceResolution`과 같은 개념)")]
@@ -383,11 +388,7 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-#if UNITY_ANDROID || UNITY_IOS
-            UpdateStaticRatioWithLetterBox();
-#else
             UpdateDynamicRatio();
-#endif
         }
 
         public void ChangeRatioState()
@@ -404,6 +405,7 @@ namespace Nekoyume.Game
 
         public void UpdateDynamicRatio()
         {
+            IsResolutionDynamic = true;
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
             Cam.aspect = Screen.safeArea.width / Screen.safeArea.height;
@@ -413,10 +415,12 @@ namespace Nekoyume.Game
             _isStaticRatio = false;
             GL.Clear(true, true, Color.black);
             ScreenClear.ClearScreen();
+            OnResolutionDynamic?.Invoke();
         }
 
         public void UpdateStaticRatioWithLetterBox()
         {
+            IsResolutionDynamic = false;
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
 
@@ -448,6 +452,7 @@ namespace Nekoyume.Game
             _isStaticRatio = true;
             ScreenClear.ClearScreen(scaleheight < 1, letterboxSize);
             GL.Clear(true, true, Color.black);
+            OnResolutionStatic?.Invoke();
         }
 
         void OnPreCull() => GL.Clear(true, true, Color.black);
