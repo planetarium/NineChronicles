@@ -1866,10 +1866,10 @@ namespace Nekoyume.Game
             return;
 #endif
             Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
-            if (_commandLineOptions.SelectedPlanetId.HasValue)
+            if (!string.IsNullOrEmpty(_commandLineOptions.SelectedPlanetId))
             {
                 Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
-                CurrentPlanetId = _commandLineOptions.SelectedPlanetId.Value;
+                CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
                 return;
             }
 
