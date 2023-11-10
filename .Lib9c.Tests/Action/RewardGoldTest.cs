@@ -482,7 +482,7 @@ namespace Lib9c.Tests.Action
         public async Task Genesis_StateRootHash(bool mainnet)
         {
             BlockPolicySource blockPolicySource = new BlockPolicySource();
-            IStagePolicy stagePolicy = new VolatileStagePolicy();
+            NCStagePolicy stagePolicy = new NCStagePolicy(default, 2);
             IBlockPolicy policy = blockPolicySource.GetPolicy();
             Block genesis;
             if (mainnet)
