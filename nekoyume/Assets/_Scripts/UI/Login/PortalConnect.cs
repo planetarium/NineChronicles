@@ -286,9 +286,17 @@ namespace Nekoyume.UI
                     return true;
                 }
 
-                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... json deserialize error.");
-                ShowRequestErrorPopup(data);
-                return false;
+                if (data.resultCode == 3004)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)} Refresh Token expired: " +
+                              $"Refresh Token({accessToken})\n{json}");
+                    // RefreshToken
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... json deserialize error.");
+                    ShowRequestErrorPopup(data);
+                }
             }
 
             Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... " +
@@ -356,7 +364,14 @@ namespace Nekoyume.UI
             request.timeout = Timeout;
             request.SetRequestHeader("authorization", $"Bearer {accessToken}");
 
-            await request.SendWebRequest();
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
+            }
 
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<ReferralResult>(json);
@@ -370,8 +385,8 @@ namespace Nekoyume.UI
 
                 if (data.resultCode == 3002)
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} AccessToken expired: " +
-                              $"accessToken({accessToken})\n{json}");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Access Token expired: " +
+                              $"Access Token({accessToken})\n{json}");
                     if (await RefreshAccessToken())
                     {
                         return await GetReferralInformation();
@@ -392,7 +407,7 @@ namespace Nekoyume.UI
             return null;
         }
 
-        public async Task<bool> EnterReferralCode(string referralCode)
+        public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
@@ -406,22 +421,28 @@ namespace Nekoyume.UI
             request.timeout = Timeout;
             request.SetRequestHeader("authorization", $"Bearer {accessToken}");
 
-            await request.SendWebRequest();
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
+            }
 
             var json = request.downloadHandler.text;
-            var data = JsonUtility.FromJson<ReferralResult>(json);
+            var data = JsonUtility.FromJson<RequestResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
                 if (request.responseCode == 200)
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Success: {json}");
-                    return true;
                 }
 
                 if (data.resultCode == 3002)
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} AccessToken expired: " +
-                              $"accessToken({accessToken})\n{json}");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Access Token expired: " +
+                              $"Access Token({accessToken})\n{json}");
                     if (await RefreshAccessToken())
                     {
                         return await EnterReferralCode(referralCode);
@@ -430,27 +451,32 @@ namespace Nekoyume.UI
                 else
                 {
                     Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
                 }
             }
             else
             {
                 Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Error: {request.error}\n{json}\n");
-                ShowRequestErrorPopup(data);
             }
 
-            return false;
+            return data;
         }
 
         private static void ShowRequestErrorPopup(RequestResult data)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
-            message += $"\nResponse code : {data.resultCode}";
+            message += $"\nError code : {data.resultCode}";
             message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
-            popup.SubmitCallback = Application.Quit;
+            popup.SubmitCallback = () =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+            };
             Analyzer.Instance.Track("Unity/Portal/0");
         }
     }

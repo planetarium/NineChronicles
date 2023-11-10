@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
@@ -109,12 +110,16 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("NOTIFICATION_REFERRAL_CODE_COPY"),
                     NotificationCell.NotificationType.Notification);
-                Debug.LogError($"CopyReferralCodeButton: {_referralCode}");
+                ClipboardHelper.CopyToClipboard(_referralCode);
             });
 
             shareReferralCodeButton.onClick.AddListener(() =>
             {
-                Debug.LogError($"ShareReferralCodeButton: {_referralUrl}");
+                new NativeShare()
+                    .SetSubject(L10nManager.Localize("UI_SHARE_REFERRAL_CODE_TITLE"))
+                    .SetText(L10nManager.Localize("UI_SHARE_REFERRAL_CODE_CONTENT",
+                        _referralCode, _referralUrl))
+                    .Share();
             });
 
             enterReferralCodeButton.onClick.AddListener(() =>
@@ -152,8 +157,8 @@ namespace Nekoyume.UI
 
         private async void EnterReferralCode(string referralCode)
         {
-            var success = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
-            if (success)
+            var result = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
+            if (result.resultCode == 1000)
             {
                 enterReferralCodeButton.gameObject.SetActive(false);
                 OneLineSystem.Push(
@@ -163,7 +168,12 @@ namespace Nekoyume.UI
             }
             else
             {
-                errorPopup.Show("enter referral code failed");
+                if (result.resultCode == 4001)
+                {
+                    enterReferralCodeButton.gameObject.SetActive(false);
+                }
+
+                errorPopup.Show($"{result.title}\n{result.message}\n({result.resultCode})");
             }
         }
     }
