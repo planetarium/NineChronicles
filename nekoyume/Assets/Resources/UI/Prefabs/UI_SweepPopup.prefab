@@ -2763,6 +2763,7 @@ GameObject:
   - component: {fileID: 7887110279561886705}
   - component: {fileID: 368763733246791726}
   - component: {fileID: 1597707347426919129}
+  - component: {fileID: 3258097356440694727}
   m_Layer: 5
   m_Name: Text_Title
   m_TagString: Untagged
@@ -2888,6 +2889,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3258097356440694727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926794771455613333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_REWARDS
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &1962276443516235354
 GameObject:
   m_ObjectHideFlags: 0
@@ -14989,6 +15021,43 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3076158039256622631}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3719664332142294693 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1814478344688914562, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3076158039256622631}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8952941499272186806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3719664332142294693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_BATTLE_AUTO_REPEAT
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1001 &4086532477783600284
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15323,6 +15392,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53e520f2a4d6941b3afdb31ab7af136b, type: 3}
+--- !u!1 &5203951740970542066 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1814478344688914562, guid: 53e520f2a4d6941b3afdb31ab7af136b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5842986181620495216}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4789201590226277406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5203951740970542066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SWEEP
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!224 &6688695330035401484 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 992322504285646972, guid: 53e520f2a4d6941b3afdb31ab7af136b,

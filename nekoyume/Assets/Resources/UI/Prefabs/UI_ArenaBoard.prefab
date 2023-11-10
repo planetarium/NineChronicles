@@ -2938,6 +2938,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7887009337486271270, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_WIN_DRAW_LOSE_FORMAT
+      objectReference: {fileID: 0}
     - target: {fileID: 8316693649841477823, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
       propertyPath: m_IsActive
