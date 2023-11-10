@@ -260,6 +260,7 @@ namespace Nekoyume.UI
             });
             appleSignInButton.onClick.AddListener(() =>
             {
+                Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
                 if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
                 {
@@ -269,10 +270,11 @@ namespace Nekoyume.UI
 
                 OnClickAppleSignIn.OnNext((this, apple));
 
-                if (apple.State.Value is not (AppleSigninBehaviour.SignInState.Signed or
+                if (apple.State.Value is not (
+                    AppleSigninBehaviour.SignInState.Signed or
                     AppleSigninBehaviour.SignInState.Waiting))
                 {
-                    apple.SignInWithApple();
+                    apple.OnSignIn();
                     startButtonContainer.SetActive(false);
                     appleSignInButton.gameObject.SetActive(false);
                     apple.State

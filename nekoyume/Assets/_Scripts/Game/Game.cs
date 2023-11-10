@@ -1321,6 +1321,7 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
+                // google signin
                 introScreen.OnClickGoogleSignIn.AsObservable()
                     .First()
                     .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
@@ -1330,33 +1331,73 @@ namespace Nekoyume.Game
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
                     .Subscribe(tuple => onGoogleSignInTuple = tuple);
+                
+                // apple signin
+                introScreen.OnClickAppleSignIn.AsObservable()
+                    .First()
+                    .Subscribe(_ => loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating));
 
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn.");
-                yield return new WaitUntil(() => onGoogleSignInTuple.HasValue);
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn. Done.");
+                (IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)?
+                    onAppleSignInTuple = null;
+                introScreen.OnAppleSignedIn.AsObservable()
+                    .First()
+                    .Subscribe(tuple => onAppleSignInTuple = tuple);
 
-                var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or OnAppleSignedIn.");
+                yield return new WaitUntil(() => onGoogleSignInTuple.HasValue || onAppleSignInTuple.HasValue);
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or OnAppleSignedIn. Done.");
 
-                Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
-                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
-                Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
-
-                if (googleSigninBehaviour.AgentAddress is null)
+                if (onGoogleSignInTuple.HasValue)
                 {
-                    loginSystem.Show(connectedAddress: null);
-                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
-                              $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
+                    var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
+
+                    Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
+                    loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                    yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
+                    Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
+
+                    if (googleSigninBehaviour.AgentAddress is null)
+                    {
+                        loginSystem.Show(connectedAddress: null);
+                        Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
+                                $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
+                    }
+                    else
+                    {
+                        Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null." +
+                                $" {googleSigninBehaviour.AgentAddress.Value}");
+                        agentAddr = googleSigninBehaviour.AgentAddress.Value;
+                        // NOTE: Don't show login popup when google signed in.
+                        //       Because introScreen.ShowForQrCodeGuide() will be called
+                        //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
+                        // loginSystem.Show(connectedAddress: agentAddr);
+                    }
                 }
-                else
+                else if (onAppleSignInTuple.HasValue)
                 {
-                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null." +
-                              $" {googleSigninBehaviour.AgentAddress.Value}");
-                    agentAddr = googleSigninBehaviour.AgentAddress.Value;
-                    // NOTE: Don't show login popup when google signed in.
-                    //       Because introScreen.ShowForQrCodeGuide() will be called
-                    //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
-                    // loginSystem.Show(connectedAddress: agentAddr);
+                    var (_, appleSigninBehaviour) = onAppleSignInTuple!.Value;
+
+                    Debug.Log("[Game] CoLogin()... WaitUntil appleSigninBehaviour.CoSendAppleIdToken.");
+                    loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                    yield return StartCoroutine(appleSigninBehaviour.CoSendAppleIdToken());
+                    Debug.Log("[Game] CoLogin()... WaitUntil appleSigninBehaviour.CoSendAppleIdToken. Done.");
+
+                    if (appleSigninBehaviour.AgentAddress is null)
+                    {
+                        loginSystem.Show(connectedAddress: null);
+                        Debug.Log("[Game] CoLogin()... appleSigninBehaviour.AgentAddress is null." +
+                                $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
+                    }
+                    else
+                    {
+                        Debug.Log("[Game] CoLogin()... appleSigninBehaviour.AgentAddress is not null." +
+                                $" {appleSigninBehaviour.AgentAddress.Value}");
+                        agentAddr = appleSigninBehaviour.AgentAddress.Value;
+                        // NOTE: Don't show login popup when apple signed in.
+                        //       Because introScreen.ShowForQrCodeGuide() will be called
+                        //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
+                        // loginSystem.Show(connectedAddress: agentAddr);
+                    }
                 }
             }
 

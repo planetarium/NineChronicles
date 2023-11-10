@@ -31,6 +31,9 @@ namespace Nekoyume.Game.OAuth
 
         public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
 
+        public string IDToken { get; private set; } = string.Empty;
+        public Address? AgentAddress { get; private set; } = null;
+
         // Start is called before the first frame update
         private void Start()
         {
@@ -99,8 +102,9 @@ namespace Nekoyume.Game.OAuth
                 });
         }
         
-        public void SignInWithApple()
+        public void OnSignIn()
         {
+            Debug.Log("[AppleSigninBehaviour] OnSignIn() invoked.");
             var loginArgs = new AppleAuthLoginArgs(LoginOptions.IncludeEmail | LoginOptions.IncludeFullName);
             
             State.Value = SignInState.Waiting;
@@ -110,27 +114,39 @@ namespace Nekoyume.Game.OAuth
                 {
                     // If a sign in with apple succeeds, we should have obtained the credential with the user id, name, and email, save it
                     PlayerPrefs.SetString(AppleUserIdKey, credential.User);
-                    State.Value = SignInState.Signed;
                     Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
                     var appleIdCredential = credential as IAppleIDCredential;
-                    var identityToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
-                    StartCoroutine(CoSendAppleIdToken(identityToken));
+                    IDToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+                    State.Value = SignInState.Signed;
                 },
                 error =>
                 {
                     var authorizationErrorCode = error.GetAuthorizationErrorCode();
                     Debug.LogWarning("Sign in with Apple failed " + authorizationErrorCode.ToString() + " " + error.ToString());
                     State.Value = SignInState.NotSigned;
-                    // this.SetupLoginMenuForSignInWithApple();
                 });
+            State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
+            {
+                Debug.Log($"[AppleSigninBehaviour] State changed: {state}");
+                if (state is SignInState.Signed)
+                {
+                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
+                }
+
+                if (state is SignInState.Canceled)
+                {
+                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
+                }
+            });
         }
         
-        private IEnumerator CoSendAppleIdToken(string idToken)
+        public IEnumerator CoSendAppleIdToken()
         {
+            Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({IDToken})");
             yield return new WaitUntil(() => Game.instance.PortalConnect != null);
             Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
 
-            var body = new JsonObject {{"idToken", idToken}};
+            var body = new JsonObject {{"idToken", IDToken}};
             var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
             var request =
                 new UnityWebRequest(
@@ -151,13 +167,17 @@ namespace Nekoyume.Game.OAuth
                 var accessTokenResult =
                     JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
                         request.downloadHandler.text);
-                Address? address = null;
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
-                    address = new Address(accessTokenResult.address);
+                    AgentAddress = new Address(accessTokenResult.address);
+                    Debug.Log("[AppleSigninBehaviour] CoSendAppleIdToken succeeded." +
+                              $" AgentAddress: {AgentAddress}");
                 }
-
-                Widget.Find<LoginSystem>().Show(address);
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[AppleSigninBehaviour] CoSendAppleIdToken failed w/ error: {request.error}");
             }
         }
     }
