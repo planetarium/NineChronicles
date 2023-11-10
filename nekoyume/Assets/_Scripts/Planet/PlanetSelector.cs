@@ -330,7 +330,7 @@ namespace Nekoyume.Planet
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] Querying avatars for planet({planetInfo.ID})" +
+                Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
                 var avatarsGraphTypes = await client.QueryAgentAsync(agentAddress);
@@ -396,6 +396,7 @@ namespace Nekoyume.Planet
             }
 
             var clo = context.CommandLineOptions;
+            clo.SelectedPlanetId = currentPlanetInfo.ID;
             clo.genesisBlockPath = currentPlanetInfo.GenesisUri;
             var rpcEndpoints = currentPlanetInfo.RPCEndpoints;
             if (rpcEndpoints.HeadlessGrpc.Count == 0)

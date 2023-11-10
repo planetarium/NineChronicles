@@ -10,7 +10,8 @@ namespace Nekoyume.UI
     {
         public enum ContentType
         {
-            ConnectingToTheNetworks = 0,
+            Undefined = 0,
+            ConnectingToTheNetworks,
             WaitingForSocialAuthenticating,
             WaitingForPortalAuthenticating,
             WaitingForPlanetAccountInfoSyncing,
@@ -23,6 +24,8 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TMP_Text subText;
+
+        private ContentType _contentType = ContentType.Undefined;
 
         public void Show(
             ContentType contentType = ContentType.ConnectingToTheNetworks,
@@ -39,8 +42,15 @@ namespace Nekoyume.UI
 
         private void UpdateContent(ContentType contentType)
         {
+            if (contentType == _contentType)
+            {
+                return;
+            }
+
             switch (contentType)
             {
+                case ContentType.Undefined:
+                    break;
                 case ContentType.ConnectingToTheNetworks:
                     titleText.text = L10nManager.Localize("LOADING_TO_CONNECT_TO_NETWORKS");
                     subText.text = L10nManager.Localize("LOADING_TO_CONNECT_TO_NETWORKS_DESC");
@@ -60,6 +70,8 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(contentType), contentType, null);
             }
+
+            _contentType = contentType;
         }
     }
 }
