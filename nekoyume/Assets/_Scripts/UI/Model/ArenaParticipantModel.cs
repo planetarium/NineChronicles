@@ -15,13 +15,4 @@ namespace Nekoyume.UI.Model
         public int Cp;
         public int PortraitId;
     }
-
-    public class ArenaInformationModel
-    {
-        public int Win;
-        public int Lose;
-        public int Ticket;
-        public int TicketResetCount;
-        public int PurchasedTicketCount;
-    }
 }

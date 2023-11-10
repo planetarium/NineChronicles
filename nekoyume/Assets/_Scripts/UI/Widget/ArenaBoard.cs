@@ -152,19 +152,28 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // if (player.CurrentArenaInfo is null)
-            // {
-            //     Debug.Log($"{nameof(player.CurrentArenaInfo)} is null");
-            //     _billboard.SetData();
-            //     return;
-            // }
+            if (!RxProps.ArenaInfoTuple.HasValue)
+            {
+                Debug.Log($"{nameof(RxProps.ArenaInfoTuple)} is null");
+                _billboard.SetData();
+                return;
+            }
+
+            var win = 0;
+            var lose = 0;
+            var currentInfo = RxProps.ArenaInfoTuple.Value.current;
+            if (currentInfo is { })
+            {
+                win = currentInfo.Win;
+                lose = currentInfo.Lose;
+            }
 
             var cp = player.Cp;
             _billboard.SetData(
                 "season",
                 player.Rank,
-                player.WinScore,
-                player.LoseScore,
+                win,
+                lose,
                 cp,
                 player.Score);
         }

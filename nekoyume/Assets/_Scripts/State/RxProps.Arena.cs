@@ -217,8 +217,6 @@ namespace Nekoyume.State
             var arenaInfo = new List<ArenaParticipantModel>();
             int purchasedCountDuringInterval = 0;
             long lastBattleBlockIndex = 0L;
-            int playerWinScore = 0;
-            int playerLoseScore = 0;
             try
             {
                 // var client = new NineChroniclesAPIClient("http://localhost:50000/graphql");
@@ -228,14 +226,14 @@ namespace Nekoyume.State
                 arenaInfo = graphqlData.ArenaParticipants;
                 purchasedCountDuringInterval = graphqlData.PurchasedCountDuringInterval;
                 lastBattleBlockIndex = graphqlData.LastBattleBlockIndex;
-                var arenaInformationModel = graphqlData.ArenaInformation;
-                playerWinScore = arenaInformationModel.Win;
-                playerLoseScore = arenaInformationModel.Lose;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
+
+            var portraitId = Util.GetPortraitId(BattleType.Arena);
+            var cp = Util.TotalCP(BattleType.Arena);
             ArenaParticipantModel playerArenaInf = new ArenaParticipantModel
             {
                 AvatarAddr = currentAvatarAddr,
@@ -243,8 +241,8 @@ namespace Nekoyume.State
                 WinScore = 0,
                 LoseScore = 0,
                 NameWithHash = currentAvatar.NameWithHash,
-                PortraitId = Util.GetPortraitId(BattleType.Arena),
-                Cp = Util.TotalCP(BattleType.Arena),
+                PortraitId = portraitId,
+                Cp = cp,
                 Level = currentAvatar.level
             };
 
@@ -259,16 +257,16 @@ namespace Nekoyume.State
             }
 
             var playerArenaInfo = arenaInfo.FirstOrDefault(p => p.AvatarAddr == currentAvatarAddr);
-            if (playerArenaInfo is { })
-            {
-                playerArenaInfo.WinScore = playerWinScore;
-                playerArenaInfo.LoseScore = playerLoseScore;
-            }
-            else
+            if (playerArenaInfo is null)
             {
                 playerArenaInf.Rank = arenaInfo.Max(r => r.Rank);
                 playerArenaInfo = playerArenaInf;
                 arenaInfo.Add(playerArenaInfo);
+            }
+            else
+            {
+                playerArenaInfo.Cp = cp;
+                playerArenaInfo.PortraitId = portraitId;
             }
             _playerArenaInfo.SetValueAndForceNotify(playerArenaInfo);
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.

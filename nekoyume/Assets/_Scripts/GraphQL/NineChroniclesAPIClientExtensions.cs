@@ -67,13 +67,6 @@ query {{
                         }
                         lastBattleBlockIndex
                         purchasedCountDuringInterval
-                        arenaInformation {
-                            win
-                            lose
-                            ticket
-                            ticketResetCount
-                            purchasedTicketCount
-                        }
                     }
                 }
             }";
@@ -105,7 +98,6 @@ query {{
             public List<ArenaParticipantModel> ArenaParticipants;
             public int PurchasedCountDuringInterval;
             public long LastBattleBlockIndex;
-            public ArenaInformationModel ArenaInformation;
         }
     }
 }
