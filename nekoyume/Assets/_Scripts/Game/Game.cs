@@ -498,9 +498,7 @@ namespace Nekoyume.Game
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
 
-#if RUN_ON_MOBILE
             StartCoroutine(InitializeIAP());
-#endif
 
             yield return StartCoroutine(InitializeWithAgent());
             Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
@@ -550,7 +548,6 @@ namespace Nekoyume.Game
             EnterNext();
             yield break;
 
-#if RUN_ON_MOBILE
             IEnumerator InitializeIAP()
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitIAP);
@@ -559,7 +556,6 @@ namespace Nekoyume.Game
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
                 Debug.Log("[Game] Start() IAPStoreManager initialize start");
             }
-#endif
 
             IEnumerator InitializeWithAgent()
             {
