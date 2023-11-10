@@ -79,9 +79,7 @@ namespace Nekoyume.UI
             else
             {
                 Debug.Log("[CodeReaderView] Request camera permission.");
-                Permission.RequestUserPermission(
-                    Permission.Camera,
-                    _permissionCallbacks);
+                Permission.RequestUserPermission(Permission.Camera, _permissionCallbacks);
 
                 Debug.Log("[CodeReaderView] Wait for camera permission.");
                 yield return new WaitUntil(() => _cameraPermissionState is PermissionState.Granted);

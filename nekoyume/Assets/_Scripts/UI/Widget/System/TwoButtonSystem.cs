@@ -57,6 +57,7 @@ namespace Nekoyume.UI
 
         private void Confirm()
         {
+            Debug.Log($"[TwoButtonSystem] Confirm() invoked. {confirmButton.Text}");
             _confirmCallback?.Invoke();
             base.Close();
             AudioController.PlayClick();
@@ -64,6 +65,7 @@ namespace Nekoyume.UI
 
         public void Cancel()
         {
+            Debug.Log($"[TwoButtonSystem] Cancel() invoked. {cancelButton.Text}");
             _cancelCallback?.Invoke();
             base.Close();
             AudioController.PlayClick();

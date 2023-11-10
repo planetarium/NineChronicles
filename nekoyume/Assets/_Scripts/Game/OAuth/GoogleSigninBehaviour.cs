@@ -48,14 +48,14 @@ namespace Nekoyume.Game.OAuth
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 Debug.Log($"[GoogleSigninBehaviour] State changed: {state}");
-                if (state is SignInState.Signed)
+                switch (state)
                 {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
-                }
-
-                if (state is SignInState.Canceled)
-                {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                    case SignInState.Signed:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
+                        break;
+                    case SignInState.Canceled:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                        break;
                 }
             });
         }
@@ -85,7 +85,7 @@ namespace Nekoyume.Game.OAuth
             Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished() invoked.");
             if (task.IsFaulted)
             {
-                Debug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                Debug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                                " task is faulted.");
                 using var enumerator =
                     task.Exception?.InnerExceptions.GetEnumerator();

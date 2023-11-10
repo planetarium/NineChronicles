@@ -330,7 +330,7 @@ namespace Nekoyume.Planet
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] Querying avatars for planet({planetInfo.ID})" +
+                Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
                 var avatarsGraphTypes = await client.QueryAgentAsync(agentAddress);
