@@ -65,7 +65,7 @@ namespace Nekoyume.IAPStore
                 }
             }
 
-#if RUN_ON_MOBILE
+#if UNITY_EDITOR || RUN_ON_MOBILE
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
             {
