@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Helper;
 using Nekoyume.Planet;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -155,7 +156,7 @@ namespace Nekoyume.UI
             {
                 if (!accountExist)
                 {
-                    AccessToken();
+                    GetAccessToken();
                 }
 
                 Address? address = accountExist
@@ -221,10 +222,10 @@ namespace Nekoyume.UI
             }
         }
 
-        private async void AccessToken()
+        private async void GetAccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(AccessToken)} invoked: " +
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetAccessToken)} invoked: " +
                       $"url({url}), clientSecret({clientSecret}), code({code})");
 
             var form = new WWWForm();
@@ -243,14 +244,14 @@ namespace Nekoyume.UI
                 Debug.LogException(e);
             }
 
-            HandleAccessTokenResult(request);
+            HandleTokensResult(request);
         }
 
-        private async Task<bool> RefreshAccessToken()
+        private async Task<bool> RefreshTokens()
         {
             var url = $"{PortalUrl}{RefreshTokenEndpoint}";
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RefreshAccessToken)} invoked: " +
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RefreshTokens)} invoked: " +
                       $"url({url}), refreshToken({refreshToken})");
 
             var form = new WWWForm();
@@ -268,13 +269,50 @@ namespace Nekoyume.UI
                 Debug.LogException(e);
             }
 
-            return HandleAccessTokenResult(request);
+            return HandleTokensResult(request);
         }
 
-        public bool HandleAccessTokenResult(UnityWebRequest request)
+        private async void GetRefreshToken()
+        {
+            // Social Login
+        }
+
+        private bool GetTokens(string address)
+        {
+            var encryptedAccessToken = PlayerPrefs.GetString($"LOCAL_ACCESS_TOKEN_{address}", string.Empty);
+            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
+
+            if (string.IsNullOrEmpty(encryptedAccessToken) || string.IsNullOrEmpty(encryptedRefreshToken))
+            {
+                return false;
+            }
+
+            accessToken = Util.AesDecrypt(encryptedAccessToken);
+            refreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            return true;
+        }
+
+        private void SetTokens(string address)
+        {
+            PlayerPrefs.SetString($"LOCAL_ACCESS_TOKEN_{address}", Util.AesEncrypt(accessToken));
+            PlayerPrefs.SetString($"LOCAL_REFRESH_TOKEN_{address}", Util.AesEncrypt(refreshToken));
+            PlayerPrefs.Save();
+        }
+
+        public void RefreshTokens(Address address)
+        {
+            if (GetTokens(address.ToString()))
+            {
+                RefreshTokens();
+                return;
+            }
+            GetRefreshToken();
+        }
+
+        public bool HandleTokensResult(UnityWebRequest request)
         {
             var json = request.downloadHandler.text;
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)} invoked w/ request: " +
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} invoked w/ request: " +
                       $"result({request.result}), json({json})");
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -283,23 +321,24 @@ namespace Nekoyume.UI
                 {
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
+                    SetTokens(Game.Game.instance.Agent.Address.ToString());
                     return true;
                 }
 
                 if (data.resultCode == 3004)
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)} Refresh Token expired: " +
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Refresh Token expired: " +
                               $"Refresh Token({accessToken})\n{json}");
-                    // RefreshToken
+                    GetRefreshToken();
                 }
                 else
                 {
-                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... json deserialize error.");
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... json deserialize error.");
                     ShowRequestErrorPopup(data);
                 }
             }
 
-            Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleAccessTokenResult)}... " +
+            Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... " +
                            $"result failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
             ShowRequestErrorPopup(data);
             return false;
@@ -387,7 +426,7 @@ namespace Nekoyume.UI
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Access Token expired: " +
                               $"Access Token({accessToken})\n{json}");
-                    if (await RefreshAccessToken())
+                    if (await RefreshTokens())
                     {
                         return await GetReferralInformation();
                     }
@@ -443,7 +482,7 @@ namespace Nekoyume.UI
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Access Token expired: " +
                               $"Access Token({accessToken})\n{json}");
-                    if (await RefreshAccessToken())
+                    if (await RefreshTokens())
                     {
                         return await EnterReferralCode(referralCode);
                     }

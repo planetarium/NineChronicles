@@ -140,7 +140,7 @@ namespace Nekoyume.Game.OAuth
             request.SetRequestHeader("Content-Type", "application/json");
             yield return request.SendWebRequest();
 
-            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
+            if (Game.instance.PortalConnect.HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
                 var accessTokenResult =
