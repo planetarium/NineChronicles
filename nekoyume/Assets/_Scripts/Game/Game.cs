@@ -104,6 +104,8 @@ namespace Nekoyume.Game
         [SerializeField]
         private GameObject debugConsolePrefab;
 
+        public PlanetId? CurrentPlanetId { get; private set; }
+
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
@@ -389,6 +391,9 @@ namespace Nekoyume.Game
                 yield break;
             }
 #endif
+
+            yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
+            Debug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
 
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
@@ -1258,9 +1263,7 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Initialize current planet info.
-            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(
-                planetContext,
-                resetIfCachedPlanetNotFoundInPlanets: true);
+            planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
             if (planetContext.HasError)
             {
                 QuitWithMessage(
@@ -1860,6 +1863,67 @@ namespace Nekoyume.Game
                     Application.Quit();
 #endif
                 });
+        }
+
+        private async UniTask UpdateCurrentPlanetIdAsync(PlanetContext planetContext)
+        {
+#if RUN_ON_MOBILE
+            CurrentPlanetId = planetContext.SelectedPlanetInfo.ID;
+            return;
+#endif
+            Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
+            if (_commandLineOptions.SelectedPlanetId.HasValue)
+            {
+                Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
+                CurrentPlanetId = _commandLineOptions.SelectedPlanetId.Value;
+                return;
+            }
+
+            Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is null." +
+                             " Try to get planet id from planet registry.");
+            if (planetContext is null)
+            {
+                if (string.IsNullOrEmpty(_commandLineOptions.PlanetRegistryUrl))
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " CommandLineOptions.PlanetRegistryUrl is null.");
+                    return;
+                }
+
+                planetContext = new PlanetContext(_commandLineOptions);
+                await PlanetSelector.InitializePlanetsAsync(planetContext);
+                if (planetContext.IsSkipped)
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " planetContext.IsSkipped is true." +
+                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    return;
+                }
+
+                if (planetContext.HasError)
+                {
+                    Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                     " planetContext.HasError is true." +
+                                     " You can consider to use CommandLineOptions.SelectedPlanetId instead.");
+                    return;
+                }
+            }
+
+            if (planetContext.Planets!.TryGetPlanetInfoByHeadlessGrpc(
+                    _commandLineOptions.RpcServerHost,
+                    out var planetInfo))
+            {
+                Debug.Log("[Game] UpdateCurrentPlanetIdAsync()..." +
+                          " planet id is found in planet registry.");
+                CurrentPlanetId = planetInfo.ID;
+            }
+            else
+            {
+                Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
+                                 " planet id is not found in planet registry." +
+                                 " Check CommandLineOptions.PlaneRegistryUrl and" +
+                                 " CommandLineOptions.RpcServerHost.");
+            }
         }
     }
 }

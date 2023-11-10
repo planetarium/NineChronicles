@@ -32,8 +32,17 @@ namespace Nekoyume.UI.Module.Lobby
 
                 premiumIcon.SetActive(info.IsPremium);
                 premiumPlusIcon.SetActive(info.IsPremiumPlus);
-                levelText.text = $"Lv.{info.Level}";
                 notificationObj.SetActive(info.LastNormalClaim != info.Level);
+
+                if (info.Level >= SeasonPass.SeasonPassMaxLevel)
+                {
+                    levelText.text = "MAX";
+                }
+                else
+                {
+                    levelText.text = $"Lv.{info.Level}";
+                }
+
             }).AddTo(gameObject);
 
             Game.Game.instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>
