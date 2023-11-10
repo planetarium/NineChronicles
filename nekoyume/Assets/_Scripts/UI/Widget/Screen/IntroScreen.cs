@@ -259,6 +259,7 @@ namespace Nekoyume.UI
                             case GoogleSigninBehaviour.SignInState.Canceled:
                                 startButtonContainer.SetActive(true);
                                 googleSignInButton.gameObject.SetActive(true);
+                                Find<DimmedLoadingScreen>().Close();
                                 break;
                             case GoogleSigninBehaviour.SignInState.Signed:
                                 OnGoogleSignedIn.OnNext((this, google));
