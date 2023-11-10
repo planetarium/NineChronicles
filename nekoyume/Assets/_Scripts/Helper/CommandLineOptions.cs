@@ -35,6 +35,8 @@ namespace Nekoyume.Helper
 
         private PlanetId? _defaultPlanetId;
 
+        private PlanetId? _selectedPlanetId;
+
         private string privateKey;
 
         // null이면 Web3KeyStore.DefaultStore 따름
@@ -130,6 +132,21 @@ namespace Nekoyume.Helper
             set
             {
                 _defaultPlanetId = value;
+                Empty = false;
+            }
+        }
+
+        /// <summary>
+        /// Use this if you want to inject the selected planet id.
+        /// It is usually used for standalone platforms with the launcher.
+        /// </summary>
+        [Option("selected-planet-id", Required = false, HelpText = "planet id")]
+        public PlanetId? SelectedPlanetId
+        {
+            get => _selectedPlanetId;
+            set
+            {
+                _selectedPlanetId = value;
                 Empty = false;
             }
         }
