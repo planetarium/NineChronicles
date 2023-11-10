@@ -3972,6 +3972,7 @@ GameObject:
   - component: {fileID: 4863973393720397985}
   - component: {fileID: 974489696783129385}
   - component: {fileID: 1709353114212839191}
+  - component: {fileID: 2059621580477159575}
   m_Layer: 5
   m_Name: Text_01
   m_TagString: Untagged
@@ -4096,6 +4097,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2059621580477159575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4028583860253831989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &4375042185302676143
 GameObject:
   m_ObjectHideFlags: 0
@@ -4183,6 +4215,7 @@ GameObject:
   - component: {fileID: 4465391461433547132}
   - component: {fileID: 1214545577507084044}
   - component: {fileID: 8168527483365331929}
+  - component: {fileID: 2209470056105828081}
   m_Layer: 5
   m_Name: Text_add
   m_TagString: Untagged
@@ -4307,6 +4340,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2209470056105828081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764359078187854712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SWEEP
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &4833656455212708915
 GameObject:
   m_ObjectHideFlags: 0
@@ -6592,6 +6656,7 @@ GameObject:
   - component: {fileID: 6188840752795673569}
   - component: {fileID: 5308843967438157023}
   - component: {fileID: 3738325453473057095}
+  - component: {fileID: 63829834767360015}
   m_Layer: 5
   m_Name: Text_00
   m_TagString: Untagged
@@ -6716,6 +6781,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &63829834767360015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8028480881824772741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: UI_SWEEP
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &9057105349462620232
 GameObject:
   m_ObjectHideFlags: 0
@@ -10801,10 +10897,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1009997455389979155}
     m_Modifications:
+    - target: {fileID: 162339393150111165, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
+    - target: {fileID: 1064845625844210996, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
     - target: {fileID: 1868312093538365534, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
       propertyPath: m_Name
       value: Ok_Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 2742352608818009789, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
+    - target: {fileID: 4156633523159160521, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
       objectReference: {fileID: 0}
     - target: {fileID: 5476809316646564014, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
@@ -11729,10 +11845,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1009997455389979155}
     m_Modifications:
+    - target: {fileID: 162339393150111165, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
+    - target: {fileID: 1064845625844210996, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
     - target: {fileID: 1868312093538365534, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
       propertyPath: m_Name
       value: Main_Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 2742352608818009789, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
+      objectReference: {fileID: 0}
+    - target: {fileID: 4156633523159160521, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_GET_REWARDS
       objectReference: {fileID: 0}
     - target: {fileID: 5476809316646564014, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
