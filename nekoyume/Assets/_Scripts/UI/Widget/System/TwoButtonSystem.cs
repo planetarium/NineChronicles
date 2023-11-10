@@ -29,8 +29,12 @@ namespace Nekoyume.UI
             cancelButton.OnClick = Cancel;
         }
 
-        public void Show(string content, string confirmText, string cancelText,
-            System.Action confirmCallback, System.Action cancelCallback = null)
+        public void Show(
+            string content,
+            string confirmText,
+            string cancelText,
+            System.Action confirmCallback,
+            System.Action cancelCallback = null)
         {
             if (gameObject.activeSelf)
             {
