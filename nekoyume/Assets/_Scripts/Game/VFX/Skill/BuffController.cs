@@ -22,8 +22,7 @@ namespace Nekoyume.Game.VFX.Skill
         public BuffController(ObjectPool objectPool)
         {
             _pool = objectPool;
-            AssetBundleLoader.LoadVFXCache();
-            var buffs = AssetBundleLoader.LoadAllAssetBundle<GameObject>("vfx/prefabs");
+            var buffs = AssetBundleLoader.LoadAllAssetBundle<GameObject>("vfx/vfxprefabs");
             foreach (var buff in buffs)
             {
                 _pool.Add(buff, InitCount);
