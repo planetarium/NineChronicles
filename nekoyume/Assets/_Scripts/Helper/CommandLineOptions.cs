@@ -8,7 +8,7 @@ using CommandLine;
 using Nekoyume.Planet;
 using UnityEngine;
 
-#if !UNITY_EDITOR
+#if !UNITY_ANDROID
 using System.IO;
 #endif
 
