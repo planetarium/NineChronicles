@@ -11,8 +11,10 @@ namespace Nekoyume.AssetBundleHelper
         [SerializeField] private string assetBundleURL;
         [SerializeField] private string assetBundleCredentials;
         [SerializeField] private List<string> assetBundleNames;
+        [SerializeField] private List<string> preloadNames;
 
         public string AssetBundleURL => assetBundleURL;
         public IReadOnlyCollection<string> AssetBundleNames => assetBundleNames;
+        public IReadOnlyCollection<string> PreloadNames => preloadNames;
     }
 }

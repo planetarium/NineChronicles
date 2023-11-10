@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 using UnityEngine;
@@ -36,20 +37,35 @@ namespace Nekoyume.AssetBundleHelper
             }
         }
 
+        public static IReadOnlyCollection<string> PreloadNames
+        {
+            get
+            {
+                if (preloadNames == null)
+                {
+                    Initialize();
+                }
+
+                return preloadNames;
+            }
+        }
+
         private static string assetBundleURL;
         private static IReadOnlyCollection<string> assetBundleNames;
+        private static IReadOnlyCollection<string> preloadNames;
 
         private static void Initialize()
         {
             var settings = Resources.Load<AssetBundleSettings>("AssetBundleSettings");
             assetBundleURL = settings.AssetBundleURL;
             assetBundleNames = settings.AssetBundleNames;
+            preloadNames = settings.PreloadNames;
         }
     }
 
     public static class AssetBundleLoader
     {
-        private static Dictionary<string, AssetBundle> loaded = new();
+        private static Dictionary<string, AssetBundle> preloaded = new();
 
         public static IEnumerator DownloadAssetBundles(string bundleName, Action<float> onProgress)
         {
@@ -70,8 +86,14 @@ namespace Nekoyume.AssetBundleHelper
                 try
                 {
                     var bundle = DownloadHandlerAssetBundle.GetContent(www);
-                    loaded[bundleName] = bundle;
-                    // bundle.Unload(false);
+                    if (AssetBundleData.PreloadNames.Contains(bundleName))
+                    {
+                        preloaded[bundleName] = bundle;
+                    }
+                    else
+                    {
+                        Unload(bundle);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -92,10 +114,9 @@ namespace Nekoyume.AssetBundleHelper
             var obj = bundles[0].LoadAsset<T>(objectName);
             foreach (var bundle in bundles)
             {
-                // bundle.Unload(false);
+                Unload(bundle);
             }
 
-            Debug.Log($"{bundleName} - {objectName}");
             return obj;
         }
 
@@ -106,7 +127,7 @@ namespace Nekoyume.AssetBundleHelper
             var objs = bundles[0].LoadAllAssets<T>();
             foreach (var bundle in bundles)
             {
-                // bundle.Unload(false);
+                Unload(bundle);
             }
 
             return objs;
@@ -115,7 +136,7 @@ namespace Nekoyume.AssetBundleHelper
         private static IReadOnlyList<AssetBundle> GetAssetBundle(string bundleName, bool ignoreDeps=false)
         {
             var bundles = new List<AssetBundle>();
-            if (loaded.TryGetValue(bundleName, out var value))
+            if (preloaded.TryGetValue(bundleName, out var value))
             {
                 bundles.Add(value);
                 return bundles;
@@ -150,7 +171,7 @@ namespace Nekoyume.AssetBundleHelper
             {
                 var bundle = GetAssetBundle(GetPlatform(), true)[0];
                 manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
-                bundle.Unload(false);
+                Unload(bundle);
             }
 
             var dependentBundleNames = new List<string>();
@@ -177,6 +198,12 @@ namespace Nekoyume.AssetBundleHelper
                 dependencies.AddRange(GetAssetBundle(dependency, true));
             }
             return dependencies;
+        }
+
+        private static void Unload(AssetBundle bundle)
+        {
+            if (AssetBundleData.PreloadNames.Contains(bundle.name)) return;
+            bundle.Unload(false);
         }
 
         private static string GetPlatform()
