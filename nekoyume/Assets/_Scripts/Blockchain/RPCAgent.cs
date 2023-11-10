@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -682,7 +683,7 @@ namespace Nekoyume.Blockchain
                 privateKey: PrivateKey,
                 genesisHash: _genesis?.Hash,
                 actions: actions.Select(action => action.PlainValue),
-                updatedAddresses: actions.CalculateUpdateAddresses(),
+                updatedAddresses: ImmutableHashSet<Address>.Empty,
                 maxGasPrice: Currencies.Mead * 1,
                 gasLimit: gasLimit
             );
