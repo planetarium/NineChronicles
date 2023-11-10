@@ -183,7 +183,7 @@ RectTransform:
   m_Children:
   - {fileID: 5109134937894700686}
   m_Father: {fileID: 553648112077217407}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -811,6 +811,7 @@ RectTransform:
   - {fileID: 359115452020470505}
   - {fileID: 3677020719913940206}
   - {fileID: 1929002957489927283}
+  - {fileID: 6059473657494346260}
   - {fileID: 5306896103811734823}
   m_Father: {fileID: 4464130593833661832}
   m_RootOrder: 1
@@ -4750,7 +4751,6 @@ RectTransform:
   - {fileID: 967204440583816733}
   - {fileID: 4715720422514842558}
   - {fileID: 3777769775567828212}
-  - {fileID: 6059473657494346260}
   m_Father: {fileID: 553648112077217407}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6771,6 +6771,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NotchType: 0
 --- !u!114 &8354548078518022176 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8824049992684031751, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
@@ -7299,6 +7300,10 @@ PrefabInstance:
     - target: {fileID: 1701844486344900, guid: 09b93ce70a9aa954abba7ecf30fa3cbf, type: 3}
       propertyPath: m_Name
       value: BoxCatBtnContainers
+      objectReference: {fileID: 0}
+    - target: {fileID: 1701844486344900, guid: 09b93ce70a9aa954abba7ecf30fa3cbf, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 723496014391059450, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
@@ -9450,12 +9455,17 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1929002957489927283}
+    m_TransformParent: {fileID: 553648112077217407}
     m_Modifications:
     - target: {fileID: 409812662611381061, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
       propertyPath: m_Name
       value: SeasonPassBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 409812662611381061, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1345131832591843909, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
@@ -9470,7 +9480,7 @@ PrefabInstance:
     - target: {fileID: 1345131832591843909, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1345131832591843909, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
@@ -9545,7 +9555,7 @@ PrefabInstance:
     - target: {fileID: 1345131832591843909, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -173
+      value: -204.00159
       objectReference: {fileID: 0}
     - target: {fileID: 1345131832591843909, guid: 0aa92a8fa48c76348adf2ff6a5fb8e0d,
         type: 3}
