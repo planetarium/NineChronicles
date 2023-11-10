@@ -110,7 +110,8 @@ namespace Nekoyume
                 return;
             }
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(),
+            
+            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
                     AvatarInfo.SetValueAndForceNotify(result);
@@ -129,7 +130,8 @@ namespace Nekoyume
             {
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.Value.SeasonPassId
+                SeasonId = AvatarInfo.Value.SeasonPassId,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>(Game.Game.instance.CurrentPlanetId.ToString())
             },
                 (result) =>
                 {

@@ -66,6 +66,8 @@ public class SeasonPassServiceClient
 
     public class ClaimRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("agent_addr")]
         public string AgentAddr { get; set; }
         [JsonPropertyName("avatar_addr")]
@@ -132,6 +134,39 @@ public class SeasonPassServiceClient
         public int? Exp { get; set; }
     }
 
+    [JsonConverter(typeof(PlanetIDTypeConverter))]
+    public enum PlanetID
+    {
+        _0x000000000000,
+        _0x000000000001,
+        _0x100000000000,
+        _0x100000000001,
+    }
+
+    public class PlanetIDTypeConverter : JsonConverter<PlanetID>
+    {
+        public override PlanetID Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            return reader.TokenType switch
+            {
+                JsonTokenType.Number => (PlanetID)reader.GetInt32(),
+                JsonTokenType.String => Enum.Parse<PlanetID>("_"+reader.GetString()),
+                _ => throw new JsonException(
+                    $"Expected token type to be {string.Join(" or ", new[] { JsonTokenType.Number, JsonTokenType.String })} but got {reader.TokenType}")
+            };
+        }
+        public override void Write(
+            Utf8JsonWriter writer,
+            PlanetID value,
+            JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue((int)value);
+        }
+    }
+
     public class PremiumRequestSchema
     {
         [JsonPropertyName("avatar_addr")]
@@ -144,6 +179,8 @@ public class SeasonPassServiceClient
 
     public class RegisterRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("agent_addr")]
         public string AgentAddr { get; set; }
         [JsonPropertyName("avatar_addr")]
@@ -182,6 +219,8 @@ public class SeasonPassServiceClient
 
     public class UpgradeRequestSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID? PlanetId { get; set; }
         [JsonPropertyName("agent_addr")]
         public string AgentAddr { get; set; }
         [JsonPropertyName("avatar_addr")]
@@ -196,6 +235,8 @@ public class SeasonPassServiceClient
 
     public class UserSeasonPassSchema
     {
+        [JsonPropertyName("planet_id")]
+        public PlanetID PlanetId { get; set; }
         [JsonPropertyName("agent_addr")]
         public string AgentAddr { get; set; }
         [JsonPropertyName("avatar_addr")]
@@ -286,12 +327,12 @@ public class SeasonPassServiceClient
         }
     }
 
-    public async Task GetUserStatusAsync(int season_id, string avatar_addr, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
+    public async Task GetUserStatusAsync(int season_id, string avatar_addr, string planet_id, Action<UserSeasonPassSchema> onSuccess, Action<string> onError)
     {
         string url = Url + "/api/user/status";
         using (var request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("GET"), url))
         {
-            url += $"?season_id={season_id}&avatar_addr={avatar_addr}";
+            url += $"?season_id={season_id}&avatar_addr={avatar_addr}&planet_id={planet_id}";
             request.RequestUri = new Uri(url);
             try
             {
