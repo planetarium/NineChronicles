@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Google;
 using Libplanet.Crypto;
-using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Nekoyume.Game.OAuth
 {
@@ -60,7 +55,7 @@ namespace Nekoyume.Game.OAuth
             });
         }
 
-        private void OnSignInSilently()
+        public void OnSignInSilently()
         {
             Debug.Log("[GoogleSigninBehaviour] OnSignInSilently() invoked.");
             GoogleSignIn.Configuration = _configuration;
@@ -116,47 +111,6 @@ namespace Nekoyume.Game.OAuth
                           $" Welcome: {res.UserId}!\ntoken: {res.IdToken}");
                 IDToken = res.IdToken;
                 State.Value = SignInState.Signed;
-            }
-        }
-
-        public IEnumerator CoSendGoogleIdToken()
-        {
-            Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({IDToken})");
-            yield return new WaitUntil(() => Game.instance.PortalConnect != null);
-            Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
-
-            var body = new JsonObject {{"idToken", IDToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
-            var request =
-                new UnityWebRequest(
-                    $"{Game.instance.PortalConnect.PortalUrl}{PortalConnect.GoogleAuthEndpoint}",
-                    "POST");
-            var jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyString);
-            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = 180;
-            request.uploadHandler.contentType = "application/json";
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest();
-
-            if (Game.instance.PortalConnect.HandleTokensResult(request))
-            {
-                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
-                var accessTokenResult =
-                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
-                        request.downloadHandler.text);
-                if (!string.IsNullOrEmpty(accessTokenResult.address))
-                {
-                    AgentAddress = new Address(accessTokenResult.address);
-                    Debug.Log("[GoogleSigninBehaviour] CoSendGoogleIdToken succeeded." +
-                              $" AgentAddress: {AgentAddress}");
-                }
-            }
-            else
-            {
-                Debug.LogError(
-                    $"[GoogleSigninBehaviour] CoSendGoogleIdToken failed w/ error: {request.error}");
             }
         }
     }
