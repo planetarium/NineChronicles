@@ -87,7 +87,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            RefreshSeasonPassCourageAmount();
+            var repeatCount = 1;
+            if (winDefeatCount.HasValue)
+            {
+                repeatCount = winDefeatCount.Value.win + winDefeatCount.Value.defeat;
+            }
+            RefreshSeasonPassCourageAmount(repeatCount);
 
             _onClose = onClose;
         }
@@ -98,7 +103,7 @@ namespace Nekoyume.UI
             _onClose?.Invoke();
         }
 
-        private void RefreshSeasonPassCourageAmount()
+        private void RefreshSeasonPassCourageAmount(int count)
         {
             if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
             {
@@ -106,7 +111,7 @@ namespace Nekoyume.UI
                 {
                     item.SetActive(true);
                 }
-                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount}";
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
             }
             else
             {
