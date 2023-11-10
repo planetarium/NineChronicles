@@ -505,7 +505,7 @@ namespace Nekoyume.Game
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
-            PortalConnect.RefreshTokens(States.AgentState.address);
+            PortalConnect.CheckTokens(States.AgentState.address);
 
 #if RUN_ON_MOBILE
             if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
@@ -1326,24 +1326,24 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
-                (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
-                    onGoogleSignInTuple = null;
+                string idToken = null;
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
-                    .Subscribe(tuple => onGoogleSignInTuple = tuple);
+                    .Subscribe(value => idToken = value);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn.");
-                yield return new WaitUntil(() => onGoogleSignInTuple.HasValue);
+                yield return new WaitUntil(() => idToken is not null);
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn. Done.");
-
-                var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
 
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
+
+                var googleSigninTask = PortalConnect.SendGoogleIdToken(idToken);
+                yield return new WaitUntil(() => googleSigninTask.IsCompleted);
                 Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
 
-                if (googleSigninBehaviour.AgentAddress is null)
+                var agentAddress = googleSigninTask.Result;
+                if (agentAddress is null)
                 {
                     loginSystem.Show(connectedAddress: null);
                     Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
@@ -1351,9 +1351,8 @@ namespace Nekoyume.Game
                 }
                 else
                 {
-                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null." +
-                              $" {googleSigninBehaviour.AgentAddress.Value}");
-                    agentAddr = googleSigninBehaviour.AgentAddress.Value;
+                    Debug.Log($"[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null. {agentAddress.Value}");
+                    agentAddr = agentAddress.Value;
                     // NOTE: Don't show login popup when google signed in.
                     //       Because introScreen.ShowForQrCodeGuide() will be called
                     //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
