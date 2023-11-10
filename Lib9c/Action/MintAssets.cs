@@ -60,10 +60,10 @@ namespace Nekoyume.Action
 
                     foreach (MaterialItemSheet.Row row in itemSheet.OrderedList)
                     {
-                        if (row.ItemId.Equals(items.Id))
+                        if (row.ItemId.Equals(itemsNotNull.Id))
                         {
                             Material item = ItemFactory.CreateMaterial(row);
-                            inventory.AddFungibleItem(item, items.Count);
+                            inventory.AddFungibleItem(item, itemsNotNull.Count);
                         }
                     }
 
@@ -104,7 +104,7 @@ namespace Nekoyume.Action
             private set;
         }
 
-        public record FungibleItemValue(HashDigest<SHA256> Id, int Count)
+        public readonly struct FungibleItemValue
         {
             public FungibleItemValue(List bencoded)
                 : this(
@@ -114,13 +114,22 @@ namespace Nekoyume.Action
             {
             }
 
+            public FungibleItemValue(HashDigest<SHA256> id, int count)
+            {
+                Id = id;
+                Count = count;
+            }
+
             public IValue Serialize()
             {
                 return new List(Id.Serialize(), (Integer)Count);
             }
+
+            public HashDigest<SHA256> Id { get; }
+            public int Count { get; }
         }
 
-        public record MintSpec(Address Recipient, FungibleAssetValue? Assets, FungibleItemValue? Items)
+        public readonly struct MintSpec
         {
             public MintSpec(List bencoded)
                 : this(
@@ -131,11 +140,38 @@ namespace Nekoyume.Action
             {
             }
 
+            public MintSpec(
+                Address recipient,
+                FungibleAssetValue? assets,
+                FungibleItemValue? items
+            )
+            {
+                Recipient = recipient;
+                Assets = assets;
+                Items = items;
+            }
+
             public IValue Serialize() => new List(
                 Recipient.Serialize(),
                 Assets?.Serialize() ?? Null.Value,
                 Items?.Serialize() ?? Null.Value
             );
+
+            internal void Deconstruct(
+                out Address recipient,
+                out FungibleAssetValue? assets,
+                out FungibleItemValue? items
+            )
+            {
+                recipient = Recipient;
+                assets = Assets;
+                items = Items;
+            }
+
+            public Address Recipient { get; }
+            public FungibleAssetValue? Assets { get; }
+            public FungibleItemValue? Items { get; }
+
         }
     }
 }
