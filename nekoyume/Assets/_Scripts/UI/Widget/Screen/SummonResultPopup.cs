@@ -40,6 +40,8 @@ namespace Nekoyume.UI
         private bool _isGreat;
         private Coroutine _coroutine;
         private string _previousMusicName;
+        private System.Action _completeCallback;
+
         private readonly List<IDisposable> _disposables = new();
         private static readonly WaitForSeconds ItemViewAnimInterval = new(0.1f);
         private static readonly WaitForSeconds DefaultAnimInterval = new(1f);
@@ -79,9 +81,11 @@ namespace Nekoyume.UI
             SummonSheet.Row summonRow,
             int summonCount,
             List<Equipment> resultList,
+            System.Action completeCallback = null,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            _completeCallback = completeCallback;
 
             animator.SetTrigger(AnimatorHashHide);
 
@@ -205,6 +209,9 @@ namespace Nekoyume.UI
             yield return null;
             audioController.PlayMusic(_previousMusicName);
             animator.SetTrigger(AnimatorHashShowButton);
+
+            _completeCallback?.Invoke();
+            _completeCallback = null;
         }
     }
 }
