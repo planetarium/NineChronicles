@@ -107,12 +107,14 @@ namespace Nekoyume
         public async Task AvatarStateRefreshAsync()
         {
             if(CurrentSeasonPassData == null || LevelInfos == null) {
+                AvatarInfo.SetValueAndForceNotify(null);
                 Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
             }
 
             if (!Game.Game.instance.CurrentPlanetId.HasValue)
             {
+                AvatarInfo.SetValueAndForceNotify(null);
                 Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
                 return;
             }
@@ -126,6 +128,7 @@ namespace Nekoyume
                 },
                 (error) =>
                 {
+                    AvatarInfo.SetValueAndForceNotify(null);
                     Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
                 });   
         }
