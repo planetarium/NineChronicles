@@ -10,6 +10,10 @@ namespace Nekoyume.Helper
         public static T GetCommandLineOptions<T>() where T : class
         {
             var args = Environment.GetCommandLineArgs();
+            var argsString = string.Join(" ", args);
+            Debug.Log($"[CommandLineParser] GetCommandLineOptions<{typeof(T).Name}> invoked" +
+                      $" with {argsString}");
+
             var parser = new Parser(with => with.IgnoreUnknownArguments = true);
             ParserResult<T> result = parser.ParseArguments<T>(args);
             if (result.Tag == ParserResultType.Parsed)
@@ -17,7 +21,7 @@ namespace Nekoyume.Helper
                 return ((Parsed<T>)result).Value;
             }
 
-            result.WithNotParsed(_ =>Debug.Log(HelpText.AutoBuild(result)));
+            result.WithNotParsed(_ => Debug.Log(HelpText.AutoBuild(result)));
             return null;
         }
     }
