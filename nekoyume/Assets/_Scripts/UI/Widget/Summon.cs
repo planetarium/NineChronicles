@@ -258,6 +258,16 @@ namespace Nekoyume.UI
             }).AddTo(disposables);
         }
 
+        // Do not use with Aura summon tutorial. this logic is fake.
+        public void SetCostUIForTutorial()
+        {
+            var costButton = drawItems.FirstOrDefault()?.draw1Button;
+            if (costButton != null)
+            {
+                costButton.SetFakeUI(CostType.SilverDust, 0);
+            }
+        }
+
         private static void GoToMarket()
         {
             Find<Summon>().Close(true);
@@ -294,9 +304,9 @@ namespace Nekoyume.UI
             var resultEquipment =
                 States.Instance.CurrentAvatarState.inventory.Equipments.FirstOrDefault(e =>
                     e is Aura);
+            var button = drawItems[0].draw1Button;
             if (resultEquipment is null)
             {
-                var button = drawItems[0].draw1Button;
                 button.OnClickSubject.OnNext(button.CurrentState.Value);
                 return;
             }
@@ -306,6 +316,9 @@ namespace Nekoyume.UI
                 {
                     Game.Game.instance.Stage.TutorialController.Play(50005);
                 });
+
+            // UI Reset for SetCostUIForTutorial() invoking
+            button.UpdateObjects();
         }
     }
 }
