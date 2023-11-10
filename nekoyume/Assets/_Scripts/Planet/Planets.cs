@@ -103,5 +103,12 @@ namespace Nekoyume.Planet
             planetInfo = _planetInfos.FirstOrDefault(e => e.Name.ToLower().Equals(planetName));
             return planetInfo is not null;
         }
+
+        public bool TryGetPlanetInfoByHeadlessGrpc(string headlessGrpc, out PlanetInfo planetInfo)
+        {
+            planetInfo = _planetInfos.FirstOrDefault(e =>
+                e.RPCEndpoints.HeadlessGrpc.Contains(headlessGrpc));
+            return planetInfo is not null;
+        }
     }
 }
