@@ -95,7 +95,7 @@ namespace Nekoyume.Planet
         {
             Debug.Log("[PlanetSelector] Initializing CurrentPlanetInfo...");
             // Check selected planet id in command line options.
-            if (context.CommandLineOptions.SelectedPlanetId.HasValue)
+            if (!string.IsNullOrEmpty(context.CommandLineOptions.SelectedPlanetId))
             {
                 Debug.Log("[PlanetSelector] Selected planet id found in command line options.");
                 if (context.Planets is null)
@@ -106,8 +106,8 @@ namespace Nekoyume.Planet
                     return context;
                 }
 
-                if (context.Planets.TryGetPlanetInfoById(
-                        context.CommandLineOptions.SelectedPlanetId.Value,
+                if (context.Planets.TryGetPlanetInfoByIdString(
+                        context.CommandLineOptions.SelectedPlanetId,
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
@@ -160,18 +160,18 @@ namespace Nekoyume.Planet
                 PlayerPrefs.DeleteKey(CachedPlanetIdStringKey);
             }
 
-            if (context.CommandLineOptions.DefaultPlanetId.HasValue)
-            {
-                // Use default planet id in command line options.
-                Debug.Log($"[PlanetSelector] Default planet id({context.CommandLineOptions.DefaultPlanetId})" +
-                          $" found in command line options.");
-                context = SelectPlanetById(context, context.CommandLineOptions.DefaultPlanetId.Value);
-            }
-            else
+            if (string.IsNullOrEmpty(context.CommandLineOptions.DefaultPlanetId))
             {
                 // Use default planet id in script.
                 Debug.Log($"[PlanetSelector] Using PlanetSelector.DefaultPlanetId({DefaultPlanetId}).");
                 context = SelectPlanetById(context, DefaultPlanetId);
+            }
+            else
+            {
+                // Use default planet id in command line options.
+                Debug.Log($"[PlanetSelector] Default planet id({context.CommandLineOptions.DefaultPlanetId})" +
+                          $" found in command line options.");
+                context = SelectPlanetByIdString(context, context.CommandLineOptions.DefaultPlanetId);
             }
 
             if (context.HasError)
@@ -396,7 +396,7 @@ namespace Nekoyume.Planet
             }
 
             var clo = context.CommandLineOptions;
-            clo.SelectedPlanetId = currentPlanetInfo.ID;
+            clo.SelectedPlanetId = currentPlanetInfo.ID.ToString();
             clo.genesisBlockPath = currentPlanetInfo.GenesisUri;
             var rpcEndpoints = currentPlanetInfo.RPCEndpoints;
             if (rpcEndpoints.HeadlessGrpc.Count == 0)

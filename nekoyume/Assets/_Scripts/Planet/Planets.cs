@@ -90,10 +90,12 @@ namespace Nekoyume.Planet
         }
 
         public bool TryGetPlanetInfoByIdString(
-            string planetIdHexString,
+            string planetIdString,
             out PlanetInfo planetInfo)
         {
-            planetInfo = _planetInfos.FirstOrDefault(e => e.ID.ToString().Equals(planetIdHexString));
+            planetInfo = _planetInfos.FirstOrDefault(e =>
+                e.ID.ToString().Equals(planetIdString) ||
+                e.ID.ToHexString().Equals(planetIdString));
             return planetInfo is not null;
         }
 
