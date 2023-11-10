@@ -279,22 +279,19 @@ namespace Nekoyume.UI
 
         private bool GetTokens(string address)
         {
-            var encryptedAccessToken = PlayerPrefs.GetString($"LOCAL_ACCESS_TOKEN_{address}", string.Empty);
             var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
 
-            if (string.IsNullOrEmpty(encryptedAccessToken) || string.IsNullOrEmpty(encryptedRefreshToken))
+            if (string.IsNullOrEmpty(encryptedRefreshToken))
             {
                 return false;
             }
 
-            accessToken = Util.AesDecrypt(encryptedAccessToken);
             refreshToken = Util.AesDecrypt(encryptedRefreshToken);
             return true;
         }
 
         private void SetTokens(string address)
         {
-            PlayerPrefs.SetString($"LOCAL_ACCESS_TOKEN_{address}", Util.AesEncrypt(accessToken));
             PlayerPrefs.SetString($"LOCAL_REFRESH_TOKEN_{address}", Util.AesEncrypt(refreshToken));
             PlayerPrefs.Save();
         }
