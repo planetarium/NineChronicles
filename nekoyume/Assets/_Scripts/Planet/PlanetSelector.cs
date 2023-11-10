@@ -396,6 +396,7 @@ namespace Nekoyume.Planet
             }
 
             var clo = context.CommandLineOptions;
+            clo.SelectedPlanetId = currentPlanetInfo.ID;
             clo.genesisBlockPath = currentPlanetInfo.GenesisUri;
             var rpcEndpoints = currentPlanetInfo.RPCEndpoints;
             if (rpcEndpoints.HeadlessGrpc.Count == 0)
