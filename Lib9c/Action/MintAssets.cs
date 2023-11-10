@@ -33,6 +33,8 @@ namespace Nekoyume.Action
 
         public override IAccount Execute(IActionContext context)
         {
+            context.UseGas(1);
+
             if (MintSpecs is null)
             {
                 throw new InvalidOperationException();
