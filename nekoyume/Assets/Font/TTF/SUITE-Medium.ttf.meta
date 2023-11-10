@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f496f0d578f7449b0b5d3d7eb1f05ca6
+guid: 76a1a6cd027f94e489da106e9ab05f3e
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,11 +8,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Poor Story
   fontNames:
-  - Poor Story
-  fallbackFontReferences:
-  - {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
+  - SUITE
+  fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
