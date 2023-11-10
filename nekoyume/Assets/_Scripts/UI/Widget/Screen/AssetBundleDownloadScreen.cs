@@ -21,11 +21,10 @@ namespace Nekoyume.UI
 
         private IEnumerator DownloadAssetBundle(System.Action then)
         {
-            var settings = Resources.Load<AssetBundleSettings>("AssetBundleSettings");
-            foreach (var bundleName in settings.AssetBundleNames)
+            foreach (var bundleName in AssetBundleData.AssetBundleNames)
             {
                 yield return AssetBundleLoader.DownloadAssetBundles(
-                    settings.AssetBundleURL, bundleName,
+                    bundleName,
                     progress => { progressText.text = $"{bundleName} - {progress * 100}%"; });
             }
             then();

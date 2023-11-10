@@ -1,30 +1,62 @@
-using Nekoyume.Game.VFX.Skill;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
+using System.Text;
+using Microsoft.Extensions.Primitives;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Nekoyume.AssetBundleHelper
 {
+    public static class AssetBundleData
+    {
+        public static string AssetBundleURL
+        {
+            get
+            {
+                if (assetBundleURL == null)
+                {
+                    Initialize();
+                }
+
+                return assetBundleURL;
+            }
+        }
+
+        public static IReadOnlyCollection<string> AssetBundleNames
+        {
+            get
+            {
+                if (assetBundleNames == null)
+                {
+                    Initialize();
+                }
+
+                return assetBundleNames;
+            }
+        }
+
+        private static string assetBundleURL;
+        private static IReadOnlyCollection<string> assetBundleNames;
+
+        private static void Initialize()
+        {
+            var settings = Resources.Load<AssetBundleSettings>("AssetBundleSettings");
+            assetBundleURL = settings.AssetBundleURL;
+            assetBundleNames = settings.AssetBundleNames;
+        }
+    }
+
     public static class AssetBundleLoader
     {
-        private static readonly bool useCache = true;
-        private static readonly Dictionary<string, AssetBundle> loadedAssetBundleCache = new();
+        private static Dictionary<string, AssetBundle> loaded = new();
 
-        #region ASYNC_DOWNLOADING
-
-        public static IEnumerator DownloadAssetBundles(string assetBundleURL, string bundleName,
-            Action<float> onProgress)
+        public static IEnumerator DownloadAssetBundles(string bundleName, Action<float> onProgress)
         {
             bundleName = bundleName.ToLower();
-            if (loadedAssetBundleCache.ContainsKey(bundleName)) yield break;
-
             using var www =
                 UnityWebRequestAssetBundle.GetAssetBundle(
-                    $"{assetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}");
+                    $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}", GetVersion(), 0);
             var operation = www.SendWebRequest();
 
             while (!operation.isDone)
@@ -35,13 +67,116 @@ namespace Nekoyume.AssetBundleHelper
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                var bundle = DownloadHandlerAssetBundle.GetContent(www);
-                loadedAssetBundleCache[bundleName] = bundle;
+                try
+                {
+                    var bundle = DownloadHandlerAssetBundle.GetContent(www);
+                    loaded[bundleName] = bundle;
+                    // bundle.Unload(false);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e.Message);
+                }
             }
             else
             {
                 Debug.LogError($"AssetBundle Download failed: {www.error}");
             }
+        }
+
+        public static T LoadAssetBundle<T>(string bundleName, string objectName)
+            where T : UnityEngine.Object
+        {
+            bundleName = bundleName.ToLower();
+            var bundles = GetAssetBundle(bundleName);
+            var obj = bundles[0].LoadAsset<T>(objectName);
+            foreach (var bundle in bundles)
+            {
+                // bundle.Unload(false);
+            }
+
+            Debug.Log($"{bundleName} - {objectName}");
+            return obj;
+        }
+
+        public static T[] LoadAllAssetBundle<T>(string bundleName) where T : UnityEngine.Object
+        {
+            bundleName = bundleName.ToLower();
+            var bundles = GetAssetBundle(bundleName);
+            var objs = bundles[0].LoadAllAssets<T>();
+            foreach (var bundle in bundles)
+            {
+                // bundle.Unload(false);
+            }
+
+            return objs;
+        }
+
+        private static IReadOnlyList<AssetBundle> GetAssetBundle(string bundleName, bool ignoreDeps=false)
+        {
+            var bundles = new List<AssetBundle>();
+            if (loaded.TryGetValue(bundleName, out var value))
+            {
+                bundles.Add(value);
+                return bundles;
+            }
+            foreach (var loadedBundle in AssetBundle.GetAllLoadedAssetBundles())
+            {
+                if (loadedBundle.name == bundleName) return bundles;
+            }
+
+            using var www =
+                UnityWebRequestAssetBundle.GetAssetBundle(
+                    $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}", GetVersion(), 0);
+            var operation = www.SendWebRequest();
+
+            while (!operation.isDone)
+            {
+            } // Technically, this MUST be done immediately.
+
+            bundles.Add(DownloadHandlerAssetBundle.GetContent(www));
+            if (!ignoreDeps)
+            {
+                bundles.AddRange(LoadDependencies(bundleName));
+            }
+
+            return bundles;
+        }
+
+        private static AssetBundleManifest manifest;
+        private static IReadOnlyList<AssetBundle> LoadDependencies(string bundleName)
+        {
+            if (!manifest)
+            {
+                var bundle = GetAssetBundle(GetPlatform(), true)[0];
+                manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+                bundle.Unload(false);
+            }
+
+            var dependentBundleNames = new List<string>();
+            dependentBundleNames.AddRange(manifest.GetAllDependencies(bundleName));
+
+            while (true)
+            {
+                var currSize = dependentBundleNames.Count;
+                for (var i = 0; i < currSize; i++)
+                {
+                    var dependency = dependentBundleNames[i];
+                    foreach (var deepDep in manifest.GetAllDependencies(dependency))
+                    {
+                        if (!dependentBundleNames.Contains(deepDep)) dependentBundleNames.Add(deepDep);
+                    }
+                }
+
+                if (currSize == dependentBundleNames.Count) break;
+            }
+
+            var dependencies = new List<AssetBundle>();
+            foreach (var dependency in dependentBundleNames)
+            {
+                dependencies.AddRange(GetAssetBundle(dependency, true));
+            }
+            return dependencies;
         }
 
         private static string GetPlatform()
@@ -60,126 +195,10 @@ namespace Nekoyume.AssetBundleHelper
 #endif
         }
 
-        #endregion
-
-        #region ASYNC_LOADING
-
-        public static IEnumerator LoadAllAssetBundleAsync<T>(string bundleName,
-            Action<T[]> onFinished) where T : UnityEngine.Object
+        private static uint GetVersion()
         {
-            bundleName = bundleName.ToLower();
-            return LoadFromFileAsync(bundleName, assetBundle =>
-            {
-                var assets = assetBundle.LoadAllAssets<T>();
-                onFinished(assets);
-            });
+            var version = Application.version;
+            return BitConverter.ToUInt32(Encoding.ASCII.GetBytes(version));
         }
-
-        public static IEnumerator LoadAssetBundleAsync<T>(string bundleName, string objectName,
-            Action<T> onFinished) where T : UnityEngine.Object
-        {
-            bundleName = bundleName.ToLower();
-            return LoadFromFileAsync(bundleName, assetBundle =>
-            {
-                var asset = assetBundle.LoadAsset<T>(objectName);
-                onFinished(asset);
-            });
-        }
-
-        private static IEnumerator LoadFromFileAsync(string bundleName,
-            Action<AssetBundle> onFinished)
-        {
-            bundleName = bundleName.ToLower();
-            if (useCache && loadedAssetBundleCache.TryGetValue(bundleName, out var value))
-            {
-                onFinished(value);
-                yield break;
-            }
-
-            var path = Path.Combine(Application.streamingAssetsPath, bundleName);
-            var request = AssetBundle.LoadFromFileAsync(path);
-            yield return request;
-            var loadedBundle = request.assetBundle;
-            if (loadedBundle == null)
-            {
-                Debug.LogError($"Failed to load Assetbundle at ${path} - ${bundleName}");
-                yield break;
-            }
-
-            if (useCache)
-            {
-                loadedAssetBundleCache[bundleName] = loadedBundle;
-            }
-
-            onFinished.Invoke(loadedBundle);
-        }
-
-        #endregion
-
-        #region STATIC_LOADING
-
-        public static void LoadVFXCache()
-        {
-            var bundleName = "vfx/materials";
-            if (!loadedAssetBundleCache.ContainsKey(bundleName))
-            {
-                if (!LoadFromFile(bundleName))
-                {
-                    Debug.LogError($"{bundleName} does not exist.");
-                }
-            }
-        }
-
-        public static T LoadAssetBundle<T>(string bundleName, string objectName)
-            where T : UnityEngine.Object
-        {
-            bundleName = bundleName.ToLower();
-            if (!loadedAssetBundleCache.ContainsKey(bundleName))
-            {
-                if (!LoadFromFile(bundleName))
-                {
-                    Debug.LogError($"{bundleName} - {objectName} does not exist.");
-                    return null;
-                }
-            }
-
-            return loadedAssetBundleCache[bundleName].LoadAsset<T>(objectName);
-        }
-
-        public static T[] LoadAllAssetBundle<T>(string bundleName) where T : UnityEngine.Object
-        {
-            bundleName = bundleName.ToLower();
-            if (!loadedAssetBundleCache.ContainsKey(bundleName))
-            {
-                if (!LoadFromFile(bundleName))
-                {
-                    Debug.LogError($"{bundleName} does not exist.");
-                    return null;
-                }
-            }
-
-            return loadedAssetBundleCache[bundleName].LoadAllAssets<T>();
-        }
-
-        private static bool LoadFromFile(string bundleName)
-        {
-            bundleName = bundleName.ToLower();
-            var path = Path.Combine(Application.streamingAssetsPath, bundleName);
-            var loadedBundle = AssetBundle.LoadFromFile(path);
-            if (loadedBundle == null)
-            {
-                Debug.LogError($"Failed to load Assetbundle at ${path} - ${bundleName}");
-                return false;
-            }
-
-            if (useCache)
-            {
-                loadedAssetBundleCache[bundleName] = loadedBundle;
-            }
-
-            return true;
-        }
-
-        #endregion
     }
 }

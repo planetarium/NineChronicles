@@ -22,7 +22,6 @@ namespace Nekoyume.Game.VFX.Skill
         public SkillController(IObjectPool objectPool)
         {
             _pool = objectPool;
-            AssetBundleLoader.LoadVFXCache();
             var skills = AssetBundleLoader.LoadAllAssetBundle<GameObject>("vfx/skills");
             foreach (var skill in skills)
             {

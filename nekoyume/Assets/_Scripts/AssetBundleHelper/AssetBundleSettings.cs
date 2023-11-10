@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Nekoyume.AssetBundleHelper
@@ -15,14 +12,7 @@ namespace Nekoyume.AssetBundleHelper
         [SerializeField] private string assetBundleCredentials;
         [SerializeField] private List<string> assetBundleNames;
 
-        public string AssetBundleURL
-        {
-            get { return assetBundleURL; }
-        }
-
-        public IReadOnlyCollection<string> AssetBundleNames
-        {
-            get { return assetBundleNames; }
-        }
+        public string AssetBundleURL => assetBundleURL;
+        public IReadOnlyCollection<string> AssetBundleNames => assetBundleNames;
     }
 }

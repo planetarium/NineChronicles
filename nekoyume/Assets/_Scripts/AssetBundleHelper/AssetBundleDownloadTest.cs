@@ -6,20 +6,17 @@ namespace Nekoyume.AssetBundleHelper
 {
     public class AssetBundleDownloadTest : MonoBehaviour
     {
-        [SerializeField] private AssetBundleSettings assetBundleSettings;
-
         private IEnumerator Start()
         {
-            UnityEngine.Caching.ClearCache();
-            foreach (var bundleName in assetBundleSettings.AssetBundleNames)
+            foreach (var bundleName in AssetBundleData.AssetBundleNames)
             {
                 yield return AssetBundleLoader.DownloadAssetBundles(
-                    assetBundleSettings.AssetBundleURL, bundleName,
+                    bundleName,
                     progress => { Debug.Log($"{bundleName} - {progress * 100}%"); });
             }
 
-            yield return AssetBundleLoader.LoadAssetBundleAsync<GameObject>("vfx/skills",
-                "areaattack_l_fire", obj => { Instantiate(obj); });
+            Instantiate(
+                AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_fire"));
 
             Instantiate(
                 AssetBundleLoader.LoadAssetBundle<GameObject>("vfx/skills", "areaattack_l_water"));
