@@ -59,62 +59,22 @@ namespace Nekoyume.UI
                 }
 
                 Reset();
-                _arrow.Play(_guideTypes[GuideType.Stop]);
 
                 if (d.target == null)
                 {
                     d.guideType = GuideType.Stop;
                 }
 
-                if (d.guideType != GuideType.Stop)
-                {
-                    var targetWorldCorners = new Vector3[4];
-                    var thisWorldCorners = new Vector3[4];
-
-                    d.target.GetWorldCorners(targetWorldCorners);
-
-                    for (int i = 0; i < 4; i++)
+                _arrow.Play(_guideTypes[GuideType.Stop]);
+                _coroutine = StartCoroutine(PlayGuideAnimation(d.guideType, d.arrowAdditionalDelay,
+                    d.isSkip,
+                    () =>
                     {
-                        // 타겟의 각 모서리 월드 좌표를 화면 좌표로 변환
-                        // Convert A.worldCorners to screen position
-                        Vector2 screenPos = _camera.WorldToScreenPoint(targetWorldCorners[i]);
-
-                        // 변환된 화면 좌표를 B의 월드 좌표로 다시 변환
-                        // Convert screenPos to world position about _rectTransform
-                        RectTransformUtility.ScreenPointToWorldPointInRectangle(_rectTransform,
-                            screenPos, _camera, out thisWorldCorners[i]);
-                    }
-
-                    Vector2 newCenter = (thisWorldCorners[0] + thisWorldCorners[2]) * 0.5f;
-                    _rectTransform.position = newCenter;
-
-                    _rectTransform.SetSizeWithCurrentAnchors(
-                        RectTransform.Axis.Horizontal,
-                        d.target.rect.width);
-                    _rectTransform.SetSizeWithCurrentAnchors(
-                        RectTransform.Axis.Vertical,
-                        d.target.rect.height);
-
-                    _rectTransform.anchoredPosition += d.targetPositionOffset;
-                    _rectTransform.sizeDelta += d.targetSizeOffset;
-                    var zeroZPosition = _rectTransform.anchoredPosition3D;
-                    zeroZPosition.z = 0;
-                    _rectTransform.anchoredPosition3D = zeroZPosition;
-
-                    var arrowCount = arrowTransform.Count;
-                    for (var i = 0; i < arrowCount; i++)
-                    {
-                        arrowTransform[i].anchoredPosition =
-                            _arrowDefaultPositionOffset[i] + d.arrowPositionOffset;
-                    }
-
-                    if (d.guideType == GuideType.Outline)
-                    {
-                        ApplyOutline(d.target);
-                    }
-                }
-
-                _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.arrowAdditionalDelay, d.isSkip, callback));
+                        if (d.guideType != GuideType.Stop)
+                        {
+                            SetGuideRect(d);
+                        }
+                    }, callback));
             }
         }
 
@@ -133,6 +93,16 @@ namespace Nekoyume.UI
 
             Reset();
             _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, 0,false, callback));
+        }
+
+        private IEnumerator PlayGuideAnimation(GuideType guideType, float additionalDelay, bool isSkip, System.Action delayCallback, System.Action callback)
+        {
+            yield return new WaitForSeconds(predelay + additionalDelay);
+            delayCallback?.Invoke();
+            _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
+            var length = _arrow.GetCurrentAnimatorStateInfo(0).length;
+            yield return new WaitForSeconds(length);
+            callback?.Invoke();
         }
 
         private IEnumerator PlayAnimation(GuideType guideType, float additionalDelay, bool isSkip, System.Action callback)
@@ -173,6 +143,54 @@ namespace Nekoyume.UI
         {
             _arrow.Play(_arrow.GetCurrentAnimatorStateInfo(0).shortNameHash, 0, 1);
             callback?.Invoke();
+        }
+
+        private void SetGuideRect(GuideArrowData data)
+        {
+            var targetWorldCorners = new Vector3[4];
+            var thisWorldCorners = new Vector3[4];
+
+            data.target.GetWorldCorners(targetWorldCorners);
+
+            for (int i = 0; i < 4; i++)
+            {
+                // 타겟의 각 모서리 월드 좌표를 화면 좌표로 변환
+                // Convert A.worldCorners to screen position
+                Vector2 screenPos = _camera.WorldToScreenPoint(targetWorldCorners[i]);
+
+                // 변환된 화면 좌표를 B의 월드 좌표로 다시 변환
+                // Convert screenPos to world position about _rectTransform
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(_rectTransform,
+                    screenPos, _camera, out thisWorldCorners[i]);
+            }
+
+            Vector2 newCenter = (thisWorldCorners[0] + thisWorldCorners[2]) * 0.5f;
+            _rectTransform.position = newCenter;
+
+            _rectTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal,
+                data.target.rect.width);
+            _rectTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Vertical,
+                data.target.rect.height);
+
+            _rectTransform.anchoredPosition += data.targetPositionOffset;
+            _rectTransform.sizeDelta += data.targetSizeOffset;
+            var zeroZPosition = _rectTransform.anchoredPosition3D;
+            zeroZPosition.z = 0;
+            _rectTransform.anchoredPosition3D = zeroZPosition;
+
+            var arrowCount = arrowTransform.Count;
+            for (var i = 0; i < arrowCount; i++)
+            {
+                arrowTransform[i].anchoredPosition =
+                    _arrowDefaultPositionOffset[i] + data.arrowPositionOffset;
+            }
+
+            if (data.guideType == GuideType.Outline)
+            {
+                ApplyOutline(data.target);
+            }
         }
     }
 }

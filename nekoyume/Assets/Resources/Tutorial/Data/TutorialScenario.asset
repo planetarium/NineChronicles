@@ -2558,7 +2558,7 @@ MonoBehaviour:
         checkPointId: 490000
         data:
           presetId: 1
-          arrowPositionOffset: {x: 30, y: 0}
+          arrowPositionOffset: {x: -30, y: -10}
           targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 0, y: 0}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
