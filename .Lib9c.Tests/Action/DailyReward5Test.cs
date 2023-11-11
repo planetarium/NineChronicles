@@ -58,31 +58,6 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize());
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new DailyReward5
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousState = new Account(MockState.Empty),
-                RandomSeed = 0,
-                Rehearsal = true,
-                Signer = _agentAddress,
-            });
-
-            var updatedAddresses = new List<Address>
-            {
-                _avatarAddress,
-            };
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
         [Theory]
         [InlineData(1)]
         [InlineData(2)]

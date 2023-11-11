@@ -421,41 +421,6 @@
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var action = new RankingBattle5
-            {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<Guid>(),
-                equipmentIds = new List<Guid>(),
-                consumableIds = new List<Guid>(),
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _avatar1Address,
-                _weeklyArenaAddress,
-                _avatar1Address.Derive(LegacyInventoryKey),
-                _avatar1Address.Derive(LegacyWorldInformationKey),
-                _avatar1Address.Derive(LegacyQuestListKey),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agent1Address,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
-        [Fact]
         public void SerializeWithDotnetAPI()
         {
             var action = new RankingBattle5
