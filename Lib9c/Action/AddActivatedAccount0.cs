@@ -41,12 +41,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IAccount state = context.PreviousState;
 
-            if (context.Rehearsal)
-            {
-                return state
-                    .SetState(ActivatedAccountsState.Address, MarkChanged);
-            }
-
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {
                 throw new ActivatedAccountsDoesNotExistsException();

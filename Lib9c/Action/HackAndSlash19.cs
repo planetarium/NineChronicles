@@ -94,10 +94,6 @@ namespace Nekoyume.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            if (context.Rehearsal)
-            {
-                return context.PreviousState;
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100360ObsoleteIndex, context);
 

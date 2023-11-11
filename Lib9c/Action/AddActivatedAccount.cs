@@ -43,12 +43,6 @@ namespace Nekoyume.Action
             IAccount state = context.PreviousState;
             var address = Address.Derive(ActivationKey.DeriveKey);
 
-            if (context.Rehearsal)
-            {
-                return state
-                    .SetState(address, MarkChanged);
-            }
-
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!(state.GetState(address) is null))
             {

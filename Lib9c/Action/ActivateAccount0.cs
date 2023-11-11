@@ -47,13 +47,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IAccount state = context.PreviousState;
 
-            if (context.Rehearsal)
-            {
-                return state
-                    .SetState(ActivatedAccountsState.Address, MarkChanged)
-                    .SetState(PendingAddress, MarkChanged);
-            }
-
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))

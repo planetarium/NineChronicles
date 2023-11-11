@@ -101,10 +101,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var random = context.GetRandom();
-            if (context.Rehearsal)
-            {
-                return context.PreviousState;
-            }
 
             return Execute(
                 context.PreviousState,

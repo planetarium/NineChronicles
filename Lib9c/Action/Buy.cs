@@ -72,11 +72,6 @@ namespace Nekoyume.Action
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
             var buyerWorldInformationAddress = buyerAvatarAddress.Derive(LegacyWorldInformationKey);
             var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 
             var sw = new Stopwatch();

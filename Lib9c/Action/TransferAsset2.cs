@@ -84,10 +84,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             var state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return state.MarkBalanceChanged(context, Amount.Currency, new[] { Sender, Recipient });
-            }
 
             CheckObsolete(TransferAsset3.CrystalTransferringRestrictionStartIndex - 1, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);

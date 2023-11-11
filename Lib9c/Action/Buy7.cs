@@ -199,27 +199,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousState;
-            if (ctx.Rehearsal)
-            {
-                foreach (var purchaseInfo in purchaseInfos)
-                {
-                    Address shardedShopAddress =
-                        ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
-                    states = states
-                        .SetState(shardedShopAddress, MarkChanged)
-                        .SetState(purchaseInfo.sellerAvatarAddress, MarkChanged)
-                        .MarkBalanceChanged(
-                            ctx,
-                            GoldCurrencyMock,
-                            ctx.Signer,
-                            purchaseInfo.sellerAgentAddress,
-                            GoldCurrencyState.Address);
-                }
-                return states
-                    .SetState(buyerAvatarAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
-                    .SetState(Addresses.Shop, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

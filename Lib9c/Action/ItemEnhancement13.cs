@@ -134,11 +134,6 @@ namespace Nekoyume.Action
             var states = ctx.PreviousState;
             var random = context.GetRandom();
 
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
-
             // Collect addresses
             var slotAddress = avatarAddress.Derive(
                 string.Format(

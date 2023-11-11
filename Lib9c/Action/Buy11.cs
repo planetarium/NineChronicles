@@ -72,41 +72,6 @@ namespace Nekoyume.Action
             var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
             var buyerWorldInformationAddress = buyerAvatarAddress.Derive(LegacyWorldInformationKey);
             var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                foreach (var purchaseInfo in purchaseInfos)
-                {
-                    var sellerAvatarAddress = purchaseInfo.SellerAvatarAddress;
-                    var sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
-                    var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
-                    var sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
-                    Address shardedShopAddress =
-                        ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
-                    Address orderReceiptAddress = OrderReceipt.DeriveAddress(purchaseInfo.OrderId);
-                    Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
-                    states = states
-                        .SetState(shardedShopAddress, MarkChanged)
-                        .SetState(sellerAvatarAddress, MarkChanged)
-                        .SetState(sellerInventoryAddress, MarkChanged)
-                        .SetState(sellerWorldInformationAddress, MarkChanged)
-                        .SetState(sellerQuestListAddress, MarkChanged)
-                        .SetState(orderReceiptAddress, MarkChanged)
-                        .SetState(digestListAddress, MarkChanged)
-                        .MarkBalanceChanged(
-                            ctx,
-                            GoldCurrencyMock,
-                            ctx.Signer,
-                            purchaseInfo.SellerAgentAddress,
-                            GetFeeStoreAddress());
-                }
-
-                return states
-                    .SetState(buyerAvatarAddress, MarkChanged)
-                    .SetState(buyerInventoryAddress, MarkChanged)
-                    .SetState(buyerWorldInformationAddress, MarkChanged)
-                    .SetState(buyerQuestListAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();

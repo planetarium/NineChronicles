@@ -137,11 +137,6 @@ namespace Nekoyume.Action
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
 
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
-
             var costSheetV3Address = Addresses.GetSheetAddress<EnhancementCostSheetV3>();
             var sheetState = states.GetState(costSheetV3Address);
             if (sheetState != null)

@@ -77,11 +77,6 @@ namespace Nekoyume.Action
             var ctx = context;
             var states = ctx.PreviousState;
 
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
-
             // Collect addresses
             var slotAddress = avatarAddress.Derive(
                 string.Format(
