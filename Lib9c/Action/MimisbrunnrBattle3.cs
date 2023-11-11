@@ -74,12 +74,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousState;
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(RankingMapAddress, MarkChanged);
-                states = states.SetState(avatarAddress, MarkChanged);
-                return states.SetState(WeeklyArenaAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

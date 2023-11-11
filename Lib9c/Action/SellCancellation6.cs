@@ -52,13 +52,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             var states = context.PreviousState;
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
-            if (context.Rehearsal)
-            {
-                states = states.SetState(shardedShopAddress, MarkChanged);
-                return states
-                    .SetState(Addresses.Shop, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

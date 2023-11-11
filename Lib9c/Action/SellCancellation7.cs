@@ -92,17 +92,6 @@ namespace Nekoyume.Action
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             var orderDigestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             var itemAddress = Addresses.GetItemAddress(tradableId);
-            if (context.Rehearsal)
-            {
-                states = states.SetState(shardedShopAddress, MarkChanged);
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(orderDigestListAddress, MarkChanged)
-                    .SetState(itemAddress, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

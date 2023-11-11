@@ -91,10 +91,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200070ObsoleteIndex, context);
             if (championshipId == 6 && round >= 2 || championshipId > 6)
