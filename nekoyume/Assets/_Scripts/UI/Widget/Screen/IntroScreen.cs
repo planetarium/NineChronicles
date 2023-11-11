@@ -35,7 +35,7 @@ namespace Nekoyume.UI
         public struct AgentInfo
         {
             private const string AccountTextFormat =
-                "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>"; 
+                "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>";
             public PlanetId? PlanetId { get; private set; }
             public TextMeshProUGUI title;
             public GameObject noAccount;
@@ -143,7 +143,7 @@ namespace Nekoyume.UI
             }
         }
 
-        // NOTE: Use to mobileContainerAnimator. 
+        // NOTE: Use to mobileContainerAnimator.
         private static readonly int IdleToShowButtons = Animator.StringToHash("IdleToShowButtons");
 
         [SerializeField] private GameObject pcContainer;
@@ -194,11 +194,9 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
-        public Subject<(IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)>
-            OnGoogleSignedIn { get; } = new();
+        public Subject<string> OnGoogleSignedIn { get; } = new();
 
-        public Subject<(IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)>
-            OnAppleSignedIn { get; } = new();
+        public Subject<string> OnAppleSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -234,7 +232,7 @@ namespace Nekoyume.UI
                 {
                     case GoogleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                        OnGoogleSignedIn.OnNext((this, google));
+                        OnGoogleSignedIn.OnNext(google.IDToken);
                         return;
                     case GoogleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for google sign in.");
@@ -266,7 +264,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case GoogleSigninBehaviour.SignInState.Signed:
-                                OnGoogleSignedIn.OnNext((this, google));
+                                OnGoogleSignedIn.OnNext(google.IDToken);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -288,7 +286,7 @@ namespace Nekoyume.UI
                 {
                     case AppleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
-                        OnAppleSignedIn.OnNext((this, apple));
+                        OnAppleSignedIn.OnNext(apple.IDToken);
                         return;
                     case AppleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for apple sign in.");
@@ -320,7 +318,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case AppleSigninBehaviour.SignInState.Signed:
-                                OnAppleSignedIn.OnNext((this, apple));
+                                OnAppleSignedIn.OnNext(apple.IDToken);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -399,7 +397,7 @@ namespace Nekoyume.UI
 #endif
             GetGuestPrivateKey();
         }
-        
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -422,7 +420,7 @@ namespace Nekoyume.UI
                 != IdleToShowButtons)
             {
                 mobileContainerAnimator.Play("Idle", 0);
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);    
+                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
             }
 
             // videoImage.gameObject.SetActive(false);
@@ -445,7 +443,7 @@ namespace Nekoyume.UI
                 != IdleToShowButtons)
             {
                 mobileContainerAnimator.Play("Idle");
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);    
+                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
             }
 
             startButtonContainer.SetActive(false);

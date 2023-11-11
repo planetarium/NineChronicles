@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Game.OAuth;
 using Nekoyume.Helper;
 using Nekoyume.Planet;
 using UnityEngine;
@@ -13,6 +16,7 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class PortalConnect
     {
         [Serializable]
@@ -246,14 +250,14 @@ namespace Nekoyume.UI
             }
 
             HandleTokensResult(request);
+            // Set RefreshToken To PlayerPrefs
         }
 
-        private async Task<bool> RefreshTokens()
+        private async Task<bool> UpdateTokens()
         {
             var url = $"{PortalUrl}{RefreshTokenEndpoint}";
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RefreshTokens)} invoked: " +
-                      $"url({url}), refreshToken({refreshToken})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(UpdateTokens)} invoked: url({url}), refreshToken({refreshToken})");
 
             var form = new WWWForm();
             form.AddField("refreshToken", refreshToken);
@@ -270,15 +274,65 @@ namespace Nekoyume.UI
                 Debug.LogException(e);
             }
 
-            return HandleTokensResult(request);
+            if (HandleTokensResult(request))
+            {
+                return true;
+            }
+
+            var data = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+            if (data.resultCode is 3003 or 3004)
+            {
+                await GetTokensSilently();
+                return true;
+            }
+
+            return false;
         }
 
-        private async void GetRefreshToken()
+        private async Task GetTokensSilently()
         {
-            // Social Login
+            if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+            {
+                google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+            }
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)} invoked: google.State.Value({google.State.Value})");
+
+            switch (google.State.Value)
+            {
+                case GoogleSigninBehaviour.SignInState.Signed:
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
+                    await SendGoogleIdToken(google.IDToken);
+                    return;
+                case GoogleSigninBehaviour.SignInState.Waiting:
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
+                    return;
+                case GoogleSigninBehaviour.SignInState.Undefined:
+                case GoogleSigninBehaviour.SignInState.Canceled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            google.OnSignInSilently();
+            var state = await google.State.SkipLatestValueOnSubscribe().First();
+
+            switch (state)
+            {
+                case GoogleSigninBehaviour.SignInState.Undefined:
+                case GoogleSigninBehaviour.SignInState.Waiting:
+                    return;
+                case GoogleSigninBehaviour.SignInState.Canceled:
+                    break;
+                case GoogleSigninBehaviour.SignInState.Signed:
+                    await SendGoogleIdToken(google.IDToken);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
         }
 
-        private bool GetTokens(string address)
+        private bool GetRefreshTokenFromPlayerPrefs(string address)
         {
             var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
 
@@ -291,20 +345,102 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private void SetTokens(string address)
+        private void SetRefreshTokenToPlayerPrefs(string address)
         {
             PlayerPrefs.SetString($"LOCAL_REFRESH_TOKEN_{address}", Util.AesEncrypt(refreshToken));
             PlayerPrefs.Save();
         }
 
-        public void RefreshTokens(Address address)
+        public async Task<Address?> SendGoogleIdToken(string idToken)
         {
-            if (GetTokens(address.ToString()))
+            Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
+            Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
+
+            var body = new JsonObject {{"idToken", idToken}};
+            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var request = new UnityWebRequest($"{PortalUrl}{GoogleAuthEndpoint}", "POST");
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = 180;
+            request.uploadHandler.contentType = "application/json";
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            await request.SendWebRequest();
+
+            if (HandleTokensResult(request))
             {
-                RefreshTokens();
+                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
+                var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+                if (!string.IsNullOrEmpty(accessTokenResult.address))
+                {
+                    var address = new Address(accessTokenResult.address);
+                    Debug.Log($"[GoogleSigninBehaviour] SendGoogleIdToken succeeded. AgentAddress: {address}");
+                    return address;
+                }
+            }
+            else
+            {
+                Debug.LogError($"[GoogleSigninBehaviour] SendGoogleIdToken failed w/ error: {request.error}");
+            }
+
+            return null;
+        }
+
+
+        public async Task<Address?> SendAppleIdToken(string idToken)
+        {
+            Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
+            Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
+
+            var body = new JsonObject {{"idToken", idToken}};
+            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var request = new UnityWebRequest($"{PortalUrl}{AppleAuthEndpoint}", "POST");
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = 180;
+            request.uploadHandler.contentType = "application/json";
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            await request.SendWebRequest();
+
+            if (HandleTokensResult(request))
+            {
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
+                var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+                if (!string.IsNullOrEmpty(accessTokenResult.address))
+                {
+                    var address = new Address(accessTokenResult.address);
+                    Debug.Log($"[AppleSigninBehaviour] SendAppleleIdToken succeeded. AgentAddress: {address}");
+                    return address;
+                }
+            }
+            else
+            {
+                Debug.LogError($"[AppleSigninBehaviour] SendAppleleIdToken failed w/ error: {request.error}");
+            }
+
+            return null;
+        }
+
+        public async void CheckTokens(Address address)
+        {
+            if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
+            {
+                SetRefreshTokenToPlayerPrefs(address.ToString());
                 return;
             }
-            GetRefreshToken();
+
+            if (GetRefreshTokenFromPlayerPrefs(address.ToString()))
+            {
+                await UpdateTokens();
+                SetRefreshTokenToPlayerPrefs(address.ToString());
+                return;
+            }
+
+            await GetTokensSilently();
+            SetRefreshTokenToPlayerPrefs(address.ToString());
         }
 
         public bool HandleTokensResult(UnityWebRequest request)
@@ -317,17 +453,17 @@ namespace Nekoyume.UI
             {
                 if (request.responseCode == 200)
                 {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Success: {json}");
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
-                    SetTokens(Game.Game.instance.Agent.Address.ToString());
+
                     return true;
                 }
 
-                if (data.resultCode == 3004)
+                if (data.resultCode is 3003 or 3004)
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Refresh Token expired: " +
                               $"Refresh Token({accessToken})\n{json}");
-                    GetRefreshToken();
                 }
                 else
                 {
@@ -420,11 +556,11 @@ namespace Nekoyume.UI
                     return data;
                 }
 
-                if (data.resultCode == 3002)
+                if (data.resultCode is 3001 or 3002)
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Access Token expired: " +
                               $"Access Token({accessToken})\n{json}");
-                    if (await RefreshTokens())
+                    if (await UpdateTokens())
                     {
                         return await GetReferralInformation();
                     }
@@ -476,11 +612,11 @@ namespace Nekoyume.UI
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Success: {json}");
                 }
 
-                if (data.resultCode == 3002)
+                if (data.resultCode is 3001 or 3002)
                 {
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Access Token expired: " +
                               $"Access Token({accessToken})\n{json}");
-                    if (await RefreshTokens())
+                    if (await UpdateTokens())
                     {
                         return await EnterReferralCode(referralCode);
                     }

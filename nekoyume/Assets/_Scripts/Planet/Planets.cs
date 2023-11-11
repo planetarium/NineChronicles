@@ -90,10 +90,12 @@ namespace Nekoyume.Planet
         }
 
         public bool TryGetPlanetInfoByIdString(
-            string planetIdHexString,
+            string planetIdString,
             out PlanetInfo planetInfo)
         {
-            planetInfo = _planetInfos.FirstOrDefault(e => e.ID.ToString().Equals(planetIdHexString));
+            planetInfo = _planetInfos.FirstOrDefault(e =>
+                e.ID.ToString().Equals(planetIdString) ||
+                e.ID.ToHexString().Equals(planetIdString));
             return planetInfo is not null;
         }
 
@@ -106,9 +108,19 @@ namespace Nekoyume.Planet
 
         public bool TryGetPlanetInfoByHeadlessGrpc(string headlessGrpc, out PlanetInfo planetInfo)
         {
-            planetInfo = _planetInfos.FirstOrDefault(e =>
-                e.RPCEndpoints.HeadlessGrpc.Contains(headlessGrpc));
-            return planetInfo is not null;
+            planetInfo = null;
+            foreach (var pInfo in _planetInfos)
+            {
+                foreach (var grpc in pInfo.RPCEndpoints.HeadlessGrpc)
+                {
+                    if (grpc.Contains(headlessGrpc))
+                    {
+                        planetInfo = pInfo;
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

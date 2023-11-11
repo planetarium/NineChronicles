@@ -494,7 +494,7 @@ namespace Nekoyume.Game
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
-            PortalConnect.RefreshTokens(States.AgentState.address);
+            PortalConnect.CheckTokens(States.AgentState.address);
 
 #if RUN_ON_MOBILE
             if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
@@ -1319,73 +1319,47 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
-                (IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)?
-                    onGoogleSignInTuple = null;
+                string idToken = null;
+                bool isGoogle = false;
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
-                    .Subscribe(tuple => onGoogleSignInTuple = tuple);
-
-                (IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)?
-                    onAppleSignInTuple = null;
+                    .Subscribe(value => {
+                        idToken = value;
+                        isGoogle = true;
+                    });
                 introScreen.OnAppleSignedIn.AsObservable()
                     .First()
-                    .Subscribe(tuple => onAppleSignInTuple = tuple);
+                    .Subscribe(value => {
+                        idToken = value;
+                        isGoogle = false;
+                    });
 
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or OnAppleSignedIn.");
-                yield return new WaitUntil(() => onGoogleSignInTuple.HasValue || onAppleSignInTuple.HasValue);
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or OnAppleSignedIn. Done.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn.");
+                yield return new WaitUntil(() => idToken is not null);
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn. Done.");
 
-                if (onGoogleSignInTuple.HasValue)
+                Debug.Log("[Game] CoLogin()... WaitUntil signinTask.");
+                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+
+                var signinTask = isGoogle ? PortalConnect.SendGoogleIdToken(idToken) : PortalConnect.SendAppleIdToken(idToken);
+                yield return new WaitUntil(() => signinTask.IsCompleted);
+                Debug.Log("[Game] CoLogin()... WaitUntil signinTask. Done.");
+
+                var agentAddress = signinTask.Result;
+                if (agentAddress is null)
                 {
-                    var (_, googleSigninBehaviour) = onGoogleSignInTuple!.Value;
-
-                    Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken.");
-                    loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                    yield return StartCoroutine(googleSigninBehaviour.CoSendGoogleIdToken());
-                    Debug.Log("[Game] CoLogin()... WaitUntil googleSigninBehaviour.CoSendGoogleIdToken. Done.");
-
-                    if (googleSigninBehaviour.AgentAddress is null)
-                    {
-                        loginSystem.Show(connectedAddress: null);
-                        Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
-                                $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
-                    }
-                    else
-                    {
-                        Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null." +
-                                $" {googleSigninBehaviour.AgentAddress.Value}");
-                        agentAddr = googleSigninBehaviour.AgentAddress.Value;
-                        // NOTE: Don't show login popup when google signed in.
-                        //       Because introScreen.ShowForQrCodeGuide() will be called
-                        //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
-                        // loginSystem.Show(connectedAddress: agentAddr);
-                    }
+                    loginSystem.Show(connectedAddress: null);
+                    Debug.Log("[Game] CoLogin()... signinBehaviour.AgentAddress is null." +
+                              $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
                 }
-                else if (onAppleSignInTuple.HasValue)
+                else
                 {
-                    var (_, appleSigninBehaviour) = onAppleSignInTuple!.Value;
-
-                    Debug.Log("[Game] CoLogin()... WaitUntil appleSigninBehaviour.CoSendAppleIdToken.");
-                    loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-                    yield return StartCoroutine(appleSigninBehaviour.CoSendAppleIdToken());
-                    Debug.Log("[Game] CoLogin()... WaitUntil appleSigninBehaviour.CoSendAppleIdToken. Done.");
-
-                    if (appleSigninBehaviour.AgentAddress is null)
-                    {
-                        loginSystem.Show(connectedAddress: null);
-                        Debug.Log("[Game] CoLogin()... appleSigninBehaviour.AgentAddress is null." +
-                                $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
-                    }
-                    else
-                    {
-                        Debug.Log("[Game] CoLogin()... appleSigninBehaviour.AgentAddress is not null." +
-                                $" {appleSigninBehaviour.AgentAddress.Value}");
-                        agentAddr = appleSigninBehaviour.AgentAddress.Value;
-                        // NOTE: Don't show login popup when apple signed in.
-                        //       Because introScreen.ShowForQrCodeGuide() will be called
-                        //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
-                        // loginSystem.Show(connectedAddress: agentAddr);
-                    }
+                    Debug.Log($"[Game] CoLogin()... signinBehaviour.AgentAddress is not null. {agentAddress.Value}");
+                    agentAddr = agentAddress.Value;
+                    // NOTE: Don't show login popup when google or apple signed in.
+                    //       Because introScreen.ShowForQrCodeGuide() will be called
+                    //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
+                    // loginSystem.Show(connectedAddress: agentAddr);
                 }
             }
 
@@ -1899,10 +1873,10 @@ namespace Nekoyume.Game
             return;
 #endif
             Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... Try to set current planet id.");
-            if (_commandLineOptions.SelectedPlanetId.HasValue)
+            if (!string.IsNullOrEmpty(_commandLineOptions.SelectedPlanetId))
             {
                 Debug.Log("[Game] UpdateCurrentPlanetIdAsync()... SelectedPlanetId is not null.");
-                CurrentPlanetId = _commandLineOptions.SelectedPlanetId.Value;
+                CurrentPlanetId = new PlanetId(_commandLineOptions.SelectedPlanetId);
                 return;
             }
 

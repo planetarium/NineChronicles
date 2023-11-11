@@ -139,46 +139,5 @@ namespace Nekoyume.Game.OAuth
                 }
             });
         }
-        
-        public IEnumerator CoSendAppleIdToken()
-        {
-            Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({IDToken})");
-            yield return new WaitUntil(() => Game.instance.PortalConnect != null);
-            Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
-
-            var body = new JsonObject {{"idToken", IDToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
-            var request =
-                new UnityWebRequest(
-                    $"{Game.instance.PortalConnect.PortalUrl}{PortalConnect.AppleAuthEndpoint}",
-                    "POST");
-            var jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyString);
-            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = 180;
-            request.uploadHandler.contentType = "application/json";
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest();
-
-            if (Game.instance.PortalConnect.HandleTokensResult(request))
-            {
-                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
-                var accessTokenResult =
-                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
-                        request.downloadHandler.text);
-                if (!string.IsNullOrEmpty(accessTokenResult.address))
-                {
-                    AgentAddress = new Address(accessTokenResult.address);
-                    Debug.Log("[AppleSigninBehaviour] CoSendAppleIdToken succeeded." +
-                              $" AgentAddress: {AgentAddress}");
-                }
-            }
-            else
-            {
-                Debug.LogError(
-                    $"[AppleSigninBehaviour] CoSendAppleIdToken failed w/ error: {request.error}");
-            }
-        }
     }
 }
