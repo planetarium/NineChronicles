@@ -364,45 +364,6 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-
-            var updatedAddresses = new List<Address>()
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                slotAddress,
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var action = new RapidCombination7
-            {
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-            };
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData(1)]

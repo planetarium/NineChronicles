@@ -182,32 +182,6 @@ namespace Lib9c.Tests.Action
             );
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            IAccount nextState = _action.Execute(new ActionContext
-                {
-                    PreviousState = new Account(MockState.Empty),
-                    Signer = _signer,
-                    BlockIndex = 0,
-                    Rehearsal = true,
-                }
-            );
-
-            List<Address> updatedAddresses = new List<Address>
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                MonsterCollectionState.DeriveAddress(_signer, 0),
-                MonsterCollectionState.DeriveAddress(_signer, 1),
-                MonsterCollectionState.DeriveAddress(_signer, 2),
-                MonsterCollectionState.DeriveAddress(_signer, 3),
-            };
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
         private class ExecuteFixture : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>

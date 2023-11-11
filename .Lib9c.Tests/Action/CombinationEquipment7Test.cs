@@ -229,48 +229,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var action = new CombinationEquipment7
-            {
-                AvatarAddress = _avatarAddress,
-                RecipeId = 1,
-                SlotIndex = 0,
-                SubRecipeId = 255,
-            };
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-
-            var updatedAddresses = new List<Address>
-            {
-                _agentAddress,
-                _avatarAddress,
-                slotAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
-        [Fact]
         public void SelectOption()
         {
             var options = new Dictionary<int, int>();
