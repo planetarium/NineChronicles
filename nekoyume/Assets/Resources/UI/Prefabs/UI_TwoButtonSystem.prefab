@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<size=140%>Try to purchase {0} items and pay {1} NCG.</size>
+  m_text: '<size=120%>Try to purchase {0} items and pay {1} NCG.</size>
 
 
     Items
@@ -104,10 +104,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.2
+  m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 16
   m_fontSizeMax: 22
   m_fontStyle: 33
@@ -271,10 +271,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 32
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 8
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -438,10 +438,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 32
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 8
   m_fontSizeMax: 24
   m_fontStyle: 1
@@ -968,7 +968,6 @@ MonoBehaviour:
   tutorialActions: 
   confirmButton: {fileID: 8786400757489469699}
   cancelButton: {fileID: 5355011932519075559}
-  costButton: {fileID: 6182308141023359936}
   contentText: {fileID: 5669120989085549578}
 --- !u!95 &301272268539683782
 Animator:
@@ -1932,18 +1931,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 203923140625990451}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6182308141023359936 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
-    type: 3}
-  m_PrefabInstance: {fileID: 203923140625990451}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 804624504384699624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4064942361338948142
 PrefabInstance:
   m_ObjectHideFlags: 0
