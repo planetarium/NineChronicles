@@ -58,7 +58,7 @@ namespace Nekoyume.UI
 
         public void PlayRewardSfx()
         {
-            AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
         }
 
         private void SetItems(IReadOnlyList<(ItemBase, int)> items)
