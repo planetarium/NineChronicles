@@ -224,6 +224,10 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
+
+            // header menu
+            _secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
+            yield return null;
             
             _secondWidgets.Add(Widget.Create<SweepPopup>());
             yield return null;
