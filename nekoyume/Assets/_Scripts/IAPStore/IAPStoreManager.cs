@@ -181,7 +181,8 @@ namespace Nekoyume.IAPStore
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address,
-                        states.CurrentAvatarState.address);
+                        states.CurrentAvatarState.address,
+                        Game.Game.instance.CurrentPlanetId.ToString());
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
