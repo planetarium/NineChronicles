@@ -18,9 +18,11 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 4f78ee70a4dfce141863260ef37cab7f, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
-    additiveMaterials: []
+    additiveMaterials:
+    - pageName: tail_skin.png
+      material: {fileID: 2100000, guid: 82ce62c6fab594ba89ef1aaacf06884e, type: 2}
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []
