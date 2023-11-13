@@ -2454,7 +2454,7 @@ PrefabInstance:
     - target: {fileID: 801584910548760658, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1434793155216603422, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2465,6 +2465,11 @@ PrefabInstance:
         type: 3}
       propertyPath: l10nKey
       value: UI_ARENA_BOARD_BACK_BUTTON
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
+        type: 3}
+      propertyPath: helpId
+      value: 100015
       objectReference: {fileID: 0}
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2932,6 +2937,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7887009337486271270, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_WIN_DRAW_LOSE_FORMAT
       objectReference: {fileID: 0}
     - target: {fileID: 8316693649841477823, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}

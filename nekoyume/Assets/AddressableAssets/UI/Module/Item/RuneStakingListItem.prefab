@@ -5028,6 +5028,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 0}
   lockedLevelText: {fileID: 0}
   elementImage: {fileID: 0}
+  countText: {fileID: 0}
 --- !u!1 &515816288160553797
 GameObject:
   m_ObjectHideFlags: 0
@@ -21486,8 +21487,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: 69, y: 49}
+  m_AnchoredPosition: {x: -0.000015258789, y: 10}
+  m_SizeDelta: {x: 60, y: 39}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1000371914510000912
 CanvasRenderer:
@@ -26963,8 +26964,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: 69, y: 49}
+  m_AnchoredPosition: {x: -0.000015258789, y: 10}
+  m_SizeDelta: {x: 60, y: 39}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &8750883530609545474
 CanvasRenderer:
@@ -31975,6 +31976,7 @@ MonoBehaviour:
   normalLevelText: {fileID: 0}
   lockedLevelText: {fileID: 0}
   elementImage: {fileID: 0}
+  countText: {fileID: 0}
 --- !u!1 &9191251058101790234
 GameObject:
   m_ObjectHideFlags: 0

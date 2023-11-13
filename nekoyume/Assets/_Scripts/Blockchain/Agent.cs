@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -121,6 +122,7 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[Agent] Start initialization");
             if (disposed)
             {
                 Debug.Log("Agent Exist");
@@ -128,6 +130,7 @@ namespace Nekoyume.Blockchain
             }
 
             InitAgentAsync(callback, privateKey, options);
+            Debug.Log($"[Agent] Finish initialization");
         }
 
         private async Task InitAsync(
@@ -831,7 +834,7 @@ namespace Nekoyume.Blockchain
             Transaction tx = blocks.MakeTransaction(
                 privateKey: PrivateKey,
                 actions: actions,
-                updatedAddresses: actions.CalculateUpdateAddresses()
+                updatedAddresses: ImmutableHashSet<Address>.Empty
             );
             _onMakeTransactionSubject.OnNext((tx, actions));
 

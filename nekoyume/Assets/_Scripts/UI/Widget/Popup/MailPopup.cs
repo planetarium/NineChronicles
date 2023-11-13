@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Text.RegularExpressions;
     using UniRx;
 
     public class MailPopup : PopupWidget, IMail
@@ -128,6 +129,7 @@ namespace Nekoyume.UI
                     case ProductBuyerMail:
                     case ProductSellerMail:
                     case ProductCancelMail:
+                    case UnloadFromMyGaragesRecipientMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                         break;
                     case ItemEnhanceMail:
@@ -251,6 +253,27 @@ namespace Nekoyume.UI
                             false);
                     }
                     break;
+                case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
+                    if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        foreach (var (fungibleId, fungibleCount) in
+                                 unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                            if (row is null)
+                            {
+                                Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                                continue;
+                            }
+
+                            var material = ItemFactory.CreateMaterial(row);
+                            mailRewards.Add(new MailReward(material, fungibleCount));
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
             }
         }
 
@@ -356,7 +379,8 @@ namespace Nekoyume.UI
                        OrderExpirationMail or
                        CancelOrderMail or
                        CombinationMail or
-                       ItemEnhanceMail;
+                       ItemEnhanceMail or
+                       UnloadFromMyGaragesRecipientMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -700,6 +724,67 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 unloadFromMyGaragesRecipientMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            if (unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("season_pass"))
+            {
+                var mailRewards = new List<MailReward>();
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+
+                bool iapProductFindComplete = false;
+                if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
+                {
+                    Regex gSkuRegex = new Regex("'g_sku': '([^']+)'");
+                    Match gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
+                    if (gSkuMatch.Success)
+                    {
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        if(findKey.Value != null)
+                        {
+                            iapProductFindComplete = true;
+                            foreach (var item in findKey.Value.FungibleItemList)
+                            {
+                                var row = materialSheet.OrderedList!
+                                    .FirstOrDefault(row => row.ItemId.Equals(item.FungibleItemId));
+                                if (row is null)
+                                {
+                                    Debug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
+                                    continue;
+                                }
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, item.Amount));
+                            }
+                            foreach (var item in findKey.Value.FavList)
+                            {
+                                var currency = Currency.Legacy(item.Ticker.ToString(), 0, null);
+                                var fav = new FungibleAssetValue(currency, (int)item.Amount, 0);
+                                mailRewards.Add(new MailReward(fav, (int)item.Amount, true));
+                            }
+                        }
+                    }
+                }
+
+                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null && !iapProductFindComplete)
+                {
+                    foreach (var (fungibleId, fungibleCount) in
+                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        mailRewards.Add(new MailReward(material, fungibleCount));
+                    }
+                }
+
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(mailRewards);
+                return;
+            }
 
             var showQueue = new Queue<System.Action>();
             if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)

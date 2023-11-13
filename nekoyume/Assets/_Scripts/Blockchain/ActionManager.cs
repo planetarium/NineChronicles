@@ -1514,9 +1514,9 @@ namespace Nekoyume.Blockchain
                 .Where(eval => eval.Signer.Equals(States.Instance.AgentState.address))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e =>
+                .DoOnError(_ =>
                 {
-
+                    // NOTE: Handle exception outside of this method.
                 });
         }
 

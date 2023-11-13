@@ -141,6 +141,7 @@ namespace Nekoyume
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
         public GameObject GrindingCountObject => grindingCountObject;
         public TMP_Text GrindingCountText => grindingCountText;
+        public GameObject RewardReceived;
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {

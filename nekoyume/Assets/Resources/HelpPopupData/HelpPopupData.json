@@ -3,101 +3,22 @@
     {
       "id": 100000,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100000_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/repeat",
-              "anchoredPosition": {
-                "x": 200,
-                "y": -70
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
-              "delay": 0,
+              "delay": 1,
               "duration": -1,
               "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_00",
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
                 "y": 0
-              }
-            },
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_01",
-              "fontSize": 16,
-              "alignment": "Center",
-              "anchoredPosition": {
-                "x": 0,
-                "y": -150
-              }
-            },
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_02",
-              "fontSize": 16,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -220
-              }
-            },
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_03",
-              "fontSize": 16,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -300
-              }
-            },
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_04",
-              "fontSize": 16,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -390
-              }
-            }
-          ]
-        },
-        {
-          "titleL10nKey": "HELP_POPUP_100000_PAGE_01_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_01_character_customize",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 0
-              },
-              "spinning": false
-            }
-          ],
-          "texts": [
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100000_PAGE_01_TEXT_00",
-              "fontSize": 16,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -290
               }
             }
           ]
@@ -107,24 +28,13 @@
     {
       "id": 100001,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100001_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_02_lobby",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -133,7 +43,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -143,24 +53,13 @@
     {
       "id": 100002,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100002_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_03_world_map",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -169,7 +68,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -179,24 +78,13 @@
     {
       "id": 100003,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100003_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_world_01_yggdrasil",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -205,7 +93,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -215,24 +103,13 @@
     {
       "id": 100004,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100004_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_04_battle_preparation",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -241,7 +118,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -251,24 +128,13 @@
     {
       "id": 100005,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100005_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_05_battle",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -277,7 +143,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -287,24 +153,13 @@
     {
       "id": 100006,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100006_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_07_battle_result",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -313,7 +168,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -323,24 +178,13 @@
     {
       "id": 100007,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100007_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_08_craft_workshop",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -349,7 +193,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -359,24 +203,13 @@
     {
       "id": 100008,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100008_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_09_workshop_in_progress",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -385,7 +218,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -395,24 +228,13 @@
     {
       "id": 100009,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100009_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_10_lobby_prosperity",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -421,7 +243,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -431,24 +253,13 @@
     {
       "id": 100010,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100010_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_11_mail",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -457,7 +268,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -467,24 +278,13 @@
     {
       "id": 100011,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100011_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_12_quest",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -493,7 +293,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -503,24 +303,13 @@
     {
       "id": 100012,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100012_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_13_discord",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -529,7 +318,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -539,24 +328,13 @@
     {
       "id": 100013,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100013_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_14_character",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -565,7 +343,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -575,24 +353,13 @@
     {
       "id": 100014,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100014_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_15_settings",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -601,7 +368,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -611,24 +378,13 @@
     {
       "id": 100015,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100015_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_16_arena_reward",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -637,7 +393,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -647,24 +403,13 @@
     {
       "id": 100016,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100016_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_16_craft_equipments",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -673,7 +418,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -683,24 +428,13 @@
     {
       "id": 100017,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100017_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_17_upgrade_equipment",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -709,7 +443,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -719,24 +453,13 @@
     {
       "id": 100018,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100018_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_18_market",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -745,7 +468,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -755,24 +478,13 @@
     {
       "id": 100019,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100019_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_19_mimisbrunnr_stage",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -781,7 +493,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -791,24 +503,13 @@
     {
       "id": 100020,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100020_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_20_prepare_mimisbrunnr_stage",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -817,7 +518,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -827,24 +528,13 @@
     {
       "id": 100022,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100022_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_22_Grind",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -853,7 +543,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -863,24 +553,13 @@
     {
       "id": 100023,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100023_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_23_WorldBoss",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -889,7 +568,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -899,24 +578,13 @@
     {
       "id": 100025,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100025_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_25_Rune",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -925,7 +593,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -935,24 +603,13 @@
     {
       "id": 100026,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100026_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_26_DCC",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -961,7 +618,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -971,24 +628,13 @@
     {
       "id": 100027,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100027_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_27_DccCollection",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -997,7 +643,7 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
               }
             }
           ]
@@ -1007,24 +653,13 @@
     {
       "id": 100028,
       "size": {
-        "x": 600,
-        "y": 600
+        "x": 900,
+        "y": 500
       },
       "pages": [
         {
           "titleL10nKey": "HELP_POPUP_100028_PAGE_00_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_28_Summon",
-              "anchoredPosition": {
-                "x": 0,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
+          "images": null,
           "texts": [
             {
               "delay": 1,
@@ -1033,7 +668,32 @@
               "fontSize": 16,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100029,
+      "size": {
+        "x": 900,
+        "y": 500
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100029_PAGE_00_TITLE",
+          "images": null,
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100029_PAGE_00_TEXT_00",
+              "fontSize": 16,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
               }
             }
           ]

@@ -21,9 +21,7 @@ namespace Nekoyume.UI
 
             _clientCommitHash = Resources.Load<TextAsset>("ClientHash")?.text[..8] ?? string.Empty;
 
-#if UNITY_ANDROID || UNITY_IOS
             UpdateText();
-#endif
         }
 
         public void SetVersion(int version)
@@ -56,14 +54,7 @@ namespace Nekoyume.UI
                 commitHashText = $"({_clientCommitHash})";
             }
 
-#if UNITY_ANDROID || UNITY_IOS
             versionText = $"/ Ver: {UnityEngine.Application.version}{commitHashText}";
-#else
-            if (!string.IsNullOrEmpty(_clientCommitHash))
-            {
-                versionText = $"/ Ver: {commitHashText}";
-            }
-#endif
 
             informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {hash} {versionText}";
         }

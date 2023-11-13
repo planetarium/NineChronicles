@@ -1,3 +1,8 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +29,8 @@ namespace Nekoyume.IAPStore
 
         private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
 
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
+
         private async void Awake()
         {
             try
@@ -37,8 +44,6 @@ namespace Nekoyume.IAPStore
                 // An error occurred during services initialization.
                 Debug.LogException(exception);
             }
-
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
             var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
                 States.Instance.AgentState.address);
@@ -56,14 +61,24 @@ namespace Nekoyume.IAPStore
                 {
                     _initailizedProductSchema.TryAdd(product.GoogleSku, product);
                 }
+                if(category.Name == "NoShow")
+                {
+                    foreach (var product in category.ProductList)
+                    {
+                        SeasonPassProduct.Add(product.Name, product);
+                    }
+                }
             }
 
+#if UNITY_EDITOR || RUN_ON_MOBILE
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
             {
                 builder.AddProduct(schema.Value.GoogleSku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
+#endif
         }
 
         public void OnPurchaseClicked(string productId)
@@ -119,6 +134,7 @@ namespace Nekoyume.IAPStore
             }
 
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
@@ -168,6 +184,7 @@ namespace Nekoyume.IAPStore
                         states.CurrentAvatarState.address);
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
                 if (result is null)
                 {
@@ -205,6 +222,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception exc)
             {
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }

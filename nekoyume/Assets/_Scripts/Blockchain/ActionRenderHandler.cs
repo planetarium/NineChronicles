@@ -3236,11 +3236,6 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
-                action.FungibleIdAndCounts is not null)
-            {
-                UpdateCurrentAvatarInventory(eval);
-            }
 
             return eval;
         }
@@ -3256,11 +3251,33 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
+            MailBox mailBox;
+            UnloadFromMyGaragesRecipientMail mail;
 
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
                 avatarValue = StateGetter.GetState(avatarAddr, states);
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                    eval.Action.FungibleIdAndCounts is not null &&
+                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                {
+                    UpdateCurrentAvatarInventory(eval);
+                }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 if (avatarValue is not Dictionary avatarDict)
@@ -3276,14 +3293,21 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                var mailBox = new MailBox(mailBoxList);
-                var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
                 if (mail is not null)
                 {
                     mail.New = true;
                     gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                    }
                 }
                 else
                 {

@@ -2,14 +2,21 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
+using Nekoyume.Game.OAuth;
+using Nekoyume.Helper;
+using Nekoyume.Planet;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class PortalConnect
     {
         [Serializable]
@@ -17,7 +24,7 @@ namespace Nekoyume.UI
         {
             public string title;
             public string message;
-            public string resultCode;
+            public int resultCode;
         }
 
         [Serializable]
@@ -30,6 +37,7 @@ namespace Nekoyume.UI
         public class AccessTokenResult : RequestResult
         {
             public string accessToken;
+            public string refreshToken;
             public string address;
         }
 
@@ -39,49 +47,78 @@ namespace Nekoyume.UI
             public string txId;
         }
 
+        [Serializable]
+        public class ReferralResult : RequestResult
+        {
+            public string referralCode;
+            public int inviterReward;
+            public int inviteeReward;
+            public int requiredLevel;
+            public int inviteeLevelReward;
+            public bool isRegistered;
+            public string referralUrl;
+        }
+
         private System.Action _onPortalEnd;
         private string deeplinkURL;
 
         private string clientSecret;
         private string code;
         private string accessToken;
+        private string refreshToken;
         private string txId;
+        private ReferralResult referralResult;
 
         public readonly string PortalUrl;
         public const string GoogleAuthEndpoint = "/api/auth/login/google";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
+        private const string RefreshTokenEndpoint = "api/auth/mobile/refresh";
+        private const string ReferralEndpoint = "/api/invitations/mobile/referral";
+
         private const string PortalRewardEndpoint = "/earn#Play";
         private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
 
         public PortalConnect(string url)
         {
-            if (string.IsNullOrEmpty(url))
-                url = "https://nine-chronicles.com";
-
-            PortalUrl = url ?? throw new ArgumentNullException(nameof(url));
+            PortalUrl = url ?? "https://nine-chronicles.com";
 
             Application.deepLinkActivated += OnDeepLinkActivated;
             if (!string.IsNullOrEmpty(Application.absoluteURL))
             {
                 OnDeepLinkActivated(Application.absoluteURL);
             }
-            else deeplinkURL = "[none]";
+            else
+            {
+                deeplinkURL = "[none]";
+            }
+
+            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl}), deeplinkURL({deeplinkURL})");
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
         {
+            var url = $"{PortalUrl}/mobile-signin?clientSecret={clientSecret}";
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortal)} invoked: url({url})");
             _onPortalEnd = onPortalEnd;
 
             clientSecret = GetClientSecret();
-            Application.OpenURL($"{PortalUrl}/mobile-signin?clientSecret={clientSecret}");
+            Application.OpenURL(url);
             Analyzer.Instance.Track("Unity/Portal/1");
+        }
+
+        public void OpenPortalRewardUrl()
+        {
+            var url = $"{PortalUrl}{PortalRewardEndpoint}";
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OpenPortalRewardUrl)} invoked: url({url})");
+            Application.OpenURL(url);
         }
 
         private void OnDeepLinkActivated(string url)
         {
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(OnDeepLinkActivated)} invoked: url({url})");
             deeplinkURL = url;
 
             if (_onPortalEnd != null)
@@ -100,15 +137,15 @@ namespace Nekoyume.UI
             var param = deeplinkURL.Split('?')[1].Split('&')
                 .ToDictionary(str => str.Split('=')[0], str => str.Split('=')[1]);
 
-            if (param.ContainsKey("clientSecret"))
+            if (param.TryGetValue("clientSecret", out var outClientSecret))
             {
-                clientSecret = param["clientSecret"];
+                clientSecret = outClientSecret;
             }
 
             var accountExist = param.ContainsKey("ncAddress");
-            if (param.ContainsKey("code"))
+            if (param.TryGetValue("code", out var outCode))
             {
-                code = param["code"];
+                code = outCode;
                 if (string.IsNullOrEmpty(code) && !accountExist)
                 {
                     RequestCode(OnSuccess);
@@ -117,12 +154,13 @@ namespace Nekoyume.UI
             }
 
             OnSuccess();
+            return;
 
             void OnSuccess()
             {
                 if (!accountExist)
                 {
-                    AccessToken();
+                    GetAccessToken();
                 }
 
                 Address? address = accountExist
@@ -159,12 +197,12 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Portal/3");
 
             var url = $"{PortalUrl}{RequestCodeEndpoint}?clientSecret={clientSecret}";
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestCode)} invoked: url({url})");
+
             var form = new WWWForm();
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
-
             await request.SendWebRequest();
-
             var json = request.downloadHandler.text;
             var data = JsonUtility.FromJson<RequestCodeResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
@@ -176,20 +214,23 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    Debug.LogError($"AccessToken Deserialize Error: {json}");
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                Debug.LogError($"AccessToken Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
-                ShowRequestErrorPopup(request.result, request.error);
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestCode)} " +
+                               $"Error: {request.error}\n{json}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(data);
             }
         }
 
-        private async void AccessToken()
+        private async void GetAccessToken()
         {
             var url = $"{PortalUrl}{AccessTokenEndpoint}";
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetAccessToken)} invoked: " +
+                      $"url({url}), clientSecret({clientSecret}), code({code})");
 
             var form = new WWWForm();
             form.AddField("clientSecret", clientSecret);
@@ -204,40 +245,202 @@ namespace Nekoyume.UI
             }
             catch (UnityWebRequestException e)
             {
-                Debug.Log(e.Text);
+                Debug.LogException(e);
             }
 
-            HandleAccessTokenResult(request);
+            HandleTokensResult(request);
+            // Set RefreshToken To PlayerPrefs
         }
 
-        public bool HandleAccessTokenResult(UnityWebRequest request)
+        private async Task<bool> UpdateTokens()
         {
-            var json = request.downloadHandler.text;
-            var data = JsonUtility.FromJson<AccessTokenResult>(json);
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                if (!string.IsNullOrEmpty(data.accessToken))
-                {
-                    accessToken = data.accessToken;
-                    return true;
-                }
+            var url = $"{PortalUrl}{RefreshTokenEndpoint}";
 
-                Debug.LogError($"AccessToken Deserialize Error: {json}");
-                ShowRequestErrorPopup(data);
-                return false;
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(UpdateTokens)} invoked: url({url}), refreshToken({refreshToken})");
+
+            var form = new WWWForm();
+            form.AddField("refreshToken", refreshToken);
+
+            var request = UnityWebRequest.Post(url, form);
+            request.timeout = Timeout;
+
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
             }
 
-            Debug.LogError($"AccessToken Error: {request.error}\n{json}\ncode: {code}\nclientSecret: {clientSecret}");
-            ShowRequestErrorPopup(request.result, request.error);
+            if (HandleTokensResult(request))
+            {
+                return true;
+            }
+
+            var data = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+            if (data.resultCode is 3003 or 3004)
+            {
+                await GetTokensSilently();
+                return true;
+            }
+
             return false;
         }
 
-        public void OpenPortalRewardUrl()
+        private async Task GetTokensSilently()
         {
-            Application.OpenURL($"{PortalUrl}{PortalRewardEndpoint}");
+            if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+            {
+                google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+            }
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)} invoked: google.State.Value({google.State.Value})");
+
+            switch (google.State.Value)
+            {
+                case GoogleSigninBehaviour.SignInState.Signed:
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
+                    await SendGoogleIdToken(google.IDToken);
+                    return;
+                case GoogleSigninBehaviour.SignInState.Waiting:
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
+                    return;
+                case GoogleSigninBehaviour.SignInState.Undefined:
+                case GoogleSigninBehaviour.SignInState.Canceled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            google.OnSignInSilently();
+            var state = await google.State.SkipLatestValueOnSubscribe().First();
+
+            switch (state)
+            {
+                case GoogleSigninBehaviour.SignInState.Undefined:
+                case GoogleSigninBehaviour.SignInState.Waiting:
+                    return;
+                case GoogleSigninBehaviour.SignInState.Canceled:
+                    break;
+                case GoogleSigninBehaviour.SignInState.Signed:
+                    await SendGoogleIdToken(google.IDToken);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
         }
 
-        public IEnumerator RequestPledge(Address address)
+        private bool GetRefreshTokenFromPlayerPrefs(string address)
+        {
+            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
+
+            if (string.IsNullOrEmpty(encryptedRefreshToken))
+            {
+                return false;
+            }
+
+            refreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            return true;
+        }
+
+        private void SetRefreshTokenToPlayerPrefs(string address)
+        {
+            PlayerPrefs.SetString($"LOCAL_REFRESH_TOKEN_{address}", Util.AesEncrypt(refreshToken));
+            PlayerPrefs.Save();
+        }
+
+        public async Task<Address?> SendGoogleIdToken(string idToken)
+        {
+            Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
+            Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
+
+            var body = new JsonObject {{"idToken", idToken}};
+            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var request = new UnityWebRequest($"{PortalUrl}{GoogleAuthEndpoint}", "POST");
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = 180;
+            request.uploadHandler.contentType = "application/json";
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            await request.SendWebRequest();
+
+            if (HandleTokensResult(request))
+            {
+                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
+                var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+                if (!string.IsNullOrEmpty(accessTokenResult.address))
+                {
+                    var address = new Address(accessTokenResult.address);
+                    Debug.Log($"[GoogleSigninBehaviour] SendGoogleIdToken succeeded. AgentAddress: {address}");
+                    return address;
+                }
+            }
+            else
+            {
+                Debug.LogError($"[GoogleSigninBehaviour] SendGoogleIdToken failed w/ error: {request.error}");
+            }
+
+            return null;
+        }
+
+        public async void CheckTokens(Address address)
+        {
+            if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
+            {
+                SetRefreshTokenToPlayerPrefs(address.ToString());
+                return;
+            }
+
+            if (GetRefreshTokenFromPlayerPrefs(address.ToString()))
+            {
+                await UpdateTokens();
+                SetRefreshTokenToPlayerPrefs(address.ToString());
+                return;
+            }
+
+            await GetTokensSilently();
+            SetRefreshTokenToPlayerPrefs(address.ToString());
+        }
+
+        public bool HandleTokensResult(UnityWebRequest request)
+        {
+            var json = request.downloadHandler.text;
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} invoked w/ request: " +
+                      $"result({request.result}), json({json})");
+            var data = JsonUtility.FromJson<AccessTokenResult>(json);
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                if (request.responseCode == 200)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Success: {json}");
+                    accessToken = data.accessToken;
+                    refreshToken = data.refreshToken;
+
+                    return true;
+                }
+
+                if (data.resultCode is 3003 or 3004)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Refresh Token expired: " +
+                              $"Refresh Token({accessToken})\n{json}");
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... json deserialize error.");
+                    ShowRequestErrorPopup(data);
+                }
+            }
+
+            Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... " +
+                           $"result failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
+            ShowRequestErrorPopup(data);
+            return false;
+        }
+
+        public IEnumerator RequestPledge(PlanetId planetId, Address address)
         {
             var url = $"{PortalUrl}{RequestPledgeEndpoint}";
             var os = string.Empty;
@@ -247,9 +450,13 @@ namespace Nekoyume.UI
             os = "ios";
 #endif
 
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} invoked: " +
+                      $"url({url}), os({os}), planetId({planetId}), address({address}), accessToken({accessToken})");
+
             var form = new WWWForm();
             form.AddField("address", address.ToHex());
             form.AddField("os", os);
+            form.AddField("planetId", planetId.ToString());
 
             var request = UnityWebRequest.Post(url, form);
             request.timeout = Timeout;
@@ -263,42 +470,148 @@ namespace Nekoyume.UI
             {
                 if (!string.IsNullOrEmpty(data.txId))
                 {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Success: {json}");
                     txId = data.txId;
                     PlayerPrefs.DeleteKey(ClientSecretKey);
                 }
                 else
                 {
-                    Debug.LogError($"RequestPledge Deserialize Error: {json}");
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Deserialize Error: {json}");
                     ShowRequestErrorPopup(data);
                 }
             }
             else
             {
-                Debug.LogError($"RequestPledge Error: {request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
-                ShowRequestErrorPopup(request.result, request.error);
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(RequestPledge)} Error: " +
+                               $"{request.error}\n{json}\naddress: {address.ToHex()}\nos: {os}");
+                ShowRequestErrorPopup(data);
             }
         }
 
-        private void ShowRequestErrorPopup(RequestResult data)
+        public async Task<ReferralResult> GetReferralInformation()
+        {
+            var url = $"{PortalUrl}{ReferralEndpoint}";
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} invoked: " +
+                      $"url({url}), accessToken({accessToken})");
+
+            var request = UnityWebRequest.Get(url);
+            request.timeout = Timeout;
+            request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
+            }
+
+            var json = request.downloadHandler.text;
+            var data = JsonUtility.FromJson<ReferralResult>(json);
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                if (request.responseCode == 200)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Success: {json}");
+                    return data;
+                }
+
+                if (data.resultCode is 3001 or 3002)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Access Token expired: " +
+                              $"Access Token({accessToken})\n{json}");
+                    if (await UpdateTokens())
+                    {
+                        return await GetReferralInformation();
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Deserialize Error: {json}");
+                    ShowRequestErrorPopup(data);
+                }
+            }
+            else
+            {
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Error: {request.error}\n{json}\n");
+                ShowRequestErrorPopup(data);
+            }
+
+            return null;
+        }
+
+        public async Task<RequestResult> EnterReferralCode(string referralCode)
+        {
+            var url = $"{PortalUrl}{ReferralEndpoint}";
+
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} invoked: " +
+                      $"url({url}), referralCode({referralCode}) accessToken({accessToken})");
+
+            var form = new WWWForm();
+            form.AddField("referralCode", referralCode);
+
+            var request = UnityWebRequest.Post(url, form);
+            request.timeout = Timeout;
+            request.SetRequestHeader("authorization", $"Bearer {accessToken}");
+
+            try
+            {
+                await request.SendWebRequest();
+            }
+            catch (UnityWebRequestException e)
+            {
+                Debug.LogException(e);
+            }
+
+            var json = request.downloadHandler.text;
+            var data = JsonUtility.FromJson<RequestResult>(json);
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                if (request.responseCode == 200)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Success: {json}");
+                }
+
+                if (data.resultCode is 3001 or 3002)
+                {
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Access Token expired: " +
+                              $"Access Token({accessToken})\n{json}");
+                    if (await UpdateTokens())
+                    {
+                        return await EnterReferralCode(referralCode);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Deserialize Error: {json}");
+                }
+            }
+            else
+            {
+                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Error: {request.error}\n{json}\n");
+            }
+
+            return data;
+        }
+
+        private static void ShowRequestErrorPopup(RequestResult data)
         {
             var message = "An abnormal condition has been identified. Please try again after finishing the app.";
+            message += $"\nError code : {data.resultCode}";
             message += string.IsNullOrEmpty(data.message) ? string.Empty : $"\n{data.message}";
-            message += string.IsNullOrEmpty(data.resultCode) ? string.Empty : $"\nResponse code : {data.resultCode}";
 
             var popup = Widget.Find<TitleOneButtonSystem>();
             popup.Show(data.title, message, "OK", false);
-            popup.SubmitCallback = Application.Quit;
-            Analyzer.Instance.Track("Unity/Portal/0");
-        }
-
-        private void ShowRequestErrorPopup(UnityWebRequest.Result result, string errorMessage)
-        {
-            var message = "An abnormal condition has been identified. Please try again after finishing the app.";
-            message += string.IsNullOrEmpty(errorMessage) ? string.Empty : $"\n{errorMessage}";
-
-            var popup = Widget.Find<TitleOneButtonSystem>();
-            popup.Show(result.ToString(), message, "OK", false);
-            popup.SubmitCallback = Application.Quit;
+            popup.SubmitCallback = () =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+            };
             Analyzer.Instance.Track("Unity/Portal/0");
         }
     }
