@@ -11,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -196,6 +197,13 @@ namespace Lib9c.Tests.Action
                 var currency = _favCurrencies[i];
                 Assert.Equal(currency * 1, states.GetBalance(recipientAddress, currency));
             }
+
+            var avatarState = states.GetAvatarStateV2(recipientAvatarAddress);
+            var mail = Assert.IsType<ClaimItemsMail>(avatarState.mailBox.Single());
+            Assert.Equal(0, mail.blockIndex);
+            Assert.Equal(0, mail.requiredBlockIndex);
+            Assert.Equal(2, mail.FungibleAssetValues.Count);
+            Assert.Equal(3, mail.Items.Count);
         }
 
         [Fact]
@@ -320,6 +328,14 @@ namespace Lib9c.Tests.Action
             state = state
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    avatarAddress.Derive(SerializeKeys.LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize()
+                )
+                .SetState(
+                    avatarAddress.Derive(SerializeKeys.LegacyQuestListKey),
+                    avatarState.questList.Serialize()
+                )
                 .SetState(
                     avatarAddress.Derive(SerializeKeys.LegacyInventoryKey),
                     avatarState.inventory.Serialize());

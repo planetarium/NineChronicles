@@ -105,6 +105,8 @@ namespace Nekoyume.Action
                 }
 
                 var agentAddress = avatarDict[AgentAddressKey].ToAddress();
+                var favs = new List<FungibleAssetValue>();
+                var items = new List<(int id, int count)>();
                 foreach (var fungibleAssetValue in fungibleAssetValues)
                 {
                     var wrappedTicker = fungibleAssetValue.Currency.Ticker;
@@ -116,9 +118,11 @@ namespace Nekoyume.Action
                         var currency = Currencies.GetMinterlessCurrency(ticker);
                         var recipientAddress =
                             currency.DecimalPlaces > 0 ? agentAddress : avatarAddress;
+                        var fav = FungibleAssetValue.FromRawValue(currency, fungibleAssetValue.RawValue);
                         states = states
                             .BurnAsset(context, context.Signer, fungibleAssetValue)
-                            .MintAsset(context, recipientAddress, FungibleAssetValue.FromRawValue(currency, fungibleAssetValue.RawValue));
+                            .MintAsset(context, recipientAddress, fav);
+                        favs.Add(fav);
                     }
                     else
                     {
@@ -152,21 +156,30 @@ namespace Nekoyume.Action
                         // but we'll deal with it temporarily here.
                         // If Pluggable AEV ever becomes a reality,
                         // it's only right that this is fixed in Inventory.
+                        var itemCount = (int)fungibleAssetValue.RawValue;
                         if (item is INonFungibleItem)
                         {
-                            foreach (var _ in Enumerable.Range(0, (int)fungibleAssetValue.RawValue))
+                            foreach (var _ in Enumerable.Range(0, itemCount))
                             {
                                 inventory.AddItem(item, 1);
                             }
                         }
                         else
                         {
-                            inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                            inventory.AddItem(item, itemCount);
                         }
+                        items.Add((item.Id, itemCount));
                     }
                 }
 
-                states = states.SetState(inventoryAddress, inventory.Serialize());
+                var mailBox = new MailBox((List)avatarDict[MailBoxKey]);
+                var mail = new ClaimItemsMail(context.BlockIndex, context.GetRandom().GenerateRandomGuid(), context.BlockIndex, favs, items);
+                mailBox.Add(mail);
+                mailBox.CleanUp();
+                avatarDict = avatarDict.SetItem(MailBoxKey, mailBox.Serialize());
+                states = states
+                    .SetState(inventoryAddress, inventory.Serialize())
+                    .SetState(avatarAddress, avatarDict);
             }
 
             return states;
