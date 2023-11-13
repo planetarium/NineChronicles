@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
-        private const string RefreshTokenEndpoint = "api/auth/mobile/refresh";
+        private const string RefreshTokenEndpoint = "/api/auth/mobile/refresh";
         private const string ReferralEndpoint = "/api/invitations/mobile/referral";
 
         private const string PortalRewardEndpoint = "/earn#Play";
