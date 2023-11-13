@@ -45,7 +45,7 @@ namespace Nekoyume.UI
                 StopCoroutine(_coroutine);
                 _coroutine = null;
             }
-            
+
             if (_camTexture is { isPlaying: true })
             {
                 _camTexture.Stop();
@@ -88,6 +88,7 @@ namespace Nekoyume.UI
 
             rawCamImage.gameObject.SetActive(true);
             StartCoroutine(CoScanQrCode(onSuccess));
+            yield return null;
         }
 
         private IEnumerator CoScanQrCode(Action<Result> onSuccess = null)
@@ -131,7 +132,7 @@ namespace Nekoyume.UI
                     {
                         if (_camTexture.isPlaying)
                         {
-                            _camTexture.Stop();    
+                            _camTexture.Stop();
                         }
 
                         Debug.Log("[CodeReaderView] QR code detected." +
@@ -145,7 +146,7 @@ namespace Nekoyume.UI
                 {
                     if (_camTexture.isPlaying)
                     {
-                        _camTexture.Stop();    
+                        _camTexture.Stop();
                     }
 
                     Debug.LogError($"[CodeReaderView] Exception: {ex.Message}");
