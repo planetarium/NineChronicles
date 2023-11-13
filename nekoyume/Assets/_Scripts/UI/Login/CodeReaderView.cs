@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Nekoyume.L10n;
+using Nekoyume.Native;
 using Nekoyume.Permissions;
 using UnityEngine;
 using UnityEngine.Android;
@@ -125,14 +126,14 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[CodeReaderView] OnPermissionDenied: {permission}");
             _cameraPermissionState = PermissionState.Denied;
-            RetryOrQuit();
+            OpenSystemSettingsAndQuit();
         }
 
         private void OnPermissionDeniedAndDontAskAgain(string permission)
         {
             Debug.Log($"[CodeReaderView] OnPermissionDeniedAndDontAskAgain: {permission}");
             _cameraPermissionState = PermissionState.DeniedAndDontAskAgain;
-            RetryOrQuit();
+            OpenSystemSettingsAndQuit();
         }
 
         private void OnPermissionGranted(string permission)
@@ -141,26 +142,20 @@ namespace Nekoyume.UI
             _cameraPermissionState = PermissionState.Granted;
         }
 
-        private void RetryOrQuit()
+        private static void OpenSystemSettingsAndQuit()
         {
-            if (!Widget.TryFind<TwoButtonSystem>(out var widget))
+            if (!Widget.TryFind<OneButtonSystem>(out var widget))
             {
-                widget = Widget.Create<TwoButtonSystem>();
+                widget = Widget.Create<OneButtonSystem>();
             }
-
+            
             widget.Show(
                 L10nManager.Localize("STC_REQUIRED_CAMERA_PERMISSION_FOR_IMPORT_ACCOUNT_QR_CODE"),
-                confirmText: L10nManager.Localize("BTN_RETRY"),
-                confirmCallback: () => {
-                    Debug.Log("[CodeReaderView] Request camera permission.(Retry)");
-                    Permission.RequestUserPermission(
-                        Permission.Camera,
-                        _permissionCallbacks);
-                },
-                cancelText: L10nManager.Localize("BTN_QUIT"),
-                cancelCallback: () =>
+                confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
+                confirmCallback: () =>
                 {
-                    Debug.Log("[CodeReaderView] Quit.");
+                    Debug.Log("[CodeReaderView] Open system settings.");
+                    SystemSettingsOpener.OpenApplicationDetailSettings();
 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.isPlaying = false;
 #else
