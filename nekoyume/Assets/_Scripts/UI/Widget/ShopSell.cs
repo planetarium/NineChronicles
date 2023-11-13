@@ -242,10 +242,14 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+#if UNITY_ANDROID || UNITY_IOS
+            Find<MobileShop>().Show();
+#else
             ShowAsync(ignoreShowAnimation);
+#endif
         }
 
-        private async Task ShowAsync(bool ignoreShowAnimation = false)
+        private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             inventory.SetShop(ShowItemTooltip);
             await ReactiveShopState.RequestSellProductsAsync();
