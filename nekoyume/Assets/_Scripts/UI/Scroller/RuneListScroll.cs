@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Reactive.Subjects;
+using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
@@ -39,5 +40,10 @@ namespace Nekoyume.UI.Scroller
         }
 
         protected override FancyCell<RuneListItem, ContextModel> CellTemplate => cellTemplate;
+        protected override void Initialize()
+        {
+            base.Initialize();
+            startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, cellContainer.GetComponent<RectTransform>().rect.width);
+        }
     }
 }
