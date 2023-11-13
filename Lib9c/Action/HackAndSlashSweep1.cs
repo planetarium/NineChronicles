@@ -59,14 +59,6 @@ namespace Nekoyume.Action
             var states = context.PreviousState;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100193ObsoleteIndex, context);
 

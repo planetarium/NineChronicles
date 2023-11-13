@@ -181,11 +181,6 @@ namespace Nekoyume.Action
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
 
-            if (context.Rehearsal)
-            {
-                return states;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug($"{addressesHex} AuraSummon Exec. Started.");

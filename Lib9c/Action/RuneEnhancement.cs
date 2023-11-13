@@ -47,10 +47,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out _, out _))
             {

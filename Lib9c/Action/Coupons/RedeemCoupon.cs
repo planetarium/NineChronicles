@@ -36,18 +36,6 @@ namespace Nekoyume.Action.Coupons
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(AvatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetCouponWallet(
-                        context.Signer,
-                        ImmutableDictionary.Create<Guid, Coupon>(),
-                        rehearsal: true);
-            }
 
             if (!states.TryGetAvatarStateV2(
                     context.Signer,

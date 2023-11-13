@@ -83,28 +83,6 @@ namespace Nekoyume.Action
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(signer, MarkChanged);
-                for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-                {
-                    var slotAddress = avatarAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CombinationSlotState.DeriveFormat,
-                            i
-                        )
-                    );
-                    states = states.SetState(slotAddress, MarkChanged);
-                }
-
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(ctx, GoldCurrencyMock, signer);
-            }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

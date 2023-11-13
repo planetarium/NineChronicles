@@ -141,40 +141,6 @@ namespace Lib9c.Tests.Action.Coupons
                 .SetCouponWallet(CouponsFixture.AgentAddress1, agent1CouponWallet)
                 .SetCouponWallet(CouponsFixture.AgentAddress2, agent2CouponWallet);
 
-            var rehearsedState = new RedeemCoupon(CouponsFixture.Guid1, agent1Avatar0Address)
-                .Execute(
-                    new ActionContext
-                    {
-                        PreviousState = state,
-                        Rehearsal = true,
-                        Signer = CouponsFixture.AgentAddress1,
-                        RandomSeed = random.Seed,
-                    });
-
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(agent1Avatar0Address));
-
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    agent1Avatar0Address.Derive(SerializeKeys.LegacyInventoryKey)));
-
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    agent1Avatar0Address.Derive(SerializeKeys.LegacyWorldInformationKey)));
-
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    agent1Avatar0Address.Derive(SerializeKeys.LegacyQuestListKey)));
-
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    CouponsFixture.AgentAddress1.Derive(SerializeKeys.CouponWalletKey)));
-
             // can't redeem other person's coupon
             var expected = state.GetAvatarStateV2(agent1Avatar0Address);
             state = new RedeemCoupon(CouponsFixture.Guid3, agent1Avatar0Address)

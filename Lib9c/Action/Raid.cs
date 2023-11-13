@@ -46,11 +46,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IAccount states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
-
             var addressHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressHex}Raid exec started", addressHex);

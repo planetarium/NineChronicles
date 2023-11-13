@@ -61,10 +61,6 @@ namespace Nekoyume.Action
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             var digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100351ObsoleteIndex, context);
 

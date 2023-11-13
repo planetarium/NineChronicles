@@ -222,29 +222,6 @@ namespace Nekoyume.Action
             IActionContext ctx = context;
             var states = ctx.PreviousState;
 
-            if (ctx.Rehearsal)
-            {
-                states = states
-                    .SetState(buyerAvatarAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged);
-
-                foreach (var info in purchaseInfos)
-                {
-                    var sellerAgentAddress = info.sellerAgentAddress;
-                    var sellerAvatarAddress = info.sellerAvatarAddress;
-
-                    states = states.SetState(sellerAvatarAddress, MarkChanged)
-                        .MarkBalanceChanged(
-                            ctx,
-                            GoldCurrencyMock,
-                            ctx.Signer,
-                            sellerAgentAddress,
-                            GoldCurrencyState.Address);
-                }
-
-                return states.SetState(ShopState.Address, MarkChanged);
-            }
-
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             var availableInfos = purchaseInfos.Where(p => !(p is null));

@@ -27,10 +27,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IAccount states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
                 typeof(WorldBossCharacterSheet),

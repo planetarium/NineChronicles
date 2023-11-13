@@ -19,31 +19,6 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
-        public static IAccount MarkBalanceChanged(
-            this IAccount states,
-            IActionContext context,
-            Currency currency,
-            params Address[] accounts
-        )
-        {
-            if (accounts.Length == 1)
-            {
-                return states.MintAsset(context, accounts[0], currency * 1);
-            }
-            else if (accounts.Length < 1)
-            {
-                return states;
-            }
-
-            for (int i = 1; i < accounts.Length; i++)
-            {
-                states = states.TransferAsset(context, accounts[i - 1], accounts[i], currency * 1, true);
-            }
-
-            return states;
-        }
-
-
         public static IAccount SetWorldBossKillReward(
             this IAccount states,
             IActionContext context,
@@ -99,15 +74,9 @@ namespace Nekoyume.Action
         public static IAccount SetCouponWallet(
             this IAccount states,
             Address agentAddress,
-            IImmutableDictionary<Guid, Coupon> couponWallet,
-            bool rehearsal = false)
+            IImmutableDictionary<Guid, Coupon> couponWallet)
         {
             Address walletAddress = agentAddress.Derive(CouponWalletKey);
-            if (rehearsal)
-            {
-                return states.SetState(walletAddress, ActionBase.MarkChanged);
-            }
-
             IValue serializedWallet = new Bencodex.Types.List(
                 couponWallet.Values.OrderBy(c => c.Id).Select(v => v.Serialize())
             );

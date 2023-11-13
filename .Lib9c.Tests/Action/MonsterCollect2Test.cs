@@ -154,31 +154,5 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             }));
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new MonsterCollect2
-            {
-                level = 1,
-            };
-            IAccount nextState = action.Execute(new ActionContext
-            {
-                PreviousState = new Account(MockState.Empty),
-                Signer = _signer,
-                Rehearsal = true,
-            });
-
-            List<Address> updatedAddresses = new List<Address>()
-            {
-                _signer,
-                MonsterCollectionState.DeriveAddress(_signer, 0),
-                MonsterCollectionState.DeriveAddress(_signer, 1),
-                MonsterCollectionState.DeriveAddress(_signer, 2),
-                MonsterCollectionState.DeriveAddress(_signer, 3),
-            };
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
     }
 }

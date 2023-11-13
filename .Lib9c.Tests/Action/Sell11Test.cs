@@ -461,46 +461,5 @@ namespace Lib9c.Tests.Action
                 RandomSeed = 0,
             }));
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            Guid tradableId = Guid.NewGuid();
-            Guid orderId = Guid.NewGuid();
-            var action = new Sell11
-            {
-                sellerAvatarAddress = _avatarAddress,
-                tradableId = tradableId,
-                count = 1,
-                price = _currency * ProductPrice,
-                itemSubType = ItemSubType.Weapon,
-                orderId = orderId,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.GetItemAddress(tradableId),
-                Order.DeriveAddress(orderId),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, orderId),
-                OrderDigestListState.DeriveAddress(_avatarAddress),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
     }
 }

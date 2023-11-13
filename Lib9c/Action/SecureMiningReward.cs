@@ -59,14 +59,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IAccount state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return state.MarkBalanceChanged(
-                    context,
-                    NCG,
-                    AuthorizedMiners.Add(Recipient).Add(Treasury).ToArray()
-                );
-            }
 
             CheckPermission(context);
 

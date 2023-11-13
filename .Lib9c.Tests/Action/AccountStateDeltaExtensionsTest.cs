@@ -116,17 +116,10 @@ namespace Lib9c.Tests.Action
             var agentAddress2 = new Address("0000000000000000000000000000000000000001");
 
             states = states.SetCouponWallet(
-                agentAddress1,
-                ImmutableDictionary<Guid, Coupon>.Empty
-                    .Add(guid1, coupon1)
-                    .Add(guid2, coupon2), true);
-
-            states = states.SetCouponWallet(
                 agentAddress2,
                 ImmutableDictionary<Guid, Coupon>.Empty);
 
-            Assert.Equal(
-                ActionBase.MarkChanged,
+            Assert.Null(
                 states.GetState(agentAddress1.Derive(SerializeKeys.CouponWalletKey)));
             Assert.Equal(
                 Bencodex.Types.List.Empty,

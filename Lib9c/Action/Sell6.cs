@@ -62,16 +62,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                states = states.SetState(sellerAvatarAddress, MarkChanged);
-                states = ShardedShopState.AddressKeys.Aggregate(
-                    states,
-                    (current, addressKey) => current.SetState(
-                        ShardedShopState.DeriveAddress(itemSubType, addressKey),
-                        MarkChanged));
-                return states.SetState(context.Signer, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

@@ -83,10 +83,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             var state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return Recipients.Aggregate(state, (current, t) => current.MarkBalanceChanged(context, t.amount.Currency, new[] {Sender, t.recipient}));
-            }
 
             if (Recipients.Count > RecipientsCapacity)
             {

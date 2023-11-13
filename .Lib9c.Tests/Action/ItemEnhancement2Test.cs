@@ -438,49 +438,5 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(result.Serialize(), result2.Serialize());
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var agentAddress = default(Address);
-            var avatarAddress = agentAddress.Derive("avatar");
-            var slotAddress =
-                avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
-
-            var action = new ItemEnhancement2()
-            {
-                itemId = default,
-                materialId = Guid.NewGuid(),
-                avatarAddress = avatarAddress,
-                slotIndex = 0,
-            };
-
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
-#pragma warning restore CS0618
-
-            var updatedAddresses = new List<Address>()
-            {
-                agentAddress,
-                avatarAddress,
-                slotAddress,
-                Addresses.GoldCurrency,
-                Addresses.Blacksmith,
-            };
-
-            var state = new Account(MockState.Empty)
-                .SetState(GoldCurrencyState.Address, gold.Serialize());
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
     }
 }

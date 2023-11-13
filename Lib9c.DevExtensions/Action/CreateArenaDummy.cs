@@ -57,10 +57,6 @@ namespace Lib9c.DevExtensions.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             for (var i = 0; i < accountCount; i++)
             {

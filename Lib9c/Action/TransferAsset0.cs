@@ -78,10 +78,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(4);
             var state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return state.MarkBalanceChanged(context, Amount.Currency, new[] { Sender, Recipient });
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

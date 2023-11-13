@@ -127,37 +127,5 @@ namespace Lib9c.Tests.Action
                 nextRedeemCodeState.Redeem(redeemCode.Code, redeemCode.AvatarAddress);
             });
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var redeemCode = new RedeemCode(
-                string.Empty,
-                _avatarAddress
-            );
-
-            IAccount nextState = redeemCode.Execute(new ActionContext()
-            {
-                BlockIndex = 1,
-                Miner = default,
-                PreviousState = new Account(MockState.Empty),
-                Rehearsal = true,
-                Signer = _agentAddress,
-            });
-
-            Assert.Equal(
-                new[]
-                {
-                    _avatarAddress,
-                    _agentAddress,
-                    RedeemCodeState.Address,
-                    GoldCurrencyState.Address,
-                    _avatarAddress.Derive(LegacyInventoryKey),
-                    _avatarAddress.Derive(LegacyWorldInformationKey),
-                    _avatarAddress.Derive(LegacyQuestListKey),
-                }.ToImmutableHashSet(),
-                nextState.Delta.UpdatedAddresses
-            );
-        }
     }
 }

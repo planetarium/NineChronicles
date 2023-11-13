@@ -36,11 +36,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(Addresses.Admin, MarkChanged);
-            }
 
             if (TryGetAdminState(context, out AdminState adminState))
             {

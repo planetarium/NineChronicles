@@ -49,14 +49,6 @@ namespace Nekoyume.Action
                     SlotIndex
                 )
             );
-            if (ctx.Rehearsal)
-            {
-                return states
-                    .SetState(AvatarAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

@@ -456,40 +456,6 @@ namespace Lib9c.Tests.Action
             });
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new RankingBattle10
-            {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<Guid>(),
-                equipmentIds = new List<Guid>(),
-            };
-
-            var updatedAddresses = new List<Address>
-            {
-                _avatar1Address,
-                _weeklyArenaAddress,
-                _avatar1Address.Derive(LegacyInventoryKey),
-                _avatar1Address.Derive(LegacyWorldInformationKey),
-                _avatar1Address.Derive(LegacyQuestListKey),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousState = state,
-                Signer = _agent1Address,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
         [Theory]
         [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
         [InlineData(ItemSubType.Armor, GameConfig.MaxEquipmentSlotCount.Armor)]

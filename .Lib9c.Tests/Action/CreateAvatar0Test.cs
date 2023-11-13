@@ -216,64 +216,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var agentAddress = default(Address);
-            var avatarAddress = agentAddress.Derive("avatar");
-
-            var action = new CreateAvatar0()
-            {
-                avatarAddress = avatarAddress,
-                index = 0,
-                hair = 0,
-                ear = 0,
-                lens = 0,
-                tail = 0,
-                name = "test",
-            };
-
-#pragma warning disable CS0618
-            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
-            var gold = new GoldCurrencyState(Currency.Legacy("NCG", 2, null));
-#pragma warning restore CS0618
-            var updatedAddresses = new List<Address>()
-            {
-                agentAddress,
-                avatarAddress,
-                Addresses.GoldCurrency,
-                Addresses.Ranking,
-            };
-            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-            {
-                var slotAddress = avatarAddress.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
-                updatedAddresses.Add(slotAddress);
-            }
-
-            var state = new Account(MockState.Empty)
-                .SetState(Addresses.Ranking, new RankingState0().Serialize())
-                .SetState(GoldCurrencyState.Address, gold.Serialize());
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(
-                updatedAddresses.ToImmutableHashSet(),
-                nextState.Delta.UpdatedAddresses
-            );
-        }
-
-        [Fact]
         public void SerializeWithDotnetAPI()
         {
             var formatter = new BinaryFormatter();

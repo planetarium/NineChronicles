@@ -44,11 +44,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousState;
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(ShopState.Address, MarkChanged);
-                return states.SetState(sellerAvatarAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

@@ -31,10 +31,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             var states = context.PreviousState;
             var random = context.GetRandom();
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             if (!RegisterInfos.Any())
             {

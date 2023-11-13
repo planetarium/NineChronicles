@@ -56,34 +56,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var admin = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
-            var state = new Account(
-                MockState.Empty
-                    .SetState(AdminState.Address, new AdminState(admin, 100).Serialize()));
-            var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
-            var action = new AddActivatedAccount(newComer);
-
-            IAccount nextState = action.Execute(new ActionContext()
-            {
-                BlockIndex = 1,
-                Miner = default,
-                PreviousState = state,
-                Signer = admin,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(
-                new[]
-                {
-                    newComer.Derive(ActivationKey.DeriveKey),
-                }.ToImmutableHashSet(),
-                nextState.Delta.UpdatedAddresses
-            );
-        }
-
-        [Fact]
         public void PlainValue()
         {
             var newComer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
