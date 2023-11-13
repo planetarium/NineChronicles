@@ -46,13 +46,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             IAccount states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                foreach (var asset in Assets)
-                {
-                    return states.MarkBalanceChanged(context, asset.Currency, RewardPoolAddress);
-                }
-            }
 
             CheckPermission(context);
 

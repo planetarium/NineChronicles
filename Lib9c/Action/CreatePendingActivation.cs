@@ -45,10 +45,6 @@ namespace Nekoyume.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            if (context.Rehearsal)
-            {
-                return context.PreviousState.SetState(PendingActivation.address, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);

@@ -31,13 +31,6 @@ namespace Nekoyume.Action.Coupons
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states.SetCouponWallet(
-                    Recipient,
-                    ImmutableDictionary.Create<Guid, Coupon>(),
-                    rehearsal: true);
-            }
 
             CheckPermission(context);
 

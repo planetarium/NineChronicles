@@ -168,34 +168,5 @@ namespace Lib9c.Tests.Action
                 })
             );
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new ChargeActionPoint
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
     }
 }

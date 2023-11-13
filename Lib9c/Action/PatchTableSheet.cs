@@ -43,13 +43,6 @@ namespace Nekoyume.Action
             IActionContext ctx = context;
             var states = ctx.PreviousState;
             var sheetAddress = Addresses.TableSheet.Derive(TableName);
-            if (ctx.Rehearsal)
-            {
-                return states
-                    .SetState(sheetAddress, MarkChanged)
-                    .SetState(GameConfigState.Address, MarkChanged);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context);
 
 #if !LIB9C_DEV_EXTENSIONS && !UNITY_EDITOR

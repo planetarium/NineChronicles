@@ -94,43 +94,6 @@ namespace Lib9c.DevExtensions.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var orderReceiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
 
-            if (context.Rehearsal)
-            {
-                states = states.SetState(agentAddress, MarkChanged);
-                for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-                {
-                    var slotAddress = avatarAddress.Derive(
-                        string.Format(CultureInfo.InvariantCulture,
-                            CombinationSlotState.DeriveFormat, i));
-                    states = states.SetState(slotAddress, MarkChanged);
-                }
-
-                states = states.SetState(avatarAddress, MarkChanged)
-                    .SetState(Addresses.Ranking, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged);
-
-                for (var i = 0; i < sellData.Items.Length; i++)
-                {
-                    var itemAddress = Addresses.GetItemAddress(addedItemInfos[i].TradableId);
-                    var orderAddress = Order.DeriveAddress(addedItemInfos[i].OrderId);
-                    var shopAddress = ShardedShopStateV2.DeriveAddress(
-                        sellData.Items[i].ItemSubType,
-                        addedItemInfos[i].OrderId);
-
-                    states = states.SetState(avatarAddress, MarkChanged)
-                        .SetState(inventoryAddress, MarkChanged)
-                        .MarkBalanceChanged(
-                            context, GoldCurrencyMock, agentAddress, GoldCurrencyState.Address)
-                        .SetState(orderReceiptAddress, MarkChanged)
-                        .SetState(itemAddress, MarkChanged)
-                        .SetState(orderAddress, MarkChanged)
-                        .SetState(shopAddress, MarkChanged);
-                }
-                return states;
-            }
-
             // Create Agent and avatar
             var existingAgentState = states.GetAgentState(agentAddress);
             var agentState = existingAgentState ?? new AgentState(agentAddress);

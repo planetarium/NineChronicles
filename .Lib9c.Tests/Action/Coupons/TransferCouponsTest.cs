@@ -135,47 +135,6 @@ namespace Lib9c.Tests.Action.Coupons
                         Rehearsal = false,
                     }));
 
-            state = state
-                .SetCouponWallet(
-                    CouponsFixture.AgentAddress1,
-                    ImmutableDictionary<Guid, Coupon>.Empty
-                        .Add(CouponsFixture.Guid1, coupon1)
-                        .Add(CouponsFixture.Guid2, coupon2)
-                        .Add(CouponsFixture.Guid3, coupon3))
-                .SetCouponWallet(
-                    CouponsFixture.AgentAddress2,
-                    ImmutableDictionary<Guid, Coupon>.Empty)
-                .SetCouponWallet(
-                    CouponsFixture.AgentAddress3,
-                    ImmutableDictionary<Guid, Coupon>.Empty);
-
-            var rehearsedState = new TransferCoupons(
-                    ImmutableDictionary<Address, IImmutableSet<Guid>>.Empty
-                        .Add(CouponsFixture.AgentAddress2, ImmutableHashSet<Guid>.Empty
-                            .Add(CouponsFixture.Guid1)
-                            .Add(CouponsFixture.Guid2))
-                        .Add(CouponsFixture.AgentAddress3, ImmutableHashSet<Guid>.Empty
-                            .Add(CouponsFixture.Guid3)))
-                .Execute(
-                    new ActionContext
-                    {
-                        PreviousState = state,
-                        Signer = CouponsFixture.AgentAddress1,
-                        Rehearsal = true,
-                    });
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    CouponsFixture.AgentAddress1.Derive(SerializeKeys.CouponWalletKey)));
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    CouponsFixture.AgentAddress2.Derive(SerializeKeys.CouponWalletKey)));
-            Assert.Equal(
-                ActionBase.MarkChanged,
-                rehearsedState.GetState(
-                    CouponsFixture.AgentAddress3.Derive(SerializeKeys.CouponWalletKey)));
-
             // multiple transfer
             state = new TransferCoupons(
                     ImmutableDictionary<Address, IImmutableSet<Guid>>.Empty

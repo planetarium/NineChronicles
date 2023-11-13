@@ -114,37 +114,6 @@ namespace Nekoyume.Action
             var weeklyArenaState = new WeeklyArenaState(0);
 
             var rankingState = new RankingState0(Ranking);
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(RankingState0.Address, MarkChanged);
-                states = states.SetState(ShopState.Address, MarkChanged);
-#pragma warning disable LAA1002
-                states = TableSheets
-                    .Aggregate(states, (current, pair) =>
-                        current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
-                states = rankingState.RankingMap
-                    .Aggregate(states, (current, pair) =>
-                        current.SetState(pair.Key, MarkChanged));
-#pragma warning restore LAA1002
-                states = states.SetState(weeklyArenaState.address, MarkChanged);
-                states = states.SetState(GameConfigState.Address, MarkChanged);
-                states = states.SetState(RedeemCodeState.Address, MarkChanged);
-                states = states.SetState(AdminState.Address, MarkChanged);
-                states = states.SetState(ActivatedAccountsState.Address, MarkChanged);
-                states = states.SetState(GoldCurrencyState.Address, MarkChanged);
-                states = states.SetState(Addresses.GoldDistribution, MarkChanged);
-                foreach (var rawPending in PendingActivations)
-                {
-                    states = states.SetState(
-                        new PendingActivationState((Dictionary)rawPending).address,
-                        MarkChanged
-                    );
-                }
-
-                states = states.SetState(AuthorizedMinersState.Address, MarkChanged);
-                states = states.SetState(CreditsState.Address, MarkChanged);
-                return states;
-            }
 
             if (ctx.BlockIndex != 0)
             {

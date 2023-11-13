@@ -37,16 +37,6 @@ namespace Nekoyume.Action
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var unlockedWorldIdsAddress = AvatarAddress.Derive("world_ids");
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(AvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}UnlockWorld exec started", addressesHex);

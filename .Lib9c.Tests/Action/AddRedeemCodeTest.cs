@@ -105,26 +105,5 @@ namespace Lib9c.Tests.Action
                 })
             );
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new AddRedeemCode
-            {
-                redeemCsv = "test",
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousState = new Account(MockState.Empty),
-                Rehearsal = true,
-            });
-
-            Assert.Equal(
-                nextState.Delta.UpdatedAddresses,
-                new[] { Addresses.RedeemCode }.ToImmutableHashSet()
-            );
-        }
     }
 }

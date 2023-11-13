@@ -38,16 +38,6 @@ namespace Nekoyume.Action
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}ChargeActionPoint exec started", addressesHex);

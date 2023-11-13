@@ -165,11 +165,6 @@ namespace Nekoyume.Action.Garages
         {
             context.UseGas(1);
             var state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return state;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context);
             ValidateFields(addressesHex);
             state = SendBalances(context, state);
