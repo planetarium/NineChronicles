@@ -224,6 +224,7 @@ namespace Nekoyume.L10n.Editor
                 case LanguageType.Russian:
                 case LanguageType.ChineseTraditional:
                 case LanguageType.Tagalog:
+                case LanguageType.Vietnam:
                     return 2500;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(languageType), languageType, null);
