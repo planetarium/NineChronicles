@@ -301,7 +301,7 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
-                    await SendGoogleIdToken(google.IDToken);
+                    await SendGoogleIdToken(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
@@ -324,7 +324,7 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    await SendGoogleIdToken(google.IDToken);
+                    await SendGoogleIdToken(google.IdToken);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
