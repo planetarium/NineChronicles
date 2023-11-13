@@ -241,7 +241,7 @@ namespace Nekoyume.State
             long lastBattleBlockIndex = arenaAvatarState?.LastBattleBlockIndex ?? 0L;
             try
             {
-                var response = await Game.Game.instance.RpcClient.QueryArenaInfoAsync(currentAvatarAddr);
+                var response = await Game.Game.instance.RpcGraphQLClient.QueryArenaInfoAsync(currentAvatarAddr);
                 arenaInfo = response.StateQuery.ArenaParticipants;
             }
             catch (Exception e)
