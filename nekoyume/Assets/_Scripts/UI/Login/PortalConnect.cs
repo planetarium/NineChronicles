@@ -51,10 +51,10 @@ namespace Nekoyume.UI
         public class ReferralResult : RequestResult
         {
             public string referralCode;
-            public int inviterReward;
-            public int inviteeReward;
+            public float inviterReward;
+            public float inviteeReward;
             public int requiredLevel;
-            public int inviteeLevelReward;
+            public float inviteeLevelReward;
             public bool isRegistered;
             public string referralUrl;
         }
