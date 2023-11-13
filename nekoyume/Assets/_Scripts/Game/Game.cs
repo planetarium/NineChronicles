@@ -505,9 +505,9 @@ namespace Nekoyume.Game
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
+#if RUN_ON_MOBILE
             PortalConnect.CheckTokens(States.AgentState.address);
 
-#if RUN_ON_MOBILE
             if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
             {
                 yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
