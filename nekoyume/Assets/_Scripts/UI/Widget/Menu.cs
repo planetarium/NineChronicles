@@ -611,7 +611,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
+            if(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value == null)
+            {
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
+                return;
+            }
             Find<SeasonPass>().Show();
         }
 

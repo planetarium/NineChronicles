@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 using System;
 
 namespace Nekoyume.UI.Module.Lobby
@@ -17,23 +18,36 @@ namespace Nekoyume.UI.Module.Lobby
         private TextMeshProUGUI timeText;
         [SerializeField]
         private GameObject notificationObj;
+        [SerializeField]
+        private GameObject dim;
 
         private const int SeasonPassNewPopupLimitClearedStageId = 15;
 
         private void Awake()
         {
             _requireStage = SeasonPassNewPopupLimitClearedStageId;
+            dim.SetActive(false);
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
             seasonPassService.AvatarInfo.Subscribe((info)=> {
+                dim.SetActive(info == null);
                 if (info == null)
-                {    
+                {
                     return;
                 }
 
                 premiumIcon.SetActive(info.IsPremium);
                 premiumPlusIcon.SetActive(info.IsPremiumPlus);
-                levelText.text = $"Lv.{info.Level}";
                 notificationObj.SetActive(info.LastNormalClaim != info.Level);
+
+                if (info.Level >= SeasonPass.SeasonPassMaxLevel)
+                {
+                    levelText.text = "MAX";
+                }
+                else
+                {
+                    levelText.text = $"Lv.{info.Level}";
+                }
+
             }).AddTo(gameObject);
 
             Game.Game.instance.SeasonPassServiceManager.RemainingDateTime.Subscribe((endDate) =>

@@ -132,6 +132,11 @@ namespace Nekoyume.UI.Module
             return inventory.GetBestEquipments();
         }
 
+        public InventoryItem GetBestEquipmentInventoryItems()
+        {
+            return inventory.GetBestEquipmentInventoryItem();
+        }
+
         public List<InventoryItem> GetBestRunes(BattleType battleType)
         {
             return inventory.GetBestRunes(battleType);

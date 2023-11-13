@@ -107,16 +107,28 @@ namespace Nekoyume
         public async Task AvatarStateRefreshAsync()
         {
             if(CurrentSeasonPassData == null || LevelInfos == null) {
+                AvatarInfo.SetValueAndForceNotify(null);
+                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] CurrentSeasonPassData or LevelInfos is null");
                 return;
             }
+
+            if (!Game.Game.instance.CurrentPlanetId.HasValue)
+            {
+                AvatarInfo.SetValueAndForceNotify(null);
+                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Game.Game.instance.CurrentPlanetId is null");
+                return;
+            }
+
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(),
+            
+            await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>
                 {
                     AvatarInfo.SetValueAndForceNotify(result);
                 },
                 (error) =>
                 {
+                    AvatarInfo.SetValueAndForceNotify(null);
                     Debug.LogError($"SeasonPassServiceManager [AvatarStateRefresh] error: {error}");
                 });   
         }
@@ -125,11 +137,19 @@ namespace Nekoyume
         {
             var agentAddress = Game.Game.instance.States.AgentState.address;
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            if (!Game.Game.instance.CurrentPlanetId.HasValue)
+            {
+                var errorString = "$SeasonPassServiceManager [ReceiveAll] Game.Game.instance.CurrentPlanetId is null";
+                Debug.LogError(errorString);
+                onError?.Invoke(errorString);
+                return;
+            }
             Client.PostUserClaimAsync(new SeasonPassServiceClient.ClaimRequestSchema
             {
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
-                SeasonId = AvatarInfo.Value.SeasonPassId
+                SeasonId = AvatarInfo.Value.SeasonPassId,
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>(Game.Game.instance.CurrentPlanetId.ToString())
             },
                 (result) =>
                 {

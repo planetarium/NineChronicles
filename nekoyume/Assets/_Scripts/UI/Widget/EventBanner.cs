@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.UI.Module.Common;
 
 namespace Nekoyume.UI.Module
 {
@@ -57,6 +58,7 @@ namespace Nekoyume.UI.Module
             }
 
             pageView.Set(content, indexImages);
+            GetComponent<NotchAdjuster>()?.RefreshNotchByScreenState();
         }
     }
 }

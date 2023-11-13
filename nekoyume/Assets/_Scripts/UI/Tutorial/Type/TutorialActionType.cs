@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         TutorialActionGoToWorkShop = 50000,
         TutorialActionClickSummonEnteringButton,
         TutorialActionClickNormal1SummonButton,
+        TutorialActionClickBattlePreparationSecondInventoryCellView,
         TutorialActionClickPatrolRewardMenu = 100000,
         TutorialActionClickClaimPatrolRewardButton,
         // TutorialScenario 편집을 json에서 SO로 바꿨기 때문에 Enum 값에 가독성이 필요없어짐
@@ -55,7 +56,7 @@ namespace Nekoyume.UI
         TutorialActionClickCombinationRuneButton,
         TutorialActionClickCombinationRuneCombineButton,
         TutorialActionActionPointHeaderMenu,
-        TutorialActionActionPointChargeButton
+        TutorialActionActionPointChargeButton,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>
