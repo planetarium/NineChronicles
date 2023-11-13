@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Lib9c;
-using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -628,6 +627,7 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Lobby/Show");
             SubscribeAtShow();
+            Time.timeScale = Prologue.DefaultTimeScale;
 
             if (!(_coLazyClose is null))
             {
