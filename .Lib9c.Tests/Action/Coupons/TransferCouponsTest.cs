@@ -136,6 +136,20 @@ namespace Lib9c.Tests.Action.Coupons
                     }));
 
             // multiple transfer
+            state = state
+                .SetCouponWallet(
+                    CouponsFixture.AgentAddress1,
+                    ImmutableDictionary<Guid, Coupon>.Empty
+                        .Add(CouponsFixture.Guid1, coupon1)
+                        .Add(CouponsFixture.Guid2, coupon2)
+                        .Add(CouponsFixture.Guid3, coupon3))
+                .SetCouponWallet(
+                    CouponsFixture.AgentAddress2,
+                    ImmutableDictionary<Guid, Coupon>.Empty)
+                .SetCouponWallet(
+                    CouponsFixture.AgentAddress3,
+                    ImmutableDictionary<Guid, Coupon>.Empty);
+
             state = new TransferCoupons(
                     ImmutableDictionary<Address, IImmutableSet<Guid>>.Empty
                         .Add(CouponsFixture.AgentAddress2, ImmutableHashSet<Guid>.Empty

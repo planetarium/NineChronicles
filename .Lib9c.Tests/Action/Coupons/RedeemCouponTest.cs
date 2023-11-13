@@ -137,6 +137,10 @@ namespace Lib9c.Tests.Action.Coupons
                     CouponsFixture.Guid3,
                     new Coupon(CouponsFixture.Guid3, CouponsFixture.RewardSet3));
 
+            state = state
+                .SetCouponWallet(CouponsFixture.AgentAddress1, agent1CouponWallet)
+                .SetCouponWallet(CouponsFixture.AgentAddress2, agent2CouponWallet);
+
             // can't redeem other person's coupon
             var expected = state.GetAvatarStateV2(agent1Avatar0Address);
             state = new RedeemCoupon(CouponsFixture.Guid3, agent1Avatar0Address)
