@@ -26,17 +26,10 @@ namespace Nekoyume.UI
 
         private PermissionCallbacks _permissionCallbacks;
         private PermissionState? _cameraPermissionState;
+        private bool _shouldRequestPermissionWhenApplicationFocusedIn;
 
         private void Awake()
         {
-            var rect = rawCamImage.rectTransform.rect;
-            _camTexture = new WebCamTexture
-            {
-                requestedHeight = (int)rect.height,
-                requestedWidth = (int)rect.width
-            };
-            rawCamImage.texture = _camTexture;
-
             _permissionCallbacks = new PermissionCallbacks();
             _permissionCallbacks.PermissionDenied += OnPermissionDenied;
             _permissionCallbacks.PermissionDeniedAndDontAskAgain += OnPermissionDeniedAndDontAskAgain;
@@ -52,6 +45,11 @@ namespace Nekoyume.UI
                 StopCoroutine(_coroutine);
                 _coroutine = null;
             }
+            
+            if (_camTexture is { isPlaying: true })
+            {
+                _camTexture.Stop();
+            }
         }
 
         public void Show(Action<Result> onSuccess = null)
@@ -63,7 +61,6 @@ namespace Nekoyume.UI
 
         public void Close()
         {
-            _camTexture.Stop();
             gameObject.SetActive(false);
         }
 
@@ -71,6 +68,7 @@ namespace Nekoyume.UI
         {
             Debug.Log("[CodeReaderView] CoRequestPermission start.");
             rawCamImage.gameObject.SetActive(false);
+            _shouldRequestPermissionWhenApplicationFocusedIn = false;
 #if UNITY_ANDROID
             if (Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
@@ -89,37 +87,74 @@ namespace Nekoyume.UI
 #endif
 
             rawCamImage.gameObject.SetActive(true);
-            _camTexture.Play();
-            _disposable?.Dispose();
-            _disposable = Observable.EveryUpdate()
-                .Where(_ => _camTexture.isPlaying)
-                .Subscribe(_ =>
+            StartCoroutine(CoScanQrCode(onSuccess));
+        }
+
+        private IEnumerator CoScanQrCode(Action<Result> onSuccess = null)
+        {
+            Debug.Log("[CodeReaderView] CoScanQrCode start.");
+            var rect = rawCamImage.rectTransform.rect;
+            // NOTE: WebCamTexture need to construct after the camera permission granted.
+            _camTexture = new WebCamTexture
+            {
+                requestedHeight = (int)rect.height,
+                requestedWidth = (int)rect.width
+            };
+            rawCamImage.texture = _camTexture;
+            var barcodeReader = new BarcodeReader
+            {
+                Options =
                 {
-                    try
+                    PureBarcode = false,
+                },
+            };
+            while (gameObject.activeSelf)
+            {
+                // NOTE: Why we need to check isPlaying in every frame?
+                //       Because the WebCamTexture throws an exception when the camera is not playing.
+                //       It may occur by native reasons.
+                if (!_camTexture.isPlaying)
+                {
+                    Debug.Log("[CodeReaderView] WebCamTexture is not playing. Now start playing and wait for playing.");
+                    _camTexture.Play();
+                    yield return new WaitUntil(() => _camTexture.isPlaying);
+                    Debug.Log("[CodeReaderView] WebCamTexture is playing.");
+                }
+
+                try
+                {
+                    var result = barcodeReader.Decode(
+                        _camTexture.GetPixels32(),
+                        _camTexture.width,
+                        _camTexture.height);
+                    if (result != null)
                     {
-                        IBarcodeReader barcodeReader = new BarcodeReader();
-                        barcodeReader.Options.PureBarcode = false;
-                        var result = barcodeReader.Decode(
-                            _camTexture.GetPixels32(),
-                            _camTexture.width,
-                            _camTexture.height);
-                        if (result != null)
+                        if (_camTexture.isPlaying)
                         {
-                            Debug.Log("[CodeReaderView] QR code detected." +
-                                      $" Text: {result.Text}" +
-                                      $", Format: {result.BarcodeFormat}");
-                            Debug.Log("[CodeReaderView] CoRequestPermission end.");
-                            onSuccess?.Invoke(result);
+                            _camTexture.Stop();    
                         }
+
+                        Debug.Log("[CodeReaderView] QR code detected." +
+                                  $" Text: {result.Text}" +
+                                  $", Format: {result.BarcodeFormat}");
+                        Debug.Log("[CodeReaderView] CoRequestPermission end.");
+                        onSuccess?.Invoke(result);
                     }
-                    catch (Exception ex)
+                }
+                catch (Exception ex)
+                {
+                    if (_camTexture.isPlaying)
                     {
-                        Debug.LogError($"[CodeReaderView] Exception: {ex.Message}");
-                        Debug.LogException(ex);
-                        // Don't invoke onSuccess? with null. Just try again.
+                        _camTexture.Stop();    
                     }
-                });
-            yield break;
+
+                    Debug.LogError($"[CodeReaderView] Exception: {ex.Message}");
+                    Debug.LogException(ex);
+                    // Don't invoke onSuccess? with null. Just try again.
+                }
+
+                yield return null;
+            }
         }
 
         private void OnPermissionDenied(string permission)
@@ -142,26 +177,35 @@ namespace Nekoyume.UI
             _cameraPermissionState = PermissionState.Granted;
         }
 
-        private static void OpenSystemSettingsAndQuit()
+        private void OpenSystemSettingsAndQuit()
         {
             if (!Widget.TryFind<OneButtonSystem>(out var widget))
             {
                 widget = Widget.Create<OneButtonSystem>();
             }
-            
+
             widget.Show(
                 L10nManager.Localize("STC_REQUIRED_CAMERA_PERMISSION_FOR_IMPORT_ACCOUNT_QR_CODE"),
                 confirmText: L10nManager.Localize("BTN_OPEN_SYSTEM_SETTINGS"),
                 confirmCallback: () =>
                 {
                     Debug.Log("[CodeReaderView] Open system settings.");
+                    _shouldRequestPermissionWhenApplicationFocusedIn = true;
                     SystemSettingsOpener.OpenApplicationDetailSettings();
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
                 });
+        }
+
+        public void OnApplicationFocus(bool hasFocus)
+        {
+            Debug.Log($"[CodeReaderView] OnApplicationFocus: {hasFocus}");
+            if (hasFocus && _shouldRequestPermissionWhenApplicationFocusedIn)
+            {
+                _shouldRequestPermissionWhenApplicationFocusedIn = false;
+                Debug.Log("[CodeReaderView] Request camera permission.(Retry)");
+                Permission.RequestUserPermission(
+                    Permission.Camera,
+                    _permissionCallbacks);
+            }
         }
     }
 }
