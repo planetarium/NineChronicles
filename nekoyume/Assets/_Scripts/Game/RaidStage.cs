@@ -214,6 +214,10 @@ namespace Nekoyume.Game
             _player.Pet.DelayedPlay(Character.PetAnimation.Type.BattleStart, 2.5f);
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
+            foreach (var character in GetComponentsInChildren<Character.CharacterBase>())
+            {
+                character.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
+            }
         }
 
         public IEnumerator CoAct(Character.RaidActionParams param)
