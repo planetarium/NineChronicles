@@ -22,6 +22,7 @@ namespace Lib9c.Tests.Model.State
             GoldCurrencyState deserialized = new GoldCurrencyState(serialized);
 
             Assert.Equal(currency.Hash, deserialized.Currency.Hash);
+            Assert.Equal(1000000000, deserialized.InitialSupply);
         }
 
         [Fact]
@@ -41,6 +42,21 @@ namespace Lib9c.Tests.Model.State
             var deserialized = (GoldCurrencyState)formatter.Deserialize(ms);
 
             Assert.Equal(currency.Hash, deserialized.Currency.Hash);
+        }
+
+        [Fact]
+        public void SerializeWithInitialSupply()
+        {
+            #pragma warning disable CS0618
+            // Use of obsolete method Currency.Legacy(): https://github.com/planetarium/lib9c/discussions/1319
+            var currency = Currency.Legacy("NCG", 2, default(Address));
+#pragma warning restore CS0618
+            var state = new GoldCurrencyState(currency, 0L);
+            var serialized = (Dictionary)state.Serialize();
+            GoldCurrencyState deserialized = new GoldCurrencyState(serialized);
+
+            Assert.Equal(currency.Hash, deserialized.Currency.Hash);
+            Assert.Equal(0, deserialized.InitialSupply);
         }
     }
 }
