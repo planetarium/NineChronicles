@@ -110,7 +110,7 @@ namespace Nekoyume.Action
                 foreach (var fungibleAssetValue in fungibleAssetValues)
                 {
                     var wrappedTicker = fungibleAssetValue.Currency.Ticker;
-                    var separator = wrappedTicker.Contains("__") ? "__" : "_";
+                    var separator = wrappedTicker.Contains("FAV") ? "__" : "_";
                     var parsedTicker = wrappedTicker.Split(separator);
                     if (parsedTicker.Length == 2)
                     {
