@@ -8,6 +8,7 @@ using Nekoyume.Arena;
 using Nekoyume.Blockchain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.GraphQL;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -19,6 +20,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using TMPro;
 
 namespace Nekoyume.UI
@@ -72,9 +74,7 @@ namespace Nekoyume.UI
 
         private const int TicketCountToUse = 1;
         private ArenaSheet.RoundData _roundData;
-        private AvatarState _chooseAvatarState;
-        private List<Equipment> _chooseAvatarEquipments = new ();
-        private List<Costume> _chooseAvatarCostumes = new ();
+        private ArenaParticipantModel _info;
 
         private readonly List<IDisposable> _disposables = new();
 
@@ -89,8 +89,8 @@ namespace Nekoyume.UI
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var currentRound =
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-                var ticketCount = RxProps.PlayersArenaParticipant.HasValue
-                    ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
+                var ticketCount = RxProps.ArenaInfoTuple.HasValue
+                    ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
                         blockIndex,
                         currentRound.StartBlockIndex,
                         States.Instance.GameConfigState.DailyArenaInterval)
@@ -140,19 +140,13 @@ namespace Nekoyume.UI
 
         public void Show(
             ArenaSheet.RoundData roundData,
-            AvatarState chooseAvatarState,
-            List<Equipment> chooseAvatarEquipments,
-            List<Costume> chooseAvatarCostumes,
+            ArenaParticipantModel info,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             _roundData = roundData;
-            _chooseAvatarState = chooseAvatarState;
-            _chooseAvatarEquipments.Clear();
-            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
-            _chooseAvatarCostumes.Clear();
-            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
+            _info = info;
             enemyCp.text = chooseAvatarCp.ToString();
             UpdateStartButton(false);
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
@@ -162,19 +156,13 @@ namespace Nekoyume.UI
 
         public void Show(
             int grandFinaleId,
-            AvatarState chooseAvatarState,
-            List<Equipment> chooseAvatarEquipments,
-            List<Costume> chooseAvatarCostumes,
+            ArenaParticipantModel info,
             int chooseAvatarCp,
             bool ignoreShowAnimation = false)
         {
             _grandFinaleId = grandFinaleId;
-            _chooseAvatarState = chooseAvatarState;
-            _chooseAvatarEquipments.Clear();
-            _chooseAvatarEquipments.AddRange(chooseAvatarEquipments);
-            _chooseAvatarCostumes.Clear();
-            _chooseAvatarCostumes.AddRange(chooseAvatarCostumes);
             enemyCp.text = chooseAvatarCp.ToString();
+            _info = info;
             UpdateStartButton(true);
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             coverToBlockClick.SetActive(false);
@@ -235,11 +223,11 @@ namespace Nekoyume.UI
             }
 
             var balance = States.Instance.GoldBalanceState.Gold;
+            var currentArenaInfo = RxProps.ArenaInfoTuple.Value.current;
             var cost = ArenaHelper.GetTicketPrice(
                 _roundData,
-                RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo,
+                currentArenaInfo,
                 balance.Currency);
-            var arenaInformation = RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo;
 
             Find<ArenaTicketPurchasePopup>().Show(
                 CostType.ArenaTicket,
@@ -248,7 +236,7 @@ namespace Nekoyume.UI
                 cost,
                 () => StartCoroutine(CoBattleStart(CostType.NCG)),
                 GoToMarket,
-                arenaInformation.PurchasedTicketCount,
+                currentArenaInfo.PurchasedTicketCount,
                 _roundData.MaxPurchaseCount,
                 RxProps.ArenaTicketsProgress.Value.purchasedCountDuringInterval,
                 _roundData.MaxPurchaseCountWithInterval
@@ -291,16 +279,16 @@ namespace Nekoyume.UI
         private void SendBattleArenaAction(int ticket = TicketCountToUse)
         {
             startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            var playerAvatar = States.Instance.CurrentAvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
                 Util.GetPortraitId(BattleType.Arena),
                 playerAvatar.address,
-                _chooseAvatarState.NameWithHash,
-                _chooseAvatarState.level,
-                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes),
-                _chooseAvatarState.address);
+                _info.NameWithHash,
+                _info.Level,
+                _info.PortraitId,
+                _info.AvatarAddr);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
@@ -308,7 +296,7 @@ namespace Nekoyume.UI
                 .GetEquippedRuneSlotInfos();
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleArena(
-                    _chooseAvatarState.address,
+                    _info.AvatarAddr,
                     costumes,
                     equipments,
                     runeInfos,
@@ -321,16 +309,16 @@ namespace Nekoyume.UI
         private void SendBattleGrandFinaleAction()
         {
             startButton.gameObject.SetActive(false);
-            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            var playerAvatar = States.Instance.CurrentAvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
                 playerAvatar.NameWithHash,
                 playerAvatar.level,
                 Util.GetPortraitId(BattleType.Arena),
                 playerAvatar.address,
-                _chooseAvatarState.NameWithHash,
-                _chooseAvatarState.level,
-                Util.GetPortraitId(_chooseAvatarEquipments, _chooseAvatarCostumes),
-                _chooseAvatarState.address);
+                _info.NameWithHash,
+                _info.Level,
+                _info.PortraitId,
+                _info.AvatarAddr);
 
             var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
             var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
@@ -339,7 +327,7 @@ namespace Nekoyume.UI
 
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleGrandFinale(
-                    _chooseAvatarState.address,
+                    _info.AvatarAddr,
                     costumes,
                     equipments,
                     _grandFinaleId)
@@ -412,7 +400,7 @@ namespace Nekoyume.UI
 
         private static bool IsIntervalValid(long blockIndex)
         {
-            var lastBattleBlockIndex = RxProps.PlayersArenaParticipant.Value.LastBattleBlockIndex;
+            var lastBattleBlockIndex = RxProps.LastBattleBlockIndex.Value;
             var battleArenaInterval = States.Instance.GameConfigState.BattleArenaInterval;
 
             return blockIndex - lastBattleBlockIndex >= battleArenaInterval;

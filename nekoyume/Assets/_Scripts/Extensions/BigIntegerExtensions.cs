@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Nekoyume
 {
@@ -7,60 +6,44 @@ namespace Nekoyume
     {
         public static string ToCurrencyNotation(this BigInteger num)
         {
-            var absoluteValue = BigInteger.Abs(num);
-            var exponent = BigInteger.Log10(absoluteValue);
-            if (absoluteValue >= BigInteger.One)
+            // maxUnit is 1e9 (billions)
+            // maxRemainder is 1e7 (millions)
+            var maxUnit = (BigInteger)1e9;
+            var maxRemainder = (BigInteger)1e7;
+
+            var divided = BigInteger.Divide(num, maxUnit);
+            if (divided > 1)
             {
-                switch ((long) Math.Floor(exponent))
+                var remainder = BigInteger.Remainder(num, maxUnit);
+                var scaledRemainder = BigInteger.Divide(remainder, maxRemainder);
+
+                var remainderString = string.Empty;
+                if (scaledRemainder > 0)
                 {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                        return num.ToString();
-                    case 4:
-                    case 5:
-                    case 6:
-                        return BigInteger.Divide(num, (BigInteger)1e3) + "K";
-                    case 7:
-                    case 8:
-                    case 9:
-                        return BigInteger.Divide(num, (BigInteger)1e6) + "M";
-                    default:
-                        return BigInteger.Divide(num, (BigInteger)1e9) + "B";
+                    remainderString = $"{scaledRemainder:D2}".TrimEnd('0');
+                    remainderString = $".{remainderString}B";
                 }
+
+                return $"{divided}{remainderString}";
             }
 
-            return num.ToString();
+            return ToCurrencyNotation((decimal)num);
         }
 
-        public static string ToCurrencyNotation(this int num)
+        public static string ToCurrencyNotation(this int num) => ToCurrencyNotation((decimal)num);
+
+        private static string ToCurrencyNotation(decimal value)
         {
-            var absoluteValue = BigInteger.Abs(num);
-            var exponent = BigInteger.Log10(absoluteValue);
-            if (absoluteValue >= BigInteger.One)
+            string[] suffixes = { "", "K", "M", "B" };
+
+            var suffixIndex = 0;
+            while (value >= 1000 && suffixIndex < suffixes.Length)
             {
-                switch ((long) Math.Floor(exponent))
-                {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                        return num.ToString();
-                    case 4:
-                    case 5:
-                    case 6:
-                        return BigInteger.Divide(num, (BigInteger)1e3) + "K";
-                    case 7:
-                    case 8:
-                    case 9:
-                        return BigInteger.Divide(num, (BigInteger)1e6) + "M";
-                    default:
-                        return BigInteger.Divide(num, (BigInteger)1e9) + "B";
-                }
+                value /= 1000;
+                suffixIndex++;
             }
 
-            return num.ToString();
+            return string.Format("{0:N2}", value).TrimEnd('0').TrimEnd('.') + suffixes[suffixIndex];
         }
     }
 }

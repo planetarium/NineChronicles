@@ -5428,7 +5428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationSteps:
   - rid: 0
-  duration: 1.5
+  duration: 3.4028235e+38
   initializeMode: 2
   references:
     version: 2
@@ -21789,7 +21789,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationSteps:
   - rid: 1713354883680174080
-  duration: 7.5
+  duration: 3.4028235e+38
   initializeMode: 2
   references:
     version: 2
@@ -27216,8 +27216,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: 69, y: 49}
+  m_AnchoredPosition: {x: -0.000015258789, y: 12}
+  m_SizeDelta: {x: 60, y: 39}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &8750883530609545474
 CanvasRenderer:

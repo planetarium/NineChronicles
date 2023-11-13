@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6744442424251077906}
   - component: {fileID: 6275506572555224754}
   - component: {fileID: 4927431873330913612}
+  - component: {fileID: 1048679393611521218}
   m_Layer: 5
   m_Name: UI_Tutorial
   m_TagString: Untagged
@@ -132,6 +133,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1048679393611521218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 0
 --- !u!1 &2195344964137216935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,6 +1464,11 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 1561887470287552699, guid: 292e9443893dc3b498df2a6f44af005d,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 18
+      objectReference: {fileID: 0}
     - target: {fileID: 2328527658826067001, guid: 292e9443893dc3b498df2a6f44af005d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1786,7 +1805,7 @@ PrefabInstance:
     - target: {fileID: 5111392007820844266, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 22
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 5111392007820844266, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
