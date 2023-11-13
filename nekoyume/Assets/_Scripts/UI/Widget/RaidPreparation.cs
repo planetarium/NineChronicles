@@ -362,7 +362,7 @@ namespace Nekoyume.UI
                 .GetEquippedRuneSlotInfos();
 
             ActionManager.Instance.Raid(costumes, equipments, consumables, runeInfos, payNcg).Subscribe();
-            Find<LoadingScreen>().Show();
+            Find<LoadingScreen>().Show(LoadingScreen.LoadingType.WorldBoss);
             Find<WorldBoss>().ForceClose(true);
             Close();
         }

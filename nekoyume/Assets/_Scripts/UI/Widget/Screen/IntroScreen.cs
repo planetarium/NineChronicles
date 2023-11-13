@@ -194,9 +194,9 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
-        public Subject<string> OnGoogleSignedIn { get; } = new();
+        public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
 
-        public Subject<string> OnAppleSignedIn { get; } = new();
+        public Subject<(string email, string idToken)> OnAppleSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -232,7 +232,7 @@ namespace Nekoyume.UI
                 {
                     case GoogleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                        OnGoogleSignedIn.OnNext(google.IDToken);
+                        OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
                         return;
                     case GoogleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for google sign in.");
@@ -264,7 +264,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case GoogleSigninBehaviour.SignInState.Signed:
-                                OnGoogleSignedIn.OnNext(google.IDToken);
+                                OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -286,7 +286,7 @@ namespace Nekoyume.UI
                 {
                     case AppleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
-                        OnAppleSignedIn.OnNext(apple.IDToken);
+                        OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
                         return;
                     case AppleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for apple sign in.");
@@ -318,7 +318,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case AppleSigninBehaviour.SignInState.Signed:
-                                OnAppleSignedIn.OnNext(apple.IDToken);
+                                OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);

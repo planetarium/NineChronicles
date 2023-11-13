@@ -42,5 +42,8 @@ namespace Nekoyume.L10n
 	QuestRewardText6,
 	SpeechBubbleInformation,
         ButtonGreen,
+        WorldmapClose,
+        WorldmapOpen,
+        WorldmapUnlock,
     }
 }

@@ -1,3 +1,8 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

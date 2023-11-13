@@ -31,7 +31,8 @@ namespace Nekoyume.Game.OAuth
             UseGameSignIn = false
         };
 
-        public string IDToken { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string IdToken { get; private set; } = string.Empty;
         public Address? AgentAddress { get; private set; } = null;
 
         public void OnSignIn()
@@ -108,8 +109,9 @@ namespace Nekoyume.Game.OAuth
             {
                 var res = task.Result;
                 Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
-                          $" Welcome: {res.UserId}!\ntoken: {res.IdToken}");
-                IDToken = res.IdToken;
+                          $" Welcome!! {res.Email}, userId({res.UserId}), token({res.IdToken})");
+                Email = res.Email;
+                IdToken = res.IdToken;
                 State.Value = SignInState.Signed;
             }
         }

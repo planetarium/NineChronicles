@@ -90,6 +90,9 @@ namespace Nekoyume.Game
         public bool InPrologue = false;
         private bool _isStaticRatio;
 
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+
         #region Mono
 
         protected void Awake()
@@ -103,6 +106,10 @@ namespace Nekoyume.Game
 
         private void Update()
         {
+            if (_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
+            {
+                InitScreenResolution();
+            }
             UpdateScreenResolution();
         }
 
@@ -124,6 +131,8 @@ namespace Nekoyume.Game
         private void InitScreenResolution()
         {
             float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
             if (ActionCamera.MinScreenRatio > currentScreenRatio || ActionCamera.MaxScreenRatio < currentScreenRatio)
             {
                 UpdateStaticRatioWithLetterBox();

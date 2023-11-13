@@ -360,26 +360,41 @@ namespace Nekoyume.Game
                         Debug.Log($"[Game] Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
-                        Analyzer.SetAgentAddress(Agent.Address.ToString());
-                        Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
+                        if (agentInitializeSucceed)
+                        {
+                            Analyzer.SetAgentAddress(Agent.Address.ToString());
+                            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
+                        }
+                        else
+                        {
+                            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
+                        }
                     }
                 )
             );
             grayLoadingScreen.ShowProgress(GameInitProgress.ProgressStart);
             yield return new WaitUntil(() => agentInitialized);
-            if (!agentInitializeSucceed)
+#if RUN_ON_MOBILE
+            if (planetContext?.HasError ?? false)
             {
-                QuitWithAgentConnectionError(null);
+                QuitWithMessage(
+                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
+                    planetContext.Error);
                 yield break;
             }
 
-#if RUN_ON_MOBILE
             if (planetContext.SelectedPlanetInfo is null)
             {
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
             }
 #endif
+
+            if (!agentInitializeSucceed)
+            {
+                QuitWithAgentConnectionError(null);
+                yield break;
+            }
 
             yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
             Debug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
@@ -494,9 +509,9 @@ namespace Nekoyume.Game
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
+#if RUN_ON_MOBILE
             PortalConnect.CheckTokens(States.AgentState.address);
 
-#if RUN_ON_MOBILE
             if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
             {
                 yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
@@ -1257,9 +1272,7 @@ namespace Nekoyume.Game
             planetContext = PlanetSelector.InitializeSelectedPlanetInfo(planetContext);
             if (planetContext.HasError)
             {
-                QuitWithMessage(
-                    L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                    planetContext.Error);
+                callback?.Invoke(false);
                 yield break;
             }
 
@@ -1282,6 +1295,15 @@ namespace Nekoyume.Game
             {
                 Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is false.");
                 planetContext.NeedToAutoLogin = false;
+                // NOTE: We can expect the LoginSystem.Login updated to true if the
+                //       IntroScreen.Show(pkPath, pk, planetContext) is called on non-mobile
+                //       platform. Because the LoginSystem.Show(pkPath, pk) will be called
+                //       inside the IntroScreen.Show(pkPath, pk, planetContext) on non-mobile
+                //       platform.
+                //
+                //       If we need to cover the Multiplanetary context on non-mobile platform,
+                //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
+                //       in here.
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
                     _commandLineOptions.PrivateKey,
@@ -1315,6 +1337,7 @@ namespace Nekoyume.Game
             }
 
             var loadingScreen = Widget.Find<DimmedLoadingScreen>();
+            string email = null;
             Address? agentAddr = null;
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
@@ -1324,13 +1347,15 @@ namespace Nekoyume.Game
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
                     .Subscribe(value => {
-                        idToken = value;
+                        email = value.email;
+                        idToken = value.idToken;
                         isGoogle = true;
                     });
                 introScreen.OnAppleSignedIn.AsObservable()
                     .First()
                     .Subscribe(value => {
-                        idToken = value;
+                        email = value.email;
+                        idToken = value.idToken;
                         isGoogle = false;
                     });
 
@@ -1349,8 +1374,9 @@ namespace Nekoyume.Game
                 if (agentAddress is null)
                 {
                     loginSystem.Show(connectedAddress: null);
+                    var autoGeneratedAgentAddress = loginSystem.GetPrivateKey().ToAddress();
                     Debug.Log("[Game] CoLogin()... signinBehaviour.AgentAddress is null." +
-                              $"auto generated agent address: {loginSystem.GetPrivateKey().ToAddress()}");
+                              $"And auto generated agent address: {autoGeneratedAgentAddress}");
                 }
                 else
                 {
@@ -1371,9 +1397,7 @@ namespace Nekoyume.Game
                     agentAddr.Value).ToCoroutine();
                 if (planetContext.HasError)
                 {
-                    QuitWithMessage(
-                        L10nManager.Localize("ERROR_INITIALIZE_FAILED"),
-                        planetContext.Error);
+                    callback?.Invoke(false);
                     yield break;
                 }
             }
@@ -1437,8 +1461,28 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log("[Game] CoLogin()... account does not exist." +
-                          " Player have to make a pledge.");
+                Debug.Log("[Game] CoLogin()... account does not exist.");
+                if (!loginSystem.Login)
+                {
+                    // NOTE: Complex logic here...
+                    //       - Portal has agent address which connected with social account.
+                    //       - No agent states in the all planets.
+                    //       - LoginSystem.Login is false.
+                    //
+                    //       Client cannot know the agent private key of the portal's agent address.
+                    //       So, we quit the application with kind message.
+                    var msg = "Portal has agent address which connected with social account." +
+                              " But no agent states in the all planets." +
+                              $"\n Portal: {PortalConnect.PortalUrl}" +
+                              $"\n Social Account: {email}" +
+                              $"\n Agent Address: {agentAddr}";
+                    Debug.LogError(msg);
+                    planetContext.Error = msg;
+                    callback?.Invoke(false);
+                    yield break;
+                }
+
+                Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
                 planetContext.NeedToPledge = true;
                 Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
                           " w/ planetContext.SelectedPlanetInfo.ID.");

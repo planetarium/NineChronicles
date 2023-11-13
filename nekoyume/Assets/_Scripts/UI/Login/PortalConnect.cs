@@ -75,7 +75,7 @@ namespace Nekoyume.UI
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
-        private const string RefreshTokenEndpoint = "api/auth/mobile/refresh";
+        private const string RefreshTokenEndpoint = "/api/auth/mobile/refresh";
         private const string ReferralEndpoint = "/api/invitations/mobile/referral";
 
         private const string PortalRewardEndpoint = "/earn#Play";
@@ -302,7 +302,7 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
-                    await SendGoogleIdToken(google.IDToken);
+                    await SendGoogleIdToken(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
@@ -325,7 +325,7 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    await SendGoogleIdToken(google.IDToken);
+                    await SendGoogleIdToken(google.IdToken);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -445,36 +445,34 @@ namespace Nekoyume.UI
 
         public bool HandleTokensResult(UnityWebRequest request)
         {
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}";
+
             var json = request.downloadHandler.text;
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} invoked w/ request: " +
-                      $"result({request.result}), json({json})");
+            Debug.Log($"{logTitle} invoked w/ request: result({request.result}), json({json})");
             var data = JsonUtility.FromJson<AccessTokenResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (request.responseCode == 200)
+                if (!string.IsNullOrEmpty(data.accessToken) && !string.IsNullOrEmpty(data.refreshToken))
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Success: {json}");
+                    Debug.Log($"{logTitle} Success: {json}");
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
-
                     return true;
                 }
 
-                if (data.resultCode is 3003 or 3004)
-                {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)} Refresh Token expired: " +
-                              $"Refresh Token({accessToken})\n{json}");
-                }
-                else
-                {
-                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... json deserialize error.");
-                    ShowRequestErrorPopup(data);
-                }
+                Debug.LogError($"{logTitle} Deserialize Error: {json}");
+                ShowRequestErrorPopup(data);
+            }
+            else if (data.resultCode is 3003 or 3004)
+            {
+                Debug.Log($"{logTitle} Refresh Token expired: Refresh Token({accessToken})\n{json}");
+            }
+            else
+            {
+                Debug.LogError($"{logTitle} Failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
+                ShowRequestErrorPopup(data);
             }
 
-            Debug.LogError($"[{nameof(PortalConnect)}] {nameof(HandleTokensResult)}... " +
-                           $"result failed: {request.error}\ncode: {code}\nclientSecret: {clientSecret}");
-            ShowRequestErrorPopup(data);
             return false;
         }
 
@@ -528,10 +526,10 @@ namespace Nekoyume.UI
 
         public async Task<ReferralResult> GetReferralInformation()
         {
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} invoked: " +
-                      $"url({url}), accessToken({accessToken})");
+            Debug.Log($"{logTitle} invoked: url({url}), accessToken({accessToken})");
 
             var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
@@ -550,30 +548,26 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<ReferralResult>(json);
             if (request.result == UnityWebRequest.Result.Success)
             {
-                if (request.responseCode == 200)
+                if (!string.IsNullOrEmpty(data.referralCode))
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Success: {json}");
+                    Debug.Log($"{logTitle} Success: {json}");
                     return data;
                 }
 
-                if (data.resultCode is 3001 or 3002)
+                Debug.LogError($"{logTitle} Deserialize Error: {json}");
+                ShowRequestErrorPopup(data);
+            }
+            else if (data.resultCode is 3001 or 3002)
+            {
+                Debug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                if (await UpdateTokens())
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Access Token expired: " +
-                              $"Access Token({accessToken})\n{json}");
-                    if (await UpdateTokens())
-                    {
-                        return await GetReferralInformation();
-                    }
-                }
-                else
-                {
-                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Deserialize Error: {json}");
-                    ShowRequestErrorPopup(data);
+                    return await GetReferralInformation();
                 }
             }
             else
             {
-                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)} Error: {request.error}\n{json}\n");
+                Debug.LogError($"{logTitle} Failed: {request.error}\n{json}\n");
                 ShowRequestErrorPopup(data);
             }
 
@@ -582,10 +576,10 @@ namespace Nekoyume.UI
 
         public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} invoked: " +
-                      $"url({url}), referralCode({referralCode}) accessToken({accessToken})");
+            Debug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
 
             var form = new WWWForm();
             form.AddField("referralCode", referralCode);
@@ -609,26 +603,20 @@ namespace Nekoyume.UI
             {
                 if (request.responseCode == 200)
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Success: {json}");
+                    Debug.Log($"{logTitle} Success: {json}");
                 }
-
-                if (data.resultCode is 3001 or 3002)
+            }
+            else if (data.resultCode is 3001 or 3002)
+            {
+                Debug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                if (await UpdateTokens())
                 {
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Access Token expired: " +
-                              $"Access Token({accessToken})\n{json}");
-                    if (await UpdateTokens())
-                    {
-                        return await EnterReferralCode(referralCode);
-                    }
-                }
-                else
-                {
-                    Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Deserialize Error: {json}");
+                    return await EnterReferralCode(referralCode);
                 }
             }
             else
             {
-                Debug.LogError($"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)} Error: {request.error}\n{json}\n");
+                Debug.LogError($"{logTitle} Error: {request.error}\n{json}\n");
             }
 
             return data;

@@ -31,7 +31,8 @@ namespace Nekoyume.Game.OAuth
 
         public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
-        public string IDToken { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string IdToken { get; private set; } = string.Empty;
         public Address? AgentAddress { get; private set; } = null;
 
         // Start is called before the first frame update
@@ -116,7 +117,8 @@ namespace Nekoyume.Game.OAuth
                     PlayerPrefs.SetString(AppleUserIdKey, credential.User);
                     Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
                     var appleIdCredential = credential as IAppleIDCredential;
-                    IDToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+                    Email = appleIdCredential.Email;
+                    IdToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
                     State.Value = SignInState.Signed;
                 },
                 error =>
