@@ -163,10 +163,11 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            var fungibleAssetValues = avatarValues.Concat(agentValues).ToList();
+
             var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
             {
-                (recipientAvatarAddress, avatarValues),
-                (recipientAgentAddress, agentValues),
+                (recipientAvatarAddress, fungibleAssetValues),
             });
             var states = action.Execute(new ActionContext
             {
@@ -318,7 +319,7 @@ namespace Lib9c.Tests.Action
 
             state = state
                 .SetState(agentAddress, agentState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(
                     avatarAddress.Derive(SerializeKeys.LegacyInventoryKey),
                     avatarState.inventory.Serialize());

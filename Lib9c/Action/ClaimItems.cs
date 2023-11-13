@@ -90,21 +90,21 @@ namespace Nekoyume.Action
             var random = context.GetRandom();
             var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
 
-            foreach (var (recipientAddress, fungibleAssetValues) in ClaimData)
+            foreach (var (avatarAddress, fungibleAssetValues) in ClaimData)
             {
-                var inventoryAddress = recipientAddress.Derive(LegacyInventoryKey);
-                Inventory inventory = null;
-                bool inventoryExist = false;
-                try
+                var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+                var inventory = states.GetInventory(inventoryAddress)
+                            ?? throw new FailedLoadStateException(
+                                ActionTypeText,
+                                GetSignerAndOtherAddressesHex(context, inventoryAddress),
+                                typeof(Inventory),
+                                inventoryAddress);
+                if (!states.TryGetState(avatarAddress, out Dictionary avatarDict))
                 {
-                    inventory = states.GetInventory(inventoryAddress);
-                    inventoryExist = true;
-                }
-                catch (Exception)
-                {
-                    // inventory not required if claim fav
+                    throw new FailedLoadStateException(avatarAddress, typeof(AvatarState));
                 }
 
+                var agentAddress = avatarDict[AgentAddressKey].ToAddress();
                 foreach (var fungibleAssetValue in fungibleAssetValues)
                 {
                     var wrappedTicker = fungibleAssetValue.Currency.Ticker;
@@ -114,20 +114,14 @@ namespace Nekoyume.Action
                     {
                         var ticker = parsedTicker[1];
                         var currency = Currencies.GetMinterlessCurrency(ticker);
+                        var recipientAddress =
+                            currency.DecimalPlaces > 0 ? agentAddress : avatarAddress;
                         states = states
                             .BurnAsset(context, context.Signer, fungibleAssetValue)
                             .MintAsset(context, recipientAddress, FungibleAssetValue.FromRawValue(currency, fungibleAssetValue.RawValue));
                     }
                     else
                     {
-                        if (!inventoryExist)
-                        {
-                            throw new FailedLoadStateException(
-                                ActionTypeText,
-                                GetSignerAndOtherAddressesHex(context, inventoryAddress),
-                                typeof(Inventory),
-                                inventoryAddress);
-                        }
                         if (fungibleAssetValue.Currency.DecimalPlaces != 0)
                         {
                             throw new ArgumentException(
@@ -142,6 +136,7 @@ namespace Nekoyume.Action
                             throw new ArgumentException(
                                 $"Format of Amount currency's ticker is invalid");
                         }
+
 
                         states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
 
@@ -171,10 +166,7 @@ namespace Nekoyume.Action
                     }
                 }
 
-                if (inventoryExist)
-                {
-                    states = states.SetState(inventoryAddress, inventory.Serialize());
-                }
+                states = states.SetState(inventoryAddress, inventory.Serialize());
             }
 
             return states;
