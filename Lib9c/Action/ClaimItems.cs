@@ -108,7 +108,21 @@ namespace Nekoyume.Action
                         var itemRow => ItemFactory.CreateItem(itemRow, random)
                     };
 
-                    inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                    // FIXME: This is an implementation bug in the Inventory class,
+                    // but we'll deal with it temporarily here.
+                    // If Pluggable AEV ever becomes a reality,
+                    // it's only right that this is fixed in Inventory.
+                    if (item is INonFungibleItem)
+                    {
+                        foreach (var _ in Enumerable.Range(0, (int)fungibleAssetValue.RawValue))
+                        {
+                            inventory.AddItem(item, 1);
+                        }
+                    }
+                    else
+                    {
+                        inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                    }
                 }
 
                 states = states.SetState(inventoryAddress, inventory.Serialize());

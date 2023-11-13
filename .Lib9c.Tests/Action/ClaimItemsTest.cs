@@ -184,6 +184,44 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_WithNonFungibleItem()
+        {
+            const int nonFungibleitemId = 10232001;
+            const int itemCount = 5;
+            var currency = Currency.Legacy($"Item_T_{nonFungibleitemId}", 0, null);
+
+            var state = GenerateAvatar(_initialState, out var recipientAvatarAddress1);
+            state = state.MintAsset(
+                new ActionContext
+                {
+                    PreviousState = state,
+                    Signer = _signerAddress,
+                    BlockIndex = 0,
+                    RandomSeed = 0,
+                },
+                _signerAddress,
+                currency * itemCount);
+
+            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
+            {
+                (recipientAvatarAddress1, new List<FungibleAssetValue> { currency * itemCount, }),
+            });
+
+            var states = action.Execute(new ActionContext
+            {
+                PreviousState = state,
+                Signer = _signerAddress,
+                BlockIndex = 0,
+                RandomSeed = 0,
+            });
+
+            Assert.Equal(states.GetBalance(_signerAddress, currency), currency * 0);
+
+            var inventory = states.GetInventory(recipientAvatarAddress1.Derive(SerializeKeys.LegacyInventoryKey));
+            Assert.Equal(itemCount, inventory.Items.Count(x => x.item.Id == nonFungibleitemId));
+        }
+
+        [Fact]
         public void Execute_WithIncorrectClaimData()
         {
             var fungibleAssetValues = _currencies.Select(currency => currency * 1).ToList();
