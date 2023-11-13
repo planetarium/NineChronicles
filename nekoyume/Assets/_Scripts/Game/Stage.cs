@@ -1304,11 +1304,6 @@ namespace Nekoyume.Game
                 menuNames.Add("UI_MAIN_MENU_RANKING");
             }
 
-            if (stageId == LiveAsset.GameConfig.RequiredStage.Mimisbrunnr)
-            {
-                menuNames.Add("UI_MAIN_MENU_MIMISBRUNNR");
-            }
-
             if (stageId == LiveAsset.GameConfig.RequiredStage.WorldBoss)
             {
                 menuNames.Add("UI_WORLD_BOSS");
