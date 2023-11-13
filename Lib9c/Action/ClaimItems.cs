@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
@@ -70,62 +71,91 @@ namespace Nekoyume.Action
             var random = context.GetRandom();
             var itemSheet = states.GetSheets(containItemSheet: true).GetItemSheet();
 
-            foreach (var (avatarAddress, fungibleAssetValues) in ClaimData)
+            foreach (var (recipientAddress, fungibleAssetValues) in ClaimData)
             {
-                var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-                var inventory = states.GetInventory(inventoryAddress)
-                                ?? throw new FailedLoadStateException(
-                                    ActionTypeText,
-                                    GetSignerAndOtherAddressesHex(context, inventoryAddress),
-                                    typeof(Inventory),
-                                    inventoryAddress);
+                var inventoryAddress = recipientAddress.Derive(LegacyInventoryKey);
+                Inventory inventory = null;
+                bool inventoryExist = false;
+                try
+                {
+                    inventory = states.GetInventory(inventoryAddress);
+                    inventoryExist = true;
+                }
+                catch (Exception)
+                {
+                    // inventory not required if claim fav
+                }
 
                 foreach (var fungibleAssetValue in fungibleAssetValues)
                 {
-                    if (fungibleAssetValue.Currency.DecimalPlaces != 0)
+                    var wrappedTicker = fungibleAssetValue.Currency.Ticker;
+                    var separator = wrappedTicker.Contains("__") ? "__" : "_";
+                    var parsedTicker = wrappedTicker.Split(separator);
+                    if (parsedTicker.Length == 2)
                     {
-                        throw new ArgumentException(
-                            $"DecimalPlaces of fungibleAssetValue for claimItems are not 0: {fungibleAssetValue.Currency.Ticker}");
-                    }
-
-                    var parsedTicker = fungibleAssetValue.Currency.Ticker.Split("_");
-                    if (parsedTicker.Length != 3
-                        || parsedTicker[0] != "Item"
-                        || (parsedTicker[1] != "NT" && parsedTicker[1] != "T")
-                        || !int.TryParse(parsedTicker[2], out var itemId))
-                    {
-                        throw new ArgumentException(
-                            $"Format of Amount currency's ticker is invalid");
-                    }
-
-                    states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
-
-                    var item = itemSheet[itemId] switch
-                    {
-                        MaterialItemSheet.Row materialRow => parsedTicker[1] == "T"
-                            ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateMaterial(materialRow),
-                        var itemRow => ItemFactory.CreateItem(itemRow, random)
-                    };
-
-                    // FIXME: This is an implementation bug in the Inventory class,
-                    // but we'll deal with it temporarily here.
-                    // If Pluggable AEV ever becomes a reality,
-                    // it's only right that this is fixed in Inventory.
-                    if (item is INonFungibleItem)
-                    {
-                        foreach (var _ in Enumerable.Range(0, (int)fungibleAssetValue.RawValue))
-                        {
-                            inventory.AddItem(item, 1);
-                        }
+                        var ticker = parsedTicker[1];
+                        var currency = Currencies.GetMinterlessCurrency(ticker);
+                        states = states
+                            .BurnAsset(context, context.Signer, fungibleAssetValue)
+                            .MintAsset(context, recipientAddress, FungibleAssetValue.FromRawValue(currency, fungibleAssetValue.RawValue));
                     }
                     else
                     {
-                        inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                        if (!inventoryExist)
+                        {
+                            throw new FailedLoadStateException(
+                                ActionTypeText,
+                                GetSignerAndOtherAddressesHex(context, inventoryAddress),
+                                typeof(Inventory),
+                                inventoryAddress);
+                        }
+                        if (fungibleAssetValue.Currency.DecimalPlaces != 0)
+                        {
+                            throw new ArgumentException(
+                                $"DecimalPlaces of fungibleAssetValue for claimItems are not 0: {fungibleAssetValue.Currency.Ticker}");
+                        }
+
+                        if (parsedTicker.Length != 3
+                            || parsedTicker[0] != "Item"
+                            || (parsedTicker[1] != "NT" && parsedTicker[1] != "T")
+                            || !int.TryParse(parsedTicker[2], out var itemId))
+                        {
+                            throw new ArgumentException(
+                                $"Format of Amount currency's ticker is invalid");
+                        }
+
+                        states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
+
+                        var item = itemSheet[itemId] switch
+                        {
+                            MaterialItemSheet.Row materialRow => parsedTicker[1] == "T"
+                                ? ItemFactory.CreateTradableMaterial(materialRow)
+                                : ItemFactory.CreateMaterial(materialRow),
+                            var itemRow => ItemFactory.CreateItem(itemRow, random)
+                        };
+
+                        // FIXME: This is an implementation bug in the Inventory class,
+                        // but we'll deal with it temporarily here.
+                        // If Pluggable AEV ever becomes a reality,
+                        // it's only right that this is fixed in Inventory.
+                        if (item is INonFungibleItem)
+                        {
+                            foreach (var _ in Enumerable.Range(0, (int)fungibleAssetValue.RawValue))
+                            {
+                                inventory.AddItem(item, 1);
+                            }
+                        }
+                        else
+                        {
+                            inventory.AddItem(item, (int)fungibleAssetValue.RawValue);
+                        }
                     }
                 }
 
-                states = states.SetState(inventoryAddress, inventory.Serialize());
+                if (inventoryExist)
+                {
+                    states = states.SetState(inventoryAddress, inventory.Serialize());
+                }
             }
 
             return states;
