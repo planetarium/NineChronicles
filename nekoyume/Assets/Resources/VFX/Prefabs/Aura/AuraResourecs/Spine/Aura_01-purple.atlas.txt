@@ -1,0 +1,97 @@
+
+Aura_01-purple.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+aura01_01
+  rotate: false
+  xy: 393, 238
+  size: 250, 269
+  orig: 252, 271
+  offset: 1, 1
+  index: -1
+aura01_L1
+  rotate: false
+  xy: 267, 43
+  size: 75, 122
+  orig: 77, 124
+  offset: 1, 1
+  index: -1
+aura01_L2
+  rotate: false
+  xy: 79, 13
+  size: 92, 152
+  orig: 94, 154
+  offset: 1, 1
+  index: -1
+aura01_R1
+  rotate: false
+  xy: 344, 43
+  size: 75, 122
+  orig: 77, 124
+  offset: 1, 1
+  index: -1
+aura01_R2
+  rotate: false
+  xy: 173, 13
+  size: 92, 152
+  orig: 94, 154
+  offset: 1, 1
+  index: -1
+effect_circle01
+  rotate: true
+  xy: 653, 68
+  size: 196, 193
+  orig: 196, 193
+  offset: 0, 0
+  index: -1
+effect_circle03
+  rotate: false
+  xy: 888, 386
+  size: 121, 121
+  orig: 121, 121
+  offset: 0, 0
+  index: -1
+effect_circle05
+  rotate: false
+  xy: 645, 266
+  size: 241, 241
+  orig: 241, 241
+  offset: 0, 0
+  index: -1
+effect_dot01
+  rotate: false
+  xy: 47, 15
+  size: 30, 35
+  orig: 43, 47
+  offset: 7, 6
+  index: -1
+effect_dot02
+  rotate: false
+  xy: 2, 3
+  size: 43, 47
+  orig: 43, 47
+  offset: 0, 0
+  index: -1
+effect_image (1)
+  rotate: true
+  xy: 421, 2
+  size: 234, 230
+  orig: 234, 230
+  offset: 0, 0
+  index: -1
+effect_image (2)
+  rotate: false
+  xy: 51, 167
+  size: 340, 340
+  orig: 340, 340
+  offset: 0, 0
+  index: -1
+effect_line02
+  rotate: true
+  xy: 2, 52
+  size: 455, 47
+  orig: 455, 47
+  offset: 0, 0
+  index: -1
