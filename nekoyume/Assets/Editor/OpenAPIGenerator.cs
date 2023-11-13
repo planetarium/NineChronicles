@@ -204,7 +204,15 @@ namespace Nekoyume
             }
             else if (propertyType.IsEnum)
             {
-                propertyValue = EditorGUILayout.EnumPopup(property.Name, (Enum)propertyValue);
+                if (propertyValue == null)
+                {
+                    var enumValues = Enum.GetValues(propertyType);
+                    propertyValue = enumValues.Length > 0 ? enumValues.GetValue(0) : null;
+                }
+                else
+                {
+                    propertyValue = EditorGUILayout.EnumPopup(property.Name, (Enum)propertyValue);
+                }
             }
 
             property.SetValue(instance, propertyValue);
@@ -559,7 +567,14 @@ namespace Nekoyume
                                 }
                             }
                         }
+
                         string preText = string.Empty;
+
+                        bool isStringPreText = false;
+                        bool isString = false;
+                        bool isNumberPreText = false;
+                        bool isNumber = false;
+
                         for (int i = 0; i < enumValues.Count; i++)
                         {
                             var enumVal = enumValues[i].ToString();
@@ -573,10 +588,12 @@ namespace Nekoyume
                                     {
                                         sb.AppendLine($"        _{enumName},");
                                         preText = "\"_\"+";
+                                        isStringPreText = true;
                                     }
                                     else
                                     {
                                         sb.AppendLine($"        {enumName},");
+                                        isString = true;
                                     }
                                 }
                                 else
@@ -587,16 +604,27 @@ namespace Nekoyume
                                         {
                                             sb.AppendLine($"        _{enumName} = {enumVal},");
                                             preText = "\"_\"+";
+                                            isNumberPreText = true;
                                         }
                                         else
                                         {
-                                            sb.AppendLine($"        _{enumVal},");
+                                            sb.AppendLine($"        _{enumName},");
                                             preText = "\"_\"+";
+                                            isStringPreText = true;
                                         }
                                     }
                                     else
                                     {
-                                        sb.AppendLine($"        {enumName} = {enumVal},");
+                                        if (int.TryParse(enumVal[0].ToString(), out var enumValNumber))
+                                        {
+                                            sb.AppendLine($"        {enumName} = {enumVal},");
+                                            isNumber = true;
+                                        }
+                                        else
+                                        {
+                                            sb.AppendLine($"        {enumName},");
+                                            isString = true;
+                                        }
                                     }
                                 }
                             }
@@ -607,10 +635,12 @@ namespace Nekoyume
                                 {
                                     sb.AppendLine($"        _{enumVal},");
                                     preText = "\"_\"+";
+                                    isStringPreText = true;
                                 }
                                 else
                                 {
                                     sb.AppendLine($"        {enumVal},");
+                                    isString = true;
                                 }
                             }
                         }
@@ -639,7 +669,22 @@ namespace Nekoyume
                         sb.AppendLine($"            {schema.Key} value,");
                         sb.AppendLine("            JsonSerializerOptions options)");
                         sb.AppendLine("        {");
-                        sb.AppendLine("            writer.WriteNumberValue((int)value);");
+                        if (isStringPreText)
+                        {
+                            sb.AppendLine("            writer.WriteStringValue(value.ToString().Substring(1));");
+                        }
+                        else if (isString)
+                        {
+                            sb.AppendLine("            writer.WriteStringValue(value.ToString());");
+                        }
+                        else if (isNumber)
+                        {
+                            sb.AppendLine("            writer.WriteNumberValue((int)value);");
+                        }
+                        else if (isNumberPreText)
+                        {
+                            sb.AppendLine("            writer.WriteNumberValue((int)value);");
+                        }
                         sb.AppendLine("        }");
                         sb.AppendLine("    }");
                         sb.AppendLine();
