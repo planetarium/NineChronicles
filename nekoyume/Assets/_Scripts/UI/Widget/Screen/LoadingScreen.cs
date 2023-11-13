@@ -18,6 +18,7 @@ namespace Nekoyume.UI
             Arena,
             Shop,
             Workshop,
+            WorldBoss,
         }
 
         [Serializable]
