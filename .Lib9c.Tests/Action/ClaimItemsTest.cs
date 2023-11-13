@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet.Action.State;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
@@ -70,17 +71,26 @@ namespace Lib9c.Tests.Action
                 .MintAsset(context, _signerAddress, _wrappedFavCurrencies[1] * 5);
         }
 
-        [Fact]
-        public void Serialize()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Serialize(bool memoExist)
         {
             var states = GenerateAvatar(_initialState, out var avatarAddress1, out _);
             GenerateAvatar(states, out var avatarAddress2, out _);
-
-            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
+            string memo = memoExist ? "memo" : null;
+            var action = new ClaimItems(
+                new List<(Address, IReadOnlyList<FungibleAssetValue>)>
                 {
                     (avatarAddress1, new List<FungibleAssetValue> { _itemCurrencies[0] * 1, _itemCurrencies[1] * 1 }),
                     (avatarAddress2, new List<FungibleAssetValue> { _itemCurrencies[0] * 1 }),
-                });
+                },
+                memo
+            );
+            Assert.Equal(!memoExist, string.IsNullOrEmpty(action.Memo));
+            Dictionary serialized = (Dictionary)action.PlainValue;
+            Dictionary values = (Dictionary)serialized["values"];
+            Assert.Equal(memoExist, values.ContainsKey("m"));
             var deserialized = new ClaimItems();
             deserialized.LoadPlainValue(action.PlainValue);
 
@@ -90,6 +100,8 @@ namespace Lib9c.Tests.Action
                 Assert.True(action.ClaimData[i].fungibleAssetValues
                     .SequenceEqual(deserialized.ClaimData[i].fungibleAssetValues));
             }
+
+            Assert.Equal(action.Memo, deserialized.Memo);
         }
 
         [Fact]

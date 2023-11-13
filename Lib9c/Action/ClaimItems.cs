@@ -8,8 +8,10 @@ using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Action.Garages;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -23,24 +25,37 @@ namespace Nekoyume.Action
         private const int MaxClaimDataCount = 100;
 
         public IReadOnlyList<(Address address, IReadOnlyList<FungibleAssetValue> fungibleAssetValues)> ClaimData { get; private set; }
+        public string Memo;
 
         public ClaimItems()
         {
         }
 
-        public ClaimItems(IReadOnlyList<(Address, IReadOnlyList<FungibleAssetValue>)> claimData)
+        public ClaimItems(IReadOnlyList<(Address, IReadOnlyList<FungibleAssetValue>)> claimData, string memo = null)
         {
             ClaimData = claimData;
+            Memo = memo;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            ImmutableDictionary<string, IValue>.Empty
+            GetPlainValueInternal();
+
+        private IImmutableDictionary<string, IValue> GetPlainValueInternal()
+        {
+            var dict = ImmutableDictionary<string, IValue>.Empty
                 .Add(ClaimDataKey, ClaimData.Aggregate(List.Empty, (list, tuple) =>
                 {
                     var serializedFungibleAssetValues = tuple.fungibleAssetValues.Select(x => x.Serialize()).Serialize();
 
                     return list.Add(new List(tuple.address.Bencoded, serializedFungibleAssetValues));
                 }));
+            if (!string.IsNullOrEmpty(Memo))
+            {
+                dict = dict.Add(MemoKey, Memo.Serialize());
+            }
+
+            return dict;
+        }
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
@@ -53,6 +68,10 @@ namespace Nekoyume.Action
                         new Address(pair[0]),
                         pair[1].ToList(x => x.ToFungibleAssetValue()) as IReadOnlyList<FungibleAssetValue>);
                 }).ToList();
+            if (plainValue.ContainsKey(MemoKey))
+            {
+                Memo = (Text) plainValue[MemoKey];
+            }
         }
 
         public override IAccount Execute(IActionContext context)
