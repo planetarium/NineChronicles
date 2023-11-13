@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using UnityEngine.UI.Extensions;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -35,5 +36,10 @@ namespace Nekoyume.UI.Scroller
     public IObservable<EnhancementInventoryItem> OnDoubleClick => Context.OnDoubleClick;
 
     protected override FancyCell<EnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
+        protected override void Initialize()
+        {
+            base.Initialize();
+            startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, cellContainer.GetComponent<RectTransform>().rect.width);
+        }
     }
 }
