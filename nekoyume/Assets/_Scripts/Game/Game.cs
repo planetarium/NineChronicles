@@ -309,10 +309,13 @@ namespace Nekoyume.Game
 #endif
             // NOTE: Initialize Analyzer after load CommandLineOptions, initialize States,
             //       initialize Firebase Manager.
+            //       The planetId is null because it is not initialized yet. It will be
+            //       updated after initialize Agent.
             InitializeAnalyzer(
                 agentAddr: _commandLineOptions.PrivateKey is null
                     ? null
                     : PrivateKey.FromString(_commandLineOptions.PrivateKey).ToAddress(),
+                planetId: null,
                 rpcServerHost: _commandLineOptions.RpcServerHost);
             Analyzer.Track("Unity/Started");
 
@@ -371,15 +374,6 @@ namespace Nekoyume.Game
                         Debug.Log($"[Game] Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
-                        if (agentInitializeSucceed)
-                        {
-                            Analyzer.SetAgentAddress(Agent.Address.ToString());
-                            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
-                        }
-                        else
-                        {
-                            Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
-                        }
                     }
                 )
             );
@@ -399,10 +393,17 @@ namespace Nekoyume.Game
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
             }
-#endif
 
-            if (!agentInitializeSucceed)
+            Analyzer.SetPlanetId(planetContext.SelectedPlanetInfo.ID.ToString());
+#endif
+            if (agentInitializeSucceed)
             {
+                Analyzer.SetAgentAddress(Agent.Address.ToString());
+                Analyzer.Instance.Track("Unity/Intro/Start/AgentInitialized");
+            }
+            else
+            {
+                Analyzer.Instance.Track("Unity/Intro/Start/AgentInitializeFailed");
                 QuitWithAgentConnectionError(null);
                 yield break;
             }
@@ -1845,18 +1846,22 @@ namespace Nekoyume.Game
 
         private void InitializeAnalyzer(
             Address? agentAddr = null,
+            PlanetId? planetId = null,
             string rpcServerHost = null)
         {
-            Debug.Log("[Game] InitializeAnalyzer() invoked");
-            var uniqueId = agentAddr?.ToString();
+            Debug.Log("[Game] InitializeAnalyzer() invoked." +
+                      $" agentAddr: {agentAddr}, planetId: {planetId}, rpcServerHost: {rpcServerHost}");
 #if UNITY_EDITOR
             Debug.Log("[Game] InitializeAnalyzer()... Analyze is disabled in editor mode.");
-            Analyzer = new Analyzer(uniqueId, rpcServerHost, isTrackable: false);
+            Analyzer = new Analyzer(
+                agentAddr?.ToString(),
+                planetId?.ToString(),
+                rpcServerHost,
+                isTrackable: false);
             return;
 #endif
 
             var isTrackable = true;
-
             if (UnityEngine.Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
@@ -1870,7 +1875,8 @@ namespace Nekoyume.Game
             }
 
             Analyzer = new Analyzer(
-                uniqueId,
+                agentAddr?.ToString(),
+                planetId?.ToString(),
                 rpcServerHost,
                 isTrackable);
         }
