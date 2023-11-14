@@ -7,6 +7,7 @@ using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Nekoyume.Model.State;
+using System.Numerics;
 
 namespace Nekoyume.Action
 {
@@ -164,8 +165,16 @@ namespace Nekoyume.Action
                 states = states.SetState(CreditsState.Address, Credits);
             }
 
-            var currency = new GoldCurrencyState(GoldCurrency).Currency;
-            states = states.MintAsset(ctx, GoldCurrencyState.Address, currency * 1000000000);
+            var currencyState = new GoldCurrencyState(GoldCurrency);
+            if (currencyState.InitialSupply > 0)
+            {
+                states = states.MintAsset(
+                    ctx,
+                    GoldCurrencyState.Address,
+                    currencyState.Currency * currencyState.InitialSupply
+                );
+            }
+
             return states;
         }
 
