@@ -691,9 +691,12 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<ClaimItems>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
-                    eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
+                    eval.Action.ClaimData.Any(e =>
+                        e.address.Equals(States.Instance.CurrentAvatarState.address)))
                 .Where(ValidateEvaluationIsSuccess)
-                .Subscribe(UpdateCurrentAvatarInventory)
+                .Select(PrepareClaimItems)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimItems)
                 .AddTo(_disposables);
         }
 
@@ -3312,6 +3315,115 @@ namespace Nekoyume.Blockchain
                 else
                 {
                     Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                        $"the render context of UnloadFromMyGarages action.\n" +
+                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+                }
+            });
+        }
+
+        private ActionEvaluation<ClaimItems> PrepareClaimItems(
+            ActionEvaluation<ClaimItems> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.ClaimData is not null)
+            {
+                foreach (var (addr, favList) in action.ClaimData)
+                {
+                    if (addr.Equals(avatarAddr))
+                    {
+                        foreach (var fav in favList)
+                        {
+                            var balance = StateGetter.GetBalance(
+                                addr,
+                                fav.Currency,
+                                states);
+                            gameStates.SetCurrentAvatarBalance(balance);
+                        }
+                    }
+                }
+            }
+
+
+            return eval;
+        }
+
+        private void ResponseClaimItems(ActionEvaluation<ClaimItems> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            MailBox mailBox;
+            ClaimItemsMail mail;
+
+            IValue avatarValue = null;
+            UniTask.RunOnThreadPool(() =>
+            {
+                avatarValue = StateGetter.GetState(avatarAddr, states);
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<ClaimItemsMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                if (eval.Action.ClaimData.Any(tuple => tuple.address.Equals(States.Instance.CurrentAvatarState.address)) &&
+                    mail?.Items is not null &&
+                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                {
+                    UpdateCurrentAvatarInventory(eval);
+                }
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<ClaimItemsMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                if (mail is not null)
+                {
+                    mail.New = true;
+                    gameStates.CurrentAvatarState.mailBox = mailBox;
+                    LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Not found ClaimItemsMail from " +
                         $"the render context of UnloadFromMyGarages action.\n" +
                         $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
                 }

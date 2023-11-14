@@ -829,9 +829,8 @@ namespace Nekoyume.UI
 
         public void Read(ClaimItemsMail claimItemsMail)
         {
-
             Analyzer.Instance.Track(
-                "Unity/MailBox/UnloadFromMyGaragesRecipientMail/ReceiveButton/Click");
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
             var game = Game.Game.instance;
             claimItemsMail.New = false;
             LocalLayerModifier.RemoveNewMail(
@@ -858,7 +857,7 @@ namespace Nekoyume.UI
                             foreach (var item in findKey.Value.FungibleItemList)
                             {
                                 var row = materialSheet.OrderedList!
-                                    .FirstOrDefault(row => row.ItemId.Equals(item.FungibleItemId));
+                                    .FirstOrDefault(row => row.Id.Equals(item.SheetItemId));
                                 if (row is null)
                                 {
                                     Debug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
