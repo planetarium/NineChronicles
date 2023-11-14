@@ -216,7 +216,7 @@ namespace Nekoyume.Action
                 new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var random = context.GetRandom();
-            var simulator = new ArenaSimulator(random);
+            var simulator = new ArenaSimulatorV5(random);
             var log = simulator.Simulate(
                 ExtraMyArenaPlayerDigest,
                 ExtraEnemyArenaPlayerDigest,
