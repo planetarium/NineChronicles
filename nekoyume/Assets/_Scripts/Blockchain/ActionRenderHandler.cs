@@ -3337,13 +3337,21 @@ namespace Nekoyume.Blockchain
                     {
                         foreach (var fav in favList)
                         {
-                            var isCrystal = fav.Currency.Equals(Currencies.Crystal);
-                            var balanceAddr = isCrystal
-                                ? agentAddr
-                                : avatarAddr;
+                            var tokenCurrency = fav.Currency;
+                            Address recipientAddress;
+                            var currency = tokenCurrency;
+                            if (Currencies.IsWrappedCurrency(tokenCurrency))
+                            {
+                                currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                            }
+
+                            recipientAddress =
+                                Currencies.SelectRecipientAddress(currency, agentAddr,
+                                    avatarAddr);
+                            var isCrystal = currency.Equals(Currencies.Crystal);
                             var balance = StateGetter.GetBalance(
-                                balanceAddr,
-                                fav.Currency,
+                                recipientAddress,
+                                currency,
                                 states);
                             if (isCrystal)
                             {
@@ -3358,7 +3366,7 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, eval.OutputState)).Forget();
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
             return eval;
         }
 
