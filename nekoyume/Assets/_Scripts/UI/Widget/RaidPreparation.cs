@@ -155,8 +155,6 @@ namespace Nekoyume.UI
                 crystalContainer.SetActive(false);
             }
 
-            closeButtonText.text = L10nManager.LocalizeCharacterName(bossId);
-
             UpdateStartButton();
             information.UpdateInventory(BattleType.Raid);
 

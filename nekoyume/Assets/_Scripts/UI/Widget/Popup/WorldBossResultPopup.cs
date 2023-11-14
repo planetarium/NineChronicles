@@ -129,6 +129,11 @@ namespace Nekoyume.UI
                     _gradeObject.transform.localScale = Vector3.one;
                 }
             }
+
+            foreach (var item in seasonPassObjs)
+            {
+                item.SetActive(false);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

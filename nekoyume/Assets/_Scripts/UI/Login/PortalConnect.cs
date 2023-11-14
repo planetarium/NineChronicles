@@ -301,7 +301,7 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
@@ -324,7 +324,7 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -357,7 +357,7 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
         }
 
-        public async Task<Address?> SendGoogleIdToken(string idToken)
+        public async Task<Address?> SendGoogleIdTokenAsync(string idToken)
         {
             Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
@@ -545,7 +545,7 @@ namespace Nekoyume.UI
 
         public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
-            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
             Debug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
@@ -573,6 +573,7 @@ namespace Nekoyume.UI
                 if (request.responseCode == 200)
                 {
                     Debug.Log($"{logTitle} Success: {json}");
+                    return null;
                 }
             }
             else if (data.resultCode is 3001 or 3002)

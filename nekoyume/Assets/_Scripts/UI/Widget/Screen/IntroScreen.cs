@@ -48,16 +48,16 @@ namespace Nekoyume.UI
                 PlanetContext planetContext,
                 PlanetAccountInfo planetAccountInfo)
             {
-                if (planetContext?.Planets is null ||
+                if (planetContext?.PlanetRegistry is null ||
                     planetAccountInfo is null)
                 {
-                    Debug.LogError("[IntroScreen] AgentInfo.Set()... context(planets)" +
-                                   " or info is null");
+                    Debug.LogError("[IntroScreen] AgentInfo.Set()... planetContext?PlanetRegistry" +
+                                   " or planetAccountInfo is null");
                     return;
                 }
 
                 PlanetId = planetAccountInfo.PlanetId;
-                if (planetContext.Planets.TryGetPlanetInfoById(PlanetId.Value, out var planetInfo))
+                if (planetContext.PlanetRegistry.TryGetPlanetInfoById(PlanetId.Value, out var planetInfo))
                 {
                     var textInfo = CultureInfo.InvariantCulture.TextInfo;
                     title.text = textInfo.ToTitleCase(planetInfo.Name);
@@ -79,6 +79,7 @@ namespace Nekoyume.UI
                         .First()
                         .Subscribe(_ =>
                         {
+                            // FIXME: Handle planetContext.Error.
                             PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
                             PlanetSelector.SelectPlanetAccountInfo(
                                 planetContext,
@@ -134,6 +135,7 @@ namespace Nekoyume.UI
                         .First()
                         .Subscribe(_ =>
                         {
+                            // FIXME: Handle planetContext.Error.
                             PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
                             PlanetSelector.SelectPlanetAccountInfo(
                                 planetContext,
@@ -503,9 +505,9 @@ namespace Nekoyume.UI
 
         private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {
-            var planets = planetContext.Planets;
+            var planetRegistry = planetContext.PlanetRegistry;
             var planetInfo = planetContext.SelectedPlanetInfo;
-            if (planets is null ||
+            if (planetRegistry is null ||
                 planetInfo is null)
             {
                 planetText.text = "Null";
@@ -519,14 +521,14 @@ namespace Nekoyume.UI
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             planetText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (planets.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
-                planets.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
+            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
+                planetRegistry.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
             {
                 heimdallButton.Text = textInfo.ToTitleCase(heimdallInfo.Name);
             }
 
-            if (planets.TryGetPlanetInfoById(PlanetId.Odin, out var odinInfo) ||
-                planets.TryGetPlanetInfoById(PlanetId.OdinInternal, out odinInfo))
+            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Odin, out var odinInfo) ||
+                planetRegistry.TryGetPlanetInfoById(PlanetId.OdinInternal, out odinInfo))
             {
                 odinButton.Text = textInfo.ToTitleCase(odinInfo.Name);
             }

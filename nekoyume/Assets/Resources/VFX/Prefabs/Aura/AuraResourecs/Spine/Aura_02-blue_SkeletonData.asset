@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Aura_02-blue_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: e36a6759889019d46a48a4b291fcec3a, type: 2}
+  - {fileID: 11400000, guid: 2e3ce32173dc0b6409a91bf2be0c29c7, type: 2}
   scale: 0.01
   skeletonJSON: {fileID: 4900000, guid: d0e1e6d5f8e3aa946beed0771266f56c, type: 3}
   isUpgradingBlendModeMaterials: 0
@@ -21,12 +21,12 @@ MonoBehaviour:
     requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials:
-    - pageName: Aura_02-yellow.png
-      material: {fileID: 2100000, guid: 6000e8128f105334c9b5739f79729953, type: 2}
+    - pageName: Aura_02-blue.png
+      material: {fileID: 2100000, guid: 6b6278945c9ed614a98800f1b3c9ae99, type: 2}
     multiplyMaterials: []
     screenMaterials:
-    - pageName: Aura_02-yellow.png
-      material: {fileID: 2100000, guid: b36766930aa55f34d900b09c45b8ff94, type: 2}
+    - pageName: Aura_02-blue.png
+      material: {fileID: 2100000, guid: eae1e64c924c5ce4d97828937dde03be, type: 2}
   skeletonDataModifiers: []
   fromAnimation: []
   toAnimation: []

@@ -779,6 +779,10 @@ namespace Nekoyume.UI
                         var material = ItemFactory.CreateMaterial(row);
                         mailRewards.Add(new MailReward(material, fungibleCount));
                     }
+                    foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                    {
+                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                    }
                 }
 
                 UpdateTabs();
@@ -805,6 +809,58 @@ namespace Nekoyume.UI
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                    if (row is null)
+                    {
+                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        continue;
+                    }
+
+                    var material = ItemFactory.CreateMaterial(row);
+                    showQueue.Enqueue(() => itemTooltip.Show(
+                        material,
+                        L10nManager.Localize("UI_OK"),
+                        true,
+                        () => UniTask.WaitWhile(itemTooltip.IsActive)
+                            .ToObservable()
+                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
+                        itemCount: count)
+                    );
+                }
+            }
+
+            showQueue.Dequeue()?.Invoke();
+        }
+
+        public void Read(ClaimItemsMail claimItemsMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
+            var game = Game.Game.instance;
+            claimItemsMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                claimItemsMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            var showQueue = new Queue<System.Action>();
+            if (claimItemsMail.FungibleAssetValues is not null)
+            {
+                foreach (var fav in
+                         claimItemsMail.FungibleAssetValues)
+                {
+                    // TODO: Enqueue functions.
+                }
+            }
+
+            if (claimItemsMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemTooltip = ItemTooltip.Find(ItemType.Material);
+                foreach (var (fungibleId, count) in
+                         claimItemsMail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
                     if (row is null)
                     {
                         Debug.LogWarning($"Not found material sheet row. {fungibleId}");
