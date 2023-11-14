@@ -482,7 +482,6 @@ namespace Nekoyume.UI
                     Debug.LogWarning($"value is null. last is {last.name}");
                     continue;
                 }
-                Debug.Log(value.GetType());
                 value.Initialize();
                 last = value;
             }
