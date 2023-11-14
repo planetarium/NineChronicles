@@ -545,7 +545,7 @@ namespace Nekoyume.UI
 
         public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
-            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
             Debug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
