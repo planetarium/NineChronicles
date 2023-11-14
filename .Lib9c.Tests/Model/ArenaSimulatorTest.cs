@@ -91,17 +91,21 @@ namespace Lib9c.Tests
             }
         }
 
-        [Fact]
-        public void HpIncreasingModifier()
+        [Theory]
+        [InlineData(10)]
+        [InlineData(5)]
+        [InlineData(null)]
+        public void HpIncreasingModifier(int? modifier)
         {
-            var simulator = new ArenaSimulator(_random, 10);
+            var simulator = modifier.HasValue ? new ArenaSimulator(_random, modifier.Value) : new ArenaSimulator(_random);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
             var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
             var log = simulator.Simulate(myDigest, enemyDigest, arenaSheets);
+            var expectedHpModifier = modifier ?? 2;
 
             Assert.Equal(_random, simulator.Random);
-            Assert.Equal(10, simulator.HpModifier);
+            Assert.Equal(expectedHpModifier, simulator.HpModifier);
 
             var turn = log.Events.OfType<ArenaTurnEnd>().Count();
             Assert.Equal(simulator.Turn, turn);
@@ -113,7 +117,7 @@ namespace Lib9c.Tests
             Assert.Equal(2, players.Count);
             foreach (var player in players)
             {
-                Assert.Equal(player.Stats.BaseHP * 10, player.CurrentHP);
+                Assert.Equal(player.Stats.BaseHP * expectedHpModifier, player.CurrentHP);
             }
         }
     }

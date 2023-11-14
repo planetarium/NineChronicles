@@ -10,7 +10,7 @@ using Priority_Queue;
 namespace Nekoyume.Arena
 {
     /// <summary>
-    /// Introduce at https://github.com/planetarium/lib9c/pull/2229
+    /// Changed at https://github.com/planetarium/lib9c/pull/2229
     /// </summary>
     public class ArenaSimulator : IArenaSimulator
     {
@@ -22,11 +22,11 @@ namespace Nekoyume.Arena
         public ArenaLog Log { get; private set; }
         public int HpModifier { get; }
 
-        public ArenaSimulator(IRandom random, int hpModifier)
+        public ArenaSimulator(IRandom random, int hpModifier = 2)
         {
             Random = random;
             Turn = 1;
-            HpModifier = Math.Max(0, hpModifier);
+            HpModifier = hpModifier;
         }
 
         public ArenaLog Simulate(

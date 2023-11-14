@@ -372,7 +372,7 @@ namespace Nekoyume.Action
             var random = context.GetRandom();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulatorV5(random);
+                var simulator = new ArenaSimulator(random);
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
