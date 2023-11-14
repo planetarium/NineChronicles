@@ -145,22 +145,17 @@ namespace Nekoyume.UI
             }
         }
 
-        // NOTE: Use to mobileContainerAnimator.
-        private static readonly int IdleToShowButtons = Animator.StringToHash("IdleToShowButtons");
-
         [SerializeField] private GameObject pcContainer;
 
         [Header("Mobile")]
 
         [SerializeField] private GameObject mobileContainer;
-        [SerializeField] private Animator mobileContainerAnimator;
         [SerializeField] private RawImage videoImage;
 
+        [SerializeField] private GameObject logoAreaGO;
         [SerializeField] private GameObject touchScreenButtonGO;
         [SerializeField] private Button touchScreenButton;
 
-        // NOTE: `startButtonContainer` will be enabled when the mobileContainerAnimator
-        //       is in the `IdleToShowButtons` state.
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
@@ -357,15 +352,8 @@ namespace Nekoyume.UI
             ApplyCurrentPlanetInfo(_planetContext);
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
-            if (mobileContainerAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash
-                != IdleToShowButtons)
-            {
-                mobileContainerAnimator.Play("Idle", 0);
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
-            }
-
-            // videoImage.gameObject.SetActive(false);
-            startButtonContainer.SetActive(false);
+            logoAreaGO.SetActive(false);
+            startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
             ShowMobile();
 #else
@@ -380,13 +368,7 @@ namespace Nekoyume.UI
         {
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
-            if (mobileContainerAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash
-                != IdleToShowButtons)
-            {
-                mobileContainerAnimator.Play("Idle");
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
-            }
-
+            logoAreaGO.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 

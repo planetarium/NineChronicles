@@ -1760,8 +1760,8 @@ MonoBehaviour:
   tutorialActions: 
   pcContainer: {fileID: 6668649362734582986}
   mobileContainer: {fileID: 6004842978331103633}
-  mobileContainerAnimator: {fileID: 422779642905769095}
   videoImage: {fileID: 5860571314653810958}
+  logoAreaGO: {fileID: 1457498944839203433}
   touchScreenButtonGO: {fileID: 4943159830034945701}
   touchScreenButton: {fileID: 1007397819372763151}
   startButtonContainer: {fileID: 3860952466932365792}
@@ -11231,7 +11231,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2724005287680946405}
-  - component: {fileID: 422779642905769095}
   m_Layer: 5
   m_Name: Mobile
   m_TagString: Untagged
@@ -11271,26 +11270,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &422779642905769095
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6004842978331103633}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 982341d476729f745b8773894e827214, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6074018489475148619
 GameObject:
   m_ObjectHideFlags: 0
