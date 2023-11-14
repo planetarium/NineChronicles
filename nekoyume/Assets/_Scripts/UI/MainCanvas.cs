@@ -222,11 +222,30 @@ namespace Nekoyume.UI
             
             _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
+
+            _secondWidgets.Add(Widget.Create<BattlePreparation>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RaidPreparation>());
+            yield return null;
+
+            // module
             _secondWidgets.Add(Widget.Create<Craft>());
+            _secondWidgets.Add(Widget.Create<Grind>());
             yield return null;
 
             // header menu
             _secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
+            // Popup included in header menu
+            _secondWidgets.Add(Widget.Create<MailPopup>());
+            _secondWidgets.Add(Widget.Create<QuestPopup>());
+            _secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
+            _secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
+            _secondWidgets.Add(Widget.Create<RankPopup>());
+            _secondWidgets.Add(Widget.Create<ChatPopup>());
+            _secondWidgets.Add(Widget.Create<QuitSystem>());
+            _secondWidgets.Add(Widget.Create<BuffBonusPopup>());
             yield return null;
             
             _secondWidgets.Add(Widget.Create<SweepPopup>());
@@ -455,31 +474,24 @@ namespace Nekoyume.UI
 
         public IEnumerator InitializeSecondWidgets()
         {
-            try
+            Widget last = null;
+            foreach (var value in _secondWidgets)
             {
-                Widget last = null;
-                foreach (var value in _secondWidgets)
+                if (value is null)
                 {
-                    if (value is null)
-                    {
-                        Debug.LogWarning($"value is null. last is {last.name}");
-                        continue;
-                    }
-
-                    value.Initialize();
-                    last = value;
+                    Debug.LogWarning($"value is null. last is {last.name}");
+                    continue;
                 }
-
-                Widgets.AddRange(_secondWidgets);
-                UpdateLayers();
-
-                Widget.Find<SettingPopup>().transform.SetAsLastSibling();
-                EventManager.UpdateEventContainer(transform);
+                Debug.Log(value.GetType());
+                value.Initialize();
+                last = value;
             }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-            }
+
+            Widgets.AddRange(_secondWidgets);
+            UpdateLayers();
+
+            Widget.Find<SettingPopup>().transform.SetAsLastSibling();
+            EventManager.UpdateEventContainer(transform);
 
             yield return null;
         }
