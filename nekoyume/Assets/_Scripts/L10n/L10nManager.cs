@@ -239,6 +239,7 @@ namespace Nekoyume.L10n
                     ChineseSimplified = csvReader.GetField<string>("ChineseSimplified"),
                     ChineseTraditional = csvReader.GetField<string>("ChineseTraditional"),
                     Tagalog = csvReader.GetField<string>("Tagalog"),
+                    Vietnam = csvReader.GetField<string>("Vietnam"),
                 };
                 records.Add(record);
             }

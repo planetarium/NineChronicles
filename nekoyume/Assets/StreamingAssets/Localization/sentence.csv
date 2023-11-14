@@ -1,4 +1,4 @@
-Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog
+Key,English,Korean,Portuguese,Japanese,Spanish,Thai,Indonesian,Russian,ChineseSimplified,ChineseTraditional,Tagalog,Vietnam
 STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST,"Your account already exists.
 To play an existing account, import a keystore from your PC.
 Or you can create a new character on a new Planet.","당신의 계정이 이미 존재합니다.
@@ -21,8 +21,8 @@ Atau Anda dapat membuat karakter baru di planet baru.","Ваша учетная 
 要播放現有帳戶，請從PC匯入keystore。
 或者，您可以在新行星上創建新角色。","Ang iyong account ay mayroon na.
 Upang maglaro ng isang umiiral na account, i-import ang isang keystore mula sa iyong PC.
-O maaari kang lumikha ng isang bagong character sa isang bagong planeta."
-STC_NO_ACCOUNT,"No account","계정 없음","Nenhuma conta","アカウントなし","Nenhuma conta","ไม่มีบัญชี","Tidak ada akun","Нет аккаунта","没有帐户","沒有帳戶","Walang account"
+O maaari kang lumikha ng isang bagong character sa isang bagong planeta.",
+STC_NO_ACCOUNT,No account,계정 없음,Nenhuma conta,アカウントなし,Nenhuma conta,ไม่มีบัญชี,Tidak ada akun,Нет аккаунта,没有帐户,沒有帳戶,Walang account,
 STC_REQUIRED_CAMERA_PERMISSION_FOR_IMPORT_ACCOUNT_QR_CODE,"To import an account via QR code, you need to allow camera permission.
 You can enable permission in system settings.","QR 코드를 통해 계정을 가져 오려면 카메라 권한을 허용해야합니다.
 시스템 설정에서 권한을 활성화 할 수 있습니다.","Para importar uma conta via código QR, você precisa permitir a permissão da câmera.
@@ -34,4 +34,4 @@ Anda dapat mengaktifkan izin di pengaturan sistem.","Чтобы импортир
 Вы можете включить разрешение в настройках системы.","要通过QR码导入帐户，您需要允许使用相机。
 您可以在系统设置中启用权限。","要通過QR碼導入帳戶，您需要允許使用相機。
 您可以在系統設置中啟用權限。","Upang i-import ang isang account sa pamamagitan ng QR code, kailangan mong pahintulutan ang pahintulot ng kamera.
-Maaari mong paganahin ang pahintulot sa mga setting ng system."
+Maaari mong paganahin ang pahintulot sa mga setting ng system.",
