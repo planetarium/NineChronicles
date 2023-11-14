@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 
 namespace Nekoyume.Planet
 {
-    public class Planets
+    public class PlanetRegistry
     {
         private readonly string _planetRegistryUrl;
         private List<PlanetInfo> _planetInfos;
@@ -17,7 +17,7 @@ namespace Nekoyume.Planet
         public bool IsInitialized { get; private set; }
         public IEnumerable<PlanetInfo> PlanetInfos => _planetInfos;
 
-        public Planets(string planetRegistryUrl)
+        public PlanetRegistry(string planetRegistryUrl)
         {
             if (string.IsNullOrEmpty(planetRegistryUrl))
             {
@@ -37,7 +37,7 @@ namespace Nekoyume.Planet
                 return true;
             }
 
-            Debug.Log("[Planets] start initialization");
+            Debug.Log("[PlanetRegistry] start initialization");
             using var req = UnityWebRequest.Get(_planetRegistryUrl);
             var cts = new CancellationTokenSource();
             cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
@@ -49,14 +49,14 @@ namespace Nekoyume.Planet
             {
                 if (ex.CancellationToken == cts.Token)
                 {
-                    Debug.LogError($"[Planets] initialize failed due to timeout({timeout})");
+                    Debug.LogError($"[PlanetRegistry] initialize failed due to timeout({timeout})");
                     return false;
                 }
             }
 
             if (req.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"[Planets] initialize failed: {req.error}");
+                Debug.LogError($"[PlanetRegistry] initialize failed: {req.error}");
                 return false;
             }
 
@@ -67,19 +67,19 @@ namespace Nekoyume.Planet
             {
                 if (planetInfos.Count == 0)
                 {
-                    Debug.LogError("[Planets] initialize failed: count of planet infos is 0.");
+                    Debug.LogError("[PlanetRegistry] initialize failed: count of planet infos is 0.");
                     return false;
                 }
 
                 _planetInfos = planetInfos;
                 var text = string.Join(", ", _planetInfos.Select(e =>
                     $"{e.ID.ToString()}({e.Name})"));
-                Debug.Log($"[Planets] initialize succeeded: [{text}]");
+                Debug.Log($"[PlanetRegistry] initialize succeeded: [{text}]");
 
                 IsInitialized = true;
             }
 
-            Debug.Log($"[Planets] finish initialization: {IsInitialized}");
+            Debug.Log($"[PlanetRegistry] finish initialization: {IsInitialized}");
             return IsInitialized;
         }
 

@@ -13,7 +13,7 @@ namespace Nekoyume
 {
     public static class GraphQlHttpClientExtensions
     {
-        public static async UniTask<T> StateQueryAsync<T>(
+        public static async UniTask<(GraphQLError[]? errors, T? result)> StateQueryAsync<T>(
             this GraphQLHttpClient client,
             string query)
         {
@@ -37,10 +37,10 @@ namespace Nekoyume
                 }
             }
 
-            return response.Data.StateQuery;
+            return (response.Errors, response.Data.StateQuery);
         }
 
-        public static async UniTask<AgentGraphType> QueryAgentAsync(
+        public static async UniTask<(GraphQLError[]? errors, AgentGraphType? result)> QueryAgentAsync(
             this GraphQLHttpClient client,
             Address agentAddress)
         {
@@ -51,16 +51,18 @@ namespace Nekoyume
             return await client.StateQueryAsync<AgentGraphType>(query);
         }
 
-        public static async UniTask<AvatarsGraphType> QueryAvatarsAsync(
+        public static async UniTask<(GraphQLError[]? errors, AvatarsGraphType? result)> QueryAvatarsAsync(
             this GraphQLHttpClient client,
             params string[] avatarAddresses)
         {
             if (avatarAddresses.Length == 0)
             {
-                return new AvatarsGraphType
-                {
-                    Avatars = Array.Empty<AvatarGraphType>(),
-                };
+                return (
+                    null,
+                    new AvatarsGraphType
+                    {
+                        Avatars = Array.Empty<AvatarGraphType>(),
+                    });
             }
 
             var sb = new StringBuilder("query { stateQuery { avatars(addresses: [");
@@ -75,7 +77,7 @@ namespace Nekoyume
             return await client.StateQueryAsync<AvatarsGraphType>(query);
         }
 
-        public static async UniTask<AvatarsGraphType> QueryAvatarsByAgentAddressAsync(
+        public static async UniTask<(GraphQLError[]? errors, AvatarsGraphType? result)> QueryAvatarsByAgentAddressAsync(
             this GraphQLHttpClient client,
             string agentAddress)
         {
