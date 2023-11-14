@@ -38,6 +38,12 @@ namespace Editor
                 BuildTarget.StandaloneWindows);
         }
 
+        [MenuItem("Build/AssetBundles/Delete Cache")]
+        public static void DeleteCache()
+        {
+            UnityEngine.Caching.ClearCache();
+        }
+
         private static void BuildAllAssetBundles(string path, BuildTarget target)
         {
             if (!Directory.Exists(path))
