@@ -679,5 +679,9 @@ namespace Nekoyume.UI
             Find<BattlePreparation>().Close();
             Find<Grind>().Show();
         }
+        public void TutorialActionSeasonPassGuidePopup()
+        {
+            Widget.Find<SeasonPassNewPopup>().Show();
+        }
     }
 }
