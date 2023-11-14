@@ -582,5 +582,32 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0 * Currencies.Mead, nextState.GetBalance(patronAddress, Currencies.Mead));
             Assert.Equal(balance * Currencies.Mead, nextState.GetBalance(agentAddress, Currencies.Mead));
         }
+
+        [Fact]
+        public void NoRewardWhenEmptySupply()
+        {
+            var weekly = new WeeklyArenaState(0);
+            var gameConfigState = new GameConfigState();
+            gameConfigState.Set(_tableSheets.GameConfigSheet);
+
+            var currency = Currency.Legacy("NCG", 2, null);
+            IAccount states = new Account(MockState.Empty)
+                .SetState(GoldCurrencyState.Address, new GoldCurrencyState(currency, 0).Serialize())
+                .SetState(weekly.address, weekly.Serialize())
+                .SetState(Addresses.GoldDistribution, new List())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
+            var action = new RewardGold();
+
+            IAccount nextState = action.Execute(
+                new ActionContext()
+                {
+                    BlockIndex = 42,
+                    PreviousState = states,
+                    Miner = default,
+                }
+            );
+
+            Assert.Equal(0 * currency, nextState.GetBalance(default, currency));
+        }
     }
 }
