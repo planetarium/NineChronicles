@@ -102,6 +102,7 @@ namespace Nekoyume.AssetBundleHelper
             }
             else
             {
+                Debug.LogError($"Request URL: {www.url}");
                 Debug.LogError($"AssetBundle Download failed: {www.error}");
             }
         }
