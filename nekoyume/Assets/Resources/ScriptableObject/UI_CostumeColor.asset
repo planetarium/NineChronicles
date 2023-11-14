@@ -19,6 +19,10 @@ MonoBehaviour:
   - Light
   - LeopardPrint1
   - LeopardPrint2
+  - LeopardPrint3
+  - LeopardPrint4
+  - LeopardPrint5
+  - Light2
   colorSelectList:
   - itemSubType: 2
     colorSelect:
@@ -58,6 +62,26 @@ MonoBehaviour:
       color: {r: 0.39607844, g: 0.39607844, b: 0.39215687, a: 1}
     - colorSelectType: 2
       color: {r: 0.34117648, g: 0.3764706, b: 0.8666667, a: 1}
+    - colorSelectType: 5
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.7176471, g: 0.882353, b: 0.96470594, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.41960788, g: 0.9607844, b: 0.003921569, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.9215687, g: 0.9803922, b: 0.98823535, a: 1}
+    - colorSelectType: 6
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 7
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.9921569, g: 0.7176471, b: 0.7568628, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.91372555, g: 0.27450982, b: 0.94117653, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.95294124, g: 0.8078432, b: 0.19607845, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.09019608, g: 0.09019608, b: 0.09019608, a: 1}
   - itemSubType: 4
     colorSelect:
     - colorSelectType: 0
@@ -94,3 +118,23 @@ MonoBehaviour:
       color: {r: 0.39607844, g: 0.39607844, b: 0.39215687, a: 1}
     - colorSelectType: 2
       color: {r: 0.34117648, g: 0.3764706, b: 0.8666667, a: 1}
+    - colorSelectType: 5
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.7176471, g: 0.882353, b: 0.96470594, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.41960788, g: 0.9607844, b: 0.003921569, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.9215687, g: 0.9803922, b: 0.98823535, a: 1}
+    - colorSelectType: 6
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 7
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.9921569, g: 0.7176471, b: 0.7568628, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.91372555, g: 0.27450982, b: 0.94117653, a: 1}
+    - colorSelectType: 8
+      color: {r: 0.95294124, g: 0.8078432, b: 0.19607845, a: 1}
+    - colorSelectType: 0
+      color: {r: 0.09019608, g: 0.09019608, b: 0.09019608, a: 1}
