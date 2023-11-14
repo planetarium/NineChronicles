@@ -80,6 +80,29 @@ namespace Lib9c.Tests.Action.Summon
         }
 
         [Theory]
+        [InlineData(10001)]
+        [InlineData(10002)]
+        public void CumulativeRatio(int groupId)
+        {
+            var sheet = _tableSheets.SummonSheet;
+            var targetRow = sheet.OrderedList.First(r => r.GroupId == groupId);
+
+            for (var i = 1; i <= 15; i++)
+            {
+                var sum = 0;
+                for (var j = 0; j < i; j++)
+                {
+                    if (j < targetRow.Recipes.Count)
+                    {
+                        sum += targetRow.Recipes[j].Item2;
+                    }
+                }
+
+                Assert.Equal(sum, targetRow.CumulativeRatio(i));
+            }
+        }
+
+        [Theory]
         // success first group
         [InlineData(10001, 1, 800201, 1, 1, new[] { 10610000 }, null)]
         [InlineData(10001, 2, 800201, 2, 54, new[] { 10620000, 10630000 }, null)]
