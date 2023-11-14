@@ -50,7 +50,7 @@ namespace Lib9c.Tests
         [Fact]
         public void Simulate()
         {
-            var simulator = new ArenaSimulator(_random);
+            var simulator = new ArenaSimulator(_random, 10);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
             var arenaSheets = _tableSheets.GetArenaSimulatorSheets();

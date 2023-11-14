@@ -252,7 +252,7 @@ namespace Lib9c.Tests.Action.Scenario
                 });
                 var avatarState = prevState.GetAvatarStateV2(avatarAddress);
                 var enemyAvatarState = prevState.GetAvatarStateV2(enemyAvatarAddress);
-                var simulator = new ArenaSimulator(new TestRandom());
+                var simulator = new ArenaSimulator(new TestRandom(), 10);
                 var myArenaPlayerDigest = new ArenaPlayerDigest(
                     avatarState,
                     battle.equipments,
