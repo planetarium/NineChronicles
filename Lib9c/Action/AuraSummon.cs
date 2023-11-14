@@ -91,7 +91,7 @@ namespace Nekoyume.Action
             {
                 var recipeId = 0;
                 var targetRatio = random.Next(1, summonRow.TotalRatio() + 1);
-                for (var j = 1; j <= 15; j++)
+                for (var j = 1; j <= SummonSheet.Row.MaxRecipeCount; j++)
                 {
                     if (targetRatio <= summonRow.CumulativeRatio(j))
                     {
@@ -107,7 +107,8 @@ namespace Nekoyume.Action
                     throw new SheetRowNotFoundException(
                         addressesHex,
                         nameof(EquipmentItemRecipeSheet),
-                        recipeId);
+                        recipeId
+                    );
                 }
 
                 // Validate Recipe ResultEquipmentId

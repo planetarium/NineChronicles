@@ -9,6 +9,7 @@ namespace Nekoyume.TableData.Summon
     {
         public class Row : SheetRow<int>
         {
+            public const int MaxRecipeCount = 15;
             public override int Key => GroupId;
 
             public int GroupId { get; private set; }
@@ -28,7 +29,7 @@ namespace Nekoyume.TableData.Summon
                 if (index is < 1 or > 15)
                 {
                     throw new IndexOutOfRangeException(
-                        $"{index} is not valid index. Use between 1 and 15.");
+                        $"{index} is not valid index. Use between 1 and {MaxRecipeCount}.");
                 }
 
                 var ratio = 0;
@@ -52,12 +53,14 @@ namespace Nekoyume.TableData.Summon
                 Recipes.Add((ParseInt(fields[6]), ParseInt(fields[7])));
 
                 // Recipe3 ~ 15 are optional
-                for (var i = 3; i < 16; i++)
+                for (var i = 3; i <= MaxRecipeCount; i++)
                 {
                     var idx = 2 * i + 2;
-                    if (TryParseInt(fields[idx], out _) && TryParseInt(fields[idx + 1], out _))
+                    if (fields.Count >= idx + 2 &&
+                        TryParseInt(fields[idx], out _) &&
+                        TryParseInt(fields[idx + 1], out _))
                     {
-                        Recipes.Add((ParseInt(fields[idx]), ParseInt(fields[idx+1])));
+                        Recipes.Add((ParseInt(fields[idx]), ParseInt(fields[idx + 1])));
                     }
                     else
                     {
