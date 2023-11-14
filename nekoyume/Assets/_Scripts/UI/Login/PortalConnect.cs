@@ -302,7 +302,7 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
@@ -325,7 +325,7 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -358,7 +358,7 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
         }
 
-        public async Task<Address?> SendGoogleIdToken(string idToken)
+        public async Task<Address?> SendGoogleIdTokenAsync(string idToken)
         {
             Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
@@ -395,7 +395,7 @@ namespace Nekoyume.UI
         }
 
 
-        public async Task<Address?> SendAppleIdToken(string idToken)
+        public async Task<Address?> SendAppleIdTokenAsync(string idToken)
         {
             Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");

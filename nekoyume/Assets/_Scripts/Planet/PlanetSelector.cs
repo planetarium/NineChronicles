@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
@@ -8,6 +9,7 @@ using Libplanet.Crypto;
 using Nekoyume.GraphQL.GraphTypes;
 using UniRx;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.Planet
@@ -31,7 +33,7 @@ namespace Nekoyume.Planet
         public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
             CurrentPlanetInfoSubject { get; } = new();
 
-        public static async UniTask<PlanetContext> InitializePlanetsAsync(
+        public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
             PlanetContext context)
         {
             Debug.Log("[PlanetSelector] Initializing Planets...");
@@ -66,7 +68,7 @@ namespace Nekoyume.Planet
             {
                 Debug.Log("[PlanetSelector] Initializing Planets with" +
                           $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
-                context.Planets = new Planets(clo.PlanetRegistryUrl);
+                context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
             }
             catch (ArgumentException)
             {
@@ -77,8 +79,16 @@ namespace Nekoyume.Planet
                 return context;
             }
 
-            await context.Planets.InitializeAsync();
-            if (!context.Planets.IsInitialized)
+            var sw = new Stopwatch();
+            sw.Start();
+            await context.PlanetRegistry.InitializeAsync();
+            sw.Stop();
+            context.ElapsedTuples.Add((
+                "Unity_Elapsed_Initialize_PlanetRegistry",
+                sw.ElapsedMilliseconds,
+                "Fetching planet infos from planet registry."));
+            Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.");
+            if (!context.PlanetRegistry.IsInitialized)
             {
                 context.Error = "[PlanetSelector] Failed to initialize Planets.";
                 Debug.LogError(context.Error);
@@ -98,7 +108,7 @@ namespace Nekoyume.Planet
             if (!string.IsNullOrEmpty(context.CommandLineOptions.SelectedPlanetId))
             {
                 Debug.Log("[PlanetSelector] Selected planet id found in command line options.");
-                if (context.Planets is null)
+                if (context.PlanetRegistry is null)
                 {
                     context.Error = "[PlanetSelector] Planets is null." +
                                     " Use InitializeAsync() before calling this method.";
@@ -106,7 +116,7 @@ namespace Nekoyume.Planet
                     return context;
                 }
 
-                if (context.Planets.TryGetPlanetInfoByIdString(
+                if (context.PlanetRegistry.TryGetPlanetInfoByIdString(
                         context.CommandLineOptions.SelectedPlanetId,
                         out var planetInfo))
                 {
@@ -132,7 +142,7 @@ namespace Nekoyume.Planet
             if (HasCachedPlanetIdString)
             {
                 Debug.Log("[PlanetSelector] Cached planet id found in player prefs.");
-                if (context.Planets is null)
+                if (context.PlanetRegistry is null)
                 {
                     context.Error = "[PlanetSelector] Planets is null." +
                                     " Use InitializeAsync() before calling this method.";
@@ -140,7 +150,7 @@ namespace Nekoyume.Planet
                     return context;
                 }
 
-                if (context.Planets.TryGetPlanetInfoByIdString(
+                if (context.PlanetRegistry.TryGetPlanetInfoByIdString(
                         CachedPlanetIdString,
                         out var planetInfo))
                 {
@@ -186,7 +196,7 @@ namespace Nekoyume.Planet
         public static PlanetContext SelectPlanetById(PlanetContext context, PlanetId planetId)
         {
             Debug.Log($"[PlanetSelector] Selecting planet by id({planetId})...");
-            if (context.Planets is null)
+            if (context.PlanetRegistry is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
                                 " Use InitializeAsync() before calling this method.";
@@ -200,7 +210,7 @@ namespace Nekoyume.Planet
                 return context;
             }
 
-            if (!context.Planets.TryGetPlanetInfoById(planetId, out var planetInfo))
+            if (!context.PlanetRegistry.TryGetPlanetInfoById(planetId, out var planetInfo))
             {
                 context.Error = $"[PlanetSelector] There is no planet info for planet id({planetId}).";
                 Debug.LogError(context.Error);
@@ -215,7 +225,7 @@ namespace Nekoyume.Planet
             string planetIdString)
         {
             Debug.Log($"[PlanetSelector] Selecting planet by id string({planetIdString})...");
-            if (context.Planets is null)
+            if (context.PlanetRegistry is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
                                 " Use InitializeAsync() before calling this method.";
@@ -229,7 +239,7 @@ namespace Nekoyume.Planet
                 return context;
             }
 
-            if (!context.Planets.TryGetPlanetInfoByIdString(
+            if (!context.PlanetRegistry.TryGetPlanetInfoByIdString(
                     planetIdString,
                     out var planetInfo))
             {
@@ -244,7 +254,7 @@ namespace Nekoyume.Planet
         public static PlanetContext SelectPlanetByName(PlanetContext context, string planetName)
         {
             Debug.Log($"[PlanetSelector] Selecting planet by name({planetName})...");
-            if (context.Planets is null)
+            if (context.PlanetRegistry is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
                                 " Use InitializeAsync() before calling this method.";
@@ -258,7 +268,7 @@ namespace Nekoyume.Planet
                 return context;
             }
 
-            if (!context.Planets.TryGetPlanetInfoByName(planetName, out var planetInfo))
+            if (!context.PlanetRegistry.TryGetPlanetInfoByName(planetName, out var planetInfo))
             {
                 context.Error = $"[PlanetSelector] There is no planet info for planet name({planetName}).";
                 Debug.LogError(context.Error);
@@ -293,7 +303,7 @@ namespace Nekoyume.Planet
             Address agentAddress)
         {
             Debug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
-            if (context.Planets is null)
+            if (context.PlanetRegistry is null)
             {
                 context.Error = "[PlanetSelector] Planets is null." +
                                 " Use InitializeAsync() before calling this method.";
@@ -301,7 +311,7 @@ namespace Nekoyume.Planet
                 return context;
             }
 
-            if (!context.Planets.PlanetInfos?.Any() ?? true)
+            if (!context.PlanetRegistry.PlanetInfos?.Any() ?? true)
             {
                 context.Error = "[PlanetSelector] Planets.PlanetInfos is null or empty." +
                                 " It cannot proceed without planet infos.";
@@ -309,9 +319,11 @@ namespace Nekoyume.Planet
                 return context;
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
             var planetAccountInfos = new List<PlanetAccountInfo>();
             var jsonSerializer = new NewtonsoftJsonSerializer();
-            foreach (var planetInfo in context.Planets.PlanetInfos)
+            foreach (var planetInfo in context.PlanetRegistry.PlanetInfos)
             {
                 if (planetInfo.RPCEndpoints.HeadlessGql.Count == 0)
                 {
@@ -333,7 +345,15 @@ namespace Nekoyume.Planet
                 Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
-                var avatarsGraphTypes = await client.QueryAgentAsync(agentAddress);
+                var (errors, avatarsGraphTypes) = await client.QueryAgentAsync(agentAddress);
+                if (errors != null)
+                {
+                    context.Error = $"[PlanetSelector] Failed to query agent and avatars for planet({planetInfo.ID})." +
+                                    "\nPlease check your internet connection and try again.";
+                    Debug.LogError(context.Error);
+                    break;
+                }
+
                 Debug.Log($"[PlanetSelector] {avatarsGraphTypes}");
                 var info = new PlanetAccountInfo(
                     planetInfo.ID,
@@ -341,6 +361,13 @@ namespace Nekoyume.Planet
                     avatarsGraphTypes.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
+
+            sw.Stop();
+            context.ElapsedTuples.Add((
+                "Unity_Elapsed_Update_PlanetAccountInfos",
+                sw.ElapsedMilliseconds,
+                "Fetching agent and avatars from planets."));
+            Debug.Log($"[PlanetSelector] PlanetAccountInfos updated in {sw.ElapsedMilliseconds}ms.");
 
             if (context.HasError)
             {
@@ -419,8 +446,8 @@ namespace Nekoyume.Planet
             clo.RpcServerPort = uri.Port;
 
             // FIXME: Other hosts are selected randomly for now.
-            clo.ApiServerHost = rpcEndpoints.HeadlessGql.Count > 0
-                ? rpcEndpoints.HeadlessGql[Random.Range(0, rpcEndpoints.HeadlessGql.Count)]
+            clo.ApiServerHost = rpcEndpoints.DataProviderGql.Count > 0
+                ? rpcEndpoints.DataProviderGql[Random.Range(0, rpcEndpoints.DataProviderGql.Count)]
                 : null;
             clo.MarketServiceHost = rpcEndpoints.MarketRest.Count > 0
                 ? rpcEndpoints.MarketRest[Random.Range(0, rpcEndpoints.MarketRest.Count)]
