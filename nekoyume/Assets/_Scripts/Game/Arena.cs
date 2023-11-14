@@ -37,6 +37,7 @@ namespace Nekoyume.Game
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
         private readonly ISubject<Arena> _onArenaEnd = new Subject<Arena>();
         private const float SkillDelay = 0.1f;
+        private const float AnimatorTimeScale = 2.5f;
         private Coroutine _battleCoroutine;
         private int _turnNumber;
         private bool _isPlaying;
@@ -141,8 +142,8 @@ namespace Nekoyume.Game
             container.SetActive(true);
             me.Init(myDigest, myAvatarAddress, enemy, false);
             enemy.Init(enemyDigest, enemyAvatarAddress, me, true);
-            me.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
-            enemy.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
+            me.Animator.TimeScale = AnimatorTimeScale;
+            enemy.Animator.TimeScale = AnimatorTimeScale;
 
             _turnNumber = 1;
 
