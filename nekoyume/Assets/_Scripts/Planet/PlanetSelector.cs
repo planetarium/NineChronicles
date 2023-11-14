@@ -345,7 +345,15 @@ namespace Nekoyume.Planet
                 Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
-                var avatarsGraphTypes = await client.QueryAgentAsync(agentAddress);
+                var (errors, avatarsGraphTypes) = await client.QueryAgentAsync(agentAddress);
+                if (errors != null)
+                {
+                    context.Error = $"[PlanetSelector] Failed to query agent and avatars for planet({planetInfo.ID})." +
+                                    "\nPlease check your internet connection and try again.";
+                    Debug.LogError(context.Error);
+                    break;
+                }
+
                 Debug.Log($"[PlanetSelector] {avatarsGraphTypes}");
                 var info = new PlanetAccountInfo(
                     planetInfo.ID,
