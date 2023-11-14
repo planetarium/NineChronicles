@@ -39,6 +39,7 @@ namespace Nekoyume.UI
                 OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
                 return;
             }
+            base.Close();
             Find<SeasonPass>().Show();
         }
     }

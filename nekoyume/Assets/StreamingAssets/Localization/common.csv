@@ -8,13 +8,13 @@ CRAFT,Craft,제작,Fabricar,製作,Fabricar,สร้าง,Membuat,,制造,制�
 EXCHANGE,Exchange,거래,Trocar,交換,Intercambio,แลกเปลี่ยน,Bertukar,,交换,交易,Ipalit,
 OBTAIN,Obtain,획득,Obter,入手,Obtener,ได้รับ,Mendapatkan,,获取,獲取,Makamit,
 SYSTEM,System,시스템,Sistema,システム,Sistema,ระบบ,Sistem,,系统,繫統,Sistema,
-PLAYER_INIT_0,"It’s full of monsters here, too..",여기도 우글우글하군..,Este lugar está cheio de pequenos monstros.,ここは小さなモンスターでいっぱいだ。,Este lugar esta lleno de pequeños monstruos.,สถานที่แห่งนี้เต็มไปด้วยสัตว์ประหลาดตัวน้อย,Tempat ini penuh dengan monster-monster kecil.,,这个地方到处都是小怪物。,這地方充滿了小怪物。,Ang lugar na ito ay puno ng malilit na halimaw.,
+PLAYER_INIT_0,"It's full of monsters here, too..",여기도 우글우글하군..,Este lugar está cheio de pequenos monstros.,ここは小さなモンスターでいっぱいだ。,Este lugar esta lleno de pequeños monstruos.,สถานที่แห่งนี้เต็มไปด้วยสัตว์ประหลาดตัวน้อย,Tempat ini penuh dengan monster-monster kecil.,,这个地方到处都是小怪物。,這地方充滿了小怪物。,Ang lugar na ito ay puno ng malilit na halimaw.,
 PLAYER_INIT_1,Let's go!,시작해볼까?,Vamos começar!,さあ、はじめよう！,¡Comencemos!,มาเริ่มกันเลย!,Ayo mulai!,,开始吧！,讓我們開始吧！,Umpisahan na natin!,
 PLAYER_INIT_2,I must complete the mission.,미션을 완수해야만 해.,,,,,,,,,,
 PLAYER_INIT_3,I want to go back home..,집에 돌아가고 싶어..,,,,,,,,,,
-PLAYER_INIT_4,We’re going deeper and deeper..,점점 더 깊은 곳으로 들어가고 있어..,,,,,,,,,,
+PLAYER_INIT_4,We're going deeper and deeper..,점점 더 깊은 곳으로 들어가고 있어..,,,,,,,,,,
 PLAYER_ATTACK_0,Hiyah!,이얍!,Oops!,よっ！,¡Oops!,อุ่ย!,Oops!,,哎呀！,哎呀！,Oops!,
-PLAYER_ATTACK_1,Let’s show the power of this sword!,이 칼의 위력을 보여주마!,,,,,,,,,,
+PLAYER_ATTACK_1,Let's show the power of this sword!,이 칼의 위력을 보여주마!,,,,,,,,,,
 PLAYER_ATTACK_2,Do you think I'll defeat?!,내가 질 것 같아?!,,,,,,,,,,
 PLAYER_ATTACK_3,I'll crush you!,박살을 내줄게!,,,,,,,,,,
 PLAYER_ATTACK_4,I can do this!,난 할 수 있어!,,,,,,,,,,
@@ -54,7 +54,7 @@ menghindari ini!",,!你无法避免！ ...,！您無法避免這个！,!Hindi mo
 ENEMY_DAMAGE_0,Ugh!,으악!,Ugh!,うっ！,¡Ugh!,เอิ๊ก!,Aw!,,啊！,啊！,Ugh!,
 ENEMY_DAMAGE_1,Groan..,으윽..,,,,,,,,,,
 ENEMY_DEAD_0,Ugh...,으윽..,Ugh...,ぐふっ…,Ugh...,เอิ๊ก...,Argh...,,啊...,啊....,Ugh...,
-ENEMY_DEAD_1,I’m frustrated..,분하다..,,,,,,,,,,
+ENEMY_DEAD_1,I'm frustrated..,분하다..,,,,,,,,,,
 ENEMY_DEAD_2,How could I lose?,내가 패배하다니..,,,,,,,,,,
 ENEMY_DEAD_3,Why are you so strong?,왜 이렇게 힘이 세?,,,,,,,,,,
 ENEMY_201003_0,My head is itchy...,머리가 너무 간지러워..,Minha cabeça está coçando ...,頭がムズムズする…,Me duele la cabeza...,ฉันคันหัว...,Kepalaku gatal...,,我的头很痒...,我的頭很癢…,Makati ang aking ulo...,
@@ -262,7 +262,7 @@ UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1,Raise your level through battle!,반복 전
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON,Go to World Map,월드맵,Go to World Map,ワールドマップへ,Ir al Mapa del Mundo,ไปที่แผนที่โลก,Pergi ke Peta Dunia,,进入世界地图,前往世界地圖,Pumunta sa Mapa ng Mundo,
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2,Craft stronger equipment!,더 강한 장비를 만드세요!,Fabrique equipamento mais fortes!,もっと強い装備品を作りましょう！,¡Fabrica equipo más poderoso!,สร้างอุปกรณ์ที่แข็งแกร่งขึ้น!,Buat perlengkapan yang lebih kuat!,,制作更坚固的装备！,打造更強的裝備！,Lumikha ng mas malakas na sandata!,
 UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON,Go to Craft,제작하러 가기,Go to Craft,装備作成へ,Dirigete al taller,ไปที่สร้าง,Pergi ke pandai besi,,进入制作,去制造,Pumunta sa Paglikha,
-UI_MENU,NEMU,메뉴,,,,,,,,,,
+UI_MENU,MENU,메뉴,,,,,,,,,,
 UI_NOTICE,Notice,공지,,,,,,,,,,
 UI_GO_BACK,Back,뒤로,Voltar,戻る,Regresar,กลับไป,Kembali,,返回,後退,Balik,
 UI_GO_MAIN,Main,메인,Principal,メイン,Principal,หน้าหลัก,Utama,,主菜单,主界面,Main,
@@ -488,7 +488,7 @@ UI_ARMOR,Armor,방어구,Armadura,アーマー,Armadura,เกราะ,Baju zir
 UI_BELT,Belt,벨트,Cinto,ベルト,Cinturón,เข็มขัด,sabuk,,皮带,腰帶,Sinturon,
 UI_NECKLACE,Necklace,목걸이,Colar,ネックレス,Collar,สร้อยคอ,kalung,,项链,項鍊,Kuwintas,
 UI_RING,Ring,반지,Anel,リング,Anillo,แหวน,cincin,,戒指,戒指,Singsing,
-UI_AURA,Aura,아우라,Aura,オーラ,Aura,Ōrā,Aura,Aura,气场,氣場,Awra,
+UI_AURA,Aura,아우라,Aura,オーラ,Aura,ออร่า,Aura,Aura,气场,氣場,Awra,
 UI_COST_BLOCK,It will take {0} blocks to complete crafting.,{0} 블록 정도 후에 완성 될꺼야.,São necessários {0} blocos para concluir a criação.,製作完了まであと {0} ブロック,Se necesitarán {0} bloques para completar la fabricación.,ใช้เวลาในการสร้าง {0} บล็อก,Diperlukan {0} blocks untuk menyelesaikan pembuatan.,,将需要{0}个区块来完成手工制作。,需要{0}區塊才能完成製作。,Nangangailan ng {0} blocks para makumpleto ang paglikha.,
 UI_REDEEM_CODE,Redeem Code,코드 사용,Resgate de código,コードを使用,Canjear Código,แลกรหัสหรือบัตรของขวัญ,Redeem Code,,兑换代码,兌換碼,Kunin ang Code,
 UI_REDEEM_CODE_PLACEHOLDER,Input Code,코드 입력,Coloque Código,コードを入力,Escribir el Código,ใส่รหัส,Masukkan Code,,输入代码,輸入代碼,Ilagay ang Code,
@@ -668,7 +668,7 @@ The detailed reopening schedule will be announced on Discord.",市場暫時關�
 UI_RANKING_API_MISSING,"You are not using the '9c.gg' service, so you cannot see the ranking. Please change the 'config' file to see the ranking.","9c.gg 서비스를 사용하지 않고 있어 랭킹을 볼 수 없습니다.
 랭킹을 보려면 'config' 파일을 변경해주세요.","Você não está usando o serviço '9c.gg', então você não pode ver o ranking.
 Por favor, altere o arquivo 'config' para ver a classificação.","あなたがランキングを見ることができないようにするには、「9c.gg」サービスを使用していません。
-ランキングを見て「config」ファイルを変更してください。","No estás utilizando el servicio '9c.gg', por lo que no puedes ver la clasificación. Por favor, cambia el archivo 'config' para poder ver la clasificación.",คุณไม่ได้ใช้บริการ '9c.gg' เลยไม่สามารถดูการจัดอันดับได้ โปรดเปลี่ยน ‘config' ของไฟล์เพื่อดูการจัดอันดับ,"Anda tidak menggunakan layanan '9c.gg', sehingga Anda tidak dapat melihat peringkat.
+ランキングを見て「config」ファイルを変更してください。","No estás utilizando el servicio '9c.gg', por lo que no puedes ver la clasificación. Por favor, cambia el archivo 'config' para poder ver la clasificación.",คุณไม่ได้ใช้บริการ '9c.gg' เลยไม่สามารถดูการจัดอันดับได้ โปรดเปลี่ยน 'config' ของไฟล์เพื่อดูการจัดอันดับ,"Anda tidak menggunakan layanan '9c.gg', sehingga Anda tidak dapat melihat peringkat.
 Silahkan ubah 'config' file untuk melihat ranking.","Вы не используете услугу '9c.gg', так что вы не можете увидеть рейтинг.
 Пожалуйста, измените файл 'config', чтобы увидеть рейтинг.","你是不是用'9c.gg'服务，所以你不能看到排名。
 请更改'config'文件中看到的排名。",您沒有使用“ 9C.GG”服務，因此您看不到排名。請更改“配置”文件以查看排名。,"Ikaw ay hindi gumamit ng serbisyo ng 9c.gg', kaya't hindi mo makita ang pagranggo. Pakiusap, palitan ang 'config' file para makita ang pagranggo.",
@@ -1273,10 +1273,10 @@ UI_INVITE_FRIENDS,Invite Friends,친구 초대,,,,,,,,,,
 UI_INVITE_FRIENDS_BANNER_TITLE,Invite your friends and earn NCG!,친구를 초대하고 NCG를 얻으세요!,,,,,,,,,,
 UI_INVITE_FRIENDS_BANNER_DESC,"Inviter gets {0} NCG instantly.
 Invitee gets {1} NCG now, and {2} NCG more at lv.{3}.","초대한 사람은 즉시 {0} NCG를 받습니다.
-초대받은 사람은 즉시 {1} NCG를 받고, 레벨 {2}에서 추가로 {3} NCG를 받습니다.",,,,,,,,,
-UI_MY_REFERRAL_CODE,My Referral Code,나의 추천인 코드,,,,,,,,,
-UI_SHARE_REFERRAL_CODE,Invite Friends,친구 초대하기,,,,,,,,,
-UI_ENTER_REFERRAL_CODE,Enter Referral Code,초대코드 입력,,,,,,,,,
+초대받은 사람은 즉시 {1} NCG를 받고, 레벨 {2}에서 추가로 {3} NCG를 받습니다.",,,,,,,,,,
+UI_MY_REFERRAL_CODE,My Referral Code,나의 추천인 코드,,,,,,,,,,
+UI_SHARE_REFERRAL_CODE,Invite Friends,친구 초대하기,,,,,,,,,,
+UI_ENTER_REFERRAL_CODE,Enter Referral Code,초대코드 입력,,,,,,,,,,
 UI_ENTER_REFERRAL_CODE_DESC,"Enter the referral code who introduced you to Nine Chronicles M.
 Only 1 referral code can be registered. Register it now get a reward!","나인 크로니클 M을 소개해준 친구의 추천인 코드를 입력하세요.
 추천 코드는 한 번만 등록할 수 있습니다. 지금 등록하고 보상을 받으세요!",,,,,,,,,,
