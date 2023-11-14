@@ -827,6 +827,41 @@ namespace Nekoyume.UI
             showQueue.Dequeue()?.Invoke();
         }
 
+        public void Read(ClaimItemsMail claimItemsMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
+            var game = Game.Game.instance;
+            claimItemsMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                claimItemsMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            var showQueue = new Queue<System.Action>();
+            if (claimItemsMail.Items.Any())
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemTooltip = ItemTooltip.Find(ItemType.Material);
+                foreach (var (id, count) in claimItemsMail.Items)
+                {
+                    var row = materialSheet[id];
+                    var material = ItemFactory.CreateMaterial(row);
+                    showQueue.Enqueue(() => itemTooltip.Show(
+                        material,
+                        L10nManager.Localize("UI_OK"),
+                        true,
+                        () => UniTask.WaitWhile(itemTooltip.IsActive)
+                            .ToObservable()
+                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
+                        itemCount: count)
+                    );
+                }
+            }
+
+            showQueue.Dequeue()?.Invoke();
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)

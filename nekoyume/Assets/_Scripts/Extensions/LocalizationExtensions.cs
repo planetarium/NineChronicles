@@ -223,6 +223,20 @@ namespace Nekoyume
                         sellProductName);
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
                     return await unloadFromMyGaragesRecipientMail.GetCellContentAsync();
+                case ClaimItemsMail claimItemsMail:
+                    var str = "";
+                    foreach (var f in claimItemsMail.FungibleAssetValues)
+                    {
+                        str += $"{f}\n";
+                    }
+
+                    foreach (var tuple in claimItemsMail.Items)
+                    {
+                        var itemName =L10nManager.Localize($"ITEM_NAME_{tuple.id}");
+                        str += $"{itemName} : {tuple.count}";
+                    }
+
+                    return str;
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
