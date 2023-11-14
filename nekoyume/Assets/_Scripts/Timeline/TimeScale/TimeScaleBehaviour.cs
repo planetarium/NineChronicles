@@ -22,7 +22,7 @@ namespace Nekoyume
                 var inputWeight = playable.GetInputWeight(i);
                 if (!(inputWeight > 0f))
                 {
-                    Time.timeScale = 1;
+                    Time.timeScale = Game.Prologue.DefaultTimeScale;
                     continue;
                 }
 
