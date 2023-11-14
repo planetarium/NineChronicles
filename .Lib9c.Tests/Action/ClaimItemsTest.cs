@@ -25,7 +25,6 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly List<Currency> _itemCurrencies;
         private readonly List<Currency> _wrappedFavCurrencies;
-        private readonly List<Currency> _favCurrencies;
         private readonly List<int> _itemIds;
         private readonly Currency _wrappedCrystalCurrency;
 
@@ -47,14 +46,12 @@ namespace Lib9c.Tests.Action
 
             _tableSheets = new TableSheets(sheets);
             _itemIds = _tableSheets.CostumeItemSheet.Values.Take(3).Select(x => x.Id).ToList();
-            _itemCurrencies = _itemIds.Select(id => Currency.Legacy($"Item_T_{id}", 0, minters: null)).ToList();
+            _itemCurrencies = _itemIds.Select(id => Currencies.GetItemCurrency(id, true)).ToList();
             _wrappedFavCurrencies = new List<Currency>();
-            _favCurrencies = new List<Currency>();
             foreach (var currency in new[] { Currencies.Crystal, Currencies.StakeRune })
             {
-                var wrappedCurrency = Currency.Legacy($"FAV__{currency.Ticker}", currency.DecimalPlaces, minters: null);
+                var wrappedCurrency = Currencies.GetWrappedCurrency(currency);
                 _wrappedFavCurrencies.Add(wrappedCurrency);
-                _favCurrencies.Add(currency);
                 if (currency.Ticker == "CRYSTAL")
                 {
                     _wrappedCrystalCurrency = wrappedCurrency;
@@ -213,10 +210,12 @@ namespace Lib9c.Tests.Action
             {
                 var wrappedCurrency = _wrappedFavCurrencies[i];
                 Assert.Equal(wrappedCurrency * 4, states.GetBalance(_signerAddress, wrappedCurrency));
-                var recipientAddress = wrappedCurrency.Equals(_wrappedCrystalCurrency)
-                    ? recipientAgentAddress
-                    : recipientAvatarAddress;
-                var currency = _favCurrencies[i];
+                var currency = Currencies.GetUnwrappedCurrency(wrappedCurrency);
+                var recipientAddress = Currencies.SelectRecipientAddress(
+                    currency,
+                    recipientAgentAddress,
+                    recipientAvatarAddress
+                    );
                 Assert.Equal(currency * 1, states.GetBalance(recipientAddress, currency));
                 var mailFav = mail.FungibleAssetValues.Single(f => f.Currency.Equals(currency));
                 Assert.Equal(currency * 1, mailFav);

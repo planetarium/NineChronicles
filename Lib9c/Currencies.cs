@@ -3,6 +3,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.TableData;
 
@@ -135,5 +136,67 @@ namespace Lib9c
                     .Select(row => row.SoulStoneTicker)
                     .Select(GetSoulStone)
                     .OrderBy(soulStone => soulStone.Hash.GetHashCode());
+
+        public static Address SelectRecipientAddress(Currency currency, Address agentAddress,
+            Address avatarAddress)
+        {
+            var agentCurrencies = new[]
+            {
+                Crystal,
+                Garage,
+                Mead,
+            };
+            return agentCurrencies.Contains(currency) || currency.Ticker == "NCG" ? agentAddress : avatarAddress;
+        }
+
+        public static Currency GetWrappedCurrency(Currency currency)
+        {
+            return Currency.Legacy($"FAV__{currency.Ticker}", currency.DecimalPlaces, minters: null);
+        }
+
+        public static bool IsWrappedCurrency(Currency currency)
+        {
+            return currency.Ticker.StartsWith("FAV");
+        }
+
+        public static Currency GetUnwrappedCurrency(Currency currency)
+        {
+            if (!IsWrappedCurrency(currency))
+            {
+                throw new ArgumentException("{Ticker} is not wrapped currency", currency.Ticker);
+            }
+
+            var wrappedTicker = currency.Ticker;
+            var parsedTicker = wrappedTicker.Split("__");
+            var ticker = parsedTicker[1];
+            return GetMinterlessCurrency(ticker);
+        }
+
+        public static (bool tradable, int itemId) ParseItemCurrency(Currency currency)
+        {
+            if (currency.DecimalPlaces != 0)
+            {
+                throw new ArgumentException(
+                    $"DecimalPlaces of currency are not 0: {currency.Ticker}");
+            }
+
+            var parsedTicker = currency.Ticker.Split("_");
+            if (parsedTicker.Length != 3
+                || parsedTicker[0] != "Item"
+                || (parsedTicker[1] != "NT" && parsedTicker[1] != "T")
+                || !int.TryParse(parsedTicker[2], out var itemId))
+            {
+                throw new ArgumentException(
+                    $"Format of Amount currency's ticker is invalid");
+            }
+
+            return (parsedTicker[1] == "T", itemId);
+        }
+
+        public static Currency GetItemCurrency(int itemId, bool tradable)
+        {
+            var type = tradable ? "T" : "NT";
+            return Currency.Legacy($"Item_{type}_{itemId}", decimalPlaces: 0, minters: null);
+        }
     }
 }

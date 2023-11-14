@@ -115,15 +115,13 @@ namespace Nekoyume.Action
                 var items = new List<(int id, int count)>();
                 foreach (var fungibleAssetValue in fungibleAssetValues)
                 {
-                    var wrappedTicker = fungibleAssetValue.Currency.Ticker;
-                    var separator = wrappedTicker.Contains("FAV") ? "__" : "_";
-                    var parsedTicker = wrappedTicker.Split(separator);
-                    if (parsedTicker.Length == 2)
+                    var tokenCurrency = fungibleAssetValue.Currency;
+                    if (Currencies.IsWrappedCurrency(tokenCurrency))
                     {
-                        var ticker = parsedTicker[1];
-                        var currency = Currencies.GetMinterlessCurrency(ticker);
+                        var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
                         var recipientAddress =
-                            currency.DecimalPlaces > 0 ? agentAddress : avatarAddress;
+                            Currencies.SelectRecipientAddress(currency, agentAddress,
+                                avatarAddress);
                         var fav = FungibleAssetValue.FromRawValue(currency, fungibleAssetValue.RawValue);
                         states = states
                             .BurnAsset(context, context.Signer, fungibleAssetValue)
@@ -132,27 +130,11 @@ namespace Nekoyume.Action
                     }
                     else
                     {
-                        if (fungibleAssetValue.Currency.DecimalPlaces != 0)
-                        {
-                            throw new ArgumentException(
-                                $"DecimalPlaces of fungibleAssetValue for claimItems are not 0: {fungibleAssetValue.Currency.Ticker}");
-                        }
-
-                        if (parsedTicker.Length != 3
-                            || parsedTicker[0] != "Item"
-                            || (parsedTicker[1] != "NT" && parsedTicker[1] != "T")
-                            || !int.TryParse(parsedTicker[2], out var itemId))
-                        {
-                            throw new ArgumentException(
-                                $"Format of Amount currency's ticker is invalid");
-                        }
-
-
+                        (bool tradable, int itemId) = Currencies.ParseItemCurrency(tokenCurrency);
                         states = states.BurnAsset(context, context.Signer, fungibleAssetValue);
-
                         var item = itemSheet[itemId] switch
                         {
-                            MaterialItemSheet.Row materialRow => parsedTicker[1] == "T"
+                            MaterialItemSheet.Row materialRow => tradable
                                 ? ItemFactory.CreateTradableMaterial(materialRow)
                                 : ItemFactory.CreateMaterial(materialRow),
                             var itemRow => ItemFactory.CreateItem(itemRow, random)
