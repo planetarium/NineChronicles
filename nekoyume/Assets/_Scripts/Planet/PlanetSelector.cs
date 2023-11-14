@@ -88,7 +88,7 @@ namespace Nekoyume.Planet
                 "Unity_Elapsed_Initialize_PlanetRegistry",
                 sw.ElapsedMilliseconds,
                 "Fetching planet infos from planet registry."));
-            Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.");
+            Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (!context.PlanetRegistry.IsInitialized)
             {
                 context.Error = "[PlanetSelector] Failed to initialize Planets.";
@@ -396,7 +396,7 @@ namespace Nekoyume.Planet
                 sw.ElapsedMilliseconds,
                 "Fetching agent and avatars from planets."));
             Debug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
-                      $" updated in {sw.ElapsedMilliseconds}ms.");
+                      $" updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
 
             if (context.HasError)
             {

@@ -1324,7 +1324,7 @@ namespace Nekoyume.Game
                     "Unity_Elapsed_Initialize_Agent",
                     sw.ElapsedMilliseconds,
                     string.Empty));
-                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1355,7 +1355,7 @@ namespace Nekoyume.Game
                     loginSystem.GetPrivateKey(),
                     callback);
                 sw.Stop();
-                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1368,7 +1368,7 @@ namespace Nekoyume.Game
                 "Unity_Elapsed_Select_Planet",
                 sw.ElapsedMilliseconds,
                 string.Empty));
-            Debug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (planetContext.HasError)
             {
                 callback?.Invoke(false);
@@ -1429,7 +1429,7 @@ namespace Nekoyume.Game
                         "Unity_Elapsed_Initialize_Agent",
                         sw.ElapsedMilliseconds,
                         string.Empty));
-                    Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                    Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                     yield break;
                 }
 
@@ -1474,7 +1474,7 @@ namespace Nekoyume.Game
                     "Unity_Elapsed_Signin_Portal",
                     sw.ElapsedMilliseconds,
                     string.Empty));
-                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync. Done.");
 
                 var agentAddress = portalSigninTask.Result;
@@ -1612,7 +1612,7 @@ namespace Nekoyume.Game
                 "Unity_Elapsed_Initialize_Agent",
                 sw.ElapsedMilliseconds,
                 string.Empty));
-            Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void ResetStore()
@@ -1774,7 +1774,7 @@ namespace Nekoyume.Game
                     Dcc.instance.Init(responseData.Avatars);
                 });
             sw.Stop();
-            Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         private IEnumerator CoInitDccConnecting()
@@ -1789,7 +1789,8 @@ namespace Nekoyume.Game
                 _ => { Dcc.instance.IsConnected = true; },
                 _ => { Dcc.instance.IsConnected = false; });
             sw.Stop();
-            Debug.Log($"[Game] CoInitDccConnecting()... DCC Connecting initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log("[Game] CoInitDccConnecting()... DCC Connecting initialized in" +
+                      $" {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void PauseTimeline(PlayableDirector whichOne)
