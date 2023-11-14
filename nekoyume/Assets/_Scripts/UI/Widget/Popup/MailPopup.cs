@@ -827,6 +827,119 @@ namespace Nekoyume.UI
             showQueue.Dequeue()?.Invoke();
         }
 
+        public void Read(ClaimItemsMail claimItemsMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
+            var game = Game.Game.instance;
+            claimItemsMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                claimItemsMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            if (claimItemsMail.Memo != null && claimItemsMail.Memo.Contains("season_pass"))
+            {
+                var mailRewards = new List<MailReward>();
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+
+                bool iapProductFindComplete = false;
+                if (claimItemsMail.Memo.Contains("iap"))
+                {
+                    Regex gSkuRegex = new Regex("'g_sku': '([^']+)'");
+                    Match gSkuMatch = gSkuRegex.Match(claimItemsMail.Memo);
+                    if (gSkuMatch.Success)
+                    {
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        if(findKey.Value != null)
+                        {
+                            iapProductFindComplete = true;
+                            foreach (var item in findKey.Value.FungibleItemList)
+                            {
+                                var row = materialSheet.OrderedList!
+                                    .FirstOrDefault(row => row.Id.Equals(item.SheetItemId));
+                                if (row is null)
+                                {
+                                    Debug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
+                                    continue;
+                                }
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, item.Amount));
+                            }
+                            foreach (var item in findKey.Value.FavList)
+                            {
+                                var currency = Currency.Legacy(item.Ticker.ToString(), 0, null);
+                                var fav = new FungibleAssetValue(currency, (int)item.Amount, 0);
+                                mailRewards.Add(new MailReward(fav, (int)item.Amount, true));
+                            }
+                        }
+                    }
+                }
+
+                if (claimItemsMail.Items is not null && !iapProductFindComplete)
+                {
+                    foreach (var (fungibleId, fungibleCount) in
+                             claimItemsMail.Items)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        mailRewards.Add(new MailReward(material, fungibleCount));
+                    }
+                }
+
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(mailRewards);
+                return;
+            }
+
+            var showQueue = new Queue<System.Action>();
+            if (claimItemsMail.FungibleAssetValues is not null)
+            {
+                foreach (var fav in
+                         claimItemsMail.FungibleAssetValues)
+                {
+                    // TODO: Enqueue functions.
+                }
+            }
+
+            if (claimItemsMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemTooltip = ItemTooltip.Find(ItemType.Material);
+                foreach (var (fungibleId, count) in
+                         claimItemsMail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row is null)
+                    {
+                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        continue;
+                    }
+
+                    var material = ItemFactory.CreateMaterial(row);
+                    showQueue.Enqueue(() => itemTooltip.Show(
+                        material,
+                        L10nManager.Localize("UI_OK"),
+                        true,
+                        () => UniTask.WaitWhile(itemTooltip.IsActive)
+                            .ToObservable()
+                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
+                        itemCount: count)
+                    );
+                }
+            }
+
+            showQueue.Dequeue()?.Invoke();
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)
