@@ -3381,15 +3381,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                mailBox = new MailBox(mailBoxList);
-                mail = mailBox.OfType<ClaimItemsMail>()
-                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
-                if (eval.Action.ClaimData.Any(tuple => tuple.address.Equals(States.Instance.CurrentAvatarState.address)) &&
-                    mail?.Items is not null &&
-                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
-                {
-                    UpdateCurrentAvatarInventory(eval);
-                }
+                UpdateCurrentAvatarInventory(eval);
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 if (avatarValue is not Dictionary avatarDict)
@@ -3405,7 +3397,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                mailBox = new MailBox(mailBoxList);
+                /*mailBox = new MailBox(mailBoxList);
                 mail = mailBox.OfType<ClaimItemsMail>()
                     .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
                 if (mail is not null)
@@ -3413,20 +3405,14 @@ namespace Nekoyume.Blockchain
                     mail.New = true;
                     gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
-                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    if (mail.Memo != null)
                     {
                         OneLineSystem.Push(MailType.System,
                             L10nManager.Localize(
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
                     }
-                }
-                else
-                {
-                    Debug.LogWarning($"Not found ClaimItemsMail from " +
-                        $"the render context of UnloadFromMyGarages action.\n" +
-                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                }
+                }*/
             });
         }
     }

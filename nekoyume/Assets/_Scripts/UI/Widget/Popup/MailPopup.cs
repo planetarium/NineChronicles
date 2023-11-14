@@ -779,6 +779,10 @@ namespace Nekoyume.UI
                         var material = ItemFactory.CreateMaterial(row);
                         mailRewards.Add(new MailReward(material, fungibleCount));
                     }
+                    foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                    {
+                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                    }
                 }
 
                 UpdateTabs();
@@ -837,67 +841,6 @@ namespace Nekoyume.UI
                 game.States.CurrentAvatarState.address,
                 claimItemsMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
-
-            if (claimItemsMail.Memo != null && claimItemsMail.Memo.Contains("season_pass"))
-            {
-                var mailRewards = new List<MailReward>();
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-
-                bool iapProductFindComplete = false;
-                if (claimItemsMail.Memo.Contains("iap"))
-                {
-                    Regex gSkuRegex = new Regex("'g_sku': '([^']+)'");
-                    Match gSkuMatch = gSkuRegex.Match(claimItemsMail.Memo);
-                    if (gSkuMatch.Success)
-                    {
-                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
-                        if(findKey.Value != null)
-                        {
-                            iapProductFindComplete = true;
-                            foreach (var item in findKey.Value.FungibleItemList)
-                            {
-                                var row = materialSheet.OrderedList!
-                                    .FirstOrDefault(row => row.Id.Equals(item.SheetItemId));
-                                if (row is null)
-                                {
-                                    Debug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
-                                    continue;
-                                }
-                                var material = ItemFactory.CreateMaterial(row);
-                                mailRewards.Add(new MailReward(material, item.Amount));
-                            }
-                            foreach (var item in findKey.Value.FavList)
-                            {
-                                var currency = Currency.Legacy(item.Ticker.ToString(), 0, null);
-                                var fav = new FungibleAssetValue(currency, (int)item.Amount, 0);
-                                mailRewards.Add(new MailReward(fav, (int)item.Amount, true));
-                            }
-                        }
-                    }
-                }
-
-                if (claimItemsMail.Items is not null && !iapProductFindComplete)
-                {
-                    foreach (var (fungibleId, fungibleCount) in
-                             claimItemsMail.Items)
-                    {
-                        var row = materialSheet.OrderedList!
-                            .FirstOrDefault(row => row.Id.Equals(fungibleId));
-                        if (row is null)
-                        {
-                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
-                            continue;
-                        }
-
-                        var material = ItemFactory.CreateMaterial(row);
-                        mailRewards.Add(new MailReward(material, fungibleCount));
-                    }
-                }
-
-                UpdateTabs();
-                Find<MailRewardScreen>().Show(mailRewards);
-                return;
-            }
 
             var showQueue = new Queue<System.Action>();
             if (claimItemsMail.FungibleAssetValues is not null)
