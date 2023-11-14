@@ -167,3 +167,17 @@ MonoBehaviour:
     characterSequence: 
     renderMode: 4165
     includeFontFeatures: 1
+  - language: 11
+    sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 40
+    padding: 5
+    packingMode: 0
+    atlasWidth: 512
+    atlasHeight: 512
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: ba13bfe4cb7c24d0ea39623b9e18976c,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
