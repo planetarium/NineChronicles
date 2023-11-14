@@ -1547,6 +1547,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &655261373206760397
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,6 +1761,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &737593587829050291
 GameObject:
   m_ObjectHideFlags: 0
@@ -2156,6 +2158,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &1134317460214245715
 GameObject:
   m_ObjectHideFlags: 0
@@ -2914,6 +2917,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &1450928109810927476
 GameObject:
   m_ObjectHideFlags: 0
@@ -19192,6 +19196,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &4963590087510084444
 GameObject:
   m_ObjectHideFlags: 0
@@ -19465,6 +19470,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &5200167008277990724
 GameObject:
   m_ObjectHideFlags: 0
@@ -26603,6 +26609,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &6406908579075322886
 GameObject:
   m_ObjectHideFlags: 0
@@ -27931,6 +27938,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &7550665276560710508
 GameObject:
   m_ObjectHideFlags: 0
@@ -34777,14 +34785,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55039fc6de8a40cdb18cd5223468e252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -1.8888888
-  scrollOffset: -1.8888888
+  cellInterval: -2.7142856
+  scrollOffset: -2.7142856
   loop: 0
   cellContainer: {fileID: 1221599988471288606}
   reuseCellMarginCount: 0
   paddingHead: 0
   paddingTail: 0
-  spacing: 0
+  spacing: 10
   startAxisSpacing: 0
   startAxisCellCount: 3
   cellSize: {x: 90, y: 85}
@@ -36534,6 +36542,7 @@ MonoBehaviour:
   itemGradeParticle: {fileID: 0}
   grindingCountObject: {fileID: 0}
   grindingCountText: {fileID: 0}
+  RewardReceived: {fileID: 0}
 --- !u!1 &9074374986486664037
 GameObject:
   m_ObjectHideFlags: 0
