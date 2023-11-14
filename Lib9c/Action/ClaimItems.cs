@@ -161,7 +161,7 @@ namespace Nekoyume.Action
                 }
 
                 var mailBox = new MailBox((List)avatarDict[MailBoxKey]);
-                var mail = new ClaimItemsMail(context.BlockIndex, context.GetRandom().GenerateRandomGuid(), context.BlockIndex, favs, items, Memo);
+                var mail = new ClaimItemsMail(context.BlockIndex, random.GenerateRandomGuid(), context.BlockIndex, favs, items, Memo);
                 mailBox.Add(mail);
                 mailBox.CleanUp();
                 avatarDict = avatarDict.SetItem(MailBoxKey, mailBox.Serialize());
