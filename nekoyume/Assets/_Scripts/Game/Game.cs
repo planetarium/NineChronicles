@@ -509,7 +509,8 @@ namespace Nekoyume.Game
             }
             
             sw.Stop();
-            Debug.Log($"[Game] Start()... Services(w/o IAPService) initialized in {sw.ElapsedMilliseconds}ms");
+            Debug.Log("[Game] Start()... Services(w/o IAPService) initialized in" +
+                      $" {sw.ElapsedMilliseconds}ms.(elapsed)");
 
             StartCoroutine(InitializeIAP());
 
@@ -546,17 +547,17 @@ namespace Nekoyume.Game
             sw.Start();
             Stage.Initialize();
             sw.Stop();
-            Debug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms");
+            Debug.Log($"[Game] Start()... Stage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
             Arena.Initialize();
             sw.Stop();
-            Debug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms");
+            Debug.Log($"[Game] Start()... Arena initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             sw.Reset();
             sw.Start();
             RaidStage.Initialize();
             sw.Stop();
-            Debug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms");
+            Debug.Log($"[Game] Start()... RaidStage initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             // Initialize Rank.SharedModel
             RankPopup.UpdateSharedModel();
             Helper.Util.TryGetAppProtocolVersionFromToken(
@@ -587,7 +588,8 @@ namespace Nekoyume.Game
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... IAPServiceManager initialized in {innerSw.ElapsedMilliseconds}ms");
+                Debug.Log("[Game] Start()... IAPServiceManager initialized in" +
+                          $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 IAPStoreManager = gameObject.AddComponent<IAPStoreManager>();
             }
 
@@ -599,7 +601,7 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms");
+                Debug.Log($"[Game] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
                 RxProps.Start(Agent, States, TableSheets);
 
@@ -621,12 +623,12 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... SecondWidgets created in {innerSw.ElapsedMilliseconds}ms");
+                Debug.Log($"[Game] Start()... SecondWidgets created in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 innerSw.Reset();
                 innerSw.Start();
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms");
+                Debug.Log($"[Game] Start()... SecondWidgets initialized in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
             }
         }
 
@@ -898,7 +900,7 @@ namespace Nekoyume.Game
                             States.AgentState.address);
                         swForRequestPledge.Stop();
                         Debug.Log("[Game] CoCheckPledge()... PortalConnect.RequestPledge()" +
-                                  $" finished in {swForRequestPledge.ElapsedMilliseconds}ms");
+                                  $" finished in {swForRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
 
                         if (!swForRenderingRequestPledge.IsRunning)
                         {
@@ -911,7 +913,7 @@ namespace Nekoyume.Game
                         {
                             swForRenderingRequestPledge.Stop();
                             Debug.Log("[Game] CoCheckPledge()... Rendering RequestPledge" +
-                                      $" finished in {swForRenderingRequestPledge.ElapsedMilliseconds}ms");
+                                      $" finished in {swForRenderingRequestPledge.ElapsedMilliseconds}ms.(elapsed)");
                         }
 
                         Analyzer.Instance.Track("Unity/Intro/Pledge/Requested");
@@ -935,7 +937,7 @@ namespace Nekoyume.Game
 
                     swForRenderingApprovePledge.Stop();
                     Debug.Log("[Game] CoCheckPledge()... Rendering ApprovePledge" +
-                              $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms");
+                              $" finished in {swForRenderingApprovePledge.ElapsedMilliseconds}ms.(elapsed)");
                     Analyzer.Instance.Track("Unity/Intro/Pledge/Approve");
                 }
 
@@ -1072,7 +1074,8 @@ namespace Nekoyume.Game
                     sw.Start();
                     await RxProps.SelectAvatarAsync(slotIndex);
                     sw.Stop();
-                    Debug.Log($"[Game] EnterNext()... SelectAvatarAsync() finished in {sw.ElapsedMilliseconds}ms");
+                    Debug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
+                              $" {sw.ElapsedMilliseconds}ms.(elapsed)");
                     loadingScreen.Close();
                     Event.OnRoomEnter.Invoke(false);
                     Event.OnUpdateAddresses.Invoke();
@@ -1103,7 +1106,8 @@ namespace Nekoyume.Game
                         sw.Start();
                         await RxProps.SelectAvatarAsync(slotIndex);
                         sw.Stop();
-                        Debug.Log($"[Game] EnterNext()... SelectAvatarAsync() finished in {sw.ElapsedMilliseconds}ms");
+                        Debug.Log("[Game] EnterNext()... SelectAvatarAsync() finished in" +
+                                  $" {sw.ElapsedMilliseconds}ms.(elapsed)");
                         Event.OnRoomEnter.Invoke(false);
                         Event.OnUpdateAddresses.Invoke();
                     }
@@ -1317,7 +1321,7 @@ namespace Nekoyume.Game
                     "Unity_Elapsed_Initialize_Agent",
                     sw.ElapsedMilliseconds,
                     string.Empty));
-                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1348,7 +1352,7 @@ namespace Nekoyume.Game
                     loginSystem.GetPrivateKey(),
                     callback);
                 sw.Stop();
-                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
 
@@ -1361,7 +1365,7 @@ namespace Nekoyume.Game
                 "Unity_Elapsed_Select_Planet",
                 sw.ElapsedMilliseconds,
                 string.Empty));
-            Debug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoLogin()... PlanetInfo selected in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (planetContext.HasError)
             {
                 callback?.Invoke(false);
@@ -1422,7 +1426,7 @@ namespace Nekoyume.Game
                         "Unity_Elapsed_Initialize_Agent",
                         sw.ElapsedMilliseconds,
                         string.Empty));
-                    Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+                    Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                     yield break;
                 }
 
@@ -1475,7 +1479,7 @@ namespace Nekoyume.Game
                     "Unity_Elapsed_Signin_Portal",
                     sw.ElapsedMilliseconds,
                     string.Empty));
-                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds} ms.");
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync. Done.");
 
                 var agentAddress = portalSigninTask.Result;
@@ -1613,7 +1617,7 @@ namespace Nekoyume.Game
                 "Unity_Elapsed_Initialize_Agent",
                 sw.ElapsedMilliseconds,
                 string.Empty));
-            Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void ResetStore()
@@ -1775,7 +1779,7 @@ namespace Nekoyume.Game
                     Dcc.instance.Init(responseData.Avatars);
                 });
             sw.Stop();
-            Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log($"[Game] CoInitDccAvatar()... DCC Avatar initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         private IEnumerator CoInitDccConnecting()
@@ -1790,7 +1794,8 @@ namespace Nekoyume.Game
                 _ => { Dcc.instance.IsConnected = true; },
                 _ => { Dcc.instance.IsConnected = false; });
             sw.Stop();
-            Debug.Log($"[Game] CoInitDccConnecting()... DCC Connecting initialized in {sw.ElapsedMilliseconds} ms.");
+            Debug.Log("[Game] CoInitDccConnecting()... DCC Connecting initialized in" +
+                      $" {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
         public void PauseTimeline(PlayableDirector whichOne)

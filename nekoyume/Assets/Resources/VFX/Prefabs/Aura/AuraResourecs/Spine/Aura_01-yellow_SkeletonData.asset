@@ -22,11 +22,11 @@ MonoBehaviour:
     applyAdditiveMaterial: 1
     additiveMaterials:
     - pageName: Aura_01-yellow.png
-      material: {fileID: 2100000, guid: 523aff75b43e274468bf23d8085c6eb3, type: 2}
+      material: {fileID: 2100000, guid: f963995bf21477745861f0a337c92a4c, type: 2}
     multiplyMaterials: []
     screenMaterials:
     - pageName: Aura_01-yellow.png
-      material: {fileID: 2100000, guid: a6ab6623c8fcde2449143b9c87a15756, type: 2}
+      material: {fileID: 2100000, guid: 6edcb2297f0f9cb45a324e44f886c524, type: 2}
   skeletonDataModifiers: []
   fromAnimation: []
   toAnimation: []

@@ -583,7 +583,7 @@ namespace Nekoyume.UI
 
         public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
-            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
             Debug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
@@ -611,6 +611,7 @@ namespace Nekoyume.UI
                 if (request.responseCode == 200)
                 {
                     Debug.Log($"{logTitle} Success: {json}");
+                    return null;
                 }
             }
             else if (data.resultCode is 3001 or 3002)

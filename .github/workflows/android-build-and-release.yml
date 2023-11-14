@@ -1,9 +1,5 @@
 name: Android Build and Release
 
-concurrency: 
-  group: ${{ github.head_ref }}
-  cancel-in-progress: true
-
 on:
   push:
     branches:
@@ -30,6 +26,10 @@ on:
         type: boolean
         required: false
         default: false
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 
 env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
