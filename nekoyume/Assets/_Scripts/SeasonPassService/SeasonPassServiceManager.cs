@@ -149,7 +149,7 @@ namespace Nekoyume
                 AgentAddr = agentAddress.ToString(),
                 AvatarAddr = avatarAddress.ToString(),
                 SeasonId = AvatarInfo.Value.SeasonPassId,
-                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>(Game.Game.instance.CurrentPlanetId.ToString())
+                PlanetId = Enum.Parse<SeasonPassServiceClient.PlanetID>($"_{Game.Game.instance.CurrentPlanetId}")
             },
                 (result) =>
                 {
