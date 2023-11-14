@@ -277,11 +277,11 @@ namespace Nekoyume.Game
 #endif
 
 #if RUN_ON_MOBILE
-            // NOTE: Initialize planets.
+            // NOTE: Initialize planet registry.
             //       It should do after load CommandLineOptions.
             //       And it should do before initialize Agent.
             var planetContext = new PlanetContext(_commandLineOptions);
-            yield return PlanetSelector.InitializePlanetsAsync(planetContext).ToCoroutine();
+            yield return PlanetSelector.InitializePlanetRegistryAsync(planetContext).ToCoroutine();
             if (planetContext.HasError)
             {
                 QuitWithMessage(
@@ -298,7 +298,7 @@ namespace Nekoyume.Game
 #endif
 
             OnLoadCommandlineOptions();
-            // ~Initialize planets
+            // ~Initialize planet registry
 
             // NOTE: Portal url does not change for each planet.
             PortalConnect = new PortalConnect(_commandLineOptions.MeadPledgePortalUrl);
@@ -1405,7 +1405,7 @@ namespace Nekoyume.Game
             {
                 // NOTE: Initialize planet account infos as default(empty) value
                 //       when agent address is not set.
-                planetContext.PlanetAccountInfos = planetContext.Planets?.PlanetInfos
+                planetContext.PlanetAccountInfos = planetContext.PlanetRegistry?.PlanetInfos
                     .Select(planetInfo => new PlanetAccountInfo(
                         planetInfo.ID,
                         agentAddress: null))
@@ -1936,7 +1936,7 @@ namespace Nekoyume.Game
                 }
 
                 planetContext = new PlanetContext(_commandLineOptions);
-                await PlanetSelector.InitializePlanetsAsync(planetContext);
+                await PlanetSelector.InitializePlanetRegistryAsync(planetContext);
                 if (planetContext.IsSkipped)
                 {
                     Debug.LogWarning("[Game] UpdateCurrentPlanetIdAsync()..." +
@@ -1954,7 +1954,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            if (planetContext.Planets!.TryGetPlanetInfoByHeadlessGrpc(
+            if (planetContext.PlanetRegistry!.TryGetPlanetInfoByHeadlessGrpc(
                     _commandLineOptions.RpcServerHost,
                     out var planetInfo))
             {

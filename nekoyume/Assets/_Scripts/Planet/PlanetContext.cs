@@ -9,7 +9,7 @@ namespace Nekoyume.Planet
         public readonly CommandLineOptions CommandLineOptions;
         public bool IsSkipped;
         public string Error = string.Empty;
-        public Planets? Planets;
+        public PlanetRegistry? PlanetRegistry;
         public PlanetInfo? SelectedPlanetInfo;
         public PlanetAccountInfo[]? PlanetAccountInfos;
         public PlanetAccountInfo? SelectedPlanetAccountInfo;
