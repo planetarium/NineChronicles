@@ -159,8 +159,8 @@ namespace Nekoyume.UI
         {
             enterReferralCodeButton.gameObject.SetActive(false);
 
-            var result = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
-            if (result.resultCode == 1000)
+            var errorResult = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
+            if (errorResult is null)
             {
                 _referralInformation.isRegistered = true;
 
@@ -171,12 +171,12 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (result.resultCode == 4001)
+                if (errorResult.resultCode == 4001)
                 {
                     _referralInformation.isRegistered = true;
                 }
 
-                errorPopup.Show($"{result.title}\n{result.message}\n({result.resultCode})");
+                errorPopup.Show($"{errorResult.title}\n{errorResult.message}\n({errorResult.resultCode})");
             }
 
             enterReferralCodeButton.gameObject.SetActive(!_referralInformation.isRegistered);
