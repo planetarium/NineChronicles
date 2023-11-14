@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
+    using Libplanet.Crypto;
     using Libplanet.Types.Assets;
     using Nekoyume.TableData;
     using Xunit;
@@ -199,6 +200,18 @@ namespace Lib9c.Tests
         public void GetSoulStones_With_Sheet_Throws_ArgumentNullException()
         {
             Assert.Throws<ArgumentNullException>(() => Currencies.GetSoulStones((PetSheet?)null));
+        }
+
+        [Fact]
+        public void SelectRecipientAddress()
+        {
+            var agentAddress = new PrivateKey().ToAddress();
+            var avatarAddress = new PrivateKey().ToAddress();
+            Assert.Equal(agentAddress, Currencies.SelectRecipientAddress(Currencies.Crystal, agentAddress, avatarAddress));
+            Assert.Equal(agentAddress, Currencies.SelectRecipientAddress(Currencies.Garage, agentAddress, avatarAddress));
+            Assert.Equal(agentAddress, Currencies.SelectRecipientAddress(Currencies.Mead, agentAddress, avatarAddress));
+            Assert.Equal(agentAddress, Currencies.SelectRecipientAddress(Currency.Legacy("NCG", decimalPlaces: 2, minter: new PrivateKey().ToAddress()), agentAddress, avatarAddress));
+            Assert.Equal(avatarAddress, Currencies.SelectRecipientAddress(Currencies.DailyRewardRune, agentAddress, avatarAddress));
         }
     }
 }

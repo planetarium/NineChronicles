@@ -40,6 +40,7 @@ namespace Nekoyume.Model.Mail
                 [nameof(ProductCancelMail)] = d => new ProductCancelMail(d),
                 [nameof(UnloadFromMyGaragesRecipientMail)] = d =>
                     new UnloadFromMyGaragesRecipientMail(d),
+                [nameof(ClaimItemsMail)] = d => new ClaimItemsMail(d),
             };
 
         public Guid id;
