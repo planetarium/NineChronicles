@@ -175,7 +175,7 @@ namespace Lib9c.Tests.Action.Summon
         // Fail by exceeding summon limit
         [InlineData("V1", 10001, 11, 800201, 22, 1, new int[] { }, typeof(InvalidSummonCountException))]
         // 15 recipes
-        [InlineData("V2", 10002, 1, 600201, 1, 0, new[] { 10650006 }, null)]
+        [InlineData("V2", 10002, 1, 600201, 1, 5341, new[] { 10650006 }, null)]
         public void Execute(
             string version,
             int groupId,
