@@ -8,7 +8,6 @@ using Libplanet.Action;
 using Libplanet.Action.State;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
-using Nekoyume.Action.Garages;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -70,7 +69,14 @@ namespace Nekoyume.Action
                 }).ToList();
             if (plainValue.ContainsKey(MemoKey))
             {
-                Memo = (Text) plainValue[MemoKey];
+                if (plainValue[MemoKey] is Text t && !string.IsNullOrEmpty(t))
+                {
+                    Memo = t;
+                }
+                else
+                {
+                    throw new ArgumentException(nameof(PlainValue));
+                }
             }
         }
 
