@@ -779,6 +779,10 @@ namespace Nekoyume.UI
                         var material = ItemFactory.CreateMaterial(row);
                         mailRewards.Add(new MailReward(material, fungibleCount));
                     }
+                    foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                    {
+                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                    }
                 }
 
                 UpdateTabs();

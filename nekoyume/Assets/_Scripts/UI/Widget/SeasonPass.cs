@@ -76,7 +76,7 @@ namespace Nekoyume.UI
                 receiveBtn.Interactable = seasonPassInfo.Level > seasonPassInfo.LastNormalClaim
                     || (seasonPassInfo.IsPremium && seasonPassInfo.Level > seasonPassInfo.LastPremiumClaim);
 
-                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 1);
+                lineImage.fillAmount = (float)(seasonPassInfo.Level - 1) / (float)(seasonPassManager.CurrentSeasonPassData.RewardList.Count - 2);
 
                 premiumIcon.SetActive(!seasonPassInfo.IsPremiumPlus);
                 premiumUnlockBtn.SetActive(!seasonPassInfo.IsPremium);
