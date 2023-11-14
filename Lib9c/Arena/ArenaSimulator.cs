@@ -20,7 +20,7 @@ namespace Nekoyume.Arena
         public IRandom Random { get; }
         public int Turn { get; private set; }
         public ArenaLog Log { get; private set; }
-        private int HpModifier { get; set; }
+        public int HpModifier { get; }
 
         public ArenaSimulator(IRandom random, int hpModifier)
         {
