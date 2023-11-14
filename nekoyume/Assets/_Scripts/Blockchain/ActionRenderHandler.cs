@@ -692,7 +692,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     eval.Action.ClaimData.Any(e =>
-                        e.address.Equals(States.Instance.CurrentAvatarState.address)))
+                        e.address.Equals(States.Instance?.CurrentAvatarState?.address)))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareClaimItems)
                 .ObserveOnMainThread()
@@ -3337,17 +3337,36 @@ namespace Nekoyume.Blockchain
                     {
                         foreach (var fav in favList)
                         {
+                            var tokenCurrency = fav.Currency;
+                            Address recipientAddress;
+                            var currency = tokenCurrency;
+                            if (Currencies.IsWrappedCurrency(tokenCurrency))
+                            {
+                                currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                            }
+
+                            recipientAddress =
+                                Currencies.SelectRecipientAddress(currency, agentAddr,
+                                    avatarAddr);
+                            var isCrystal = currency.Equals(Currencies.Crystal);
                             var balance = StateGetter.GetBalance(
-                                addr,
-                                fav.Currency,
+                                recipientAddress,
+                                currency,
                                 states);
-                            gameStates.SetCurrentAvatarBalance(balance);
+                            if (isCrystal)
+                            {
+                                gameStates.SetCrystalBalance(balance);
+                            }
+                            else
+                            {
+                                gameStates.SetCurrentAvatarBalance(balance);
+                            }
                         }
                     }
                 }
             }
 
-
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
             return eval;
         }
 
