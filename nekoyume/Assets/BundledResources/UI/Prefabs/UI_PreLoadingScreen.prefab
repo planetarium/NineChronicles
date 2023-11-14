@@ -622,8 +622,6 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   indicator: {fileID: 8213140320646043228}
-  toolTip: {fileID: 3652841202504076709}
-  toolTipChangeButton: {fileID: 0}
   videoPlayer: {fileID: 7163093752010764354}
   showClip: {fileID: 32900000, guid: 6a0f631264b7042abbc5e0bcbeaf75d9, type: 3}
   loopClip: {fileID: 32900000, guid: b9a1d5e46cccc4f9d8cd47800cea3610, type: 3}
@@ -1151,6 +1149,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LoadingIndicator
+      objectReference: {fileID: 0}
+    - target: {fileID: 895844495534889874, guid: 1a0b987d9e902134fa44625a2541ac08,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5334243447944014314, guid: 1a0b987d9e902134fa44625a2541ac08,
         type: 3}

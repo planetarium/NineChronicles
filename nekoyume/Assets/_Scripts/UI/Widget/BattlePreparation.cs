@@ -772,6 +772,26 @@ namespace Nekoyume.UI
             }
         }
 
+        public void TutorialActionClickBattlePreparationSecondInventoryCellView()
+        {
+            try
+            {
+                var itemCell = information.GetBestEquipmentInventoryItems();
+                if (itemCell is null)
+                {
+                    Debug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
+                    return;
+                }
+
+                itemCell.Selected.Value = true;
+                Find<EquipmentTooltip>().OnEnterButtonArea(true);
+            }
+            catch
+            {
+                Debug.LogError($"GetSecondCell throw error.");
+            }
+        }
+
         public void TutorialActionClickBattlePreparationHackAndSlash()
         {
             OnClickBattle();

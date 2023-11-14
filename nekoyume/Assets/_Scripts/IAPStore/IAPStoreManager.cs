@@ -1,3 +1,8 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,8 +45,6 @@ namespace Nekoyume.IAPStore
                 Debug.LogException(exception);
             }
 
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
             var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
                 States.Instance.AgentState.address);
             if (categorys is null)
@@ -67,12 +70,15 @@ namespace Nekoyume.IAPStore
                 }
             }
 
+#if UNITY_EDITOR || RUN_ON_MOBILE
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
             {
                 builder.AddProduct(schema.Value.Sku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
+#endif
         }
 
         public void OnPurchaseClicked(string productId)

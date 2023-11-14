@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Google;
 using Libplanet.Crypto;
-using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace Nekoyume.Game.OAuth
 {
@@ -15,13 +10,13 @@ namespace Nekoyume.Game.OAuth
     {
         public enum SignInState
         {
-            NotSigned,
+            Undefined,
             Signed,
             Canceled,
             Waiting
         }
 
-        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
         private const string WebClientId =
             "449111430622-hu1uin72e3n3727rmab7e9sslbvnimrr.apps.googleusercontent.com";
@@ -36,7 +31,8 @@ namespace Nekoyume.Game.OAuth
             UseGameSignIn = false
         };
 
-        public string IDToken { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string IdToken { get; private set; } = string.Empty;
         public Address? AgentAddress { get; private set; } = null;
 
         public void OnSignIn()
@@ -48,19 +44,19 @@ namespace Nekoyume.Game.OAuth
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 Debug.Log($"[GoogleSigninBehaviour] State changed: {state}");
-                if (state is SignInState.Signed)
+                switch (state)
                 {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
-                }
-
-                if (state is SignInState.Canceled)
-                {
-                    Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                    case SignInState.Signed:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
+                        break;
+                    case SignInState.Canceled:
+                        Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+                        break;
                 }
             });
         }
 
-        private void OnSignInSilently()
+        public void OnSignInSilently()
         {
             Debug.Log("[GoogleSigninBehaviour] OnSignInSilently() invoked.");
             GoogleSignIn.Configuration = _configuration;
@@ -85,7 +81,7 @@ namespace Nekoyume.Game.OAuth
             Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished() invoked.");
             if (task.IsFaulted)
             {
-                Debug.LogError("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
+                Debug.LogWarning("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
                                " task is faulted.");
                 using var enumerator =
                     task.Exception?.InnerExceptions.GetEnumerator();
@@ -113,50 +109,10 @@ namespace Nekoyume.Game.OAuth
             {
                 var res = task.Result;
                 Debug.Log("[GoogleSigninBehaviour] OnAuthenticationFinished()..." +
-                          $" Welcome: {res.UserId}!\ntoken: {res.IdToken}");
-                IDToken = res.IdToken;
+                          $" Welcome!! {res.Email}, userId({res.UserId}), token({res.IdToken})");
+                Email = res.Email;
+                IdToken = res.IdToken;
                 State.Value = SignInState.Signed;
-            }
-        }
-
-        public IEnumerator CoSendGoogleIdToken()
-        {
-            Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({IDToken})");
-            yield return new WaitUntil(() => Game.instance.PortalConnect != null);
-            Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
-
-            var body = new JsonObject {{"idToken", IDToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
-            var request =
-                new UnityWebRequest(
-                    $"{Game.instance.PortalConnect.PortalUrl}{PortalConnect.GoogleAuthEndpoint}",
-                    "POST");
-            var jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyString);
-            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = 180;
-            request.uploadHandler.contentType = "application/json";
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest();
-
-            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
-            {
-                Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
-                var accessTokenResult =
-                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
-                        request.downloadHandler.text);
-                if (!string.IsNullOrEmpty(accessTokenResult.address))
-                {
-                    AgentAddress = new Address(accessTokenResult.address);
-                    Debug.Log("[GoogleSigninBehaviour] CoSendGoogleIdToken succeeded." +
-                              $" AgentAddress: {AgentAddress}");
-                }
-            }
-            else
-            {
-                Debug.LogError(
-                    $"[GoogleSigninBehaviour] CoSendGoogleIdToken failed w/ error: {request.error}");
             }
         }
     }

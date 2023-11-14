@@ -99,6 +99,12 @@ namespace Nekoyume.Game
         public bool InPrologue = false;
         private bool _isStaticRatio;
 
+        public static float MinScreenRatio => 16f / 9f;
+        public static float MaxScreenRatio => 21f / 9f;
+
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+
         #region Mono
 
         protected override void Awake()
@@ -122,6 +128,10 @@ namespace Nekoyume.Game
 
         private void Update()
         {
+            if(_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
+            {
+                InitScreenResolution();
+            }
             UpdateScreenResolution();
         }
 
@@ -388,7 +398,17 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-            UpdateDynamicRatio();
+            float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
+            if (MinScreenRatio > currentScreenRatio || MaxScreenRatio < currentScreenRatio)
+            {
+                UpdateStaticRatioWithLetterBox();
+            }
+            else
+            {
+                UpdateDynamicRatio();
+            }
         }
 
         public void ChangeRatioState()
@@ -421,7 +441,7 @@ namespace Nekoyume.Game
         public void UpdateStaticRatioWithLetterBox()
         {
             IsResolutionDynamic = false;
-            _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
+            _defaultAspect = Mathf.Clamp((float)Screen.width / (float)Screen.height, MinScreenRatio, MaxScreenRatio);
             _defaultOrthographicSize = Cam.orthographicSize;
 
             float fixedAspectRatio = _defaultAspect;

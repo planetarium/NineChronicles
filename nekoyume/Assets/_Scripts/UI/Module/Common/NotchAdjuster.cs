@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module.Common
             originAnchorMax = rectTransform.anchorMax;
 
             ActionCamera.instance.OnResolutionDynamic += CalculateNotchSizeAndAdjustPosition;
-            ActionCamera.instance.OnResolutionStatic += ResetNotchSizeAndAdjustPosition;
+            ActionCamera.instance.OnResolutionStatic += CalculateNotchSizeAndAdjustPosition;
 
             switch (NotchType)
             {
@@ -48,14 +48,7 @@ namespace Nekoyume.UI.Module.Common
 
         public void RefreshNotchByScreenState()
         {
-            if (ActionCamera.instance.IsResolutionDynamic)
-            {
-                CalculateNotchSizeAndAdjustPosition();
-            }
-            else
-            {
-                ResetNotchSizeAndAdjustPosition();
-            }
+            CalculateNotchSizeAndAdjustPosition();
         }
 
         private void CalculateNotchSizeAndAdjustPosition()

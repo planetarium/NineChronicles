@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         public struct AgentInfo
         {
             private const string AccountTextFormat =
-                "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>"; 
+                "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>";
             public PlanetId? PlanetId { get; private set; }
             public TextMeshProUGUI title;
             public GameObject noAccount;
@@ -144,7 +144,7 @@ namespace Nekoyume.UI
             }
         }
 
-        // NOTE: Use to mobileContainerAnimator. 
+        // NOTE: Use to mobileContainerAnimator.
         private static readonly int IdleToShowButtons = Animator.StringToHash("IdleToShowButtons");
 
         [SerializeField] private GameObject pcContainer;
@@ -155,8 +155,8 @@ namespace Nekoyume.UI
         [SerializeField] private Animator mobileContainerAnimator;
         [SerializeField] private RawImage videoImage;
 
-        // NOTE: `startButtonContainer` enabled automatically by animator when
-        //        the `mobileContainer` is enabled.
+        // NOTE: `startButtonContainer` will be enabled when the mobileContainerAnimator
+        //       is in the `IdleToShowButtons` state.
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
@@ -195,15 +195,9 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
-        public Subject<(IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)>
-            OnClickGoogleSignIn { get; } = new();
-        public Subject<(IntroScreen introScreen, GoogleSigninBehaviour googleSigninBehaviour)>
-            OnGoogleSignedIn { get; } = new();
+        public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
 
-        public Subject<(IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)>
-            OnClickAppleSignIn { get; } = new();
-        public Subject<(IntroScreen introScreen, AppleSigninBehaviour appleSigninBehaviour)>
-            OnAppleSignedIn { get; } = new();
+        public Subject<(string email, string idToken)> OnAppleSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -234,30 +228,49 @@ namespace Nekoyume.UI
                     google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
                 }
 
-                OnClickGoogleSignIn.OnNext((this, google));
-
                 Debug.Log($"[IntroScreen] google.State.Value: {google.State.Value}");
-                if (google.State.Value is not (
-                    GoogleSigninBehaviour.SignInState.Signed or
-                    GoogleSigninBehaviour.SignInState.Waiting))
+                switch (google.State.Value)
                 {
-                    google.OnSignIn();
-                    startButtonContainer.SetActive(false);
-                    googleSignInButton.gameObject.SetActive(false);
-                    google.State
-                        .SkipLatestValueOnSubscribe()
-                        .First()
-                        .Subscribe(state =>
-                        {
-                            var isCanceled = state is GoogleSigninBehaviour.SignInState.Canceled;
-                            startButtonContainer.SetActive(isCanceled);
-                            googleSignInButton.gameObject.SetActive(isCanceled);
-                            if (state is GoogleSigninBehaviour.SignInState.Signed)
-                            {
-                                OnGoogleSignedIn.OnNext((this, google));    
-                            }
-                        });
+                    case GoogleSigninBehaviour.SignInState.Signed:
+                        Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
+                        OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
+                        return;
+                    case GoogleSigninBehaviour.SignInState.Waiting:
+                        Debug.Log("[IntroScreen] Already waiting for google sign in.");
+                        return;
+                    case GoogleSigninBehaviour.SignInState.Undefined:
+                    case GoogleSigninBehaviour.SignInState.Canceled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
+
+                Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
+                google.OnSignIn();
+                startButtonContainer.SetActive(false);
+                googleSignInButton.gameObject.SetActive(false);
+                google.State
+                    .SkipLatestValueOnSubscribe()
+                    .First()
+                    .Subscribe(state =>
+                    {
+                        switch (state)
+                        {
+                            case GoogleSigninBehaviour.SignInState.Undefined:
+                            case GoogleSigninBehaviour.SignInState.Waiting:
+                                return;
+                            case GoogleSigninBehaviour.SignInState.Canceled:
+                                startButtonContainer.SetActive(true);
+                                googleSignInButton.gameObject.SetActive(true);
+                                Find<DimmedLoadingScreen>().Close();
+                                break;
+                            case GoogleSigninBehaviour.SignInState.Signed:
+                                OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                        }
+                    });
             });
             appleSignInButton.onClick.AddListener(() =>
             {
@@ -269,29 +282,49 @@ namespace Nekoyume.UI
                     apple.Initialize();
                 }
 
-                OnClickAppleSignIn.OnNext((this, apple));
-
-                if (apple.State.Value is not (
-                    AppleSigninBehaviour.SignInState.Signed or
-                    AppleSigninBehaviour.SignInState.Waiting))
+                Debug.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
+                switch (apple.State.Value)
                 {
-                    apple.OnSignIn();
-                    startButtonContainer.SetActive(false);
-                    appleSignInButton.gameObject.SetActive(false);
-                    apple.State
-                        .SkipLatestValueOnSubscribe()
-                        .First()
-                        .Subscribe(state =>
-                        {
-                            var isCanceled = state is AppleSigninBehaviour.SignInState.Canceled;
-                            startButtonContainer.SetActive(isCanceled);
-                            appleSignInButton.gameObject.SetActive(isCanceled);
-                            if (state is AppleSigninBehaviour.SignInState.Signed)
-                            {
-                                OnAppleSignedIn.OnNext((this, apple));    
-                            }
-                        });
+                    case AppleSigninBehaviour.SignInState.Signed:
+                        Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
+                        OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                        return;
+                    case AppleSigninBehaviour.SignInState.Waiting:
+                        Debug.Log("[IntroScreen] Already waiting for apple sign in.");
+                        return;
+                    case AppleSigninBehaviour.SignInState.Undefined:
+                    case AppleSigninBehaviour.SignInState.Canceled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
+
+                Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
+                apple.OnSignIn();
+                startButtonContainer.SetActive(false);
+                appleSignInButton.gameObject.SetActive(false);
+                apple.State
+                    .SkipLatestValueOnSubscribe()
+                    .First()
+                    .Subscribe(state =>
+                    {
+                        switch (state)
+                        {
+                            case AppleSigninBehaviour.SignInState.Undefined:
+                            case AppleSigninBehaviour.SignInState.Waiting:
+                                return;
+                            case AppleSigninBehaviour.SignInState.Canceled:
+                                startButtonContainer.SetActive(true);
+                                appleSignInButton.gameObject.SetActive(true);
+                                Find<DimmedLoadingScreen>().Close();
+                                break;
+                            case AppleSigninBehaviour.SignInState.Signed:
+                                OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                        }
+                    });
             });
             signinButton.onClick.AddListener(() =>
             {
@@ -365,13 +398,11 @@ namespace Nekoyume.UI
 #endif
             GetGuestPrivateKey();
         }
-        
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            OnClickGoogleSignIn.Dispose();
             OnGoogleSignedIn.Dispose();
-            OnClickAppleSignIn.Dispose();
             OnAppleSignedIn.Dispose();
         }
 
@@ -390,7 +421,7 @@ namespace Nekoyume.UI
                 != IdleToShowButtons)
             {
                 mobileContainerAnimator.Play("Idle", 0);
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);    
+                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
             }
 
             // videoImage.gameObject.SetActive(false);
@@ -413,7 +444,7 @@ namespace Nekoyume.UI
                 != IdleToShowButtons)
             {
                 mobileContainerAnimator.Play("Idle");
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);    
+                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
             }
 
             startButtonContainer.SetActive(false);

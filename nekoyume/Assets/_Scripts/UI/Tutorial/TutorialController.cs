@@ -30,11 +30,11 @@ namespace Nekoyume.UI
         private const string TutorialBundle = "Tutorial";
         private const string ScenarioPath = "TutorialScenario";
         private const string PresetPath = "TutorialPreset";
-        private const int CreateAvatarRewardTutorialId = 2;
+        private const int CreateAvatarRewardTutorialId = 50000;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
+        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
@@ -296,8 +296,11 @@ namespace Nekoyume.UI
                 {
                     for (var i = 0; i < count; i++)
                     {
-                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                        mailRewards.Add(new MailReward(item, 1));
+                        if (itemRow.ItemSubType != ItemSubType.Aura)
+                        {
+                            var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                            mailRewards.Add(new MailReward(item, 1));
+                        }
                     }
                 }
             }

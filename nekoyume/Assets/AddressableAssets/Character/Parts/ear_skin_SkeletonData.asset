@@ -18,9 +18,11 @@ MonoBehaviour:
   skeletonJSON: {fileID: 4900000, guid: 5add78ddb484f0a4ba97585143f85de2, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
-    requiresBlendModeMaterials: 0
+    requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
-    additiveMaterials: []
+    additiveMaterials:
+    - pageName: ear_skin.png
+      material: {fileID: 2100000, guid: 8d17de87bbbae46e9b1cd6ca012ce062, type: 2}
     multiplyMaterials: []
     screenMaterials: []
   skeletonDataModifiers: []

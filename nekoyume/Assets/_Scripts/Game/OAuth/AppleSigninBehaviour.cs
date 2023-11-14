@@ -19,7 +19,7 @@ namespace Nekoyume.Game.OAuth
     {
         public enum SignInState
         {
-            NotSigned,
+            Undefined,
             Signed,
             Canceled,
             Waiting
@@ -29,9 +29,10 @@ namespace Nekoyume.Game.OAuth
 
         private IAppleAuthManager _appleAuthManager;
 
-        public ReactiveProperty<SignInState> State { get; } = new(SignInState.NotSigned);
+        public ReactiveProperty<SignInState> State { get; } = new(SignInState.Undefined);
 
-        public string IDToken { get; private set; } = string.Empty;
+        public string Email { get; private set; } = string.Empty;
+        public string IdToken { get; private set; } = string.Empty;
         public Address? AgentAddress { get; private set; } = null;
 
         // Start is called before the first frame update
@@ -90,7 +91,7 @@ namespace Nekoyume.Game.OAuth
                         case CredentialState.NotFound:
                             // this.SetupLoginMenuForSignInWithApple();
                             PlayerPrefs.DeleteKey(AppleUserIdKey);
-                            State.Value = SignInState.NotSigned;
+                            State.Value = SignInState.Undefined;
                             return;
                     }
                 },
@@ -116,7 +117,8 @@ namespace Nekoyume.Game.OAuth
                     PlayerPrefs.SetString(AppleUserIdKey, credential.User);
                     Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
                     var appleIdCredential = credential as IAppleIDCredential;
-                    IDToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
+                    Email = appleIdCredential.Email;
+                    IdToken = Encoding.UTF8.GetString(appleIdCredential.IdentityToken, 0, appleIdCredential.IdentityToken.Length);
                     State.Value = SignInState.Signed;
                 },
                 error =>
@@ -128,57 +130,16 @@ namespace Nekoyume.Game.OAuth
             State.SkipLatestValueOnSubscribe().First().Subscribe(state =>
             {
                 Debug.Log($"[AppleSigninBehaviour] State changed: {state}");
-                if (state is SignInState.Signed)
+                switch (state)
                 {
-                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
-                }
-
-                if (state is SignInState.Canceled)
-                {
-                    Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
+                    case SignInState.Signed:
+                        Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Signed");
+                        break;
+                    case SignInState.Canceled:
+                        Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Canceled");
+                        break;
                 }
             });
-        }
-        
-        public IEnumerator CoSendAppleIdToken()
-        {
-            Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({IDToken})");
-            yield return new WaitUntil(() => Game.instance.PortalConnect != null);
-            Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
-
-            var body = new JsonObject {{"idToken", IDToken}};
-            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
-            var request =
-                new UnityWebRequest(
-                    $"{Game.instance.PortalConnect.PortalUrl}{PortalConnect.AppleAuthEndpoint}",
-                    "POST");
-            var jsonToSend = new System.Text.UTF8Encoding().GetBytes(bodyString);
-            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.timeout = 180;
-            request.uploadHandler.contentType = "application/json";
-            request.SetRequestHeader("accept", "application/json");
-            request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest();
-
-            if (Game.instance.PortalConnect.HandleAccessTokenResult(request))
-            {
-                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
-                var accessTokenResult =
-                    JsonUtility.FromJson<PortalConnect.AccessTokenResult>(
-                        request.downloadHandler.text);
-                if (!string.IsNullOrEmpty(accessTokenResult.address))
-                {
-                    AgentAddress = new Address(accessTokenResult.address);
-                    Debug.Log("[AppleSigninBehaviour] CoSendAppleIdToken succeeded." +
-                              $" AgentAddress: {AgentAddress}");
-                }
-            }
-            else
-            {
-                Debug.LogError(
-                    $"[AppleSigninBehaviour] CoSendAppleIdToken failed w/ error: {request.error}");
-            }
         }
     }
 }

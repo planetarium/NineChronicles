@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b3b4b945939a54ea0b23d3396115fb, type: 3}
+  m_Name: Aura_02-green_SkeletonData
+  m_EditorClassIdentifier: 
+  atlasAssets:
+  - {fileID: 11400000, guid: 7d9aee6f1848ffd4182a5bd0cd513396, type: 2}
+  scale: 0.01
+  skeletonJSON: {fileID: 4900000, guid: 5a6299d8fe2c30c449b867866898b84f, type: 3}
+  isUpgradingBlendModeMaterials: 0
+  blendModeMaterials:
+    requiresBlendModeMaterials: 1
+    applyAdditiveMaterial: 1
+    additiveMaterials:
+    - pageName: Aura_02-green.png
+      material: {fileID: 2100000, guid: fa8e97b9ea30bb94fb9869c1cb4f2540, type: 2}
+    multiplyMaterials: []
+    screenMaterials:
+    - pageName: Aura_02-green.png
+      material: {fileID: 2100000, guid: 5952ed032c293ef4390ac3fcf7053292, type: 2}
+  skeletonDataModifiers: []
+  fromAnimation: []
+  toAnimation: []
+  duration: []
+  defaultMix: 0.2
+  controller: {fileID: 0}

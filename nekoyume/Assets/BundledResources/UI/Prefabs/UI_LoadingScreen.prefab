@@ -1189,6 +1189,9 @@ MonoBehaviour:
   - type: 5
     videoClip: {fileID: 0}
     texture: {fileID: 2800000, guid: 234d2ad2cceae5449af559de3bd329fc, type: 3}
+  - type: 6
+    videoClip: {fileID: 0}
+    texture: {fileID: 2800000, guid: 61e32ab835ebde342a2a35f31266fd94, type: 3}
 --- !u!1 &9164911897383629554
 GameObject:
   m_ObjectHideFlags: 0
@@ -1272,6 +1275,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5631972601959498813}
     m_Modifications:
+    - target: {fileID: 403374612209808479, guid: 9387536cf1f3c094f8af104689eb03a6,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 403374612209808479, guid: 9387536cf1f3c094f8af104689eb03a6,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2899257344133928302, guid: 9387536cf1f3c094f8af104689eb03a6,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1416,6 +1429,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8070018461471112453, guid: 9387536cf1f3c094f8af104689eb03a6,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9387536cf1f3c094f8af104689eb03a6, type: 3}

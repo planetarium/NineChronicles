@@ -1024,7 +1024,6 @@ MonoBehaviour:
   - type: 50001
     rectTransform: {fileID: 3573887815729517353}
   tutorialActions: 52c30000
-  costIconData: {fileID: 11400000, guid: 4ed06bb1bfe2f9b4aabebaebcb463201, type: 2}
   closeButton: {fileID: 241345997775891456}
   drawItems:
   - infoButton: {fileID: 6598006676150947060}
@@ -4817,27 +4816,27 @@ PrefabInstance:
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 212
+      value: -13
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 78
+      value: -22
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
@@ -4877,7 +4876,7 @@ PrefabInstance:
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -106
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 8618180979211578268, guid: c87f25173d5ad5848984d2772972e6fa,
         type: 3}
@@ -4954,7 +4953,7 @@ PrefabInstance:
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7126975939112497894, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

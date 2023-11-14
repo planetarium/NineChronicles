@@ -1,3 +1,6 @@
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Scroller;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,7 +34,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
+            if (Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value == null)
+            {
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
+                return;
+            }
             Find<SeasonPass>().Show();
         }
     }

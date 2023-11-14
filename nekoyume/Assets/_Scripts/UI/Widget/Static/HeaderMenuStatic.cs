@@ -195,7 +195,7 @@ namespace Nekoyume.UI.Module
                     case ToggleType.InviteFriend:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS
                             Find<InviteFriendsPopup>().Show();
 #else
                             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
