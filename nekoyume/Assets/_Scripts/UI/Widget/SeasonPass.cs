@@ -222,7 +222,7 @@ namespace Nekoyume.UI
             if (!isPageEffectComplete)
                 return;
 
-            if(rewardCellScrollbar.value > 0.95f && Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.Level < SeasonPassMaxLevel)
+            if(rewardCellScrollbar.value > 0.95f && Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.Level <= SeasonPassMaxLevel)
             {
                 if (isLastCellShow)
                 {

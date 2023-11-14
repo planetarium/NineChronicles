@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Reactive.Subjects;
+using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI.Extensions;

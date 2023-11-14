@@ -102,6 +102,9 @@ namespace Nekoyume.Game
         public static float MinScreenRatio => 16f / 9f;
         public static float MaxScreenRatio => 21f / 9f;
 
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+
         #region Mono
 
         protected override void Awake()
@@ -125,6 +128,10 @@ namespace Nekoyume.Game
 
         private void Update()
         {
+            if(_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
+            {
+                InitScreenResolution();
+            }
             UpdateScreenResolution();
         }
 
@@ -392,6 +399,8 @@ namespace Nekoyume.Game
         private void InitScreenResolution()
         {
             float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
             if (MinScreenRatio > currentScreenRatio || MaxScreenRatio < currentScreenRatio)
             {
                 UpdateStaticRatioWithLetterBox();

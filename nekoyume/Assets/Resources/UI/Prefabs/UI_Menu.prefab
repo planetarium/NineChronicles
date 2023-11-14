@@ -7570,6 +7570,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5777233478852806583, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4575422773675835264}
+    - target: {fileID: 5777233478852806583, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: DccClick
+      objectReference: {fileID: 0}
     - target: {fileID: 7478032419956731259, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
       propertyPath: m_fontColor32.rgba

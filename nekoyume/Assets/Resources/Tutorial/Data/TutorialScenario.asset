@@ -1667,9 +1667,9 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: -50, y: 0}
-          targetPositionOffset: {x: -133, y: -97}
+          targetPositionOffset: {x: 0, y: 0}
           targetSizeOffset: {x: 25, y: 60}
-          buttonRaycastPadding: {x: 122, y: 90, z: -130, w: -95}
+          buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 70001
           actionType: 70001
           guideType: 1

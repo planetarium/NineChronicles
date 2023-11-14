@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using Nekoyume.Helper;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Pet;
 using UniRx;
@@ -40,5 +41,10 @@ namespace Nekoyume.UI.Scroller
         }
 
         protected override FancyCell<PetSlotViewModel, ContextModel> CellTemplate => cellTemplate;
+        protected override void Initialize()
+        {
+            base.Initialize();
+            startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, cellContainer.GetComponent<RectTransform>().rect.width);
+        }
     }
 }

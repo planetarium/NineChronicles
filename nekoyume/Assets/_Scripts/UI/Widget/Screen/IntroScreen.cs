@@ -193,7 +193,7 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
-        public Subject<string> OnGoogleSignedIn { get; } = new();
+        public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -229,7 +229,7 @@ namespace Nekoyume.UI
                 {
                     case GoogleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                        OnGoogleSignedIn.OnNext(google.IDToken);
+                        OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
                         return;
                     case GoogleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for google sign in.");
@@ -261,7 +261,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case GoogleSigninBehaviour.SignInState.Signed:
-                                OnGoogleSignedIn.OnNext(google.IDToken);
+                                OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
