@@ -573,6 +573,7 @@ namespace Nekoyume.UI
                 if (request.responseCode == 200)
                 {
                     Debug.Log($"{logTitle} Success: {json}");
+                    return null;
                 }
             }
             else if (data.resultCode is 3001 or 3002)
