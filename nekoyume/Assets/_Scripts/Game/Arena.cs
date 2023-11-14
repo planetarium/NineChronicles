@@ -141,6 +141,8 @@ namespace Nekoyume.Game
             container.SetActive(true);
             me.Init(myDigest, myAvatarAddress, enemy, false);
             enemy.Init(enemyDigest, enemyAvatarAddress, me, true);
+            me.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
+            enemy.Animator.TimeScale = Stage.AcceleratedAnimationTimeScaleWeight;
 
             _turnNumber = 1;
 
