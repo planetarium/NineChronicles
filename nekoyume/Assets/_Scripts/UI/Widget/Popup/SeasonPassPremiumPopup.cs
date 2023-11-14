@@ -96,7 +96,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            string premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+            string premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}PremiumAll";
+            if (Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
+            {
+                premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
+            }
+
             if (Game.Game.instance.IAPStoreManager.SeasonPassProduct.TryGetValue(premiumPlusProductKey, out var premiumPlusProduct))
             {
                 int index = 0;
