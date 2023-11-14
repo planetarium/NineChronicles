@@ -145,8 +145,10 @@ namespace Lib9c.Tests.Action
                 }));
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData("memo")]
+        [InlineData(null)]
+        public void Execute(string memo)
         {
             var state = GenerateAvatar(_initialState, out var recipientAvatarAddress, out var recipientAgentAddress);
 
@@ -166,10 +168,13 @@ namespace Lib9c.Tests.Action
 
             var fungibleAssetValues = avatarValues.Concat(agentValues).ToList();
 
-            var action = new ClaimItems(new List<(Address, IReadOnlyList<FungibleAssetValue>)>
-            {
-                (recipientAvatarAddress, fungibleAssetValues),
-            });
+            var action = new ClaimItems(
+                new List<(Address, IReadOnlyList<FungibleAssetValue>)>
+                {
+                    (recipientAvatarAddress, fungibleAssetValues),
+                },
+                memo
+            );
             var states = action.Execute(new ActionContext
             {
                 PreviousState = state,
@@ -178,13 +183,30 @@ namespace Lib9c.Tests.Action
                 RandomSeed = 0,
             });
 
+            var avatarState = states.GetAvatarStateV2(recipientAvatarAddress);
+            var mail = Assert.IsType<ClaimItemsMail>(avatarState.mailBox.Single());
+            if (string.IsNullOrEmpty(memo))
+            {
+                Assert.Null(mail.Memo);
+            }
+            else
+            {
+                Assert.Equal(memo, mail.Memo);
+            }
+
+            Assert.Equal(0, mail.blockIndex);
+            Assert.Equal(0, mail.requiredBlockIndex);
+
             var inventory = states.GetInventory(recipientAvatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
             foreach (var i in Enumerable.Range(0, 3))
             {
                 Assert.Equal(_itemCurrencies[i] * 4, states.GetBalance(_signerAddress, _itemCurrencies[i]));
+                var itemId = _itemIds[i];
                 Assert.Equal(
                     1,
-                    inventory.Items.First(x => x.item.Id == _itemIds[i]).count);
+                    inventory.Items.First(x => x.item.Id == itemId).count);
+                var mailItems = mail.Items.Single(m => m.id == itemId);
+                Assert.Equal(1, mailItems.count);
             }
 
             for (int i = 0; i < _wrappedFavCurrencies.Count; i++)
@@ -196,14 +218,9 @@ namespace Lib9c.Tests.Action
                     : recipientAvatarAddress;
                 var currency = _favCurrencies[i];
                 Assert.Equal(currency * 1, states.GetBalance(recipientAddress, currency));
+                var mailFav = mail.FungibleAssetValues.Single(f => f.Currency.Equals(currency));
+                Assert.Equal(currency * 1, mailFav);
             }
-
-            var avatarState = states.GetAvatarStateV2(recipientAvatarAddress);
-            var mail = Assert.IsType<ClaimItemsMail>(avatarState.mailBox.Single());
-            Assert.Equal(0, mail.blockIndex);
-            Assert.Equal(0, mail.requiredBlockIndex);
-            Assert.Equal(2, mail.FungibleAssetValues.Count);
-            Assert.Equal(3, mail.Items.Count);
         }
 
         [Fact]

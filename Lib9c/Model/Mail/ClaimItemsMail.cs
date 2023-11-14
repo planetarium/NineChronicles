@@ -13,11 +13,15 @@ namespace Nekoyume.Model.Mail
 
         public List<FungibleAssetValue> FungibleAssetValues = new List<FungibleAssetValue>();
         public List<(int id, int count)> Items = new List<(int id, int count)>();
+        public string Memo;
 
-        public ClaimItemsMail(long blockIndex, Guid id, long requiredBlockIndex, List<FungibleAssetValue> fungibleAssetValues, List<(int id, int count)> items) : base(blockIndex, id, requiredBlockIndex)
+        public ClaimItemsMail(long blockIndex, Guid id, long requiredBlockIndex,
+            List<FungibleAssetValue> fungibleAssetValues, List<(int id, int count)> items,
+            string memo) : base(blockIndex, id, requiredBlockIndex)
         {
             FungibleAssetValues = fungibleAssetValues;
             Items = items;
+            Memo = memo;
         }
 
         public ClaimItemsMail(Dictionary serialized) : base(serialized)
@@ -34,6 +38,11 @@ namespace Nekoyume.Model.Mail
                     var list = (List) v;
                     return ((Integer)list[0], (Integer)list[1]);
                 });
+            }
+
+            if (serialized.ContainsKey("m"))
+            {
+                Memo = (Text) serialized["m"];
             }
         }
 
@@ -56,6 +65,11 @@ namespace Nekoyume.Model.Mail
             {
                 dict = dict.SetItem("i",
                     new List(Items.Select(tuple => List.Empty.Add(tuple.id).Add(tuple.count))));
+            }
+
+            if (!string.IsNullOrEmpty(Memo))
+            {
+                dict = dict.SetItem("m", Memo);
             }
 
             return dict;
