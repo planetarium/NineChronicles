@@ -446,8 +446,8 @@ namespace Nekoyume.Planet
             clo.RpcServerPort = uri.Port;
 
             // FIXME: Other hosts are selected randomly for now.
-            clo.ApiServerHost = rpcEndpoints.HeadlessGql.Count > 0
-                ? rpcEndpoints.HeadlessGql[Random.Range(0, rpcEndpoints.HeadlessGql.Count)]
+            clo.ApiServerHost = rpcEndpoints.DataProviderGql.Count > 0
+                ? rpcEndpoints.DataProviderGql[Random.Range(0, rpcEndpoints.DataProviderGql.Count)]
                 : null;
             clo.MarketServiceHost = rpcEndpoints.MarketRest.Count > 0
                 ? rpcEndpoints.MarketRest[Random.Range(0, rpcEndpoints.MarketRest.Count)]
