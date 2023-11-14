@@ -1762,6 +1762,8 @@ MonoBehaviour:
   mobileContainer: {fileID: 6004842978331103633}
   mobileContainerAnimator: {fileID: 422779642905769095}
   videoImage: {fileID: 5860571314653810958}
+  touchScreenButtonGO: {fileID: 4943159830034945701}
+  touchScreenButton: {fileID: 1007397819372763151}
   startButtonContainer: {fileID: 3860952466932365792}
   startButton: {fileID: 1478799154173498968}
   signinButton: {fileID: 636972386927832638}
@@ -9738,7 +9740,6 @@ GameObject:
   - component: {fileID: 3019006239557419426}
   - component: {fileID: 1032868087955622211}
   - component: {fileID: 4494285534938689945}
-  - component: {fileID: 8656704800895300080}
   - component: {fileID: 9158243737731110635}
   - component: {fileID: 6916702244998983157}
   m_Layer: 5
@@ -9796,7 +9797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Touch the screen to continue.
+  m_text: Touch to Start
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 33edc2626444d664b85126c972076f37, type: 2}
@@ -9865,37 +9866,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &8656704800895300080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5397275626905306111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixedFontAsset: 0
-  fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
-  fixedMarginOption: 0
-  fontMaterialType: 9
-  l10nKey: 
-  fontMaterialIndexInitialized: 0
-  fontMaterialIndex: 0
-  defaultFontStylesInitialized: 0
-  defaultFontStyles: 0
-  defaultFontSizeInitialized: 0
-  defaultFontSize: 0
-  defaultCharacterSpacingInitialized: 0
-  defaultCharacterSpacing: 0
-  defaultWordSpacingInitialized: 0
-  defaultWordSpacing: 0
-  defaultLineSpacingInitialized: 0
-  defaultLineSpacing: 0
 --- !u!95 &9158243737731110635
 Animator:
   serializedVersion: 4

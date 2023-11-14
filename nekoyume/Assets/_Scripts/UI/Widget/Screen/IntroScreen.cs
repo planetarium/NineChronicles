@@ -156,6 +156,9 @@ namespace Nekoyume.UI
         [SerializeField] private Animator mobileContainerAnimator;
         [SerializeField] private RawImage videoImage;
 
+        [SerializeField] private GameObject touchScreenButtonGO;
+        [SerializeField] private Button touchScreenButton;
+
         // NOTE: `startButtonContainer` will be enabled when the mobileContainerAnimator
         //       is in the `IdleToShowButtons` state.
         [SerializeField] private GameObject startButtonContainer;
