@@ -8,6 +8,8 @@ using Nekoyume.Model.Item;
 using UnityEngine.UI;
 using Nekoyume.Game.Controller;
 using System.Numerics;
+using TMPro;
+using System.Linq;
 
 namespace Nekoyume.UI
 {
@@ -41,6 +43,12 @@ namespace Nekoyume.UI
         private BaseItemView[] premiumRewards;
         [SerializeField]
         private BaseItemView[] premiumPlusRewards;
+
+        [SerializeField]
+        private TextMeshProUGUI[] premiumPrices;
+
+        [SerializeField]
+        private TextMeshProUGUI[] premiumPlusPrices;
 
         protected override void Awake()
         {
@@ -78,6 +86,14 @@ namespace Nekoyume.UI
                 {
                     ItemViewSetItemData(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
                 }
+                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.GoogleSku);
+                if(_puchasingData != null)
+                {
+                    foreach (var item in premiumPrices)
+                    {
+                        item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                    }
+                }
             }
 
             string premiumPlusProductKey = $"SeasonPass{seasonPassManager.CurrentSeasonPassData.Id}Premiumplus";
@@ -91,6 +107,14 @@ namespace Nekoyume.UI
                 for (int i = 0; i < premiumPlusProduct.FungibleItemList.Length && index < premiumPlusRewards.Length; i++, index++)
                 {
                     ItemViewSetItemData(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
+                }
+                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.GoogleSku);
+                if (_puchasingData != null)
+                {
+                    foreach (var item in premiumPlusPrices)
+                    {
+                        item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                    }
                 }
             }
         }
