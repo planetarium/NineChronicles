@@ -2742,7 +2742,7 @@ namespace Nekoyume.Blockchain
                 var arenaSheets = tableSheets.GetArenaSimulatorSheets();
                 for (int i = 0; i < eval.Action.ticket; i++)
                 {
-                    var simulator = new ArenaSimulator(random);
+                    var simulator = new ArenaSimulator(random, BattleArena.HpIncreasingModifier);
                     var log = simulator.Simulate(
                         myDigest.Value,
                         enemyDigest.Value,
