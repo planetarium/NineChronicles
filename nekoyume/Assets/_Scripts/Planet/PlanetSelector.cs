@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
@@ -8,6 +9,7 @@ using Libplanet.Crypto;
 using Nekoyume.GraphQL.GraphTypes;
 using UniRx;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.Planet
@@ -77,7 +79,15 @@ namespace Nekoyume.Planet
                 return context;
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
             await context.PlanetRegistry.InitializeAsync();
+            sw.Stop();
+            context.ElapsedTuples.Add((
+                "Unity_Elapsed_Initialize_PlanetRegistry",
+                sw.ElapsedMilliseconds,
+                "Fetching planet infos from planet registry."));
+            Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.");
             if (!context.PlanetRegistry.IsInitialized)
             {
                 context.Error = "[PlanetSelector] Failed to initialize Planets.";
@@ -309,6 +319,8 @@ namespace Nekoyume.Planet
                 return context;
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
             var planetAccountInfos = new List<PlanetAccountInfo>();
             var jsonSerializer = new NewtonsoftJsonSerializer();
             foreach (var planetInfo in context.PlanetRegistry.PlanetInfos)
@@ -341,6 +353,13 @@ namespace Nekoyume.Planet
                     avatarsGraphTypes.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
+
+            sw.Stop();
+            context.ElapsedTuples.Add((
+                "Unity_Elapsed_Update_PlanetAccountInfos",
+                sw.ElapsedMilliseconds,
+                "Fetching agent and avatars from planets."));
+            Debug.Log($"[PlanetSelector] PlanetAccountInfos updated in {sw.ElapsedMilliseconds}ms.");
 
             if (context.HasError)
             {

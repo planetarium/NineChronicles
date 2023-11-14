@@ -79,6 +79,7 @@ namespace Nekoyume.UI
                         .First()
                         .Subscribe(_ =>
                         {
+                            // FIXME: Handle planetContext.Error.
                             PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
                             PlanetSelector.SelectPlanetAccountInfo(
                                 planetContext,
@@ -134,6 +135,7 @@ namespace Nekoyume.UI
                         .First()
                         .Subscribe(_ =>
                         {
+                            // FIXME: Handle planetContext.Error.
                             PlanetSelector.SelectPlanetById(planetContext, planetInfo.ID);
                             PlanetSelector.SelectPlanetAccountInfo(
                                 planetContext,
