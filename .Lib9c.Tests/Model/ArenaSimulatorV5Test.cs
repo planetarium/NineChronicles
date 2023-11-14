@@ -1,4 +1,4 @@
-namespace Lib9c.Tests
+﻿namespace Lib9c.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -10,7 +10,7 @@ namespace Lib9c.Tests
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class ArenaSimulatorTest
+    public class ArenaSimulatorV5Test
     {
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
@@ -20,7 +20,7 @@ namespace Lib9c.Tests
         private readonly ArenaAvatarState _arenaAvatarState1;
         private readonly ArenaAvatarState _arenaAvatarState2;
 
-        public ArenaSimulatorTest()
+        public ArenaSimulatorV5Test()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new TestRandom();
@@ -50,7 +50,7 @@ namespace Lib9c.Tests
         [Fact]
         public void Simulate()
         {
-            var simulator = new ArenaSimulator(_random, 10);
+            var simulator = new ArenaSimulatorV5(_random);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
             var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
@@ -94,14 +94,13 @@ namespace Lib9c.Tests
         [Fact]
         public void HpIncreasingModifier()
         {
-            var simulator = new ArenaSimulator(_random, 10);
+            var simulator = new ArenaSimulatorV5(_random);
             var myDigest = new ArenaPlayerDigest(_avatarState1, _arenaAvatarState1);
             var enemyDigest = new ArenaPlayerDigest(_avatarState2, _arenaAvatarState2);
             var arenaSheets = _tableSheets.GetArenaSimulatorSheets();
             var log = simulator.Simulate(myDigest, enemyDigest, arenaSheets);
 
             Assert.Equal(_random, simulator.Random);
-            Assert.Equal(10, simulator.HpModifier);
 
             var turn = log.Events.OfType<ArenaTurnEnd>().Count();
             Assert.Equal(simulator.Turn, turn);
@@ -113,7 +112,7 @@ namespace Lib9c.Tests
             Assert.Equal(2, players.Count);
             foreach (var player in players)
             {
-                Assert.Equal(player.Stats.BaseHP * 10, player.CurrentHP);
+                Assert.Equal(player.Stats.BaseHP * 2, player.CurrentHP);
             }
         }
     }
