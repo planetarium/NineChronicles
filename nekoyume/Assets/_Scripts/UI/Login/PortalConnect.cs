@@ -333,14 +333,21 @@ namespace Nekoyume.UI
 
         private bool GetRefreshTokenFromPlayerPrefs(string address)
         {
-            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
-
-            if (string.IsNullOrEmpty(encryptedRefreshToken))
+            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}");
+            if (string.IsNullOrEmpty(encryptedRefreshToken) ||
+                string.IsNullOrWhiteSpace(encryptedRefreshToken))
             {
                 return false;
             }
 
-            refreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            var decryptedRefreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            if (string.IsNullOrEmpty(decryptedRefreshToken) ||
+                string.IsNullOrWhiteSpace(decryptedRefreshToken))
+            {
+                return false;
+            }
+
+            refreshToken = decryptedRefreshToken;
             return true;
         }
 
