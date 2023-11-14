@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using Cysharp.Threading.Tasks;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -344,21 +345,48 @@ namespace Nekoyume.Planet
 
                 Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
+                AgentGraphType agentGraphType;
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
-                var (errors, avatarsGraphTypes) = await client.QueryAgentAsync(agentAddress);
-                if (errors != null)
+                client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
+                try
                 {
-                    context.Error = $"[PlanetSelector] Failed to query agent and avatars for planet({planetInfo.ID})." +
-                                    "\nPlease check your internet connection and try again.";
-                    Debug.LogError(context.Error);
+                    (_, agentGraphType) = await client.QueryAgentAsync(agentAddress);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Debug.LogException(ex);
+                    const string message = "[PlanetSelector] Querying agent and avatars canceled." +
+                                           " Check the network connection.";
+                    context.Error = message;
+                    Debug.LogError(message);
+                    break;
+                }
+                catch (HttpRequestException ex)
+                {
+                    Debug.LogException(ex);
+                    const string message = "[PlanetSelector] Querying agent and avatars failed." +
+                                           " Check the endpoint url.";
+                    context.Error = message;
+                    Debug.LogError(message);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                    Debug.LogException(ex.InnerException);
+                    var message = "[PlanetSelector] Querying agent and avatars failed." +
+                                  " Unexpected exception occurred." +
+                                  $"{ex.GetType().FullName}({ex.InnerException?.GetType().FullName})";
+                    context.Error = message;
+                    Debug.LogError(message);
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] {avatarsGraphTypes}");
+                Debug.Log($"[PlanetSelector] {agentGraphType}");
                 var info = new PlanetAccountInfo(
                     planetInfo.ID,
-                    avatarsGraphTypes.Agent?.Address,
-                    avatarsGraphTypes.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
+                    agentGraphType?.Agent?.Address,
+                    agentGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
 
@@ -367,7 +395,8 @@ namespace Nekoyume.Planet
                 "Unity_Elapsed_Update_PlanetAccountInfos",
                 sw.ElapsedMilliseconds,
                 "Fetching agent and avatars from planets."));
-            Debug.Log($"[PlanetSelector] PlanetAccountInfos updated in {sw.ElapsedMilliseconds}ms.");
+            Debug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
+                      $" updated in {sw.ElapsedMilliseconds}ms.");
 
             if (context.HasError)
             {
