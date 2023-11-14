@@ -10,6 +10,7 @@ namespace Nekoyume.Arena
 {
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1930
+    /// Hard-forked at https://github.com/planetarium/lib9c/pull/2229
     /// </summary>
     public class ArenaSimulatorV5 : IArenaSimulator
     {
