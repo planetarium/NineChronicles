@@ -97,8 +97,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private ErrorPopup errorPopup;
 
-        private string _referralCode;
-        private string _referralUrl;
+        private PortalConnect.ReferralResult _referralInformation;
 
         protected override void Awake()
         {
@@ -110,7 +109,7 @@ namespace Nekoyume.UI
                     MailType.System,
                     L10nManager.Localize("NOTIFICATION_REFERRAL_CODE_COPY"),
                     NotificationCell.NotificationType.Notification);
-                ClipboardHelper.CopyToClipboard(_referralCode);
+                ClipboardHelper.CopyToClipboard(_referralInformation.referralCode);
             });
 
             shareReferralCodeButton.onClick.AddListener(() =>
@@ -118,7 +117,7 @@ namespace Nekoyume.UI
                 new NativeShare()
                     .SetSubject(L10nManager.Localize("UI_SHARE_REFERRAL_CODE_TITLE"))
                     .SetText(L10nManager.Localize("UI_SHARE_REFERRAL_CODE_CONTENT",
-                        _referralCode, _referralUrl))
+                        _referralInformation.referralCode, _referralInformation.referralUrl))
                     .Share();
             });
 
@@ -133,34 +132,38 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            ShowAsync();
+            ShowAsync(ignoreShowAnimation);
         }
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
-            var referralInfo = await Game.Game.instance.PortalConnect.GetReferralInformation();
+            _referralInformation ??= await Game.Game.instance.PortalConnect.GetReferralInformation();
 
+            Set(_referralInformation);
+            base.Show(ignoreShowAnimation);
+        }
+
+        private void Set(PortalConnect.ReferralResult referralInformation)
+        {
             referralRewardText.text = L10nManager.Localize(
                 "UI_INVITE_FRIENDS_BANNER_DESC",
-                referralInfo.inviterReward,
-                referralInfo.inviteeReward,
-                referralInfo.inviteeLevelReward,
-                referralInfo.requiredLevel);
-            referralCodeText.text = referralInfo.referralCode;
-            enterReferralCodeButton.gameObject.SetActive(!referralInfo.isRegistered);
-
-            _referralCode = referralInfo.referralCode;
-            _referralUrl = referralInfo.referralUrl;
-
-            base.Show(ignoreShowAnimation);
+                referralInformation.inviterReward,
+                referralInformation.inviteeReward,
+                referralInformation.inviteeLevelReward,
+                referralInformation.requiredLevel);
+            referralCodeText.text = referralInformation.referralCode;
+            enterReferralCodeButton.gameObject.SetActive(!referralInformation.isRegistered);
         }
 
         private async void EnterReferralCode(string referralCode)
         {
+            enterReferralCodeButton.gameObject.SetActive(false);
+
             var result = await Game.Game.instance.PortalConnect.EnterReferralCode(referralCode);
             if (result.resultCode == 1000)
             {
-                enterReferralCodeButton.gameObject.SetActive(false);
+                _referralInformation.isRegistered = true;
+
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize("NOTIFICATION_REFERRAL_CODE_ENTER_SUCCESS"),
@@ -170,11 +173,13 @@ namespace Nekoyume.UI
             {
                 if (result.resultCode == 4001)
                 {
-                    enterReferralCodeButton.gameObject.SetActive(false);
+                    _referralInformation.isRegistered = true;
                 }
 
                 errorPopup.Show($"{result.title}\n{result.message}\n({result.resultCode})");
             }
+
+            enterReferralCodeButton.gameObject.SetActive(!_referralInformation.isRegistered);
         }
     }
 }
