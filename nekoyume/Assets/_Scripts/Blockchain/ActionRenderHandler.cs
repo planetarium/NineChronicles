@@ -692,7 +692,7 @@ namespace Nekoyume.Blockchain
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
                     eval.Action.ClaimData.Any(e =>
-                        e.address.Equals(States.Instance.CurrentAvatarState.address)))
+                        e.address.Equals(States.Instance?.CurrentAvatarState?.address)))
                 .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareClaimItems)
                 .ObserveOnMainThread()
@@ -3337,17 +3337,28 @@ namespace Nekoyume.Blockchain
                     {
                         foreach (var fav in favList)
                         {
+                            var isCrystal = fav.Currency.Equals(Currencies.Crystal);
+                            var balanceAddr = isCrystal
+                                ? agentAddr
+                                : avatarAddr;
                             var balance = StateGetter.GetBalance(
-                                addr,
+                                balanceAddr,
                                 fav.Currency,
                                 states);
-                            gameStates.SetCurrentAvatarBalance(balance);
+                            if (isCrystal)
+                            {
+                                gameStates.SetCrystalBalance(balance);
+                            }
+                            else
+                            {
+                                gameStates.SetCurrentAvatarBalance(balance);
+                            }
                         }
                     }
                 }
             }
 
-
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, eval.OutputState)).Forget();
             return eval;
         }
 
