@@ -69,6 +69,7 @@ namespace Nekoyume.Model.Stat
         public int AdditionalThorn => Thorn - _baseStats.Thorn;
 
         public bool IsArenaCharacter { private get; set; } = false;
+        public int HpIncreasingModifier { private get; set; } = 2;
 
         private readonly Dictionary<StatType, decimal> MinimumStatValues =
             new Dictionary<StatType, decimal>()
@@ -106,7 +107,7 @@ namespace Nekoyume.Model.Stat
             _baseStats.Set(stats);
             SetStats(stat.Level);
         }
-            
+
         public CharacterStats(CharacterStats value) : base(value)
         {
             _row = value._row;
@@ -355,7 +356,7 @@ namespace Nekoyume.Model.Stat
         public void IncreaseHpForArena()
         {
             var originalHP = _statMap[StatType.HP];
-            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.TotalValueAsInt * 2));
+            _statMap[StatType.HP].SetBaseValue(Math.Max(0, originalHP.TotalValueAsInt * HpIncreasingModifier));
         }
 
         private void UpdateBaseStats()
