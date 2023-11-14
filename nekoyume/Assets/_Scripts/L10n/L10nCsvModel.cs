@@ -28,5 +28,7 @@ namespace Nekoyume.L10n
         public string ChineseTraditional { get; set; }
 
         public string Tagalog { get; set; }
+
+        public string Vietnam { get; set; }
     }
 }

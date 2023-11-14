@@ -60,7 +60,7 @@ public class SeasonPassServiceClient
             ActionType value,
             JsonSerializerOptions options)
         {
-            writer.WriteNumberValue((int)value);
+            writer.WriteStringValue(value.ToString());
         }
     }
 
@@ -163,7 +163,7 @@ public class SeasonPassServiceClient
             PlanetID value,
             JsonSerializerOptions options)
         {
-            writer.WriteNumberValue((int)value);
+            writer.WriteStringValue(value.ToString().Substring(1));
         }
     }
 
