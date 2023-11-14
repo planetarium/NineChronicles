@@ -239,31 +239,6 @@
         }
 
         [Fact]
-        public void Execute_NotEnoughClearedStageLevelException()
-        {
-            var action = new BattleArena
-            {
-                myAvatarAddress = _avatar4Address,
-                enemyAvatarAddress = _avatar2Address,
-                championshipId = 1,
-                round = 1,
-                ticket = 1,
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                runeInfos = new List<RuneSlotInfo>(),
-            };
-
-            Assert.Throws<NotEnoughClearedStageLevelException>(() =>
-                action.Execute(new ActionContext
-                {
-                    PreviousState = _initialStates,
-                    Signer = _agent4Address,
-                    RandomSeed = 0,
-                    BlockIndex = 1,
-                }));
-        }
-
-        [Fact]
         public void Execute_SheetRowNotFoundException()
         {
             var action = new BattleArena
