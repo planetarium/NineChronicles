@@ -283,14 +283,14 @@ namespace Nekoyume.L10n
                         PrepareHeaderForMatch = args => args.Header.ToLower(),
                     };
                     using var csvReader = new CsvReader(streamReader, csvConfig);
-#if ENABLE_IL2CPP
-                    var records = GetL10nCsvModelRecords(csvReader);
-#else
-                    var records = csvReader.GetRecords<L10nCsvModel>();
-#endif
-                    var recordsIndex = 0;
                     try
                     {
+#if ENABLE_IL2CPP
+                        var records = GetL10nCsvModelRecords(csvReader);
+#else
+                        var records = csvReader.GetRecords<L10nCsvModel>();
+#endif
+                        var recordsIndex = 0;
                         foreach (var record in records)
                         {
 #if TEST_LOG
@@ -330,7 +330,8 @@ namespace Nekoyume.L10n
                     }
                     catch (CsvHelper.MissingFieldException e)
                     {
-                        Debug.LogWarning($"`{fileName}` file has empty field.\n{e}");
+                        Debug.LogError($"`{fileName}` file has failed parse \n{e}");
+                        continue;
                     }
                 }
 
@@ -354,14 +355,14 @@ namespace Nekoyume.L10n
                     using (var streamReader = new StreamReader(csvFileInfo.FullName))
                     using (var csvReader = new CsvReader(streamReader, csvConfig))
                     {
-                        var records = csvReader.GetRecords<L10nCsvModel>();
-                        var recordsIndex = 0;
                         try
                         {
+                            var records = csvReader.GetRecords<L10nCsvModel>();
+                            var recordsIndex = 0;
                             foreach (var record in records)
                             {
 #if TEST_LOG
-                        Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+                                Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
 #endif
                                 var key = record.Key;
                                 if (string.IsNullOrEmpty(key))
@@ -397,7 +398,8 @@ namespace Nekoyume.L10n
                         }
                         catch (CsvHelper.MissingFieldException e)
                         {
-                            Debug.LogWarning($"`{csvFileInfo.Name}` file has empty field.\n{e}");
+                            Debug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
+                            continue;
                         }
                     }
                 }
