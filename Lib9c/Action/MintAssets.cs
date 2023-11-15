@@ -11,6 +11,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -43,11 +44,24 @@ namespace Nekoyume.Action
             CheckPermission(context);
             IAccount state = context.PreviousState;
 
+            Dictionary<Address, (List<FungibleAssetValue>, List<FungibleItemValue>)> mailRecords = new();
+
             foreach (var (recipient, assets, items) in MintSpecs)
             {
+                if (!mailRecords.TryGetValue(recipient, out var records))
+                {
+                    mailRecords[recipient] = records = new(
+                        new List<FungibleAssetValue>(),
+                        new List<FungibleItemValue>()
+                    );
+                }
+
+                (List<FungibleAssetValue> favs, List<FungibleItemValue> fivs) = records;
+
                 if (assets is { } assetsNotNull)
                 {
                     state = state.MintAsset(context, recipient, assetsNotNull);
+                    favs.Add(assetsNotNull);
                 }
 
                 if (items is { } itemsNotNull)
@@ -70,8 +84,34 @@ namespace Nekoyume.Action
                     }
 
                     state = state.SetState(inventoryAddr, inventory.Serialize());
+                    fivs.Add(itemsNotNull);
                 }
+            }
 
+            IRandom rng = context.GetRandom();
+            foreach (var recipient in mailRecords.Keys)
+            {
+                if (
+                    state.GetState(recipient) is Dictionary dict &&
+                    dict.TryGetValue((Text)SerializeKeys.MailBoxKey, out IValue rawMailBox)
+                )
+                {
+                    var mailBox = new MailBox((List)rawMailBox);
+                    (List<FungibleAssetValue> favs, List<FungibleItemValue> fivs) = mailRecords[recipient];
+                    mailBox.Add(
+                        new UnloadFromMyGaragesRecipientMail(
+                            context.BlockIndex,
+                            rng.GenerateRandomGuid(),
+                            context.BlockIndex,
+                            favs.Select(v => (recipient, v)),
+                            fivs.Select(v => (v.Id, v.Count)),
+                            Memo
+                        )
+                    );
+                    mailBox.CleanUp();
+                    dict = dict.SetItem(SerializeKeys.MailBoxKey, mailBox.Serialize());
+                    state = state.SetState(recipient, dict);
+                }
             }
 
             return state;
@@ -114,7 +154,7 @@ namespace Nekoyume.Action
                     new[]
                     {
                         new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
-                        new KeyValuePair<IKey, IValue>((Text)"values",new List(values))
+                        new KeyValuePair<IKey, IValue>((Text)"values", new List(values))
                     }
                 );
             }
