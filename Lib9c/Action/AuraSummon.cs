@@ -87,33 +87,17 @@ namespace Nekoyume.Action
             }
 
             var result = new List<(int, Equipment)>();
-            int recipeId;
             for (var i = 0; i < summonCount; i++)
             {
-                var recipeValue = random.Next(1, summonRow.CumulativeRecipe6Ratio + 1);
-                if (recipeValue <= summonRow.CumulativeRecipe1Ratio)
+                var recipeId = 0;
+                var targetRatio = random.Next(1, summonRow.TotalRatio() + 1);
+                for (var j = 1; j <= SummonSheet.Row.MaxRecipeCount; j++)
                 {
-                    recipeId = summonRow.Recipes[0].Item1;
-                }
-                else if (recipeValue <= summonRow.CumulativeRecipe2Ratio)
-                {
-                    recipeId = summonRow.Recipes[1].Item1;
-                }
-                else if (recipeValue <= summonRow.CumulativeRecipe3Ratio)
-                {
-                    recipeId = summonRow.Recipes[2].Item1;
-                }
-                else if (recipeValue <= summonRow.CumulativeRecipe4Ratio)
-                {
-                    recipeId = summonRow.Recipes[3].Item1;
-                }
-                else if (recipeValue <= summonRow.CumulativeRecipe5Ratio)
-                {
-                    recipeId = summonRow.Recipes[4].Item1;
-                }
-                else
-                {
-                    recipeId = summonRow.Recipes[5].Item1;
+                    if (targetRatio <= summonRow.CumulativeRatio(j))
+                    {
+                        recipeId = summonRow.Recipes[j - 1].Item1;
+                        break;
+                    }
                 }
 
                 // Validate RecipeId
@@ -123,7 +107,8 @@ namespace Nekoyume.Action
                     throw new SheetRowNotFoundException(
                         addressesHex,
                         nameof(EquipmentItemRecipeSheet),
-                        recipeId);
+                        recipeId
+                    );
                 }
 
                 // Validate Recipe ResultEquipmentId
