@@ -397,7 +397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7556182697054055097
 RectTransform:
   m_ObjectHideFlags: 0
@@ -932,6 +932,6 @@ MonoBehaviour:
   leopardPrint1: {fileID: 2554443790102296268}
   leopardPrint2: {fileID: 8059252683838136520}
   leopardPrint3: {fileID: 5048677361339490021}
-  leopardPrint4: {fileID: 0}
-  leopardPrint5: {fileID: 0}
-  lightColor2: {fileID: 0}
+  leopardPrint4: {fileID: 1538483589510607541}
+  leopardPrint5: {fileID: 4492101928198209435}
+  lightColor2: {fileID: 1277848462888058116}

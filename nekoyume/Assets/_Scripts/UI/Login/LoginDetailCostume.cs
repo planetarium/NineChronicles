@@ -52,6 +52,7 @@ namespace Nekoyume.UI
                 if (!isOn) return;
                 UpdateTab(ItemSubType.TailCostume);
             });
+
             hairToggle.onValueChanged.AddListener(isOn =>
             {
                 if (!isOn) return;
@@ -69,7 +70,7 @@ namespace Nekoyume.UI
         {
             _views.Clear();
             _currentSubType = default;
-            hairToggle.isOn = false;
+            earToggle.isOn = false;
             foreach (Transform oldCell in gridLayoutGroup.transform)
             {
                 Destroy(oldCell.gameObject);

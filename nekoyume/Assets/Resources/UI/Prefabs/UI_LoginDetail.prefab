@@ -7438,10 +7438,11 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   btnLogin: {fileID: 5519000604697489967}
-  btnCreate: {fileID: 5518295665911700571}
+  btnCreate: {fileID: 8108419108780988524}
   levelAndNameInfo: {fileID: 1976277466369132988}
   jobInfoContainer: {fileID: 4532355840686580899}
   jobDescriptionText: {fileID: 1308210232320479708}
+  statusContainer: {fileID: 73446794486038770}
   statusRows:
   - {fileID: 3182169273867602999}
   - {fileID: 3699114200584093008}
@@ -7527,7 +7528,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5732959021876786879
 RectTransform:
   m_ObjectHideFlags: 0
