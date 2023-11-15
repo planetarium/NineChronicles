@@ -77,6 +77,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 { "avatarAddress", avatarAddr.ToHex() },
                 { "planetId", planetId}
             };
+
+            Debug.Log($"PurchaseRequestAsync : {reqJson}");
+
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,
