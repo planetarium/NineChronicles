@@ -164,9 +164,6 @@ namespace Nekoyume.UI
             AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateCrystalCost())
                 .AddTo(_disposables);
-
-            // DevCra - iOS Memory Optimization
-            this.transform.SetAsLastSibling();
         }
 
         public void UpdateInventory()

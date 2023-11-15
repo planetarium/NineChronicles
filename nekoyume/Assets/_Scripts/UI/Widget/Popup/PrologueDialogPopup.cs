@@ -46,9 +46,6 @@ namespace Nekoyume.UI
             _dialogIndex = 0;
             _dialogNum = L10nManager.LocalizedCount(_dialogKey);
             _coroutine = StartCoroutine(CoShowText());
-            
-            // DevCra - iOS Memory Optimization
-            this.transform.SetAsLastSibling();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
