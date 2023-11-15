@@ -87,7 +87,7 @@ namespace Nekoyume.Action
                         {
                             garage.Unload(count);
                             state = state.SetState(garageAddr, garage.Serialize());
-                            var currency = Currency.Legacy($"Item_NT_{material.Id}", 0, null);
+                            var currency = Currencies.GetItemCurrency(material.Id, false);
                             state = state.MintAsset(
                                 context,
                                 context.Signer,
