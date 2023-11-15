@@ -614,8 +614,16 @@ namespace Nekoyume.UI
                                       SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
-                repeatButton.gameObject.SetActive(canExit);
-                repeatButton.interactable = canExit;
+                if (SharedModel.IsClear)
+                {
+                    stagePreparationButton.gameObject.SetActive(canExit);
+                    stagePreparationButton.interactable = canExit;
+                }
+                else
+                {
+                    repeatButton.gameObject.SetActive(canExit);
+                    repeatButton.interactable = canExit;
+                }
             }
             else
             {
