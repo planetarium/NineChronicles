@@ -102,7 +102,6 @@ namespace Nekoyume.UI
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
-        private CapturedImage _capturedImage;
 
         public override bool CanHandleInputEvent => false;
 
@@ -119,7 +118,6 @@ namespace Nekoyume.UI
                 KeyStore = Web3KeyStore.DefaultKeyStore;
             }
 
-            _capturedImage = GetComponentInChildren<CapturedImage>();
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -443,11 +441,6 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
-
             if (Platform.IsMobilePlatform())
             {
                 var dataPath = Platform.GetPersistentDataPath("keystore");
@@ -548,11 +541,6 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
-
             SetState(States.SetPassword);
             base.Show();
         }

@@ -8,14 +8,13 @@ namespace Nekoyume.UI
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         private CapturedImage _capturedImage;
-
         private UIBackground _background;
 
         protected override void Awake()
         {
             base.Awake();
             _capturedImage = GetComponentInChildren<CapturedImage>();
-            if (_capturedImage != null)
+            if (_capturedImage)
             {
                 _capturedImage.OnClick = CloseWidget;
             }
@@ -29,7 +28,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (_capturedImage != null)
+            if (_capturedImage)
             {
                 _capturedImage.Show();
                 _capturedImage.OnClick = CloseWidget;
