@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Scroller
         public override void UpdateContent(Model.InventoryItem viewModel)
         {
             view.Set(viewModel, Context);
+            Context.CellDictionary[Index] = this;
 
             if (Index == 0)
             {

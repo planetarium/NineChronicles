@@ -168,14 +168,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 !string.IsNullOrEmpty(error))
             {
                 Debug.LogError(
-                    $"Purchase failed: {code}, {error}, {mediaType}, {content}");
+                    $"Purchase failed: {code}, {receipt}, {error}, {mediaType}, {content}");
                 return null;
             }
 
             if (mediaType != "application/json")
             {
                 Debug.LogError(
-                    $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
+                    $"Unexpected media type: {code}, {receipt}, {error}, {mediaType}, {content}");
                 return null;
             }
 

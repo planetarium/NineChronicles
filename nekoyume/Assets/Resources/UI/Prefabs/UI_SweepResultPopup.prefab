@@ -10907,6 +10907,21 @@ PrefabInstance:
       propertyPath: l10nKey
       value: UI_GET_REWARDS
       objectReference: {fileID: 0}
+    - target: {fileID: 1498349374040689898, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.8537736
+      objectReference: {fileID: 0}
+    - target: {fileID: 1498349374040689898, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.9945909
+      objectReference: {fileID: 0}
+    - target: {fileID: 1498349374040689898, guid: 45eb7886920094eeca085daf783730b5,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4292542207
+      objectReference: {fileID: 0}
     - target: {fileID: 1868312093538365534, guid: 45eb7886920094eeca085daf783730b5,
         type: 3}
       propertyPath: m_Name
