@@ -3,14 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c;
 using Libplanet.Action;
 using Libplanet.Action.State;
-using Libplanet.Common;
 using Libplanet.Crypto;
 using Libplanet.Types.Assets;
+using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -104,31 +103,6 @@ namespace Nekoyume.Action
         {
             get;
             private set;
-        }
-
-        public readonly struct FungibleItemValue
-        {
-            public FungibleItemValue(List bencoded)
-                : this(
-                    new HashDigest<SHA256>((Binary)bencoded[0]),
-                    (Integer)bencoded[1]
-                )
-            {
-            }
-
-            public FungibleItemValue(HashDigest<SHA256> id, int count)
-            {
-                Id = id;
-                Count = count;
-            }
-
-            public IValue Serialize()
-            {
-                return new List(Id.Serialize(), (Integer)Count);
-            }
-
-            public HashDigest<SHA256> Id { get; }
-            public int Count { get; }
         }
 
         public readonly struct MintSpec

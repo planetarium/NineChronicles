@@ -2,13 +2,11 @@ namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Security.Cryptography;
-    using System.Threading;
     using Bencodex.Types;
     using Libplanet.Action.State;
     using Libplanet.Common;
     using Libplanet.Crypto;
     using Libplanet.Types.Assets;
-    using Libplanet.Types.Tx;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
@@ -132,7 +130,7 @@ namespace Lib9c.Tests.Action
                     new (
                         avatarAddress,
                         null,
-                        new MintAssets.FungibleItemValue(fungibleId, 42)
+                        new FungibleItemValue(fungibleId, 42)
                     ),
                 }
             );
