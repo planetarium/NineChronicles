@@ -15,7 +15,6 @@ using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
-using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.L10n;
 using Nekoyume.Planet;
 using Nekoyume.UI.Module;
@@ -36,20 +35,40 @@ namespace Nekoyume.UI
         {
             private const string AccountTextFormat =
                 "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>";
-            public PlanetId? PlanetId { get; private set; }
+
+            public bool isAppliedL10n;
             public TextMeshProUGUI title;
             public GameObject noAccount;
+            public TextMeshProUGUI noAccountText;
             public Button noAccountCreateButton;
+            public TextMeshProUGUI noAccountCreateButtonText;
             public GameObject account;
             public TextMeshProUGUI[] accountTexts;
             public Button accountImportKeyButton;
             public TextMeshProUGUI accountImportKeyButtonText;
+
+            public PlanetId? PlanetId { get; private set; }
+
+            public void ApplyL10n()
+            {
+                if (isAppliedL10n || !L10nManager.IsInitialized)
+                {
+                    return;
+                }
+
+                isAppliedL10n = true;
+                noAccountText.text = L10nManager.Localize("SDESC_NO_ACCOUNT");
+                noAccountCreateButtonText.text = L10nManager.Localize("BTN_CREATE_A_NEW_CHARACTER");
+                accountImportKeyButtonText.text = L10nManager.Localize("BTN_IMPORT_KEY");
+            }
 
             public void Set(
                 PlanetContext planetContext,
                 PlanetAccountInfo planetAccountInfo,
                 bool needToImportKey)
             {
+                ApplyL10n();
+
                 if (planetContext?.PlanetRegistry is null ||
                     planetAccountInfo is null)
                 {
@@ -98,7 +117,9 @@ namespace Nekoyume.UI
                             var text = accountTexts[i];
                             if (i == 0)
                             {
-                                text.text = "Empty";
+                                text.text = L10nManager.IsInitialized
+                                    ? L10nManager.Localize("SDESC_NO_CHARACTER")
+                                    : "No character";
                                 text.gameObject.SetActive(true);
                             }
                             else
@@ -166,6 +187,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
         [SerializeField] private Button planetButton;
+        [SerializeField] private TextMeshProUGUI planetButtonText;
         [SerializeField] private TextMeshProUGUI planetText;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
@@ -182,10 +204,13 @@ namespace Nekoyume.UI
         [SerializeField] private Button appleSignInButton;
 
         [SerializeField] private GameObject selectPlanetPopup;
+        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
         [SerializeField] private ConditionalButton heimdallButton;
         [SerializeField] private ConditionalButton odinButton;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
+        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
+        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
         [SerializeField] private AgentInfo planetAccountInfoLeft;
         [SerializeField] private AgentInfo planetAccountInfoRight;
 
@@ -416,6 +441,17 @@ namespace Nekoyume.UI
             base.OnDestroy();
             OnGoogleSignedIn.Dispose();
             OnAppleSignedIn.Dispose();
+        }
+
+        public void ApplyL10n()
+        {
+            planetButtonText.text = L10nManager.Localize("SDESC_YOUR_PLANET");
+            selectPlanetPopupTitleText.text = L10nManager.Localize("SDESC_SELECT_YOUR_PLANET");
+            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
+            planetAccountInfosDescriptionText.text =
+                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
+            planetAccountInfoLeft.ApplyL10n();
+            planetAccountInfoRight.ApplyL10n();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)

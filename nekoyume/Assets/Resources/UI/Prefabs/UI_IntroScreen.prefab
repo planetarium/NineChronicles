@@ -1834,6 +1834,7 @@ MonoBehaviour:
   signinButton: {fileID: 636972386927832638}
   guestButton: {fileID: 1379309947048601246}
   planetButton: {fileID: 231605217515246203}
+  planetButtonText: {fileID: 4350155878917045938}
   planetText: {fileID: 1224978541094035838}
   qrCodeGuideContainer: {fileID: 7187465292496931806}
   qrCodeGuideBackground: {fileID: 630988183707688679}
@@ -1849,13 +1850,19 @@ MonoBehaviour:
   googleSignInButton: {fileID: 1387579804914468861}
   appleSignInButton: {fileID: 7877942956408860104}
   selectPlanetPopup: {fileID: 8186733251249421295}
+  selectPlanetPopupTitleText: {fileID: 8718336588487314175}
   heimdallButton: {fileID: 9016432275968831349}
   odinButton: {fileID: 2528496315441386273}
   planetAccountInfosPopup: {fileID: 29021361385403624}
+  planetAccountInfosTitleText: {fileID: 2825661560120518533}
+  planetAccountInfosDescriptionText: {fileID: 4509868351358636668}
   planetAccountInfoLeft:
+    isAppliedL10n: 0
     title: {fileID: 848287311407169294}
     noAccount: {fileID: 6227180520705899324}
+    noAccountText: {fileID: 1321309720544346208}
     noAccountCreateButton: {fileID: 5608381741871543948}
+    noAccountCreateButtonText: {fileID: 8015885842662072172}
     account: {fileID: 1221774357381808067}
     accountTexts:
     - {fileID: 8706386010789194820}
@@ -1864,9 +1871,12 @@ MonoBehaviour:
     accountImportKeyButton: {fileID: 8046393335314611994}
     accountImportKeyButtonText: {fileID: 3936627102438948956}
   planetAccountInfoRight:
+    isAppliedL10n: 0
     title: {fileID: 7918055687628164113}
     noAccount: {fileID: 8692707429648698968}
+    noAccountText: {fileID: 5393851628091223975}
     noAccountCreateButton: {fileID: 2602905958318197264}
+    noAccountCreateButtonText: {fileID: 7061754576173581163}
     account: {fileID: 1823037061050595669}
     accountTexts:
     - {fileID: 2048791063768920710}
@@ -2506,7 +2516,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 88}
-  m_SizeDelta: {x: 265.89, y: 50}
+  m_SizeDelta: {x: 265.88, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2957637708370673676
 MonoBehaviour:
@@ -14410,8 +14420,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 153.945, y: -25}
-  m_SizeDelta: {x: 223.89, y: 100}
+  m_AnchoredPosition: {x: 153.94, y: -25}
+  m_SizeDelta: {x: 223.88, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5100848562557945574
 CanvasRenderer:
@@ -14443,8 +14453,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Select Your Planet
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a215dd9105aed4fea9d665ae472083d6, type: 2}
-  m_sharedMaterial: {fileID: -2364689171920820918, guid: a215dd9105aed4fea9d665ae472083d6,
+  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
