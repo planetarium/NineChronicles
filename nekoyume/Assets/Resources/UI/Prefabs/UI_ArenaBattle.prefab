@@ -10352,6 +10352,7 @@ GameObject:
   - component: {fileID: 7639607244771849809}
   - component: {fileID: 2364948747168307979}
   - component: {fileID: 7825390366099378060}
+  - component: {fileID: 130982402165682959}
   m_Layer: 5
   m_Name: UI_ComboText
   m_TagString: Untagged
@@ -10417,6 +10418,19 @@ MonoBehaviour:
   shadowText: {fileID: 326793822130783056}
   labelText: {fileID: 4384599279753095382}
   group: {fileID: 2364948747168307979}
+--- !u!114 &130982402165682959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7572790403960201487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 2
 --- !u!1 &7749572580490608814
 GameObject:
   m_ObjectHideFlags: 0
@@ -12062,6 +12076,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
+      propertyPath: m_fontSize
+      value: 14.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
+        type: 3}
       propertyPath: m_margin.x
       value: -0.03499031
       objectReference: {fileID: 0}
@@ -12331,6 +12350,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 58
+      objectReference: {fileID: 0}
+    - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14.15
       objectReference: {fileID: 0}
     - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
