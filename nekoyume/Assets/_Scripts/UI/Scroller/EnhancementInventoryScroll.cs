@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine.UI.Extensions;
 using Nekoyume.UI.Model;
 using UniRx;
@@ -14,6 +15,7 @@ namespace Nekoyume.UI.Scroller
     {
     public class ContextModel : GridScrollDefaultContext
     {
+        public readonly Dictionary<int, EnhancementInventoryCell> CellDictionary = new();
         public readonly Subject<EnhancementInventoryItem> OnClick = new Subject<EnhancementInventoryItem>();
         public readonly Subject<EnhancementInventoryItem> OnDoubleClick = new Subject<EnhancementInventoryItem>();
 
@@ -34,6 +36,11 @@ namespace Nekoyume.UI.Scroller
 
     public IObservable<EnhancementInventoryItem> OnClick => Context.OnClick;
     public IObservable<EnhancementInventoryItem> OnDoubleClick => Context.OnDoubleClick;
+
+    public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
+    {
+        return Context.CellDictionary.TryGetValue(index, out cell);
+    }
 
     protected override FancyCell<EnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
         protected override void Initialize()

@@ -227,6 +227,11 @@ namespace Nekoyume.UI.Module
             return GetModels().ElementAt(index);
         }
 
+        public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
+        {
+            return scroll.TryGetCellByIndex(index, out cell);
+        }
+
         private void OnClickItem(EnhancementInventoryItem item)
         {
             ClearSelectedItem();

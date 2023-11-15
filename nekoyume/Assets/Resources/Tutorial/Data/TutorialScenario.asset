@@ -1442,7 +1442,7 @@ MonoBehaviour:
           actionType: 50001
           guideType: 3
           emojiType: 1
-          dialogPositionType: 0
+          dialogPositionType: 1
           scriptKey: TUTORIAL_05_003
           arrowAdditionalDelay: 0
           fullScreenButton: 0
@@ -1488,7 +1488,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50005
         nextId: 50006
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 2
           arrowPositionOffset: {x: 0, y: 0}
@@ -1507,7 +1507,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50006
         nextId: 50007
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 1
           arrowPositionOffset: {x: -50, y: 0}
@@ -1526,12 +1526,12 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50007
         nextId: 50008
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
           targetPositionOffset: {x: 0, y: 0}
-          targetSizeOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 30}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 10
           actionType: 30000
@@ -1545,7 +1545,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50008
         nextId: 50009
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -1564,12 +1564,12 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50009
         nextId: 50010
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
           targetPositionOffset: {x: 0, y: 0}
-          targetSizeOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 30, y: 30}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 20
           actionType: 50003
@@ -1583,7 +1583,7 @@ MonoBehaviour:
           guideSprite: {fileID: 0}
       - id: 50010
         nextId: 50011
-        checkPointId: 50005
+        checkPointId: -5
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
@@ -2104,8 +2104,8 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
-          targetPositionOffset: {x: -5, y: 5}
-          targetSizeOffset: {x: 25, y: 25}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 35, y: 35}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000004
           actionType: 1000002
@@ -2123,8 +2123,8 @@ MonoBehaviour:
         data:
           presetId: 1
           arrowPositionOffset: {x: 0, y: 0}
-          targetPositionOffset: {x: -5, y: 5}
-          targetSizeOffset: {x: 25, y: 25}
+          targetPositionOffset: {x: 0, y: 0}
+          targetSizeOffset: {x: 35, y: 35}
           buttonRaycastPadding: {x: 0, y: 0, z: 0, w: 0}
           targetType: 1000005
           actionType: 1000003

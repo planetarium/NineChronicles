@@ -112,6 +112,11 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
+        public bool TryGetCellByIndex(int index, out InventoryCell item)
+        {
+            return inventory.TryGetCellByIndex(index, out item);
+        }
+
         public void UpdateInventory(BattleType battleType, int? compareCp = null)
         {
             _compareCp = compareCp;
