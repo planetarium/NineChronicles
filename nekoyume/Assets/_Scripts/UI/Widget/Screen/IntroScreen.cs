@@ -193,12 +193,20 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
+        public Subject<IntroScreen> OnClickTabToStart { get; } = new();
         public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
 
         protected override void Awake()
         {
             base.Awake();
 
+            touchScreenButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click touch screen button.");
+                touchScreenButtonGO.SetActive(false);
+                startButtonContainer.SetActive(true);
+                OnClickTabToStart.OnNext(this);
+            });
             startButton.OnSubmitSubject.Subscribe(_ =>
             {
                 if (Find<LoginSystem>().KeyStore.ListIds().Any())
@@ -341,18 +349,34 @@ namespace Nekoyume.UI
             OnGoogleSignedIn.Dispose();
         }
 
-        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
+        public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
-            Analyzer.Instance.Track("Unity/Intro/Show");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-
-#if RUN_ON_MOBILE
             ApplyCurrentPlanetInfo(_planetContext);
+        }
+
+        public void ShowTabToStart()
+        {
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(true);
+            startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+        }
+
+        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
+        {
+            Analyzer.Instance.Track("Unity/Intro/Show");
+            SetData(keyStorePath, privateKey, planetContext);
+
+#if RUN_ON_MOBILE
+            pcContainer.SetActive(false);
+            mobileContainer.SetActive(true);
+            logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
             ShowMobile();
@@ -369,6 +393,7 @@ namespace Nekoyume.UI
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
             logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 

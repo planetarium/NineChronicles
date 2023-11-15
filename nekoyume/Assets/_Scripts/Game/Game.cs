@@ -360,6 +360,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start()... L10nManager initialized");
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
+            
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
@@ -1334,6 +1335,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            // NOTE: planetContext is null when the game is launched from the non-mobile platform.
             if (planetContext is null)
             {
                 Debug.Log("[Game] CoLogin()... planetContext is null.");
@@ -1381,20 +1383,34 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            // NOTE: Set the auto login flag to false. Player cannot login automatically on mobile platform.
+            //       It should be set after the PlanetSelector.InitializeSelectedPlanetInfo().
+            planetContext.NeedToAutoLogin = false;
+            Debug.Log("[Game] CoLogin()... set planetContext.NeedToAutoLogin to false on mobile platform.");
+
             // NOTE: Check local passphrase.
             if (loginSystem.CheckLocalPassphrase())
             {
                 Debug.Log("[Game] CoLogin()... CheckLocalPassphrase() is true.");
                 if (!PlanetSelector.HasCachedPlanetIdString)
                 {
-                    Debug.Log("[Game] CoLogin()... HasSelectedPlanetBefore is false." +
+                    Debug.Log("[Game] CoLogin()... HasCachedPlanetIdString is false." +
                               " Show planet selector.");
                     planetContext.NeedToAutoLogin = false;
-                    introScreen.Show(
-                        _commandLineOptions.KeyStorePath,
-                        ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
-                        planetContext);
                 }
+
+                // NOTE: Invoke the IntroScreen.SetDate() instead of IntroScreen.Show().
+                //
+                // NOTE: IntroScreen.SetDate() was invoked within the
+                //       `!PlanetSelector.HasCachedPlanetIdString` condition. Because if there is
+                //       a cached planet id string, we can expect the player already selected
+                //       the planet and it means the player can login automatically.
+                //       But now we don't login automatically on mobile platform. So we need to show the
+                //       IntroScreen UI to the player.
+                introScreen.SetData(
+                    _commandLineOptions.KeyStorePath,
+                    ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
+                    planetContext);
             }
             else
             {
@@ -1406,14 +1422,25 @@ namespace Nekoyume.Game
                 //       inside the IntroScreen.Show(pkPath, pk, planetContext) on non-mobile
                 //       platform.
                 //
-                //       If we need to cover the Multiplanetary context on non-mobile platform,
+                // NOTE: If we need to cover the Multiplanetary context on non-mobile platform,
                 //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
                 //       in here.
-                introScreen.Show(
+                //
+                // NOTE: Invoke the IntroScreen.SetDate() instead of IntroScreen.Show().
+                introScreen.SetData(
                     _commandLineOptions.KeyStorePath,
                     _commandLineOptions.PrivateKey,
                     planetContext);
             }
+
+            // NOTE: Show IntroScreen's tab to start button.
+            //       It should be called after the PlanetSelector.InitializeSelectedPlanetInfo().
+            //       Because the IntroScreen uses the PlanetContext.SelectedPlanetInfo.
+            //       And it should be called after the IntroScreen.SetData().
+            introScreen.ShowTabToStart();
+            Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart.");
+            yield return introScreen.OnClickTabToStart.AsObservable().First().StartAsCoroutine();
+            Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart. Done.");
 
             // NOTE: Check auto login!
             if (planetContext.NeedToAutoLogin.HasValue && planetContext.NeedToAutoLogin.Value)
@@ -1455,6 +1482,7 @@ namespace Nekoyume.Game
             // NOTE: Wait until social logged in if intro screen is active.
             if (introScreen.IsActive())
             {
+                Debug.Log("[Game] CoLogin()... IntroScreen is active. Go to social login flow.");
                 string idToken = null;
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
@@ -1501,9 +1529,15 @@ namespace Nekoyume.Game
                     // loginSystem.Show(connectedAddress: agentAddr);
                 }
             }
+            else
+            {
+                Debug.Log("[Game] CoLogin()... IntroScreen is inactive.");
+            }
 
             if (agentAddr.HasValue)
             {
+                Debug.Log("[Game] CoLogin()... agentAddr.HasValue is true." +
+                          " Try to update planet account infos.");
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
@@ -1516,6 +1550,8 @@ namespace Nekoyume.Game
             }
             else
             {
+                Debug.Log("[Game] CoLogin()... agentAddr.HasValue is false." +
+                          " Try to update planet account infos w/ empty agent address.");
                 // NOTE: Initialize planet account infos as default(empty) value
                 //       when agent address is not set.
                 planetContext.PlanetAccountInfos = planetContext.PlanetRegistry?.PlanetInfos
@@ -1568,8 +1604,16 @@ namespace Nekoyume.Game
                               " Player don't have to make a pledge.");
                     planetContext.NeedToPledge = false;
 
-                    // NOTE: QR code import sets loginSystem.Login to true.
-                    introScreen.ShowForQrCodeGuide();
+                    // NOTE: Complex logic here...
+                    //       - LoginSystem.Login is false.
+                    //       - Portal has player's account.
+                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
+                    //         - Import the agent key.
+                    if (!loginSystem.Login)
+                    {
+                        // NOTE: QR code import sets loginSystem.Login to true.
+                        introScreen.ShowForQrCodeGuide();    
+                    }
                 }
             }
             else
