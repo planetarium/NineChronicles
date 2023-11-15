@@ -1796,6 +1796,7 @@ MonoBehaviour:
     - {fileID: 7876466633333105761}
     - {fileID: 8597788125939187646}
     accountImportKeyButton: {fileID: 8046393335314611994}
+    accountImportKeyButtonText: {fileID: 3936627102438948956}
   planetAccountInfoRight:
     title: {fileID: 7918055687628164113}
     noAccount: {fileID: 8692707429648698968}
@@ -1806,6 +1807,7 @@ MonoBehaviour:
     - {fileID: 2293081218946407427}
     - {fileID: 2377636354239041655}
     accountImportKeyButton: {fileID: 3444341948988557566}
+    accountImportKeyButtonText: {fileID: 5690971249185701441}
 --- !u!1 &1103510228977098036
 GameObject:
   m_ObjectHideFlags: 0

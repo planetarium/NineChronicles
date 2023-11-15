@@ -43,10 +43,12 @@ namespace Nekoyume.UI
             public GameObject account;
             public TextMeshProUGUI[] accountTexts;
             public Button accountImportKeyButton;
+            public TextMeshProUGUI accountImportKeyButtonText;
 
             public void Set(
                 PlanetContext planetContext,
-                PlanetAccountInfo planetAccountInfo)
+                PlanetAccountInfo planetAccountInfo,
+                bool needToImportKey)
             {
                 if (planetContext?.PlanetRegistry is null ||
                     planetAccountInfo is null)
@@ -127,6 +129,9 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    accountImportKeyButtonText.text = needToImportKey
+                        ? L10nManager.Localize("BTN_IMPORT_KEY")
+                        : L10nManager.Localize("BTN_SELECT");
                     noAccount.SetActive(false);
                     account.SetActive(true);
 
@@ -414,7 +419,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
         }
 
-        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext)
+        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
             if (planetContext.PlanetAccountInfos is null)
@@ -426,12 +431,14 @@ namespace Nekoyume.UI
                 planetContext,
                 planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
                     info.PlanetId.Equals(PlanetId.Odin) ||
-                    info.PlanetId.Equals(PlanetId.OdinInternal)));
+                    info.PlanetId.Equals(PlanetId.OdinInternal)),
+                needToImportKey);
             planetAccountInfoRight.Set(
                 planetContext,
                 planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
                     info.PlanetId.Equals(PlanetId.Heimdall) ||
-                    info.PlanetId.Equals(PlanetId.HeimdallInternal)));
+                    info.PlanetId.Equals(PlanetId.HeimdallInternal)),
+                needToImportKey);
             planetAccountInfosPopup.SetActive(true);
         }
 
