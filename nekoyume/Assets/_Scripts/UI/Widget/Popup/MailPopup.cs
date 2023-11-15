@@ -869,7 +869,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            Find<RewardScreen>().Show(rewards);
+            Find<MailRewardScreen>().Show(rewards);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()
