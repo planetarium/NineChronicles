@@ -25,9 +25,10 @@ namespace Nekoyume.Action
         {
         }
 
-        public MintAssets(IEnumerable<MintSpec> specs)
+        public MintAssets(IEnumerable<MintSpec> specs, string? memo)
         {
             MintSpecs = specs.ToList();
+            Memo = memo;
         }
 
         public override IAccount Execute(IActionContext context)
@@ -79,31 +80,53 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = (Dictionary)plainValue;
-            MintSpecs = ((List)asDict["values"]).Select(v =>
+            var asList = (List)asDict["values"];
+
+            if (asList[0] is Text memo)
+            {
+                Memo = memo;
+            }
+            else
+            {
+                Memo = null;
+            }
+
+            MintSpecs = asList.Skip(1).Select(v =>
             {
                 return new MintSpec((List)v);
             }).ToList();
         }
 
-        public override IValue PlainValue =>
-            new Dictionary(
-                new[]
+        public override IValue PlainValue
+        {
+            get
+            {
+                var values = new List<IValue>
                 {
-                    new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
-                    new KeyValuePair<IKey, IValue>(
-                        (Text)"values",
-                        MintSpecs is { }
-                            ? new List(MintSpecs.Select(s => s.Serialize()))
-                            : Null.Value
-                    )
+                    Memo is { } memoNotNull ? (Text)memoNotNull : Null.Value
+                };
+                if (MintSpecs is { } mintSpecsNotNull)
+                {
+                    values.AddRange(mintSpecsNotNull.Select(s => s.Serialize()));
                 }
-            );
+
+                return new Dictionary(
+                    new[]
+                    {
+                        new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
+                        new KeyValuePair<IKey, IValue>((Text)"values",new List(values))
+                    }
+                );
+            }
+        }
 
         public List<MintSpec>? MintSpecs
         {
             get;
             private set;
         }
+
+        public string? Memo { get; private set; }
 
         public readonly struct MintSpec
         {

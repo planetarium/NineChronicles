@@ -52,15 +52,28 @@ namespace Lib9c.Tests.Action
                 new (default, _ncgCurrency * 100, null),
                 new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
             };
-            var act = new MintAssets(r);
+            var act = new MintAssets(r, null);
             var expected = Dictionary.Empty
                 .Add("type_id", "mint_assets")
                 .Add("values", List.Empty
+                    .Add(Null.Value)
                     .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
                     .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
             Assert.Equal(
                 expected,
                 act.PlainValue
+            );
+
+            var act2 = new MintAssets(r, "memo");
+            var expected2 = Dictionary.Empty
+                .Add("type_id", "mint_assets")
+                .Add("values", List.Empty
+                    .Add((Text)"memo")
+                    .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
+                    .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
+            Assert.Equal(
+                expected2,
+                act2.PlainValue
             );
         }
 
@@ -70,6 +83,7 @@ namespace Lib9c.Tests.Action
             var pv = Dictionary.Empty
                 .Add("type_id", "mint_assets")
                 .Add("values", List.Empty
+                    .Add(default(Null))
                     .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
                     .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
             var act = new MintAssets();
@@ -80,10 +94,18 @@ namespace Lib9c.Tests.Action
                 new (default, _ncgCurrency * 100, null),
                 new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
             };
-            Assert.Equal(
-                expected,
-                act.MintSpecs
-            );
+            Assert.Equal(expected, act.MintSpecs);
+            Assert.Null(act.Memo);
+
+            var pv2 = Dictionary.Empty
+                .Add("type_id", "mint_assets")
+                .Add("values", List.Empty
+                    .Add((Text)"memo")
+                    .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
+                    .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
+            var act2 = new MintAssets();
+            act2.LoadPlainValue(pv2);
+            Assert.Equal("memo", act2.Memo);
         }
 
         [Fact]
@@ -94,7 +116,8 @@ namespace Lib9c.Tests.Action
                 {
                     new (default, _ncgCurrency * 100, null),
                     new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
-                }
+                },
+                null
             );
             IAccount nextState = action.Execute(
                 new ActionContext()
@@ -132,7 +155,8 @@ namespace Lib9c.Tests.Action
                         null,
                         new FungibleItemValue(fungibleId, 42)
                     ),
-                }
+                },
+                null
             );
             IAccount nextState = action.Execute(
                 new ActionContext()
@@ -156,7 +180,8 @@ namespace Lib9c.Tests.Action
                 {
                     new (default, _ncgCurrency * 100, null),
                     new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
-                }
+                },
+                null
             );
             Assert.Throws<PermissionDeniedException>(() => action.Execute(
                 new ActionContext()
