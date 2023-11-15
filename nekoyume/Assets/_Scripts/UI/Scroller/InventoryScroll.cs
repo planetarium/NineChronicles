@@ -22,14 +22,16 @@ namespace Nekoyume.UI.Scroller
 
         public class ContextModel : GridScrollDefaultContext
         {
+            public Dictionary<int, InventoryCell> CellDictionary = new();
             public InventoryItem FirstItem;
-            public readonly Subject<InventoryItem> OnClick = new Subject<InventoryItem>();
-            public readonly Subject<InventoryItem> OnDoubleClick = new Subject<InventoryItem>();
+            public readonly Subject<InventoryItem> OnClick = new();
+            public readonly Subject<InventoryItem> OnDoubleClick = new();
 
             public override void Dispose()
             {
                 OnClick?.Dispose();
                 OnDoubleClick?.Dispose();
+                CellDictionary.Clear();
                 base.Dispose();
             }
         }
@@ -49,6 +51,11 @@ namespace Nekoyume.UI.Scroller
             cell = Context.FirstItem;
 
             return cell != null;
+        }
+
+        public bool TryGetCellByIndex(int index, out InventoryCell cell)
+        {
+            return Context.CellDictionary.TryGetValue(index, out cell);
         }
 
         protected override FancyCell<InventoryItem, ContextModel> CellTemplate => cellTemplate;
