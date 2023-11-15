@@ -522,8 +522,8 @@ namespace Nekoyume.UI
 
         private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {
-            var planetRegistry = planetContext.PlanetRegistry;
-            var planetInfo = planetContext.SelectedPlanetInfo;
+            var planetRegistry = planetContext?.PlanetRegistry;
+            var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
                 planetInfo is null)
             {
