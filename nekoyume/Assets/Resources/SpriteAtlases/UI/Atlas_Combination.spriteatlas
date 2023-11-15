@@ -74,6 +74,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5eebd6715f9d71647a65f4ce94a55894, type: 3}
   - {fileID: 21300000, guid: 9610ec718b9a943ac860d6ae94a3cc2d, type: 3}
   - {fileID: 21300000, guid: b8e69781c1fbb40e99ccdc7762cfd351, type: 3}
+  - {fileID: 21300000, guid: 5d6f7a81f00d10c42a7b406da85e24bb, type: 3}
   - {fileID: 21300000, guid: 30178091cf81e45ff86d2d68aef412f5, type: 3}
   - {fileID: 21300000, guid: 27f02ba1086584419a7beccba8f7d2e4, type: 3}
   - {fileID: 21300000, guid: 31b36db1e740e401d8be75eb249a386c, type: 3}
@@ -86,6 +87,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f67d055214ff44647ba21583c199b147, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
+  - {fileID: 21300000, guid: b82e967278150dc43ad7f00072f47fff, type: 3}
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
   - {fileID: 21300000, guid: a9e238a253e87d14c96bd7c73c25b4c1, type: 3}
   - {fileID: 21300000, guid: 34afd1b218d2b40acb1467ed4f97575c, type: 3}
@@ -294,6 +296,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8125b05e69570456fb7659c6fc91ce35, type: 3}
   - {fileID: 21300000, guid: fef1c45ed1fc04fd38a148fb0d1d520f, type: 3}
   - {fileID: 21300000, guid: 3eafd26e270ec5f49b9a66bedb330cfe, type: 3}
+  - {fileID: 21300000, guid: a13f6e7e852b58042a73ba538cb49d56, type: 3}
   - {fileID: 21300000, guid: 2ba464ae5f5ed45099296cab22f6aea8, type: 3}
   - {fileID: 21300000, guid: 397853be1edc94b93976a61fec17bf1e, type: 3}
   - {fileID: 21300000, guid: 7077dfbebc9b54c539530dc32ab9bc6a, type: 3}
@@ -343,6 +346,7 @@ SpriteAtlas:
   - Icon_BattlegReward_01_Black
   - Common_Prrogressbar_GaugeBg
   - button_Round_Normal
+  - ui_dialog_bg
   - UI_bg_frame_05
   - icon_Event_01_black
   - UI_Btn_Back_bg
@@ -355,6 +359,7 @@ SpriteAtlas:
   - bg_combination_Main_03
   - icon_combination_01_black
   - DailyBonusGauge_Bg
+  - ui_dialog_name_bg
   - button_Orange_03
   - UI_main_icon_quest_02
   - bg_combination_Main_02
@@ -563,6 +568,7 @@ SpriteAtlas:
   - UI_loading_02
   - icon_git_01_black
   - ui_line_08
+  - ui_dialog_arrow
   - icon_Inventory_01_black
   - UI_main_icon_Goldpowder
   - icon_buff_up

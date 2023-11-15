@@ -72,6 +72,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9610ec718b9a943ac860d6ae94a3cc2d, type: 3}
   - {fileID: 21300000, guid: 551e2d7187be6754c990e4fcc8e713ae, type: 3}
   - {fileID: 21300000, guid: b8e69781c1fbb40e99ccdc7762cfd351, type: 3}
+  - {fileID: 21300000, guid: 5d6f7a81f00d10c42a7b406da85e24bb, type: 3}
   - {fileID: 21300000, guid: 27f02ba1086584419a7beccba8f7d2e4, type: 3}
   - {fileID: 21300000, guid: 31b36db1e740e401d8be75eb249a386c, type: 3}
   - {fileID: 21300000, guid: 08de63c196cf24e55b09ec3cea10b387, type: 3}
@@ -82,6 +83,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
+  - {fileID: 21300000, guid: b82e967278150dc43ad7f00072f47fff, type: 3}
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
   - {fileID: 21300000, guid: b02b84925c3d8544cab59f9c098e263e, type: 3}
   - {fileID: 21300000, guid: a9e238a253e87d14c96bd7c73c25b4c1, type: 3}
@@ -285,6 +287,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8125b05e69570456fb7659c6fc91ce35, type: 3}
   - {fileID: 21300000, guid: fef1c45ed1fc04fd38a148fb0d1d520f, type: 3}
   - {fileID: 21300000, guid: 3eafd26e270ec5f49b9a66bedb330cfe, type: 3}
+  - {fileID: 21300000, guid: a13f6e7e852b58042a73ba538cb49d56, type: 3}
   - {fileID: 21300000, guid: 2ba464ae5f5ed45099296cab22f6aea8, type: 3}
   - {fileID: 21300000, guid: 397853be1edc94b93976a61fec17bf1e, type: 3}
   - {fileID: 21300000, guid: 17b939be3a8968e4fa84f1732bba89f6, type: 3}
@@ -331,6 +334,7 @@ SpriteAtlas:
   - Common_Prrogressbar_GaugeBg
   - UI_stage_icon_star_03
   - button_Round_Normal
+  - ui_dialog_bg
   - icon_Event_01_black
   - UI_Btn_Back_bg
   - UI_box_01
@@ -341,6 +345,7 @@ SpriteAtlas:
   - Common_gradiant_64
   - icon_combination_01_black
   - DailyBonusGauge_Bg
+  - ui_dialog_name_bg
   - button_Orange_03
   - UI_result_bg
   - UI_main_icon_quest_02
@@ -544,6 +549,7 @@ SpriteAtlas:
   - UI_loading_02
   - icon_git_01_black
   - ui_line_08
+  - ui_dialog_arrow
   - icon_Inventory_01_black
   - UI_main_icon_Goldpowder
   - UI_victory_ribbon

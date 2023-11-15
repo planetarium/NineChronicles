@@ -95,6 +95,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5eebd6715f9d71647a65f4ce94a55894, type: 3}
   - {fileID: 21300000, guid: 9610ec718b9a943ac860d6ae94a3cc2d, type: 3}
   - {fileID: 21300000, guid: b8e69781c1fbb40e99ccdc7762cfd351, type: 3}
+  - {fileID: 21300000, guid: 5d6f7a81f00d10c42a7b406da85e24bb, type: 3}
   - {fileID: 21300000, guid: 77cb3b917b1cf423ea0a0a8ae6ad1772, type: 3}
   - {fileID: 21300000, guid: 27f02ba1086584419a7beccba8f7d2e4, type: 3}
   - {fileID: 21300000, guid: a91d7ab1de8ab4ae3b69953b5537b5a0, type: 3}
@@ -117,6 +118,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: 2f183c62cc23f56488cada258bdc5ac0, type: 3}
   - {fileID: 21300000, guid: c8217172dae08ae47bc444fecb82c9be, type: 3}
+  - {fileID: 21300000, guid: b82e967278150dc43ad7f00072f47fff, type: 3}
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
   - {fileID: 21300000, guid: 85c0d68258ca635469a2cc53753800d0, type: 3}
   - {fileID: 21300000, guid: cee37092b244a4405ae707ea1ba04755, type: 3}
@@ -427,6 +429,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3eafd26e270ec5f49b9a66bedb330cfe, type: 3}
   - {fileID: 21300000, guid: 9c2bfd6e078278a4e89e2fd5b8b98851, type: 3}
   - {fileID: 21300000, guid: 3d392e6e9977e4bd2a4329a4a3a8cd00, type: 3}
+  - {fileID: 21300000, guid: a13f6e7e852b58042a73ba538cb49d56, type: 3}
   - {fileID: 21300000, guid: 2ba464ae5f5ed45099296cab22f6aea8, type: 3}
   - {fileID: 21300000, guid: 6f4c5dae54f1c4edeabee331a51c79bc, type: 3}
   - {fileID: 21300000, guid: 397853be1edc94b93976a61fec17bf1e, type: 3}
@@ -501,6 +504,7 @@ SpriteAtlas:
   - Icon_BattlegReward_01_Black
   - Common_Prrogressbar_GaugeBg
   - button_Round_Normal
+  - ui_dialog_bg
   - UI_icon_Mainmenu_06
   - icon_Event_01_black
   - UI_bg_frame_03
@@ -523,6 +527,7 @@ SpriteAtlas:
   - icon_combination_01_black
   - DailyBonusGauge_Bg
   - WB_Gauge_Bg_1
+  - ui_dialog_name_bg
   - button_Orange_03
   - UI_bg_frame_07_02
   - UI_bg_frame_06
@@ -833,6 +838,7 @@ SpriteAtlas:
   - ui_line_08
   - WG_Name_Bg
   - UI_bg_frame_04
+  - ui_dialog_arrow
   - icon_Inventory_01_black
   - UI_icon_Mainmenu_01
   - UI_main_icon_Goldpowder
