@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Model.Item;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Unity.Mathematics;
 using UnityEngine;
@@ -120,6 +121,8 @@ namespace Nekoyume.UI
 
         protected virtual IEnumerator PlayAnimation()
         {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Rewards);
+
             yield return null;
             var movement = content.sizeDelta.x / (_count + 1);
             content.anchoredPosition = new Vector2(movement * 0.5f * _count, content.anchoredPosition.y);
