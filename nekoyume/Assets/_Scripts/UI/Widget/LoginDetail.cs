@@ -198,7 +198,6 @@ namespace Nekoyume.UI
 
             backButtonText.text = _isCreateMode ? L10nManager.Localize("UI_CHARACTER_CREATE") : "";
             SetInformation(player);
-
             if (_isCreateMode)
             {
                 SubmitWidget = CreateClick;

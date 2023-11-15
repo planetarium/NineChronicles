@@ -14,6 +14,11 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject selected;
         [SerializeField] private GameObject leopardPrint1;
         [SerializeField] private GameObject leopardPrint2;
+        [SerializeField] private GameObject leopardPrint3;
+        [SerializeField] private GameObject leopardPrint4;
+        [SerializeField] private GameObject leopardPrint5;
+        [SerializeField] private Image lightColor2;
+
 
         public bool Selected { set => selected.SetActive(value); }
 

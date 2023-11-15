@@ -16,10 +16,10 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject costumePaletteContainer;
         [SerializeField] private GameObject costumeTabsContainer;
 
-        [SerializeField] private Toggle hairToggle;
-        [SerializeField] private Toggle eyeToggle;
         [SerializeField] private Toggle earToggle;
         [SerializeField] private Toggle tailToggle;
+        [SerializeField] private Toggle hairToggle;
+        [SerializeField] private Toggle eyeToggle;
 
         [SerializeField] private TextMeshProUGUI titleText;
         [SerializeField] private GridLayoutGroup gridLayoutGroup;
@@ -33,26 +33,14 @@ namespace Nekoyume.UI
 
         private readonly Dictionary<ItemSubType, int> _index = new Dictionary<ItemSubType, int>()
         {
-            { ItemSubType.HairCostume, 0 },
-            { ItemSubType.EyeCostume, 0 },
             { ItemSubType.EarCostume, 0 },
             { ItemSubType.TailCostume, 0 },
+            { ItemSubType.HairCostume, 0 },
+            { ItemSubType.EyeCostume, 0 },
         };
 
         private void Awake()
         {
-            hairToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (!isOn) return;
-                UpdateTab(ItemSubType.HairCostume);
-            });
-
-            eyeToggle.onValueChanged.AddListener(isOn =>
-            {
-                if (!isOn) return;
-                UpdateTab(ItemSubType.EyeCostume);
-            });
-
             earToggle.onValueChanged.AddListener(isOn =>
             {
                 if (!isOn) return;
@@ -63,6 +51,17 @@ namespace Nekoyume.UI
             {
                 if (!isOn) return;
                 UpdateTab(ItemSubType.TailCostume);
+            });
+            hairToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (!isOn) return;
+                UpdateTab(ItemSubType.HairCostume);
+            });
+
+            eyeToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (!isOn) return;
+                UpdateTab(ItemSubType.EyeCostume);
             });
         }
 
@@ -185,15 +184,15 @@ namespace Nekoyume.UI
 
         public void Show()
         {
-            _index[ItemSubType.HairCostume] = 0;
-            _index[ItemSubType.EyeCostume] = 0;
             _index[ItemSubType.EarCostume] = 0;
             _index[ItemSubType.TailCostume] = 0;
+            _index[ItemSubType.HairCostume] = 0;
+            _index[ItemSubType.EyeCostume] = 0;
 
             var earIndex = _index[ItemSubType.EarCostume];
             var tailIndex = _index[ItemSubType.TailCostume];
 
-            hairToggle.isOn = true;
+            earToggle.isOn = true;
 
             var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
@@ -215,14 +214,14 @@ namespace Nekoyume.UI
             }
         }
 
-        public (int hair, int eye, int ear, int tail) GetCostumeId()
+        public (int ear, int tail, int hair, int eye) GetCostumeId()
         {
-            var hairIndex = _index[ItemSubType.HairCostume];
-            var eyeIndex = _index[ItemSubType.EyeCostume];
             var earIndex = _index[ItemSubType.EarCostume];
             var tailIndex = _index[ItemSubType.TailCostume];
+            var hairIndex = _index[ItemSubType.HairCostume];
+            var eyeIndex = _index[ItemSubType.EyeCostume];
 
-            return (hairIndex, eyeIndex, earIndex, tailIndex);
+            return (earIndex, tailIndex, hairIndex, eyeIndex);
         }
     }
 }
