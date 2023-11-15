@@ -53,7 +53,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public GameObject bg;
         public GameObject header;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
@@ -102,7 +101,6 @@ namespace Nekoyume.UI
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
-        private CapturedImage _capturedImage;
 
         public override bool CanHandleInputEvent => false;
 
@@ -119,7 +117,6 @@ namespace Nekoyume.UI
                 KeyStore = Web3KeyStore.DefaultKeyStore;
             }
 
-            _capturedImage = GetComponentInChildren<CapturedImage>();
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -175,7 +172,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     accountAddressHolder.gameObject.SetActive(true);
                     submitButton.Text = L10nManager.Localize("UI_GAME_SIGN_UP");
-                    bg.SetActive(false);
                     break;
                 case States.SetPassword:
                     titleText.text = L10nManager.Localize("UI_SET_PASSWORD_TITLE");
@@ -207,7 +203,6 @@ namespace Nekoyume.UI
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.Login_Mobile:
                     header.SetActive(false);
@@ -217,7 +212,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.FindPassphrase:
                     titleText.gameObject.SetActive(false);
@@ -443,11 +437,6 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
-
             if (Platform.IsMobilePlatform())
             {
                 var dataPath = Platform.GetPersistentDataPath("keystore");
@@ -548,10 +537,6 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
 
             SetState(States.SetPassword);
             base.Show();

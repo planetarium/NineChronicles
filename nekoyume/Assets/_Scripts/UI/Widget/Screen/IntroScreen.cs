@@ -43,10 +43,12 @@ namespace Nekoyume.UI
             public GameObject account;
             public TextMeshProUGUI[] accountTexts;
             public Button accountImportKeyButton;
+            public TextMeshProUGUI accountImportKeyButtonText;
 
             public void Set(
                 PlanetContext planetContext,
-                PlanetAccountInfo planetAccountInfo)
+                PlanetAccountInfo planetAccountInfo,
+                bool needToImportKey)
             {
                 if (planetContext?.PlanetRegistry is null ||
                     planetAccountInfo is null)
@@ -127,6 +129,9 @@ namespace Nekoyume.UI
                         }
                     }
 
+                    accountImportKeyButtonText.text = needToImportKey
+                        ? L10nManager.Localize("BTN_IMPORT_KEY")
+                        : L10nManager.Localize("BTN_SELECT");
                     noAccount.SetActive(false);
                     account.SetActive(true);
 
@@ -145,19 +150,17 @@ namespace Nekoyume.UI
             }
         }
 
-        // NOTE: Use to mobileContainerAnimator.
-        private static readonly int IdleToShowButtons = Animator.StringToHash("IdleToShowButtons");
-
         [SerializeField] private GameObject pcContainer;
 
         [Header("Mobile")]
 
         [SerializeField] private GameObject mobileContainer;
-        [SerializeField] private Animator mobileContainerAnimator;
         [SerializeField] private RawImage videoImage;
 
-        // NOTE: `startButtonContainer` will be enabled when the mobileContainerAnimator
-        //       is in the `IdleToShowButtons` state.
+        [SerializeField] private GameObject logoAreaGO;
+        [SerializeField] private GameObject touchScreenButtonGO;
+        [SerializeField] private Button touchScreenButton;
+
         [SerializeField] private GameObject startButtonContainer;
         [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
@@ -196,6 +199,7 @@ namespace Nekoyume.UI
         private const string GuestPrivateKeyUrl =
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
+        public Subject<IntroScreen> OnClickTabToStart { get; } = new();
         public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
 
         public Subject<(string email, string idToken)> OnAppleSignedIn { get; } = new();
@@ -204,6 +208,13 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            touchScreenButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click touch screen button.");
+                touchScreenButtonGO.SetActive(false);
+                startButtonContainer.SetActive(true);
+                OnClickTabToStart.OnNext(this);
+            });
             startButton.OnSubmitSubject.Subscribe(_ =>
             {
                 if (Find<LoginSystem>().KeyStore.ListIds().Any())
@@ -407,26 +418,35 @@ namespace Nekoyume.UI
             OnAppleSignedIn.Dispose();
         }
 
-        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
+        public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
-            Analyzer.Instance.Track("Unity/Intro/Show");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-
-#if RUN_ON_MOBILE
             ApplyCurrentPlanetInfo(_planetContext);
+        }
+
+        public void ShowTabToStart()
+        {
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
-            if (mobileContainerAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash
-                != IdleToShowButtons)
-            {
-                mobileContainerAnimator.Play("Idle", 0);
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
-            }
-
-            // videoImage.gameObject.SetActive(false);
+            logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(true);
             startButtonContainer.SetActive(false);
+            qrCodeGuideContainer.SetActive(false);
+        }
+
+        public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
+        {
+            Analyzer.Instance.Track("Unity/Intro/Show");
+            SetData(keyStorePath, privateKey, planetContext);
+
+#if RUN_ON_MOBILE
+            pcContainer.SetActive(false);
+            mobileContainer.SetActive(true);
+            logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(false);
+            startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
             ShowMobile();
 #else
@@ -441,13 +461,8 @@ namespace Nekoyume.UI
         {
             pcContainer.SetActive(false);
             mobileContainer.SetActive(true);
-            if (mobileContainerAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash
-                != IdleToShowButtons)
-            {
-                mobileContainerAnimator.Play("Idle");
-                mobileContainerAnimator.SetTrigger(IdleToShowButtons);
-            }
-
+            logoAreaGO.SetActive(false);
+            touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(false);
             qrCodeGuideContainer.SetActive(false);
 
@@ -468,7 +483,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
         }
 
-        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext)
+        public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
             if (planetContext.PlanetAccountInfos is null)
@@ -480,12 +495,14 @@ namespace Nekoyume.UI
                 planetContext,
                 planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
                     info.PlanetId.Equals(PlanetId.Odin) ||
-                    info.PlanetId.Equals(PlanetId.OdinInternal)));
+                    info.PlanetId.Equals(PlanetId.OdinInternal)),
+                needToImportKey);
             planetAccountInfoRight.Set(
                 planetContext,
                 planetContext.PlanetAccountInfos?.FirstOrDefault(info =>
                     info.PlanetId.Equals(PlanetId.Heimdall) ||
-                    info.PlanetId.Equals(PlanetId.HeimdallInternal)));
+                    info.PlanetId.Equals(PlanetId.HeimdallInternal)),
+                needToImportKey);
             planetAccountInfosPopup.SetActive(true);
         }
 
@@ -579,8 +596,8 @@ namespace Nekoyume.UI
 
         private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {
-            var planetRegistry = planetContext.PlanetRegistry;
-            var planetInfo = planetContext.SelectedPlanetInfo;
+            var planetRegistry = planetContext?.PlanetRegistry;
+            var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
                 planetInfo is null)
             {

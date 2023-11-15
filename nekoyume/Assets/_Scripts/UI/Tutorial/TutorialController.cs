@@ -154,6 +154,12 @@ namespace Nekoyume.UI
 
         }
 
+        // force-set tutorial target. not recommend.
+        public void SetTutorialTarget(TutorialTarget target)
+        {
+            _targets[target.type] = target.rectTransform;
+        }
+
         private void PlayAction(TutorialActionType actionType)
         {
             if (_actions.ContainsKey(actionType))
