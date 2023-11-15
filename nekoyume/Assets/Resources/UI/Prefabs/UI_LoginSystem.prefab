@@ -8230,7 +8230,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  bg: {fileID: 2627788860525420161}
   header: {fileID: 3862495371990144050}
   titleText: {fileID: 8982525101711329035}
   contentText: {fileID: 8982525101741660200}
@@ -9944,14 +9943,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIBackground
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5921161217010795101, guid: 57682170089953e42b6f4985ecb8bf50, type: 3}
+    - {fileID: 8741377443245220786, guid: 57682170089953e42b6f4985ecb8bf50, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 57682170089953e42b6f4985ecb8bf50, type: 3}
---- !u!1 &2627788860525420161 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8565133169967020359, guid: 57682170089953e42b6f4985ecb8bf50,
-    type: 3}
-  m_PrefabInstance: {fileID: 5956783701061019590}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8927015292764331066 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2975082939532360700, guid: 57682170089953e42b6f4985ecb8bf50,
