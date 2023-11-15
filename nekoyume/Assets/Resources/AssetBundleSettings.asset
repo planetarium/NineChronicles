@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab298675436e844f975570f2ee1f2f0, type: 3}
   m_Name: AssetBundleSettings
   m_EditorClassIdentifier: 
-  assetBundleURL: https://9c-test-bucket.s3.ap-northeast-2.amazonaws.com/AssetBundles
+  assetBundleURL: https://assets-internal.nine-chronicles.com/asset-bundle
   assetBundleCredentials: 
   assetBundleNames:
   - audio/music
