@@ -3338,28 +3338,24 @@ namespace Nekoyume.Blockchain
                         foreach (var fav in favList)
                         {
                             var tokenCurrency = fav.Currency;
-                            Address recipientAddress;
-                            var currency = tokenCurrency;
                             if (Currencies.IsWrappedCurrency(tokenCurrency))
                             {
-                                currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
-                            }
-
-                            recipientAddress =
-                                Currencies.SelectRecipientAddress(currency, agentAddr,
+                                var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
                                     avatarAddr);
-                            var isCrystal = currency.Equals(Currencies.Crystal);
-                            var balance = StateGetter.GetBalance(
-                                recipientAddress,
-                                currency,
-                                states);
-                            if (isCrystal)
-                            {
-                                gameStates.SetCrystalBalance(balance);
-                            }
-                            else
-                            {
-                                gameStates.SetCurrentAvatarBalance(balance);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                var balance = StateGetter.GetBalance(
+                                    recipientAddress,
+                                    currency,
+                                    states);
+                                if (isCrystal)
+                                {
+                                    gameStates.SetCrystalBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
                             }
                         }
                     }
