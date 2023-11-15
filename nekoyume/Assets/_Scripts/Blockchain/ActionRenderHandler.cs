@@ -3338,28 +3338,24 @@ namespace Nekoyume.Blockchain
                         foreach (var fav in favList)
                         {
                             var tokenCurrency = fav.Currency;
-                            Address recipientAddress;
-                            var currency = tokenCurrency;
                             if (Currencies.IsWrappedCurrency(tokenCurrency))
                             {
-                                currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
-                            }
-
-                            recipientAddress =
-                                Currencies.SelectRecipientAddress(currency, agentAddr,
+                                var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
                                     avatarAddr);
-                            var isCrystal = currency.Equals(Currencies.Crystal);
-                            var balance = StateGetter.GetBalance(
-                                recipientAddress,
-                                currency,
-                                states);
-                            if (isCrystal)
-                            {
-                                gameStates.SetCrystalBalance(balance);
-                            }
-                            else
-                            {
-                                gameStates.SetCurrentAvatarBalance(balance);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                var balance = StateGetter.GetBalance(
+                                    recipientAddress,
+                                    currency,
+                                    states);
+                                if (isCrystal)
+                                {
+                                    gameStates.SetCrystalBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
                             }
                         }
                     }
@@ -3416,7 +3412,7 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                /*mailBox = new MailBox(mailBoxList);
+                mailBox = new MailBox(mailBoxList);
                 mail = mailBox.OfType<ClaimItemsMail>()
                     .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
                 if (mail is not null)
@@ -3424,14 +3420,7 @@ namespace Nekoyume.Blockchain
                     mail.New = true;
                     gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
-                    if (mail.Memo != null)
-                    {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize(
-                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
-                            NotificationCell.NotificationType.Notification);
-                    }
-                }*/
+                }
             });
         }
     }
