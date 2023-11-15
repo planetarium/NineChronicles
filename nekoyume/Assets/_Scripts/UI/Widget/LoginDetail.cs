@@ -29,6 +29,7 @@ namespace Nekoyume.UI
 
         public GameObject jobInfoContainer;
         public TextMeshProUGUI jobDescriptionText;
+        public GameObject statusContainer;
         public DetailedStatView[] statusRows;
         public LoginDetailCostume loginDetailCostume;
 
@@ -92,7 +93,7 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show(
                 LoadingScreen.LoadingType.Entering,
                 L10nManager.Localize("UI_IN_MINING_A_BLOCK"));
-            var (hairIndex, eyeIndex, earIndex, tailIndex) = loginDetailCostume.GetCostumeId();
+            var (earIndex, tailIndex, hairIndex, eyeIndex) = loginDetailCostume.GetCostumeId();
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, hairIndex, eyeIndex, earIndex, tailIndex)
                 .DoOnError(e =>
@@ -189,15 +190,16 @@ namespace Nekoyume.UI
             btnLogin.SetActive(!_isCreateMode);
             jobInfoContainer.SetActive(!_isCreateMode);
             levelAndNameInfo.gameObject.SetActive(!_isCreateMode);
+            statusContainer.SetActive(!_isCreateMode);
             if (!_isCreateMode)
             {
                 var level = player.Level;
                 var name = States.Instance.CurrentAvatarState.NameWithHash;
                 levelAndNameInfo.text = $"LV. {level} {name}";
+                SetInformation(player);
             }
 
             backButtonText.text = _isCreateMode ? L10nManager.Localize("UI_CHARACTER_CREATE") : "";
-            SetInformation(player);
 
             if (_isCreateMode)
             {

@@ -842,20 +842,17 @@ namespace Nekoyume.UI
                 claimItemsMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
 
-            var showQueue = new Queue<System.Action>();
+            var rewards = new List<MailReward>();
             if (claimItemsMail.FungibleAssetValues is not null)
             {
-                foreach (var fav in
-                         claimItemsMail.FungibleAssetValues)
-                {
-                    // TODO: Enqueue functions.
-                }
+                rewards.AddRange(
+                    claimItemsMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, (int) fav.MajorUnit)));
             }
 
             if (claimItemsMail.Items is not null)
             {
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                var itemTooltip = ItemTooltip.Find(ItemType.Material);
                 foreach (var (fungibleId, count) in
                          claimItemsMail.Items)
                 {
@@ -868,19 +865,11 @@ namespace Nekoyume.UI
                     }
 
                     var material = ItemFactory.CreateMaterial(row);
-                    showQueue.Enqueue(() => itemTooltip.Show(
-                        material,
-                        L10nManager.Localize("UI_OK"),
-                        true,
-                        () => UniTask.WaitWhile(itemTooltip.IsActive)
-                            .ToObservable()
-                            .Subscribe(_ => showQueue.Dequeue()?.Invoke()),
-                        itemCount: count)
-                    );
+                    rewards.Add(new MailReward(material, count));
                 }
             }
 
-            showQueue.Dequeue()?.Invoke();
+            Find<MailRewardScreen>().Show(rewards);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

@@ -124,7 +124,7 @@ namespace Nekoyume
 
         public static async Task<string> GetCellContentAsync(this ClaimItemsMail mail)
         {
-            if(mail.Memo != null && mail.Memo.Contains("season_pass"))
+            if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if (mail.Memo.Contains("\"t\": \"auto\""))
                 {
@@ -132,6 +132,11 @@ namespace Nekoyume
                 }
 
                 return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("patrol"))
+            {
+                return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
             }
 
             var game = Game.Game.instance;
