@@ -1025,6 +1025,10 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
+        public bool TryGetCellByIndex(int index, out InventoryCell cell)
+        {
+            return scroll.TryGetCellByIndex(index, out cell);
+        }
         #endregion
     }
 }

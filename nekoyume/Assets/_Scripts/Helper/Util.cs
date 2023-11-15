@@ -534,7 +534,7 @@ namespace Nekoyume.Helper
 
             if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTextureRaw))
             {
-                var myTexture = new Texture2D(2, 2);
+                var myTexture = new Texture2D(0,0, TextureFormat.RGBA32, false);
                 myTexture.LoadImage(cachedTextureRaw);
                 var result = Sprite.Create(
                     myTexture,

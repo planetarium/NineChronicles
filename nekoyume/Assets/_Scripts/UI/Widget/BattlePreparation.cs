@@ -235,6 +235,23 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+            if (information.TryGetCellByIndex(0, out var firstCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.InventoryFirstCell,
+                    rectTransform = (RectTransform)firstCell.transform
+                });
+            }
+
+            if (information.TryGetCellByIndex(1, out var secondCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.InventorySecondCell,
+                    rectTransform = (RectTransform)secondCell.transform
+                });
+            }
         }
 
         private int? UpdateCp()
