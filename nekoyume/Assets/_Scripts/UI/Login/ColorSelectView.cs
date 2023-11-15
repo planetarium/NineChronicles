@@ -14,6 +14,11 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject selected;
         [SerializeField] private GameObject leopardPrint1;
         [SerializeField] private GameObject leopardPrint2;
+        [SerializeField] private GameObject leopardPrint3;
+        [SerializeField] private GameObject leopardPrint4;
+        [SerializeField] private GameObject leopardPrint5;
+        [SerializeField] private Image lightColor2;
+
 
         public bool Selected { set => selected.SetActive(value); }
 
@@ -24,6 +29,10 @@ namespace Nekoyume.UI.Module
             lightColor.gameObject.SetActive(false);
             leopardPrint1.gameObject.SetActive(false);
             leopardPrint2.gameObject.SetActive(false);
+            leopardPrint3.gameObject.SetActive(false);
+            leopardPrint4.gameObject.SetActive(false);
+            leopardPrint5.gameObject.SetActive(false);
+            lightColor2.gameObject.SetActive(false);
 
             switch (itemData.colorSelectType)
             {
@@ -44,6 +53,19 @@ namespace Nekoyume.UI.Module
                     break;
                 case ColorSelectType.LeopardPrint2:
                     leopardPrint2.gameObject.SetActive(true);
+                    break;
+                case ColorSelectType.LeopardPrint3:
+                    leopardPrint3.gameObject.SetActive(true);
+                    break;
+                case ColorSelectType.LeopardPrint4:
+                    leopardPrint4.gameObject.SetActive(true);
+                    break;
+                case ColorSelectType.LeopardPrint5:
+                    leopardPrint5.gameObject.SetActive(true);
+                    break;
+                case ColorSelectType.Light2:
+                    lightColor2.gameObject.SetActive(true);
+                    lightColor2.color = itemData.color;
                     break;
             }
 
