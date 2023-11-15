@@ -2513,7 +2513,10 @@ namespace Nekoyume.Blockchain
             worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
-            UpdateAgentStateAsync(eval).Forget();
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+            }).Forget();
         }
 
         private ActionEvaluation<HackAndSlashRandomBuff> PrepareHackAndSlashRandomBuff(
