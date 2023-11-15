@@ -78,7 +78,7 @@ namespace Nekoyume.Helper
 
         private string[] trustedAppProtocolVersionSigners = new string[] { };
 
-        private string language = "English";
+        private string language;
 
         private string awsSinkGuid;
 
@@ -561,7 +561,7 @@ namespace Nekoyume.Helper
                 OptionAttribute optAttr = Attribute.GetCustomAttribute(property, typeof(OptionAttribute)) as OptionAttribute;
                 if (optAttr != null && property.GetValue(this) != null)
                 {
-                    
+
                     if (property.PropertyType.ToString() == "System.Collections.Generic.IEnumerable`1[System.String]")
                     {
                         string[] value = property.GetValue(this) as string[];

@@ -352,7 +352,9 @@ namespace Nekoyume.Game
             }
 #else
             yield return L10nManager
-                .Initialize(LanguageTypeMapper.ISO639(_commandLineOptions.Language))
+                .Initialize(string.IsNullOrWhiteSpace(_commandLineOptions.Language)
+                    ? L10nManager.CurrentLanguage
+                    : LanguageTypeMapper.ISO639(_commandLineOptions.Language))
                 .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
@@ -518,7 +520,7 @@ namespace Nekoyume.Game
                           $", google: {SeasonPassServiceManager.GoogleMarketURL}" +
                           $", apple: {SeasonPassServiceManager.AppleMarketURL}");
             }
-            
+
             sw.Stop();
             Debug.Log("[Game] Start()... Services(w/o IAPService) initialized in" +
                       $" {sw.ElapsedMilliseconds}ms.(elapsed)");
