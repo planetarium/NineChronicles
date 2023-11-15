@@ -28,7 +28,7 @@ namespace Nekoyume.Game.Character
         private CharacterAppearance appearance;
 
         private static Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
-        private const float AnimatorTimeScale = 1.2f;
+        private const float AnimatorTimeScale = 2.5f;
         private const float StartPos = 2.5f;
         private const float RunDuration = 1f;
 

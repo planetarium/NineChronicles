@@ -40,8 +40,8 @@ namespace Nekoyume.UI.Model
                 return Task.Run(async () =>
                 {
                     var sw = new Stopwatch();
+                    sw.Stop();
                     sw.Start();
-
                     await Task.WhenAll(
                         LoadAbilityRankingInfos(apiClient, displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Model
                     );
                     IsInitialized = true;
                     sw.Stop();
-                    UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+                    Debug.Log($"Ranking updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 });
             }
 

@@ -35,6 +35,7 @@ namespace Nekoyume
 
         public Analyzer(
             string? uniqueId = null,
+            string? planetId = null,
             string? rpcServerHost = null,
             bool isTrackable = false)
         {
@@ -45,6 +46,7 @@ namespace Nekoyume
                 return;
             }
 
+            planetId ??= "no-planet-id";
             rpcServerHost ??= "no-rpc-host";
 
             // ReSharper disable Unity.UnknownResource
@@ -71,6 +73,7 @@ namespace Nekoyume
                 rpcServerHost);
 #endif
             SetAgentAddress(uniqueId);
+            SetPlanetId(planetId);
             UpdateAvatarAddress();
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAvatarAddress());
@@ -78,11 +81,14 @@ namespace Nekoyume
             Debug.Log($"Analyzer initialized: {uniqueId}");
         }
 
-        public static void SetAgentAddress(string? addressString = null)
+        public static void SetAgentAddress(string? addressString)
         {
             if (addressString is not null)
             {
                 Mixpanel.Identify(addressString);
+#if ENABLE_FIREBASE
+                FirebaseAnalytics.SetUserId(addressString);
+#endif
             }
 
             addressString ??= "none";
@@ -92,12 +98,19 @@ namespace Nekoyume
             Mixpanel.People.Name = addressString;
             // SentrySdk.ConfigureScope(scope => { scope.User.Id = uniqueId; });
 #if ENABLE_FIREBASE
-            if (addressString is not null)
-            {
-                FirebaseAnalytics.SetUserId(addressString);
-            }
-
             FirebaseAnalytics.SetUserProperty("AgentAddress", addressString);
+#endif
+        }
+
+        public static void SetPlanetId(string? planetId)
+        {
+            Debug.Log($"[Analyzer] SetPlanetId() invoked with {planetId}");
+            planetId ??= "no-planet-id";
+
+            Mixpanel.Register("planet-id", planetId);
+            // SentrySdk.ConfigureScope(scope => scope.SetTag("planet-id", planetId));
+#if ENABLE_FIREBASE
+            FirebaseAnalytics.SetUserProperty("planet_id", planetId);
 #endif
         }
 

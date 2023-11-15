@@ -51,10 +51,10 @@ namespace Nekoyume.UI
         public class ReferralResult : RequestResult
         {
             public string referralCode;
-            public int inviterReward;
-            public int inviteeReward;
+            public float inviterReward;
+            public float inviteeReward;
             public int requiredLevel;
-            public int inviteeLevelReward;
+            public float inviteeLevelReward;
             public bool isRegistered;
             public string referralUrl;
         }
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
@@ -324,7 +324,7 @@ namespace Nekoyume.UI
                 case GoogleSigninBehaviour.SignInState.Canceled:
                     break;
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    await SendGoogleIdToken(google.IdToken);
+                    await SendGoogleIdTokenAsync(google.IdToken);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -333,14 +333,21 @@ namespace Nekoyume.UI
 
         private bool GetRefreshTokenFromPlayerPrefs(string address)
         {
-            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}", string.Empty);
-
-            if (string.IsNullOrEmpty(encryptedRefreshToken))
+            var encryptedRefreshToken = PlayerPrefs.GetString($"LOCAL_REFRESH_TOKEN_{address}");
+            if (string.IsNullOrEmpty(encryptedRefreshToken) ||
+                string.IsNullOrWhiteSpace(encryptedRefreshToken))
             {
                 return false;
             }
 
-            refreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            var decryptedRefreshToken = Util.AesDecrypt(encryptedRefreshToken);
+            if (string.IsNullOrEmpty(decryptedRefreshToken) ||
+                string.IsNullOrWhiteSpace(decryptedRefreshToken))
+            {
+                return false;
+            }
+
+            refreshToken = decryptedRefreshToken;
             return true;
         }
 
@@ -350,7 +357,7 @@ namespace Nekoyume.UI
             PlayerPrefs.Save();
         }
 
-        public async Task<Address?> SendGoogleIdToken(string idToken)
+        public async Task<Address?> SendGoogleIdTokenAsync(string idToken)
         {
             Debug.Log($"[GoogleSigninBehaviour] CoSendGoogleIdToken invoked w/ idToken({idToken})");
             Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectToPortal");
@@ -538,7 +545,7 @@ namespace Nekoyume.UI
 
         public async Task<RequestResult> EnterReferralCode(string referralCode)
         {
-            var logTitle = $"[{nameof(PortalConnect)}] {nameof(GetReferralInformation)}";
+            var logTitle = $"[{nameof(PortalConnect)}] {nameof(EnterReferralCode)}";
             var url = $"{PortalUrl}{ReferralEndpoint}";
 
             Debug.Log($"{logTitle} invoked: url({url}), referralCode({referralCode}) accessToken({accessToken})");
@@ -566,6 +573,7 @@ namespace Nekoyume.UI
                 if (request.responseCode == 200)
                 {
                     Debug.Log($"{logTitle} Success: {json}");
+                    return null;
                 }
             }
             else if (data.resultCode is 3001 or 3002)

@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using Nekoyume.Helper;
 
 namespace Nekoyume.Planet
@@ -9,7 +10,7 @@ namespace Nekoyume.Planet
         public readonly CommandLineOptions CommandLineOptions;
         public bool IsSkipped;
         public string Error = string.Empty;
-        public Planets? Planets;
+        public PlanetRegistry? PlanetRegistry;
         public PlanetInfo? SelectedPlanetInfo;
         public PlanetAccountInfo[]? PlanetAccountInfos;
         public PlanetAccountInfo? SelectedPlanetAccountInfo;
@@ -22,11 +23,14 @@ namespace Nekoyume.Planet
         //       But we have no idea where to put this yet.
         public bool? NeedToPledge;
 
+        public List<(string eventKey, long elapsedMilliseconds, string? description)> ElapsedTuples;
+
         public bool HasError => !string.IsNullOrEmpty(Error);
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
             CommandLineOptions = commandLineOptions;
+            ElapsedTuples = new List<(string eventKey, long elapsedMilliseconds, string? description)>();
         }
     }
 }

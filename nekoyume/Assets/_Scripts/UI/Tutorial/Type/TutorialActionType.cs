@@ -57,6 +57,8 @@ namespace Nekoyume.UI
         TutorialActionClickCombinationRuneCombineButton,
         TutorialActionActionPointHeaderMenu,
         TutorialActionActionPointChargeButton,
+        // SeasonPass
+        TutorialActionSeasonPassGuidePopup,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

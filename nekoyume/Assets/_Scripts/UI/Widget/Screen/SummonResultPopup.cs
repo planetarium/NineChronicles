@@ -71,6 +71,7 @@ namespace Nekoyume.UI
 
                 videoPlayer.Stop();
                 videoPlayer.gameObject.SetActive(false);
+                skipButton.gameObject.SetActive(false);
                 StartCoroutine(PlayResultAnimation(_isGreat));
             });
 
@@ -155,6 +156,7 @@ namespace Nekoyume.UI
             videoPlayer.clip = currentVideoClip.summoning;
             videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
             videoPlayer.gameObject.SetActive(true);
+            skipButton.gameObject.SetActive(true);
             videoPlayer.Play();
 
             yield return new WaitUntil(() => videoPlayer.isPlaying);
@@ -176,6 +178,7 @@ namespace Nekoyume.UI
 
             videoPlayer.Stop();
             videoPlayer.gameObject.SetActive(false);
+            skipButton.gameObject.SetActive(false);
 
             yield return PlayResultAnimation(great);
         }

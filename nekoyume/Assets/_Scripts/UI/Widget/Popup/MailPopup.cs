@@ -779,6 +779,10 @@ namespace Nekoyume.UI
                         var material = ItemFactory.CreateMaterial(row);
                         mailRewards.Add(new MailReward(material, fungibleCount));
                     }
+                    foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                    {
+                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                    }
                 }
 
                 UpdateTabs();
@@ -825,6 +829,47 @@ namespace Nekoyume.UI
             }
 
             showQueue.Dequeue()?.Invoke();
+        }
+
+        public void Read(ClaimItemsMail claimItemsMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
+            var game = Game.Game.instance;
+            claimItemsMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                claimItemsMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            var rewards = new List<MailReward>();
+            if (claimItemsMail.FungibleAssetValues is not null)
+            {
+                rewards.AddRange(
+                    claimItemsMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, (int) fav.MajorUnit)));
+            }
+
+            if (claimItemsMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                foreach (var (fungibleId, count) in
+                         claimItemsMail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row is null)
+                    {
+                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        continue;
+                    }
+
+                    var material = ItemFactory.CreateMaterial(row);
+                    rewards.Add(new MailReward(material, count));
+                }
+            }
+
+            Find<MailRewardScreen>().Show(rewards);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

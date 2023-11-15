@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: Aura_01-purple_SkeletonData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: a60b2973610761a4e95d5d4bb0377af4, type: 2}
+  - {fileID: 11400000, guid: bfb08af1a4d5ca64eab1db61f4642f38, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: 1e3c27b07028cd743abf5160cb9b232a, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: 3e9137078ef3d83478b919bc4ee76caf, type: 3}
   isUpgradingBlendModeMaterials: 0
   blendModeMaterials:
     requiresBlendModeMaterials: 1
     applyAdditiveMaterial: 1
     additiveMaterials:
-    - pageName: Aura_01-yellow.png
-      material: {fileID: 2100000, guid: 523aff75b43e274468bf23d8085c6eb3, type: 2}
+    - pageName: Aura_01-purple.png
+      material: {fileID: 2100000, guid: 469868d0305b26e4da1bf5eee75c6bfc, type: 2}
     multiplyMaterials: []
     screenMaterials:
-    - pageName: Aura_01-yellow.png
-      material: {fileID: 2100000, guid: a6ab6623c8fcde2449143b9c87a15756, type: 2}
+    - pageName: Aura_01-purple.png
+      material: {fileID: 2100000, guid: 272bb888b6a32b247a9f394e79fe21f5, type: 2}
   skeletonDataModifiers: []
   fromAnimation: []
   toAnimation: []
