@@ -53,7 +53,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public GameObject bg;
         public GameObject header;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
@@ -173,7 +172,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     accountAddressHolder.gameObject.SetActive(true);
                     submitButton.Text = L10nManager.Localize("UI_GAME_SIGN_UP");
-                    bg.SetActive(false);
                     break;
                 case States.SetPassword:
                     titleText.text = L10nManager.Localize("UI_SET_PASSWORD_TITLE");
@@ -205,7 +203,6 @@ namespace Nekoyume.UI
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.Login_Mobile:
                     header.SetActive(false);
@@ -215,7 +212,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.FindPassphrase:
                     titleText.gameObject.SetActive(false);
@@ -541,6 +537,7 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
+
             SetState(States.SetPassword);
             base.Show();
         }
