@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (10)
+  m_Name: body_front
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -179,7 +179,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -1694,7 +1694,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track
+  m_Name: hair_back
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -1755,7 +1755,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -1788,7 +1788,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -1871,7 +1871,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -1895,7 +1895,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -1964,7 +1964,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (9)
+  m_Name: full_costume
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -2025,7 +2025,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -2042,7 +2042,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2066,7 +2066,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2131,7 +2131,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2155,7 +2155,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2324,7 +2324,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (6)
+  m_Name: ac_eye
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -2385,7 +2385,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -2399,7 +2399,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (2)
+  m_Name: ear
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -2460,7 +2460,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -2501,7 +2501,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2546,7 +2546,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (3)
+  m_Name: body_back
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -2607,7 +2607,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -2665,7 +2665,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2689,7 +2689,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2713,7 +2713,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip(Clone)(Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: a9c35c9d416dff242ad7d499c6c0762e,
+    animationReference: {fileID: 11400000, guid: df529cb3e2989d045b5b8d8fa15af43b,
       type: 2}
     loop: 1
     customDuration: 0
@@ -2887,7 +2887,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (5)
+  m_Name: ac_face
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -2948,7 +2948,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -3051,7 +3051,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (1)
+  m_Name: tail
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -3112,7 +3112,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -3126,7 +3126,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (8)
+  m_Name: ac_head
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -3187,7 +3187,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -3201,7 +3201,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (4)
+  m_Name: face
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -3262,7 +3262,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0
@@ -3437,7 +3437,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dfabb056a779ae34b9ebd7de425c868b, type: 3}
-  m_Name: Spine Animation State Track (7)
+  m_Name: hair_front
   m_EditorClassIdentifier: 
   m_Version: 3
   m_AnimClip: {fileID: 0}
@@ -3498,7 +3498,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: SpineAnimationStateClip
+    m_DisplayName: Idle
   m_Markers:
     m_Objects: []
   trackIndex: 0

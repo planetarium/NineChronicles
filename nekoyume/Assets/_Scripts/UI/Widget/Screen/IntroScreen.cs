@@ -15,13 +15,13 @@ using Libplanet.Common;
 using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
-using Nekoyume.GraphQL.GraphTypes;
 using Nekoyume.L10n;
 using Nekoyume.Planet;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -31,25 +31,53 @@ namespace Nekoyume.UI
 
     public class IntroScreen : ScreenWidget
     {
+        public enum SocialType
+        {
+            Google,
+            Apple,
+        }
+
         [Serializable]
         public struct AgentInfo
         {
             private const string AccountTextFormat =
                 "<color=#B38271>Lv. {0}</color> {1} <color=#A68F7E>#{2}</color>";
-            public PlanetId? PlanetId { get; private set; }
+
+            [NonSerialized]
+            public bool isAppliedL10n;
+
             public TextMeshProUGUI title;
             public GameObject noAccount;
+            public TextMeshProUGUI noAccountText;
             public Button noAccountCreateButton;
+            public TextMeshProUGUI noAccountCreateButtonText;
             public GameObject account;
             public TextMeshProUGUI[] accountTexts;
             public Button accountImportKeyButton;
             public TextMeshProUGUI accountImportKeyButtonText;
+
+            public PlanetId? PlanetId { get; private set; }
+
+            public void ApplyL10n()
+            {
+                if (isAppliedL10n || !L10nManager.IsInitialized)
+                {
+                    return;
+                }
+
+                isAppliedL10n = true;
+                noAccountText.text = L10nManager.Localize("SDESC_NO_ACCOUNT");
+                noAccountCreateButtonText.text = L10nManager.Localize("BTN_CREATE_A_NEW_CHARACTER");
+                accountImportKeyButtonText.text = L10nManager.Localize("BTN_IMPORT_KEY");
+            }
 
             public void Set(
                 PlanetContext planetContext,
                 PlanetAccountInfo planetAccountInfo,
                 bool needToImportKey)
             {
+                ApplyL10n();
+
                 if (planetContext?.PlanetRegistry is null ||
                     planetAccountInfo is null)
                 {
@@ -98,7 +126,9 @@ namespace Nekoyume.UI
                             var text = accountTexts[i];
                             if (i == 0)
                             {
-                                text.text = "Empty";
+                                text.text = L10nManager.IsInitialized
+                                    ? L10nManager.Localize("SDESC_NO_CHARACTER")
+                                    : "No character";
                                 text.gameObject.SetActive(true);
                             }
                             else
@@ -162,11 +192,19 @@ namespace Nekoyume.UI
         [SerializeField] private Button touchScreenButton;
 
         [SerializeField] private GameObject startButtonContainer;
-        [SerializeField] private ConditionalButton startButton;
         [SerializeField] private Button signinButton;
         [SerializeField] private Button guestButton;
-        [SerializeField] private Button planetButton;
-        [SerializeField] private TextMeshProUGUI planetText;
+
+        [SerializeField] private TextMeshProUGUI yourPlanetText;
+        [SerializeField] private Button yourPlanetButton;
+        [SerializeField] private TextMeshProUGUI yourPlanetButtonText;
+        [SerializeField] private TextMeshProUGUI planetAccountInfoText;
+
+        [SerializeField] private GameObject startButtonGO;
+        [SerializeField] private Button startButton;
+        [SerializeField] private GameObject socialButtonsGO;
+        [SerializeField] private Button googleSignInButton;
+        [SerializeField] private Button appleSignInButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -178,14 +216,14 @@ namespace Nekoyume.UI
         [SerializeField] private VideoPlayer videoPlayer;
         [SerializeField] private Button videoSkipButton;
 
-        [SerializeField] private Button googleSignInButton;
-        [SerializeField] private Button appleSignInButton;
-
         [SerializeField] private GameObject selectPlanetPopup;
+        [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
         [SerializeField] private ConditionalButton heimdallButton;
         [SerializeField] private ConditionalButton odinButton;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
+        [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
+        [SerializeField] private TextMeshProUGUI planetAccountInfosDescriptionText;
         [SerializeField] private AgentInfo planetAccountInfoLeft;
         [SerializeField] private AgentInfo planetAccountInfoRight;
 
@@ -200,9 +238,8 @@ namespace Nekoyume.UI
             "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/guest-pk";
 
         public Subject<IntroScreen> OnClickTabToStart { get; } = new();
-        public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
-
-        public Subject<(string email, string idToken)> OnAppleSignedIn { get; } = new();
+        public Subject<IntroScreen> OnClickStart { get; } = new();
+        public Subject<(SocialType socialType, string email, string idToken)> OnSocialSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -215,22 +252,11 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(true);
                 OnClickTabToStart.OnNext(this);
             });
-            startButton.OnSubmitSubject.Subscribe(_ =>
+            startButton.onClick.AddListener(() =>
             {
-                if (Find<LoginSystem>().KeyStore.ListIds().Any())
-                {
-                    startButtonContainer.SetActive(false);
-                    Find<LoginSystem>().Show(_keyStorePath, _privateKey);
-                }
-                else
-                {
-                    startButton.Interactable = false;
-                    Game.Game.instance.PortalConnect.OpenPortal();
-                    Analyzer.Instance.Track("Unity/Intro/SocialLogin_open");
-
-                    StartCoroutine(CoSocialLogin());
-                }
-            }).AddTo(gameObject);
+                OnClickStart.OnNext(this);
+                Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
+            });
             googleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
@@ -245,7 +271,7 @@ namespace Nekoyume.UI
                 {
                     case GoogleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                        OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
+                        OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
                         return;
                     case GoogleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for google sign in.");
@@ -277,7 +303,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case GoogleSigninBehaviour.SignInState.Signed:
-                                OnGoogleSignedIn.OnNext((google.Email, google.IdToken));
+                                OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -299,7 +325,7 @@ namespace Nekoyume.UI
                 {
                     case AppleSigninBehaviour.SignInState.Signed:
                         Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
-                        OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                        OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
                         return;
                     case AppleSigninBehaviour.SignInState.Waiting:
                         Debug.Log("[IntroScreen] Already waiting for apple sign in.");
@@ -331,7 +357,7 @@ namespace Nekoyume.UI
                                 Find<DimmedLoadingScreen>().Close();
                                 break;
                             case AppleSigninBehaviour.SignInState.Signed:
-                                OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                                OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -356,7 +382,7 @@ namespace Nekoyume.UI
                 _guideIndex++;
                 ShowQrCodeGuide();
             });
-            planetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
+            yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
             heimdallButton.OnClickSubject
                 .Subscribe(_ => selectPlanetPopup.SetActive(false))
                 .AddTo(gameObject);
@@ -393,11 +419,13 @@ namespace Nekoyume.UI
                 Debug.Log("[IntroScreen] planetAccountInfoRight.accountImportKeyButton.onClick invoked");
                 planetAccountInfosPopup.SetActive(false);
             });
-            PlanetSelector.CurrentPlanetInfoSubject
-                .Subscribe(tuple => ApplyCurrentPlanetInfo(tuple.planetContext))
+            PlanetSelector.SelectedPlanetInfoSubject
+                .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
+                .AddTo(gameObject);
+            PlanetSelector.SelectedPlanetAccountInfoSubject
+                .Subscribe(tuple => ApplySelectedPlanetAccountInfo(tuple.planetContext))
                 .AddTo(gameObject);
 
-            startButton.Interactable = true;
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
@@ -414,8 +442,19 @@ namespace Nekoyume.UI
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            OnGoogleSignedIn.Dispose();
-            OnAppleSignedIn.Dispose();
+            OnSocialSignedIn.Dispose();
+        }
+
+        public void ApplyL10n()
+        {
+            yourPlanetText.text = L10nManager.Localize("UI_YOUR_PLANET");
+            // startButton
+            selectPlanetPopupTitleText.text = L10nManager.Localize("UI_SELECT_YOUR_PLANET");
+            planetAccountInfosTitleText.text = L10nManager.Localize("WORD_NOTIFICATION");
+            planetAccountInfosDescriptionText.text =
+                L10nManager.Localize("STC_MULTIPLANETARY_AGENT_INFOS_POPUP_ACCOUNT_ALREADY_EXIST");
+            planetAccountInfoLeft.ApplyL10n();
+            planetAccountInfoRight.ApplyL10n();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -423,7 +462,8 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-            ApplyCurrentPlanetInfo(_planetContext);
+            ApplySelectedPlanetInfo(_planetContext);
+            ApplySelectedPlanetAccountInfo(_planetContext);
         }
 
         public void ShowTabToStart()
@@ -564,27 +604,6 @@ namespace Nekoyume.UI
             guestButton.interactable = true;
         }
 
-        private IEnumerator CoSocialLogin()
-        {
-            yield return new WaitForSeconds(180);
-
-            startButton.Interactable = true;
-            yield break;
-            Analyzer.Instance.Track("Unity/Intro/SocialLogin_1");
-            var popup = Find<TitleOneButtonSystem>();
-            popup.Show("UI_LOGIN_ON_BROWSER_TITLE","UI_LOGIN_ON_BROWSER_CONTENT");
-            popup.SubmitCallback = null;
-            popup.SubmitCallback = () =>
-            {
-                Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
-                Analyzer.Instance.Track("Unity/Intro/SocialLogin_2");
-            };
-
-            yield return new WaitForSeconds(1);
-            Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
-        }
-
-
 #if RUN_ON_MOBILE
         protected override void OnCompleteOfCloseAnimationInternal()
         {
@@ -594,14 +613,19 @@ namespace Nekoyume.UI
         }
 #endif
 
-        private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
+        private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
+            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked." +
+                      $" planetContext({planetContext})" +
+                      $", planetContext.PlanetRegistry({planetContext?.PlanetRegistry})" +
+                      $", planetContext.SelectedPlanetInfo({planetContext?.SelectedPlanetInfo})");
             var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
                 planetInfo is null)
             {
-                planetText.text = "Null";
+                yourPlanetButtonText.text = "Null";
+                planetAccountInfoText.text = string.Empty;
                 heimdallButton.Interactable = false;
                 heimdallButton.Text = "Heimdall (Null)";
                 odinButton.Interactable = false;
@@ -610,7 +634,19 @@ namespace Nekoyume.UI
             }
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
-            planetText.text = textInfo.ToTitleCase(planetInfo.Name);
+            yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
+
+            if (planetContext.SkipSocialAndPortalLogin.HasValue &&
+                planetContext.SkipSocialAndPortalLogin.Value)
+            {
+                startButtonGO.SetActive(true);
+                socialButtonsGO.SetActive(false);
+            }
+            else
+            {
+                startButtonGO.SetActive(false);
+                socialButtonsGO.SetActive(true);
+            }
 
             if (planetRegistry.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
                 planetRegistry.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
@@ -635,6 +671,27 @@ namespace Nekoyume.UI
                 heimdallButton.Interactable = true;
                 odinButton.Interactable = false;
             }
+        }
+
+        private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
+        {
+            Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked." +
+                      $" planetContext({planetContext})" +
+                      $", planetContext.SelectedPlanetAccountInfo({planetContext?.SelectedPlanetAccountInfo})");
+            var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
+            if (planetAccountInfo is null)
+            {
+                planetAccountInfoText.text = string.Empty;
+                return;
+            }
+
+            var avatarCount = planetAccountInfo.AvatarGraphTypes.Count();
+            planetAccountInfoText.text = avatarCount switch
+            {
+                0 => L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER"),
+                1 => L10nManager.Localize("SDESC_THERE_IS_ONE_CHARACTER"),
+                _ => L10nManager.Localize("SDESC_THERE_ARE_0_CHARACTERS_FORMAT", avatarCount)
+            };
         }
     }
 }

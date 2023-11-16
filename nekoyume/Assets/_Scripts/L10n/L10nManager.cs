@@ -36,6 +36,7 @@ namespace Nekoyume.L10n
             new Dictionary<string, string>();
 
         public static State CurrentState { get; private set; } = State.None;
+        public static bool IsInitialized => CurrentState == State.Initialized;
 
         private static Dictionary<string, Dictionary<LanguageType, string>> _additionalDic = new Dictionary<string, Dictionary<LanguageType, string>>();
         private static Dictionary<string, bool> _initializedURLs = new Dictionary<string, bool>();
