@@ -751,7 +751,11 @@ namespace Nekoyume.UI
         {
             var player = Game.Game.instance.Stage.GetPlayer();
             player.DisableHudContainer();
-            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+            HackAndSlash(
+                States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var targetStage)
+                    ? targetStage
+                    : 1);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType
