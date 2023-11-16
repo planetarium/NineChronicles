@@ -192,7 +192,7 @@ namespace Nekoyume.UI
             subItem.countText.text =
                 $"{L10nManager.Localize($"ITEM_NAME_{subItemId}")} : {subItemCount}";
 
-            const string bonusItemTicker = "RUNE_ADVENTURE";
+            const string bonusItemTicker = "RUNE_ADVENTURER";
             const int bonusItemCount = 1;
             blockGauge.maxText.text = maxBlockRange.ToString();
             blockGauge.bonusItem.icon.sprite = SpriteHelper.GetFavIcon(bonusItemTicker);
