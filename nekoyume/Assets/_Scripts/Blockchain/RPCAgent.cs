@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -40,6 +41,7 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using Channel = Grpc.Core.Channel;
+using Debug = UnityEngine.Debug;
 using Logger = Serilog.Core.Logger;
 using NCTx = Libplanet.Types.Tx.Transaction;
 
@@ -190,6 +192,9 @@ namespace Nekoyume.Blockchain
 
             if (_genesis == null)
             {
+                var sw = new Stopwatch();
+                sw.Reset();
+                sw.Start();
                 // Android Mono only support arm7(32bit) backend in unity engine.
                 bool architecture_is_32bit = ! Environment.Is64BitProcess;
                 bool is_Android = Application.platform == RuntimePlatform.Android;
@@ -203,12 +208,15 @@ namespace Nekoyume.Blockchain
                 }
                 else
                 {
-                    yield return UniTask.Run(async () =>
+                    yield return UniTask.RunOnThreadPool(UniTask.Action(async () =>
                     {
                         var genesisBlockPath = options.GenesisBlockPath ?? BlockManager.GenesisBlockPath();
                         _genesis = await BlockManager.ImportBlockAsync(genesisBlockPath);
-                    }).ToCoroutine();
+                    })).ToCoroutine();
                 }
+
+                sw.Stop();
+                Debug.Log($"[RPCAgent] genesis block imported in {sw.ElapsedMilliseconds}ms.(elapsed)");
             }
 
             yield return getTipCoroutine;
