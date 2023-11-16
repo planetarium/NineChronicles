@@ -189,6 +189,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button planetButton;
         [SerializeField] private TextMeshProUGUI planetButtonText;
         [SerializeField] private TextMeshProUGUI planetText;
+        [SerializeField] private TextMeshProUGUI planetAccountInfoText;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -638,6 +639,7 @@ namespace Nekoyume.UI
                 planetInfo is null)
             {
                 planetText.text = "Null";
+                planetAccountInfoText.text = string.Empty;
                 heimdallButton.Interactable = false;
                 heimdallButton.Text = "Heimdall (Null)";
                 odinButton.Interactable = false;
@@ -647,6 +649,20 @@ namespace Nekoyume.UI
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             planetText.text = textInfo.ToTitleCase(planetInfo.Name);
+            if (planetContext.SelectedPlanetAccountInfo is null)
+            {
+                planetAccountInfoText.text = string.Empty;
+            }
+            else
+            {
+                var avatarCount = planetContext.SelectedPlanetAccountInfo.AvatarGraphTypes.Count();
+                planetAccountInfoText.text = avatarCount switch
+                {
+                    0 => L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER"),
+                    1 => L10nManager.Localize("SDESC_THERE_IS_ONE_CHARACTER"),
+                    _ => L10nManager.Localize("SDESC_THERE_ARE_0_CHARACTERS_FORMAT", avatarCount)
+                };
+            }
 
             if (planetRegistry.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
                 planetRegistry.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
