@@ -18,6 +18,7 @@ namespace Nekoyume.Planet
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.
         public bool? CanAutoLogin;
+        public bool? SkipSocialAndPortalLogin;
 
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.

@@ -420,7 +420,10 @@ namespace Nekoyume.UI
                 planetAccountInfosPopup.SetActive(false);
             });
             PlanetSelector.SelectedPlanetInfoSubject
-                .Subscribe(tuple => ApplyCurrentPlanetInfo(tuple.planetContext))
+                .Subscribe(tuple => ApplySelectedPlanetInfo(tuple.planetContext))
+                .AddTo(gameObject);
+            PlanetSelector.SelectedPlanetAccountInfoSubject
+                .Subscribe(tuple => ApplySelectedPlanetAccountInfo(tuple.planetContext))
                 .AddTo(gameObject);
 
             signinButton.interactable = true;
@@ -459,7 +462,8 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-            ApplyCurrentPlanetInfo(_planetContext);
+            ApplySelectedPlanetInfo(_planetContext);
+            ApplySelectedPlanetAccountInfo(_planetContext);
         }
 
         public void ShowTabToStart()
@@ -609,8 +613,12 @@ namespace Nekoyume.UI
         }
 #endif
 
-        private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
+        private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
+            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked." +
+                      $" planetContext({planetContext})" +
+                      $", planetContext.PlanetRegistry({planetContext?.PlanetRegistry})" +
+                      $", planetContext.SelectedPlanetInfo({planetContext?.SelectedPlanetInfo})");
             var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
@@ -627,20 +635,6 @@ namespace Nekoyume.UI
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
-            if (planetContext.SelectedPlanetAccountInfo is null)
-            {
-                planetAccountInfoText.text = string.Empty;
-            }
-            else
-            {
-                var avatarCount = planetContext.SelectedPlanetAccountInfo.AvatarGraphTypes.Count();
-                planetAccountInfoText.text = avatarCount switch
-                {
-                    0 => L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER"),
-                    1 => L10nManager.Localize("SDESC_THERE_IS_ONE_CHARACTER"),
-                    _ => L10nManager.Localize("SDESC_THERE_ARE_0_CHARACTERS_FORMAT", avatarCount)
-                };
-            }
 
             if (planetContext.SkipSocialAndPortalLogin.HasValue &&
                 planetContext.SkipSocialAndPortalLogin.Value)
@@ -677,6 +671,27 @@ namespace Nekoyume.UI
                 heimdallButton.Interactable = true;
                 odinButton.Interactable = false;
             }
+        }
+
+        private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
+        {
+            Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked." +
+                      $" planetContext({planetContext})" +
+                      $", planetContext.SelectedPlanetAccountInfo({planetContext?.SelectedPlanetAccountInfo})");
+            var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
+            if (planetAccountInfo is null)
+            {
+                planetAccountInfoText.text = string.Empty;
+                return;
+            }
+
+            var avatarCount = planetAccountInfo.AvatarGraphTypes.Count();
+            planetAccountInfoText.text = avatarCount switch
+            {
+                0 => L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER"),
+                1 => L10nManager.Localize("SDESC_THERE_IS_ONE_CHARACTER"),
+                _ => L10nManager.Localize("SDESC_THERE_ARE_0_CHARACTERS_FORMAT", avatarCount)
+            };
         }
     }
 }
