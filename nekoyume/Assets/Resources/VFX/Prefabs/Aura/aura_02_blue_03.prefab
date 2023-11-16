@@ -191,21 +191,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5764186376828421785}
     m_Modifications:
-    - target: {fileID: 190472562465711791, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 805259249451637609, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1287728706299265835, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1805732067828410657, guid: a53472b6376290e438f5d2a28b3c1aea,
         type: 3}
       propertyPath: m_RootOrder
@@ -261,40 +246,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3347778051603969118, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3910047498002301290, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3910047498002301290, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3910047498002301290, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3959803597958373340, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5615188381617033434, guid: a53472b6376290e438f5d2a28b3c1aea,
         type: 3}
       propertyPath: m_Name
       value: aura_02_blue_03
-      objectReference: {fileID: 0}
-    - target: {fileID: 7143008357994796310, guid: a53472b6376290e438f5d2a28b3c1aea,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a53472b6376290e438f5d2a28b3c1aea, type: 3}
