@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in price)
             {
-                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
             }
             Debug.Log($"{_puchasingData.metadata.localizedTitle} : {_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPriceString} {_puchasingData.metadata.localizedPrice}");
 
