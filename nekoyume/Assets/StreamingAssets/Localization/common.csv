@@ -1128,7 +1128,7 @@ UI_NOT_CONNECTED,Not connected,연결 안됨,Not connected,Not connected,No cone
 UI_CONNECTING,Connecting,연결 중,Connecting,Connecting,Conectando,กำลังเชื่อมต่อ,Connecting,,连接,連接中,Kumokonekta,
 UI_CONNECTED,Connected,연결 완료,,<style=G1>クリスタル価値:{0},Conectado,เชื่อมต่อแล้ว,,,,已連接,Nakakonekta,
 UI_SHOP_CANCELLATIONALL,Retrieve All,일괄 취소,Recuperar tudo,一括キャンセル,Recibir todo,เรียกคืนทั้งหมด,Ambil semua,,批量取消,取回全部,Kunin ang Lahat,
-UI_SHOP_NONCANCELLATIONALL,No items to ,취소할 아이템이 없습니다.,Não há item para recuperar.,取得するアイテムはありません。,No hay items que puedas recibir,ไม่มีรายการที่จะเรียกคืน,Tidak ada item untuk diambil.,,没有项目要检索。,沒有項目要取回。,Walang aytem na maaaring maibalik.,
+UI_SHOP_NONCANCELLATIONALL,No items to,취소할 아이템이 없습니다.,Não há item para recuperar.,取得するアイテムはありません。,No hay items que puedas recibir,ไม่มีรายการที่จะเรียกคืน,Tidak ada item untuk diambil.,,没有项目要检索。,沒有項目要取回。,Walang aytem na maaaring maibalik.,
 UI_SHOP_CANCELLATIONALL_POPUP,Do you want to retrieve all items?,등록기간이 지난 아이템을 전부 회수하시겠습니까?,Você quer recuperar todos os itens?,すべてのアイテムを取得しますか？,¿Deseas que todos los objetos vuelvan a tu inventario?,คุณต้องการที่จะเลือกคืนรายการทั้งหมดหรือไม่?,Apakah Anda ingin mengambil semua item?,,您想检索所有物品吗？,您想取回所有物品嗎？,Gusto mo bang makuha ang lahat ng mga aytem?,
 UI_CRYSTALPERPRICE,Crystal per price,크리스탈 당 가격,Cristal por preço,価格ごとにクリスタル,Precio por Cristal,ราคาคริสตัลต่อหน่วย,Kristal per harga,,每价格水晶,每單價水晶,Bawat presyo ng kristal,
 UI_DCC_COSTUME_DISABLED,D:CC costume disabled,D:CC 코스튬 비활성화,D:CC Traje desativado,D:CC コスチューム無効,Traje de D:CC desactivado,ปิดการใช้งานเครื่องแต่งกาย D:CC,D:CC Kostum dinonaktifkan,,服装残疾人,D：CC服裝禁用,Ang D:CC costume ay na-disable,
@@ -1433,3 +1433,9 @@ Hàng Ngày
 
 
 "
+UI_SEASONPASS_PREMIUM,Premium,프리미엄,Prêmio,プレミアム,De primera calidad,พรีเมี่ยม,Premium,Премиум,优质的,優質的,Premium,Phần thưởng
+UI_SEASONPASS_PREMIUM_PLUS,Premium+,프리미엄+,Premium+,プレミアム+,Premium+,พรีเมี่ยม+,Premium+,Премиум+,优质+,優質+,Premium+,Cao cấp+
+UI_SEASONPASS_NORMAL,Normal,노말,Normal,普通,Normal,ปกติ,Normal,Нормальный,普通的,普通的,Normal,Bình thường
+UI_SEASONPASS_PREMIUM_UNLOCK,UNLOCK,해제하기,Desbloquear,ロックを解除します,DESBLOQUEAR,ปลดล็อค,MEMBUKA KUNCI,Разблокировать,开锁,開鎖,I -unlock,Mở khóa
+UI_SEASONPASS_REMAINING_TIME,Remaining Time,남은시간,Tempo restante,残り時間,Tiempo restante,เวลาที่เหลือ,Waktu yang tersisa,Оставшееся время,剩余时间,剩餘時間,Natitirang oras,Thời gian còn lại
+UI_SEASONPASS_RECEIVE_ALL,Receive ALL,모두 받기,Receber tudo,すべてを受け取ります,Recibir todo,รับทั้งหมด,Menerima semua,Получить все,收到全部,收到全部,Tanggapin ang lahat,Nhận tất cả
