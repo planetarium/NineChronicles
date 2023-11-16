@@ -84,6 +84,10 @@ namespace Nekoyume.UI
             battleTimerView.Close();
             hpBar.transform.parent.gameObject.SetActive(false);
             buffLayout.SetBuff(null);
+
+#if UNITY_ANDROID || UNITY_IOS
+            this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
+#endif
         }
 
         public void ShowBattleStatus()
