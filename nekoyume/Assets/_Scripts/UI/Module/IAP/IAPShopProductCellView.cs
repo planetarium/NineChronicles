@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
                 foreach (var item in preDiscountPrice)
                 {
                     var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
-                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N2}";
+                    var origin = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
                 discount.text = $"{_data.Discount}%";
