@@ -245,8 +245,6 @@ namespace Nekoyume.Game
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
-
-            Application.lowMemory += OnLowMemory;
         }
 
         private IEnumerator Start()
@@ -2090,7 +2088,7 @@ namespace Nekoyume.Game
         
         private void OnLowMemory()
         {
-            System.GC.Collect();
+            GC.Collect();
         }
 
         private async UniTask UpdateCurrentPlanetIdAsync(PlanetContext planetContext)
