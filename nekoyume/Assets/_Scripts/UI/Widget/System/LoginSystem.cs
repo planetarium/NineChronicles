@@ -271,7 +271,7 @@ namespace Nekoyume.UI
             retypeText.gameObject.SetActive(!valid);
         }
 
-        public bool CheckLocalPassphrase()
+        public bool TryLoginWithLocalPpk()
         {
             if (Platform.IsMobilePlatform())
             {

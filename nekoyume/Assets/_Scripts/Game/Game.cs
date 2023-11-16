@@ -363,12 +363,12 @@ namespace Nekoyume.Game
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
 #if RUN_ON_MOBILE
-            // NOTE: Invoke LoginSystem.CheckLocalPassphrase() after MainCanvas initialized.
+            // NOTE: Invoke LoginSystem.TryLoginWithLocalPpk() after MainCanvas initialized.
             //       Because the _commandLineOptions.PrivateKey is empty when run on mobile.
             if (string.IsNullOrEmpty(_commandLineOptions.PrivateKey))
             {
                 var loginSystem = Widget.Find<LoginSystem>();
-                if (loginSystem.CheckLocalPassphrase())
+                if (loginSystem.TryLoginWithLocalPpk())
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
