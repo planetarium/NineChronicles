@@ -88,7 +88,7 @@ namespace Nekoyume.UI
 
             seasonPassManager.RemainingDateTime.Subscribe((endDate) =>
             {
-                remainingText.text = $"Remaining Time <Style=Clock> {endDate}";
+                remainingText.text = $"{L10nManager.Localize("UI_SEASONPASS_REMAINING_TIME")} {endDate}";
             });
 
             seasonPassManager.SeasonEndDate.Subscribe((endTime) =>
