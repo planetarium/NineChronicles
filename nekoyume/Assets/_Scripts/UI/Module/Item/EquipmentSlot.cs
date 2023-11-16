@@ -141,68 +141,65 @@ namespace Nekoyume.UI.Module
 
         private void UpdateRequireLevel()
         {
+            var gameConfig = States.Instance.GameConfigState;
+
             switch (ItemSubType)
             {
                 case ItemSubType.FullCostume:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_FullCostumeSlot;
                     break;
                 case ItemSubType.HairCostume:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_HairCostumeSlot;
                     break;
                 case ItemSubType.EarCostume:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EarCostumeSlot;
                     break;
                 case ItemSubType.EyeCostume:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EyeCostumeSlot;
                     break;
                 case ItemSubType.TailCostume:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_TailCostumeSlot;
                     break;
                 case ItemSubType.Title:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                    _requireLevel = gameConfig.RequireCharacterLevel_TitleSlot;
                     break;
                 case ItemSubType.Weapon:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotWeapon;
                     break;
                 case ItemSubType.Armor:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotArmor;
                     break;
                 case ItemSubType.Belt:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotBelt;
                     break;
                 case ItemSubType.Necklace:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotNecklace;
                     break;
                 case ItemSubType.Ring:
                     _requireLevel = ItemSubTypeIndex == 1
-                        ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
-                        : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
+                        ? gameConfig.RequireCharacterLevel_EquipmentSlotRing1
+                        : gameConfig.RequireCharacterLevel_EquipmentSlotRing2;
                     break;
                 case ItemSubType.Aura:
-                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura;
+                    _requireLevel = gameConfig.RequireCharacterLevel_EquipmentSlotAura;
                     break;
                 case ItemSubType.Food:
                     switch (ItemSubTypeIndex)
                     {
                         case 1:
-                            _requireLevel = GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot1;
+                            _requireLevel = gameConfig.RequireCharacterLevel_ConsumableSlot1;
                             break;
                         case 2:
-                            _requireLevel = GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot2;
+                            _requireLevel = gameConfig.RequireCharacterLevel_ConsumableSlot2;
                             break;
                         case 3:
-                            _requireLevel = GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot3;
+                            _requireLevel = gameConfig.RequireCharacterLevel_ConsumableSlot3;
                             break;
                         case 4:
-                            _requireLevel = GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot4;
+                            _requireLevel = gameConfig.RequireCharacterLevel_ConsumableSlot4;
                             break;
                         case 5:
-                            _requireLevel = GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot5;
+                            _requireLevel = gameConfig.RequireCharacterLevel_ConsumableSlot5;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

@@ -388,7 +388,8 @@ namespace Nekoyume.UI.Module
             }
 
             var avatarState = States.Instance.CurrentAvatarState;
-            if (!inventoryItem.IsValid(avatarState.level))
+            var gameConfig = States.Instance.GameConfigState;
+            if (!inventoryItem.IsValid(avatarState.level, gameConfig))
             {
                 return;
             }
@@ -422,7 +423,7 @@ namespace Nekoyume.UI.Module
                         switch (equipmentRemovalList.Count())
                         {
                             case 1:
-                                if (avatarState.level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2)
+                                if (avatarState.level < gameConfig.RequireCharacterLevel_EquipmentSlotRing2)
                                 {
                                     foreach (var guid in equipmentRemovalList)
                                     {
@@ -500,23 +501,23 @@ namespace Nekoyume.UI.Module
                     }
 
                     var slotCount = 0;
-                    if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot1 <= avatarState.level)
+                    if (gameConfig.RequireCharacterLevel_ConsumableSlot1 <= avatarState.level)
                     {
                         slotCount++;
                     }
-                    if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot2 <= avatarState.level)
+                    if (gameConfig.RequireCharacterLevel_ConsumableSlot2 <= avatarState.level)
                     {
                         slotCount++;
                     }
-                    if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot3 <= avatarState.level)
+                    if (gameConfig.RequireCharacterLevel_ConsumableSlot3 <= avatarState.level)
                     {
                         slotCount++;
                     }
-                    if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot4 <= avatarState.level)
+                    if (gameConfig.RequireCharacterLevel_ConsumableSlot4 <= avatarState.level)
                     {
                         slotCount++;
                     }
-                    if (GameConfig.RequireCharacterLevel.CharacterConsumableSlot5 <= avatarState.level)
+                    if (gameConfig.RequireCharacterLevel_ConsumableSlot5 <= avatarState.level)
                     {
                         slotCount++;
                     }
