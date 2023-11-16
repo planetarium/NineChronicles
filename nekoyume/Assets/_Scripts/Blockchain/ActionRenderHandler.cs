@@ -710,6 +710,7 @@ namespace Nekoyume.Blockchain
         {
             _actionRenderer.EveryRender<MintAssets>()
                 .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
                 .Where(eval =>
                 {
                     return eval.Action.MintSpecs?
@@ -718,7 +719,6 @@ namespace Nekoyume.Blockchain
                             addr.Equals(States.Instance.CurrentAvatarState?.address) ||
                             addr.Equals(States.Instance.AgentState?.address)) ?? false;
                 })
-                .Where(ValidateEvaluationIsSuccess)
                 .Select(PrepareMintAssets)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMintAssets)
