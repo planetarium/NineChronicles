@@ -187,6 +187,8 @@ namespace Nekoyume.Blockchain
             // Claim Items
             ClaimItems();
 
+            // Mint Assets
+            MintAssets();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
             ManipulateState();
@@ -697,6 +699,29 @@ namespace Nekoyume.Blockchain
                 .Select(PrepareClaimItems)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimItems)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="ClaimItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void MintAssets()
+        {
+            _actionRenderer.EveryRender<MintAssets>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(eval =>
+                {
+                    return eval.Action.MintSpecs?
+                        .Select(spec => spec.Recipient)
+                        .Any(addr =>
+                            addr.Equals(States.Instance.CurrentAvatarState?.address) ||
+                            addr.Equals(States.Instance.AgentState?.address)) ?? false;
+                })
+                .Where(ValidateEvaluationIsSuccess)
+                .Select(PrepareMintAssets)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMintAssets)
                 .AddTo(_disposables);
         }
 
@@ -3425,6 +3450,75 @@ namespace Nekoyume.Blockchain
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
                 }
             });
+        }
+
+        private ActionEvaluation<MintAssets> PrepareMintAssets(
+            ActionEvaluation<MintAssets> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.MintSpecs is {} specs)
+            {
+                var requiredUpdateAvatarState = false;
+                foreach (var spec in specs.Where(spec => spec.Recipient.Equals(avatarAddr) || spec.Recipient.Equals(agentAddr)))
+                {
+                    if (spec.Assets.HasValue)
+                    {
+                        var fav = spec.Assets.Value;
+                        {
+                            var tokenCurrency = fav.Currency;
+                            var recipientAddress = Currencies.SelectRecipientAddress(tokenCurrency, agentAddr,
+                                avatarAddr);
+                            var isCrystal = tokenCurrency.Equals(Currencies.Crystal);
+                            var balance = StateGetter.GetBalance(
+                                recipientAddress,
+                                tokenCurrency,
+                                states);
+                            if (isCrystal)
+                            {
+                                gameStates.SetCrystalBalance(balance);
+                            }
+                            else
+                            {
+                                gameStates.SetCurrentAvatarBalance(balance);
+                            }
+                        }
+                    }
+
+                    requiredUpdateAvatarState |= spec.Items.HasValue;
+                }
+
+                if (requiredUpdateAvatarState)
+                {
+                    UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
+                }
+            }
+
+            return eval;
+        }
+
+        private void ResponseMintAssets(ActionEvaluation<MintAssets> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var avatar = gameStates.CurrentAvatarState;
+            var mailBox = avatar.mailBox;
+            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+            if (mail is not null)
+            {
+                mail.New = true;
+                gameStates.CurrentAvatarState.mailBox = mailBox;
+                LocalLayerModifier.AddNewMail(avatar.address, mail.id);
+            }
         }
     }
 }
