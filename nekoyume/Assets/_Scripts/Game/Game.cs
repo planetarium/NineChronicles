@@ -1500,32 +1500,27 @@ namespace Nekoyume.Game
             {
                 Debug.Log("[Game] CoLogin()... IntroScreen is active. Go to social login flow.");
                 string idToken = null;
-                bool isGoogle = false;
-                introScreen.OnGoogleSignedIn.AsObservable()
+                IntroScreen.SocialType socialType = IntroScreen.SocialType.Apple;
+                introScreen.OnSocialSignedIn.AsObservable()
                     .First()
                     .Subscribe(value => {
+                        socialType = value.socialType;
                         email = value.email;
                         idToken = value.idToken;
-                        isGoogle = true;
-                    });
-                introScreen.OnAppleSignedIn.AsObservable()
-                    .First()
-                    .Subscribe(value => {
-                        email = value.email;
-                        idToken = value.idToken;
-                        isGoogle = false;
                     });
 
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
                 yield return new WaitUntil(() => idToken is not null);
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn. Done.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync.");
                 sw.Reset();
                 sw.Start();
-                var portalSigninTask = isGoogle ? PortalConnect.SendGoogleIdTokenAsync(idToken) : PortalConnect.SendAppleIdTokenAsync(idToken);
+                var portalSigninTask = socialType == IntroScreen.SocialType.Apple
+                    ? PortalConnect.SendAppleIdTokenAsync(idToken)
+                    : PortalConnect.SendGoogleIdTokenAsync(idToken);
                 yield return new WaitUntil(() => portalSigninTask.IsCompleted);
                 sw.Stop();
                 planetContext.ElapsedTuples.Add((
