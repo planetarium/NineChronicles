@@ -17,7 +17,7 @@ namespace Nekoyume.Planet
 
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.
-        public bool? NeedToAutoLogin;
+        public bool? NeedToTryAutoLogin;
 
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.

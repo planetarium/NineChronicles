@@ -122,8 +122,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.NeedToAutoLogin = !context.HasError;
-                    if (context.NeedToAutoLogin.Value)
+                    context.NeedToTryAutoLogin = !context.HasError;
+                    if (context.NeedToTryAutoLogin.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
@@ -156,8 +156,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.NeedToAutoLogin = !context.HasError;
-                    if (context.NeedToAutoLogin.Value)
+                    context.NeedToTryAutoLogin = !context.HasError;
+                    if (context.NeedToTryAutoLogin.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
