@@ -203,7 +203,6 @@ namespace Nekoyume.UI
 
         public static string GetPrice(string isoCurrencyCode, decimal price)
         {
-            return $"₩{price:N0}";
             switch (isoCurrencyCode)
             {
                 case "KRW":
