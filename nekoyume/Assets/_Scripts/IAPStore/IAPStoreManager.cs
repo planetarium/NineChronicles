@@ -46,7 +46,7 @@ namespace Nekoyume.IAPStore
             }
 
             var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
-                States.Instance.AgentState.address);
+                States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
             if (categorys is null)
             {
                 // TODO: not initialized case handling

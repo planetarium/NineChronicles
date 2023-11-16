@@ -48,12 +48,12 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
-            ProductAsync(Address agentAddr)
+            ProductAsync(Address agentAddr, string planetId)
         {
             var uriBuilder = new UriBuilder(_endpoints.Product);
             uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
-                ? $"agent_addr={agentAddr.ToString()}"
-                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToString()}";
+                ? $"agent_addr={agentAddr.ToString()}&planet_id={planetId}"
+                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToString()}&planet_id={planetId}";
             using var res = await _client.GetAsync(uriBuilder.Uri);
             return await ProcessResponseAsync(res);
         }

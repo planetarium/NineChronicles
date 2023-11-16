@@ -90,7 +90,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         //     //request to purchase to IAPService if there are missing receipts.
         // }
 
-        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr)
+        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr, string planetId)
         {
             if (!IsInitialized)
             {
@@ -104,7 +104,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             //     return _cache.Products;
             // }
 
-            var (code, error, mediaType, content) = await _client.ProductAsync(agentAddr);
+            var (code, error, mediaType, content) = await _client.ProductAsync(agentAddr, planetId);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
