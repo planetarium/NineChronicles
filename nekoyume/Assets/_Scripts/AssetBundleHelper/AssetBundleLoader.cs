@@ -65,6 +65,23 @@ namespace Nekoyume.AssetBundleHelper
 
     public static class AssetBundleLoader
     {
+        private static AssetBundleManifest _manifest;
+
+        private static AssetBundleManifest Manifest
+        {
+            get
+            {
+                if (!_manifest)
+                {
+                    var bundle = GetAssetBundle(GetPlatform(), true, true)[0];
+                    _manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+                    Unload(bundle);
+                }
+
+                return _manifest;
+            }
+        }
+
         private static Dictionary<string, AssetBundle> preloaded = new();
 
         public static IEnumerator DownloadAssetBundles(string bundleName, Action<float> onProgress)
@@ -72,7 +89,8 @@ namespace Nekoyume.AssetBundleHelper
             bundleName = bundleName.ToLower();
             using var www =
                 UnityWebRequestAssetBundle.GetAssetBundle(
-                    $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}", GetVersion(), 0);
+                    $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}",
+                    Manifest.GetAssetBundleHash(bundleName), 0);
             var operation = www.SendWebRequest();
 
             while (!operation.isDone)
@@ -134,7 +152,8 @@ namespace Nekoyume.AssetBundleHelper
             return objs;
         }
 
-        private static IReadOnlyList<AssetBundle> GetAssetBundle(string bundleName, bool ignoreDeps=false)
+        private static IReadOnlyList<AssetBundle> GetAssetBundle(string bundleName,
+            bool ignoreDeps = false, bool ignoreHash = false)
         {
             var bundles = new List<AssetBundle>();
             if (preloaded.TryGetValue(bundleName, out var value))
@@ -142,14 +161,19 @@ namespace Nekoyume.AssetBundleHelper
                 bundles.Add(value);
                 return bundles;
             }
+
             foreach (var loadedBundle in AssetBundle.GetAllLoadedAssetBundles())
             {
                 if (loadedBundle.name == bundleName) return bundles;
             }
 
             using var www =
-                UnityWebRequestAssetBundle.GetAssetBundle(
-                    $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}", GetVersion(), 0);
+                ignoreHash
+                    ? UnityWebRequestAssetBundle.GetAssetBundle(
+                        $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}")
+                    : UnityWebRequestAssetBundle.GetAssetBundle(
+                        $"{AssetBundleData.AssetBundleURL}/{Application.version}/{GetPlatform()}/{bundleName}",
+                        Manifest.GetAssetBundleHash(bundleName), 0);
             var operation = www.SendWebRequest();
 
             while (!operation.isDone)
@@ -165,18 +189,10 @@ namespace Nekoyume.AssetBundleHelper
             return bundles;
         }
 
-        private static AssetBundleManifest manifest;
         private static IReadOnlyList<AssetBundle> LoadDependencies(string bundleName)
         {
-            if (!manifest)
-            {
-                var bundle = GetAssetBundle(GetPlatform(), true)[0];
-                manifest = bundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
-                Unload(bundle);
-            }
-
             var dependentBundleNames = new List<string>();
-            dependentBundleNames.AddRange(manifest.GetAllDependencies(bundleName));
+            dependentBundleNames.AddRange(Manifest.GetAllDependencies(bundleName));
 
             while (true)
             {
@@ -184,9 +200,10 @@ namespace Nekoyume.AssetBundleHelper
                 for (var i = 0; i < currSize; i++)
                 {
                     var dependency = dependentBundleNames[i];
-                    foreach (var deepDep in manifest.GetAllDependencies(dependency))
+                    foreach (var deepDep in Manifest.GetAllDependencies(dependency))
                     {
-                        if (!dependentBundleNames.Contains(deepDep)) dependentBundleNames.Add(deepDep);
+                        if (!dependentBundleNames.Contains(deepDep))
+                            dependentBundleNames.Add(deepDep);
                     }
                 }
 
@@ -198,6 +215,7 @@ namespace Nekoyume.AssetBundleHelper
             {
                 dependencies.AddRange(GetAssetBundle(dependency, true));
             }
+
             return dependencies;
         }
 
