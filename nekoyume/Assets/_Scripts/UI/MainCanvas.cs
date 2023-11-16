@@ -34,8 +34,8 @@ namespace Nekoyume.UI
                 root.sortingOrder = sortingOrder;
 
                 foreach (var childCanvas in root.GetComponentsInChildren<Canvas>(true)
-                             .Where(canvas => !canvas.Equals(root))
-                             .ToList())
+                    .Where(canvas => !canvas.Equals(root))
+                    .ToList())
                 {
                     childCanvas.sortingOrder =
                         sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
@@ -43,27 +43,38 @@ namespace Nekoyume.UI
             }
         }
 
-        [SerializeField] private CanvasGroup canvasGroup = null;
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
 
-        [SerializeField] private CanvasLayer hudLayer = default;
+        [SerializeField]
+        private CanvasLayer hudLayer = default;
 
-        [SerializeField] private CanvasLayer widgetLayer = default;
+        [SerializeField]
+        private CanvasLayer widgetLayer = default;
 
-        [SerializeField] private CanvasLayer staticLayer = default;
+        [SerializeField]
+        private CanvasLayer staticLayer = default;
 
-        [SerializeField] private CanvasLayer popupLayer = default;
+        [SerializeField]
+        private CanvasLayer popupLayer = default;
 
-        [SerializeField] private CanvasLayer animationLayer = default;
+        [SerializeField]
+        private CanvasLayer animationLayer = default;
 
-        [SerializeField] private CanvasLayer tooltipLayer = default;
+        [SerializeField]
+        private CanvasLayer tooltipLayer = default;
 
-        [SerializeField] private CanvasLayer tutorialMaskLayer = default;
+        [SerializeField]
+        private CanvasLayer tutorialMaskLayer = default;
 
-        [SerializeField] private CanvasLayer screenLayer = default;
+        [SerializeField]
+        private CanvasLayer screenLayer = default;
 
-        [SerializeField] private CanvasLayer systemLayer = default;
+        [SerializeField]
+        private CanvasLayer systemLayer = default;
 
-        [SerializeField] private CanvasLayer developmentLayer = default;
+        [SerializeField]
+        private CanvasLayer developmentLayer = default;
 
 
         private List<CanvasLayer> _layers;
@@ -99,7 +110,7 @@ namespace Nekoyume.UI
                     return tutorialMaskLayer;
                 case WidgetType.Screen:
                     return screenLayer;
-                // SystemUI
+            // SystemUI
                 case WidgetType.System:
                     return systemLayer;
                 case WidgetType.Development:
@@ -186,7 +197,6 @@ namespace Nekoyume.UI
             {
                 value.Initialize();
             }
-
             Widgets.AddRange(firstWidgets);
 
             UpdateLayers();
@@ -482,23 +492,22 @@ namespace Nekoyume.UI
                     Debug.LogWarning($"value is null. last is {last.name}");
                     continue;
                 }
+
                 value.Initialize();
+                yield return null;
                 last = value;
             }
-
             Widgets.AddRange(_secondWidgets);
             UpdateLayers();
 
             Widget.Find<SettingPopup>().transform.SetAsLastSibling();
             EventManager.UpdateEventContainer(transform);
-
-            yield return null;
         }
 
         public void InitWidgetInMain()
         {
             var layer = widgetLayer.root.transform;
-            for (int i = 0; i < layer.childCount; ++i)
+            for(int i = 0; i < layer.childCount; ++i)
             {
                 var child = layer.GetChild(i);
                 var widget = child.GetComponent<Widget>();
