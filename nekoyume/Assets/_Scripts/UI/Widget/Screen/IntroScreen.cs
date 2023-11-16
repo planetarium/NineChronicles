@@ -419,7 +419,7 @@ namespace Nekoyume.UI
                 Debug.Log("[IntroScreen] planetAccountInfoRight.accountImportKeyButton.onClick invoked");
                 planetAccountInfosPopup.SetActive(false);
             });
-            PlanetSelector.CurrentPlanetInfoSubject
+            PlanetSelector.SelectedPlanetInfoSubject
                 .Subscribe(tuple => ApplyCurrentPlanetInfo(tuple.planetContext))
                 .AddTo(gameObject);
 

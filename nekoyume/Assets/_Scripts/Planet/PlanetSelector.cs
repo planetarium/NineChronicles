@@ -32,7 +32,7 @@ namespace Nekoyume.Planet
             PlayerPrefs.GetString(CachedPlanetIdStringKey);
 
         public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
-            CurrentPlanetInfoSubject { get; } = new();
+            SelectedPlanetInfoSubject { get; } = new();
 
         public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
             PlanetContext context)
