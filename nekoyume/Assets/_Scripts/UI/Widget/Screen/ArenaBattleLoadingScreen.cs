@@ -1,6 +1,7 @@
 using Libplanet.Crypto;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 
@@ -29,6 +30,8 @@ namespace Nekoyume.UI
             int enemyFullCostumeOrArmorId,
             Address enemyAvatarAddress)
         {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.ArenaBattleLoading);
+
             playerProfile.Set(playerLevel, playerName, playerFullCostumeOrArmorId, playerAvatarAddress);
             enemyProfile.Set(enemyLevel, enemyName, enemyFullCostumeOrArmorId, enemyAvatarAddress);
             loadingText.text = L10nManager.Localize("UI_MATCHING_OPPONENT");
