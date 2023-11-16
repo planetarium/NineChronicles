@@ -202,7 +202,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -206}
-  m_SizeDelta: {x: 780, y: 46}
+  m_SizeDelta: {x: 780, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1506931330323301627
 CanvasRenderer:
@@ -232,11 +232,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'The product is considered used immediately after purchase and cannot be
-    withdrawn.
+  m_text: 'By purchasing this product, you acknowledge and agree to the terms and
+    conditions.
 
-    <size=12>(Cancellation is possible when payment is made in the
-    name of a minor without the consent of a legal representative)</size>'
+    This item is non-refundable due to immediate access upon purchase.
+    A refund can be requested within 15 days of purchase if the item has not been
+    consumed.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -264,19 +265,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 12.85
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 8
   m_fontSizeMax: 14
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -20
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
