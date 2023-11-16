@@ -72,28 +72,39 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField] private Stage stage;
+        [SerializeField]
+        private Stage stage;
 
-        [SerializeField] private Arena arena;
+        [SerializeField]
+        private Arena arena;
 
-        [SerializeField] private RaidStage raidStage;
+        [SerializeField]
+        private RaidStage raidStage;
 
-        [SerializeField] private Lobby lobby;
+        [SerializeField]
+        private Lobby lobby;
 
-        [SerializeField] private bool useSystemLanguage = true;
+        [SerializeField]
+        private bool useSystemLanguage = true;
 
-        [SerializeField] private bool useLocalHeadless;
+        [SerializeField]
+        private bool useLocalHeadless;
 
-        [SerializeField] private bool useLocalMarketService;
+        [SerializeField]
+        private bool useLocalMarketService;
 
-        [SerializeField] private string marketDbConnectionString =
+        [SerializeField]
+        private string marketDbConnectionString =
             "Host=localhost;Username=postgres;Database=market";
 
-        [SerializeField] private LanguageTypeReactiveProperty languageType;
+        [SerializeField]
+        private LanguageTypeReactiveProperty languageType;
 
-        [SerializeField] private Prologue prologue;
+        [SerializeField]
+        private Prologue prologue;
 
-        [SerializeField] private GameObject debugConsolePrefab;
+        [SerializeField]
+        private GameObject debugConsolePrefab;
 
         public PlanetId? CurrentPlanetId { get; private set; }
 
