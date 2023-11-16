@@ -357,10 +357,10 @@ RectTransform:
   m_Father: {fileID: 298670678606692903}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 21}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 9, y: -15}
+  m_SizeDelta: {x: 18, y: 21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5530942538741475943
 CanvasRenderer:
@@ -7481,10 +7481,10 @@ RectTransform:
   m_Father: {fileID: 298670678606692903}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 63.475, y: -15}
+  m_SizeDelta: {x: 82.95, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3003367162751044853
 CanvasRenderer:
@@ -7600,8 +7600,8 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
-  l10nKey: 
+  fontMaterialType: 13
+  l10nKey: UI_SEASONPASS_PREMIUM
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -8068,7 +8068,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_SEASONPASS_REMAINING_TIME
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -8807,7 +8807,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_SEASONPASS_NORMAL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -9361,8 +9361,8 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
-  l10nKey: 
+  fontMaterialType: 13
+  l10nKey: UI_SEASONPASS_PREMIUM_PLUS
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -10393,6 +10393,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 861949034201126773, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_RECEIVE_ALL
+      objectReference: {fileID: 0}
     - target: {fileID: 1381315966600267184, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_SizeDelta.y
@@ -10573,10 +10578,20 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6278566912089420281, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_RECEIVE_ALL
+      objectReference: {fileID: 0}
     - target: {fileID: 6387448829685765285, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6938098714094323340, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_RECEIVE_ALL
       objectReference: {fileID: 0}
     - target: {fileID: 8928492100869035181, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
@@ -10801,6 +10816,11 @@ PrefabInstance:
       propertyPath: m_characterSpacing
       value: -5
       objectReference: {fileID: 0}
+    - target: {fileID: 5011484996602453073, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_UNLOCK
+      objectReference: {fileID: 0}
     - target: {fileID: 5434321292865560736, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_Enabled
@@ -10815,6 +10835,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8538072817255672756, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_UNLOCK
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755811113850546753, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_UNLOCK
       objectReference: {fileID: 0}
     - target: {fileID: 8928492100869035181, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
@@ -13110,17 +13140,17 @@ PrefabInstance:
     - target: {fileID: 6996705912785638260, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 159.99998
+      value: 160.2504
       objectReference: {fileID: 0}
     - target: {fileID: 6996705912785638260, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 159.99998
+      value: 160.2504
       objectReference: {fileID: 0}
     - target: {fileID: 6996705912785638260, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 159.99998
+      value: 160.2504
       objectReference: {fileID: 0}
     - target: {fileID: 6996705912785638260, guid: c119f56cb662861429fece9a1b620795,
         type: 3}
@@ -15213,6 +15243,11 @@ PrefabInstance:
       propertyPath: m_enableVertexGradient
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5011484996602453073, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_PLUS
+      objectReference: {fileID: 0}
     - target: {fileID: 5434321292865560736, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_Enabled
@@ -15234,6 +15269,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 426aa6ce414d53b4c93571ad093bbbf7,
         type: 3}
+    - target: {fileID: 8538072817255672756, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_PLUS
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755811113850546753, guid: 5423cf792096944a3884ee1f4b0d4183,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SEASONPASS_PREMIUM_PLUS
+      objectReference: {fileID: 0}
     - target: {fileID: 8928492100869035181, guid: 5423cf792096944a3884ee1f4b0d4183,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
