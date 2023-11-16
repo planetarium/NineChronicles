@@ -360,7 +360,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start()... L10nManager initialized");
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            
+
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
@@ -421,6 +421,7 @@ namespace Nekoyume.Game
 
             var sw = new Stopwatch();
             sw.Reset();
+            var createSecondWidgetCoroutine = StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
             sw.Start();
             // NOTE: planetContext.CommandLineOptions and _commandLineOptions are same.
             // NOTE: Initialize several services after Agent initialized.
@@ -529,6 +530,7 @@ namespace Nekoyume.Game
             StartCoroutine(InitializeIAP());
 
             yield return StartCoroutine(InitializeWithAgent());
+            yield return createSecondWidgetCoroutine;
 
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
@@ -629,11 +631,6 @@ namespace Nekoyume.Game
             {
                 grayLoadingScreen.ShowProgress(GameInitProgress.InitCanvas);
                 var innerSw = new Stopwatch();
-                innerSw.Reset();
-                innerSw.Start();
-                yield return StartCoroutine(MainCanvas.instance.CreateSecondWidgets());
-                innerSw.Stop();
-                Debug.Log($"[Game] Start()... SecondWidgets created in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 innerSw.Reset();
                 innerSw.Start();
                 yield return StartCoroutine(MainCanvas.instance.InitializeSecondWidgets());
@@ -1613,7 +1610,7 @@ namespace Nekoyume.Game
                     if (!loginSystem.Login)
                     {
                         // NOTE: QR code import sets loginSystem.Login to true.
-                        introScreen.ShowForQrCodeGuide();    
+                        introScreen.ShowForQrCodeGuide();
                     }
                 }
             }
