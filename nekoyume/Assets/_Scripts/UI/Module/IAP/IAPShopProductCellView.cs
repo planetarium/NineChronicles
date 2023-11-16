@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var item in price)
             {
-                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
             }
             Debug.Log($"{_puchasingData.metadata.localizedTitle} : {_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPriceString} {_puchasingData.metadata.localizedPrice}");
 
@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
                 foreach (var item in preDiscountPrice)
                 {
                     var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
-                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N2}";
+                    var origin = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
                 discount.text = $"{_data.Discount}%";

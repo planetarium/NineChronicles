@@ -200,5 +200,17 @@ namespace Nekoyume.UI
             }
             iAPShopDynamicGridLayout.Refresh();
         }
+
+        public static string GetPrice(string isoCurrencyCode, decimal price)
+        {
+            return $"₩{price:N0}";
+            switch (isoCurrencyCode)
+            {
+                case "KRW":
+                    return $"₩{price:N0}";
+                default:
+                    return $"{isoCurrencyCode} {price:N2}";
+            }
+        }
     }
 }
