@@ -11,6 +11,7 @@ using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -25,9 +26,10 @@ namespace Nekoyume.Action
         {
         }
 
-        public MintAssets(IEnumerable<MintSpec> specs)
+        public MintAssets(IEnumerable<MintSpec> specs, string? memo)
         {
             MintSpecs = specs.ToList();
+            Memo = memo;
         }
 
         public override IAccount Execute(IActionContext context)
@@ -42,11 +44,24 @@ namespace Nekoyume.Action
             CheckPermission(context);
             IAccount state = context.PreviousState;
 
+            Dictionary<Address, (List<FungibleAssetValue>, List<FungibleItemValue>)> mailRecords = new();
+
             foreach (var (recipient, assets, items) in MintSpecs)
             {
+                if (!mailRecords.TryGetValue(recipient, out var records))
+                {
+                    mailRecords[recipient] = records = new(
+                        new List<FungibleAssetValue>(),
+                        new List<FungibleItemValue>()
+                    );
+                }
+
+                (List<FungibleAssetValue> favs, List<FungibleItemValue> fivs) = records;
+
                 if (assets is { } assetsNotNull)
                 {
                     state = state.MintAsset(context, recipient, assetsNotNull);
+                    favs.Add(assetsNotNull);
                 }
 
                 if (items is { } itemsNotNull)
@@ -69,8 +84,34 @@ namespace Nekoyume.Action
                     }
 
                     state = state.SetState(inventoryAddr, inventory.Serialize());
+                    fivs.Add(itemsNotNull);
                 }
+            }
 
+            IRandom rng = context.GetRandom();
+            foreach (var recipient in mailRecords.Keys)
+            {
+                if (
+                    state.GetState(recipient) is Dictionary dict &&
+                    dict.TryGetValue((Text)SerializeKeys.MailBoxKey, out IValue rawMailBox)
+                )
+                {
+                    var mailBox = new MailBox((List)rawMailBox);
+                    (List<FungibleAssetValue> favs, List<FungibleItemValue> fivs) = mailRecords[recipient];
+                    mailBox.Add(
+                        new UnloadFromMyGaragesRecipientMail(
+                            context.BlockIndex,
+                            rng.GenerateRandomGuid(),
+                            context.BlockIndex,
+                            favs.Select(v => (recipient, v)),
+                            fivs.Select(v => (v.Id, v.Count)),
+                            Memo
+                        )
+                    );
+                    mailBox.CleanUp();
+                    dict = dict.SetItem(SerializeKeys.MailBoxKey, mailBox.Serialize());
+                    state = state.SetState(recipient, dict);
+                }
             }
 
             return state;
@@ -79,31 +120,53 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = (Dictionary)plainValue;
-            MintSpecs = ((List)asDict["values"]).Select(v =>
+            var asList = (List)asDict["values"];
+
+            if (asList[0] is Text memo)
+            {
+                Memo = memo;
+            }
+            else
+            {
+                Memo = null;
+            }
+
+            MintSpecs = asList.Skip(1).Select(v =>
             {
                 return new MintSpec((List)v);
             }).ToList();
         }
 
-        public override IValue PlainValue =>
-            new Dictionary(
-                new[]
+        public override IValue PlainValue
+        {
+            get
+            {
+                var values = new List<IValue>
                 {
-                    new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
-                    new KeyValuePair<IKey, IValue>(
-                        (Text)"values",
-                        MintSpecs is { }
-                            ? new List(MintSpecs.Select(s => s.Serialize()))
-                            : Null.Value
-                    )
+                    Memo is { } memoNotNull ? (Text)memoNotNull : Null.Value
+                };
+                if (MintSpecs is { } mintSpecsNotNull)
+                {
+                    values.AddRange(mintSpecsNotNull.Select(s => s.Serialize()));
                 }
-            );
+
+                return new Dictionary(
+                    new[]
+                    {
+                        new KeyValuePair<IKey, IValue>((Text)"type_id", (Text)TypeIdentifier),
+                        new KeyValuePair<IKey, IValue>((Text)"values", new List(values))
+                    }
+                );
+            }
+        }
 
         public List<MintSpec>? MintSpecs
         {
             get;
             private set;
         }
+
+        public string? Memo { get; private set; }
 
         public readonly struct MintSpec
         {

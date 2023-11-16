@@ -1,6 +1,8 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Cryptography;
     using Bencodex.Types;
     using Libplanet.Action.State;
@@ -11,6 +13,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -52,15 +55,28 @@ namespace Lib9c.Tests.Action
                 new (default, _ncgCurrency * 100, null),
                 new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
             };
-            var act = new MintAssets(r);
+            var act = new MintAssets(r, null);
             var expected = Dictionary.Empty
                 .Add("type_id", "mint_assets")
                 .Add("values", List.Empty
+                    .Add(Null.Value)
                     .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
                     .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
             Assert.Equal(
                 expected,
                 act.PlainValue
+            );
+
+            var act2 = new MintAssets(r, "memo");
+            var expected2 = Dictionary.Empty
+                .Add("type_id", "mint_assets")
+                .Add("values", List.Empty
+                    .Add((Text)"memo")
+                    .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
+                    .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
+            Assert.Equal(
+                expected2,
+                act2.PlainValue
             );
         }
 
@@ -70,6 +86,7 @@ namespace Lib9c.Tests.Action
             var pv = Dictionary.Empty
                 .Add("type_id", "mint_assets")
                 .Add("values", List.Empty
+                    .Add(default(Null))
                     .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
                     .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
             var act = new MintAssets();
@@ -80,10 +97,18 @@ namespace Lib9c.Tests.Action
                 new (default, _ncgCurrency * 100, null),
                 new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
             };
-            Assert.Equal(
-                expected,
-                act.MintSpecs
-            );
+            Assert.Equal(expected, act.MintSpecs);
+            Assert.Null(act.Memo);
+
+            var pv2 = Dictionary.Empty
+                .Add("type_id", "mint_assets")
+                .Add("values", List.Empty
+                    .Add((Text)"memo")
+                    .Add(new List(default(Address).Bencoded, (_ncgCurrency * 100).Serialize(), default(Null)))
+                    .Add(new List(new Address("0x47d082a115c63e7b58b1532d20e631538eafadde").Bencoded, (_ncgCurrency * 1000).Serialize(), default(Null))));
+            var act2 = new MintAssets();
+            act2.LoadPlainValue(pv2);
+            Assert.Equal("memo", act2.Memo);
         }
 
         [Fact]
@@ -94,7 +119,8 @@ namespace Lib9c.Tests.Action
                 {
                     new (default, _ncgCurrency * 100, null),
                     new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
-                }
+                },
+                null
             );
             IAccount nextState = action.Execute(
                 new ActionContext()
@@ -132,7 +158,8 @@ namespace Lib9c.Tests.Action
                         null,
                         new FungibleItemValue(fungibleId, 42)
                     ),
-                }
+                },
+                "Execute_With_FungibleItemValue"
             );
             IAccount nextState = action.Execute(
                 new ActionContext()
@@ -146,6 +173,60 @@ namespace Lib9c.Tests.Action
 
             var inventory = nextState.GetInventory(avatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
             Assert.Contains(inventory.Items, i => i.count == 42 && i.item is Material m && m.FungibleId.Equals(fungibleId));
+
+            var avatarDict = Assert.IsType<Dictionary>(nextState.GetState(avatarAddress));
+            var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey]);
+            Assert.Single(mailBox);
+            var mail = Assert.IsType<UnloadFromMyGaragesRecipientMail>(mailBox.First());
+            Assert.Equal(new[] { (fungibleId, 42) }, mail.FungibleIdAndCounts);
+            Assert.Equal(action.Memo, mail.Memo);
+        }
+
+        [Fact]
+        public void Execute_With_Mixed()
+        {
+            IAccount prevState = GenerateAvatar(_prevState, out Address avatarAddress);
+            HashDigest<SHA256> fungibleId = HashDigest<SHA256>.FromString(
+                "7f5d25371e58c0f3d5a33511450f73c2e0fa4fac32a92e1cbe64d3bf2fef6328"
+            );
+
+            var action = new MintAssets(
+                new List<MintAssets.MintSpec>()
+                {
+                    new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
+                    new (
+                        avatarAddress,
+                        Currencies.StakeRune * 123,
+                        null
+                    ),
+                    new (
+                        avatarAddress,
+                        null,
+                        new FungibleItemValue(fungibleId, 42)
+                    ),
+                },
+                "Execute_With_FungibleItemValue"
+            );
+            IAccount nextState = action.Execute(
+                new ActionContext()
+                {
+                    PreviousState = prevState,
+                    Signer = _ncgMinter.ToAddress(),
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                }
+            );
+
+            var inventory = nextState.GetInventory(avatarAddress.Derive(SerializeKeys.LegacyInventoryKey));
+            Assert.Contains(inventory.Items, i => i.count == 42 && i.item is Material m && m.FungibleId.Equals(fungibleId));
+
+            var avatarDict = Assert.IsType<Dictionary>(nextState.GetState(avatarAddress));
+            var mailBox = new MailBox((List)avatarDict[SerializeKeys.MailBoxKey]);
+            Assert.Single(mailBox);
+            var mail = Assert.IsType<UnloadFromMyGaragesRecipientMail>(mailBox.First());
+            Assert.Equal(new[] { (fungibleId, 42) }, mail.FungibleIdAndCounts);
+            Assert.Equal(new[] { (avatarAddress, Currencies.StakeRune * 123) }, mail.FungibleAssetValues);
+            Assert.Equal(action.Memo, mail.Memo);
         }
 
         [Fact]
@@ -156,7 +237,8 @@ namespace Lib9c.Tests.Action
                 {
                     new (default, _ncgCurrency * 100, null),
                     new (new Address("0x47d082a115c63e7b58b1532d20e631538eafadde"), _ncgCurrency * 1000, null),
-                }
+                },
+                null
             );
             Assert.Throws<PermissionDeniedException>(() => action.Execute(
                 new ActionContext()
@@ -192,7 +274,7 @@ namespace Lib9c.Tests.Action
 
             state = state
                 .SetState(address, agentState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(
                     avatarAddress.Derive(SerializeKeys.LegacyInventoryKey),
                     avatarState.inventory.Serialize());
