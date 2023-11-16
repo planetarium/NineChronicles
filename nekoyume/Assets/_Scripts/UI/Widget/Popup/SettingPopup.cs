@@ -176,6 +176,9 @@ namespace Nekoyume.UI
             patrolRewardPushToggle.onValueChanged.AddListener(SetPatrolRewardPush);
 
             InitResolution();
+#if UNITY_IOS
+            redeemCodeText.transform.parent?.parent?.parent?.gameObject?.SetActive(false);
+#endif
         }
 
         protected override void OnEnable()

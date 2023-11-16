@@ -84,6 +84,11 @@ namespace Nekoyume.UI
                 yield return new WaitUntil(() => _cameraPermissionState is PermissionState.Granted);
                 Debug.Log("[CodeReaderView] Camera permission granted.");
             }
+#elif UNITY_IOS
+            if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+            {
+                yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+            }
 #endif
 
             rawCamImage.gameObject.SetActive(true);

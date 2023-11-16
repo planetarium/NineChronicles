@@ -98,6 +98,10 @@ namespace Nekoyume.Game
         protected void Awake()
         {
             InitScreenResolution();
+
+#if UNITY_IOS
+            Cam.clearFlags = CameraClearFlags.SolidColor;
+#endif
         }
 
         private void Update()

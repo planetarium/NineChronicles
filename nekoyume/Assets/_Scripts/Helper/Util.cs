@@ -40,6 +40,8 @@ namespace Nekoyume.Helper
         private static Dictionary<string, byte[]> CachedDownloadTexturesRaw =
             new Dictionary<string, byte[]>();
 
+        public const float GridScrollerAdjustCellCount = 20;
+
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);

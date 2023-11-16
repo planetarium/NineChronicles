@@ -35,7 +35,7 @@ namespace Nekoyume
 
             var agentAddr = game.Agent.Address;
 
-            var categorys = await iapServiceManager.GetProductsAsync(agentAddr);
+            var categorys = await iapServiceManager.GetProductsAsync(agentAddr, Game.Game.instance.CurrentPlanetId.ToString());
             List<ProductSchema> products = new List<ProductSchema>();
             foreach (var catagory in categorys)
             {
@@ -100,7 +100,7 @@ namespace Nekoyume
             }
 
             var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
+                p.definition.id == product.Sku);
             if (storeProduct is null)
             {
                 return mail.GetCellContentsForException();
@@ -149,7 +149,7 @@ namespace Nekoyume
 
             var agentAddr = game.Agent.Address;
 
-            var categoryList = await iapServiceManager.GetProductsAsync(agentAddr);
+            var categoryList = await iapServiceManager.GetProductsAsync(agentAddr, Game.Game.instance.CurrentPlanetId.ToString());
             List<ProductSchema> products = new List<ProductSchema>();
             if (categoryList is null)
             {

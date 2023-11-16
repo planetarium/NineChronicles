@@ -108,12 +108,12 @@ namespace Nekoyume.UI
                         var iapProductCellObjs = new List<IAPShopProductCellView>();
                         foreach (var product in productList)
                         {
-                            if (!_allProductObjs.TryGetValue(product.GoogleSku, out var productObj))
+                            if (!_allProductObjs.TryGetValue(product.Sku, out var productObj))
                             {
                                 productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
                                 productObj.SetData(product, category.Name == _recommendedString);
                                 await productObj.RefreshLocalized();
-                                _allProductObjs.Add(product.GoogleSku, productObj);
+                                _allProductObjs.Add(product.Sku, productObj);
                             }
                             iapProductCellObjs.Add(productObj);
                         }
@@ -164,7 +164,7 @@ namespace Nekoyume.UI
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
 
             var categorySchemas = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
+                .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
             return categorySchemas;
         }
 
@@ -199,6 +199,18 @@ namespace Nekoyume.UI
                     item.gameObject.SetActive(true);
             }
             iAPShopDynamicGridLayout.Refresh();
+        }
+
+        public static string GetPrice(string isoCurrencyCode, decimal price)
+        {
+            return $"₩{price:N0}";
+            switch (isoCurrencyCode)
+            {
+                case "KRW":
+                    return $"₩{price:N0}";
+                default:
+                    return $"{isoCurrencyCode} {price:N2}";
+            }
         }
     }
 }
