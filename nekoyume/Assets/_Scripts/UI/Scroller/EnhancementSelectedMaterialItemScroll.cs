@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
     protected override void Initialize()
     {
         base.Initialize();
-        startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, cellContainer.GetComponent<RectTransform>().rect.width + 40);
+        startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, cellContainer.GetComponent<RectTransform>().rect.width + Util.GridScrollerAdjustCellCount);
     }
     }
 }
