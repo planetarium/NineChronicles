@@ -362,7 +362,20 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-
+#if RUN_ON_MOBILE
+            // NOTE: Invoke LoginSystem.CheckLocalPassphrase() after MainCanvas initialized.
+            //       Because the _commandLineOptions.PrivateKey is empty when run on mobile.
+            if (string.IsNullOrEmpty(_commandLineOptions.PrivateKey))
+            {
+                var loginSystem = Widget.Find<LoginSystem>();
+                if (loginSystem.CheckLocalPassphrase())
+                {
+                    Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
+                              " Set local private key instead.");
+                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);    
+                }
+            }
+#endif
             var grayLoadingScreen = Widget.Find<GrayLoadingScreen>();
 
             // Initialize TableSheets. This should be done before initialize the Agent.
