@@ -159,7 +159,11 @@ namespace Nekoyume.Game
         {
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
+#if UNITY_IOS
+            Cam.aspect = (float)Screen.width / (float)Screen.height;
+#else
             Cam.aspect = Screen.safeArea.width / Screen.safeArea.height;
+#endif
             Cam.rect = new Rect(0, 0, 1, 1);
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
             UpdateScreenResolution();
