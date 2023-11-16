@@ -30,16 +30,6 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            var rect = rawCamImage.rectTransform.rect;
-#if !UNITY_IOS
-            _camTexture = new WebCamTexture
-            {
-                requestedHeight = (int)rect.height,
-                requestedWidth = (int)rect.width
-            };
-            rawCamImage.texture = _camTexture;
-#endif
-
             _permissionCallbacks = new PermissionCallbacks();
             _permissionCallbacks.PermissionDenied += OnPermissionDenied;
             _permissionCallbacks.PermissionDeniedAndDontAskAgain += OnPermissionDeniedAndDontAskAgain;
@@ -99,15 +89,6 @@ namespace Nekoyume.UI
             {
                 yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
             }
-            
-            var rect = rawCamImage.rectTransform.rect;
-            _camTexture = new WebCamTexture
-            {
-                requestedHeight = (int)rect.height,
-                requestedWidth = (int)rect.width
-            };
-            rawCamImage.texture = _camTexture;
-            yield return null;
 #endif
 
             rawCamImage.gameObject.SetActive(true);
