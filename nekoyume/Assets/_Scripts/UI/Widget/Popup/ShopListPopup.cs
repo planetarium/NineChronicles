@@ -71,6 +71,10 @@ namespace Nekoyume.UI
                 buttonDisableObj.SetActive(true);
                 loadIndicator.SetActive(true);
                 buttonActiveEffectObj.SetActive(false);
+                foreach (var item in priceTexts)
+                {
+                    item.gameObject.SetActive(false);
+                }
             });
         }
 
@@ -80,6 +84,10 @@ namespace Nekoyume.UI
             buttonDisableObj.SetActive(false);
             loadIndicator.SetActive(false);
             buttonActiveEffectObj.SetActive(true);
+            foreach (var item in priceTexts)
+            {
+                item.gameObject.SetActive(true);
+            }
         }
 
         private async UniTask DownloadTexture()
@@ -158,6 +166,10 @@ namespace Nekoyume.UI
             }
 
             loadIndicator.SetActive(false);
+            foreach (var item in priceTexts)
+            {
+                item.gameObject.SetActive(true);
+            }
             buyButton.interactable = true;
             buttonDisableObj.SetActive(false);
             buttonActiveEffectObj.SetActive(true);
