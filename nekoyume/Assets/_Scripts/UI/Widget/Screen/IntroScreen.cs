@@ -254,6 +254,7 @@ namespace Nekoyume.UI
             });
             startButton.onClick.AddListener(() =>
             {
+                startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
             });
@@ -544,6 +545,7 @@ namespace Nekoyume.UI
                     info.PlanetId.Equals(PlanetId.HeimdallInternal)),
                 needToImportKey);
             planetAccountInfosPopup.SetActive(true);
+            startButtonContainer.SetActive(false);
         }
 
         private void OnVideoEnd()
