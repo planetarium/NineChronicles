@@ -84,10 +84,6 @@ namespace Nekoyume.Planet
             sw.Start();
             await context.PlanetRegistry.InitializeAsync();
             sw.Stop();
-            context.ElapsedTuples.Add((
-                "Unity_Elapsed_Initialize_PlanetRegistry",
-                sw.ElapsedMilliseconds,
-                "Fetching planet infos from planet registry."));
             Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (!context.PlanetRegistry.IsInitialized)
             {
@@ -391,10 +387,6 @@ namespace Nekoyume.Planet
             }
 
             sw.Stop();
-            context.ElapsedTuples.Add((
-                "Unity_Elapsed_Update_PlanetAccountInfos",
-                sw.ElapsedMilliseconds,
-                "Fetching agent and avatars from planets."));
             Debug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
                       $" updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
 

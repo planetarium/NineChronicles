@@ -23,14 +23,11 @@ namespace Nekoyume.Planet
         //       But we have no idea where to put this yet.
         public bool? NeedToPledge;
 
-        public List<(string eventKey, long elapsedMilliseconds, string? description)> ElapsedTuples;
-
         public bool HasError => !string.IsNullOrEmpty(Error);
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
             CommandLineOptions = commandLineOptions;
-            ElapsedTuples = new List<(string eventKey, long elapsedMilliseconds, string? description)>();
         }
     }
 }
