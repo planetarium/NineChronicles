@@ -100,7 +100,7 @@ namespace Nekoyume
             }
 
             var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
+                p.definition.id == product.Sku);
             if (storeProduct is null)
             {
                 return mail.GetCellContentsForException();

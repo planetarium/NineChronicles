@@ -179,6 +179,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button videoSkipButton;
 
         [SerializeField] private Button googleSignInButton;
+        [SerializeField] private Button appleSignInButton;
 
         [SerializeField] private GameObject selectPlanetPopup;
         [SerializeField] private ConditionalButton heimdallButton;
@@ -200,6 +201,8 @@ namespace Nekoyume.UI
 
         public Subject<IntroScreen> OnClickTabToStart { get; } = new();
         public Subject<(string email, string idToken)> OnGoogleSignedIn { get; } = new();
+
+        public Subject<(string email, string idToken)> OnAppleSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -281,6 +284,60 @@ namespace Nekoyume.UI
                         }
                     });
             });
+            appleSignInButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click apple sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
+                {
+                    apple = Game.Game.instance.gameObject.AddComponent<AppleSigninBehaviour>();
+                    apple.Initialize();
+                }
+
+                Debug.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
+                switch (apple.State.Value)
+                {
+                    case AppleSigninBehaviour.SignInState.Signed:
+                        Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
+                        OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                        return;
+                    case AppleSigninBehaviour.SignInState.Waiting:
+                        Debug.Log("[IntroScreen] Already waiting for apple sign in.");
+                        return;
+                    case AppleSigninBehaviour.SignInState.Undefined:
+                    case AppleSigninBehaviour.SignInState.Canceled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
+                apple.OnSignIn();
+                startButtonContainer.SetActive(false);
+                appleSignInButton.gameObject.SetActive(false);
+                apple.State
+                    .SkipLatestValueOnSubscribe()
+                    .First()
+                    .Subscribe(state =>
+                    {
+                        switch (state)
+                        {
+                            case AppleSigninBehaviour.SignInState.Undefined:
+                            case AppleSigninBehaviour.SignInState.Waiting:
+                                return;
+                            case AppleSigninBehaviour.SignInState.Canceled:
+                                startButtonContainer.SetActive(true);
+                                appleSignInButton.gameObject.SetActive(true);
+                                Find<DimmedLoadingScreen>().Close();
+                                break;
+                            case AppleSigninBehaviour.SignInState.Signed:
+                                OnAppleSignedIn.OnNext((apple.Email, apple.IdToken));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                        }
+                    });
+            });
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
@@ -345,6 +402,12 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
             googleSignInButton.interactable = true;
+#if UNITY_IOS
+            appleSignInButton.gameObject.SetActive(true);
+            appleSignInButton.interactable = true;
+#else
+            appleSignInButton.gameObject.SetActive(false);
+#endif
             GetGuestPrivateKey();
         }
 
@@ -352,6 +415,7 @@ namespace Nekoyume.UI
         {
             base.OnDestroy();
             OnGoogleSignedIn.Dispose();
+            OnAppleSignedIn.Dispose();
         }
 
         public void SetData(string keyStorePath, string privateKey, PlanetContext planetContext)
@@ -519,6 +583,16 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(1);
             Game.Game.instance.PortalConnect.OpenPortal(() => popup.Close());
         }
+
+
+#if RUN_ON_MOBILE
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            MainCanvas.instance.RemoveWidget(this);
+        }
+#endif
 
         private void ApplyCurrentPlanetInfo(PlanetContext planetContext)
         {

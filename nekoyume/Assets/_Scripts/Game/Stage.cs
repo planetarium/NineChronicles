@@ -306,6 +306,9 @@ namespace Nekoyume.Game
         {
             Destroy(_background, fadeTime);
             _background = null;
+#if UNITY_ANDROID || UNITY_IOS
+            objectPool.RemoveAllExceptFirst();
+#endif
         }
 
         public void PlayStage(BattleLog log)

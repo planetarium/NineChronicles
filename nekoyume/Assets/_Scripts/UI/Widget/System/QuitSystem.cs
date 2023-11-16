@@ -13,17 +13,13 @@ namespace Nekoyume.UI
 {
     public class QuitSystem : SystemWidget
     {
-        [SerializeField]
-        private EventSubject characterSelectEventSubject = null;
+        [SerializeField] private EventSubject characterSelectEventSubject = null;
 
-        [SerializeField]
-        private EventSubject quitEventSubject = null;
+        [SerializeField] private EventSubject quitEventSubject = null;
 
-        [SerializeField]
-        private EventSubject closeEventSubject = null;
+        [SerializeField] private EventSubject closeEventSubject = null;
 
-        [SerializeField]
-        private UIBackground background;
+        [SerializeField] private UIBackground background;
 
         protected override void Awake()
         {
@@ -64,6 +60,10 @@ namespace Nekoyume.UI
             CloseWidget = () => { Close(); };
 
             background.OnClick = CloseWidget;
+
+#if UNITY_IOS
+            quitEventSubject.gameObject.SetActive(false);
+#endif
         }
 
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)

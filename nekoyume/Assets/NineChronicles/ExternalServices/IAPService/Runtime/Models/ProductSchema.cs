@@ -13,6 +13,21 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime.Models
         [JsonPropertyName("google_sku")]
         public string GoogleSku { get; set; }
 
+        [JsonPropertyName("apple_sku")]
+        public string AppleSku { get; set; }
+
+        public string Sku {
+            get {
+#if UNITY_ANDROID
+                return GoogleSku;
+#elif UNITY_IOS
+                return AppleSku;
+#else
+                return GoogleSku;
+#endif
+            }
+        }
+
         [JsonPropertyName("daily_limit")]
         public int? DailyLimit { get; set; }
 

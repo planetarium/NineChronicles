@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                 {
                     foreach (var item in premiumPrices)
                     {
-                        item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                        item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
                     }
                 }
             }
@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                 {
                     foreach (var item in premiumPlusPrices)
                     {
-                        item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                        item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
                     }
                 }
             }

@@ -194,14 +194,15 @@ namespace Nekoyume.Game
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
 #if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
-            string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
-            //Load dynamic library of rocksdb
-            string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
-            Native.LoadLibrary(RocksdbLibPath);
+            // DevCra - iOS Build
+            //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
+            ////Load dynamic library of rocksdb
+            //string RocksdbLibPath = Path.Combine(prefix, "rocksdb.framework", "librocksdb");
+            //Native.LoadLibrary(RocksdbLibPath);
 
-            //Set the path of secp256k1's dynamic library
-            string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
-            Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
+            ////Set the path of secp256k1's dynamic library
+            //string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
+            //Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
 #elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
             string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
             Native.LoadLibrary(rocksdbLibPath);
@@ -221,18 +222,15 @@ namespace Nekoyume.Game
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
 
-#if !UNITY_EDITOR && UNITY_ANDROID
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
             // Load CommandLineOptions at Start() after init
-#elif !UNITY_EDITOR && UNITY_IOS
-            _commandLineOptions = CommandLineOptions.Load(Platform.GetStreamingAssetsPath("clo.json"));
-            OnLoadCommandlineOptions();
 #else
             _commandLineOptions = CommandLineOptions.Load(CommandLineOptionsJsonPath);
             OnLoadCommandlineOptions();
 #endif
             URL = Url.Load(UrlJsonPath);
 
-#if UNITY_EDITOR && !UNITY_ANDROID
+#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
             // Local Headless
             if (useLocalHeadless && HeadlessHelper.CheckHeadlessSettings())
             {
@@ -271,7 +269,7 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
-#if !UNITY_EDITOR && UNITY_ANDROID
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
@@ -597,7 +595,11 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
+#if UNITY_ANDROID
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
+#elif UNITY_IOS
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
+#endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 innerSw.Stop();
                 Debug.Log("[Game] Start()... IAPServiceManager initialized in" +
@@ -1481,24 +1483,32 @@ namespace Nekoyume.Game
             {
                 Debug.Log("[Game] CoLogin()... IntroScreen is active. Go to social login flow.");
                 string idToken = null;
+                bool isGoogle = false;
                 introScreen.OnGoogleSignedIn.AsObservable()
                     .First()
-                    .Subscribe(value =>
-                    {
+                    .Subscribe(value => {
                         email = value.email;
                         idToken = value.idToken;
+                        isGoogle = true;
+                    });
+                introScreen.OnAppleSignedIn.AsObservable()
+                    .First()
+                    .Subscribe(value => {
+                        email = value.email;
+                        idToken = value.idToken;
+                        isGoogle = false;
                     });
 
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn.");
                 yield return new WaitUntil(() => idToken is not null);
-                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn. Done.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnGoogleSignedIn or introScreen.OnAppleSignedIn. Done.");
 
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync.");
                 sw.Reset();
                 sw.Start();
-                var portalSigninTask = PortalConnect.SendGoogleIdTokenAsync(idToken);
+                var portalSigninTask = isGoogle ? PortalConnect.SendGoogleIdTokenAsync(idToken) : PortalConnect.SendAppleIdTokenAsync(idToken);
                 yield return new WaitUntil(() => portalSigninTask.IsCompleted);
                 sw.Stop();
                 planetContext.ElapsedTuples.Add((
@@ -1514,14 +1524,14 @@ namespace Nekoyume.Game
                     loginSystem.Show(connectedAddress: null);
                     // NOTE: Don't set the autoGeneratedAgentAddress to agentAddr.
                     var autoGeneratedAgentAddress = loginSystem.GetPrivateKey().ToAddress();
-                    Debug.Log("[Game] CoLogin()... googleSigninBehaviour.AgentAddress is null." +
+                    Debug.Log("[Game] CoLogin()... signinBehaviour.AgentAddress is null." +
                               $"And auto generated agent address: {autoGeneratedAgentAddress}");
                 }
                 else
                 {
-                    Debug.Log($"[Game] CoLogin()... googleSigninBehaviour.AgentAddress is not null. {agentAddress.Value}");
+                    Debug.Log($"[Game] CoLogin()... signinBehaviour.AgentAddress is not null. {agentAddress.Value}");
                     agentAddr = agentAddress.Value;
-                    // NOTE: Don't show login popup when google signed in.
+                    // NOTE: Don't show login popup when google or apple signed in.
                     //       Because introScreen.ShowForQrCodeGuide() will be called
                     //       when IntroScreen.AgentInfo.accountImportKeyButton is clicked.
                     // loginSystem.Show(connectedAddress: agentAddr);
@@ -2082,6 +2092,11 @@ namespace Nekoyume.Game
                     Application.Quit();
 #endif
                 });
+        }
+        
+        private void OnLowMemory()
+        {
+            GC.Collect();
         }
 
         private async UniTask UpdateCurrentPlanetIdAsync(PlanetContext planetContext)
