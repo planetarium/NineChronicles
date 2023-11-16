@@ -71,6 +71,7 @@ namespace Nekoyume.UI
 
         public readonly string PortalUrl;
         public const string GoogleAuthEndpoint = "/api/auth/login/google";
+        public const string AppleAuthEndpoint = "/api/auth/login/apple";
         private const string RequestCodeEndpoint = "/api/auth/code";
         private const string RequestPledgeEndpoint = "/api/account/mobile/contract";
         private const string AccessTokenEndpoint = "/api/auth/token";
@@ -388,6 +389,43 @@ namespace Nekoyume.UI
             else
             {
                 Debug.LogError($"[GoogleSigninBehaviour] SendGoogleIdToken failed w/ error: {request.error}");
+            }
+
+            return null;
+        }
+
+
+        public async Task<Address?> SendAppleIdTokenAsync(string idToken)
+        {
+            Debug.Log($"[AppleSigninBehaviour] CoSendAppleIdToken invoked w/ idToken({idToken})");
+            Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectToPortal");
+
+            var body = new JsonObject {{"idToken", idToken}};
+            var bodyString = body.ToJsonString(new JsonSerializerOptions {WriteIndented = true});
+            var request = new UnityWebRequest($"{PortalUrl}{AppleAuthEndpoint}", "POST");
+            var jsonToSend = new UTF8Encoding().GetBytes(bodyString);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.timeout = 180;
+            request.uploadHandler.contentType = "application/json";
+            request.SetRequestHeader("accept", "application/json");
+            request.SetRequestHeader("Content-Type", "application/json");
+            await request.SendWebRequest();
+
+            if (HandleTokensResult(request))
+            {
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
+                var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
+                if (!string.IsNullOrEmpty(accessTokenResult.address))
+                {
+                    var address = new Address(accessTokenResult.address);
+                    Debug.Log($"[AppleSigninBehaviour] SendAppleleIdToken succeeded. AgentAddress: {address}");
+                    return address;
+                }
+            }
+            else
+            {
+                Debug.LogError($"[AppleSigninBehaviour] SendAppleleIdToken failed w/ error: {request.error}");
             }
 
             return null;

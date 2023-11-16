@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+using AppleAuth.Editor;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -453,6 +454,10 @@ namespace Editor
                 new[] { unityFrameworkTargetGuid, pbxProject.GetUnityMainTargetGuid() },
                 "ENABLE_BITCODE",
                 "NO");
+            
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
+            // libz.tbd for grpc ios build
+            pbxProject.AddFrameworkToProject(targetGuid, "libz.tbd", false);
 
             // Remove static frameworks at "UnityFramework".
             foreach (var framework in new []{"rocksdb.framework", "secp256k1.framework"})
@@ -464,12 +469,43 @@ namespace Editor
 
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
+
+            var manager = new ProjectCapabilityManager(pbxProjectPath, "Entitlements.entitlements", null, pbxProject.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(pbxProject.GetUnityFrameworkTargetGuid());
+            manager.WriteToFile();
+
+            // set plist path
+            var plistPath = Path.Combine(buildPath, "info.plist");
+
+            // read plist
+            Dictionary<string, object> dict;
+            dict = (Dictionary<string, object>)Plist.readPlist(plistPath);
+        
+            // update plist
+            dict["CFBundleURLTypes"] = new List<object>
+            {
+                new Dictionary<string, object>
+                {
+                    {
+                        "CFBundleURLSchemes", new List<object>
+                        {
+                            "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
+                        }
+                    }
+                }
+            };
+
+            dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
+        
+            // write plist
+            Plist.writeXml(dict, plistPath);
         }
 #endif
 
         private static void PreProcessBuildForIOS()
         {
             string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
+            identifier = "com.planetariumlabs.ninechroniclesmobile";
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
             PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;

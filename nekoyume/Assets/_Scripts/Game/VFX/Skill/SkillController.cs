@@ -10,7 +10,11 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class SkillController
     {
+#if UNITY_ANDROID || UNITY_IOS
+        private const int InitCount = 1;
+#else
         private const int InitCount = 5;
+#endif
 
         private readonly IObjectPool _pool;
 

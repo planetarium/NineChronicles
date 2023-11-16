@@ -57,15 +57,15 @@ namespace Nekoyume.UI
             base.Awake();
         
             closeButton.onClick.AddListener(() => {
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.GoogleSku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
                 Close();
             });
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Purchase: {_data.GoogleSku}");
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.GoogleSku));
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.GoogleSku);
+                Debug.Log($"Purchase: {_data.Sku}");
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.Sku));
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
 
                 buyButton.interactable = false;
                 buttonDisableObj.SetActive(true);

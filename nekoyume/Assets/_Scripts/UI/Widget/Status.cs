@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             characterView.OnClickCharacterIcon
                 .Subscribe(_ =>
                 {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
                     Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                         "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
 #else
@@ -84,6 +84,10 @@ namespace Nekoyume.UI
             battleTimerView.Close();
             hpBar.transform.parent.gameObject.SetActive(false);
             buffLayout.SetBuff(null);
+
+#if UNITY_ANDROID || UNITY_IOS
+            this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
+#endif
         }
 
         public void ShowBattleStatus()

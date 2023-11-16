@@ -68,6 +68,7 @@ namespace Nekoyume.UI
 
             RenderTexture.active = prevRenderTexture;
             cam.targetTexture = null;
+            renderTexture.Release();
 
             return captured;
         }
