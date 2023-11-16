@@ -935,7 +935,7 @@ namespace Nekoyume.UI
                 switch (SharedModel.StageType)
                 {
                     case StageType.HackAndSlash:
-                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, true);
                         stageNumber = SharedModel.StageID;
                         break;
 
