@@ -1070,7 +1070,6 @@ namespace Nekoyume.Game
             if (!GameConfig.IsEditor)
             {
                 if (States.Instance.AgentState.avatarAddresses.Any() &&
-                    States.Instance.AvatarStates.Any(x => x.Value.level > 49) &&
                     Helper.Util.TryGetStoredAvatarSlotIndex(out var slotIndex) &&
                     States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
@@ -2093,7 +2092,7 @@ namespace Nekoyume.Game
 #endif
                 });
         }
-        
+
         private void OnLowMemory()
         {
             GC.Collect();
