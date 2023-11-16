@@ -229,12 +229,19 @@ namespace Nekoyume.UI
         private void UpdateScrolls()
         {
             var scrollData = GetScrollData();
-            var selectedRoundData = TableSheets.Instance.ArenaSheet.TryGetCurrentRound(
+            var arenaSheet = TableSheets.Instance.ArenaSheet;
+            var selectedRoundData = arenaSheet.TryGetCurrentRound(
                 Game.Game.instance.Agent.BlockIndex,
                 out var outCurrentRoundData)
                 ? outCurrentRoundData
                 : null;
-            var selectedIndex = selectedRoundData?.Round - 1 ?? 0;
+            var selectedIndex = 0;
+            if (selectedRoundData is not null)
+            {
+                selectedIndex = arenaSheet[selectedRoundData.ChampionshipId].Round
+                    .IndexOf(selectedRoundData);
+            }
+
             _scroll.SetData(scrollData, selectedIndex);
             _barScrollCellCount = scrollData.Count;
             _barScroll.SetData(

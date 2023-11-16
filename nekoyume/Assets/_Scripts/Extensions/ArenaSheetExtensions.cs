@@ -126,6 +126,13 @@ namespace Nekoyume
                 ? seasonNumber
                 : defaultValue;
 
+        /// <summary>
+        /// This is origin of TryGetSeasonNumber().
+        /// </summary>
+        /// <param name="roundDataEnumerable"></param>
+        /// <param name="round"></param>
+        /// <param name="seasonNumber"></param>
+        /// <returns></returns>
         public static bool TryGetSeasonNumber(
             this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
             int round,
@@ -149,7 +156,10 @@ namespace Nekoyume
 
             // NOTE: The season number is beginning from 4. so it initialized as 3.
             // because the first season number will be set like `seasonNumber++` in the following code.
-            seasonNumber = 3;
+            // ********
+            // The season number is beginning from 1 on heimdall, idun chain.(NOT ODIN, a.k.a. Nine Chronicles main-net)
+            // ********
+            seasonNumber = championshipId > 0 ? 3 : 0;
 
             // Add count of last season by id.
             // championship 1 includes 1 seasons.
@@ -203,7 +213,14 @@ namespace Nekoyume
             // 3,  4,  5,  6,  7,  8: 2023
             // 9, 10, 11, 12, 13, 14: 2024
             // ...
-            if (row.ChampionshipId <= 2)
+            var championshipId = row.ChampionshipId;
+            // exception handling for Championship 0 of Heimdall or Idun chain
+            if (championshipId == 0)
+            {
+                championshipId += 3;
+            }
+
+            if (championshipId <= 2)
             {
                 return 2022;
             }
@@ -244,6 +261,9 @@ namespace Nekoyume
                 ? seasonNumbers
                 : new List<int>();
 
+        /// <summary>
+        /// This is origin of TryGetSeasonNumbersOfChampionship().
+        /// </summary>
         public static bool TryGetSeasonNumbersOfChampionship(
             this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
             out List<int> seasonNumbers)
@@ -265,7 +285,10 @@ namespace Nekoyume
 
             // NOTE: The season number is beginning from 4. so it initialized as 3.
             // because the first season number will be set like `++seasonStartNumber` in the following code.
-            var seasonStartNumber = 3;
+            // ********
+            // The season number is beginning from 1 on heimdall, idun chain.(NOT ODIN, a.k.a. Nine Chronicles main-net)
+            // ********
+            var seasonStartNumber = championshipId > 0 ? 3 : 0;
 
             // Add count of last season by id.
             // championship 1 includes 1 seasons.
