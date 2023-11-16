@@ -754,7 +754,7 @@ namespace Nekoyume.UI
             HackAndSlash(
                 States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
                     out var targetStage)
-                    ? targetStage
+                    ? targetStage + 1
                     : 1);
         }
 
