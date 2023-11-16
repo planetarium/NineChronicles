@@ -282,30 +282,30 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
             if (data.resultCode is 3003 or 3004)
             {
-                await GetTokensSilently();
+                await GetTokensSilentlyAsync();
                 return true;
             }
 
             return false;
         }
 
-        private async Task GetTokensSilently()
+        public async Task GetTokensSilentlyAsync()
         {
             if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
             {
                 google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
             }
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)} invoked: google.State.Value({google.State.Value})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)} invoked: google.State.Value({google.State.Value})");
 
             switch (google.State.Value)
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
                     await SendGoogleIdTokenAsync(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)}... Already waiting for google sign in.");
                     return;
                 case GoogleSigninBehaviour.SignInState.Undefined:
                 case GoogleSigninBehaviour.SignInState.Canceled:
@@ -446,7 +446,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            await GetTokensSilently();
+            await GetTokensSilentlyAsync();
             SetRefreshTokenToPlayerPrefs(address.ToString());
         }
 
