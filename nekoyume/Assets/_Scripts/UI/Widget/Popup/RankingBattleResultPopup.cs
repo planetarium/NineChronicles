@@ -99,6 +99,8 @@ namespace Nekoyume.UI
 
         private void BackToRanking()
         {
+            AudioController.instance.StopMusicAll();
+
             Close();
             _onClose?.Invoke();
         }
