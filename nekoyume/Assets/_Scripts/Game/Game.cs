@@ -1505,7 +1505,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => portalSigninTask.IsCompleted);
             sw.Stop();
             Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync. Done.");
+            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
 
             var agentAddrInPortal = portalSigninTask.Result;
             // NOTE: Update PlanetContext.PlanetAccountInfos.
