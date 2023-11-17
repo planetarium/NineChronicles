@@ -160,8 +160,6 @@ namespace Nekoyume.UI.Module
             }
 
             buyButton.interactable = _data.Buyable;
-
-            disabledBuyButton.SetActive(!buyButton.interactable);
             RefreshDim();
         }
 
@@ -179,11 +177,13 @@ namespace Nekoyume.UI.Module
                 if (_data.PurchaseCount < _data.DailyLimit.Value)
                 {
                     dimObj.SetActive(false);
+                    disabledBuyButton.SetActive(false);
                     return;
                 }
                 else
                 {
                     dimObj.SetActive(true);
+                    disabledBuyButton.SetActive(true);
                     return;
                 }
             }
@@ -193,14 +193,17 @@ namespace Nekoyume.UI.Module
                 if (_data.PurchaseCount < _data.WeeklyLimit.Value)
                 {
                     dimObj.SetActive(false);
+                    disabledBuyButton.SetActive(false);
                     return;
                 }
                 else
                 {
                     dimObj.SetActive(true);
+                    disabledBuyButton.SetActive(true);
                     return;
                 }
             }
+            disabledBuyButton.SetActive(false);
             dimObj.SetActive(false);
         }
 

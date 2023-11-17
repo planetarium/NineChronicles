@@ -264,6 +264,7 @@ namespace Nekoyume.UI
 
         public void PurchaseButtonLoadingEnd()
         {
+            Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             premiumPurchaseButtonLoadingObj.SetActive(false);
             premiumPlusPurchaseButtonLoadingObj.SetActive(false);
             RefreshIcons(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);
