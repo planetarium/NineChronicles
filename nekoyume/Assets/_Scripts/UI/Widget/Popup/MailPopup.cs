@@ -733,7 +733,11 @@ namespace Nekoyume.UI
                 bool iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
-                    Regex gSkuRegex = new Regex("'g_sku': '([^']+)'");
+#if UNITY_IOS
+                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                    Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
                     Match gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
                     if (gSkuMatch.Success)
                     {

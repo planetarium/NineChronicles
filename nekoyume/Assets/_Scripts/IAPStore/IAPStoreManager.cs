@@ -81,6 +81,12 @@ namespace Nekoyume.IAPStore
 #endif
         }
 
+        public ProductSchema GetProductSchema(string sku)
+        {
+            _initailizedProductSchema.TryGetValue(sku, out var result);
+            return result;
+        }
+
         public void OnPurchaseClicked(string productId)
         {
             _controller.InitiatePurchase(productId);

@@ -616,10 +616,11 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
-#if UNITY_ANDROID
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-#elif UNITY_IOS
+#if UNITY_IOS
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
+#else
+                //pc has to find iap product for mail box system
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 innerSw.Stop();
