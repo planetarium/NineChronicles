@@ -273,8 +273,10 @@ namespace Nekoyume.UI
 
         public bool TryLoginWithLocalPpk()
         {
+            Debug.Log("[LoginSystem] TryLoginWithLocalPpk invoked");
             if (Platform.IsMobilePlatform())
             {
+                Debug.Log("[LoginSystem] platform is mobile");
                 try
                 {
                     var passPhrase = GetPassPhrase(KeyStore
@@ -285,18 +287,22 @@ namespace Nekoyume.UI
                     if (_privateKey != null)
                     {
                         Login = true;
+                        Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
                         return true;
                     }
+
+                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. _privateKey is null");
                 }
                 catch
                 {
+                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. exception");
                     return false;
                 }
             }
 
+            Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. platform is not mobile");
             return false;
         }
-
 
         public static string GetPassPhrase(string address)
         {
@@ -318,6 +324,7 @@ namespace Nekoyume.UI
 
         private void CheckLogin(System.Action success)
         {
+            Debug.Log($"[LoginSystem] CheckLogin invoked");
             try
             {
                 _privateKey = CheckPrivateKey(KeyStore, loginField.text);
@@ -331,8 +338,11 @@ namespace Nekoyume.UI
             var login = _privateKey is not null;
             if (login)
             {
+                Debug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
                 {
+                    Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
+                              $" {loginField.text}");
                     SetPassPhrase(_privateKey.ToAddress().ToString(), loginField.text);
                 }
 
@@ -588,12 +598,12 @@ namespace Nekoyume.UI
                 catch (IncorrectPassphraseException)
                 {
                     Debug.LogWarningFormat(
-                        "The key {0} cannot unprotected with a passphrase; failed to load",
+                        "[LoginSystem] The key {0} cannot unprotected with a passphrase; failed to load",
                         ppk.Address
                     );
                 }
 
-                Debug.LogFormat("The key {0} was successfully loaded", ppk.Address);
+                Debug.LogFormat("[LoginSystem] The key {0} was successfully loaded", ppk.Address);
                 break;
             }
 
