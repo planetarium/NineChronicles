@@ -1,6 +1,6 @@
 #nullable enable
 
-using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Helper;
 
 namespace Nekoyume.Planet
@@ -20,6 +20,13 @@ namespace Nekoyume.Planet
         public bool? CanSkipPlanetSelection;
 
         public bool HasError => !string.IsNullOrEmpty(Error);
+
+        public bool HasAccount => PlanetAccountInfos?.Any() ?? false;
+
+        public bool HasPledgedAccount => PlanetAccountInfos?.Any(e => e.IsAgentPledged.HasValue &&
+                                                               e.IsAgentPledged.Value) ?? false;
+
+        public bool IsSelectedPlanetAccountPledged => SelectedPlanetAccountInfo is { IsAgentPledged: true };
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
