@@ -86,7 +86,7 @@ namespace Nekoyume.UI
                 {
                     ItemViewSetItemData(premiumRewards[index], premiumProduct.FungibleItemList[i].SheetItemId, premiumProduct.FungibleItemList[i].Amount);
                 }
-                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.GoogleSku);
+                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumProduct.Sku);
                 if(_puchasingData != null)
                 {
                     foreach (var item in premiumPrices)
@@ -113,7 +113,7 @@ namespace Nekoyume.UI
                 {
                     ItemViewSetItemData(premiumPlusRewards[index], premiumPlusProduct.FungibleItemList[i].SheetItemId, premiumPlusProduct.FungibleItemList[i].Amount);
                 }
-                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.GoogleSku);
+                var _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == premiumPlusProduct.Sku);
                 if (_puchasingData != null)
                 {
                     foreach (var item in premiumPlusPrices)
@@ -232,7 +232,7 @@ namespace Nekoyume.UI
                 premiumPurchaseButtonDisabledObj.SetActive(true);
                 premiumPurchaseButtonPriceObj.SetActive(false);
                 premiumPurchaseButtonLoadingObj.SetActive(true);
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.GoogleSku);
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.Sku);
             }
         }
 
@@ -258,12 +258,13 @@ namespace Nekoyume.UI
                 premiumPlusPurchaseButtonDisabledObj.SetActive(true);
                 premiumPlusPurchaseButtonPriceObj.SetActive(false);
                 premiumPlusPurchaseButtonLoadingObj.SetActive(true);
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.GoogleSku);
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(product.Sku);
             }
         }
 
         public void PurchaseButtonLoadingEnd()
         {
+            Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             premiumPurchaseButtonLoadingObj.SetActive(false);
             premiumPlusPurchaseButtonLoadingObj.SetActive(false);
             RefreshIcons(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value);

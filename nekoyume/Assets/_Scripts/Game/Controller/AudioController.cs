@@ -115,6 +115,7 @@ namespace Nekoyume.Game.Controller
             public const string UpgradeNumber = "sfx_upgrade_number";
             public const string Rewards = "sfx_rewards";
             public const string Star = "sfx_star";
+            public const string ArenaBattleLoading = "sfx_arenabattleloading";
         }
 
         private enum State

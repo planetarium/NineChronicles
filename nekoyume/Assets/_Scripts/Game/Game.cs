@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -265,6 +266,8 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
+            var totalSw = new Stopwatch();
+            totalSw.Start();
 
             // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
@@ -357,7 +360,7 @@ namespace Nekoyume.Game
                 .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 
@@ -373,7 +376,7 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);    
+                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
                 }
             }
 #endif
@@ -387,6 +390,8 @@ namespace Nekoyume.Game
             Debug.Log("[Game] Start()... ResourcesHelper initialized");
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start()... AudioController initialized");
+
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
 
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
@@ -556,7 +561,7 @@ namespace Nekoyume.Game
 #if RUN_ON_MOBILE
             PortalConnect.CheckTokens(States.AgentState.address);
 
-            if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
+            if (!planetContext.IsSelectedPlanetAccountPledged)
             {
                 yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
             }
@@ -608,6 +613,8 @@ namespace Nekoyume.Game
             IsInitialized = true;
             Widget.Find<IntroScreen>().Close();
             EnterNext();
+            totalSw.Stop();
+            Debug.Log($"[Game] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
             yield break;
 
             IEnumerator InitializeIAP()
@@ -616,10 +623,11 @@ namespace Nekoyume.Game
                 var innerSw = new Stopwatch();
                 innerSw.Reset();
                 innerSw.Start();
-#if UNITY_ANDROID
-                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
-#elif UNITY_IOS
+#if UNITY_IOS
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Apple);
+#else
+                //pc has to find iap product for mail box system
+                IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
                 innerSw.Stop();
@@ -636,7 +644,7 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
                 RxProps.Start(Agent, States, TableSheets);
 
@@ -1048,6 +1056,8 @@ namespace Nekoyume.Game
         //        Show a popup with error message and quit the application.
         private async UniTask SyncTableSheetsAsync()
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var container = await Resources
                 .LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath)
                 .ToUniTask();
@@ -1056,12 +1066,18 @@ namespace Nekoyume.Game
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] load container: {sw.Elapsed}");
+            sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
             var dict = await Agent.GetStateBulkAsync(map.Keys);
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
+            sw.Restart();
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
@@ -1076,6 +1092,8 @@ namespace Nekoyume.Game
                 });
 
             TableSheets = new TableSheets(csv);
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] TableSheets cosntructor: {sw.Elapsed}");
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -1403,7 +1421,7 @@ namespace Nekoyume.Game
 
                 // NOTE: Check PlanetContext.NeedToTryAutoLogin.
                 //       If true, then update planet account infos for IntroScreen.
-                if (planetContext.CanAutoLogin.HasValue && planetContext.CanAutoLogin.Value)
+                if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
                     Debug.Log("[Game] CoLogin()... PlanetContext.NeedToTryAutoLogin is true.");
                     loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
@@ -1416,12 +1434,9 @@ namespace Nekoyume.Game
                         callback?.Invoke(false);
                         yield break;
                     }
-
-                    planetContext.SkipSocialAndPortalLogin = true;
                 }
                 else
                 {
-                    planetContext.SkipSocialAndPortalLogin = false;
                     introScreen.SetData(
                         _commandLineOptions.KeyStorePath,
                         ByteUtil.Hex(pk.ByteArray),
@@ -1431,7 +1446,6 @@ namespace Nekoyume.Game
             else
             {
                 Debug.Log("[Game] CoLogin()... LocalSystem.Login is false.");
-                planetContext.SkipSocialAndPortalLogin = false;
                 // NOTE: If we need to cover the Multiplanetary context on non-mobile platform,
                 //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
                 //       in here.
@@ -1441,9 +1455,9 @@ namespace Nekoyume.Game
                     planetContext);
             }
 
-            if (planetContext.SkipSocialAndPortalLogin.HasValue &&
-                planetContext.SkipSocialAndPortalLogin.Value)
+            if (planetContext.HasPledgedAccount)
             {
+                Debug.Log("[Game] CoLogin()... Has pledged account.");
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
                     ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
@@ -1452,8 +1466,6 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
-
-                planetContext.NeedToPledge = planetContext.SelectedPlanetAccountInfo!.AgentAddress is null;
 
                 sw.Reset();
                 sw.Start();
@@ -1504,7 +1516,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => portalSigninTask.IsCompleted);
             sw.Stop();
             Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync. Done.");
+            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
 
             var agentAddrInPortal = portalSigninTask.Result;
             // NOTE: Update PlanetContext.PlanetAccountInfos.
@@ -1521,7 +1533,8 @@ namespace Nekoyume.Game
                 planetContext.PlanetAccountInfos = planetContext.PlanetRegistry?.PlanetInfos
                     .Select(planetInfo => new PlanetAccountInfo(
                         planetInfo.ID,
-                        agentAddress: null))
+                        agentAddress: null,
+                        isAgentPledged: null))
                     .ToArray();
             }
             else
@@ -1545,9 +1558,9 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Check if the planets have at least one agent.
-            if (planetContext.PlanetAccountInfos!.Any(e => e.AgentAddress is not null))
+            if (planetContext.HasPledgedAccount)
             {
-                Debug.Log("[Game] CoLogin()... account exists. Show planet account infos popup.");
+                Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
                 introScreen.ShowPlanetAccountInfosPopup(planetContext, !loginSystem.Login);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
@@ -1556,19 +1569,17 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                           $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
 
-                var info = planetContext.SelectedPlanetAccountInfo!;
-                if (info.AgentAddress is null)
+                if (planetContext.IsSelectedPlanetAccountPledged)
                 {
-                    // NOTE: Player selected the planet that has no agent.
-                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
-                              " Player may have to make a pledge.");
-                    planetContext.NeedToPledge = true;
+                    // NOTE: Player selected the planet that has agent.
+                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
+                              " Player don't have to make a pledge.");
 
                     // NOTE: Complex logic here...
                     //       - LoginSystem.Login is false.
                     //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
-                    //         - Create a new agent in a new planet.
+                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
+                    //         - Import the agent key.
                     if (!loginSystem.Login)
                     {
                         // NOTE: QR code import sets loginSystem.Login to true.
@@ -1577,16 +1588,15 @@ namespace Nekoyume.Game
                 }
                 else
                 {
-                    // NOTE: Player selected the planet that has agent.
-                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
-                              " Player don't have to make a pledge.");
-                    planetContext.NeedToPledge = false;
+                    // NOTE: Player selected the planet that has no agent.
+                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
+                              " Player may have to make a pledge.");
 
                     // NOTE: Complex logic here...
                     //       - LoginSystem.Login is false.
                     //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
-                    //         - Import the agent key.
+                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
+                    //         - Create a new agent in a new planet.
                     if (!loginSystem.Login)
                     {
                         // NOTE: QR code import sets loginSystem.Login to true.
@@ -1618,10 +1628,9 @@ namespace Nekoyume.Game
                 }
 
                 Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
-                planetContext.NeedToPledge = true;
                 Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
                           " w/ planetContext.SelectedPlanetInfo.ID.");
-                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos.First(e =>
+                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 
@@ -1866,9 +1875,7 @@ namespace Nekoyume.Game
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var gameConfigState = States.Instance.GameConfigState;
-                var targetBlockIndex = nextRoundData.StartBlockIndex +
-                                       Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
+                var targetBlockIndex = nextRoundData.StartBlockIndex;
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
                 var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
@@ -1941,9 +1948,7 @@ namespace Nekoyume.Game
                 PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
-            var gameConfigState = States.Instance.GameConfigState;
-            var targetBlockIndex = row.StartedBlockIndex +
-                                   Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
+            var targetBlockIndex = row.StartedBlockIndex;
             var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);

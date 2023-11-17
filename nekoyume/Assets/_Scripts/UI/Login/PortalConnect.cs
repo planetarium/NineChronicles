@@ -19,6 +19,25 @@ namespace Nekoyume.UI
     using UniRx;
     public class PortalConnect
     {
+        private const string PlayerPrefsStringKeyPortalAccessToken = "PortalAccessToken";
+        private const string PlayerPrefsStringKeyPortalRefreshToken = "PortalRefreshToken";
+
+        public static bool HasCachedPortalAccessToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalAccessToken);
+
+        public static bool HasCachedPortalRefreshToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalRefreshToken);
+
+        public static string CachedPortalAccessToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalAccessToken)
+                ? PlayerPrefs.GetString(PlayerPrefsStringKeyPortalAccessToken)
+                : null;
+
+        public static string CachedPortalRefreshToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalRefreshToken)
+                ? PlayerPrefs.GetString(PlayerPrefsStringKeyPortalRefreshToken)
+                : null;
+
         [Serializable]
         public class RequestResult
         {
@@ -82,6 +101,8 @@ namespace Nekoyume.UI
         private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
 
+        public bool HasAccessToken => !string.IsNullOrEmpty(accessToken);
+
         public PortalConnect(string url)
         {
             PortalUrl = url ?? "https://nine-chronicles.com";
@@ -96,7 +117,18 @@ namespace Nekoyume.UI
                 deeplinkURL = "[none]";
             }
 
-            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl}), deeplinkURL({deeplinkURL})");
+            UpdateWithCached();
+
+            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl})" +
+                      $", deeplinkURL({deeplinkURL})" +
+                      $", accessToken({accessToken})" +
+                      $", refreshToken({refreshToken})");
+        }
+
+        private void UpdateWithCached()
+        {
+            accessToken = CachedPortalAccessToken;
+            refreshToken = CachedPortalRefreshToken;
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
@@ -282,30 +314,30 @@ namespace Nekoyume.UI
             var data = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
             if (data.resultCode is 3003 or 3004)
             {
-                await GetTokensSilently();
+                await GetTokensSilentlyAsync();
                 return true;
             }
 
             return false;
         }
 
-        private async Task GetTokensSilently()
+        public async Task GetTokensSilentlyAsync()
         {
             if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
             {
                 google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
             }
 
-            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)} invoked: google.State.Value({google.State.Value})");
+            Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)} invoked: google.State.Value({google.State.Value})");
 
             switch (google.State.Value)
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)}... Already signed in google. Anyway, invoke SendGoogleIdToken.");
                     await SendGoogleIdTokenAsync(google.IdToken);
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
-                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilently)}... Already waiting for google sign in.");
+                    Debug.Log($"[{nameof(PortalConnect)}] {nameof(GetTokensSilentlyAsync)}... Already waiting for google sign in.");
                     return;
                 case GoogleSigninBehaviour.SignInState.Undefined:
                 case GoogleSigninBehaviour.SignInState.Canceled:
@@ -446,7 +478,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            await GetTokensSilently();
+            await GetTokensSilentlyAsync();
             SetRefreshTokenToPlayerPrefs(address.ToString());
         }
 
@@ -464,6 +496,9 @@ namespace Nekoyume.UI
                     Debug.Log($"{logTitle} Success: {json}");
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
+
+                    PlayerPrefs.SetString(PlayerPrefsStringKeyPortalAccessToken, accessToken);
+                    PlayerPrefs.SetString(PlayerPrefsStringKeyPortalRefreshToken, refreshToken);
                     return true;
                 }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
@@ -8,6 +9,7 @@ using Nekoyume.TableData.Garages;
 using Nekoyume.TableData.GrandFinale;
 using Nekoyume.TableData.Pet;
 using Nekoyume.TableData.Summon;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.Game
 {
@@ -18,6 +20,9 @@ namespace Nekoyume.Game
         public TableSheets(IDictionary<string, string> sheets)
         {
             var type = typeof(TableSheets);
+            var started = DateTime.UtcNow;
+            var sw = new Stopwatch();
+            sw.Start();
             foreach (var pair in sheets)
             {
                 var sheetPropertyInfo = type.GetProperty(pair.Key);
@@ -28,8 +33,12 @@ namespace Nekoyume.Game
                     sb.Append(" / failed to get property");
                     throw new Exception(sb.ToString());
                 }
-
+                var innerSw = new Stopwatch();
+                innerSw.Start();
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
+                innerSw.Stop();
+                Debug.Log($"[TableSheets/{pair.Key}] CreateInstance: {innerSw.Elapsed}");
+                innerSw.Restart();
                 var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
@@ -43,12 +52,24 @@ namespace Nekoyume.Game
                 {
                     iSheet.Set(pair.Value);
                 }
-
+                innerSw.Stop();
+                Debug.Log($"[TableSheets/{pair.Key}] Set: {innerSw.Elapsed}");
+                innerSw.Restart();
                 sheetPropertyInfo.SetValue(this, sheetObject);
+                innerSw.Stop();
+                Debug.Log($"[TableSheets/{pair.Key}] Set Property: {innerSw.Elapsed}");
             }
-
+            sw.Stop();
+            Debug.Log($"[TableSheets] Set Sheets: {sw.Elapsed}");
+            sw.Restart();
             ItemSheetInitialize();
+            sw.Stop();
+            Debug.Log($"[TableSheets] Initialize ItemSheet: {sw.Elapsed}");
+            sw.Restart();
             QuestSheetInitialize();
+            sw.Stop();
+            Debug.Log($"[TableSheets] Initialize QuestSheet: {sw.Elapsed}");
+            Debug.Log($"[TableSheets] Constructor Total: {DateTime.UtcNow - started}");
         }
 
         public WorldSheet WorldSheet { get; private set; }
