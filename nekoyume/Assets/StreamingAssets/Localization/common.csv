@@ -772,6 +772,7 @@ UI_COMBINATION_SLOT_IDENTIFYING,Identifying {0},{0} 감정하는 중,Identifican
 UI_TRADABLE,Tradable,거래 가능,Negociável,取引可能,Negociable,ซื้อขายได้,Dapat diperdagangkan,Торговый,可交易,可交易,Maaaring ma-trade,Giao dịch
 UI_UNTRADABLE,Untradeable,거래 불가,Imobilizado,トレードできません,No negociable,ไม่สามารถซื้อขายได้,Tidak bisa dibawa,Нетронутый,无法交易,無法交易,Hindi maaaring ma-trade,Không thể phá hủy
 UI_COUNT_FORMAT,Count : {0},보유 : {0},Contagem: {0},カウント：{0},Cantidad: {0},นับ : {0},Hitung: {0},Количество: {0},计数：{0},計數：{0},Bilang : {0},Đếm: {0}
+UI_ITEM_GRADE_0,All,모두,Todos,全て,Todo,ทั้งหมด,Semua,,全部,全部,Lahat,Tất cả
 UI_ITEM_GRADE_1,Normal,노멀,Normal,正常,Normal,ปกติ,Normal,Обычный,普通的,普通的,Normal,Bình thường
 UI_ITEM_GRADE_2,Rare,레어,Cru,レア,Raro,หายาก,Langka,Редкий,稀有的,稀有的,Bihira,Hiếm
 UI_ITEM_GRADE_3,Epic,에픽,Épico,大作,Épico,มหากาพย์,Epik,эпический,史诗,史詩,Epiko,Sử thi
@@ -1774,3 +1775,5 @@ UI_SEASONPASS_RECEIVE_ALL,Receive ALL,모두 받기,Receber tudo,すべてを受
 UI_SEASONPASS_HELP_IMAGE_TITLE,Gain Courage Experience!,용기 경험치를 획득하세요!,Ganhe experiência de coragem!,勇気の経験を積む！,¡Obtenga experiencia de coraje!,ได้รับประสบการณ์ความกล้าหาญ!,Dapatkan pengalaman keberanian!,Получите мужество!,获得勇气的经验！,獲得勇氣的經驗！,Makakuha ng karanasan sa lakas ng loob!,Có được kinh nghiệm can đảm!
 UI_SEASONPASS_HELP_IMAGE_INFO,It can be obtained through battle.,전투에서 획득 가능합니다.,Pode ser obtido através da batalha.,それは戦いを通して得ることができます。,Se puede obtener a través de la batalla.,สามารถรับได้ผ่านการต่อสู้,Itu bisa diperoleh melalui pertempuran.,Это может быть получено с помощью битвы.,可以通过战斗获得。,可以通過戰鬥獲得。,Maaari itong makuha sa pamamagitan ng labanan.,Nó có thể có được thông qua trận chiến.
 UI_SEASONPASS_HELP_IMAGE_OK,OK,확인,OK,わかりました,DE ACUERDO,ตกลง,OKE,ХОРОШО,好的,好的,Ok,ĐƯỢC RỒI
+UI_UNLOCK_STAGE,Order of unlocking,언락 순서,Ordem de desbloqueio,ロック解除の順序,Orden de desbloqueo,คำสั่งปลดล็อค,Urutan Buka Kunci,,解锁的顺序,解鎖的順序,Order ng pag -unlock,Thứ tự mở khóa
+UI_GRADE,Grade,등급,,,,,,,,,,
