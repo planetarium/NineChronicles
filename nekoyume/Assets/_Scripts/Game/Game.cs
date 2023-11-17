@@ -280,6 +280,12 @@ namespace Nekoyume.Game
 
             AirbridgeEvent @event2 = new AirbridgeEvent("login");
             AirbridgeUnity.TrackEvent(@event2);
+
+
+            AirbridgeEvent @event3 = new AirbridgeEvent("test value");
+            event2.SetInAppPurchased(true);
+            AirbridgeUnity.TrackEvent(@event3);
+
             Debug.Log("=============[airbridge end]================");
 
             // Initialize LiveAssetManager, Create RequestManager
