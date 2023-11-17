@@ -553,8 +553,14 @@ namespace Nekoyume.UI
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (planetContext.SkipSocialAndPortalLogin.HasValue &&
-                planetContext.SkipSocialAndPortalLogin.Value)
+            if (!planetContext.HasAccount)
+            {
+                // NOTE: Unexpected case.
+                Debug.LogError("[IntroScreen] planetContext.HasAccount is false");
+                startButtonGO.SetActive(false);
+                socialButtonsGO.SetActive(false);
+            }
+            else if (planetContext.HasPledgedAccount)
             {
                 startButtonGO.SetActive(true);
                 socialButtonsGO.SetActive(false);
