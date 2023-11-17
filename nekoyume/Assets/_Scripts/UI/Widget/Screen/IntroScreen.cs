@@ -197,8 +197,10 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject startButtonGO;
         [SerializeField] private Button startButton;
         [SerializeField] private GameObject socialButtonsGO;
-        [SerializeField] private Button googleSignInButton;
         [SerializeField] private Button appleSignInButton;
+        [SerializeField] private Button googleSignInButton;
+        [SerializeField] private Button twitterSignInButton;
+        [SerializeField] private Button discordSignInButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -253,6 +255,13 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
             });
+            appleSignInButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click apple sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                startButtonContainer.SetActive(false);
+                ProcessAppleSigning();
+            });
             googleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
@@ -260,12 +269,17 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
             });
-            appleSignInButton.onClick.AddListener(() =>
+            twitterSignInButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click apple sign in button.");
-                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
-                startButtonContainer.SetActive(false);
-                ProcessAppleSigning();
+                Debug.Log("[IntroScreen] Click twitter sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
+                ShowPortalConnectGuidePopup(SigninContext.SocialType.Twitter);
+            });
+            discordSignInButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click discord sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
+                ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
             signinButton.onClick.AddListener(() =>
             {
@@ -332,10 +346,8 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
-            googleSignInButton.interactable = true;
 #if UNITY_IOS
             appleSignInButton.gameObject.SetActive(true);
-            appleSignInButton.interactable = true;
 #else
             appleSignInButton.gameObject.SetActive(false);
 #endif
@@ -690,6 +702,27 @@ namespace Nekoyume.UI
                             throw new ArgumentOutOfRangeException(nameof(state), state, null);
                     }
                 });
+        }
+
+        private void ShowPortalConnectGuidePopup(SigninContext.SocialType socialType)
+        {
+            if (!TryFind<TitleOneButtonSystem>(out var popup))
+            {
+                popup = Create<TitleOneButtonSystem>();
+            }
+
+            popup.SubmitCallback = () =>
+            {
+                popup.Close();
+                Application.OpenURL("http://nine-chronicles.com/connect-guide");
+            };
+            popup.Show(
+                L10nManager.Localize("UI_INFORMATION_CHARACTER_SELECT"),
+                L10nManager.Localize(
+                    "STS_YOU_CAN_CONNECT_0_TO_APPLE_OR_GOOGLE_ON_PORTAL_FORMAT",
+                    socialType.ToString()),
+                L10nManager.Localize("BTN_OPEN_A_BROWSER"),
+                localize: false);
         }
     }
 }
