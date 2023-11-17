@@ -8,6 +8,8 @@ namespace Nekoyume.UI
         {
             Google,
             Apple,
+            Twitter,
+            Discord,
         }
 
         private const string PlayerPrefsIntKeyLatestSignedInSocialType = "LatestSignedInSocialType";
