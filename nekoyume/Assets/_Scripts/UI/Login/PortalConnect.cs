@@ -458,6 +458,8 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
+                AirbridgeEvent @event = new AirbridgeEvent("Login");
+                AirbridgeUnity.TrackEvent(@event);
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
@@ -494,6 +496,8 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/ConnectedToPortal");
+                AirbridgeEvent @event = new AirbridgeEvent("Login");
+                AirbridgeUnity.TrackEvent(@event);
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {
