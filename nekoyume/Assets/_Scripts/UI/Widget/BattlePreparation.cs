@@ -728,17 +728,23 @@ namespace Nekoyume.UI
             }
 
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
-                .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
+            var canSweep = false;
+            const int sweepableStage = 23;
+            if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStage))
+            {
+                canSweep = lastClearedStage >= sweepableStage;
+            }
+
             startButton.gameObject.SetActive(canBattle);
 
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(!IsFirstStage);
+                    sweepPopupButton.gameObject.SetActive(canSweep);
                     break;
                 case StageType.Mimisbrunnr:
                     boostPopupButton.gameObject.SetActive(canBattle);
