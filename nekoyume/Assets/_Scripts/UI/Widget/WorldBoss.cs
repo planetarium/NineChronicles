@@ -34,6 +34,9 @@ namespace Nekoyume.UI
         private Button backButton;
 
         [SerializeField]
+        private TextMeshProUGUI backButtonText;
+
+        [SerializeField]
         public Button rewardButton;
 
         [SerializeField]
@@ -286,6 +289,7 @@ namespace Nekoyume.UI
                 ? data.name
                 : string.Empty;
             titleText.text = bossName;
+            backButtonText.text = bossName;
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
