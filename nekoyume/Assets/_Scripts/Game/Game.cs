@@ -265,7 +265,13 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
-
+            AirbridgeEvent @event = new AirbridgeEvent("test-category");
+            @event.SetAction("test-action");
+            @event.SetLabel("test-label");
+            @event.SetValue(9999);
+            @event.AddCustomAttribute("custom_key", "test_value");
+            @event.AddSemanticAttribute("query", "query_123");
+            AirbridgeUnity.TrackEvent(@event);
             // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
@@ -357,7 +363,7 @@ namespace Nekoyume.Game
                 .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 
@@ -373,7 +379,7 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);    
+                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
                 }
             }
 #endif
