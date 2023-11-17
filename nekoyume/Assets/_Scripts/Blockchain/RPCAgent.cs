@@ -441,6 +441,19 @@ namespace Nekoyume.Blockchain
             return result;
         }
 
+        public async Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList)
+        {
+            Dictionary<byte[], byte[]> raw =
+                await _service.GetSheets(addressList.Select(a => a.ToByteArray()),
+                    BlockTipHash.ToByteArray());
+            var result = new Dictionary<Address, IValue>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+            }
+            return result;
+        }
+
         public void SendException(Exception exc)
         {
         }

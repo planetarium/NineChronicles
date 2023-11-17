@@ -559,7 +559,13 @@ namespace Nekoyume.Game
             var initializeSecondWidgetsCoroutine = StartCoroutine(CoInitializeSecondWidget());
 
 #if RUN_ON_MOBILE
-            PortalConnect.CheckTokens(States.AgentState.address);
+            var checkTokensTask = PortalConnect.CheckTokensAsync(States.AgentState.address);
+            yield return checkTokensTask.AsCoroutine();
+            if (!checkTokensTask.Result)
+            {
+                QuitWithMessage(L10nManager.Localize("ERROR_INITIALIZE_FAILED"),"Failed to Get Tokens.");
+                yield break;
+            }
 
             if (!planetContext.IsSelectedPlanetAccountPledged)
             {
@@ -1074,7 +1080,7 @@ namespace Nekoyume.Game
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
-            var dict = await Agent.GetStateBulkAsync(map.Keys);
+            var dict = await Agent.GetSheetsAsync(map.Keys);
             sw.Stop();
             Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
             sw.Restart();
@@ -1489,7 +1495,7 @@ namespace Nekoyume.Game
 
             // NOTE: Social login flow.
             Debug.Log("[Game] CoLogin()... Go to social login flow.");
-            var socialType = IntroScreen.SocialType.Apple;
+            var socialType = SigninContext.SocialType.Apple;
             string email = null;
             string idToken = null;
             introScreen.OnSocialSignedIn.AsObservable()
@@ -1510,7 +1516,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
             sw.Reset();
             sw.Start();
-            var portalSigninTask = socialType == IntroScreen.SocialType.Apple
+            var portalSigninTask = socialType == SigninContext.SocialType.Apple
                 ? PortalConnect.SendAppleIdTokenAsync(idToken)
                 : PortalConnect.SendGoogleIdTokenAsync(idToken);
             yield return new WaitUntil(() => portalSigninTask.IsCompleted);

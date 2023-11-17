@@ -805,6 +805,40 @@ namespace Nekoyume.UI
                 return;
             }
 
+
+            if(unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
+            {
+                var rewards = new List<MailReward>();
+                if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
+                {
+                    rewards.AddRange(
+                        unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
+                            new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                }
+
+                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                {
+                    var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                    foreach (var (fungibleId, count) in
+                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                    }
+                }
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+                return;
+            }
+
             var showQueue = new Queue<System.Action>();
             if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
             {

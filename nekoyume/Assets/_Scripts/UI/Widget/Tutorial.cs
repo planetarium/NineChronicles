@@ -101,7 +101,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            skipButton.gameObject.SetActive(true);
+            const int skippableTutorialId = 50011;
+            var isSkippable = Game.Game.instance.Stage.TutorialController.LastPlayedTutorialId >
+                              skippableTutorialId;
+            skipButton.gameObject.SetActive(isSkippable);
             _finishRef = 0;
             _isPlaying = true;
 
