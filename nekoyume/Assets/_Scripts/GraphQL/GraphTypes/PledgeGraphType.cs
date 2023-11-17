@@ -8,7 +8,7 @@ namespace Nekoyume.GraphQL.GraphTypes
         public class InnerType
         {
             [JsonPropertyName("patronAddress")]
-            public Address PatronAddress;
+            public Address? PatronAddress;
 
             [JsonPropertyName("approved")]
             public bool Approved;
