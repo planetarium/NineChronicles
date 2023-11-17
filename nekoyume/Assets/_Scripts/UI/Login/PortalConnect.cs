@@ -378,6 +378,14 @@ namespace Nekoyume.UI
             if (HandleTokensResult(request))
             {
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/ConnectedToPortal");
+                AirbridgeEvent @event = new AirbridgeEvent("test-category");
+                @event.SetAction("test-action");
+                @event.SetLabel("test-label");
+                @event.SetValue(9999);
+                @event.AddCustomAttribute("custom_key", "test_value");
+                @event.AddSemanticAttribute("query", "query_123");
+                AirbridgeUnity.TrackEvent(@event);
+
                 var accessTokenResult = JsonUtility.FromJson<AccessTokenResult>(request.downloadHandler.text);
                 if (!string.IsNullOrEmpty(accessTokenResult.address))
                 {

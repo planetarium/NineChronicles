@@ -202,6 +202,13 @@ namespace Nekoyume.IAPStore
                         ("product-id", e.purchasedProduct.definition.id),
                         ("result", "Complete"),
                         ("transaction-id", e.purchasedProduct.transactionID));
+
+                    var @event = new AirbridgeEvent("iap");
+                    @event.SetAction("purchase-result");
+                    @event.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
+                    @event.AddCustomAttribute("transaction-id", e.purchasedProduct.transactionID);
+                    AirbridgeUnity.TrackEvent(@event);
+
                     popup.Show(
                         "UI_COMPLETED",
                         "UI_IAP_PURCHASE_COMPLETE",
