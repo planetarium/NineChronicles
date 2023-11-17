@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var nextState = ExecuteInternal(previousStates, 2040);
+            var nextState = ExecuteInternal(previousStates, 2448);
             var nextGameConfigState = nextState.GetGameConfigState();
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.NotNull(nextAvatarState);
@@ -97,11 +97,11 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 0, true)]
-        [InlineData(0, 2039, true)]
-        [InlineData(0, 2040, false)]
-        [InlineData(2040, 2040, true)]
-        [InlineData(2040, 2040 + 2039, true)]
-        [InlineData(2040, 2040 + 2040, false)]
+        [InlineData(0, 2447, true)]
+        [InlineData(0, 2448, false)]
+        [InlineData(2448, 2448, true)]
+        [InlineData(2448, 2448 + 2447, true)]
+        [InlineData(2448, 2448 + 2448, false)]
         public void Execute_Throw_RequiredBlockIndexException(
             long dailyRewardReceivedIndex,
             long executeBlockIndex,

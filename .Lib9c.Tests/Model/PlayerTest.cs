@@ -305,21 +305,21 @@ namespace Lib9c.Tests.Model
             );
             player.SetCostumeStat(_tableSheets.CostumeStatSheet);
 
-            Assert.Equal(600, player.HP);
-            Assert.Equal(600, player.CurrentHP);
+            Assert.Equal(27290, player.HP);
+            Assert.Equal(27290, player.CurrentHP);
 
             Assert.Equal(1, player.Level);
 
             player.CurrentHP -= 10;
 
-            Assert.Equal(590, player.CurrentHP);
+            Assert.Equal(27280, player.CurrentHP);
 
             var requiredExp = _tableSheets.CharacterLevelSheet[1].ExpNeed;
             player.GetExp2(requiredExp);
 
             Assert.Equal(2, player.Level);
-            Assert.Equal(612, player.HP);
-            Assert.Equal(590, player.CurrentHP);
+            Assert.Equal(27302, player.HP);
+            Assert.Equal(27280, player.CurrentHP);
         }
 
         [Theory]
