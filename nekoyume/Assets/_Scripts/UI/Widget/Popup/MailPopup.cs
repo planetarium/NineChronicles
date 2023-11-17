@@ -245,12 +245,23 @@ namespace Nekoyume.UI
                     if (eItem is not null)
                     {
                         mailRewards.Add(new MailReward(eItem, 1));
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            eItem.ItemId,
-                            eItem.RequiredBlockIndex,
-                            1,
-                            false);
+                        if (eItem.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                false);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                eItem.RequiredBlockIndex,
+                                1,
+                                false);
+                        }
                     }
                     break;
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
