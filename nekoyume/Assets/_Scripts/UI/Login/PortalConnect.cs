@@ -19,6 +19,25 @@ namespace Nekoyume.UI
     using UniRx;
     public class PortalConnect
     {
+        private const string PlayerPrefsStringKeyPortalAccessToken = "PortalAccessToken";
+        private const string PlayerPrefsStringKeyPortalRefreshToken = "PortalRefreshToken";
+
+        public static bool HasCachedPortalAccessToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalAccessToken);
+
+        public static bool HasCachedPortalRefreshToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalRefreshToken);
+
+        public static string CachedPortalAccessToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalAccessToken)
+                ? PlayerPrefs.GetString(PlayerPrefsStringKeyPortalAccessToken)
+                : null;
+
+        public static string CachedPortalRefreshToken =>
+            PlayerPrefs.HasKey(PlayerPrefsStringKeyPortalRefreshToken)
+                ? PlayerPrefs.GetString(PlayerPrefsStringKeyPortalRefreshToken)
+                : null;
+
         [Serializable]
         public class RequestResult
         {
@@ -98,7 +117,18 @@ namespace Nekoyume.UI
                 deeplinkURL = "[none]";
             }
 
-            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl}), deeplinkURL({deeplinkURL})");
+            UpdateWithCached();
+
+            Debug.Log($"[{nameof(PortalConnect)}] constructed: PortalUrl({PortalUrl})" +
+                      $", deeplinkURL({deeplinkURL})" +
+                      $", accessToken({accessToken})" +
+                      $", refreshToken({refreshToken})");
+        }
+
+        private void UpdateWithCached()
+        {
+            accessToken = CachedPortalAccessToken;
+            refreshToken = CachedPortalRefreshToken;
         }
 
         public void OpenPortal(System.Action onPortalEnd = null)
@@ -466,6 +496,9 @@ namespace Nekoyume.UI
                     Debug.Log($"{logTitle} Success: {json}");
                     accessToken = data.accessToken;
                     refreshToken = data.refreshToken;
+
+                    PlayerPrefs.SetString(PlayerPrefsStringKeyPortalAccessToken, accessToken);
+                    PlayerPrefs.SetString(PlayerPrefsStringKeyPortalRefreshToken, refreshToken);
                     return true;
                 }
 
