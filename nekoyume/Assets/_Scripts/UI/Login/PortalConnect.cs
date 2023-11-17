@@ -82,6 +82,8 @@ namespace Nekoyume.UI
         private const string ClientSecretKey = "Cached_ClientSecret";
         private const int Timeout = 180;
 
+        public bool HasAccessToken => !string.IsNullOrEmpty(accessToken);
+
         public PortalConnect(string url)
         {
             PortalUrl = url ?? "https://nine-chronicles.com";
