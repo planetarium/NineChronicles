@@ -347,9 +347,9 @@ namespace Nekoyume.UI
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
 #if UNITY_IOS
-            appleSignInButton.gameObject.SetActive(true);
+            appleSignInButton.interactable = true;
 #else
-            appleSignInButton.gameObject.SetActive(false);
+            appleSignInButton.interactable = false;
 #endif
             GetGuestPrivateKey();
         }
