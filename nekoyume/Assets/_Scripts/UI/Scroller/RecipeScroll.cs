@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
 
         public enum Filter
         {
-            Default,
+            UnlockedStage,
             Name,
             Level,
             Grade,
@@ -266,7 +266,7 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.Default, true, items);
+            SetFilterAndAscending(Filter.UNLOCK_STAGE, true, items);
 
             jumpToRecipe ??= items.LastOrDefault(row => !IsEquipmentLocked(row));
             JumpTo(jumpToRecipe);
@@ -342,7 +342,7 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.Default, true, items);
+            SetFilterAndAscending(Filter.LEVEL, true, items);
 
             var max = items.LastOrDefault(row => !IsConsumableLocked(row));
             JumpTo(max);
@@ -403,7 +403,7 @@ namespace Nekoyume.UI.Scroller
             emptyObjectText.gameObject.SetActive(!items.Any());
             sortArea.container.SetActive(items.Any());
             eventScheduleTab.container.SetActive(items.Any());
-            SetFilterAndAscending(Filter.Default, true, items, true);
+            SetFilterAndAscending(Filter.LEVEL, true, items, true);
         }
 
         private void UpdateEventScheduleEntireTime(EventScheduleSheet.Row row)
@@ -560,9 +560,26 @@ namespace Nekoyume.UI.Scroller
                 return Game.Game.instance.TableSheets.ItemSheet[ResultItemId(recipeRow)].Grade;
             }
 
+            int GetItemUnlockStage(T recipeRow)
+            {
+                return recipeRow is EquipmentItemRecipeSheet.Row equipmentRecipe
+                    ? equipmentRecipe.UnlockStage
+                    : GetDefault(recipeRow);
+            }
+
+            int GetDefault(T recipeRow)
+            {
+                return recipeRow.Key;
+            }
+
             IEnumerable<T> sortedItems;
             switch (selectedFilter)
             {
+                case Filter.UnlockedStage:
+                    sortedItems = isAscending
+                        ? items.OrderBy(GetItemUnlockStage)
+                        : items.OrderByDescending(GetItemUnlockStage);
+                    break;
                 case Filter.Name:
                     sortedItems = isAscending
                         ? items.OrderBy(GetItemNameString)
@@ -578,11 +595,10 @@ namespace Nekoyume.UI.Scroller
                         ? items.OrderBy(GetItemGrade)
                         : items.OrderByDescending(GetItemGrade);
                     break;
-                case Filter.Default:
                 default:
                     sortedItems = isAscending
-                        ? items.OrderBy(x => x.Key)
-                        : items.OrderByDescending(x => x.Key);
+                        ? items.OrderBy(GetDefault)
+                        : items.OrderByDescending(GetDefault);
                     break;
             }
 
