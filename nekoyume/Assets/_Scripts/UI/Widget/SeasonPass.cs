@@ -146,8 +146,13 @@ namespace Nekoyume.UI
 
             if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd))
             {
-                Find<SeasonPassCouragePopup>().Show();
-                PlayerPrefs.SetInt(SeasonPassCouragePopupViewd, 1);
+                async UniTaskVoid ShowCellEffect()
+                {
+                    await UniTask.Delay(miniumDurationCount);
+                    Find<SeasonPassCouragePopup>().Show();
+                    PlayerPrefs.SetInt(SeasonPassCouragePopupViewd, 1);
+                }
+                ShowCellEffect().Forget();
             }
         }
 
