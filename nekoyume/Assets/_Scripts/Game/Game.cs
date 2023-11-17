@@ -1404,7 +1404,7 @@ namespace Nekoyume.Game
 
                 // NOTE: Check PlanetContext.NeedToTryAutoLogin.
                 //       If true, then update planet account infos for IntroScreen.
-                if (planetContext.CanAutoLogin.HasValue && planetContext.CanAutoLogin.Value)
+                if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
                     Debug.Log("[Game] CoLogin()... PlanetContext.NeedToTryAutoLogin is true.");
                     loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
