@@ -974,8 +974,8 @@ GameObject:
   - component: {fileID: 2002465725931553163}
   - component: {fileID: 1999777664928581735}
   - component: {fileID: 3772828481787680937}
-  - component: {fileID: 6282393006862647250}
   - component: {fileID: 1088898389683989073}
+  - component: {fileID: 1165139598359571559}
   m_Layer: 5
   m_Name: UI_SeasonPassCouragePopup
   m_TagString: Untagged
@@ -1034,20 +1034,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6282393006862647250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1788435547851897477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2bca9c78ad01674cb1c0cf131efbb59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
 --- !u!114 &1088898389683989073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1060,6 +1046,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb219b23cdf4b314f94a27bca3cc8012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1165139598359571559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788435547851897477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0530da487c85ae4fa5630df70215e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  arena: {fileID: 8690405418797617073}
+  worldboss: {fileID: 4466451891038372331}
+  advanture: {fileID: 1817446403469719386}
 --- !u!1 &2024678792591281648
 GameObject:
   m_ObjectHideFlags: 0
@@ -8362,10 +8365,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6282393006862647250}
-        m_TargetAssemblyTypeName: Nekoyume.UI.SeasonPassNew_Popup, Nekoyume
-        m_MethodName: OnSeasonPassBtnClick
-        m_Mode: 1
+      - m_Target: {fileID: 1165139598359571559}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
