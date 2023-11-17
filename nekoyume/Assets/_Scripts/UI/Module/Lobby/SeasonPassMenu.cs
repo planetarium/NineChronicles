@@ -20,6 +20,8 @@ namespace Nekoyume.UI.Module.Lobby
         private GameObject notificationObj;
         [SerializeField]
         private GameObject dim;
+        [SerializeField]
+        private GameObject iconRoot;
 
         private const int SeasonPassNewPopupLimitClearedStageId = 15;
 
@@ -27,9 +29,11 @@ namespace Nekoyume.UI.Module.Lobby
         {
             _requireStage = SeasonPassNewPopupLimitClearedStageId;
             dim.SetActive(false);
+            iconRoot.SetActive(true);
             var seasonPassService = Game.Game.instance.SeasonPassServiceManager;
             seasonPassService.AvatarInfo.Subscribe((info)=> {
                 dim.SetActive(info == null);
+                iconRoot.SetActive(info != null);
                 if (info == null)
                 {
                     return;
