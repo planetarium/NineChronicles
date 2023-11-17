@@ -33,7 +33,6 @@ namespace Nekoyume.Game.OAuth
 
         public string Email { get; private set; } = string.Empty;
         public string IdToken { get; private set; } = string.Empty;
-        public Address? AgentAddress { get; private set; } = null;
 
         public void OnSignIn()
         {

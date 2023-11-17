@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,8 +33,10 @@ namespace Nekoyume.Planet
         public static string CachedPlanetIdString =>
             PlayerPrefs.GetString(CachedPlanetIdStringKey);
 
-        public static Subject<(PlanetContext planetContext, PlanetInfo planetInfo)>
-            CurrentPlanetInfoSubject { get; } = new();
+        public static Subject<(PlanetContext planetContext, PlanetInfo? planetInfo)>
+            SelectedPlanetInfoSubject { get; } = new();
+        public static Subject<(PlanetContext planetContext, PlanetAccountInfo? planetAccountInfo)>
+            SelectedPlanetAccountInfoSubject { get; } = new();
 
         public static async UniTask<PlanetContext> InitializePlanetRegistryAsync(
             PlanetContext context)
@@ -84,10 +88,6 @@ namespace Nekoyume.Planet
             sw.Start();
             await context.PlanetRegistry.InitializeAsync();
             sw.Stop();
-            context.ElapsedTuples.Add((
-                "Unity_Elapsed_Initialize_PlanetRegistry",
-                sw.ElapsedMilliseconds,
-                "Fetching planet infos from planet registry."));
             Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (!context.PlanetRegistry.IsInitialized)
             {
@@ -122,8 +122,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.NeedToAutoLogin = !context.HasError;
-                    if (context.NeedToAutoLogin.Value)
+                    context.CanAutoLogin = !context.HasError;
+                    if (context.CanAutoLogin.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
@@ -156,8 +156,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.NeedToAutoLogin = !context.HasError;
-                    if (context.NeedToAutoLogin.Value)
+                    context.CanAutoLogin = !context.HasError;
+                    if (context.CanAutoLogin.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
@@ -291,8 +291,8 @@ namespace Nekoyume.Planet
             }
 
             Debug.Log($"[PlanetSelector] Planet({planetInfo.ID}, {planetInfo.Name}) selected successfully.");
-            CurrentPlanetInfoSubject.OnNext((context, context.SelectedPlanetInfo));
-            return context;
+            SelectedPlanetInfoSubject.OnNext((context, context.SelectedPlanetInfo));
+            return UpdateSelectedPlanetAccountInfo(context);
         }
 
         #endregion
@@ -345,7 +345,7 @@ namespace Nekoyume.Planet
 
                 Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
-                AgentGraphType agentGraphType;
+                AgentGraphType? agentGraphType;
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
                 client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
                 try
@@ -391,10 +391,6 @@ namespace Nekoyume.Planet
             }
 
             sw.Stop();
-            context.ElapsedTuples.Add((
-                "Unity_Elapsed_Update_PlanetAccountInfos",
-                sw.ElapsedMilliseconds,
-                "Fetching agent and avatars from planets."));
             Debug.Log($"[PlanetSelector] PlanetAccountInfos({planetAccountInfos.Count})" +
                       $" updated in {sw.ElapsedMilliseconds}ms.(elapsed)");
 
@@ -406,7 +402,7 @@ namespace Nekoyume.Planet
             context.PlanetAccountInfos = planetAccountInfos.ToArray();
             Debug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
                       " updated successfully.");
-            return context;
+            return UpdateSelectedPlanetAccountInfo(context);
         }
 
         public static PlanetContext SelectPlanetAccountInfo(PlanetContext context, PlanetId planetId)
@@ -435,7 +431,20 @@ namespace Nekoyume.Planet
             }
 
             context.SelectedPlanetAccountInfo = info;
+            SelectedPlanetAccountInfoSubject.OnNext((context, context.SelectedPlanetAccountInfo));
             return context;
+        }
+
+        private static PlanetContext UpdateSelectedPlanetAccountInfo(PlanetContext context)
+        {
+            Debug.Log("[PlanetSelector] Updating SelectedPlanetAccountInfo...");
+            if (context.SelectedPlanetInfo is null ||
+                context.PlanetAccountInfos is null)
+            {
+                return context;
+            }
+
+            return SelectPlanetAccountInfo(context, context.SelectedPlanetInfo.ID);
         }
 
         #endregion
