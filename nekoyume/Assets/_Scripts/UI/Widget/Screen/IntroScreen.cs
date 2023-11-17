@@ -264,20 +264,23 @@ namespace Nekoyume.UI
             });
             startButton.onClick.AddListener(() =>
             {
+                Debug.Log("[IntroScreen] Click start button.");
+                Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
-                Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
             });
             googleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
+                startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
             });
             appleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                startButtonContainer.SetActive(false);
                 ProcessAppleSigning();
             });
             signinButton.onClick.AddListener(() =>
@@ -602,7 +605,7 @@ namespace Nekoyume.UI
             };
         }
 
-        public void ProcessGoogleSigning()
+        private void ProcessGoogleSigning()
         {
             if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
             {
@@ -629,8 +632,6 @@ namespace Nekoyume.UI
 
             Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
             google.OnSignIn();
-            startButtonContainer.SetActive(false);
-            googleSignInButton.gameObject.SetActive(false);
             google.State
                 .SkipLatestValueOnSubscribe()
                 .First()
@@ -643,7 +644,6 @@ namespace Nekoyume.UI
                             return;
                         case GoogleSigninBehaviour.SignInState.Canceled:
                             startButtonContainer.SetActive(true);
-                            googleSignInButton.gameObject.SetActive(true);
                             Find<DimmedLoadingScreen>().Close();
                             break;
                         case GoogleSigninBehaviour.SignInState.Signed:
@@ -656,7 +656,7 @@ namespace Nekoyume.UI
                 });
         }
 
-        public void ProcessAppleSigning()
+        private void ProcessAppleSigning()
         {
             if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
             {
@@ -684,8 +684,6 @@ namespace Nekoyume.UI
 
             Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
             apple.OnSignIn();
-            startButtonContainer.SetActive(false);
-            appleSignInButton.gameObject.SetActive(false);
             apple.State
                 .SkipLatestValueOnSubscribe()
                 .First()
@@ -698,7 +696,6 @@ namespace Nekoyume.UI
                             return;
                         case AppleSigninBehaviour.SignInState.Canceled:
                             startButtonContainer.SetActive(true);
-                            appleSignInButton.gameObject.SetActive(true);
                             Find<DimmedLoadingScreen>().Close();
                             break;
                         case AppleSigninBehaviour.SignInState.Signed:
