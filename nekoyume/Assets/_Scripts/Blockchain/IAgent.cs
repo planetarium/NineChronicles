@@ -93,5 +93,7 @@ namespace Nekoyume.Blockchain
         Task<Dictionary<Address, IValue>> GetStateBulkAsync(
             IEnumerable<Address> addressList,
             HashDigest<SHA256> stateRootHash);
+
+        Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList);
     }
 }
