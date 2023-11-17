@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
@@ -18,13 +20,13 @@ public class AirbridgeSettingsWindow : EditorWindow
 
         SerializedProperty appNameProperty = serializedAirbridgeData.FindProperty("appName");
         EditorGUILayout.PropertyField(appNameProperty, new GUILayoutOption[] { });
-        
+
         SerializedProperty appTokenProperty = serializedAirbridgeData.FindProperty("appToken");
         EditorGUILayout.PropertyField(appTokenProperty, new GUILayoutOption[] { });
 
         SerializedProperty logLevel = serializedAirbridgeData.FindProperty("logLevel");
         logLevel.intValue = EditorGUILayout.Popup("Log Level", logLevel.intValue, AirbridgeLogLevel.LogLevel);
-        
+
         SerializedProperty iOSURISchemeProperty = serializedAirbridgeData.FindProperty("iOSURIScheme");
         EditorGUILayout.PropertyField(iOSURISchemeProperty, new GUIContent("iOS URI Scheme"), new GUILayoutOption[] { });
 
@@ -57,10 +59,10 @@ public class AirbridgeSettingsWindow : EditorWindow
 
         SerializedProperty sdkSignatureSecretIDProperty = serializedAirbridgeData.FindProperty("sdkSignatureSecretID");
         EditorGUILayout.PropertyField(sdkSignatureSecretIDProperty, new GUILayoutOption[] { });
-        
+
         SerializedProperty sdkSignatureSecretProperty = serializedAirbridgeData.FindProperty("sdkSignatureSecret");
         EditorGUILayout.PropertyField(sdkSignatureSecretProperty, new GUILayoutOption[] { });
-        
+
         GUILayout.FlexibleSpace();
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Update iOS Setting", new GUILayoutOption[] { GUILayout.Height(30) }))
@@ -104,7 +106,7 @@ public class AirbridgeSettingsWindow : EditorWindow
     private void UpdateAndroidManifest()
     {
         string metaDataPrefix = "airbridge==";
-        
+
         string manifestDirPath = Path.Combine(Application.dataPath, "Plugins/Android");
         string defaultManifestPath = Path.Combine(Application.dataPath, "Plugins/Airbridge/Android/AndroidManifest.xml");
         string manifestPath = Path.Combine(Application.dataPath, "Plugins/Android/AndroidManifest.xml");
@@ -205,7 +207,7 @@ public class AirbridgeSettingsWindow : EditorWindow
             File.Create(path);
         }
 
-        string content = 
+        string content =
         "#ifndef AUAppSetting_h\n"
         + "#define AUAppSetting_h\n"
         + "\n"
@@ -227,3 +229,4 @@ public class AirbridgeSettingsWindow : EditorWindow
         File.WriteAllText(path, content);
     }
 }
+#endif

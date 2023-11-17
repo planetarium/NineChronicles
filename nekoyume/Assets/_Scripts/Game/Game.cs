@@ -265,13 +265,23 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
-            AirbridgeEvent @event = new AirbridgeEvent("test-category");
-            @event.SetAction("test-action");
-            @event.SetLabel("test-label");
-            @event.SetValue(9999);
-            @event.AddCustomAttribute("custom_key", "test_value");
-            @event.AddSemanticAttribute("query", "query_123");
+
+            Debug.Log("=============[airbridge start]================");
+            AirbridgeEvent @event = new AirbridgeEvent("iap");
+            // @event.SetAction("test-action");
+            // @event.SetLabel("test-label");
+            // @event.SetValue(9999);
+            @event.AddSemanticAttribute("product-id", "test-product-id-123");
+            @event.AddSemanticAttribute("transaction-id", "test-transaction-id-kelwjroi3-341");
+            // @event.AddSemanticAttribute("query", "query_123");
             AirbridgeUnity.TrackEvent(@event);
+
+
+
+            AirbridgeEvent @event2 = new AirbridgeEvent("login");
+            AirbridgeUnity.TrackEvent(@event2);
+            Debug.Log("=============[airbridge end]================");
+
             // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
