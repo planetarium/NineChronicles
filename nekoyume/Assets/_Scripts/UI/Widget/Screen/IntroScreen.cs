@@ -16,8 +16,10 @@ using Libplanet.KeyStore;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Planet;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -257,6 +259,14 @@ namespace Nekoyume.UI
             });
             appleSignInButton.onClick.AddListener(() =>
             {
+#if !UNITY_IOS
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("SDESC_THIS_PLATFORM_IS_NOT_SUPPORTED"),
+                    NotificationCell.NotificationType.Information);
+                return;
+#endif
+
                 Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
                 startButtonContainer.SetActive(false);
@@ -346,11 +356,6 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
-#if UNITY_IOS
-            appleSignInButton.interactable = true;
-#else
-            appleSignInButton.interactable = false;
-#endif
             GetGuestPrivateKey();
         }
 
@@ -586,7 +591,9 @@ namespace Nekoyume.UI
                       $" planetContext({planetContext})" +
                       $", planetContext.SelectedPlanetAccountInfo({planetContext?.SelectedPlanetAccountInfo})");
             var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
-            if (planetAccountInfo is null)
+            if (planetAccountInfo?.AgentAddress is null ||
+                (planetAccountInfo.IsAgentPledged.HasValue &&
+                planetAccountInfo.IsAgentPledged.Value))
             {
                 planetAccountInfoText.text = string.Empty;
                 return;
