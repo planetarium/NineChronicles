@@ -532,15 +532,13 @@ namespace Nekoyume.UI
 
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked." +
-                      $" planetContext({planetContext})" +
-                      $", planetContext.PlanetRegistry({planetContext?.PlanetRegistry})" +
-                      $", planetContext.SelectedPlanetInfo({planetContext?.SelectedPlanetInfo})");
+            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
             var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
                 planetInfo is null)
             {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetRegistry or planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
                 heimdallButton.Interactable = false;
@@ -553,20 +551,15 @@ namespace Nekoyume.UI
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (!planetContext.HasAccount)
+            if (planetContext.HasPledgedAccount)
             {
-                // NOTE: Unexpected case.
-                Debug.LogError("[IntroScreen] planetContext.HasAccount is false");
-                startButtonGO.SetActive(false);
-                socialButtonsGO.SetActive(false);
-            }
-            else if (planetContext.HasPledgedAccount)
-            {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is true");
                 startButtonGO.SetActive(true);
                 socialButtonsGO.SetActive(false);
             }
             else
             {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is false");
                 startButtonGO.SetActive(false);
                 socialButtonsGO.SetActive(true);
             }
