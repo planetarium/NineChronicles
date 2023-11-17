@@ -166,7 +166,7 @@ namespace Nekoyume.UI
             {
                 var loadingScreen = Find<LoadingScreen>();
                 loadingScreen.Show(
-                    LoadingScreen.LoadingType.Entering,
+                    LoadingScreen.LoadingType.JustModule,
                     L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
                 Game.Event.OnUpdateAddresses.Invoke();

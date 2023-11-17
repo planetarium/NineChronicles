@@ -19,10 +19,11 @@ namespace Nekoyume.UI
             Shop,
             Workshop,
             WorldBoss,
+            JustModule,
         }
 
         [Serializable]
-        private struct BackgroundItem
+        private class BackgroundItem
         {
             public LoadingType type;
             public VideoClip videoClip;
@@ -62,22 +63,31 @@ namespace Nekoyume.UI
             }
 
             SetBackGround(loadingType);
-            loadingModule.SetMessage(message);
-            loadingModule.SetToolTipText();
+            loadingModule.Show(
+                message,
+                loadingType == LoadingType.JustModule,
+                loadingType == LoadingType.JustModule);
 
             base.Show(ignoreShowAnimation);
-            loadingModule.PlaySliderAnimation();
         }
 
         private void SetBackGround(LoadingType type)
         {
-            var playVideo = type != LoadingType.None;
+            if (type == LoadingType.JustModule)
+            {
+                animationContainer.SetActive(false);
+                imageContainer.gameObject.SetActive(false);
+                return;
+            }
+
+            var item = backgroundItems.FirstOrDefault(item => item.type == type);
+
+            var playVideo = item != null;
             animationContainer.SetActive(!playVideo);
             imageContainer.gameObject.SetActive(playVideo);
 
             if (playVideo)
             {
-                var item = backgroundItems.FirstOrDefault(item => item.type == type);
                 imageContainer.texture = item.texture;
                 var clip = item.videoClip;
 
