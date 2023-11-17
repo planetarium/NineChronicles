@@ -31,6 +31,16 @@ namespace Nekoyume.UI
 
     public class IntroScreen : ScreenWidget
     {
+        private const string PlayerPrefsIntKeyLatestSignedInSocialType = "LatestSignedInSocialType";
+
+        public static bool HasCachedLatestSignedInSocialType =>
+            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType);
+
+        public static SocialType? CachedLatestSignedInSocialType =>
+            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType)
+                ? (SocialType) PlayerPrefs.GetInt(PlayerPrefsIntKeyLatestSignedInSocialType)
+                : null;
+
         public enum SocialType
         {
             Google,
