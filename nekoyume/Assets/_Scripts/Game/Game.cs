@@ -388,6 +388,8 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start()... AudioController initialized");
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
             var agentInitializeSucceed = false;

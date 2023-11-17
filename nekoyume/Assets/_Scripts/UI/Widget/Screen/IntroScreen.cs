@@ -404,11 +404,9 @@ namespace Nekoyume.UI
             touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
-            ShowMobile();
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Find<LoginSystem>().Show(_keyStorePath, _privateKey);
 #endif
         }
@@ -431,12 +429,6 @@ namespace Nekoyume.UI
 
             _guideIndex = 0;
             ShowQrCodeGuide();
-        }
-
-        public void ShowMobile()
-        {
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-            Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
         }
 
         public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
