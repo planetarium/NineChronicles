@@ -1875,9 +1875,7 @@ namespace Nekoyume.Game
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var gameConfigState = States.Instance.GameConfigState;
-                var targetBlockIndex = nextRoundData.StartBlockIndex +
-                                       Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
+                var targetBlockIndex = nextRoundData.StartBlockIndex;
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
                 var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
@@ -1950,9 +1948,7 @@ namespace Nekoyume.Game
                 PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
-            var gameConfigState = States.Instance.GameConfigState;
-            var targetBlockIndex = row.StartedBlockIndex +
-                                   Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
+            var targetBlockIndex = row.StartedBlockIndex;
             var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
