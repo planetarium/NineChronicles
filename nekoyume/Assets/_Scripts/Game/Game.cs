@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -265,6 +266,8 @@ namespace Nekoyume.Game
             Lib9c.DevExtensions.TestbedHelper.LoadTestbedCreateAvatarForQA();
 #endif
             Debug.Log("[Game] Start() invoked");
+            var totalSw = new Stopwatch();
+            totalSw.Start();
 
             // Initialize LiveAssetManager, Create RequestManager
             gameObject.AddComponent<RequestManager>();
@@ -357,7 +360,7 @@ namespace Nekoyume.Game
                 .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 
@@ -373,7 +376,7 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);    
+                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
                 }
             }
 #endif
@@ -610,6 +613,8 @@ namespace Nekoyume.Game
             IsInitialized = true;
             Widget.Find<IntroScreen>().Close();
             EnterNext();
+            totalSw.Stop();
+            Debug.Log($"[Game] Game Start End. {totalSw.ElapsedMilliseconds}ms.");
             yield break;
 
             IEnumerator InitializeIAP()
@@ -639,7 +644,7 @@ namespace Nekoyume.Game
                 innerSw.Start();
                 yield return SyncTableSheetsAsync().ToCoroutine();
                 innerSw.Stop();
-                Debug.Log($"[Game] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log($"[Game/SyncTableSheets] Start()... TableSheets synced in {innerSw.ElapsedMilliseconds}ms.(elapsed)");
                 Analyzer.Instance.Track("Unity/Intro/Start/TableSheetsInitialized");
                 RxProps.Start(Agent, States, TableSheets);
 
@@ -1051,6 +1056,8 @@ namespace Nekoyume.Game
         //        Show a popup with error message and quit the application.
         private async UniTask SyncTableSheetsAsync()
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var container = await Resources
                 .LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath)
                 .ToUniTask();
@@ -1059,12 +1066,18 @@ namespace Nekoyume.Game
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] load container: {sw.Elapsed}");
+            sw.Restart();
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
             var dict = await Agent.GetStateBulkAsync(map.Keys);
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
+            sw.Restart();
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
                 // NOTE: `pair.Value` is `null` when the chain not contains the `pair.Key`.
@@ -1079,6 +1092,8 @@ namespace Nekoyume.Game
                 });
 
             TableSheets = new TableSheets(csv);
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets] TableSheets cosntructor: {sw.Elapsed}");
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
