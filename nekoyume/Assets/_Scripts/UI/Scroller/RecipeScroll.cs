@@ -37,12 +37,12 @@ namespace Nekoyume.UI.Scroller
         {
         }
 
-        public enum Filter
+        private enum Filter
         {
-            UnlockedStage,
-            Name,
-            Level,
-            Grade,
+            UNLOCK_STAGE,
+            NAME,
+            LEVEL,
+            GRADE,
         }
 
         [Serializable]
@@ -146,7 +146,6 @@ namespace Nekoyume.UI.Scroller
                 var type = categoryToggle.Type;
                 categoryToggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    Debug.Log("consumableCategoryToggle");
                     if (!value) return;
                     AudioController.PlayClick();
                     ShowAsFood(type);
@@ -162,20 +161,21 @@ namespace Nekoyume.UI.Scroller
 
             startAxisCellCount = Util.GetGridItemCount(cellSize.x, spacing, viewport.rect.width);
 
-            var options = Enum.GetNames(typeof(Filter)).Select(f => f.ToString()).ToList();
+            var options = Enum.GetNames(typeof(Filter))
+                .Select(filter => L10nManager.Localize($"UI_{filter}")).ToList();
             sortArea.filter.AddOptions(options);
             sortArea.filter.onValueChanged.AddListener(index =>
             {
                 AudioController.PlayClick();
 
-                var items = ItemsSource.SelectMany(x => x).ToList();
+                var items = ItemsSource.SelectMany(x => x);
                 SetFilterAndAscending((Filter)index, true, items, true);
             });
             sortArea.button.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
 
-                var items = ItemsSource.SelectMany(x => x).ToList();
+                var items = ItemsSource.SelectMany(x => x);
                 SetFilterAndAscending((Filter)sortArea.filter.value, !sortArea.buttonArrow.vertical, items, true);
             });
         }
@@ -520,7 +520,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetFilterAndAscending<T>(Filter filter, bool isAscending, List<T> items, bool jumpToFirst = false) where T : SheetRow<int>
+        private void SetFilterAndAscending<T>(Filter filter, bool isAscending, IEnumerable<T> items, bool jumpToFirst = false) where T : SheetRow<int>
         {
             sortArea.filter.SetValueWithoutNotify((int)filter);
             sortArea.buttonArrow.vertical = isAscending;
@@ -530,7 +530,7 @@ namespace Nekoyume.UI.Scroller
             AnimateScroller();
         }
 
-        private static List<T> GetSortedItems<T>(List<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
+        private static List<T> GetSortedItems<T>(IEnumerable<T> items, Filter selectedFilter, bool isAscending) where T : SheetRow<int>
         {
             int ResultItemId(T row)
             {
@@ -575,22 +575,22 @@ namespace Nekoyume.UI.Scroller
             IEnumerable<T> sortedItems;
             switch (selectedFilter)
             {
-                case Filter.UnlockedStage:
+                case Filter.UNLOCK_STAGE:
                     sortedItems = isAscending
                         ? items.OrderBy(GetItemUnlockStage)
                         : items.OrderByDescending(GetItemUnlockStage);
                     break;
-                case Filter.Name:
+                case Filter.NAME:
                     sortedItems = isAscending
                         ? items.OrderBy(GetItemNameString)
                         : items.OrderByDescending(GetItemNameString);
                     break;
-                case Filter.Level:
+                case Filter.LEVEL:
                     sortedItems = isAscending
                         ? items.OrderBy(GetItemRequirementLevel)
                         : items.OrderByDescending(GetItemRequirementLevel);
                     break;
-                case Filter.Grade:
+                case Filter.GRADE:
                     sortedItems = isAscending
                         ? items.OrderBy(GetItemGrade)
                         : items.OrderByDescending(GetItemGrade);
