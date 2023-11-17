@@ -1074,7 +1074,7 @@ namespace Nekoyume.Game
             var map = csvAssets.ToDictionary(
                 asset => Addresses.TableSheet.Derive(asset.name),
                 asset => asset.name);
-            var dict = await Agent.GetStateBulkAsync(map.Keys);
+            var dict = await Agent.GetSheetsAsync(map.Keys);
             sw.Stop();
             Debug.Log($"[SyncTableSheets] get state: {sw.Elapsed}");
             sw.Restart();

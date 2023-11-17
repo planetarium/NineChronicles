@@ -344,6 +344,11 @@ namespace Nekoyume.Blockchain
             return dict;
         }
 
+        public Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
             _transactions.TryGetValue(actionId, out txId);
 
