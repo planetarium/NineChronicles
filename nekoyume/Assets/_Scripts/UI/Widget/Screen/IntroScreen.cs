@@ -31,22 +31,6 @@ namespace Nekoyume.UI
 
     public class IntroScreen : ScreenWidget
     {
-        private const string PlayerPrefsIntKeyLatestSignedInSocialType = "LatestSignedInSocialType";
-
-        public static bool HasCachedLatestSignedInSocialType =>
-            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType);
-
-        public static SocialType? CachedLatestSignedInSocialType =>
-            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType)
-                ? (SocialType) PlayerPrefs.GetInt(PlayerPrefsIntKeyLatestSignedInSocialType)
-                : null;
-
-        public enum SocialType
-        {
-            Google,
-            Apple,
-        }
-
         [Serializable]
         public struct AgentInfo
         {
@@ -249,7 +233,7 @@ namespace Nekoyume.UI
 
         public Subject<IntroScreen> OnClickTabToStart { get; } = new();
         public Subject<IntroScreen> OnClickStart { get; } = new();
-        public Subject<(SocialType socialType, string email, string idToken)> OnSocialSignedIn { get; } = new();
+        public Subject<(SigninContext.SocialType socialType, string email, string idToken)> OnSocialSignedIn { get; } = new();
 
         protected override void Awake()
         {
@@ -617,8 +601,8 @@ namespace Nekoyume.UI
             {
                 case GoogleSigninBehaviour.SignInState.Signed:
                     Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                    PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Google);
-                    OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
+                    SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
+                    OnSocialSignedIn.OnNext((SigninContext.SocialType.Google, google.Email, google.IdToken));
                     return;
                 case GoogleSigninBehaviour.SignInState.Waiting:
                     Debug.Log("[IntroScreen] Already waiting for google sign in.");
@@ -647,8 +631,8 @@ namespace Nekoyume.UI
                             Find<DimmedLoadingScreen>().Close();
                             break;
                         case GoogleSigninBehaviour.SignInState.Signed:
-                            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Google);
-                            OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
+                            SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Google);
+                            OnSocialSignedIn.OnNext((SigninContext.SocialType.Google, google.Email, google.IdToken));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -669,8 +653,8 @@ namespace Nekoyume.UI
             {
                 case AppleSigninBehaviour.SignInState.Signed:
                     Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
-                    PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Apple);
-                    OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
+                    SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
+                    OnSocialSignedIn.OnNext((SigninContext.SocialType.Apple, apple.Email, apple.IdToken));
                     return;
                 case AppleSigninBehaviour.SignInState.Waiting:
                     Debug.Log("[IntroScreen] Already waiting for apple sign in.");
@@ -699,8 +683,8 @@ namespace Nekoyume.UI
                             Find<DimmedLoadingScreen>().Close();
                             break;
                         case AppleSigninBehaviour.SignInState.Signed:
-                            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Apple);
-                            OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
+                            SigninContext.SetLatestSignedInSocialType(SigninContext.SocialType.Apple);
+                            OnSocialSignedIn.OnNext((SigninContext.SocialType.Apple, apple.Email, apple.IdToken));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(state), state, null);
