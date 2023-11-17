@@ -69,7 +69,7 @@ namespace Nekoyume
             }
 
             var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
             return string.Format(format, storeProduct.metadata.localizedTitle);
         }
 
@@ -144,7 +144,7 @@ namespace Nekoyume
             }
 
             var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
             return string.Format(format, storeProduct.metadata.localizedTitle);
         }
 

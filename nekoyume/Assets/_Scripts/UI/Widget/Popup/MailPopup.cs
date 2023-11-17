@@ -801,7 +801,7 @@ namespace Nekoyume.UI
                 }
 
                 UpdateTabs();
-                Find<MailRewardScreen>().Show(mailRewards);
+                Find<MailRewardScreen>().Show(mailRewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
                 return;
             }
 
@@ -884,7 +884,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            Find<MailRewardScreen>().Show(rewards);
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

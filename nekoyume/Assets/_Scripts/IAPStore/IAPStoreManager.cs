@@ -210,7 +210,7 @@ namespace Nekoyume.IAPStore
                         ("transaction-id", e.purchasedProduct.transactionID));
                     popup.Show(
                         "UI_COMPLETED",
-                        "UI_IAP_PURCHASE_COMPLETE",
+                        "UI_IAP_PURCHASE_COMPLETE_DETAIL",
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
