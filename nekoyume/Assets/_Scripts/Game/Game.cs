@@ -388,6 +388,8 @@ namespace Nekoyume.Game
             AudioController.instance.Initialize();
             Debug.Log("[Game] Start()... AudioController initialized");
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
+
             // NOTE: Initialize IAgent.
             var agentInitialized = false;
             var agentInitializeSucceed = false;
@@ -556,7 +558,7 @@ namespace Nekoyume.Game
 #if RUN_ON_MOBILE
             PortalConnect.CheckTokens(States.AgentState.address);
 
-            if (planetContext.NeedToPledge.HasValue && planetContext.NeedToPledge.Value)
+            if (!planetContext.IsSelectedPlanetAccountPledged)
             {
                 yield return StartCoroutine(CoCheckPledge(planetContext.SelectedPlanetInfo.ID));
             }
@@ -1404,7 +1406,7 @@ namespace Nekoyume.Game
 
                 // NOTE: Check PlanetContext.NeedToTryAutoLogin.
                 //       If true, then update planet account infos for IntroScreen.
-                if (planetContext.CanAutoLogin.HasValue && planetContext.CanAutoLogin.Value)
+                if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
                     Debug.Log("[Game] CoLogin()... PlanetContext.NeedToTryAutoLogin is true.");
                     loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
@@ -1417,12 +1419,9 @@ namespace Nekoyume.Game
                         callback?.Invoke(false);
                         yield break;
                     }
-
-                    planetContext.SkipSocialAndPortalLogin = true;
                 }
                 else
                 {
-                    planetContext.SkipSocialAndPortalLogin = false;
                     introScreen.SetData(
                         _commandLineOptions.KeyStorePath,
                         ByteUtil.Hex(pk.ByteArray),
@@ -1432,7 +1431,6 @@ namespace Nekoyume.Game
             else
             {
                 Debug.Log("[Game] CoLogin()... LocalSystem.Login is false.");
-                planetContext.SkipSocialAndPortalLogin = false;
                 // NOTE: If we need to cover the Multiplanetary context on non-mobile platform,
                 //       we need to reconsider the invoking the IntroScreen.Show(pkPath, pk, planetContext)
                 //       in here.
@@ -1442,9 +1440,9 @@ namespace Nekoyume.Game
                     planetContext);
             }
 
-            if (planetContext.SkipSocialAndPortalLogin.HasValue &&
-                planetContext.SkipSocialAndPortalLogin.Value)
+            if (planetContext.HasPledgedAccount)
             {
+                Debug.Log("[Game] CoLogin()... Has pledged account.");
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
                     ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
@@ -1453,8 +1451,6 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
-
-                planetContext.NeedToPledge = planetContext.SelectedPlanetAccountInfo!.AgentAddress is null;
 
                 sw.Reset();
                 sw.Start();
@@ -1505,7 +1501,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => portalSigninTask.IsCompleted);
             sw.Stop();
             Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.SendGoogleIdTokenAsync. Done.");
+            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
 
             var agentAddrInPortal = portalSigninTask.Result;
             // NOTE: Update PlanetContext.PlanetAccountInfos.
@@ -1522,7 +1518,8 @@ namespace Nekoyume.Game
                 planetContext.PlanetAccountInfos = planetContext.PlanetRegistry?.PlanetInfos
                     .Select(planetInfo => new PlanetAccountInfo(
                         planetInfo.ID,
-                        agentAddress: null))
+                        agentAddress: null,
+                        isAgentPledged: null))
                     .ToArray();
             }
             else
@@ -1546,9 +1543,9 @@ namespace Nekoyume.Game
             }
 
             // NOTE: Check if the planets have at least one agent.
-            if (planetContext.PlanetAccountInfos!.Any(e => e.AgentAddress is not null))
+            if (planetContext.HasPledgedAccount)
             {
-                Debug.Log("[Game] CoLogin()... account exists. Show planet account infos popup.");
+                Debug.Log("[Game] CoLogin()... Has pledged account. Show planet account infos popup.");
                 introScreen.ShowPlanetAccountInfosPopup(planetContext, !loginSystem.Login);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
@@ -1557,19 +1554,17 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... WaitUntil planetContext.SelectedPlanetAccountInfo" +
                           $" is not null. Done. {planetContext.SelectedPlanetAccountInfo!.PlanetId}");
 
-                var info = planetContext.SelectedPlanetAccountInfo!;
-                if (info.AgentAddress is null)
+                if (planetContext.IsSelectedPlanetAccountPledged)
                 {
-                    // NOTE: Player selected the planet that has no agent.
-                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
-                              " Player may have to make a pledge.");
-                    planetContext.NeedToPledge = true;
+                    // NOTE: Player selected the planet that has agent.
+                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
+                              " Player don't have to make a pledge.");
 
                     // NOTE: Complex logic here...
                     //       - LoginSystem.Login is false.
                     //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
-                    //         - Create a new agent in a new planet.
+                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
+                    //         - Import the agent key.
                     if (!loginSystem.Login)
                     {
                         // NOTE: QR code import sets loginSystem.Login to true.
@@ -1578,16 +1573,15 @@ namespace Nekoyume.Game
                 }
                 else
                 {
-                    // NOTE: Player selected the planet that has agent.
-                    Debug.Log("[Game] CoLogin()... Try to import key w/ QR code." +
-                              " Player don't have to make a pledge.");
-                    planetContext.NeedToPledge = false;
+                    // NOTE: Player selected the planet that has no agent.
+                    Debug.Log("[Game] CoLogin()... Try to create a new agent." +
+                              " Player may have to make a pledge.");
 
                     // NOTE: Complex logic here...
                     //       - LoginSystem.Login is false.
                     //       - Portal has player's account.
-                    //       - Click the IntroScreen.AgentInfo.accountImportKeyButton.
-                    //         - Import the agent key.
+                    //       - Click the IntroScreen.AgentInfo.noAccountCreateButton.
+                    //         - Create a new agent in a new planet.
                     if (!loginSystem.Login)
                     {
                         // NOTE: QR code import sets loginSystem.Login to true.
@@ -1619,10 +1613,9 @@ namespace Nekoyume.Game
                 }
 
                 Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
-                planetContext.NeedToPledge = true;
                 Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
                           " w/ planetContext.SelectedPlanetInfo.ID.");
-                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos.First(e =>
+                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
                     e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
             }
 

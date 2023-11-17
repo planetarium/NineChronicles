@@ -51,6 +51,22 @@ namespace Nekoyume
             return await client.StateQueryAsync<AgentGraphType>(query);
         }
 
+        public static async UniTask<(
+            GraphQLError[]? errors,
+            AgentAndPledgeGraphType? result)> QueryAgentAndPledgeAsync(
+            this GraphQLHttpClient client,
+            Address agentAddress)
+        {
+            var sb = new StringBuilder("query { stateQuery { agent(address: ");
+            sb.Append($"\"{agentAddress.ToString()}\"");
+            sb.Append(") { address avatarStates { address name level } }");
+            sb.Append(" pledge(agentAddress: ");
+            sb.Append($"\"{agentAddress.ToString()}\"");
+            sb.Append(") { approved } } }"); // NOTE: add more fields if needed.
+            var query = sb.ToString();
+            return await client.StateQueryAsync<AgentAndPledgeGraphType>(query);
+        }
+
         public static async UniTask<(GraphQLError[]? errors, AvatarsGraphType? result)> QueryAvatarsAsync(
             this GraphQLHttpClient client,
             params string[] avatarAddresses)
