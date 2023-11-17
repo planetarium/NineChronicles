@@ -1051,7 +1051,7 @@ namespace Nekoyume.Blockchain
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
@@ -1356,7 +1356,7 @@ namespace Nekoyume.Blockchain
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
@@ -1792,7 +1792,7 @@ namespace Nekoyume.Blockchain
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
                 var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
+                    States.Instance.GameConfigState.DailyRewardInterval));
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
                 PushNotifier.Push(
                     notificationText,

@@ -357,7 +357,7 @@ namespace Nekoyume.Game
                 .ToYieldInstruction();
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
-            
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 
@@ -373,7 +373,7 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("[Game] Start()... CommandLineOptions.PrivateKey is empty." +
                               " Set local private key instead.");
-                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);    
+                    _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
                 }
             }
 #endif
@@ -1867,9 +1867,7 @@ namespace Nekoyume.Game
                     PlayerPrefs.DeleteKey(ArenaSeasonPushIdentifierKey);
                 }
 
-                var gameConfigState = States.Instance.GameConfigState;
-                var targetBlockIndex = nextRoundData.StartBlockIndex +
-                                       Mathf.RoundToInt(gameConfigState.DailyArenaInterval * 0.15f);
+                var targetBlockIndex = nextRoundData.StartBlockIndex;
                 var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
                 var arenaTypeText = nextRoundData.ArenaType == ArenaType.Season
@@ -1942,9 +1940,7 @@ namespace Nekoyume.Game
                 PlayerPrefs.DeleteKey(WorldbossSeasonPushIdentifierKey);
             }
 
-            var gameConfigState = States.Instance.GameConfigState;
-            var targetBlockIndex = row.StartedBlockIndex +
-                                   Mathf.RoundToInt(gameConfigState.DailyWorldBossInterval * 0.15f);
+            var targetBlockIndex = row.StartedBlockIndex;
             var timeSpan = (targetBlockIndex - currentBlockIndex).BlockToTimeSpan();
 
             var content = L10nManager.Localize("PUSH_WORLDBOSS_SEASON_START_CONTENT", row.Id);
