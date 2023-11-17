@@ -197,8 +197,10 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject startButtonGO;
         [SerializeField] private Button startButton;
         [SerializeField] private GameObject socialButtonsGO;
-        [SerializeField] private Button googleSignInButton;
         [SerializeField] private Button appleSignInButton;
+        [SerializeField] private Button googleSignInButton;
+        [SerializeField] private Button twitterSignInButton;
+        [SerializeField] private Button discordSignInButton;
 
         [SerializeField] private GameObject qrCodeGuideContainer;
         [SerializeField] private CapturedImage qrCodeGuideBackground;
@@ -253,6 +255,13 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
             });
+            appleSignInButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click apple sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+                startButtonContainer.SetActive(false);
+                ProcessAppleSigning();
+            });
             googleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
@@ -260,12 +269,19 @@ namespace Nekoyume.UI
                 startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
             });
-            appleSignInButton.onClick.AddListener(() =>
+            twitterSignInButton.onClick.AddListener(() =>
             {
-                Debug.Log("[IntroScreen] Click apple sign in button.");
-                Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
-                startButtonContainer.SetActive(false);
-                ProcessAppleSigning();
+                Debug.Log("[IntroScreen] Click twitter sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
+                // startButtonContainer.SetActive(false);
+                // Find<TwitterSigninBehaviour>().OnSignIn();
+            });
+            discordSignInButton.onClick.AddListener(() =>
+            {
+                Debug.Log("[IntroScreen] Click discord sign in button.");
+                Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
+                // startButtonContainer.SetActive(false);
+                // Find<DiscordSigninBehaviour>().OnSignIn();
             });
             signinButton.onClick.AddListener(() =>
             {
@@ -332,10 +348,8 @@ namespace Nekoyume.UI
             signinButton.interactable = true;
             qrCodeGuideNextButton.interactable = true;
             videoSkipButton.interactable = true;
-            googleSignInButton.interactable = true;
 #if UNITY_IOS
             appleSignInButton.gameObject.SetActive(true);
-            appleSignInButton.interactable = true;
 #else
             appleSignInButton.gameObject.SetActive(false);
 #endif
