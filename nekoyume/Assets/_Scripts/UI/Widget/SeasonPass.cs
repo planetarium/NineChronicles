@@ -49,6 +49,7 @@ namespace Nekoyume.UI
         private bool isPageEffectComplete;
         public const int SeasonPassMaxLevel = 30;
 
+        private const string SeasonPassCouragePopupViewd = "SeasonPassCouragePopupViewd";
         protected override void Awake()
         {
             base.Awake();
@@ -142,6 +143,12 @@ namespace Nekoyume.UI
 
             if(!ignoreShowAnimation)
                 PageEffect();
+
+            if (!PlayerPrefs.HasKey(SeasonPassCouragePopupViewd))
+            {
+                Find<SeasonPassCouragePopup>().Show();
+                PlayerPrefs.SetInt(SeasonPassCouragePopupViewd, 1);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
