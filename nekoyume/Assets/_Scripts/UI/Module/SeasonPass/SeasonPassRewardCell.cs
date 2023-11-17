@@ -118,10 +118,19 @@ namespace Nekoyume.UI.Module
                     {
                         if (itemBaseForToolTip == null)
                             return;
-
                         AudioController.PlayClick();
-                        var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
-                        tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+
+                        if (ItemView.LevelLimitObject.activeSelf)
+                        {
+                            OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),
+                                NotificationCell.NotificationType.Notification);
+                        }
+                        else
+                        {
+                            var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
+                            tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+                        }
                     });
                 }
             }
