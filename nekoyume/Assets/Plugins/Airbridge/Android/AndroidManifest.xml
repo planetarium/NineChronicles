@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="YOUR_PACKAGE_NAME"
+          android:installLocation="preferExternal">
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <application
+        android:theme="@style/UnityThemeSelector"
+        android:icon="@mipmap/app_icon"
+        android:label="@string/app_name">
+        
+        <activity android:name="co.ab180.airbridge.unity.AirbridgeActivity"
+                  android:label="@string/app_name">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+        </activity>
+        
+        <!-- Auto initialize provider-->
+        <provider android:authorities="${applicationId}.co.ab180.airbridge.unity.AirbridgeContentProvider"
+                  android:name="co.ab180.airbridge.unity.AirbridgeContentProvider"
+                  android:exported="false" />
+        
+        <!-- Meta data for Airbridge -->
+        <meta-data android:name="co.ab180.airbridge.sdk.app_name" android:value="YOUR_APP_NAME" />
+        <meta-data android:name="co.ab180.airbridge.sdk.app_token" android:value="YOUR_APP_TOKEN" />
+        <!-- Optional -->
+        <meta-data android:name="co.ab180.airbridge.sdk.sdk_signature_secret_id" android:value="" />
+        <meta-data android:name="co.ab180.airbridge.sdk.sdk_signature_secret" android:value="" />
+        <meta-data android:name="co.ab180.airbridge.sdk.log_level" android:value="5" />
+        <meta-data android:name="co.ab180.airbridge.sdk.session_timeout_seconds" android:value="300" />
+        <meta-data android:name="co.ab180.airbridge.sdk.auto_start_user_tracking_enabled" android:value="true" />
+        <meta-data android:name="co.ab180.airbridge.sdk.user_info_hash_enabled" android:value="true" />
+        <meta-data android:name="co.ab180.airbridge.sdk.location_collection_enabled" android:value="false" />
+        <meta-data android:name="co.ab180.airbridge.sdk.track_airbridge_link_only" android:value="false" />
+        <meta-data android:name="co.ab180.airbridge.sdk.auto_start_tracking_enabled" android:value="true" />
+        <meta-data android:name="co.ab180.airbridge.sdk.facebook_deferred_app_link_enabled" android:value="false" />
+    </application>
+</manifest>
