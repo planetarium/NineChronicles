@@ -273,15 +273,13 @@ namespace Nekoyume.UI
             {
                 Debug.Log("[IntroScreen] Click twitter sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
-                // startButtonContainer.SetActive(false);
-                // Find<TwitterSigninBehaviour>().OnSignIn();
+                ShowPortalConnectGuidePopup(SigninContext.SocialType.Twitter);
             });
             discordSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click discord sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
-                // startButtonContainer.SetActive(false);
-                // Find<DiscordSigninBehaviour>().OnSignIn();
+                ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
             signinButton.onClick.AddListener(() =>
             {
@@ -704,6 +702,27 @@ namespace Nekoyume.UI
                             throw new ArgumentOutOfRangeException(nameof(state), state, null);
                     }
                 });
+        }
+
+        private void ShowPortalConnectGuidePopup(SigninContext.SocialType socialType)
+        {
+            if (!TryFind<TitleOneButtonSystem>(out var popup))
+            {
+                popup = Create<TitleOneButtonSystem>();
+            }
+
+            popup.SubmitCallback = () =>
+            {
+                popup.Close();
+                Application.OpenURL("http://nine-chronicles.com/connect-guide");
+            };
+            popup.Show(
+                L10nManager.Localize("UI_INFORMATION_CHARACTER_SELECT"),
+                L10nManager.Localize(
+                    "STS_YOU_CAN_CONNECT_0_TO_APPLE_OR_GOOGLE_ON_PORTAL_FORMAT",
+                    socialType.ToString()),
+                L10nManager.Localize("BTN_OPEN_A_BROWSER"),
+                localize: false);
         }
     }
 }
