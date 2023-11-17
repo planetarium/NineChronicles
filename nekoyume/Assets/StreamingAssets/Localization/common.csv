@@ -314,29 +314,29 @@ Periksa apakah peluncur game sedang berjalan
 dan coba lagi.",,"RPC服务器连接失败。
 检查游戏启动器是否正在运行，然后重试。",RPC服務器連接失敗。檢查遊戲啟動器是否正在運行，然後重試。,Ang pag-konekta sa RPC ay hindi nagtagumpay. Tignan kung gumagana ang game launcher at subukang muli.,"Kết nối máy chủ RPC không thành công.
 Vui lòng đảm bảo quyết định của bạn được kết nối với Internet."
-UI_MAIL,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,GAME START,TRÒ CHƠI BẮT ĐẦU
-UI_QUEST,Hair,머리카락,Cabelo,髪,Cabello,ผม,Rambut,,头发,頭髮,Buhok,Tóc
-UI_CHAT,Eyes,눈,Olhos,目,Ojos,ตา,Mata,,眼睛,眼睛,Mata,Mắt
-UI_BOOK,Ears,귀,Orelha,耳,Orejas,หู,Telinga,,耳朵,耳朵,Tainga,Đôi tai
-UI_SETTINGS,Tail,꼬리,Cauda,尻尾,Cola,หาง,Buntut,,尾巴,尾巴,Buntot,Đuôi
-UI_AVATARINFO,Choose your name.,캐릭터 닉네임을 정하세요,Escolha seu nome,名前を決めてください。,Escribe tu nombre,เลือกชื่อของคุณ,Pilih namamu.,,选择您的名字。,選擇您的名字。,Pumili ng iyong Pangalan.,Chọn tên của bạn.
-UI_WORLD_MAP_ENTER,Dungeon,모험,Masmorra,ダンジョン,Mazmorra,ดันเจี้ยน,Dungeon,,地牢,地牢,Dungeon,Ngục tối
-UI_WORLD_MAP,Workshop,워크샵,Oficina,ワークショップ,Taller,เวิร์กชอป,Bengkel,цех,作坊,作坊,Workshop,Xưởng
-UI_WORLD_MAP_MONSTERS,Shop,마켓,Comprar,ショップ,Tienda,ร้านค้า,Toko,Магазин,店铺,店鋪,Tindahan,Cửa hàng
-UI_REWARDS,Ranking,랭킹,Ranking,ランキング,Clasificación,การจัดอันดับ,Peringkat,Рейтинг,排行,排行,Ranking,Xếp hạng
-UI_STAGE,Food to eat,음식을 장착하세요.,Comida,食料,Alimentos para comer,สะเบียง,Makanan,,吃的食物,食物,Pagkain na kakainin,Thức ăn để ăn
-UI_REMAININGTURN,Equipment,장비를 장착하세요.,Equipamento,装備,Equipos,อุปกรณ์,Perlengkapan,,装备,裝備,Sandata,Thiết bị
-UI_ALERT_NOT_IMPLEMENTED_TITLE,Repeat,반복 전투,Repita,繰り返す,Repetir,ทำซ้ำ,Repeat,,重复,重複,Ulitin,Lặp lại
-UI_ALERT_NOT_IMPLEMENTED_CONTENT,Overall Ranking,전체 랭킹,Ranking Geral,総合ランキング,Clasificación General,จัดอันดับโดยรวม,Ranking Keseluruhan,,总体排名,總排名,Kabuuang Ranking,Xếp hạng tổng thể
-UI_CONFIRM_DELETE_CHARACTER_TITLE,24 Hour Ranking,24시간 내 랭킹,Ranking 24 horas,24時間ランキング,Clasificación dentro de 24 Horas,จัดอันดับภายใน 24 ชั่วโมง,Ranking 24 Jam,,24小时排名,24小時排名,24 Oras na Ranking,Xếp hạng 24 giờ
-UI_CONFIRM_DELETE_CHARACTER_CONTENT,Refresh,새로고침,Refresh,更新,Actualizar,รีเฟรช,Refresh,,刷新,刷新,Refresh,Làm cho khỏe lại
-UI_CONFIRM_QUIT_TITLE,Select Material,재료 선택,Seleção de Material,素材選択,Seleccionar Material,เลือกวัสดุ,Pilih Bahan,,选择材料,選擇材料,Pumili ng Materyales,Chọn tài liệu
-UI_CONFIRM_QUIT_CONTENT,Status,상태,Status,ステータス,Estado,สถานะ,Status,,状态,狀態,Status,Trạng thái
-UI_COMBINATION_ENHANCEMENT_POPUP,Equipment,장비,Equipamento,装備,Equipos,อุปกรณ์,Perlengkapan,,装备,裝備,Sandata,Thiết bị
-UI_COMBINATION_ENHANCEMENT,Foods,음식,alimentos,食べ物,Alimentos,อาหาร,makanan,еда,食物,食物,Mga Pagkain,Thực phẩm
-UI_COMBINATION_RECIPE_CLOSE,Food,음식,Comida,食物,Alimento,อาหาร,makanan,еда,食物,食物,Pagkain,Đồ ăn
-UI_RECIPE_COMBINATION,Materials,재료,Materiais,素材,Materiales,วัสดุ,Bahan,,材料,材料,Materyales,Nguyên vật liệu
-UI_SHOP_NOTICE,Material,재료,Material,素材,Material,วัสดุ,Material,,材料,材料,Materyal,Vật liệu
+UI_MAIL,Mail,메일,Correspondência,郵便,Correo,ส่งจดหมาย,Surat,,邮件,郵件,Mail,Thư
+UI_QUEST,Quest,퀘스트,Busca,クエスト,Búsqueda,การสืบเสาะ,Pencarian,,寻求,尋求,Paghahanap,Nhiệm vụ
+UI_CHAT,Chat,채팅,Bater papo,チャット,Charlar,แชท,Mengobrol,,聊天,聊天,Makipag -chat,Trò chuyện
+UI_BOOK,Book,도감,Livro,本,Libro,หนังสือ,Buku,,书,書,Libro,Sách
+UI_SETTINGS,Settings,설정,Configurações,設定,Ajustes,การตั้งค่า,Pengaturan,,设置,設定,Mga setting,Cài đặt
+UI_AVATARINFO,Character,캐릭터,Personagem,キャラクター,Personaje,อักขระ,Karakter,,特点,特點,Character,Tính cách
+UI_WORLD_MAP_ENTER,Enter,입장,Digitar,入力,Ingresar,เข้า,Memasuki,,进入,進入,Pumasok,Đi vào
+UI_WORLD_MAP,World Map,월드맵,Mapa mundial,世界地図,Mapa del mundo,แผนที่โลก,Peta Dunia,,世界地图,世界地圖,Mapa ng mundo,Bản đồ thế giới
+UI_WORLD_MAP_MONSTERS,Monsters,몬스터,Monstros,モンスター,Monstruos,สัตว์ประหลาด,Monster,,怪物,怪物,Monsters,Quái vật
+UI_REWARDS,Rewards,보상,Recompensas,報酬,Recompensas,รางวัล,Hadiah,,奖励,獎勵,Gantimpala,Phần thưởng
+UI_STAGE,Stage,스테이지,Estágio,ステージ,Escenario,เวที,Panggung,,阶段,階段,Yugto,Sân khấu
+UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0},Recurso restante: {0},残りのターン：{0},Turno restante: {0},เทิร์นที่เหลืออยู่: {0},Giliran yang tersisa: {0},,剩下的转弯：{0},剩下的轉彎：{0},Natitirang pagliko: {0},Lượt còn lại: {0}
+UI_ALERT_NOT_IMPLEMENTED_TITLE,In Development,준비 중,Em desenvolvimento,開発中,En desarrollo,ในการพัฒนา,Dalam pengembangan,,开发中,開發中,Sa kaunlaran,Trong giai đoạn phát triển
+UI_ALERT_NOT_IMPLEMENTED_CONTENT,This feature is currently under development.,준비 중인 기능입니다.,Esse recurso está atualmente em desenvolvimento.,この機能は現在開発中です。,Esta característica esta actualmente en desarrollo.,ฟีเจอร์นี้อยู่ระหว่างการพัฒนา,Fitur ini sedang dalam pengembangan.,,此功能目前正在开发中。,此功能目前正在開發中。,Ang tampok na ito ay kasalukuyang nasa ilalim ng pag -unlad.,Tính năng này hiện đang được phát triển.
+UI_CONFIRM_DELETE_CHARACTER_TITLE,Delete Character,캐릭터 삭제,Excluir o personagem,文字を削除します,Eliminar personaje,ลบตัวละคร,Hapus karakter,,删除字符,刪除字符,Tanggalin ang character,Xóa ký tự
+UI_CONFIRM_DELETE_CHARACTER_CONTENT,Do you really want to delete this character?,정말 삭제하겠습니까?,Você realmente quer excluir esse personagem?,本当にこのキャラクターを削除したいですか？,¿Realmente quieres eliminar este personaje?,คุณต้องการลบตัวละครนี้จริงๆหรือไม่?,Apakah Anda benar -benar ingin menghapus karakter ini?,,您真的想删除这个角色吗？,您真的想刪除這個角色嗎？,Nais mo bang tanggalin ang character na ito?,Bạn có thực sự muốn xóa nhân vật này?
+UI_CONFIRM_QUIT_TITLE,Quit Game,게임 종료,Desistir do jogo,ゲームをやめる,Salir del juego,ออกจากเกม,Keluar dari permainan,,退出游戏,退出遊戲,Huminto sa laro,Thoát khỏi trò chơi
+UI_CONFIRM_QUIT_CONTENT,Do you want to quit?,게임을 종료하겠습니까?,Você quer sair?,やめたいですか？,¿Quieres renunciar?,คุณต้องการเลิกหรือไม่?,Apakah kamu ingin keluar?,,你想退出吗？,你想退出嗎？,Gusto mo bang huminto?,Bạn có muốn kết thúc?
+UI_COMBINATION_ENHANCEMENT_POPUP,Item Enhancement,장비 강화,Aprimoramento do item,アイテムの強化,Mejora del artículo,การปรับปรุงรายการ,Peningkatan item,,项目增强,項目增強,Pagpapahusay ng item,Cải thiện mục
+UI_COMBINATION_ENHANCEMENT,Item Enhancement,장비 강화,Aprimoramento do item,アイテムの強化,Mejora del artículo,การปรับปรุงรายการ,Peningkatan item,,项目增强,項目增強,Pagpapahusay ng item,Cải thiện mục
+UI_COMBINATION_RECIPE_CLOSE,Recipe Close,레시피 닫기,Receita Fechar,レシピが閉じます,Receta cercana,สูตรปิด,Resep dekat,,食谱关闭,食譜關閉,Malapit na ang resipe,Công thức đóng
+UI_RECIPE_COMBINATION,Craft,제작,Arte,クラフト,Artesanía,งานฝีมือ,Keahlian,,工艺,工藝,Craft,Thủ công
+UI_SHOP_NOTICE,8% of sales item price is taxed,판매가의 8%를 세금으로 징수합니다.,8% do preço do item de vendas é tributado,販売アイテムの価格の8％は課税されます,El 8% del precio del artículo de ventas está gravado,8% ของราคาขายราคาถูกเก็บภาษี,8% dari harga barang penjualan dikenakan pajak,,8％的销售商品价格征税,8％的銷售商品價格徵稅,8% ng presyo ng benta ng item ay binubuwis,8% giá bán hàng bị đánh thuế
 UI_LOADING_BOOTSTRAP_START,Connecting to the network...,네트워크에 연결하고 있습니다...,Conectando à rede...,ネットワークに接続中…,Conectando a la red...,กำลังเชื่อมต่อกับเครือข่าย ...,Menghubungkan ke jaringan ...,,连接到网络...,連接到網絡...,Kumokonekta sa network...,Kết nối với mạng ...
 UI_LOADING_BLOCK_HASH_DOWNLOAD,Downloading block hashes... {0} / {1},블록 해시 다운로드 중... {0} / {1},Fazendo download de bloco hashes ... {0}: {1},ブロックハッシュをダウンロード中… {0} / {1},Descargando hashes de bloques... {0} / {1},กำลังดาวน์โหลดบล็อกแฮช ... {0} / {1},Mengunduh block hashes... {0} / {1},,正在下载区块哈希... {0} / {1},下載區塊哈希... {0} / {1},Downloading block hashes... {0} / {1},Block tải xuống băm ... {0} / {1}
 UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 중... {0} / {1},Fazendo download de blocos ... {0}: {1},ブロックをダウンロード中… {0} / {1},Descargando bloques... {0} / {1},กำลังดาวน์โหลดบล็อก ... {0} / {1},Mengunduh blocks... {0} / {1},,正在下载区块... {0} / {1},下載區塊... {0} / {1},Downloading blocks... {0} / {1},Tải xuống các khối ... {0} / {1}
@@ -1076,6 +1076,7 @@ UI_CLAIM_REWARD,Claim Reward,보상 수령,Receba as recompensas,報酬の受け
 UI_WORLD_BOSS_REWARD_SEASON_RANKING_CONTENT,Rewards can be earned once you have achieved the battle grade. (Seasonal Reset),전투 등급 달성 시 보상을 지급합니다. 시즌 마다 초기화 됩니다.,As recompensas podem ser obtidas quando a nota de batalha for alcançada. (Redefinição sazonalmente),バトルグレードが達成されると、報酬を獲得できます。 （季節ごとにリセット）,Las recompensas se pueden obtener una vez que se haya alcanzado el rango de batalla. (Se reinician por temporada),รางวัลสามารถรับได้เมื่อเกรดการต่อสู้สำเร็จแล้ว (รีเซ็ตตามซีซั่น),Hadiah dapat diperoleh setelah nilai pertempuran tercapai. (Reset musiman),Награды могут быть получены после достижения оценки боя. (Сезонно сброс),一旦获得战斗等级，就可以获得奖励。 （季节性重置）,達到戰斗等級後即可獲得獎勵。 （季節性重置）,Ang gantimpala ay makukuha kapag nalaman na ang iyong battle grade. (Seasonally Reset),Phần thưởng có thể kiếm được khi bạn đã đạt được điểm chiến đấu. (Đặt lại theo mùa)
 UI_LOADING_REWARD,Receiving rewards...,보상 수령 중…,Recebendo recompensas ...,報酬獲得中...,Recibiendo recompensas...,กำลังรับรางวัล,Menerima hadiah ...,Получение наград ...,接受奖励...,接受獎勵...,Tinatanggap ang gantimpala...,Nhận phần thưởng ...
 UI_BOSS_INFORMATION,Boss Information,보스 정보,Em formação,情報,Información,ข้อมูล,Informasi,Информация,信息,信息,Impormasyon,Thông tin ông chủ
+UI_WORLDBOSS_BATTLE_SCORE,Battle Score,전투 승점,Pontuação de batalha,バトルスコア,Puntaje de batalla,คะแนนการต่อสู้,Skor pertempuran,,战斗得分,戰鬥得分,Puntos ng labanan,Điểm chiến đấu
 UI_WAVE_PHASE,Wave {0},Wave {0},Onda {0},ウェーブ{0},Ronda {0},เวฟ {0},Wave {0},Волна {0},波{0},波{0},Wave {0},Wave {0}
 UI_RUNE_STONE,Rune Stone,룬 조각,Pedra Rune,ルーンストーン,Piedra Rúnica,หินรูน,Batu rune,Рунный камень,符文石,符文石,Hiyas na Bato,Đá Rune
 UI_LEADERBOARD,Leaderboard,순위표,Entre os melhores,リーダーボード,Tabla de clasificación,ลีดเดอร์บอร์ด,Papan peringkat,Таблица лидеров,排行榜,排行榜,Nangungunang kalahok,Bảng xếp hạng
