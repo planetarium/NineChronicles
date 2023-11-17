@@ -41,8 +41,23 @@ namespace Nekoyume.Action
                 throw new InvalidOperationException();
             }
 
-            CheckPermission(context);
             IAccount state = context.PreviousState;
+            HashSet<Address> allowed = new();
+
+            if (state.TryGetState(Addresses.Admin, out Dictionary rawDict))
+            {
+                allowed.Add(new AdminState(rawDict).AdminAddress);
+            }
+
+            if (state.TryGetState(Addresses.AssetMinters, out List minters))
+            {
+                allowed.UnionWith(minters.Select(m => m.ToAddress()));
+            }
+
+            if (!allowed.Contains(context.Signer))
+            {
+                throw new InvalidMinterException(context.Signer);
+            }
 
             Dictionary<Address, (List<FungibleAssetValue>, List<FungibleItemValue>)> mailRecords = new();
 

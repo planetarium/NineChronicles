@@ -19,7 +19,8 @@ namespace Lib9c.Tests.Action
 
     public class MintAssetsTest
     {
-        private readonly PrivateKey _ncgMinter;
+        private readonly Address _adminAddress;
+        private readonly ISet<Address> _minters;
         private readonly Currency _ncgCurrency;
         private readonly IAccount _prevState;
 
@@ -27,15 +28,18 @@ namespace Lib9c.Tests.Action
 
         public MintAssetsTest()
         {
-            _ncgMinter = new PrivateKey();
-            _ncgCurrency = Currency.Legacy(
-                "NCG",
-                2,
-                _ncgMinter.ToAddress()
-            );
+            _adminAddress = new PrivateKey().ToAddress();
+            _ncgCurrency = Currency.Legacy("NCG", 2, null);
+            _minters = new HashSet<Address>
+            {
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+            };
             _prevState = new Account(
                 MockState.Empty
-                    .SetState(AdminState.Address, new AdminState(_ncgMinter.ToAddress(), 100).Serialize())
+                    .SetState(AdminState.Address, new AdminState(_adminAddress, 100).Serialize())
+                    .SetState(Addresses.AssetMinters, new List(_minters.Select(m => m.Serialize())))
             );
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -126,7 +130,7 @@ namespace Lib9c.Tests.Action
                 new ActionContext()
                 {
                     PreviousState = _prevState,
-                    Signer = _ncgMinter.ToAddress(),
+                    Signer = _minters.First(),
                     Rehearsal = false,
                     BlockIndex = 1,
                 }
@@ -165,7 +169,7 @@ namespace Lib9c.Tests.Action
                 new ActionContext()
                 {
                     PreviousState = prevState,
-                    Signer = _ncgMinter.ToAddress(),
+                    Signer = _minters.First(),
                     Rehearsal = false,
                     BlockIndex = 1,
                 }
@@ -211,7 +215,7 @@ namespace Lib9c.Tests.Action
                 new ActionContext()
                 {
                     PreviousState = prevState,
-                    Signer = _ncgMinter.ToAddress(),
+                    Signer = _minters.First(),
                     Rehearsal = false,
                     BlockIndex = 1,
                 }
@@ -230,7 +234,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throws_PermissionDeniedException()
+        public void Execute_Throws_InvalidMinterException()
         {
             var action = new MintAssets(
                 new List<MintAssets.MintSpec>()
@@ -240,7 +244,34 @@ namespace Lib9c.Tests.Action
                 },
                 null
             );
-            Assert.Throws<PermissionDeniedException>(() => action.Execute(
+
+            // Allows admin
+            _ = action.Execute(
+                new ActionContext()
+                {
+                    PreviousState = _prevState,
+                    Signer = _adminAddress,
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                }
+            );
+
+            // Allows minters
+            foreach (Address m in _minters)
+            {
+                _ = action.Execute(
+                    new ActionContext()
+                    {
+                        PreviousState = _prevState,
+                        Signer = m,
+                        Rehearsal = false,
+                        BlockIndex = 1,
+                    }
+                );
+            }
+
+            // Denies others
+            Assert.Throws<InvalidMinterException>(() => action.Execute(
                 new ActionContext()
                 {
                     PreviousState = _prevState,
