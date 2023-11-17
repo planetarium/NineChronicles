@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -32,62 +33,23 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
-
             var agentAddr = game.Agent.Address;
 
-            var categorys = await iapServiceManager.GetProductsAsync(agentAddr, Game.Game.instance.CurrentPlanetId.ToString());
-            List<ProductSchema> products = new List<ProductSchema>();
-            foreach (var catagory in categorys)
+            ProductSchema product = null;
+            if (mail.Memo.Contains("iap"))
             {
-                products.AddRange(catagory.ProductList);
+#if UNITY_IOS
+                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+                Match gSkuMatch = gSkuRegex.Match(mail.Memo);
+                if (gSkuMatch.Success)
+                {
+                    product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+                }
             }
 
-            if (products is null)
-            {
-                Debug.Log("products is null.");
-                return mail.GetCellContentsForException();
-            }
-
-            var product = products.FirstOrDefault(p =>
-            {
-                if (p.FavList.Any())
-                {
-                    if (mail.FungibleAssetValues is null)
-                    {
-                        return false;
-                    }
-
-                    // NOTE: Here we compare `prodFav.Amount` to `mailFavTuple.value.MajorUnit`.
-                    //       Because the type of `prodFav.Amount` is `int`. When the type of
-                    //       `prodFav.Amount` to be `decimal` or, `prodFav` provides `MajorUnit`
-                    //       and `MinorUnit`, we should change this code.
-                    if (!mail.FungibleAssetValues.All(mFavTup =>
-                            p.FavList.Any(prodFav =>
-                                prodFav.Ticker.ToString() == mFavTup.value.Currency.Ticker &&
-                                prodFav.Amount == (decimal)mFavTup.value.MajorUnit)))
-                    {
-                        return false;
-                    }
-                }
-
-                if (p.FungibleItemList.Any())
-                {
-                    if (mail.FungibleIdAndCounts is null)
-                    {
-                        return false;
-                    }
-
-                    if (!mail.FungibleIdAndCounts.All(mFItemTup =>
-                            p.FungibleItemList.Any(prodFItem =>
-                                prodFItem.FungibleItemId == mFItemTup.fungibleId.ToString() &&
-                                prodFItem.Amount == mFItemTup.count)))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
             if (product is null)
             {
                 return mail.GetCellContentsForException();
@@ -107,7 +69,7 @@ namespace Nekoyume
             }
 
             var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
             return string.Format(format, storeProduct.metadata.localizedTitle);
         }
 
@@ -146,62 +108,23 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
-
             var agentAddr = game.Agent.Address;
 
-            var categoryList = await iapServiceManager.GetProductsAsync(agentAddr, Game.Game.instance.CurrentPlanetId.ToString());
-            List<ProductSchema> products = new List<ProductSchema>();
-            if (categoryList is null)
+            ProductSchema product = null;
+            if (mail.Memo.Contains("iap"))
             {
-                Debug.Log("products is null.");
-                return mail.GetCellContentsForException();
+#if UNITY_IOS
+                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+                Match gSkuMatch = gSkuRegex.Match(mail.Memo);
+                if (gSkuMatch.Success)
+                {
+                    product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+                }
             }
 
-            foreach (var category in categoryList)
-            {
-                products.AddRange(category.ProductList);
-            }
-
-            var product = products.FirstOrDefault(p =>
-            {
-                if (p.FavList.Any())
-                {
-                    if (mail.FungibleAssetValues is null)
-                    {
-                        return false;
-                    }
-
-                    // NOTE: Here we compare `prodFav.Amount` to `mailFavTuple.value.MajorUnit`.
-                    //       Because the type of `prodFav.Amount` is `int`. When the type of
-                    //       `prodFav.Amount` to be `decimal` or, `prodFav` provides `MajorUnit`
-                    //       and `MinorUnit`, we should change this code.
-                    if (!mail.FungibleAssetValues.All(fav =>
-                            p.FavList.Any(prodFav =>
-                                prodFav.Ticker.ToString() == fav.Currency.Ticker &&
-                                prodFav.Amount == (decimal)fav.MajorUnit)))
-                    {
-                        return false;
-                    }
-                }
-
-                if (p.FungibleItemList.Any())
-                {
-                    if (mail.Items is null)
-                    {
-                        return false;
-                    }
-
-                    if (!mail.Items.All(itemTuple =>
-                            p.FungibleItemList.Any(prodFItem =>
-                                prodFItem.SheetItemId == itemTuple.id &&
-                                prodFItem.Amount == itemTuple.count)))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
             if (product is null)
             {
                 return mail.GetCellContentsForException();
@@ -214,14 +137,14 @@ namespace Nekoyume
             }
 
             var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
+                p.definition.id == product.Sku);
             if (storeProduct is null)
             {
                 return mail.GetCellContentsForException();
             }
 
             var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
             return string.Format(format, storeProduct.metadata.localizedTitle);
         }
 

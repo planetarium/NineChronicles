@@ -1051,7 +1051,7 @@ namespace Nekoyume.Blockchain
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
@@ -1356,7 +1356,7 @@ namespace Nekoyume.Blockchain
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
@@ -1792,7 +1792,7 @@ namespace Nekoyume.Blockchain
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
                 var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
+                    States.Instance.GameConfigState.DailyRewardInterval));
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
                 PushNotifier.Push(
                     notificationText,
@@ -3339,6 +3339,13 @@ namespace Nekoyume.Blockchain
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
                     }
+                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
+                            NotificationCell.NotificationType.Notification);
+                    }
                 }
                 else
                 {
@@ -3448,6 +3455,20 @@ namespace Nekoyume.Blockchain
                     mail.New = true;
                     gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                    }
+                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
+                            NotificationCell.NotificationType.Notification);
+                    }
                 }
             });
         }

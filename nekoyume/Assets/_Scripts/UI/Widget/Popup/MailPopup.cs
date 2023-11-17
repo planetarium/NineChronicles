@@ -245,12 +245,23 @@ namespace Nekoyume.UI
                     if (eItem is not null)
                     {
                         mailRewards.Add(new MailReward(eItem, 1));
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            eItem.ItemId,
-                            eItem.RequiredBlockIndex,
-                            1,
-                            false);
+                        if (eItem.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                false);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                eItem.RequiredBlockIndex,
+                                1,
+                                false);
+                        }
                     }
                     break;
                 case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
@@ -733,7 +744,11 @@ namespace Nekoyume.UI
                 bool iapProductFindComplete = false;
                 if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
                 {
-                    Regex gSkuRegex = new Regex("'g_sku': '([^']+)'");
+#if UNITY_IOS
+                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                    Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
                     Match gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
                     if (gSkuMatch.Success)
                     {
@@ -786,7 +801,7 @@ namespace Nekoyume.UI
                 }
 
                 UpdateTabs();
-                Find<MailRewardScreen>().Show(mailRewards);
+                Find<MailRewardScreen>().Show(mailRewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
                 return;
             }
 
@@ -869,7 +884,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            Find<MailRewardScreen>().Show(rewards);
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

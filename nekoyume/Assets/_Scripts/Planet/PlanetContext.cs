@@ -1,6 +1,6 @@
 #nullable enable
 
-using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Helper;
 
 namespace Nekoyume.Planet
@@ -17,14 +17,16 @@ namespace Nekoyume.Planet
 
         // NOTE: This is not kind of planet context, it is authentication context.
         //       But we have no idea where to put this yet.
-        public bool? CanAutoLogin;
-        public bool? SkipSocialAndPortalLogin;
-
-        // NOTE: This is not kind of planet context, it is authentication context.
-        //       But we have no idea where to put this yet.
-        public bool? NeedToPledge;
+        public bool? CanSkipPlanetSelection;
 
         public bool HasError => !string.IsNullOrEmpty(Error);
+
+        public bool HasAccount => PlanetAccountInfos?.Any() ?? false;
+
+        public bool HasPledgedAccount => PlanetAccountInfos?.Any(e => e.IsAgentPledged.HasValue &&
+                                                               e.IsAgentPledged.Value) ?? false;
+
+        public bool IsSelectedPlanetAccountPledged => SelectedPlanetAccountInfo is { IsAgentPledged: true };
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {

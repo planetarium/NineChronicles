@@ -8,9 +8,11 @@ using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Unity.Mathematics;
 using UnityEngine;
+using TMPro;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.L10n;
     using UniRx;
 
     public class MailRewardScreen : ScreenWidget
@@ -43,6 +45,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private AnimationCurve fadeGraph;
+
+        [SerializeField]
+        private TextMeshProUGUI titleTextObj;
 
         private int _count;
         private readonly List<MailRewards> _mailRewardsList = new();
@@ -77,12 +82,14 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
-        public void Show(List<MailReward> mailRewards, bool ignoreShowAnimation = false)
+        public void Show(List<MailReward> mailRewards, string titleText = "UI_ALL_RECEIVED", bool ignoreShowAnimation = false)
         {
             foreach (var rewards in _mailRewardsList)
             {
                 DestroyImmediate(rewards.gameObject);
             }
+
+            titleTextObj.text = L10nManager.Localize(titleText);
 
             _mailRewardsList.Clear();
 

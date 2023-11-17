@@ -122,8 +122,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.CanAutoLogin = !context.HasError;
-                    if (context.CanAutoLogin.Value)
+                    context.CanSkipPlanetSelection = !context.HasError;
+                    if (context.CanSkipPlanetSelection.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
@@ -156,8 +156,8 @@ namespace Nekoyume.Planet
                         out var planetInfo))
                 {
                     context = SelectPlanetById(context, planetInfo.ID);
-                    context.CanAutoLogin = !context.HasError;
-                    if (context.CanAutoLogin.Value)
+                    context.CanSkipPlanetSelection = !context.HasError;
+                    if (context.CanSkipPlanetSelection.Value)
                     {
                         Debug.Log("[PlanetSelector] Need to auto login.");
                     }
@@ -345,12 +345,12 @@ namespace Nekoyume.Planet
 
                 Debug.Log($"[PlanetSelector] Querying agent and avatars for planet({planetInfo.ID})" +
                           $" with endpoint({endpoint})...");
-                AgentGraphType? agentGraphType;
+                AgentAndPledgeGraphType? agentAndPledgeGraphType;
                 using var client = new GraphQLHttpClient(endpoint, jsonSerializer);
                 client.HttpClient.Timeout = TimeSpan.FromSeconds(10);
                 try
                 {
-                    (_, agentGraphType) = await client.QueryAgentAsync(agentAddress);
+                    (_, agentAndPledgeGraphType) = await client.QueryAgentAndPledgeAsync(agentAddress);
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -382,11 +382,12 @@ namespace Nekoyume.Planet
                     break;
                 }
 
-                Debug.Log($"[PlanetSelector] {agentGraphType}");
+                Debug.Log($"[PlanetSelector] {agentAndPledgeGraphType}");
                 var info = new PlanetAccountInfo(
                     planetInfo.ID,
-                    agentGraphType?.Agent?.Address,
-                    agentGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
+                    agentAndPledgeGraphType?.Agent?.Address,
+                    agentAndPledgeGraphType?.Pledge.Approved,
+                    agentAndPledgeGraphType?.Agent?.AvatarStates ?? Array.Empty<AvatarGraphType>());
                 planetAccountInfos.Add(info);
             }
 

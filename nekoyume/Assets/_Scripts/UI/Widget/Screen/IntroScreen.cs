@@ -31,6 +31,16 @@ namespace Nekoyume.UI
 
     public class IntroScreen : ScreenWidget
     {
+        private const string PlayerPrefsIntKeyLatestSignedInSocialType = "LatestSignedInSocialType";
+
+        public static bool HasCachedLatestSignedInSocialType =>
+            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType);
+
+        public static SocialType? CachedLatestSignedInSocialType =>
+            PlayerPrefs.HasKey(PlayerPrefsIntKeyLatestSignedInSocialType)
+                ? (SocialType) PlayerPrefs.GetInt(PlayerPrefsIntKeyLatestSignedInSocialType)
+                : null;
+
         public enum SocialType
         {
             Google,
@@ -254,115 +264,24 @@ namespace Nekoyume.UI
             });
             startButton.onClick.AddListener(() =>
             {
-                OnClickStart.OnNext(this);
+                Debug.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
+                startButtonContainer.SetActive(false);
+                OnClickStart.OnNext(this);
             });
             googleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
-                if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
-                {
-                    google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
-                }
-
-                Debug.Log($"[IntroScreen] google.State.Value: {google.State.Value}");
-                switch (google.State.Value)
-                {
-                    case GoogleSigninBehaviour.SignInState.Signed:
-                        Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
-                        OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
-                        return;
-                    case GoogleSigninBehaviour.SignInState.Waiting:
-                        Debug.Log("[IntroScreen] Already waiting for google sign in.");
-                        return;
-                    case GoogleSigninBehaviour.SignInState.Undefined:
-                    case GoogleSigninBehaviour.SignInState.Canceled:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
-                google.OnSignIn();
                 startButtonContainer.SetActive(false);
-                googleSignInButton.gameObject.SetActive(false);
-                google.State
-                    .SkipLatestValueOnSubscribe()
-                    .First()
-                    .Subscribe(state =>
-                    {
-                        switch (state)
-                        {
-                            case GoogleSigninBehaviour.SignInState.Undefined:
-                            case GoogleSigninBehaviour.SignInState.Waiting:
-                                return;
-                            case GoogleSigninBehaviour.SignInState.Canceled:
-                                startButtonContainer.SetActive(true);
-                                googleSignInButton.gameObject.SetActive(true);
-                                Find<DimmedLoadingScreen>().Close();
-                                break;
-                            case GoogleSigninBehaviour.SignInState.Signed:
-                                OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(state), state, null);
-                        }
-                    });
+                ProcessGoogleSigning();
             });
             appleSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
-                if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
-                {
-                    apple = Game.Game.instance.gameObject.AddComponent<AppleSigninBehaviour>();
-                    apple.Initialize();
-                }
-
-                Debug.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
-                switch (apple.State.Value)
-                {
-                    case AppleSigninBehaviour.SignInState.Signed:
-                        Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
-                        OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
-                        return;
-                    case AppleSigninBehaviour.SignInState.Waiting:
-                        Debug.Log("[IntroScreen] Already waiting for apple sign in.");
-                        return;
-                    case AppleSigninBehaviour.SignInState.Undefined:
-                    case AppleSigninBehaviour.SignInState.Canceled:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
-                apple.OnSignIn();
                 startButtonContainer.SetActive(false);
-                appleSignInButton.gameObject.SetActive(false);
-                apple.State
-                    .SkipLatestValueOnSubscribe()
-                    .First()
-                    .Subscribe(state =>
-                    {
-                        switch (state)
-                        {
-                            case AppleSigninBehaviour.SignInState.Undefined:
-                            case AppleSigninBehaviour.SignInState.Waiting:
-                                return;
-                            case AppleSigninBehaviour.SignInState.Canceled:
-                                startButtonContainer.SetActive(true);
-                                appleSignInButton.gameObject.SetActive(true);
-                                Find<DimmedLoadingScreen>().Close();
-                                break;
-                            case AppleSigninBehaviour.SignInState.Signed:
-                                OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(state), state, null);
-                        }
-                    });
+                ProcessAppleSigning();
             });
             signinButton.onClick.AddListener(() =>
             {
@@ -488,11 +407,9 @@ namespace Nekoyume.UI
             touchScreenButtonGO.SetActive(false);
             startButtonContainer.SetActive(true);
             qrCodeGuideContainer.SetActive(false);
-            ShowMobile();
 #else
             pcContainer.SetActive(true);
             mobileContainer.SetActive(false);
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             Find<LoginSystem>().Show(_keyStorePath, _privateKey);
 #endif
         }
@@ -517,12 +434,6 @@ namespace Nekoyume.UI
             ShowQrCodeGuide();
         }
 
-        public void ShowMobile()
-        {
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
-            Analyzer.Instance.Track("Unity/Intro/StartButton/Show");
-        }
-
         public void ShowPlanetAccountInfosPopup(PlanetContext planetContext, bool needToImportKey)
         {
             Debug.Log("[IntroScreen] ShowPlanetAccountInfosPopup invoked");
@@ -544,6 +455,7 @@ namespace Nekoyume.UI
                     info.PlanetId.Equals(PlanetId.HeimdallInternal)),
                 needToImportKey);
             planetAccountInfosPopup.SetActive(true);
+            startButtonContainer.SetActive(false);
         }
 
         private void OnVideoEnd()
@@ -615,15 +527,13 @@ namespace Nekoyume.UI
 
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
-            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked." +
-                      $" planetContext({planetContext})" +
-                      $", planetContext.PlanetRegistry({planetContext?.PlanetRegistry})" +
-                      $", planetContext.SelectedPlanetInfo({planetContext?.SelectedPlanetInfo})");
+            Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
             var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
             if (planetRegistry is null ||
                 planetInfo is null)
             {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetRegistry or planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
                 heimdallButton.Interactable = false;
@@ -636,14 +546,15 @@ namespace Nekoyume.UI
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
 
-            if (planetContext.SkipSocialAndPortalLogin.HasValue &&
-                planetContext.SkipSocialAndPortalLogin.Value)
+            if (planetContext.HasPledgedAccount)
             {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is true");
                 startButtonGO.SetActive(true);
                 socialButtonsGO.SetActive(false);
             }
             else
             {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is false");
                 startButtonGO.SetActive(false);
                 socialButtonsGO.SetActive(true);
             }
@@ -692,6 +603,109 @@ namespace Nekoyume.UI
                 1 => L10nManager.Localize("SDESC_THERE_IS_ONE_CHARACTER"),
                 _ => L10nManager.Localize("SDESC_THERE_ARE_0_CHARACTERS_FORMAT", avatarCount)
             };
+        }
+
+        private void ProcessGoogleSigning()
+        {
+            if (!Game.Game.instance.TryGetComponent<GoogleSigninBehaviour>(out var google))
+            {
+                google = Game.Game.instance.gameObject.AddComponent<GoogleSigninBehaviour>();
+            }
+
+            Debug.Log($"[IntroScreen] google.State.Value: {google.State.Value}");
+            switch (google.State.Value)
+            {
+                case GoogleSigninBehaviour.SignInState.Signed:
+                    Debug.Log("[IntroScreen] Already signed in google. Anyway, invoke OnGoogleSignedIn.");
+                    PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Google);
+                    OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
+                    return;
+                case GoogleSigninBehaviour.SignInState.Waiting:
+                    Debug.Log("[IntroScreen] Already waiting for google sign in.");
+                    return;
+                case GoogleSigninBehaviour.SignInState.Undefined:
+                case GoogleSigninBehaviour.SignInState.Canceled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
+            google.OnSignIn();
+            google.State
+                .SkipLatestValueOnSubscribe()
+                .First()
+                .Subscribe(state =>
+                {
+                    switch (state)
+                    {
+                        case GoogleSigninBehaviour.SignInState.Undefined:
+                        case GoogleSigninBehaviour.SignInState.Waiting:
+                            return;
+                        case GoogleSigninBehaviour.SignInState.Canceled:
+                            startButtonContainer.SetActive(true);
+                            Find<DimmedLoadingScreen>().Close();
+                            break;
+                        case GoogleSigninBehaviour.SignInState.Signed:
+                            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Google);
+                            OnSocialSignedIn.OnNext((SocialType.Google, google.Email, google.IdToken));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                    }
+                });
+        }
+
+        private void ProcessAppleSigning()
+        {
+            if (!Game.Game.instance.TryGetComponent<AppleSigninBehaviour>(out var apple))
+            {
+                apple = Game.Game.instance.gameObject.AddComponent<AppleSigninBehaviour>();
+                apple.Initialize();
+            }
+
+            Debug.Log($"[IntroScreen] apple.State.Value: {apple.State.Value}");
+            switch (apple.State.Value)
+            {
+                case AppleSigninBehaviour.SignInState.Signed:
+                    Debug.Log("[IntroScreen] Already signed in apple. Anyway, invoke OnAppleSignedIn.");
+                    PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Apple);
+                    OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
+                    return;
+                case AppleSigninBehaviour.SignInState.Waiting:
+                    Debug.Log("[IntroScreen] Already waiting for apple sign in.");
+                    return;
+                case AppleSigninBehaviour.SignInState.Undefined:
+                case AppleSigninBehaviour.SignInState.Canceled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            Find<DimmedLoadingScreen>().Show(DimmedLoadingScreen.ContentType.WaitingForSocialAuthenticating);
+            apple.OnSignIn();
+            apple.State
+                .SkipLatestValueOnSubscribe()
+                .First()
+                .Subscribe(state =>
+                {
+                    switch (state)
+                    {
+                        case AppleSigninBehaviour.SignInState.Undefined:
+                        case AppleSigninBehaviour.SignInState.Waiting:
+                            return;
+                        case AppleSigninBehaviour.SignInState.Canceled:
+                            startButtonContainer.SetActive(true);
+                            Find<DimmedLoadingScreen>().Close();
+                            break;
+                        case AppleSigninBehaviour.SignInState.Signed:
+                            PlayerPrefs.SetInt(PlayerPrefsIntKeyLatestSignedInSocialType, (int)SocialType.Apple);
+                            OnSocialSignedIn.OnNext((SocialType.Apple, apple.Email, apple.IdToken));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                    }
+                });
         }
     }
 }

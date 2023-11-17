@@ -95,7 +95,15 @@ namespace Nekoyume.Game.Entrance
                 var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
                 if (eventReleaseNotePopup.HasUnread && clearedStageId >= requiredStageId)
                 {
-                    eventReleaseNotePopup.Show();
+                    var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
+                    if (seasonPassNewPopup.HasUnread && clearedStageId >= requiredStageId)
+                    {
+                        seasonPassNewPopup.Show();
+                    }
+                    else
+                    {
+                        eventReleaseNotePopup.Show();
+                    }
                 }
             }
 
