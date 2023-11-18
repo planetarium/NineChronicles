@@ -475,6 +475,7 @@ namespace Editor
 
             var manager = new ProjectCapabilityManager(pbxProjectPath, "Entitlements.entitlements", null, pbxProject.GetUnityMainTargetGuid());
             manager.AddSignInWithAppleWithCompatibility(pbxProject.GetUnityFrameworkTargetGuid());
+            manager.AddPushNotifications(true);
             manager.WriteToFile();
 
             // set plist path
