@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   appName: ninechronicles
   appToken: c476471c40544e479b367e2ddee1e587
-  logLevel: 0
+  logLevel: 2
   sdkSignatureSecretID: 
   sdkSignatureSecret: 
-  iOSURIScheme: https://apps.apple.com/kr/app/nine-chronicles-m/id6462364578
-  androidURIScheme: https://play.google.com/store/apps/details?id=com.planetariumlabs.ninechroniclesmobile
+  iOSURIScheme: ninechroniclesmobile
+  androidURIScheme: ninechroniclesmobile
   customDomain: 
   sessionTimeoutSeconds: 300
   userInfoHashEnabled: 1

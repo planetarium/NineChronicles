@@ -190,11 +190,28 @@ namespace Nekoyume.Game
 
         #region Mono & Initialization
 
+#if UNITY_IOS && !UNITY_EDITOR
+        void OnAuthorizationStatusReceived(AppTrackingTransparency.AuthorizationStatus status)
+        {
+            AppTrackingTransparency.OnAuthorizationStatusReceived -= OnAuthorizationStatusReceived;
+        }
+#endif
+
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
+
+#if UNITY_IOS && !UNITY_EDITOR
+            AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
+            AppTrackingTransparency.AuthorizationStatus status = AppTrackingTransparency.TrackingAuthorizationStatus();
+            if (status == AppTrackingTransparency.AuthorizationStatus.NotDetermined)
+            {
+                AppTrackingTransparency.RequestTrackingAuthorization();
+            }
+#endif
+
 #if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
             // DevCra - iOS Build
             //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
