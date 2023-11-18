@@ -467,6 +467,9 @@ namespace Editor
                 pbxProject.RemoveFileFromBuild(unityFrameworkTargetGuid, frameworkGuid);
             }
 
+            // xcode 15 error
+            pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
+
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
 
