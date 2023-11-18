@@ -62,7 +62,7 @@ namespace Nekoyume
             sb.Append(") { address avatarStates { address name level } }");
             sb.Append(" pledge(agentAddress: ");
             sb.Append($"\"{agentAddress.ToString()}\"");
-            sb.Append(") { approved } } }"); // NOTE: add more fields if needed.
+            sb.Append(") { patronAddress approved mead } } }");
             var query = sb.ToString();
             return await client.StateQueryAsync<AgentAndPledgeGraphType>(query);
         }
