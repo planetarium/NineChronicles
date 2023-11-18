@@ -493,6 +493,7 @@ namespace Editor
                         "CFBundleURLSchemes", new List<object>
                         {
                             "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
+                            "ninechroniclesmobile",
                         }
                     }
                 }
