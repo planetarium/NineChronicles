@@ -108,6 +108,8 @@ namespace Nekoyume.Blockchain
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private readonly BlockHashCache _blockHashCache = new(100);
+        private MessagePackSerializerOptions _lz4Options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
+
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void OnRuntimeInitialize()
@@ -462,6 +464,8 @@ namespace Nekoyume.Blockchain
                     await raw.ParallelForEachAsync(async pair =>
                     {
                         cd.TryAdd(pair.Key, pair.Value);
+                        var size = Buffer.ByteLength(pair.Value);
+                        Debug.Log($"[GetSheets/{new Address(pair.Key)}] buffer size: {size}");
                         await Task.CompletedTask;
                     });
                 });
@@ -471,7 +475,7 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in cd)
             {
-                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+                result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
             }
             sw.Stop();
             Debug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
