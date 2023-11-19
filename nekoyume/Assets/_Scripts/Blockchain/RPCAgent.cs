@@ -462,6 +462,8 @@ namespace Nekoyume.Blockchain
                     await raw.ParallelForEachAsync(async pair =>
                     {
                         cd.TryAdd(pair.Key, pair.Value);
+                        var size = Buffer.ByteLength(pair.Value);
+                        Debug.Log($"[GetSheets/{new Address(pair.Key)}] buffer size: {size}");
                         await Task.CompletedTask;
                     });
                 });
