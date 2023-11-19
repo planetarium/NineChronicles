@@ -156,13 +156,15 @@ namespace Nekoyume.UI
             loading.Close();
         }
 
-        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        public static async Task LoadL10Ns()
         {
             MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
-
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
+        }
 
+        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        {
             var categorySchemas = await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
             return categorySchemas;

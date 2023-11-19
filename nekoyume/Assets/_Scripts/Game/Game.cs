@@ -653,6 +653,30 @@ namespace Nekoyume.Game
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+
+                Task.Run(async () =>
+                {
+                    await MobileShop.LoadL10Ns();
+
+                    var categorySchemas = await MobileShop.GetCategorySchemas();
+                    foreach (var category in categorySchemas)
+                    {
+                        if (category.Name == "NoShow")
+                        {
+                            continue;
+                        }
+
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+
+                        foreach (var product in category.ProductList)
+                        {
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                        }
+                    }
+                });
+
                 innerSw.Stop();
                 Debug.Log("[Game] Start()... IAPServiceManager initialized in" +
                           $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
