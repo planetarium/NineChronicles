@@ -661,6 +661,11 @@ namespace Nekoyume.Game
                     var categorySchemas = await MobileShop.GetCategorySchemas();
                     foreach (var category in categorySchemas)
                     {
+                        if (category.Name == "NoShow")
+                        {
+                            continue;
+                        }
+
                         await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
 
                         foreach (var product in category.ProductList)
