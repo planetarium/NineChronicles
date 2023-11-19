@@ -1,7 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MagicOnion.Client;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.Blockchain
 {
@@ -15,7 +16,12 @@ namespace Nekoyume.Blockchain
             {
                 try
                 {
-                    return await next(context);
+                    Debug.Log("Request Begin:" + context.MethodPath);
+                    var sw = Stopwatch.StartNew();
+                    var resp = await next(context);
+                    sw.Stop();
+                    Debug.Log("Request Completed:" + context.MethodPath + ", Elapsed:" + sw.Elapsed.TotalMilliseconds + "ms");
+                    return resp;
                 }
                 catch (Exception e)
                 {
