@@ -467,11 +467,15 @@ namespace Editor
                 pbxProject.RemoveFileFromBuild(unityFrameworkTargetGuid, frameworkGuid);
             }
 
+            // xcode 15 error
+            pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
+
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
 
             var manager = new ProjectCapabilityManager(pbxProjectPath, "Entitlements.entitlements", null, pbxProject.GetUnityMainTargetGuid());
             manager.AddSignInWithAppleWithCompatibility(pbxProject.GetUnityFrameworkTargetGuid());
+            manager.AddPushNotifications(true);
             manager.WriteToFile();
 
             // set plist path
@@ -490,6 +494,7 @@ namespace Editor
                         "CFBundleURLSchemes", new List<object>
                         {
                             "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
+                            "ninechroniclesmobile",
                         }
                     }
                 }
