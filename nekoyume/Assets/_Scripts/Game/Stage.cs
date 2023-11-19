@@ -227,7 +227,7 @@ namespace Nekoyume.Game
                 else
                 {
                     playerObject.transform.DOScale(0.9f, 1.0f);
-                    playerObject.transform.DOMoveY(-3.6f, 2.0f);
+                    playerObject.transform.DOMoveY(-5.4f, 3.0f);
 
                     if (!ReferenceEquals(anim, null) && anim.Target.activeSelf)
                     {
