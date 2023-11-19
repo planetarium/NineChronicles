@@ -14,7 +14,12 @@ namespace Nekoyume
     {
         public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
-            if(mail.Memo != null && mail.Memo.Contains("season_pass"))
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if(mail.Memo.Contains("\"t\": \"auto\""))
                 {
@@ -86,6 +91,11 @@ namespace Nekoyume
 
         public static async Task<string> GetCellContentAsync(this ClaimItemsMail mail)
         {
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if (mail.Memo.Contains("\"t\": \"auto\""))
