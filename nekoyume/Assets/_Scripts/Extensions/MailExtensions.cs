@@ -38,6 +38,12 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
+
+            if(Game.Game.instance.IAPStoreManager is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
@@ -107,6 +113,12 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
+
+            if (Game.Game.instance.IAPStoreManager is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
