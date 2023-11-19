@@ -125,7 +125,7 @@ namespace Nekoyume.Planet
                     context.CanSkipPlanetSelection = !context.HasError;
                     if (context.CanSkipPlanetSelection.Value)
                     {
-                        Debug.Log("[PlanetSelector] Need to auto login.");
+                        Debug.Log("[PlanetSelector] Can skip planet selection.");
                     }
 
                     return context;
@@ -159,7 +159,7 @@ namespace Nekoyume.Planet
                     context.CanSkipPlanetSelection = !context.HasError;
                     if (context.CanSkipPlanetSelection.Value)
                     {
-                        Debug.Log("[PlanetSelector] Need to auto login.");
+                        Debug.Log("[PlanetSelector] Can skip planet selection.");
                     }
 
                     return context;

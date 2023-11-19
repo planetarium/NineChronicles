@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Async;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -443,14 +444,37 @@ namespace Nekoyume.Blockchain
 
         public async Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw =
-                await _service.GetSheets(addressList.Select(a => a.ToByteArray()),
-                    BlockTipHash.ToByteArray());
+            var sw = new Stopwatch();
+            sw.Start();
+            var cd = new ConcurrentDictionary<byte[], byte[]>();
+            var chunks = addressList
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 24)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+            await chunks
+                .AsParallel()
+                .ParallelForEachAsync(async list =>
+                {
+                    Dictionary<byte[], byte[]> raw =
+                        await _service.GetSheets(list.Select(a => a.ToByteArray()),
+                            BlockTipHash.ToByteArray());
+                    await raw.ParallelForEachAsync(async pair =>
+                    {
+                        cd.TryAdd(pair.Key, pair.Value);
+                        await Task.CompletedTask;
+                    });
+                });
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets/GetSheets] Get sheets. {sw.Elapsed}");
+            sw.Restart();
             var result = new Dictionary<Address, IValue>();
-            foreach (var kv in raw)
+            foreach (var kv in cd)
             {
                 result[new Address(kv.Key)] = _codec.Decode(kv.Value);
             }
+            sw.Stop();
+            Debug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
             return result;
         }
 

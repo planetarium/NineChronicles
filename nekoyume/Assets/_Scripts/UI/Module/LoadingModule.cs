@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private LoadingIndicator indicator;
         [SerializeField] private TextMeshProUGUI toolTip;
         [SerializeField] private Button toolTipChangeButton;
+        [SerializeField] private GameObject sliderContainer;
         [SerializeField] private Slider slider;
 
         private string _defaultMessage;
@@ -43,12 +44,22 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Show(string message)
+        public void Show(string message, bool hideTooltip = false, bool hideSlider = false)
         {
             gameObject.SetActive(true);
             SetMessage(message);
-            SetToolTipText();
-            PlaySliderAnimation();
+
+            toolTip.gameObject.SetActive(!hideTooltip);
+            if (!hideTooltip)
+            {
+                SetToolTipText();
+            }
+
+            sliderContainer.gameObject.SetActive(!hideSlider);
+            if (!hideSlider)
+            {
+                PlaySliderAnimation();
+            }
         }
 
         public void Close()

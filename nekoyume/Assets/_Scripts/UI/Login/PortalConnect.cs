@@ -16,6 +16,7 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
+    using System.Net.Http;
     using UniRx;
     public class PortalConnect
     {
@@ -627,6 +628,39 @@ namespace Nekoyume.UI
 
             Debug.Log($"{logTitle} invoked: url({url}), accessToken({accessToken})");
 
+#if UNITY_IOS
+            var client = new HttpClient();
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Add("authorization", $"Bearer {accessToken}");
+
+            var resp = await client.SendAsync(req);
+            var json = await resp.Content.ReadAsStringAsync();
+            var data = JsonUtility.FromJson<ReferralResult>(json);
+            if (resp.IsSuccessStatusCode)
+            {
+                if (!string.IsNullOrEmpty(data.referralCode))
+                {
+                    Debug.Log($"{logTitle} Success: {json}");
+                    return data;
+                }
+
+                Debug.LogError($"{logTitle} Deserialize Error: {json}");
+                ShowRequestErrorPopup(data);
+            }
+            else if (data.resultCode is 3001 or 3002)
+            {
+                Debug.Log($"{logTitle} Access Token expired: Access Token({accessToken})\n{json}");
+                if (await UpdateTokens())
+                {
+                    return await GetReferralInformation();
+                }
+            }
+            else
+            {
+                Debug.LogError($"{logTitle} Failed: {resp.StatusCode}\n{json}\n");
+                ShowRequestErrorPopup(data);
+            }
+#else
             var request = UnityWebRequest.Get(url);
             request.timeout = Timeout;
             request.SetRequestHeader("authorization", $"Bearer {accessToken}");
@@ -666,6 +700,7 @@ namespace Nekoyume.UI
                 Debug.LogError($"{logTitle} Failed: {request.error}\n{json}\n");
                 ShowRequestErrorPopup(data);
             }
+#endif
 
             return null;
         }
