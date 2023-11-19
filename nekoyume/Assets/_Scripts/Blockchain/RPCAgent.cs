@@ -475,7 +475,7 @@ namespace Nekoyume.Blockchain
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in cd)
             {
-                result[new Address(kv.Key)] = _codec.Decode(MessagePackSerializer.Deserialize<byte[]>(kv.Value, _lz4Options));
+                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
             }
             sw.Stop();
             Debug.Log($"[SyncTableSheets/GetSheets] decode values. {sw.Elapsed}");
