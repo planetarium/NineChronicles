@@ -33,12 +33,7 @@ namespace Nekoyume.Game
                     sb.Append(" / failed to get property");
                     throw new Exception(sb.ToString());
                 }
-                var innerSw = new Stopwatch();
-                innerSw.Start();
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                innerSw.Stop();
-                Debug.Log($"[TableSheets/{pair.Key}] CreateInstance: {innerSw.Elapsed}");
-                innerSw.Restart();
                 var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
@@ -52,23 +47,11 @@ namespace Nekoyume.Game
                 {
                     iSheet.Set(pair.Value);
                 }
-                innerSw.Stop();
-                Debug.Log($"[TableSheets/{pair.Key}] Set: {innerSw.Elapsed}");
-                innerSw.Restart();
                 sheetPropertyInfo.SetValue(this, sheetObject);
-                innerSw.Stop();
-                Debug.Log($"[TableSheets/{pair.Key}] Set Property: {innerSw.Elapsed}");
             }
-            sw.Stop();
-            Debug.Log($"[TableSheets] Set Sheets: {sw.Elapsed}");
-            sw.Restart();
             ItemSheetInitialize();
-            sw.Stop();
-            Debug.Log($"[TableSheets] Initialize ItemSheet: {sw.Elapsed}");
-            sw.Restart();
             QuestSheetInitialize();
             sw.Stop();
-            Debug.Log($"[TableSheets] Initialize QuestSheet: {sw.Elapsed}");
             Debug.Log($"[TableSheets] Constructor Total: {DateTime.UtcNow - started}");
         }
 
