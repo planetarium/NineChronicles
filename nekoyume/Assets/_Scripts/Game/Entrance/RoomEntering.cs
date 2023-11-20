@@ -96,7 +96,10 @@ namespace Nekoyume.Game.Entrance
                 if (eventReleaseNotePopup.HasUnread && clearedStageId >= requiredStageId)
                 {
                     var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
-                    if (seasonPassNewPopup.HasUnread && clearedStageId >= requiredStageId)
+                    
+                    if (seasonPassNewPopup.HasUnread && clearedStageId >= requiredStageId &&
+                        Game.instance.SeasonPassServiceManager.AvatarInfo.HasValue &&
+                        !Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium)
                     {
                         seasonPassNewPopup.Show();
                     }
