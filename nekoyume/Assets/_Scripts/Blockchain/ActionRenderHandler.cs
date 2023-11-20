@@ -2777,7 +2777,8 @@ namespace Nekoyume.Blockchain
                     var log = simulator.Simulate(
                         myDigest.Value,
                         enemyDigest.Value,
-                        arenaSheets);
+                        arenaSheets,
+                        true);
 
                     var reward = RewardSelector.Select(
                         random,
