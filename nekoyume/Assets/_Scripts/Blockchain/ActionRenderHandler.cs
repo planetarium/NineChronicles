@@ -74,6 +74,8 @@ namespace Nekoyume.Blockchain
         // approximately 4h == 1200 block count
         private const int WorkshopNotifiedBlockCount = 0;
 
+        private const string WorkshopPushIdentifierKeyFormat = "WORKSHOP_SLOT_{0}_PUSH_IDENTIFIER";
+
         private ActionRenderHandler()
         {
         }
@@ -905,6 +907,14 @@ namespace Nekoyume.Blockchain
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 NotificationCell.NotificationType.Notification);
 
+            var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+            var identifier = PlayerPrefs.GetString(pushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(identifier))
+            {
+                PushNotifier.CancelReservation(identifier);
+                PlayerPrefs.DeleteKey(pushIdentifierKey);
+            }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(
                 avatarAddress,
                 renderArgs.Evaluation.Action.slotIndex,
@@ -1047,6 +1057,7 @@ namespace Nekoyume.Blockchain
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
@@ -1055,17 +1066,19 @@ namespace Nekoyume.Blockchain
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
 
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
@@ -1352,6 +1365,7 @@ namespace Nekoyume.Blockchain
                 renderArgs.CombinationSlotState.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
@@ -1360,10 +1374,13 @@ namespace Nekoyume.Blockchain
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
             // ~Notify
 
@@ -1383,8 +1400,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
