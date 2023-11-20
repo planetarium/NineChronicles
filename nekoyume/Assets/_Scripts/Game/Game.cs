@@ -236,7 +236,6 @@ namespace Nekoyume.Game
             // Debug.LogWarning($"native load path = {loadPath}");
             // RocksDbSharp.Native.LoadLibrary(loadPath);
 #endif
-            Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.ScriptOnly);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             base.Awake();
@@ -291,6 +290,7 @@ namespace Nekoyume.Game
             var liveAssetManager = gameObject.AddComponent<LiveAssetManager>();
             liveAssetManager.InitializeData();
 #if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+            Application.targetFrameRate = 30;
             yield return liveAssetManager.InitializeApplicationCLO();
 
             _commandLineOptions = liveAssetManager.CommandLineOptions;
