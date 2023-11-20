@@ -386,7 +386,7 @@ namespace Nekoyume.Game
                         "UI_REQUIRED_UPDATE_CONTENT",
                         "UI_OK",
                         true,
-                        IconAndButtonSystem.SystemType.Error);
+                        IconAndButtonSystem.SystemType.Information);
                 popup.ConfirmCallback = popup.CancelCallback =  () =>
                 {
 #if UNITY_ANDROID
