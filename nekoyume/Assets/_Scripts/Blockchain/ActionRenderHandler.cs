@@ -3327,6 +3327,7 @@ namespace Nekoyume.Blockchain
                 mailBox = new MailBox(mailBoxList);
                 mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
                     .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+
                 if (mail is not null)
                 {
                     mail.New = true;
@@ -3338,21 +3339,28 @@ namespace Nekoyume.Blockchain
                             L10nManager.Localize(
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
+                        return;
                     }
-                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize(
-                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
-                            NotificationCell.NotificationType.Notification);
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if(product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
                     }
                 }
-                else
-                {
-                    Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                        $"the render context of UnloadFromMyGarages action.\n" +
-                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                }
+                
+                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                    $"the render context of UnloadFromMyGarages action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
         }
 
@@ -3461,15 +3469,28 @@ namespace Nekoyume.Blockchain
                             L10nManager.Localize(
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
+                        return;
                     }
-                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize(
-                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
-                            NotificationCell.NotificationType.Notification);
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if (product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
                     }
                 }
+
+                Debug.LogWarning($"Not found ClaimItemsRecipientMail from " +
+                    $"the render context of ClaimItems action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
         }
 
