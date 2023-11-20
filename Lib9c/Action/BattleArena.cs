@@ -25,13 +25,14 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Introduce at https://github.com/planetarium/lib9c/pull/2229
+    /// Changed at https://github.com/planetarium/lib9c/pull/2242
     /// </summary>
     [Serializable]
     [ActionType("battle_arena15")]
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
-        public const int HpIncreasingModifier = 10;
+        public const int HpIncreasingModifier = 5;
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
         public int championshipId;
@@ -377,7 +378,8 @@ namespace Nekoyume.Action
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
-                    arenaSheets);
+                    arenaSheets,
+                    true);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
                     winCount++;

@@ -47,15 +47,16 @@ namespace Nekoyume.Model.Buff
             SkillBuffSheet skillBuffSheet,
             StatBuffSheet statBuffSheet,
             SkillActionBuffSheet skillActionBuffSheet,
-            ActionBuffSheet actionBuffSheet)
+            ActionBuffSheet actionBuffSheet,
+            bool hasExtraValueBuff = false)
         {
             var buffs = new List<Buff>();
 
             // If ReferencedStatType exists,
             // buff value = original value + (referenced stat * (SkillRow.StatPowerRatio / 10000))
-            var extraValueBuff =
-                skill is BuffSkill &&
-                (skill.Power > 0 || skill.ReferencedStatType != StatType.NONE);
+            var extraValueBuff = hasExtraValueBuff ||
+                                 (skill is BuffSkill &&
+                                  (skill.Power > 0 || skill.ReferencedStatType != StatType.NONE));
 
             if (skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillStatBuffRow))
             {
@@ -76,7 +77,7 @@ namespace Nekoyume.Model.Buff
                             var multiplier = skill.StatPowerRatio / 10000m;
                             additionalValue += (int)Math.Round(statMap.GetStat(skill.ReferencedStatType) * multiplier);
                         }
-                        
+
                         customField = new SkillCustomField()
                         {
                             BuffDuration = buffRow.Duration,

@@ -32,10 +32,11 @@ namespace Nekoyume.Arena
         public ArenaLog Simulate(
             ArenaPlayerDigest challenger,
             ArenaPlayerDigest enemy,
-            ArenaSimulatorSheets sheets)
+            ArenaSimulatorSheets sheets,
+            bool setExtraValueBuffBeforeGetBuffs = false)
         {
             Log = new ArenaLog();
-            var players = SpawnPlayers(this, challenger, enemy, sheets, Log);
+            var players = SpawnPlayers(this, challenger, enemy, sheets, Log, setExtraValueBuffBeforeGetBuffs);
             Turn = 1;
 
             while (true)
@@ -97,15 +98,20 @@ namespace Nekoyume.Arena
             return (player, player.IsEnemy ? ArenaLog.ArenaResult.Win : ArenaLog.ArenaResult.Lose);
         }
 
-
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
             ArenaSimulator simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,
-            ArenaLog log)
+            ArenaLog log,
+            bool setExtraValueBuffBeforeGetBuffs = false)
         {
-            var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets, simulator.HpModifier);
+            var challenger = new ArenaCharacter(
+                simulator,
+                challengerDigest,
+                simulatorSheets,
+                simulator.HpModifier,
+                setExtraValueBuffBeforeGetBuffs: setExtraValueBuffBeforeGetBuffs);
             if (challengerDigest.Runes != null)
             {
                 challenger.SetRune(
@@ -114,7 +120,13 @@ namespace Nekoyume.Arena
                     simulatorSheets.SkillSheet);
             }
 
-            var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, simulator.HpModifier, true);
+            var enemy = new ArenaCharacter(
+                simulator,
+                enemyDigest,
+                simulatorSheets,
+                simulator.HpModifier,
+                isEnemy: true,
+                setExtraValueBuffBeforeGetBuffs: setExtraValueBuffBeforeGetBuffs);
             if (enemyDigest.Runes != null)
             {
                 enemy.SetRune(
