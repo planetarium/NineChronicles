@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Policy
 
             Assert.False(BlockPolicySource.IsObsolete(odinTx2, newActionLoader, 1));
             Assert.False(BlockPolicySource.IsObsolete(odinTx2, newActionLoader, 50));
-            Assert.True(BlockPolicySource.IsObsolete(odinTx2, newActionLoader, 101));
+            Assert.True(BlockPolicySource.IsObsolete(odinTx2, newActionLoader, 103));  // Due to +2 offset for odin bug
             Assert.False(BlockPolicySource.IsObsolete(heimdallTx2, newActionLoader, 1));
             Assert.True(BlockPolicySource.IsObsolete(heimdallTx2, newActionLoader, 51));
         }

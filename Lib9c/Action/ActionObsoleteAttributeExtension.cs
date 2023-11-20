@@ -26,7 +26,7 @@ namespace Nekoyume
                 return attrs.Single().ObsoleteIndex + 2 <= blockIndex;
             }
 
-            return attrs.Any(attr => attr.ObsoleteIndex <= blockIndex && attr.AffectedPlanet == planet);
+            return attrs.Any(attr => (attr.AffectedPlanet == Planet.Odin ? attr.ObsoleteIndex + 2 : attr.ObsoleteIndex) <= blockIndex && attr.AffectedPlanet == planet);
         }
     }
 }
