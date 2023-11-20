@@ -378,6 +378,26 @@ namespace Nekoyume.Game
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
 
+            if (_commandLineOptions.RequiredUpdate)
+            {
+                var popup = Widget.Find<IconAndButtonSystem>();
+                popup.Show(
+                        "UI_REQUIRED_UPDATE_TITLE",
+                        "UI_REQUIRED_UPDATE_CONTENT",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Error);
+                popup.ConfirmCallback = popup.CancelCallback =  () =>
+                {
+#if UNITY_ANDROID
+                    Application.OpenURL(_commandLineOptions.GoogleMarketUrl);
+#elif UNITY_IOS
+                    Application.OpenURL(_commandLineOptions.AppleMarketUrl);
+#endif
+                };
+                yield break;
+            }
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 

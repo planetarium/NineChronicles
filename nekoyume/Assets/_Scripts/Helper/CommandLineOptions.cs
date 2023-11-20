@@ -104,6 +104,8 @@ namespace Nekoyume.Helper
 
         private string _appleMarketUrl;
 
+        private bool _requiredUpdate;
+
         public bool Empty { get; private set; } = true;
 
         public string genesisBlockPath;
@@ -547,6 +549,17 @@ namespace Nekoyume.Helper
             set
             {
                 _appleMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("required-update", Required = false, HelpText = "required update")]
+        public bool RequiredUpdate
+        {
+            get => _requiredUpdate;
+            set
+            {
+                _requiredUpdate = value;
                 Empty = false;
             }
         }
