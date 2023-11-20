@@ -309,7 +309,16 @@ namespace Nekoyume.UI
                 ShowQrCodeGuide();
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
+            selectPlanetScroll.OnChangeSelectedPlanetSubject
+                .Subscribe(tuple =>
+                {
+                    _planetContext = PlanetSelector.SelectPlanetByName(
+                        _planetContext,
+                        tuple.selectedPlanetName);
+                    selectPlanetPopup.SetActive(false);
+                })
                 .AddTo(gameObject);
+            selectPlanetScroll.OnClickSelectedPlanetSubject
                 .Subscribe(_ => selectPlanetPopup.SetActive(false))
                 .AddTo(gameObject);
             planetAccountInfoLeft.noAccountCreateButton.onClick.AddListener(() =>
@@ -368,6 +377,7 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
+            ApplyPlanetRegistry(_planetContext);
             ApplySelectedPlanetInfo(_planetContext);
             ApplySelectedPlanetAccountInfo(_planetContext);
         }
@@ -526,15 +536,18 @@ namespace Nekoyume.UI
         }
 #endif
 
+        private void ApplyPlanetRegistry(PlanetContext planetContext)
+        {
+            selectPlanetScroll.UpdateData(planetContext?.PlanetRegistry);
+        }
+
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
         {
             Debug.Log("[IntroScreen] ApplySelectedPlanetInfo invoked.");
-            var planetRegistry = planetContext?.PlanetRegistry;
             var planetInfo = planetContext?.SelectedPlanetInfo;
-            if (planetRegistry is null ||
-                planetInfo is null)
+            if (planetInfo is null)
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetRegistry or planetInfo is null");
+                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
                 return;
