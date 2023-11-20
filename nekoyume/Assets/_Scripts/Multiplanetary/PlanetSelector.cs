@@ -15,7 +15,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public static class PlanetSelector
     {
