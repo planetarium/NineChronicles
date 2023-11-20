@@ -309,24 +309,14 @@ namespace Nekoyume.Helper
                         return true;
                     }
 
-                    if (States.Instance.CurrentAvatarState.worldInformation
-                        .TryGetLastClearedStageId(out var lastClearedStage))
-                    {
-                        return lastClearedStage >= Game.LiveAsset.GameConfig.RequiredStage.Shop;
-                    }
-
-                    return false;
+                    return States.Instance.CurrentAvatarState.worldInformation
+                        .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.Shop);
                 }
 
                 case PlaceType.Arena:
                 {
-                    if (States.Instance.CurrentAvatarState.worldInformation
-                        .TryGetLastClearedStageId(out var lastClearedStage))
-                    {
-                        return lastClearedStage >= Game.LiveAsset.GameConfig.RequiredStage.Arena;
-                    }
-
-                    return false;
+                    return States.Instance.CurrentAvatarState.worldInformation
+                        .IsStageCleared(Game.LiveAsset.GameConfig.RequiredStage.Arena);
                 }
                 case PlaceType.Quest:
                 case PlaceType.Staking:

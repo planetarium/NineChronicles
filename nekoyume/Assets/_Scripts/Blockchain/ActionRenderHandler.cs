@@ -74,6 +74,8 @@ namespace Nekoyume.Blockchain
         // approximately 4h == 1200 block count
         private const int WorkshopNotifiedBlockCount = 0;
 
+        private const string WorkshopPushIdentifierKeyFormat = "WORKSHOP_SLOT_{0}_PUSH_IDENTIFIER";
+
         private ActionRenderHandler()
         {
         }
@@ -905,6 +907,14 @@ namespace Nekoyume.Blockchain
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 NotificationCell.NotificationType.Notification);
 
+            var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+            var identifier = PlayerPrefs.GetString(pushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(identifier))
+            {
+                PushNotifier.CancelReservation(identifier);
+                PlayerPrefs.DeleteKey(pushIdentifierKey);
+            }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(
                 avatarAddress,
                 renderArgs.Evaluation.Action.slotIndex,
@@ -1047,6 +1057,7 @@ namespace Nekoyume.Blockchain
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
@@ -1055,17 +1066,19 @@ namespace Nekoyume.Blockchain
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
 
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
@@ -1352,6 +1365,7 @@ namespace Nekoyume.Blockchain
                 renderArgs.CombinationSlotState.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
@@ -1360,10 +1374,13 @@ namespace Nekoyume.Blockchain
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
             // ~Notify
 
@@ -1383,8 +1400,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -2777,7 +2793,8 @@ namespace Nekoyume.Blockchain
                     var log = simulator.Simulate(
                         myDigest.Value,
                         enemyDigest.Value,
-                        arenaSheets);
+                        arenaSheets,
+                        true);
 
                     var reward = RewardSelector.Select(
                         random,
@@ -3327,6 +3344,7 @@ namespace Nekoyume.Blockchain
                 mailBox = new MailBox(mailBoxList);
                 mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
                     .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+
                 if (mail is not null)
                 {
                     mail.New = true;
@@ -3338,21 +3356,28 @@ namespace Nekoyume.Blockchain
                             L10nManager.Localize(
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
+                        return;
                     }
-                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize(
-                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
-                            NotificationCell.NotificationType.Notification);
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if(product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
                     }
                 }
-                else
-                {
-                    Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                        $"the render context of UnloadFromMyGarages action.\n" +
-                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                }
+                
+                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                    $"the render context of UnloadFromMyGarages action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
         }
 
@@ -3461,15 +3486,28 @@ namespace Nekoyume.Blockchain
                             L10nManager.Localize(
                                 "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
                             NotificationCell.NotificationType.Notification);
+                        return;
                     }
-                    else if (mail.Memo != null && mail.Memo.Contains("iap"))
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
                     {
-                        OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize(
-                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE"),
-                            NotificationCell.NotificationType.Notification);
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if (product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
                     }
                 }
+
+                Debug.LogWarning($"Not found ClaimItemsRecipientMail from " +
+                    $"the render context of ClaimItems action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
         }
 

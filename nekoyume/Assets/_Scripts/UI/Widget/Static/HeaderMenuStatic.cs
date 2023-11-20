@@ -196,7 +196,22 @@ namespace Nekoyume.UI.Module
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
 #if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS
-                            Find<InviteFriendsPopup>().Show();
+                            var widget = Find<InviteFriendsPopup>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
 #else
                             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");

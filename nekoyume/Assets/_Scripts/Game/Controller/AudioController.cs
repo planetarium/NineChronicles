@@ -37,9 +37,6 @@ namespace Nekoyume.Game.Controller
             public const string Shop = "bgm_shop";
             public const string Ranking = "bgm_ranking";
             public const string Combination = "bgm_workshop";
-            public const string StageGreen = "bgm_stage_green";
-            public const string StageBlue = "bgm_stage_blue";
-            public const string StageOrange = "bgm_stage_orange";
             public const string Boss1 = "bgm_boss1";
             public const string Win = "bgm_win";
             public const string Lose = "bgm_lose";

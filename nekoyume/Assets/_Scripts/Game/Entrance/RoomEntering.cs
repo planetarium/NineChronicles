@@ -86,17 +86,15 @@ namespace Nekoyume.Game.Entrance
                 headerMenu.Show();
             }
 
-            var worldInfo = States.Instance.CurrentAvatarState?.worldInformation;
-            if (worldInfo is not null)
+            const int requiredStage = LiveAsset.GameConfig.RequiredStage.ShowPopupRoomEntering;
+            if (States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
-                var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-                const int requiredStageId = LiveAsset.GameConfig.RequiredStage.ShowPopupRoomEntering;
-
                 var eventReleaseNotePopup = Widget.Find<EventReleaseNotePopup>();
-                if (eventReleaseNotePopup.HasUnread && clearedStageId >= requiredStageId)
+                if (eventReleaseNotePopup.HasUnread)
                 {
+                    var avatarInfo = Game.instance.SeasonPassServiceManager.AvatarInfo;
                     var seasonPassNewPopup = Widget.Find<SeasonPassNewPopup>();
-                    if (seasonPassNewPopup.HasUnread && clearedStageId >= requiredStageId)
+                    if (seasonPassNewPopup.HasUnread && avatarInfo.HasValue && !avatarInfo.Value.IsPremium)
                     {
                         seasonPassNewPopup.Show();
                     }

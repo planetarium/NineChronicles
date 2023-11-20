@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CommandLine;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
 using UnityEngine;
 
 #if !UNITY_ANDROID
@@ -103,6 +103,8 @@ namespace Nekoyume.Helper
         private string _googleMarketUrl;
 
         private string _appleMarketUrl;
+
+        private bool _requiredUpdate;
 
         public bool Empty { get; private set; } = true;
 
@@ -547,6 +549,17 @@ namespace Nekoyume.Helper
             set
             {
                 _appleMarketUrl = value;
+                Empty = false;
+            }
+        }
+
+        [Option("required-update", Required = false, HelpText = "required update")]
+        public bool RequiredUpdate
+        {
+            get => _requiredUpdate;
+            set
+            {
+                _requiredUpdate = value;
                 Empty = false;
             }
         }

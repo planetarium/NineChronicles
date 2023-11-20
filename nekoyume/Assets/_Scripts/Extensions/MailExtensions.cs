@@ -49,16 +49,7 @@ namespace Nekoyume
             ProductSchema product = null;
             if (mail.Memo.Contains("iap"))
             {
-#if UNITY_IOS
-                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
-#else
-                Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
-#endif
-                Match gSkuMatch = gSkuRegex.Match(mail.Memo);
-                if (gSkuMatch.Success)
-                {
-                    product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
-                }
+                product = GetProductFromMemo(mail.Memo);
             }
 
             if (product is null)
@@ -71,6 +62,23 @@ namespace Nekoyume
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
             return string.Format(format, productName);
+        }
+
+        public static ProductSchema GetProductFromMemo(string memo)
+        {
+            ProductSchema product = null;
+#if UNITY_IOS
+                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+            Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+            Match gSkuMatch = gSkuRegex.Match(memo);
+            if (gSkuMatch.Success)
+            {
+                product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+            }
+
+            return product;
         }
 
         private static string GetCellContentsForException(

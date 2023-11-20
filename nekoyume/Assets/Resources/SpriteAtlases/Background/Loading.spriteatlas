@@ -52,7 +52,6 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: f8c78760de4942e42b701e825be5f48a, type: 3}
   - {fileID: 21300000, guid: 75960fa0a23350747889f353ca04f218, type: 3}
-  - {fileID: 21300000, guid: c8a75991f58c2fb44aa25279aa416f2b, type: 3}
   - {fileID: 21300000, guid: 044b1f122d8835247b403a329ffc7c40, type: 3}
   - {fileID: 21300000, guid: 850ed972508bc2b459bd28c22f8a3377, type: 3}
   - {fileID: 21300000, guid: 234d2ad2cceae5449af559de3bd329fc, type: 3}
@@ -60,6 +59,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f9ed6d23580368b4bab35cfff3e6861b, type: 3}
   - {fileID: 21300000, guid: c67647e4e123e3e41b8ae9994d5ca58d, type: 3}
   - {fileID: 21300000, guid: e94c4948ba810f348943bee2ce27db31, type: 3}
+  - {fileID: 21300000, guid: 61e32ab835ebde342a2a35f31266fd94, type: 3}
   - {fileID: 21300000, guid: 083bf39ac01dfe14eb9000b3ddb8401e, type: 3}
   - {fileID: 21300000, guid: 5bbad4ad68b59cc40b36c23664c59a7b, type: 3}
   - {fileID: 21300000, guid: fa1409bd25e03a84aba704aa53863b52, type: 3}
@@ -68,7 +68,6 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - loading_arena
   - UI_loading_cat
-  - UI_loading_workshop_dialog
   - UI_loading_bg
   - UI_loading_girlback
   - loading_workshop
@@ -76,6 +75,7 @@ SpriteAtlas:
   - UI_loading_02
   - UI_loading_icon_01
   - loading_shop
+  - loading_worldboss
   - UI_loading_ornament
   - loading_entering
   - UI_loading_lens flare

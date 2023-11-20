@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         {
             get
             {
-                return PlayerPrefs.HasKey(LastReadingDayKey);
+                return !PlayerPrefs.HasKey(LastReadingDayKey);
             }
         }
 

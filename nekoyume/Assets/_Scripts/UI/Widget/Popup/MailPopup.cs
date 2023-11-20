@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Blockchain;
     using System.Text.RegularExpressions;
     using UniRx;
 
@@ -281,6 +282,43 @@ namespace Nekoyume.UI
 
                             var material = ItemFactory.CreateMaterial(row);
                             mailRewards.Add(new MailReward(material, fungibleCount));
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
+                case ClaimItemsMail claimItemsMail:
+                    if (claimItemsMail.FungibleAssetValues is not null)
+                    {
+                        mailRewards.AddRange(
+                            claimItemsMail.FungibleAssetValues.Select(fav =>
+                                new MailReward(fav, (int)fav.MajorUnit)));
+                    }
+
+                    if (claimItemsMail.Items is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                        foreach (var (fungibleId, itemCount) in
+                                 claimItemsMail.Items)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                            if (row != null)
+                            {
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, itemCount));
+                                continue;
+                            }
+
+
+                            if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                            {
+                                var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, itemCount));
+                                continue;
+                            }
+
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
                         }
                     }
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
@@ -902,19 +940,28 @@ namespace Nekoyume.UI
             if (claimItemsMail.Items is not null)
             {
                 var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
                 foreach (var (fungibleId, count) in
                          claimItemsMail.Items)
                 {
                     var row = materialSheet.OrderedList!
                         .FirstOrDefault(row => row.Id.Equals(fungibleId));
-                    if (row is null)
+                    if (row != null)
                     {
-                        Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
                         continue;
                     }
 
-                    var material = ItemFactory.CreateMaterial(row);
-                    rewards.Add(new MailReward(material, count));
+                    
+                    if(itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, 1));
+                        continue;
+                    }
+
+                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
                 }
             }
 

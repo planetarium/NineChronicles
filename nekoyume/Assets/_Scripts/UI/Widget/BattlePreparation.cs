@@ -727,16 +727,11 @@ namespace Nekoyume.UI
                 }
             }
 
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Sweep;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
-            var canSweep = false;
-            const int sweepableStage = 23;
-            if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStage))
-            {
-                canSweep = lastClearedStage >= sweepableStage;
-            }
+            var canSweep = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
 
             startButton.gameObject.SetActive(canBattle);
 

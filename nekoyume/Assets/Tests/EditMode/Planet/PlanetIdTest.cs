@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Planet
