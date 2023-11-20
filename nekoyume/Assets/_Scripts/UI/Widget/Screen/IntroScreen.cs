@@ -216,8 +216,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private GameObject selectPlanetPopup;
         [SerializeField] private TextMeshProUGUI selectPlanetPopupTitleText;
-        [SerializeField] private ConditionalButton heimdallButton;
-        [SerializeField] private ConditionalButton odinButton;
+        [SerializeField] private SelectPlanetScroll selectPlanetScroll;
 
         [SerializeField] private GameObject planetAccountInfosPopup;
         [SerializeField] private TextMeshProUGUI planetAccountInfosTitleText;
@@ -310,22 +309,9 @@ namespace Nekoyume.UI
                 ShowQrCodeGuide();
             });
             yourPlanetButton.onClick.AddListener(() => selectPlanetPopup.SetActive(true));
-            heimdallButton.OnClickSubject
+                .AddTo(gameObject);
                 .Subscribe(_ => selectPlanetPopup.SetActive(false))
                 .AddTo(gameObject);
-            heimdallButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, heimdallButton.Text);
-                selectPlanetPopup.SetActive(false);
-            }).AddTo(gameObject);
-            odinButton.OnClickSubject
-                .Subscribe(_ => selectPlanetPopup.SetActive(false))
-                .AddTo(gameObject);
-            odinButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                _planetContext = PlanetSelector.SelectPlanetByName(_planetContext, odinButton.Text);
-                selectPlanetPopup.SetActive(false);
-            }).AddTo(gameObject);
             planetAccountInfoLeft.noAccountCreateButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] planetAccountInfoLeft.noAccountCreateButton.onClick invoked");
@@ -551,10 +537,6 @@ namespace Nekoyume.UI
                 Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetRegistry or planetInfo is null");
                 yourPlanetButtonText.text = "Null";
                 planetAccountInfoText.text = string.Empty;
-                heimdallButton.Interactable = false;
-                heimdallButton.Text = "Heimdall (Null)";
-                odinButton.Interactable = false;
-                odinButton.Text = "Odin (Null)";
                 return;
             }
 
@@ -572,30 +554,6 @@ namespace Nekoyume.UI
                 Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is false");
                 startButtonGO.SetActive(false);
                 socialButtonsGO.SetActive(true);
-            }
-
-            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Heimdall, out var heimdallInfo) ||
-                planetRegistry.TryGetPlanetInfoById(PlanetId.HeimdallInternal, out heimdallInfo))
-            {
-                heimdallButton.Text = textInfo.ToTitleCase(heimdallInfo.Name);
-            }
-
-            if (planetRegistry.TryGetPlanetInfoById(PlanetId.Odin, out var odinInfo) ||
-                planetRegistry.TryGetPlanetInfoById(PlanetId.OdinInternal, out odinInfo))
-            {
-                odinButton.Text = textInfo.ToTitleCase(odinInfo.Name);
-            }
-
-            if (planetInfo.ID.Equals(PlanetId.Odin) ||
-                planetInfo.ID.Equals(PlanetId.OdinInternal))
-            {
-                heimdallButton.Interactable = false;
-                odinButton.Interactable = true;
-            }
-            else
-            {
-                heimdallButton.Interactable = true;
-                odinButton.Interactable = false;
             }
         }
 
