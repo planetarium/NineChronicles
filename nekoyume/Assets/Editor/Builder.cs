@@ -21,7 +21,7 @@ namespace Editor
     public class Builder
     {
 #if UNITY_ANDROID || UNITY_IOS
-        private const string PlayerName = "Nine Chronicles M";
+        private static string PlayerName = "Nine Chronicles M";
 #else
         private static readonly string PlayerName = PlayerSettings.productName;
 #endif
@@ -239,7 +239,9 @@ namespace Editor
             bool useDevExtension = false)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
-
+#if UNITY_ANDROID || UNITY_IOS
+            PlayerSettings.productName = PlayerName;
+#endif
 
             // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
             var cliOptions = new Dictionary<string, string>();
