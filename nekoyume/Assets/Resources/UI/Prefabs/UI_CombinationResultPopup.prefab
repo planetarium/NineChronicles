@@ -111833,12 +111833,12 @@ PrefabInstance:
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
@@ -112309,11 +112309,6 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4278245631
       objectReference: {fileID: 0}
-    - target: {fileID: 8622957319197902052, guid: c5267550da1c5564fbd3a183284ebe1b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8933844638924130764, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -112531,12 +112526,12 @@ PrefabInstance:
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318047958946, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
@@ -112989,11 +112984,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5527990495606193651, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
-      propertyPath: m_text
-      value: Magma Tsunami Get Random Stats
-      objectReference: {fileID: 0}
-    - target: {fileID: 5527990495606193651, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
-        type: 3}
       propertyPath: m_fontColor.a
       value: 1
       objectReference: {fileID: 0}
@@ -113004,31 +112994,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
-      propertyPath: m_text
-      value: Magma Tsunami 10000 / 10%
-      objectReference: {fileID: 0}
-    - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
-        type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
-    - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
-        type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035,
-        type: 2}
     - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
-    - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-        type: 2}
     - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
       propertyPath: m_fontColor32.rgba
