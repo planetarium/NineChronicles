@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Nekoyume.Blockchain;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using NineChronicles.ExternalServices.IAPService.Runtime;
 using NineChronicles.ExternalServices.IAPService.Runtime.Models;
@@ -159,12 +161,49 @@ namespace Nekoyume
         private static string GetCellContentsForException(
             this ClaimItemsMail mail)
         {
+            string itemNames = string.Empty;
+            if (mail.FungibleAssetValues is not null)
+            {
+                foreach (var fav in mail.FungibleAssetValues)
+                {
+                    itemNames += LocalizationExtensions.GetLocalizedName(fav) + ", ";
+                }
+            }
+
+            if (mail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in
+                         mail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        continue;
+                    }
+
+                    if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        itemNames += LocalizationExtensions.GetLocalizedName(item) + ", ";
+                        continue;
+                    }
+                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+            if(itemNames.Length > 2)
+            {
+                itemNames.Remove(itemNames.Length-2,2);
+            }
             var exceptionFormat = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_EXCEPTION_FORMAT");
-            return string.Format(
-                exceptionFormat,
-                mail.FungibleAssetValues?.Count ?? 0,
-                mail.Items?.Count ?? 0);
+                "UI_RECEIVED");
+            itemNames += exceptionFormat;
+
+            return itemNames;
         }
     }
 }
