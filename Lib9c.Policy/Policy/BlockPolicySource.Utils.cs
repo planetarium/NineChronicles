@@ -46,16 +46,23 @@ namespace Nekoyume.Blockchain.Policy
             }
             else
             {
+                Planet? planet = transaction.DeterminePlanet();
                 try
                 {
-                    // Comparison with ObsoleteIndex + 2 is intended to have backward
-                    // compatibility with a bugged original implementation.
                     return rawActions
                         .Select(rawAction => actionLoader.LoadAction(blockIndex, rawAction))
                         .Select(action => action.GetType())
-                        .Any(actionType =>
-                            actionType.GetCustomAttribute<ActionObsoleteAttribute>(false) is { } attribute &&
-                            attribute.ObsoleteIndex + 2 <= blockIndex);
+                        .Any(t =>
+                        {
+                            if (planet is { } planetNotNull)
+                            {
+                                return t.GetCustomAttributes<ActionObsoleteAttribute>(false)
+                                    .IsObsolete(planetNotNull, blockIndex);
+                            }
+
+                            // Exempt obsoleting check against unknown planet
+                            return false;
+                        });
                 }
                 catch (Exception)
                 {
