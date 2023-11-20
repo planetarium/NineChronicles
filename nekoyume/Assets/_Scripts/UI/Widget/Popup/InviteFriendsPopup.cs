@@ -139,20 +139,16 @@ namespace Nekoyume.UI
         {
             _referralInformation ??= await Game.Game.instance.PortalConnect.GetReferralInformation();
 
-            Set(_referralInformation);
-            base.Show(ignoreShowAnimation);
-        }
-
-        private void Set(PortalConnect.ReferralResult referralInformation)
-        {
             referralRewardText.text = L10nManager.Localize(
                 "UI_INVITE_FRIENDS_BANNER_DESC",
-                referralInformation.inviterReward,
-                referralInformation.inviteeReward,
-                referralInformation.inviteeLevelReward,
-                referralInformation.requiredLevel);
-            referralCodeText.text = referralInformation.referralCode;
-            enterReferralCodeButton.gameObject.SetActive(!referralInformation.isRegistered);
+                _referralInformation.inviterReward,
+                _referralInformation.inviteeReward,
+                _referralInformation.inviteeLevelReward,
+                _referralInformation.requiredLevel);
+            referralCodeText.text = _referralInformation.referralCode;
+            enterReferralCodeButton.gameObject.SetActive(!_referralInformation.isRegistered);
+
+            base.Show(ignoreShowAnimation);
         }
 
         private async void EnterReferralCode(string referralCode)
