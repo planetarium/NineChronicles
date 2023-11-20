@@ -1265,40 +1265,29 @@ UI_SEASON,Season,시즌,Temporada,シーズン,Temporada,ซีซั่น,Musi
 UI_CHAMPIONSHIP,Championship,챔피언십,Campeonato,チャンピオンシップ,Campeonato,การแข่งขันชิงแชมป์,Kejuaraan,Чемпионат,锦标赛,錦標賽,Kampeonado,Giải đấu
 UI_PUSH_ALERT,Push Alert,푸시 알림,Empurre o alerta,プッシュ通知,Alerta,แจ้งเตือน,Dorong Peringatan,Проталкивать оповещение,推动警报,推送警報,Agarang abiso,Phát động cảnh báo
 UI_NIGHTTIME_PUSH,Nighttime (21:00-08:00),야간 (21:00-08:00),Nighttime (21: 00-08: 00),夜間（21:00－08:00）,Noche (21:00-08:00),ช่วงกลางคืน (21:00-08:00 น.),Malam hari (21: 00-08: 00),Ночь (21: 00-08: 00),夜间（21：00-08：00）,夜間（21：00-08：00）,Oras ng gabi,Ban đêm (21: 00-08: 00)
-UI_IAP_PURCHASE_COMPLETE,"<size=24>Purchase completed.</size>
-
-<size=16>Product delivery will commence through the blockchain network.
-Once the delivery is complete, the product will be sent to you via email.</size>","<size=24>구매 성공</size>
-
-<size=16>블록체인 네트워크를 통해 상품 배송이 시작됩니다.
-곧 제이드가 메일로 상품을 보내줄거예요!.</size>","<size=24>Compra concluída.</size>
-
-<size=16>A entrega dos produtos começará através da rede blockchain.
-Em breve, Jade enviará os itens para você por meio do correio!</size>","<size=24>購買に成功しました。</size>
-
-<size=16>ブロックチェーンネットワークを通じて商品の配送が始まります。
-まもなく、ジェイドがアイテムをメールで送ってくれるでしょう！</size>","<size=24>Compra completada.</size>
-
-<size=16>La entrega de productos comenzará a través de la red blockchain.
-Pronto, Jade enviará los artículos por correo.</size>","<size=24>ซื้อเสร็จ</size>
-
-<size=16>การจัดส่งสินค้าจะเริ่มต้นผ่านเครือข่ายบล็อกเชนแล้ว
-ในไม่ช้า เจดจะส่งไอเท็มให้คุณทางไปรษณีย์!</size>","<size=24>Pembelian selesai.</size>
-
-<size=16>Pengiriman produk akan dimulai melalui jaringan blockchain.
-Setelah pengiriman selesai, produk akan dikirimkan kepada Anda melalui mail.</size>",,"<size=24>购买完成。</size>
-
-<size=16>产品将通过区块链网络开始交付。
-很快，Jade将通过邮件向您发送物品！</size>","<size=24>購買完成。</size>
-
-<size=16>產品將透過區塊鏈網絡開始交付。
-不久後，Jade將透過郵件將物品發送給您！</size>","<size=24>Bumili ng nakumpleto.</size>
-
-<size=16>Magsisimula ang paghahatid ng mga produkto sa pamamagitan ng blockchain network.
-Sa lalong madaling panahon, si Jade ay magpapadala ng mga item sa iyo sa pamamagitan ng koreo!</size>","<size=24>Giao dịch hoàn tất.</size>
-
-<size=16>Giao hàng sản phẩm sẽ bắt đầu thông qua mạng blockchain. 
-Sớm thôi, Jade sẽ gửi các sản phẩm đến bạn qua thư!</size>"
+UI_IAP_PURCHASE_COMPLETE,"<line-height=120%><size=24>Purchase completed.</size>
+<line-height=50%><size=16>Product delivery via blockchain.
+item sent to your mailbox upon completion.</size>","<line-height=120%><size=24>구매 성공</size>
+<line-height=50%><size=16>블록체인 네트워크를 통해 상품 배송이 시작됩니다.
+곧 제이드가 메일로 상품을 보내줄거예요!</size>","<line-height=120%><size=24>Compra concluída.</size>
+<line-height=50%><size=16>Entrega via blockchain;
+item enviado à sua caixa de correio após conclusão.</size>","<line-height=120%><size=24>購買に成功しました。</size>
+<line-height=50%><size=16>ブロックチェーンネットワークを介し商品配送が始まります。
+ジェイドがすぐアイテムをメールボックスに送ります！</size>","<line-height=120%><size=24>Compra completada.</size>
+<line-height=50%><size=16>La entrega de productos comenzará a través de la red blockchain.
+Pronto, Jade enviará los artículos por correo.</size>","<line-height=120%><size=24>ซื้อเสร็จ</size>
+<line-height=50%><size=16>การจัดส่งสินค้าจะเริ่มต้นผ่านเครือข่ายบล็อกเชนแล้ว
+ในไม่ช้า เจดจะส่งไอเท็มให้คุณทางไปรษณีย์!</size>","<line-height=120%><size=24>Pembelian selesai.</size>
+<line-height=50%><size=16>Pengiriman produk akan dimulai melalui jaringan blockchain.
+Setelah pengiriman selesai, produk akan dikirimkan kepada Anda melalui mail.</size>",,"<line-height=120%><size=24>购买完成。</size>
+<line-height=50%><size=16>产品将通过区块链网络开始交付。
+很快，Jade将通过邮件向您发送物品！</size>","<line-height=120%><size=24>購買完成。</size>
+<line-height=50%><size=16>產品將透過區塊鏈網絡開始交付。
+不久後，Jade將透過郵件將物品發送給您！</size>","<line-height=120%><size=24>Bumili ng nakumpleto.</size>
+<line-height=50%><size=16>Mag-umpisa na ang delivery ng produkto sa blockchain network.
+Ipadadala ni Jade ang items sa iyo via mailbox.</size>","<line-height=120%><size=24>Giao dịch hoàn tất.</size>
+<line-height=50%><size=16>Giao hàng qua blockchain sắp bắt đầu.
+Jade sẽ gửi sản phẩm đến bạn sớm thôi!</size>"
 UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL,"<color=#FFA78B>[Shop Cat Jade]</color>
 {0} delivery is complete!","<color=#FFA78B>[마켓고양이 제이드]</color>
 {0} 배송이 완료되었습니다!","<color=#ffa78b>[Shop Cat Jade]</color>
