@@ -37,7 +37,8 @@ namespace Nekoyume
             PrivateKey? privateKey = null,
             DateTimeOffset? timestamp = null,
             IEnumerable<ActionBase>? actionBases = null,
-            Currency? goldCurrency = null
+            Currency? goldCurrency = null,
+            ISet<Address>? assetMinters = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -72,7 +73,8 @@ namespace Nekoyume
                 goldDistributions: goldDistributions,
                 pendingActivationStates: pendingActivationStates,
                 authorizedMinersState: authorizedMinersState,
-                creditsState: credits is null ? null : new CreditsState(credits)
+                creditsState: credits is null ? null : new CreditsState(credits),
+                assetMinters: assetMinters
             );
             List<ActionBase> actions = new List<ActionBase>
             {
