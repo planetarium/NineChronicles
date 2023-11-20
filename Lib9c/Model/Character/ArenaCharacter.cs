@@ -14,9 +14,11 @@ using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Skill.Arena;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using ArenaSkill = Nekoyume.Model.BattleStatus.Arena.ArenaSkill;
 
 namespace Nekoyume.Model
 {
@@ -50,6 +52,8 @@ namespace Nekoyume.Model
         public float AttackRange { get; }
         public int CharacterId { get; }
         public bool IsEnemy { get; }
+
+        private bool _setExtraValueBuffBeforeGetBuffs = false;
 
         private int _currentHP;
 
@@ -155,7 +159,8 @@ namespace Nekoyume.Model
             ArenaPlayerDigest digest,
             ArenaSimulatorSheets sheets,
             int hpModifier,
-            bool isEnemy = false)
+            bool isEnemy = false,
+            bool setExtraValueBuffBeforeGetBuffs = false)
         {
             OffensiveElementalType = GetElementalType(digest.Equipments, ItemSubType.Weapon);
             DefenseElementalType = GetElementalType(digest.Equipments, ItemSubType.Armor);
@@ -165,6 +170,7 @@ namespace Nekoyume.Model
             AttackRange = row?.AttackRange ?? 1f;
             CharacterId = digest.CharacterId;
             IsEnemy = isEnemy;
+            _setExtraValueBuffBeforeGetBuffs = setExtraValueBuffBeforeGetBuffs;
 
             _skillSheet = sheets.SkillSheet;
             _skillBuffSheet = sheets.SkillBuffSheet;
@@ -685,7 +691,12 @@ namespace Nekoyume.Model
                     _skillBuffSheet,
                     _statBuffSheet,
                     _skillActionBuffSheet,
-                    _actionBuffSheet)
+                    _actionBuffSheet,
+                    _setExtraValueBuffBeforeGetBuffs &&
+                    selectedSkill is ArenaBuffSkill &&
+                    (selectedSkill.Power > 0 ||
+                     selectedSkill.ReferencedStatType !=
+                     StatType.NONE))
             );
 
             if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))

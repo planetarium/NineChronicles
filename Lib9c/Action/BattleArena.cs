@@ -25,6 +25,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Introduce at https://github.com/planetarium/lib9c/pull/2229
+    /// Changed at https://github.com/planetarium/lib9c/pull/2242
     /// </summary>
     [Serializable]
     [ActionType("battle_arena15")]
@@ -377,7 +378,8 @@ namespace Nekoyume.Action
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
-                    arenaSheets);
+                    arenaSheets,
+                    true);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
                     winCount++;
