@@ -31,7 +31,7 @@ namespace Nekoyume.Action
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
-        public const int HpIncreasingModifier = 10;
+        public const int HpIncreasingModifier = 5;
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
         public int championshipId;
