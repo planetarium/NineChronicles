@@ -1839,6 +1839,7 @@ namespace Nekoyume.Blockchain
                 return eval;
             }
 
+
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
                 Game.Game.instance.Stage.onEnterToStageEnd
@@ -1888,6 +1889,7 @@ namespace Nekoyume.Blockchain
 
             var tempPlayer =
                 new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
+            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.GetEquippedRuneStates(BattleType.Adventure),
@@ -3374,7 +3376,7 @@ namespace Nekoyume.Blockchain
                         }
                     }
                 }
-                
+
                 Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
                     $"the render context of UnloadFromMyGarages action.\n" +
                     $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
