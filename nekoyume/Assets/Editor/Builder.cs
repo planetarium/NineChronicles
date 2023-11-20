@@ -20,7 +20,11 @@ namespace Editor
     [ExecuteInEditMode]
     public class Builder
     {
+#if UNITY_ANDROID || UNITY_IOS
+        private const string PlayerName = "Nine Chronicles M";
+#else
         private static readonly string PlayerName = PlayerSettings.productName;
+#endif
         private const string BuildBasePath = "build";
 
         [MenuItem("Build/Standalone/Android Arm64")]
@@ -454,7 +458,7 @@ namespace Editor
                 new[] { unityFrameworkTargetGuid, pbxProject.GetUnityMainTargetGuid() },
                 "ENABLE_BITCODE",
                 "NO");
-            
+
             var targetGuid = pbxProject.GetUnityMainTargetGuid();
             // libz.tbd for grpc ios build
             pbxProject.AddFrameworkToProject(targetGuid, "libz.tbd", false);
@@ -484,7 +488,7 @@ namespace Editor
             // read plist
             Dictionary<string, object> dict;
             dict = (Dictionary<string, object>)Plist.readPlist(plistPath);
-        
+
             // update plist
             dict["CFBundleURLTypes"] = new List<object>
             {
@@ -501,7 +505,7 @@ namespace Editor
             };
 
             dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
-        
+
             // write plist
             Plist.writeXml(dict, plistPath);
         }
