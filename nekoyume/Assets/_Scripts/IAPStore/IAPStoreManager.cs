@@ -212,7 +212,7 @@ namespace Nekoyume.IAPStore
                     AirbridgeEvent @event = new AirbridgeEvent("IAP");
                     @event.SetAction(e.purchasedProduct.definition.id);
                     @event.SetLabel("iap");
-                    @event.SetValue(1);
+                    @event.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
                     @event.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
                     @event.SetTransactionId(e.purchasedProduct.transactionID);
                     AirbridgeUnity.TrackEvent(@event);
