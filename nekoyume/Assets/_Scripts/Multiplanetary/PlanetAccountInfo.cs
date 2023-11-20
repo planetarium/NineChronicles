@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Libplanet.Crypto;
 using Nekoyume.GraphQL.GraphTypes;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public class PlanetAccountInfo
     {

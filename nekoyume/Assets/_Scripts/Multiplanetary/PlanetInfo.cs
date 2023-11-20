@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public class PlanetInfo
     {

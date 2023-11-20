@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CommandLine;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
 using UnityEngine;
 
 #if !UNITY_ANDROID

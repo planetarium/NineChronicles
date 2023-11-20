@@ -3,7 +3,7 @@
 using System.Linq;
 using Nekoyume.Helper;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public class PlanetContext
     {
