@@ -190,7 +190,7 @@ namespace Nekoyume.Game
 
         #region Mono & Initialization
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_IOS
         void OnAuthorizationStatusReceived(AppTrackingTransparency.AuthorizationStatus status)
         {
             AppTrackingTransparency.OnAuthorizationStatusReceived -= OnAuthorizationStatusReceived;
@@ -203,7 +203,7 @@ namespace Nekoyume.Game
             GL.Clear(true, true, Color.black);
             Application.runInBackground = true;
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_IOS
             AppTrackingTransparency.OnAuthorizationStatusReceived += OnAuthorizationStatusReceived;
             AppTrackingTransparency.AuthorizationStatus status = AppTrackingTransparency.TrackingAuthorizationStatus();
             if (status == AppTrackingTransparency.AuthorizationStatus.NotDetermined)
@@ -212,7 +212,7 @@ namespace Nekoyume.Game
             }
 #endif
 
-#if UNITY_IOS && !UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_IOS && !UNITY_IOS_SIMULATOR
             // DevCra - iOS Build
             //string prefix = Path.Combine(Platform.DataPath.Replace("Data", ""), "Frameworks");
             ////Load dynamic library of rocksdb
@@ -222,7 +222,7 @@ namespace Nekoyume.Game
             ////Set the path of secp256k1's dynamic library
             //string secp256k1LibPath = Path.Combine(prefix, "secp256k1.framework", "libsecp256k1");
             //Secp256k1Net.UnityPathHelper.SetSpecificPath(secp256k1LibPath);
-#elif UNITY_IOS_SIMULATOR && !UNITY_EDITOR
+#elif !UNITY_EDITOR && UNITY_IOS_SIMULATOR
             string rocksdbLibPath = Platform.GetStreamingAssetsPath("librocksdb.dylib");
             Native.LoadLibrary(rocksdbLibPath);
 
