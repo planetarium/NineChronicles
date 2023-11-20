@@ -286,6 +286,43 @@ namespace Nekoyume.UI
                     }
                     ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
                     break;
+                case ClaimItemsMail claimItemsMail:
+                    if (claimItemsMail.FungibleAssetValues is not null)
+                    {
+                        mailRewards.AddRange(
+                            claimItemsMail.FungibleAssetValues.Select(fav =>
+                                new MailReward(fav, (int)fav.MajorUnit)));
+                    }
+
+                    if (claimItemsMail.Items is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                        foreach (var (fungibleId, itemCount) in
+                                 claimItemsMail.Items)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                            if (row != null)
+                            {
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, itemCount));
+                                continue;
+                            }
+
+
+                            if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                            {
+                                var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, itemCount));
+                                continue;
+                            }
+
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
             }
         }
 

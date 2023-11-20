@@ -3,7 +3,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public class PlanetIdJsonConverter : JsonConverter<PlanetId>
     {

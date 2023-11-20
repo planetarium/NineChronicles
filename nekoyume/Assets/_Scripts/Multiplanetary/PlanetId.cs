@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public readonly partial struct PlanetId : IEnumerable<byte>, IEquatable<PlanetId>
     {

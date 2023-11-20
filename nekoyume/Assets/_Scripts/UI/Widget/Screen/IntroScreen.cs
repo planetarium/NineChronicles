@@ -17,7 +17,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.OAuth;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;

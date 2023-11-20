@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet.Crypto;
 using Nekoyume.Game.OAuth;
 using Nekoyume.Helper;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
 using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;

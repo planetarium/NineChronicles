@@ -32,6 +32,7 @@ namespace Nekoyume.UI.Module
             [SerializeField]
             public Button TooltipButton;
 
+            private bool isNotPremium = false;
             private IDisposable disposable;
             private ItemBase itemBaseForToolTip = null;
 
@@ -104,6 +105,7 @@ namespace Nekoyume.UI.Module
                     if(!avatarInfo.IsPremium && !isNormal)
                     {
                         ItemView.LevelLimitObject.SetActive(true);
+                        isNotPremium = true;
                     }
                     else
                     {
@@ -120,7 +122,7 @@ namespace Nekoyume.UI.Module
                             return;
                         AudioController.PlayClick();
 
-                        if (ItemView.LevelLimitObject.activeSelf)
+                        if (ItemView.LevelLimitObject.activeSelf && isNotPremium)
                         {
                             OneLineSystem.Push(MailType.System,
                             L10nManager.Localize("NOTIFICATION_SEASONPASS_PREMIUM_LIMIT_UNLOCK_GUIDE"),

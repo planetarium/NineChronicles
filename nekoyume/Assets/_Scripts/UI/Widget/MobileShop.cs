@@ -65,9 +65,9 @@ namespace Nekoyume.UI
 
             try
             {
+                var categorySchemas = await GetCategorySchemas();
                 if (!_isInitailizedObj)
                 {
-                    var categorySchemas = await GetCategorySchemas();
 
                     if(categorySchemas.Count == 0)
                     {
@@ -125,6 +125,19 @@ namespace Nekoyume.UI
                             _recommendedToggle = categoryTabObj;
                     }
                     _isInitailizedObj = true;
+                }
+                else
+                {
+                    foreach (var category in categorySchemas)
+                    {
+                        foreach (var item in category.ProductList)
+                        {
+                            if (_allProductObjs.TryGetValue(item.Sku,out var cellView))
+                            {
+                                cellView.SetData(item, category.Name == _recommendedString);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)

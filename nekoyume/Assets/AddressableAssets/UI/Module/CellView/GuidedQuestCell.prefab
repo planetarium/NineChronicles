@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 40, y: 3}
-  m_SizeDelta: {x: -125, y: 38}
+  m_SizeDelta: {x: -135, y: 38}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3323864369049285392
 CanvasRenderer:
@@ -108,7 +108,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -50
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -5242,7 +5242,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 40, y: 3}
-  m_SizeDelta: {x: -125, y: 38}
+  m_SizeDelta: {x: -135, y: 38}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1923486161196092807
 CanvasRenderer:
@@ -5312,7 +5312,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -50
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -6733,6 +6733,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StageRewardItemView (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 455179787460779663, guid: f5d25136d0ee01b4599de5ee424b1575,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6665917645473585687, guid: f5d25136d0ee01b4599de5ee424b1575,
         type: 3}

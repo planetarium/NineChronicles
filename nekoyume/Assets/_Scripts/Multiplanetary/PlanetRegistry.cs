@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public class PlanetRegistry
     {

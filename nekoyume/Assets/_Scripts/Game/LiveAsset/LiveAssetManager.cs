@@ -11,7 +11,6 @@ using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-using Nekoyume.Planet;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset

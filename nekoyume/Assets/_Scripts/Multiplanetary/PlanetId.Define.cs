@@ -1,4 +1,4 @@
-namespace Nekoyume.Planet
+namespace Nekoyume.Multiplanetary
 {
     public partial struct PlanetId
     {
