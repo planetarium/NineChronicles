@@ -38,8 +38,6 @@ namespace Nekoyume.UI
             }
             [Tooltip("페이드 혹은 나타날 사진이 찍히는 Image컴포넌트")]
             public Image image;
-            [Tooltip("SkeletonAnimation이 들어가는 여부")]
-            public bool hasSkeletonAnimation;
             [Tooltip("페이드 혹은 나타날 CanvasGroup")]
             public CanvasGroup canvasGroup;
             [Tooltip("페이드 혹은 나타날 사진")]
@@ -166,14 +164,13 @@ namespace Nekoyume.UI
 
                         tweener = script.image.DOFade(1, script.imageAnimationTime);
 
-                        if (script.hasSkeletonAnimation)
+                        if (script.canvasGroup)
                         {
-                            script.canvasGroup.alpha = 1;
-                            script.canvasGroup.DOFade(0, script.imageAnimationTime);
+                            script.canvasGroup.alpha = 0;
+                            script.canvasGroup.DOFade(1, script.imageAnimationTime);
                         }
 
                         tweener.Play();
-                        skeletonTweener?.Play();
 
                         if (skipSynopsis)
                         {
@@ -193,14 +190,13 @@ namespace Nekoyume.UI
 
                         tweener = script.image.DOFade(0, script.imageAnimationTime);
 
-                        if (script.hasSkeletonAnimation)
+                        if (script.canvasGroup)
                         {
-                            script.canvasGroup.alpha = 0;
-                            script.canvasGroup.DOFade(1, script.imageAnimationTime);
+                            script.canvasGroup.alpha = 1;
+                            script.canvasGroup.DOFade(0, script.imageAnimationTime);
                         }
 
                         tweener.Play();
-                        skeletonTweener?.Play();
 
                         if (skipSynopsis)
                         {

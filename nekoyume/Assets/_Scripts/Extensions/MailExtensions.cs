@@ -14,7 +14,12 @@ namespace Nekoyume
     {
         public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
-            if(mail.Memo != null && mail.Memo.Contains("season_pass"))
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if(mail.Memo.Contains("\"t\": \"auto\""))
                 {
@@ -33,6 +38,12 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
+
+            if(Game.Game.instance.IAPStoreManager is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
@@ -55,22 +66,11 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var iapStoreManager = game.IAPStoreManager;
-            if (iapStoreManager is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.Sku);
-            if (storeProduct is null)
-            {
-                return mail.GetCellContentsForException();
-            }
+            var productName = L10nManager.Localize(product.L10n_Key);
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
-            return string.Format(format, storeProduct.metadata.localizedTitle);
+            return string.Format(format, productName);
         }
 
         private static string GetCellContentsForException(
@@ -86,6 +86,11 @@ namespace Nekoyume
 
         public static async Task<string> GetCellContentAsync(this ClaimItemsMail mail)
         {
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             if (mail.Memo != null && mail.Memo.Contains("season_pass"))
             {
                 if (mail.Memo.Contains("\"t\": \"auto\""))
@@ -108,6 +113,12 @@ namespace Nekoyume
                 Debug.Log($"{nameof(IAPServiceManager)} is null.");
                 return mail.GetCellContentsForException();
             }
+
+            if (Game.Game.instance.IAPStoreManager is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
             var agentAddr = game.Agent.Address;
 
             ProductSchema product = null;
@@ -130,22 +141,11 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var iapStoreManager = game.IAPStoreManager;
-            if (iapStoreManager is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.Sku);
-            if (storeProduct is null)
-            {
-                return mail.GetCellContentsForException();
-            }
+            var productName = L10nManager.Localize(product.L10n_Key);
 
             var format = L10nManager.Localize(
                 "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
-            return string.Format(format, storeProduct.metadata.localizedTitle);
+            return string.Format(format, productName);
         }
 
         private static string GetCellContentsForException(

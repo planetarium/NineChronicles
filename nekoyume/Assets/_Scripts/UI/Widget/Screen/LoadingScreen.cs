@@ -63,12 +63,12 @@ namespace Nekoyume.UI
             }
 
             SetBackGround(loadingType);
+
+            base.Show(ignoreShowAnimation);
             loadingModule.Show(
                 message,
                 loadingType == LoadingType.JustModule,
                 loadingType == LoadingType.JustModule);
-
-            base.Show(ignoreShowAnimation);
         }
 
         private void SetBackGround(LoadingType type)

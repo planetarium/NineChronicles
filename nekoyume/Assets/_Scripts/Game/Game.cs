@@ -378,6 +378,26 @@ namespace Nekoyume.Game
 #endif
             Debug.Log("[Game] Start()... L10nManager initialized");
 
+            if (_commandLineOptions.RequiredUpdate)
+            {
+                var popup = Widget.Find<IconAndButtonSystem>();
+                popup.Show(
+                        "UI_REQUIRED_UPDATE_TITLE",
+                        "UI_REQUIRED_UPDATE_CONTENT",
+                        "UI_OK",
+                        true,
+                        IconAndButtonSystem.SystemType.Error);
+                popup.ConfirmCallback = popup.CancelCallback =  () =>
+                {
+#if UNITY_ANDROID
+                    Application.OpenURL(_commandLineOptions.GoogleMarketUrl);
+#elif UNITY_IOS
+                    Application.OpenURL(_commandLineOptions.AppleMarketUrl);
+#endif
+                };
+                yield break;
+            }
+
             // NOTE: Apply l10n to IntroScreen after L10nManager initialized.
             Widget.Find<IntroScreen>().ApplyL10n();
 
@@ -653,6 +673,30 @@ namespace Nekoyume.Game
                 IAPServiceManager = new IAPServiceManager(_commandLineOptions.IAPServiceHost, Store.Google);
 #endif
                 yield return IAPServiceManager.InitializeAsync().AsCoroutine();
+
+                Task.Run(async () =>
+                {
+                    await MobileShop.LoadL10Ns();
+
+                    var categorySchemas = await MobileShop.GetCategorySchemas();
+                    foreach (var category in categorySchemas)
+                    {
+                        if (category.Name == "NoShow")
+                        {
+                            continue;
+                        }
+
+                        await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+
+                        foreach (var product in category.ProductList)
+                        {
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
+                            await Helper.Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
+                        }
+                    }
+                });
+
                 innerSw.Stop();
                 Debug.Log("[Game] Start()... IAPServiceManager initialized in" +
                           $" {innerSw.ElapsedMilliseconds}ms.(elapsed)");
