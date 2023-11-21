@@ -1313,13 +1313,25 @@ namespace Nekoyume.Game
 
             Event.OnNestEnter.Invoke();
 
-            var deletableWidgets = Widget.FindWidgets().Where(widget =>
-                widget is not SystemWidget &&
-                widget is not MessageCatTooltip &&
-                widget.IsActive());
-            foreach (var widget in deletableWidgets)
+            try
             {
-                widget.Close(true);
+                var deletableWidgets = Widget.FindWidgets().Where(widget =>
+                    widget is not SystemWidget &&
+                    widget is not MessageCatTooltip &&
+                    widget.IsActive()).ToList();
+
+                for (var i = deletableWidgets.Count - 1; i >= 0; i--)
+                {
+                    var widget = deletableWidgets[i];
+                    if (widget)
+                    {
+                        widget.Close(true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             Widget.Find<Login>().Show();
@@ -1609,12 +1621,13 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log($"[Game] CoLogin()... AgentAddress({agentAddrInPortal.Value}) in portal" +
+                var requiredAddress = agentAddrInPortal.Value;
+                Debug.Log($"[Game] CoLogin()... AgentAddress({requiredAddress}) in portal" +
                           $" is not null. Try to update planet account infos.");
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
-                    agentAddrInPortal.Value).ToCoroutine();
+                    requiredAddress).ToCoroutine();
                 if (planetContext.HasError)
                 {
                     callback?.Invoke(false);
