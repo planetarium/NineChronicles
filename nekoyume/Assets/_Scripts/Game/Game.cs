@@ -1388,7 +1388,7 @@ namespace Nekoyume.Game
                 var w = Widget.Create<IconAndButtonSystem>();
                 w.CancelCallback = () =>
                 {
-                    Application.OpenURL(GameConfig.DiscordLink);
+                    Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.ExitPlaymode();
 #else
@@ -1412,7 +1412,7 @@ namespace Nekoyume.Game
                 {
                     if (result == ConfirmResult.Yes)
                     {
-                        Application.OpenURL(GameConfig.DiscordLink);
+                        Application.OpenURL(LiveAsset.GameConfig.DiscordLink);
                     }
 
 #if UNITY_EDITOR
