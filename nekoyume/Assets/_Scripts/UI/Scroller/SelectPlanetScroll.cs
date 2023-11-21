@@ -1,31 +1,49 @@
 using System;
+using System.Globalization;
 using System.Linq;
-using Nekoyume.Planet;
+using Nekoyume.Multiplanetary;
+using UnityEngine;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
 
-    public class SelectPlanetScroll : RectScroll<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
+    public class SelectPlanetScroll : FancyScrollRect<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
     {
-        public class ContextModel : RectScrollDefaultContext
+        public class ContextModel : FancyScrollRectContext, IDisposable
         {
             public readonly Subject<(
                 SelectPlanetCell cell,
                 SelectPlanetCell.ViewModel viewModel)> OnClickCellSubject = new();
 
-            public override void Dispose()
+            public void Dispose()
             {
                 OnClickCellSubject.Dispose();
-                base.Dispose();
             }
         }
 
+        [SerializeField]
+        private float cellSize;
+
+        [SerializeField]
+        private GameObject cellPrefab;
+
+        protected override float CellSize => cellSize;
+
+        protected override GameObject CellPrefab => cellPrefab;
+
         public readonly Subject<SelectPlanetScroll> OnClickSelectedPlanetSubject = new();
 
-        public readonly Subject<(
-            SelectPlanetScroll scroll,
-            string selectedPlanetName)> OnChangeSelectedPlanetSubject = new();
+        public readonly Subject<(SelectPlanetScroll scroll, PlanetId selectedPlanetId)>
+            OnChangeSelectedPlanetSubject = new();
+
+        private void OnDestroy()
+        {
+            Context.Dispose();
+            OnClickSelectedPlanetSubject.Dispose();
+            OnChangeSelectedPlanetSubject.Dispose();
+        }
 
         protected override void Initialize()
         {
@@ -34,43 +52,60 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public void UpdateData(PlanetRegistry planetRegistry)
+        public void SetData(PlanetRegistry planetRegistry, PlanetId? selectedPlanetId)
         {
+            if (!initialized)
+            {
+                Initialize();
+                initialized = true;
+            }
+
             if (planetRegistry is null)
             {
-                UpdateData(Array.Empty<SelectPlanetCell.ViewModel>());
+                UpdateContents(Array.Empty<SelectPlanetCell.ViewModel>());
                 return;
             }
 
-            UpdateData(planetRegistry.PlanetInfos.Select(e =>
-            {
-                if (e is null)
+            var textInfo = CultureInfo.InvariantCulture.TextInfo;
+            var newItemsSource = planetRegistry.PlanetInfos.Select(e =>
                 {
+                    if (e is null)
+                    {
+                        return new SelectPlanetCell.ViewModel
+                        {
+                            PlanetId = default,
+                            PlanetName = "null",
+                            IsSelected = false,
+                            IsNew = false,
+                        };
+                    }
+
+                    if (selectedPlanetId is null)
+                    {
+                        return new SelectPlanetCell.ViewModel
+                        {
+                            PlanetId = e.ID,
+                            PlanetName = textInfo.ToTitleCase(e.Name),
+                            IsSelected = false,
+                            IsNew = !(e.ID.Equals(PlanetId.Odin) ||
+                                      e.ID.Equals(PlanetId.OdinInternal)),
+                        };
+                    }
+
                     return new SelectPlanetCell.ViewModel
                     {
-                        PlanetName = "null",
-                        IsSelected = false,
-                        IsNew = false,
+                        PlanetId = e.ID,
+                        PlanetName = textInfo.ToTitleCase(e.Name),
+                        IsSelected = e.ID.Equals(selectedPlanetId),
+                        IsNew = !(e.ID.Equals(PlanetId.Odin) ||
+                                  e.ID.Equals(PlanetId.OdinInternal)),
                     };
-                }
-
-                if (string.IsNullOrEmpty(e.Name))
-                {
-                    return new SelectPlanetCell.ViewModel
-                    {
-                        PlanetName = "null",
-                        IsSelected = false,
-                        IsNew = false,
-                    };
-                }
-
-                return new SelectPlanetCell.ViewModel
-                {
-                    PlanetName = e.Name,
-                    IsSelected = false,
-                    IsNew = !e.Name.Contains(nameof(PlanetId.Odin)),
-                };
-            }).ToArray());
+                }).OrderByDescending(e => e.PlanetId.Equals(PlanetId.Odin) ||
+                                          e.PlanetId.Equals(PlanetId.OdinInternal)
+                    ? default
+                    : Guid.NewGuid())
+                .ToArray();
+            UpdateContents(newItemsSource);
         }
 
         private void OnClickCell((
@@ -84,7 +119,7 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            viewModel.IsSelected = true;
+            var selectedPlanetId = viewModel.PlanetId;
             var newItemsSource = ItemsSource.Select(e =>
             {
                 if (e.IsSelected)
@@ -93,11 +128,16 @@ namespace Nekoyume.UI.Scroller
                     return e;
                 }
 
-                return e;
-            });
+                if (e.PlanetId.Equals(selectedPlanetId))
+                {
+                    e.IsSelected = true;
+                    return e;
+                }
 
-            UpdateData(newItemsSource);
-            OnChangeSelectedPlanetSubject.OnNext((this, tuple.viewModel.PlanetName));
+                return e;
+            }).ToArray();
+            UpdateContents(newItemsSource);
+            OnChangeSelectedPlanetSubject.OnNext((this, tuple.viewModel.PlanetId));
         }
     }
 }
