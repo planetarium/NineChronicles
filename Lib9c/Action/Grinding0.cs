@@ -41,23 +41,6 @@ namespace Nekoyume.Action
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                states = EquipmentIds.Aggregate(states,
-                    (current, guid) =>
-                        current.SetState(Addresses.GetItemAddress(guid), MarkChanged));
-                return states
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 0), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 1), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged)
-                    .SetState(AvatarAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}Grinding exec started", addressesHex);

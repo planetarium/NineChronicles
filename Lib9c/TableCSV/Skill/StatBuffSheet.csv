@@ -29,6 +29,7 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,is
 202001,202000,공격 약화,100,10,Enemy,ATK,Percentage,-25,true
 202002,202000,ATK Down (Stat conversion),100,10,Enemy,ATK,Add,0,true
 202003,202000,ATK ALL Down (Stat conversion),100,6,Enemies,ATK,Add,0,true
+202004,202004,ATK Down (Aegis Aura),100,30,Enemy,ATK,Percentage,0,true
 203001,203000,방어 약화,100,10,Enemy,DEF,Percentage,-25,true
 203002,203000,DEF Down (Stat conversion),100,10,Enemy,DEF,Add,0,true
 203003,203003,Double edged sword (DEF),100,20,Self,DEF,Percentage,-20,false

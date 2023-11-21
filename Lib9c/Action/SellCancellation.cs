@@ -98,18 +98,6 @@ namespace Nekoyume.Action
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             var digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             var itemAddress = Addresses.GetItemAddress(tradableId);
-            if (context.Rehearsal)
-            {
-                states = states.SetState(shardedShopAddress, MarkChanged);
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(digestListAddress, MarkChanged)
-                    .SetState(itemAddress, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
             if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState, out _))

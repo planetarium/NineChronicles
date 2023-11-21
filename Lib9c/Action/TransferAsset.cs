@@ -88,11 +88,6 @@ namespace Nekoyume.Action
             context.UseGas(4);
             Address signer = context.Signer;
             var state = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return state.MarkBalanceChanged(context, Amount.Currency, new[] {Sender, Recipient});
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}TransferAsset5 exec started", addressesHex);

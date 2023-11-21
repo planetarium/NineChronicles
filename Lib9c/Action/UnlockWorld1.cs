@@ -33,15 +33,6 @@ namespace Nekoyume.Action
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var unlockedWorldIdsAddress = AvatarAddress.Derive("world_ids");
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(AvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))

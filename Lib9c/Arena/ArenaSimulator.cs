@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
@@ -9,7 +10,7 @@ using Priority_Queue;
 namespace Nekoyume.Arena
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1930
+    /// Changed at https://github.com/planetarium/lib9c/pull/2229
     /// </summary>
     public class ArenaSimulator : IArenaSimulator
     {
@@ -19,20 +20,23 @@ namespace Nekoyume.Arena
         public IRandom Random { get; }
         public int Turn { get; private set; }
         public ArenaLog Log { get; private set; }
+        public int HpModifier { get; }
 
-        public ArenaSimulator(IRandom random)
+        public ArenaSimulator(IRandom random, int hpModifier = 2)
         {
             Random = random;
             Turn = 1;
+            HpModifier = hpModifier;
         }
 
         public ArenaLog Simulate(
             ArenaPlayerDigest challenger,
             ArenaPlayerDigest enemy,
-            ArenaSimulatorSheets sheets)
+            ArenaSimulatorSheets sheets,
+            bool setExtraValueBuffBeforeGetBuffs = false)
         {
             Log = new ArenaLog();
-            var players = SpawnPlayers(this, challenger, enemy, sheets, Log);
+            var players = SpawnPlayers(this, challenger, enemy, sheets, Log, setExtraValueBuffBeforeGetBuffs);
             Turn = 1;
 
             while (true)
@@ -94,15 +98,20 @@ namespace Nekoyume.Arena
             return (player, player.IsEnemy ? ArenaLog.ArenaResult.Win : ArenaLog.ArenaResult.Lose);
         }
 
-
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
             ArenaSimulator simulator,
             ArenaPlayerDigest challengerDigest,
             ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,
-            ArenaLog log)
+            ArenaLog log,
+            bool setExtraValueBuffBeforeGetBuffs = false)
         {
-            var challenger = new ArenaCharacter(simulator, challengerDigest, simulatorSheets);
+            var challenger = new ArenaCharacter(
+                simulator,
+                challengerDigest,
+                simulatorSheets,
+                simulator.HpModifier,
+                setExtraValueBuffBeforeGetBuffs: setExtraValueBuffBeforeGetBuffs);
             if (challengerDigest.Runes != null)
             {
                 challenger.SetRune(
@@ -111,7 +120,13 @@ namespace Nekoyume.Arena
                     simulatorSheets.SkillSheet);
             }
 
-            var enemy = new ArenaCharacter(simulator, enemyDigest, simulatorSheets, true);
+            var enemy = new ArenaCharacter(
+                simulator,
+                enemyDigest,
+                simulatorSheets,
+                simulator.HpModifier,
+                isEnemy: true,
+                setExtraValueBuffBeforeGetBuffs: setExtraValueBuffBeforeGetBuffs);
             if (enemyDigest.Runes != null)
             {
                 enemy.SetRune(

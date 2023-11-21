@@ -80,10 +80,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(

@@ -85,10 +85,6 @@ namespace Nekoyume.Action
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);

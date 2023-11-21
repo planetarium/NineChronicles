@@ -76,16 +76,6 @@ namespace Nekoyume.Action
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(rankingMapAddress, MarkChanged);
-                states = states.SetState(avatarAddress, MarkChanged);
-                states = states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100170ObsoleteIndex, context);
 

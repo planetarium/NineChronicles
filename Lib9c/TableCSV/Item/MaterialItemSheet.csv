@@ -39,6 +39,7 @@ id,_name,item_sub_type,grade,elemental_type
 800108,Aurora_Powder,FoodMaterial,3,Normal
 800109,Fluffy_Marshmallow,FoodMaterial,4,Normal
 800201,Silver Dust,FoodMaterial,4,Normal
+800202,Golden Meat,FoodMaterial,4,Normal
 303000,녹슨 칼,EquipmentMaterial,1,Normal
 303001,버려진 검,EquipmentMaterial,2,Normal
 303002,단단한 검,EquipmentMaterial,3,Normal
@@ -175,12 +176,13 @@ id,_name,item_sub_type,grade,elemental_type
 700002,아레나 시즌2 메달,NormalMaterial,5,Normal
 700003,아레나 시즌3 메달,NormalMaterial,5,Normal
 700004,아레나 시즌4 메달,NormalMaterial,5,Normal
-700005,아레나 시즌5 메달,NormalMaterial,5,Normal
+700005,시즌 1 메달 (헤임달용),NormalMaterial,5,Normal
 700006,아레나 시즌6 메달,NormalMaterial,5,Normal
-700007,아레나 시즌7 메달,NormalMaterial,5,Normal
+700007,시즌 2 메달 (헤임달용),NormalMaterial,5,Normal
 700008,아레나 시즌8 메달,NormalMaterial,5,Normal
-700009,아레나 시즌9 메달,NormalMaterial,5,Normal
+700009,시즌 3 메달 (헤임달용),NormalMaterial,5,Normal
 700010,아레나 시즌10 메달,NormalMaterial,5,Normal
+700011,챔피언 쉽 0 메달 (헤임달용),NormalMaterial,5,Normal
 700102,시즌 3 메달,NormalMaterial,5,Normal
 700104,시즌 4 메달,NormalMaterial,5,Normal
 700106,시즌 5 메달,NormalMaterial,5,Normal

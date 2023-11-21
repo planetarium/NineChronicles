@@ -45,14 +45,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IActionContext ctx = context;
             var states = ctx.PreviousState;
-            if (ctx.Rehearsal)
-            {
-                return states.SetState(ctx.Signer, MarkChanged)
-                    .SetState(AvatarAddress, MarkChanged)
-                    .SetState(WeeklyArenaAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(ctx, GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
-            }
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))

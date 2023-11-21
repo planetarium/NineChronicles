@@ -44,18 +44,6 @@ namespace Nekoyume.Action
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(RedeemCodeState.Address, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(AvatarAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

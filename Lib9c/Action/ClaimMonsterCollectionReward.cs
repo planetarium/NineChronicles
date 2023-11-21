@@ -47,19 +47,6 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}ClaimMonsterCollection exec started", addressesHex);
 
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 0), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 1), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
-                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged);
-            }
-
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");

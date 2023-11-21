@@ -43,11 +43,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
-
             var addresses = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             // NOTE: The `AvatarAddress` must contained in `Signer`'s `AgentState.avatarAddresses`.
             if (!Addresses.CheckAvatarAddrIsContainedInAgent(context.Signer, AvatarAddress))

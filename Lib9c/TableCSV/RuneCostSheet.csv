@@ -29,7 +29,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 30001,Adventurer's Rune,28,1,1,0,10000
 30001,Adventurer's Rune,29,1,1,0,10000
 30001,Adventurer's Rune,30,1,1,0,10000
-30001,Adventurer's Rune,31,2,10,1,10000
+30001,Adventurer's Rune,31,2,10,0,10000
 30001,Adventurer's Rune,32,2,10,0,10000
 30001,Adventurer's Rune,33,2,10,0,10000
 30001,Adventurer's Rune,34,2,10,0,10000
@@ -39,7 +39,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 30001,Adventurer's Rune,38,2,10,0,10000
 30001,Adventurer's Rune,39,2,10,0,10000
 30001,Adventurer's Rune,40,2,10,0,10000
-30001,Adventurer's Rune,41,2,10,1,10000
+30001,Adventurer's Rune,41,2,10,0,10000
 30001,Adventurer's Rune,42,2,10,0,10000
 30001,Adventurer's Rune,43,2,10,0,10000
 30001,Adventurer's Rune,44,2,10,0,10000
@@ -309,7 +309,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10001,Fenrir HP Rune,8,10,2000,0,8000
 10001,Fenrir HP Rune,9,10,2000,0,6000
 10001,Fenrir HP Rune,10,100,2000,0,5000
-10001,Fenrir HP Rune,11,10,2000,10,8000
+10001,Fenrir HP Rune,11,10,2000,0,8000
 10001,Fenrir HP Rune,12,10,2000,0,8000
 10001,Fenrir HP Rune,13,10,2000,0,6000
 10001,Fenrir HP Rune,14,10,2000,0,10000
@@ -319,7 +319,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10001,Fenrir HP Rune,18,10,2000,0,8000
 10001,Fenrir HP Rune,19,10,2000,0,6000
 10001,Fenrir HP Rune,20,100,2000,0,5000
-10001,Fenrir HP Rune,21,10,2000,10,8000
+10001,Fenrir HP Rune,21,10,2000,0,8000
 10001,Fenrir HP Rune,22,10,2000,0,8000
 10001,Fenrir HP Rune,23,10,2000,0,6000
 10001,Fenrir HP Rune,24,10,2000,0,10000
@@ -329,7 +329,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10001,Fenrir HP Rune,28,10,2000,0,8000
 10001,Fenrir HP Rune,29,10,2000,0,6000
 10001,Fenrir HP Rune,30,100,2000,0,5000
-10001,Fenrir HP Rune,31,30,10000,10,8000
+10001,Fenrir HP Rune,31,30,10000,0,8000
 10001,Fenrir HP Rune,32,30,10000,0,8000
 10001,Fenrir HP Rune,33,30,10000,0,6000
 10001,Fenrir HP Rune,34,30,10000,0,10000
@@ -339,7 +339,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10001,Fenrir HP Rune,38,30,10000,0,8000
 10001,Fenrir HP Rune,39,30,10000,0,6000
 10001,Fenrir HP Rune,40,300,10000,0,5000
-10001,Fenrir HP Rune,41,30,10000,20,8000
+10001,Fenrir HP Rune,41,30,10000,0,8000
 10001,Fenrir HP Rune,42,30,10000,0,8000
 10001,Fenrir HP Rune,43,30,10000,0,6000
 10001,Fenrir HP Rune,44,30,10000,0,10000
@@ -609,7 +609,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10002,Fenrir ATK Rune,8,5,5000,0,8000
 10002,Fenrir ATK Rune,9,5,5000,0,6000
 10002,Fenrir ATK Rune,10,50,50000,0,5000
-10002,Fenrir ATK Rune,11,5,5000,30,8000
+10002,Fenrir ATK Rune,11,5,5000,0,8000
 10002,Fenrir ATK Rune,12,5,5000,0,8000
 10002,Fenrir ATK Rune,13,5,5000,0,6000
 10002,Fenrir ATK Rune,14,5,5000,0,10000
@@ -619,7 +619,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10002,Fenrir ATK Rune,18,5,5000,0,8000
 10002,Fenrir ATK Rune,19,5,5000,0,6000
 10002,Fenrir ATK Rune,20,50,50000,0,5000
-10002,Fenrir ATK Rune,21,5,5000,30,8000
+10002,Fenrir ATK Rune,21,5,5000,0,8000
 10002,Fenrir ATK Rune,22,5,5000,0,8000
 10002,Fenrir ATK Rune,23,5,5000,0,6000
 10002,Fenrir ATK Rune,24,5,5000,0,10000
@@ -629,7 +629,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10002,Fenrir ATK Rune,28,5,5000,0,8000
 10002,Fenrir ATK Rune,29,5,5000,0,6000
 10002,Fenrir ATK Rune,30,50,50000,0,5000
-10002,Fenrir ATK Rune,31,10,20000,30,8000
+10002,Fenrir ATK Rune,31,10,20000,0,8000
 10002,Fenrir ATK Rune,32,10,20000,0,8000
 10002,Fenrir ATK Rune,33,10,20000,0,6000
 10002,Fenrir ATK Rune,34,10,20000,0,10000
@@ -639,7 +639,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10002,Fenrir ATK Rune,38,10,20000,0,8000
 10002,Fenrir ATK Rune,39,10,20000,0,6000
 10002,Fenrir ATK Rune,40,100,100000,0,5000
-10002,Fenrir ATK Rune,41,10,20000,60,8000
+10002,Fenrir ATK Rune,41,10,20000,0,8000
 10002,Fenrir ATK Rune,42,10,20000,0,8000
 10002,Fenrir ATK Rune,43,10,20000,0,6000
 10002,Fenrir ATK Rune,44,10,20000,0,10000
@@ -900,7 +900,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10002,Fenrir ATK Rune,299,50,500000,0,2000
 10002,Fenrir ATK Rune,300,400,2000000,0,1000
 10003,Fenrir Bleeding Rune,1,10,400000,0,10000
-10003,Fenrir Bleeding Rune,2,10,400000,10,10000
+10003,Fenrir Bleeding Rune,2,10,400000,0,10000
 10003,Fenrir Bleeding Rune,3,10,400000,0,10000
 10003,Fenrir Bleeding Rune,4,10,400000,0,10000
 10003,Fenrir Bleeding Rune,5,10,400000,0,10000
@@ -909,7 +909,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10003,Fenrir Bleeding Rune,8,10,400000,0,10000
 10003,Fenrir Bleeding Rune,9,10,400000,0,10000
 10003,Fenrir Bleeding Rune,10,10,2000000,0,10000
-10003,Fenrir Bleeding Rune,11,10,400000,10,10000
+10003,Fenrir Bleeding Rune,11,10,400000,0,10000
 10003,Fenrir Bleeding Rune,12,10,400000,0,10000
 10003,Fenrir Bleeding Rune,13,10,400000,0,10000
 10003,Fenrir Bleeding Rune,14,10,400000,0,10000
@@ -919,7 +919,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10003,Fenrir Bleeding Rune,18,10,400000,0,10000
 10003,Fenrir Bleeding Rune,19,10,400000,0,10000
 10003,Fenrir Bleeding Rune,20,10,2000000,0,10000
-10003,Fenrir Bleeding Rune,21,10,400000,20,10000
+10003,Fenrir Bleeding Rune,21,10,400000,0,10000
 10003,Fenrir Bleeding Rune,22,10,400000,0,10000
 10003,Fenrir Bleeding Rune,23,10,400000,0,10000
 10003,Fenrir Bleeding Rune,24,10,400000,0,10000
@@ -929,7 +929,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10003,Fenrir Bleeding Rune,28,10,400000,0,10000
 10003,Fenrir Bleeding Rune,29,10,400000,0,10000
 10003,Fenrir Bleeding Rune,30,10,2000000,0,10000
-10003,Fenrir Bleeding Rune,31,30,600000,30,10000
+10003,Fenrir Bleeding Rune,31,30,600000,0,10000
 10003,Fenrir Bleeding Rune,32,30,600000,0,10000
 10003,Fenrir Bleeding Rune,33,30,600000,0,10000
 10003,Fenrir Bleeding Rune,34,30,600000,0,10000
@@ -939,7 +939,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10003,Fenrir Bleeding Rune,38,30,600000,0,10000
 10003,Fenrir Bleeding Rune,39,30,600000,0,10000
 10003,Fenrir Bleeding Rune,40,30,3000000,0,10000
-10003,Fenrir Bleeding Rune,41,30,600000,50,10000
+10003,Fenrir Bleeding Rune,41,30,600000,0,10000
 10003,Fenrir Bleeding Rune,42,30,600000,0,10000
 10003,Fenrir Bleeding Rune,43,30,600000,0,10000
 10003,Fenrir Bleeding Rune,44,30,600000,0,10000
@@ -1209,7 +1209,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10011,Saehrimnir HIT Rune,8,10,2000,0,8000
 10011,Saehrimnir HIT Rune,9,10,2000,0,6000
 10011,Saehrimnir HIT Rune,10,100,2000,0,5000
-10011,Saehrimnir HIT Rune,11,10,2000,10,10000
+10011,Saehrimnir HIT Rune,11,10,2000,0,10000
 10011,Saehrimnir HIT Rune,12,10,2000,0,8000
 10011,Saehrimnir HIT Rune,13,10,2000,0,6000
 10011,Saehrimnir HIT Rune,14,10,2000,0,10000
@@ -1219,7 +1219,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10011,Saehrimnir HIT Rune,18,10,2000,0,8000
 10011,Saehrimnir HIT Rune,19,10,2000,0,6000
 10011,Saehrimnir HIT Rune,20,100,2000,0,5000
-10011,Saehrimnir HIT Rune,21,10,2000,10,10000
+10011,Saehrimnir HIT Rune,21,10,2000,0,10000
 10011,Saehrimnir HIT Rune,22,10,2000,0,8000
 10011,Saehrimnir HIT Rune,23,10,2000,0,6000
 10011,Saehrimnir HIT Rune,24,10,2000,0,10000
@@ -1229,7 +1229,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10011,Saehrimnir HIT Rune,28,10,2000,0,8000
 10011,Saehrimnir HIT Rune,29,10,2000,0,6000
 10011,Saehrimnir HIT Rune,30,100,2000,0,5000
-10011,Saehrimnir HIT Rune,31,30,10000,10,10000
+10011,Saehrimnir HIT Rune,31,30,10000,0,10000
 10011,Saehrimnir HIT Rune,32,30,10000,0,8000
 10011,Saehrimnir HIT Rune,33,30,10000,0,6000
 10011,Saehrimnir HIT Rune,34,30,10000,0,10000
@@ -1239,7 +1239,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10011,Saehrimnir HIT Rune,38,30,10000,0,8000
 10011,Saehrimnir HIT Rune,39,30,10000,0,6000
 10011,Saehrimnir HIT Rune,40,300,10000,0,5000
-10011,Saehrimnir HIT Rune,41,30,10000,20,10000
+10011,Saehrimnir HIT Rune,41,30,10000,0,10000
 10011,Saehrimnir HIT Rune,42,30,10000,0,8000
 10011,Saehrimnir HIT Rune,43,30,10000,0,6000
 10011,Saehrimnir HIT Rune,44,30,10000,0,10000
@@ -1509,7 +1509,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10012,Saehrimnir DEF Rune,8,5,5000,0,8000
 10012,Saehrimnir DEF Rune,9,5,5000,0,6000
 10012,Saehrimnir DEF Rune,10,50,50000,0,5000
-10012,Saehrimnir DEF Rune,11,5,5000,30,10000
+10012,Saehrimnir DEF Rune,11,5,5000,0,10000
 10012,Saehrimnir DEF Rune,12,5,5000,0,8000
 10012,Saehrimnir DEF Rune,13,5,5000,0,6000
 10012,Saehrimnir DEF Rune,14,5,5000,0,10000
@@ -1519,7 +1519,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10012,Saehrimnir DEF Rune,18,5,5000,0,8000
 10012,Saehrimnir DEF Rune,19,5,5000,0,6000
 10012,Saehrimnir DEF Rune,20,50,50000,0,5000
-10012,Saehrimnir DEF Rune,21,5,5000,30,10000
+10012,Saehrimnir DEF Rune,21,5,5000,0,10000
 10012,Saehrimnir DEF Rune,22,5,5000,0,8000
 10012,Saehrimnir DEF Rune,23,5,5000,0,6000
 10012,Saehrimnir DEF Rune,24,5,5000,0,10000
@@ -1529,7 +1529,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10012,Saehrimnir DEF Rune,28,5,5000,0,8000
 10012,Saehrimnir DEF Rune,29,5,5000,0,6000
 10012,Saehrimnir DEF Rune,30,50,50000,0,5000
-10012,Saehrimnir DEF Rune,31,10,20000,30,10000
+10012,Saehrimnir DEF Rune,31,10,20000,0,10000
 10012,Saehrimnir DEF Rune,32,10,20000,0,8000
 10012,Saehrimnir DEF Rune,33,10,20000,0,6000
 10012,Saehrimnir DEF Rune,34,10,20000,0,10000
@@ -1539,7 +1539,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10012,Saehrimnir DEF Rune,38,10,20000,0,8000
 10012,Saehrimnir DEF Rune,39,10,20000,0,6000
 10012,Saehrimnir DEF Rune,40,100,100000,0,5000
-10012,Saehrimnir DEF Rune,41,10,20000,60,10000
+10012,Saehrimnir DEF Rune,41,10,20000,0,10000
 10012,Saehrimnir DEF Rune,42,10,20000,0,8000
 10012,Saehrimnir DEF Rune,43,10,20000,0,6000
 10012,Saehrimnir DEF Rune,44,10,20000,0,10000
@@ -1800,7 +1800,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10012,Saehrimnir DEF Rune,299,50,500000,0,2000
 10012,Saehrimnir DEF Rune,300,400,2000000,0,1000
 10013,Saehrimnir Skill Rune,1,10,400000,0,10000
-10013,Saehrimnir Skill Rune,2,10,400000,10,10000
+10013,Saehrimnir Skill Rune,2,10,400000,0,10000
 10013,Saehrimnir Skill Rune,3,10,400000,0,10000
 10013,Saehrimnir Skill Rune,4,10,400000,0,10000
 10013,Saehrimnir Skill Rune,5,10,400000,0,10000
@@ -1809,7 +1809,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10013,Saehrimnir Skill Rune,8,10,400000,0,10000
 10013,Saehrimnir Skill Rune,9,10,400000,0,10000
 10013,Saehrimnir Skill Rune,10,10,2000000,0,10000
-10013,Saehrimnir Skill Rune,11,10,400000,10,10000
+10013,Saehrimnir Skill Rune,11,10,400000,0,10000
 10013,Saehrimnir Skill Rune,12,10,400000,0,10000
 10013,Saehrimnir Skill Rune,13,10,400000,0,10000
 10013,Saehrimnir Skill Rune,14,10,400000,0,10000
@@ -1819,7 +1819,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10013,Saehrimnir Skill Rune,18,10,400000,0,10000
 10013,Saehrimnir Skill Rune,19,10,400000,0,10000
 10013,Saehrimnir Skill Rune,20,10,2000000,0,10000
-10013,Saehrimnir Skill Rune,21,10,400000,20,10000
+10013,Saehrimnir Skill Rune,21,10,400000,0,10000
 10013,Saehrimnir Skill Rune,22,10,400000,0,10000
 10013,Saehrimnir Skill Rune,23,10,400000,0,10000
 10013,Saehrimnir Skill Rune,24,10,400000,0,10000
@@ -1829,7 +1829,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10013,Saehrimnir Skill Rune,28,10,400000,0,10000
 10013,Saehrimnir Skill Rune,29,10,400000,0,10000
 10013,Saehrimnir Skill Rune,30,10,2000000,0,10000
-10013,Saehrimnir Skill Rune,31,30,600000,30,10000
+10013,Saehrimnir Skill Rune,31,30,600000,0,10000
 10013,Saehrimnir Skill Rune,32,30,600000,0,10000
 10013,Saehrimnir Skill Rune,33,30,600000,0,10000
 10013,Saehrimnir Skill Rune,34,30,600000,0,10000
@@ -1839,7 +1839,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10013,Saehrimnir Skill Rune,38,30,600000,0,10000
 10013,Saehrimnir Skill Rune,39,30,600000,0,10000
 10013,Saehrimnir Skill Rune,40,30,3000000,0,10000
-10013,Saehrimnir Skill Rune,41,30,600000,50,10000
+10013,Saehrimnir Skill Rune,41,30,600000,0,10000
 10013,Saehrimnir Skill Rune,42,30,600000,0,10000
 10013,Saehrimnir Skill Rune,43,30,600000,0,10000
 10013,Saehrimnir Skill Rune,44,30,600000,0,10000
@@ -2100,7 +2100,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 10013,Saehrimnir Skill Rune,299,80,2000000,0,10000
 10013,Saehrimnir Skill Rune,300,80,8000000,0,10000
 20001,Golden leaf Rune,1,4,200000,0,10000
-20001,Golden leaf Rune,2,2,200000,100,10000
+20001,Golden leaf Rune,2,2,200000,0,10000
 20001,Golden leaf Rune,3,2,200000,0,10000
 20001,Golden leaf Rune,4,2,200000,0,10000
 20001,Golden leaf Rune,5,2,200000,0,10000
@@ -2109,7 +2109,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 20001,Golden leaf Rune,8,2,200000,0,10000
 20001,Golden leaf Rune,9,2,200000,0,10000
 20001,Golden leaf Rune,10,0,1000000,0,5000
-20001,Golden leaf Rune,11,10,200000,100,10000
+20001,Golden leaf Rune,11,10,200000,0,10000
 20001,Golden leaf Rune,12,10,200000,0,10000
 20001,Golden leaf Rune,13,10,200000,0,10000
 20001,Golden leaf Rune,14,10,200000,0,10000
@@ -2119,7 +2119,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 20001,Golden leaf Rune,18,10,200000,0,10000
 20001,Golden leaf Rune,19,10,200000,0,10000
 20001,Golden leaf Rune,20,0,1000000,0,5000
-20001,Golden leaf Rune,21,15,200000,100,10000
+20001,Golden leaf Rune,21,15,200000,0,10000
 20001,Golden leaf Rune,22,15,200000,0,10000
 20001,Golden leaf Rune,23,15,200000,0,10000
 20001,Golden leaf Rune,24,15,200000,0,10000
@@ -2129,7 +2129,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 20001,Golden leaf Rune,28,15,200000,0,10000
 20001,Golden leaf Rune,29,15,200000,0,10000
 20001,Golden leaf Rune,30,0,1000000,0,5000
-20001,Golden leaf Rune,31,20,200000,100,10000
+20001,Golden leaf Rune,31,20,200000,0,10000
 20001,Golden leaf Rune,32,20,200000,0,10000
 20001,Golden leaf Rune,33,20,200000,0,10000
 20001,Golden leaf Rune,34,20,200000,0,10000
@@ -2139,7 +2139,7 @@ id,_name,rune_level,rune_stone_quantity,crystal_quantity,ncg_quantity,level_up_s
 20001,Golden leaf Rune,38,20,200000,0,10000
 20001,Golden leaf Rune,39,20,200000,0,10000
 20001,Golden leaf Rune,40,0,1000000,0,5000
-20001,Golden leaf Rune,41,25,200000,100,10000
+20001,Golden leaf Rune,41,25,200000,0,10000
 20001,Golden leaf Rune,42,25,200000,0,10000
 20001,Golden leaf Rune,43,25,200000,0,10000
 20001,Golden leaf Rune,44,25,200000,0,10000

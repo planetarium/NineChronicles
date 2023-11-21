@@ -169,10 +169,6 @@ namespace Nekoyume.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            if (context.Rehearsal)
-            {
-                return context.PreviousState;
-            }
 
             CheckActionAvailable(ClaimStakeReward2.ObsoletedIndex, context);
             CheckObsolete(ObsoleteBlockIndex, context);

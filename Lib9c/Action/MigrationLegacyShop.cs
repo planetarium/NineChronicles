@@ -30,19 +30,6 @@ namespace Nekoyume.Action
             var states = context.PreviousState;
             var sellerAvatarAddresses = _avatarAddressesHex.Select(a => new Address(a)).ToList();
 
-            if (context.Rehearsal)
-            {
-                foreach (var avatarAddress in sellerAvatarAddresses)
-                {
-                    var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-                    states = states
-                        .SetState(inventoryAddress, MarkChanged)
-                        .SetState(avatarAddress, MarkChanged);
-                }
-
-                return states.SetState(Addresses.Shop, MarkChanged);
-            }
-
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
             CheckPermission(context);
 

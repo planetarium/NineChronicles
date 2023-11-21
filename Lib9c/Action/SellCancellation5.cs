@@ -51,13 +51,6 @@ namespace Nekoyume.Action
             IActionContext ctx = context;
             var states = ctx.PreviousState;
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(shardedShopAddress, MarkChanged);
-                return states
-                    .SetState(Addresses.Shop, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

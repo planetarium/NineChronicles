@@ -47,11 +47,6 @@ namespace Lib9c.DevExtensions.Action
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            if (context.Rehearsal)
-            {
-                return context.PreviousState;
-            }
-
             return Execute(context, context.PreviousState, StateList, BalanceList);
         }
 

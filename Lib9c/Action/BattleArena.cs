@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -24,13 +24,15 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/2195
+    /// Introduce at https://github.com/planetarium/lib9c/pull/2229
+    /// Changed at https://github.com/planetarium/lib9c/pull/2242
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena14")]
+    [ActionType("battle_arena15")]
     public class BattleArena : GameAction, IBattleArenaV1
     {
         public const string PurchasedCountKey = "purchased_count_during_interval";
+        public const int HpIncreasingModifier = 5;
         public Address myAvatarAddress;
         public Address enemyAvatarAddress;
         public int championshipId;
@@ -90,11 +92,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(
                 context,
                 myAvatarAddress,
@@ -377,11 +374,12 @@ namespace Nekoyume.Action
             var random = context.GetRandom();
             for (var i = 0; i < ticket; i++)
             {
-                var simulator = new ArenaSimulator(random);
+                var simulator = new ArenaSimulator(random, HpIncreasingModifier);
                 var log = simulator.Simulate(
                     myArenaPlayerDigest,
                     enemyArenaPlayerDigest,
-                    arenaSheets);
+                    arenaSheets,
+                    true);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
                     winCount++;

@@ -40,32 +40,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-            var privateKey = new PrivateKey();
-            (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                ActivationKey.Create(privateKey, nonce);
-
-            ActivateAccount0 action = activationKey.CreateActivateAccount0(nonce);
-            IAccount nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = new Account(MockState.Empty),
-                Signer = default,
-                Rehearsal = true,
-                BlockIndex = 1,
-            });
-
-            Assert.Equal(
-                ImmutableHashSet.Create(
-                    ActivatedAccountsState.Address,
-                    pendingActivation.address
-                ),
-                nextState.Delta.UpdatedAddresses
-            );
-        }
-
-        [Fact]
         public void ExecuteWithInvalidSignature()
         {
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };

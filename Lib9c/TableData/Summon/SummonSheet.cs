@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData.Summon
@@ -7,6 +9,7 @@ namespace Nekoyume.TableData.Summon
     {
         public class Row : SheetRow<int>
         {
+            public const int MaxRecipeCount = 15;
             public override int Key => GroupId;
 
             public int GroupId { get; private set; }
@@ -14,14 +17,30 @@ namespace Nekoyume.TableData.Summon
             public int CostMaterialCount { get; private set; }
             public int CostNcg { get; private set; }
 
-            public readonly List<(int, int)> Recipes = new List<(int, int)>();
-            // For convenience
-            public int CumulativeRecipe1Ratio { get; private set; }
-            public int CumulativeRecipe2Ratio { get; private set; }
-            public int CumulativeRecipe3Ratio { get; private set; }
-            public int CumulativeRecipe4Ratio { get; private set; }
-            public int CumulativeRecipe5Ratio { get; private set; }
-            public int CumulativeRecipe6Ratio { get; private set; }
+            public readonly List<(int, int)> Recipes = new();
+
+            public int TotalRatio()
+            {
+                return Recipes.Sum(x => x.Item2);
+            }
+
+            public int CumulativeRatio(int index)
+            {
+                if (index is < 1 or > 15)
+                {
+                    throw new IndexOutOfRangeException(
+                        $"{index} is not valid index. Use between 1 and {MaxRecipeCount}.");
+                }
+
+                var ratio = 0;
+                for (var i = 0; i < index; i++)
+                {
+                    if (i == Recipes.Count) break;
+                    ratio += Recipes[i].Item2;
+                }
+
+                return ratio;
+            }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -31,48 +50,22 @@ namespace Nekoyume.TableData.Summon
                 CostNcg = ParseInt(fields[3]);
                 // Min. Two recipes are necessary
                 Recipes.Add((ParseInt(fields[4]), ParseInt(fields[5])));
-                CumulativeRecipe1Ratio = ParseInt(fields[5]);
                 Recipes.Add((ParseInt(fields[6]), ParseInt(fields[7])));
-                CumulativeRecipe2Ratio = CumulativeRecipe1Ratio + ParseInt(fields[7]);
 
-                // Recipe3 ~ 6 are optional
-                if (TryParseInt(fields[8], out _) && TryParseInt(fields[9], out _))
+                // Recipe3 ~ 15 are optional
+                for (var i = 3; i <= MaxRecipeCount; i++)
                 {
-                    Recipes.Add((ParseInt(fields[8]), ParseInt(fields[9])));
-                    CumulativeRecipe3Ratio = CumulativeRecipe2Ratio + ParseInt(fields[9]);
-                }
-                else
-                {
-                    CumulativeRecipe3Ratio = CumulativeRecipe2Ratio;
-                }
-
-                if (TryParseInt(fields[10], out _) && TryParseInt(fields[11], out _))
-                {
-                    Recipes.Add((ParseInt(fields[10]), ParseInt(fields[11])));
-                    CumulativeRecipe4Ratio = CumulativeRecipe3Ratio + ParseInt(fields[11]);
-                }
-                else
-                {
-                    CumulativeRecipe4Ratio = CumulativeRecipe3Ratio;
-                }
-
-                if (TryParseInt(fields[12], out _) && TryParseInt(fields[13], out _))
-                {
-                    Recipes.Add((ParseInt(fields[12]), ParseInt(fields[13])));
-                    CumulativeRecipe5Ratio = CumulativeRecipe4Ratio + ParseInt(fields[13]);
-                }
-                else
-                {
-                    CumulativeRecipe5Ratio = CumulativeRecipe4Ratio;
-                }
-                if (TryParseInt(fields[14], out _) && TryParseInt(fields[15], out _))
-                {
-                    Recipes.Add((ParseInt(fields[14]), ParseInt(fields[15])));
-                    CumulativeRecipe6Ratio = CumulativeRecipe5Ratio + ParseInt(fields[15]);
-                }
-                else
-                {
-                    CumulativeRecipe6Ratio = CumulativeRecipe5Ratio;
+                    var idx = 2 * i + 2;
+                    if (fields.Count >= idx + 2 &&
+                        TryParseInt(fields[idx], out _) &&
+                        TryParseInt(fields[idx + 1], out _))
+                    {
+                        Recipes.Add((ParseInt(fields[idx]), ParseInt(fields[idx + 1])));
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }

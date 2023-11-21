@@ -22,8 +22,6 @@ namespace Nekoyume.Action
     [Serializable]
     public abstract class ActionBase : IAction
     {
-        public static readonly IValue MarkChanged = Null.Value;
-
         // FIXME GoldCurrencyState 에 정의된 것과 다른데 괜찮을지 점검해봐야 합니다.
         protected static readonly Currency GoldCurrencyMock = new Currency();
 

@@ -72,26 +72,6 @@ namespace Nekoyume.Action
                     index
                 )
             );
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(ctx.Signer, MarkChanged);
-                for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-                {
-                    var slotAddress = avatarAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CombinationSlotState.DeriveFormat,
-                            i
-                        )
-                    );
-                    states = states.SetState(slotAddress, MarkChanged);
-                }
-
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(Addresses.Ranking, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

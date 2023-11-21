@@ -89,10 +89,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             if (championshipId > 2)
             {

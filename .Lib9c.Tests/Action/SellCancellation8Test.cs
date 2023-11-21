@@ -474,41 +474,6 @@
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var action = new SellCancellation8()
-            {
-                sellerAvatarAddress = _avatarAddress,
-                orderId = default,
-                itemSubType = ItemSubType.Weapon,
-                tradableId = default,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, default(Guid)),
-                OrderDigestListState.DeriveAddress(_avatarAddress),
-                Addresses.GetItemAddress(default),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
-        [Fact]
         public void PlainValue()
         {
             var action = new SellCancellation8

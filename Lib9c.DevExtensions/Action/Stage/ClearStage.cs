@@ -23,11 +23,6 @@ namespace Lib9c.DevExtensions.Action.Stage
         public override IAccount Execute(IActionContext context)
         {
             context.UseGas(1);
-            if (context.Rehearsal)
-            {
-                return context.PreviousState;
-            }
-
             var states = context.PreviousState;
             var worldInformation = new WorldInformation(
                 context.BlockIndex,

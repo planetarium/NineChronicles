@@ -197,36 +197,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_recipient, ex.Recipient);
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new TransferAsset4(
-                sender: _sender,
-                recipient: _recipient,
-                amount: _currency * 100
-            );
-
-            var context = new ActionContext();
-            IAccount nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = new Account(MockState.Empty).MintAsset(context, _sender, Currencies.Mead * 1),
-                Signer = default,
-                Rehearsal = true,
-                BlockIndex = 1,
-            });
-
-            Assert.Equal(
-                ImmutableHashSet.Create(
-                    _sender,
-                    _recipient
-                ),
-                nextState.Delta.UpdatedFungibleAssets.Select(pair => pair.Item1).ToImmutableHashSet()
-            );
-            Assert.Equal(
-                new[] { _currency, Currencies.Mead, }.ToImmutableHashSet(),
-                nextState.Delta.UpdatedFungibleAssets.Select(pair => pair.Item2).ToImmutableHashSet());
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData("Nine Chronicles")]

@@ -32,13 +32,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, avatarAddress);
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}DailyReward exec started", addressesHex);

@@ -61,12 +61,6 @@ namespace Nekoyume.Action
                     slotIndex
                 )
             );
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

@@ -69,24 +69,6 @@ namespace Lib9c.Tests.Action.Coupons
                         })
                     .GetCouponWallet(CouponsFixture.AgentAddress1));
 
-            Assert.Equal(
-                Bencodex.Types.Null.Value,
-                new IssueCoupons(
-                        ImmutableDictionary<RewardSet, uint>.Empty
-                            .Add(CouponsFixture.RewardSet1, 1)
-                            .Add(CouponsFixture.RewardSet2, 2),
-                        CouponsFixture.AgentAddress1)
-                    .Execute(
-                        new ActionContext
-                        {
-                            PreviousState = state,
-                            Rehearsal = true,
-                            RandomSeed = random.Seed,
-                            BlockIndex = 0,
-                            Signer = CouponsFixture.AgentAddress1,
-                        })
-                    .GetState(CouponsFixture.AgentAddress1.Derive(SerializeKeys.CouponWalletKey)));
-
             state = new IssueCoupons(
                     ImmutableDictionary<RewardSet, uint>.Empty
                         .Add(CouponsFixture.RewardSet1, 1)

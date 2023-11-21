@@ -73,19 +73,6 @@ namespace Nekoyume.Action
             Address itemAddress = Addresses.GetItemAddress(tradableId);
             Address orderAddress = Order.DeriveAddress(orderId);
             Address orderReceiptAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(context.Signer, MarkChanged)
-                    .SetState(shopAddress, MarkChanged)
-                    .SetState(itemAddress, MarkChanged)
-                    .SetState(orderAddress, MarkChanged)
-                    .SetState(orderReceiptAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100300ObsoleteIndex, context);
 

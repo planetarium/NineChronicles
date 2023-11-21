@@ -775,55 +775,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
-                _orderId,
-                default,
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                ItemSubType.Weapon,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
-            );
-
-            var action = new Buy11
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                _sellerAvatarAddress.Derive(LegacyInventoryKey),
-                _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _sellerAvatarAddress.Derive(LegacyQuestListKey),
-                OrderDigestListState.DeriveAddress(_sellerAvatarAddress),
-                _buyerAgentAddress,
-                _buyerAvatarAddress,
-                _buyerAvatarAddress.Derive(LegacyInventoryKey),
-                _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _buyerAvatarAddress.Derive(LegacyQuestListKey),
-                Buy11.GetFeeStoreAddress(),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, _orderId),
-                OrderReceipt.DeriveAddress(_orderId),
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _buyerAgentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
-        [Fact]
         public void Execute_With_Testbed()
         {
             var result = BlockChainHelper.MakeInitialState();

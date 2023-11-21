@@ -30,10 +30,6 @@ namespace Nekoyume.Action
         {
             context.UseGas(1);
             var states = context.PreviousState;
-            if (context.Rehearsal)
-            {
-                return states;
-            }
 
             if (!RegisterInfos.Any())
             {
@@ -80,10 +76,10 @@ namespace Nekoyume.Action
             {
                 productsState = new ProductsState();
                 var marketState = states.TryGetState(Addresses.Market, out List rawMarketList)
-                    ? new MarketState(rawMarketList)
-                    : new MarketState();
-                marketState.AvatarAddresses.Add(AvatarAddress);
-                states = states.SetState(Addresses.Market, marketState.Serialize());
+                    ? rawMarketList
+                    : List.Empty;
+                marketState = marketState.Add(AvatarAddress.Serialize());
+                states = states.SetState(Addresses.Market, marketState);
             }
 
             var random = context.GetRandom();

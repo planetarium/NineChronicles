@@ -55,10 +55,10 @@ namespace Nekoyume.Action.Coupons
                     recipientWallet = recipientWallet.Add(id, coupon);
                 }
 
-                states = states.SetCouponWallet(recipient, recipientWallet, context.Rehearsal);
+                states = states.SetCouponWallet(recipient, recipientWallet);
             }
 
-            states = states.SetCouponWallet(context.Signer, signerWallet, context.Rehearsal);
+            states = states.SetCouponWallet(context.Signer, signerWallet);
             return states;
         }
 

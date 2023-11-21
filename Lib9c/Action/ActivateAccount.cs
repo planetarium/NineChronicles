@@ -49,12 +49,6 @@ namespace Nekoyume.Action
             IAccount state = context.PreviousState;
             Address activatedAddress = context.Signer.Derive(ActivationKey.DeriveKey);
 
-            if (context.Rehearsal)
-            {
-                return state
-                    .SetState(activatedAddress, MarkChanged)
-                    .SetState(PendingAddress, MarkChanged);
-            }
             CheckObsolete(ActionObsoleteConfig.V200030ObsoleteIndex, context);
 
             if (!(state.GetState(activatedAddress) is null))

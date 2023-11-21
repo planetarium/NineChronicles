@@ -1,184 +1,195 @@
 id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_range,spine_resource_path,exp
 10100000,Wooden Club,Weapon,0,Normal,0,ATK,1,2,10100000,10
-10110000,Long Sword,Weapon,1,Normal,1,ATK,11,2,10110000,1
-10111000,Long Sword,Weapon,1,Fire,2,ATK,14,2,10111000,1
-10112000,Long Sword,Weapon,1,Water,3,ATK,17,2,10112000,1
-10113000,Long Sword,Weapon,1,Land,4,ATK,55,2,10113000,6
-10114000,Long Sword,Weapon,1,Wind,5,ATK,136,2,10114000,7
-10120000,Gladiator Sword,Weapon,2,Normal,6,ATK,31,2,10120000,14
-10121000,Gladiator Sword,Weapon,2,Fire,7,ATK,32,2,10121000,18
-10122000,Gladiator Sword,Weapon,2,Water,8,ATK,38,2,10122000,117
-10123000,Gladiator Sword,Weapon,2,Land,9,ATK,152,2,10123000,139
-10124000,Gladiator Sword,Weapon,2,Wind,10,ATK,327,2,10124000,150
-10130000,Black Crow Sword,Weapon,3,Normal,11,ATK,78,2,10130000,90
-10131000,Black Crow Sword,Weapon,3,Fire,12,ATK,81,2,10131000,150
-10132000,Black Crow Sword,Weapon,3,Water,13,ATK,92,2,10132000,1191
-10133000,Black Crow Sword,Weapon,3,Land,14,ATK,354,2,10133000,2074
-10134000,Black Crow Sword,Weapon,3,Wind,15,ATK,693,2,10134000,2288
-10130001,Heavy Sword,Weapon,3,Normal,11,ATK,170,2,10130001,1611
-10131001,Heavy Sword,Weapon,3,Fire,12,ATK,179,2,10131001,2931
-10132001,Heavy Sword,Weapon,3,Water,13,ATK,196,2,10132001,3000
-10133001,Heavy Sword,Weapon,3,Land,14,ATK,908,2,10133001,3000
-10134001,Heavy Sword,Weapon,3,Wind,15,ATK,967,2,10134001,3000
-10140000,War Sword,Weapon,4,Normal,11,ATK,3094,2,10140000,60000
-10141000,War Sword,Weapon,4,Fire,12,ATK,1934,2,10141000,60000
-10142000,War Sword,Weapon,4,Water,13,ATK,2224,2,10142000,80000
-10143000,War Sword,Weapon,4,Land,14,ATK,2514,2,10143000,80000
-10144000,War Sword,Weapon,4,Wind,15,ATK,2804,2,10144000,120000
-10150000,Dainsleif,Weapon,5,Normal,16,ATK,6063,2,10150000,2000000
-10151000,Dainsleif,Weapon,5,Fire,17,ATK,4331,2,10151000,1500000
-10152000,Dainsleif,Weapon,5,Water,18,ATK,4331,2,10152000,1500000
-10153000,Dainsleif,Weapon,5,Land,19,ATK,6063,2,10153000,2000000
-10154000,Dainsleif,Weapon,5,Wind,20,ATK,6063,2,10154000,2000000
-10140001,Asgardian Sword,Weapon,5,Normal,11,ATK,765,2,10140001,1
-10141001,Asgardian Sword,Weapon,5,Fire,12,ATK,782,2,10141001,1
-10142001,Asgardian Sword,Weapon,5,Water,13,ATK,798,2,10142001,1
-10143001,Asgardian Sword,Weapon,5,Land,14,ATK,1221,2,10143001,1
-10144001,Asgardian Sword,Weapon,5,Wind,15,ATK,1525,2,10144001,1
-10150001,Surt's Sword,Weapon,5,Normal,16,ATK,2157,2,10150001,1
-10151001,Surt's Sword,Weapon,5,Fire,17,ATK,2190,2,10151001,1
-10152001,Surt's Sword,Weapon,5,Water,18,ATK,2223,2,10152001,1
-10153001,Surt's Sword,Weapon,5,Land,19,ATK,3390,2,10153001,1
-10154001,Surt's Sword,Weapon,5,Wind,20,ATK,4219,2,10154001,1
-10155000,Valkyrie’s Sword,Weapon,5,Normal,15,ATK,2902,2,10155000,1
-10200000,Ragged Clothes,Armor,0,Normal,0,HP,30,2,Character/Player/10200000,10
-10210000,Casual Clothes,Armor,1,Normal,1,HP,180,2,Character/Player/10210000,1
-10211000,Casual Clothes,Armor,1,Fire,2,HP,222,2,Character/Player/10211000,1
-10212000,Casual Clothes,Armor,1,Water,3,HP,288,2,Character/Player/10212000,2
-10213000,Casual Clothes,Armor,1,Land,4,HP,915,2,Character/Player/10213000,4
-10214000,Casual Clothes,Armor,1,Wind,5,HP,2182,2,Character/Player/10214000,5
-10220000,Leather Clothes,Armor,2,Normal,6,HP,531,2,Character/Player/10220000,10
-10221000,Leather Clothes,Armor,2,Fire,7,HP,549,2,Character/Player/10221000,120
-10222000,Leather Clothes,Armor,2,Water,8,HP,621,2,Character/Player/10222000,150
-10223000,Leather Clothes,Armor,2,Land,9,HP,2431,2,Character/Player/10223000,150
-10224000,Leather Clothes,Armor,2,Wind,10,HP,5109,2,Character/Player/10224000,150
-10230000,Black Crow Armor,Armor,3,Normal,11,HP,1337,2,Character/Player/10230000,130
-10231000,Black Crow Armor,Armor,3,Fire,12,HP,1418,2,Character/Player/10231000,132
-10232000,Black Crow Armor,Armor,3,Water,13,HP,1580,2,Character/Player/10232000,1300
-10233000,Black Crow Armor,Armor,3,Land,14,HP,8370,2,Character/Player/10233000,2000
-10234000,Black Crow Armor,Armor,3,Wind,15,HP,10571,2,Character/Player/10234000,2000
-10230001,Hermes' Clothes,Armor,3,Normal,11,HP,2811,2,Character/Player/10230001,1700
-10231001,Hermes' Clothes,Armor,3,Fire,12,HP,3009,2,Character/Player/10231001,3000
-10232001,Hermes' Clothes,Armor,3,Water,13,HP,3141,2,Character/Player/10232001,3000
-10233001,Hermes' Clothes,Armor,3,Land,14,HP,11482,2,Character/Player/10233001,3000
-10234001,Hermes' Clothes,Armor,3,Wind,15,HP,12302,2,Character/Player/10234001,3000
-10240000,War Armor,Armor,4,Normal,11,HP,34446,2,Character/Player/10240000,60000
-10241000,War Armor,Armor,4,Fire,12,HP,24604,2,Character/Player/10241000,60000
-10242000,War Armor,Armor,4,Water,13,HP,27064,2,Character/Player/10242000,80000
-10243000,War Armor,Armor,4,Land,14,HP,29525,2,Character/Player/10243000,80000
-10244000,War Armor,Armor,4,Wind,15,HP,31985,2,Character/Player/10244000,120000
-10250001,Ancient Armor,Armor,5,Normal,11,HP,67513,2,Character/Player/10250001,2000000
-10251001,Ancient Armor,Armor,5,Fire,12,HP,48224,2,Character/Player/10251001,1500000
-10252001,Ancient Armor,Armor,5,Water,13,HP,48224,2,Character/Player/10252001,1500000
-10253001,Ancient Armor,Armor,5,Land,14,HP,67513,2,Character/Player/10253001,2000000
-10254001,Ancient Armor,Armor,5,Wind,15,HP,67513,2,Character/Player/10254001,2000000
-10250000,Legendary Armor,Armor,5,Normal,11,HP,15550,2,Character/Player/10250000,1
-10251000,Legendary Armor,Armor,5,Fire,12,HP,15848,2,Character/Player/10251000,1
-10252000,Legendary Armor,Armor,5,Water,13,HP,16146,2,Character/Player/10252000,1
-10253000,Legendary Armor,Armor,5,Land,14,HP,24665,2,Character/Player/10253000,1
-10254000,Legendary Armor,Armor,5,Wind,15,HP,30823,2,Character/Player/10254000,1
-10240001,Asgardian Armor,Armor,5,Normal,11,HP,10358,2,Character/Player/10240001,1
-10241001,Asgardian Armor,Armor,5,Fire,12,HP,10571,2,Character/Player/10241001,1
-10242001,Asgardian Armor,Armor,5,Water,13,HP,10783,2,Character/Player/10242001,1
-10243001,Asgardian Armor,Armor,5,Land,14,HP,16494,2,Character/Player/10243001,1
-10244001,Asgardian Armor,Armor,5,Wind,15,HP,20647,2,Character/Player/10244001,1
-10255000,Heavenly Cat,Armor,5,Normal,11,HP,42856,2,Character/Player/10235000,1
-10310000,Basic Belt,Belt,1,Normal,1,SPD,46,2,10310000,1
-10311000,Basic Belt,Belt,1,Fire,2,SPD,62,2,10311000,2
-10312000,Basic Belt,Belt,1,Water,3,SPD,69,2,10312000,3
-10313000,Basic Belt,Belt,1,Land,4,SPD,239,2,10313000,8
-10314000,Basic Belt,Belt,1,Wind,5,SPD,610,2,10314000,8
-10320000,Leather Belt,Belt,2,Normal,6,SPD,137,2,10320000,16
-10321000,Leather Belt,Belt,2,Fire,7,SPD,141,2,10321000,20
-10322000,Leather Belt,Belt,2,Water,8,SPD,166,2,10322000,150
-10323000,Leather Belt,Belt,2,Land,9,SPD,718,2,10323000,150
-10324000,Leather Belt,Belt,2,Wind,10,SPD,1314,2,10324000,150
-10330000,Solid Belt,Belt,3,Normal,11,SPD,350,2,10330000,72
-10331000,Solid Belt,Belt,3,Fire,12,SPD,359,2,10331000,112
-10332000,Solid Belt,Belt,3,Water,13,SPD,425,2,10332000,3000
-10333000,Solid Belt,Belt,3,Land,14,SPD,1701,2,10333000,3000
-10334000,Solid Belt,Belt,3,Wind,15,SPD,2883,2,10334000,2000
-10340000,War Belt,Belt,4,Normal,11,SPD,1215,2,10340000,8000
-10341000,War Belt,Belt,4,Fire,12,SPD,1262,2,10341000,50000
-10342000,War Belt,Belt,4,Water,13,SPD,2292,2,10342000,50000
-10343000,War Belt,Belt,4,Land,14,SPD,2292,2,10343000,50000
-10344000,War Belt,Belt,4,Wind,15,SPD,2292,2,10344000,27500
-10350000,Legendary Belt,Belt,4,Normal,11,SPD,7334,2,10350000,60000
-10351000,Legendary Belt,Belt,4,Fire,12,SPD,4584,2,10351000,60000
-10352000,Legendary Belt,Belt,4,Water,13,SPD,5272,2,10352000,80000
-10353000,Legendary Belt,Belt,4,Land,14,SPD,5959,2,10353000,80000
-10354000,Legendary Belt,Belt,4,Wind,15,SPD,6647,2,10354000,100000
-10410000,Thin Necklace,Necklace,1,Normal,1,HIT,70,0,10410000,1
-10411000,Thin Necklace,Necklace,1,Fire,2,HIT,81,0,10411000,2
-10412000,Thin Necklace,Necklace,1,Water,3,HIT,99,0,10412000,3
-10413000,Thin Necklace,Necklace,1,Land,4,HIT,357,0,10413000,5
-10414000,Thin Necklace,Necklace,1,Wind,5,HIT,863,0,10414000,7
-10420000,Guardian Necklace,Necklace,2,Normal,6,HIT,192,0,10420000,25
-10421000,Guardian Necklace,Necklace,2,Fire,7,HIT,197,0,10421000,32
-10422000,Guardian Necklace,Necklace,2,Water,8,HIT,230,0,10422000,150
-10423000,Guardian Necklace,Necklace,2,Land,9,HIT,1002,0,10423000,150
-10424000,Guardian Necklace,Necklace,2,Wind,10,HIT,1682,0,10424000,150
-10430000,Mana Necklace,Necklace,3,Normal,11,HIT,510,0,10430000,150
-10431000,Mana Necklace,Necklace,3,Fire,12,HIT,522,0,10431000,250
-10432000,Mana Necklace,Necklace,3,Water,13,HIT,608,0,10432000,3000
-10433000,Mana Necklace,Necklace,3,Land,14,HIT,2151,0,10433000,3000
-10434000,Mana Necklace,Necklace,3,Wind,15,HIT,2333,0,10434000,3000
-10440000,Warrior's Necklace,Necklace,4,Normal,11,HIT,2031,0,10440000,30000
-10441000,Warrior's Necklace,Necklace,4,Fire,12,HIT,3047,0,10441000,60000
-10442000,Warrior's Necklace,Necklace,4,Water,13,HIT,3047,0,10442000,60000
-10443000,Warrior's Necklace,Necklace,4,Land,14,HIT,3047,0,10443000,60000
-10444000,Warrior's Necklace,Necklace,4,Wind,15,HIT,3047,0,10444000,60000
-10450000,Legendary Necklace,Necklace,4,Normal,11,HIT,7466,0,10450000,50000
-10451000,Legendary Necklace,Necklace,4,Fire,12,HIT,4666,0,10451000,50000
-10452000,Legendary Necklace,Necklace,4,Water,13,HIT,5366,0,10452000,80000
-10453000,Legendary Necklace,Necklace,4,Land,14,HIT,6066,0,10453000,80000
-10454000,Legendary Necklace,Necklace,4,Wind,15,HIT,6766,0,10454000,100000
-10510000,Thin Ring,Ring,1,Normal,1,DEF,8,0,10510000,1
-10511000,Thin Ring,Ring,1,Fire,2,DEF,9,0,10511000,2
-10512000,Thin Ring,Ring,1,Water,3,DEF,11,0,10512000,3
-10513000,Thin Ring,Ring,1,Land,4,DEF,44,0,10513000,5
-10514000,Thin Ring,Ring,1,Wind,5,DEF,107,0,10514000,7
-10520000,Guardian Ring,Ring,2,Normal,6,DEF,23,0,10520000,25
-10521000,Guardian Ring,Ring,2,Fire,7,DEF,24,0,10521000,32
-10522000,Guardian Ring,Ring,2,Water,8,DEF,29,0,10522000,150
-10523000,Guardian Ring,Ring,2,Land,9,DEF,122,0,10523000,150
-10524000,Guardian Ring,Ring,2,Wind,10,DEF,189,0,10524000,150
-10530000,Mana Ring,Ring,3,Normal,11,DEF,63,0,10530000,50
-10531000,Mana Ring,Ring,3,Fire,12,DEF,65,0,10531000,100
-10532000,Mana Ring,Ring,3,Water,13,DEF,74,0,10532000,1000
-10533000,Mana Ring,Ring,3,Land,14,DEF,251,0,10533000,3000
-10534000,Mana Ring,Ring,3,Wind,15,DEF,270,0,10534000,3000
-10540000,Warrior's Ring,Ring,4,Normal,11,DEF,864,0,10540000,50000
-10541000,Warrior's Ring,Ring,4,Fire,12,DEF,540,0,10541000,50000
-10542000,Warrior's Ring,Ring,4,Water,13,DEF,621,0,10542000,80000
-10543000,Warrior's Ring,Ring,4,Land,14,DEF,702,0,10543000,80000
-10544000,Warrior's Ring,Ring,4,Wind,15,DEF,783,0,10544000,100000
-10550000,Ancient Ring,Ring,5,Normal,11,DEF,1946,0,10550000,2000000
-10551000,Ancient Ring,Ring,5,Fire,12,DEF,1209,0,10551000,1500000
-10552000,Ancient Ring,Ring,5,Water,13,DEF,1209,0,10552000,1500000
-10553000,Ancient Ring,Ring,5,Land,14,DEF,1946,0,10553000,2000000
-10554000,Ancient Ring,Ring,5,Wind,15,DEF,1946,0,10554000,2000000
-11320000,Blue Sapphire Belt,Belt,2,Normal,6,SPD,176,2,11320000,1
-11420000,Blue Sapphire Necklace,Necklace,2,Normal,6,HIT,227,0,11420000,1
-11520000,Blue Sapphire Ring,Ring,2,Normal,6,DEF,50,0,11520000,1
+10110000,Long Sword,Weapon,1,Normal,1,ATK,11,2,10110000,5
+10111000,Long Sword,Weapon,1,Fire,2,ATK,14,2,10111000,5
+10112000,Long Sword,Weapon,1,Water,3,ATK,17,2,10112000,5
+10113000,Long Sword,Weapon,1,Land,4,ATK,55,2,10113000,8
+10114000,Long Sword,Weapon,1,Wind,5,ATK,136,2,10114000,9
+10120000,Gladiator Sword,Weapon,2,Normal,6,ATK,31,2,10120000,100
+10121000,Gladiator Sword,Weapon,2,Fire,7,ATK,32,2,10121000,100
+10122000,Gladiator Sword,Weapon,2,Water,8,ATK,38,2,10122000,141
+10123000,Gladiator Sword,Weapon,2,Land,9,ATK,152,2,10123000,167
+10124000,Gladiator Sword,Weapon,2,Wind,10,ATK,327,2,10124000,180
+10130000,Black Crow Sword,Weapon,3,Normal,11,ATK,78,2,10130000,500
+10131000,Black Crow Sword,Weapon,3,Fire,12,ATK,81,2,10131000,700
+10132000,Black Crow Sword,Weapon,3,Water,13,ATK,92,2,10132000,1430
+10133000,Black Crow Sword,Weapon,3,Land,14,ATK,354,2,10133000,2489
+10134000,Black Crow Sword,Weapon,3,Wind,15,ATK,693,2,10134000,2746
+10130001,Heavy Sword,Weapon,3,Normal,11,ATK,170,2,10130001,1934
+10131001,Heavy Sword,Weapon,3,Fire,12,ATK,179,2,10131001,3518
+10132001,Heavy Sword,Weapon,3,Water,13,ATK,196,2,10132001,3600
+10133001,Heavy Sword,Weapon,3,Land,14,ATK,908,2,10133001,3600
+10134001,Heavy Sword,Weapon,3,Wind,15,ATK,967,2,10134001,3600
+10140000,War Sword,Weapon,4,Normal,11,ATK,3094,2,10140000,75000
+10141000,War Sword,Weapon,4,Fire,12,ATK,1934,2,10141000,75000
+10142000,War Sword,Weapon,4,Water,13,ATK,2224,2,10142000,96000
+10143000,War Sword,Weapon,4,Land,14,ATK,2514,2,10143000,96000
+10144000,War Sword,Weapon,4,Wind,15,ATK,2804,2,10144000,144000
+10150000,Dainsleif,Weapon,5,Normal,16,ATK,6063,2,10150000,2400000
+10151000,Dainsleif,Weapon,5,Fire,17,ATK,4331,2,10151000,1800000
+10152000,Dainsleif,Weapon,5,Water,18,ATK,4331,2,10152000,1800000
+10153000,Dainsleif,Weapon,5,Land,19,ATK,6063,2,10153000,2400000
+10154000,Dainsleif,Weapon,5,Wind,20,ATK,6063,2,10154000,2400000
+10140001,Asgardian Sword,Weapon,5,Normal,11,ATK,765,2,10140001,2
+10141001,Asgardian Sword,Weapon,5,Fire,12,ATK,782,2,10141001,2
+10142001,Asgardian Sword,Weapon,5,Water,13,ATK,798,2,10142001,2
+10143001,Asgardian Sword,Weapon,5,Land,14,ATK,1221,2,10143001,2
+10144001,Asgardian Sword,Weapon,5,Wind,15,ATK,1525,2,10144001,2
+10150001,Surt's Sword,Weapon,5,Normal,16,ATK,2157,2,10150001,2
+10151001,Surt's Sword,Weapon,5,Fire,17,ATK,2190,2,10151001,2
+10152001,Surt's Sword,Weapon,5,Water,18,ATK,2223,2,10152001,2
+10153001,Surt's Sword,Weapon,5,Land,19,ATK,3390,2,10153001,2
+10154001,Surt's Sword,Weapon,5,Wind,20,ATK,4219,2,10154001,2
+10155000,Valkyrie’s Sword,Weapon,5,Normal,15,ATK,2902,2,10155000,2
+10200000,Ragged Clothes,Armor,0,Normal,0,HP,30,2,Character/Player/10200000,12
+10210000,Casual Clothes,Armor,1,Normal,1,HP,180,2,Character/Player/10210000,5
+10211000,Casual Clothes,Armor,1,Fire,2,HP,222,2,Character/Player/10211000,5
+10212000,Casual Clothes,Armor,1,Water,3,HP,288,2,Character/Player/10212000,5
+10213000,Casual Clothes,Armor,1,Land,4,HP,915,2,Character/Player/10213000,6
+10214000,Casual Clothes,Armor,1,Wind,5,HP,2182,2,Character/Player/10214000,8
+10220000,Leather Clothes,Armor,2,Normal,6,HP,531,2,Character/Player/10220000,100
+10221000,Leather Clothes,Armor,2,Fire,7,HP,549,2,Character/Player/10221000,144
+10222000,Leather Clothes,Armor,2,Water,8,HP,621,2,Character/Player/10222000,180
+10223000,Leather Clothes,Armor,2,Land,9,HP,2431,2,Character/Player/10223000,180
+10224000,Leather Clothes,Armor,2,Wind,10,HP,5109,2,Character/Player/10224000,180
+10230000,Black Crow Armor,Armor,3,Normal,11,HP,1337,2,Character/Player/10230000,500
+10231000,Black Crow Armor,Armor,3,Fire,12,HP,1418,2,Character/Player/10231000,700
+10232000,Black Crow Armor,Armor,3,Water,13,HP,1580,2,Character/Player/10232000,1560
+10233000,Black Crow Armor,Armor,3,Land,14,HP,8370,2,Character/Player/10233000,2400
+10234000,Black Crow Armor,Armor,3,Wind,15,HP,10571,2,Character/Player/10234000,2400
+10230001,Hermes' Clothes,Armor,3,Normal,11,HP,2811,2,Character/Player/10230001,2040
+10231001,Hermes' Clothes,Armor,3,Fire,12,HP,3009,2,Character/Player/10231001,3600
+10232001,Hermes' Clothes,Armor,3,Water,13,HP,3141,2,Character/Player/10232001,3600
+10233001,Hermes' Clothes,Armor,3,Land,14,HP,11482,2,Character/Player/10233001,3600
+10234001,Hermes' Clothes,Armor,3,Wind,15,HP,12302,2,Character/Player/10234001,3600
+10240000,War Armor,Armor,4,Normal,11,HP,34446,2,Character/Player/10240000,75000
+10241000,War Armor,Armor,4,Fire,12,HP,24604,2,Character/Player/10241000,75000
+10242000,War Armor,Armor,4,Water,13,HP,27064,2,Character/Player/10242000,96000
+10243000,War Armor,Armor,4,Land,14,HP,29525,2,Character/Player/10243000,96000
+10244000,War Armor,Armor,4,Wind,15,HP,31985,2,Character/Player/10244000,144000
+10250001,Ancient Armor,Armor,5,Normal,11,HP,67513,2,Character/Player/10250001,2400000
+10251001,Ancient Armor,Armor,5,Fire,12,HP,48224,2,Character/Player/10251001,1800000
+10252001,Ancient Armor,Armor,5,Water,13,HP,48224,2,Character/Player/10252001,1800000
+10253001,Ancient Armor,Armor,5,Land,14,HP,67513,2,Character/Player/10253001,2400000
+10254001,Ancient Armor,Armor,5,Wind,15,HP,67513,2,Character/Player/10254001,2400000
+10250000,Legendary Armor,Armor,5,Normal,11,HP,15550,2,Character/Player/10250000,2
+10251000,Legendary Armor,Armor,5,Fire,12,HP,15848,2,Character/Player/10251000,2
+10252000,Legendary Armor,Armor,5,Water,13,HP,16146,2,Character/Player/10252000,2
+10253000,Legendary Armor,Armor,5,Land,14,HP,24665,2,Character/Player/10253000,2
+10254000,Legendary Armor,Armor,5,Wind,15,HP,30823,2,Character/Player/10254000,2
+10240001,Asgardian Armor,Armor,5,Normal,11,HP,10358,2,Character/Player/10240001,2
+10241001,Asgardian Armor,Armor,5,Fire,12,HP,10571,2,Character/Player/10241001,2
+10242001,Asgardian Armor,Armor,5,Water,13,HP,10783,2,Character/Player/10242001,2
+10243001,Asgardian Armor,Armor,5,Land,14,HP,16494,2,Character/Player/10243001,2
+10244001,Asgardian Armor,Armor,5,Wind,15,HP,20647,2,Character/Player/10244001,2
+10255000,Heavenly Cat,Armor,5,Normal,11,HP,42856,2,Character/Player/10235000,2
+10310000,Basic Belt,Belt,1,Normal,1,SPD,46,2,10310000,5
+10311000,Basic Belt,Belt,1,Fire,2,SPD,62,2,10311000,6
+10312000,Basic Belt,Belt,1,Water,3,SPD,69,2,10312000,8
+10313000,Basic Belt,Belt,1,Land,4,SPD,239,2,10313000,10
+10314000,Basic Belt,Belt,1,Wind,5,SPD,610,2,10314000,10
+10320000,Leather Belt,Belt,2,Normal,6,SPD,137,2,10320000,100
+10321000,Leather Belt,Belt,2,Fire,7,SPD,141,2,10321000,100
+10322000,Leather Belt,Belt,2,Water,8,SPD,166,2,10322000,180
+10323000,Leather Belt,Belt,2,Land,9,SPD,718,2,10323000,180
+10324000,Leather Belt,Belt,2,Wind,10,SPD,1314,2,10324000,180
+10330000,Solid Belt,Belt,3,Normal,11,SPD,350,2,10330000,500
+10331000,Solid Belt,Belt,3,Fire,12,SPD,359,2,10331000,700
+10332000,Solid Belt,Belt,3,Water,13,SPD,425,2,10332000,3600
+10333000,Solid Belt,Belt,3,Land,14,SPD,1701,2,10333000,3600
+10334000,Solid Belt,Belt,3,Wind,15,SPD,2883,2,10334000,2400
+10340000,War Belt,Belt,4,Normal,11,SPD,1215,2,10340000,9600
+10341000,War Belt,Belt,4,Fire,12,SPD,1262,2,10341000,60000
+10342000,War Belt,Belt,4,Water,13,SPD,2292,2,10342000,60000
+10343000,War Belt,Belt,4,Land,14,SPD,2292,2,10343000,60000
+10344000,War Belt,Belt,4,Wind,15,SPD,2292,2,10344000,33000
+10350000,Legendary Belt,Belt,4,Normal,11,SPD,7334,2,10350000,75000
+10351000,Legendary Belt,Belt,4,Fire,12,SPD,4584,2,10351000,75000
+10352000,Legendary Belt,Belt,4,Water,13,SPD,5272,2,10352000,96000
+10353000,Legendary Belt,Belt,4,Land,14,SPD,5959,2,10353000,96000
+10354000,Legendary Belt,Belt,4,Wind,15,SPD,6647,2,10354000,120000
+10410000,Thin Necklace,Necklace,1,Normal,1,HIT,70,0,10410000,5
+10411000,Thin Necklace,Necklace,1,Fire,2,HIT,81,0,10411000,5
+10412000,Thin Necklace,Necklace,1,Water,3,HIT,99,0,10412000,5
+10413000,Thin Necklace,Necklace,1,Land,4,HIT,357,0,10413000,8
+10414000,Thin Necklace,Necklace,1,Wind,5,HIT,863,0,10414000,10
+10420000,Guardian Necklace,Necklace,2,Normal,6,HIT,192,0,10420000,100
+10421000,Guardian Necklace,Necklace,2,Fire,7,HIT,197,0,10421000,100
+10422000,Guardian Necklace,Necklace,2,Water,8,HIT,230,0,10422000,180
+10423000,Guardian Necklace,Necklace,2,Land,9,HIT,1002,0,10423000,180
+10424000,Guardian Necklace,Necklace,2,Wind,10,HIT,1682,0,10424000,180
+10430000,Mana Necklace,Necklace,3,Normal,11,HIT,510,0,10430000,180
+10431000,Mana Necklace,Necklace,3,Fire,12,HIT,522,0,10431000,300
+10432000,Mana Necklace,Necklace,3,Water,13,HIT,608,0,10432000,3600
+10433000,Mana Necklace,Necklace,3,Land,14,HIT,2151,0,10433000,3600
+10434000,Mana Necklace,Necklace,3,Wind,15,HIT,2333,0,10434000,3600
+10440000,Warrior's Necklace,Necklace,4,Normal,11,HIT,2031,0,10440000,50000
+10441000,Warrior's Necklace,Necklace,4,Fire,12,HIT,3047,0,10441000,75000
+10442000,Warrior's Necklace,Necklace,4,Water,13,HIT,3047,0,10442000,75000
+10443000,Warrior's Necklace,Necklace,4,Land,14,HIT,3047,0,10443000,75000
+10444000,Warrior's Necklace,Necklace,4,Wind,15,HIT,3047,0,10444000,75000
+10450000,Legendary Necklace,Necklace,4,Normal,11,HIT,7466,0,10450000,60000
+10451000,Legendary Necklace,Necklace,4,Fire,12,HIT,4666,0,10451000,60000
+10452000,Legendary Necklace,Necklace,4,Water,13,HIT,5366,0,10452000,96000
+10453000,Legendary Necklace,Necklace,4,Land,14,HIT,6066,0,10453000,96000
+10454000,Legendary Necklace,Necklace,4,Wind,15,HIT,6766,0,10454000,120000
+10510000,Thin Ring,Ring,1,Normal,1,DEF,8,0,10510000,5
+10511000,Thin Ring,Ring,1,Fire,2,DEF,9,0,10511000,5
+10512000,Thin Ring,Ring,1,Water,3,DEF,11,0,10512000,5
+10513000,Thin Ring,Ring,1,Land,4,DEF,44,0,10513000,8
+10514000,Thin Ring,Ring,1,Wind,5,DEF,107,0,10514000,10
+10520000,Guardian Ring,Ring,2,Normal,6,DEF,23,0,10520000,100
+10521000,Guardian Ring,Ring,2,Fire,7,DEF,24,0,10521000,100
+10522000,Guardian Ring,Ring,2,Water,8,DEF,29,0,10522000,180
+10523000,Guardian Ring,Ring,2,Land,9,DEF,122,0,10523000,180
+10524000,Guardian Ring,Ring,2,Wind,10,DEF,189,0,10524000,180
+10530000,Mana Ring,Ring,3,Normal,11,DEF,63,0,10530000,500
+10531000,Mana Ring,Ring,3,Fire,12,DEF,65,0,10531000,700
+10532000,Mana Ring,Ring,3,Water,13,DEF,74,0,10532000,1200
+10533000,Mana Ring,Ring,3,Land,14,DEF,251,0,10533000,3600
+10534000,Mana Ring,Ring,3,Wind,15,DEF,270,0,10534000,3600
+10540000,Warrior's Ring,Ring,4,Normal,11,DEF,864,0,10540000,60000
+10541000,Warrior's Ring,Ring,4,Fire,12,DEF,540,0,10541000,60000
+10542000,Warrior's Ring,Ring,4,Water,13,DEF,621,0,10542000,96000
+10543000,Warrior's Ring,Ring,4,Land,14,DEF,702,0,10543000,96000
+10544000,Warrior's Ring,Ring,4,Wind,15,DEF,783,0,10544000,120000
+10550000,Ancient Ring,Ring,5,Normal,11,DEF,1946,0,10550000,2400000
+10551000,Ancient Ring,Ring,5,Fire,12,DEF,1209,0,10551000,1800000
+10552000,Ancient Ring,Ring,5,Water,13,DEF,1209,0,10552000,1800000
+10553000,Ancient Ring,Ring,5,Land,14,DEF,1946,0,10553000,2400000
+10554000,Ancient Ring,Ring,5,Wind,15,DEF,1946,0,10554000,2400000
+11320000,Blue Sapphire Belt,Belt,2,Normal,6,SPD,176,2,11320000,2
+11420000,Blue Sapphire Necklace,Necklace,2,Normal,6,HIT,227,0,11420000,2
+11520000,Blue Sapphire Ring,Ring,2,Normal,6,DEF,50,0,11520000,2
 12001001,Special Crystal Belt,Belt,2,Normal,0,ATK,1,0,12001001,1
 12001002,Special Crystal Necklace,Necklace,3,Normal,1,ATK,1,0,12001002,1
 12001003,Special Crystal Ring,Ring,4,Normal,2,ATK,1,0,12001003,1
-10350001,Ancient Belt,Belt,5,Normal,15,SPD,14373,2,10350001,2000000
-10351001,Ancient Belt,Belt,5,Fire,15,SPD,10267,2,10351001,1500000
-10352001,Ancient Belt,Belt,5,Water,15,SPD,10267,2,10352001,1500000
-10353001,Ancient Belt,Belt,5,Land,15,SPD,14373,2,10353001,2000000
-10354001,Ancient Belt,Belt,5,Wind,15,SPD,14373,2,10354001,2000000
-10450001,Ancient Necklace,Necklace,5,Normal,15,HIT,15363,0,10450001,2000000
-10451001,Ancient Necklace,Necklace,5,Fire,15,HIT,10452,0,10451001,1500000
-10452001,Ancient Necklace,Necklace,5,Water,15,HIT,10452,0,10452001,1500000
-10453001,Ancient Necklace,Necklace,5,Land,15,HIT,15363,0,10453001,2000000
-10454001,Ancient Necklace,Necklace,5,Wind,15,HIT,15363,0,10454001,2000000
-10610000,Nimble Aura,Aura,1,Normal,0,HIT,10,0,10610000,1
-10620000,Nimble Aura,Aura,2,Normal,0,HIT,10,0,10610000,20
-10630000,Nimble Aura,Aura,3,Normal,0,HIT,10,0,10610000,400
-10620001,Beast Aura,Aura,2,Normal,0,ATK,10,0,10620001,20
-10630001,Beast Aura,Aura,3,Normal,0,ATK,10,0,10620001,400
-10640001,Beast Aura,Aura,4,Normal,0,ATK,10,0,10620001,4000
-10650001,Beast Aura,Aura,5,Normal,0,ATK,10,0,10620001,40000
-10650002,Lord's Beast Aura,Aura,5,Normal,0,ATK,10,0,10620001,40000
+10350001,Ancient Belt,Belt,5,Normal,15,SPD,14373,2,10350001,2400000
+10351001,Ancient Belt,Belt,5,Fire,15,SPD,10267,2,10351001,1800000
+10352001,Ancient Belt,Belt,5,Water,15,SPD,10267,2,10352001,1800000
+10353001,Ancient Belt,Belt,5,Land,15,SPD,14373,2,10353001,2400000
+10354001,Ancient Belt,Belt,5,Wind,15,SPD,14373,2,10354001,2400000
+10450001,Ancient Necklace,Necklace,5,Normal,15,HIT,15363,0,10450001,2400000
+10451001,Ancient Necklace,Necklace,5,Fire,15,HIT,10452,0,10451001,1800000
+10452001,Ancient Necklace,Necklace,5,Water,15,HIT,10452,0,10452001,1800000
+10453001,Ancient Necklace,Necklace,5,Land,15,HIT,15363,0,10453001,2400000
+10454001,Ancient Necklace,Necklace,5,Wind,15,HIT,15363,0,10454001,2400000
+10610000,Nimble Aura,Aura,1,Normal,0,HIT,310,0,10610000,2
+10620000,Nimble Aura,Aura,2,Normal,0,HIT,10,0,10610000,40
+10630000,Nimble Aura,Aura,3,Normal,0,HIT,10,0,10610000,600
+10620001,Beast Aura,Aura,2,Normal,0,ATK,10,0,10620001,40
+10630001,Beast Aura,Aura,3,Normal,0,ATK,10,0,10620001,600
+10640001,Beast Aura,Aura,4,Normal,0,ATK,10,0,10620001,6000
+10650001,Beast Aura,Aura,5,Normal,0,ATK,10,0,10620001,60000
+10650002,Lord's Beast Aura,Aura,5,Normal,0,ATK,10,0,10620001,60000
+10130002,Classic Sword,Weapon,3,Normal,0,ATK,50,2,10130000,100
+10620002,Aegis Aura,Aura,2,Normal,0,HP,10,0,10620001,40
+10630002,Aegis Aura,Aura,3,Normal,0,HP,10,0,10620001,600
+10640002,Aegis Aura,Aura,4,Normal,0,HP,10,0,10620001,6000
+10650003,Aegis Aura,Aura,5,Normal,0,HP,10,0,10620001,60000
+10650004,Lord's Aegis Aura,Aura,5,Normal,0,HP,10,0,10620001,60000
+10620003,Barrage Aura,Aura,2,Normal,0,ATK,10,0,10620001,40
+10630003,Barrage Aura,Aura,3,Normal,0,ATK,10,0,10620001,600
+10640003,Barrage Aura,Aura,4,Normal,0,ATK,10,0,10620001,6000
+10650005,Barrage Aura,Aura,5,Normal,0,ATK,10,0,10620001,60000
+10650006,Lord's Barrage Aura,Aura,5,Normal,0,ATK,10,0,10620001,60000

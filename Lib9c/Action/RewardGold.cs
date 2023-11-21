@@ -63,14 +63,15 @@ namespace Nekoyume.Action
             var index = ctx.BlockIndex;
             Currency goldCurrency = states.GetGoldCurrency();
             Address fund = GoldCurrencyState.Address;
+            FungibleAssetValue fundValue = states.GetBalance(fund, goldCurrency);
             foreach(GoldDistribution distribution in goldDistributions)
             {
                 BigInteger amount = distribution.GetAmount(index);
-                if (amount <= 0) continue;
+                FungibleAssetValue fav = goldCurrency * amount;
+                if (amount <= 0 || fundValue < fav) continue;
 
                 // We should divide by 100 for only mainnet distributions.
                 // See also: https://github.com/planetarium/lib9c/pull/170#issuecomment-713380172
-                FungibleAssetValue fav = goldCurrency * amount;
                 var testAddresses = new HashSet<Address>(
                     new []
                     {
@@ -289,7 +290,8 @@ namespace Nekoyume.Action
             FungibleAssetValue miningReward =
                 defaultMiningReward.DivRem(countOfHalfLife, out FungibleAssetValue _);
 
-            if (miningReward >= FungibleAssetValue.Parse(currency, "1.25"))
+            var balance = states.GetBalance(GoldCurrencyState.Address, currency);
+            if (miningReward >= FungibleAssetValue.Parse(currency, "1.25") && balance >= miningReward)
             {
                 states = states.TransferAsset(
                     ctx,

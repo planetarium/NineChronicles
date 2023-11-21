@@ -32,14 +32,6 @@ namespace Nekoyume.Action
             IAccount states = context.PreviousState;
             Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
 
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(context.Signer, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(collectionAddress, MarkChanged);
-            }
-
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))

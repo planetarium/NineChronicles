@@ -29,13 +29,6 @@ namespace Nekoyume.Action
             context.UseGas(1);
             IAccount states = context.PreviousState;
             Address monsterCollectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
-            if (context.Rehearsal)
-            {
-                return states
-                    .SetState(monsterCollectionAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(context, GoldCurrencyMock, context.Signer, monsterCollectionAddress);
-            }
 
             CheckObsolete(ActionObsoleteConfig.V100080ObsoleteIndex, context);
 

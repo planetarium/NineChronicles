@@ -58,27 +58,6 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize());
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new DailyReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousState = new Account(MockState.Empty),
-                RandomSeed = 0,
-                Rehearsal = true,
-                Signer = _agentAddress,
-            });
-
-            var updatedAddress = Assert.Single(nextState.Delta.UpdatedAddresses);
-            Assert.Equal(_avatarAddress, updatedAddress);
-        }
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -96,7 +75,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var nextState = ExecuteInternal(previousStates, 2040);
+            var nextState = ExecuteInternal(previousStates, 2448);
             var nextGameConfigState = nextState.GetGameConfigState();
             nextState.TryGetAvatarStateV2(_agentAddress, _avatarAddress, out var nextAvatarState, out var migrationRequired);
             Assert.Equal(legacy, migrationRequired);
@@ -117,11 +96,11 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 0, true)]
-        [InlineData(0, 2039, true)]
-        [InlineData(0, 2040, false)]
-        [InlineData(2040, 2040, true)]
-        [InlineData(2040, 2040 + 2039, true)]
-        [InlineData(2040, 2040 + 2040, false)]
+        [InlineData(0, 2447, true)]
+        [InlineData(0, 2448, false)]
+        [InlineData(2448, 2448, true)]
+        [InlineData(2448, 2448 + 2447, true)]
+        [InlineData(2448, 2448 + 2448, false)]
         public void Execute_Throw_RequiredBlockIndexException(
             long dailyRewardReceivedIndex,
             long executeBlockIndex,

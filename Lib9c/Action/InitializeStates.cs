@@ -7,6 +7,7 @@ using Lib9c.Abstractions;
 using Libplanet.Action;
 using Libplanet.Action.State;
 using Nekoyume.Model.State;
+using Libplanet.Crypto;
 
 namespace Nekoyume.Action
 {
@@ -53,6 +54,8 @@ namespace Nekoyume.Action
         // This property can contain null:
         public Dictionary Credits { get; set; }
 
+        public ISet<Address> AssetMinters { get; set; }
+
         Dictionary IInitializeStatesV1.Ranking => Ranking;
         Dictionary IInitializeStatesV1.Shop => Shop;
         Dictionary<string, string> IInitializeStatesV1.TableSheets => TableSheets;
@@ -82,7 +85,8 @@ namespace Nekoyume.Action
             PendingActivationState[] pendingActivationStates,
             AdminState adminAddressState = null,
             AuthorizedMinersState authorizedMinersState = null,
-            CreditsState creditsState = null)
+            CreditsState creditsState = null,
+            ISet<Address> assetMinters = null)
         {
             Ranking = (Dictionary)rankingState.Serialize();
             Shop = (Dictionary)shopState.Serialize();
@@ -104,6 +108,11 @@ namespace Nekoyume.Action
             {
                 Credits = (Dictionary)creditsState.Serialize();
             }
+
+            if (!(assetMinters is null))
+            {
+                AssetMinters = assetMinters;
+            }
         }
 
         public override IAccount Execute(IActionContext context)
@@ -114,37 +123,6 @@ namespace Nekoyume.Action
             var weeklyArenaState = new WeeklyArenaState(0);
 
             var rankingState = new RankingState0(Ranking);
-            if (ctx.Rehearsal)
-            {
-                states = states.SetState(RankingState0.Address, MarkChanged);
-                states = states.SetState(ShopState.Address, MarkChanged);
-#pragma warning disable LAA1002
-                states = TableSheets
-                    .Aggregate(states, (current, pair) =>
-                        current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
-                states = rankingState.RankingMap
-                    .Aggregate(states, (current, pair) =>
-                        current.SetState(pair.Key, MarkChanged));
-#pragma warning restore LAA1002
-                states = states.SetState(weeklyArenaState.address, MarkChanged);
-                states = states.SetState(GameConfigState.Address, MarkChanged);
-                states = states.SetState(RedeemCodeState.Address, MarkChanged);
-                states = states.SetState(AdminState.Address, MarkChanged);
-                states = states.SetState(ActivatedAccountsState.Address, MarkChanged);
-                states = states.SetState(GoldCurrencyState.Address, MarkChanged);
-                states = states.SetState(Addresses.GoldDistribution, MarkChanged);
-                foreach (var rawPending in PendingActivations)
-                {
-                    states = states.SetState(
-                        new PendingActivationState((Dictionary)rawPending).address,
-                        MarkChanged
-                    );
-                }
-
-                states = states.SetState(AuthorizedMinersState.Address, MarkChanged);
-                states = states.SetState(CreditsState.Address, MarkChanged);
-                return states;
-            }
 
             if (ctx.BlockIndex != 0)
             {
@@ -195,8 +173,24 @@ namespace Nekoyume.Action
                 states = states.SetState(CreditsState.Address, Credits);
             }
 
-            var currency = new GoldCurrencyState(GoldCurrency).Currency;
-            states = states.MintAsset(ctx, GoldCurrencyState.Address, currency * 1000000000);
+            var currencyState = new GoldCurrencyState(GoldCurrency);
+            if (currencyState.InitialSupply > 0)
+            {
+                states = states.MintAsset(
+                    ctx,
+                    GoldCurrencyState.Address,
+                    currencyState.Currency * currencyState.InitialSupply
+                );
+            }
+
+            if (AssetMinters is { })
+            {
+                states = states.SetState(
+                    Addresses.AssetMinters,
+                    new List(AssetMinters.Select(addr => addr.Serialize()))
+                );
+            }
+
             return states;
         }
 
@@ -235,6 +229,11 @@ namespace Nekoyume.Action
                     rv = rv.Add("credits_state", Credits);
                 }
 
+                if (!(AssetMinters is null))
+                {
+                    rv = rv.Add("asset_minters", new List(AssetMinters.Select(addr => addr.Serialize())));
+                }
+
                 return rv;
             }
         }
@@ -268,6 +267,11 @@ namespace Nekoyume.Action
             if (plainValue.TryGetValue("credits_state", out IValue credits))
             {
                 Credits = (Dictionary)credits;
+            }
+
+            if (plainValue.TryGetValue("asset_minters", out IValue assetMinters))
+            {
+                AssetMinters = ((List)assetMinters).Select(addr => addr.ToAddress()).ToHashSet();
             }
         }
     }

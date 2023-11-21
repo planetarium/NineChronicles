@@ -57,16 +57,6 @@ namespace Nekoyume.Action
                 throw new MonsterCollectionExistingException();
             }
 
-            if (context.Rehearsal)
-            {
-                return states.SetState(StakeState.DeriveAddress(context.Signer), MarkChanged)
-                    .MarkBalanceChanged(
-                        context,
-                        GoldCurrencyMock,
-                        context.Signer,
-                        StakeState.DeriveAddress(context.Signer));
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, context.Signer);
             var started = DateTimeOffset.UtcNow;
             Log.Debug("{AddressesHex}Stake exec started", addressesHex);

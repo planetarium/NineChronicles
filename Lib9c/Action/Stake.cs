@@ -60,16 +60,6 @@ namespace Nekoyume.Action
                 throw new MonsterCollectionExistingException();
             }
 
-            if (context.Rehearsal)
-            {
-                return states.SetState(StakeState.DeriveAddress(context.Signer), MarkChanged)
-                    .MarkBalanceChanged(
-                        context,
-                        GoldCurrencyMock,
-                        context.Signer,
-                        StakeState.DeriveAddress(context.Signer));
-            }
-
             // NOTE: When the amount is less than 0.
             if (Amount < 0)
             {

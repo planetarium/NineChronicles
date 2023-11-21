@@ -568,42 +568,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            var action = new HackAndSlash0()
-            {
-                costumes = new List<int>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                _weeklyArenaState.address,
-                _rankingMapAddress,
-            };
-
-            var state = new Account(MockState.Empty);
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousState = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.Delta.UpdatedAddresses);
-        }
-
-        [Fact]
         public void SerializeWithDotnetAPI()
         {
             var action = new HackAndSlash0()
