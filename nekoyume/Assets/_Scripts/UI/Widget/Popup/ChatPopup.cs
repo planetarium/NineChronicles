@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         {
             confirm.onClick.AddListener(() =>
             {
-                Application.OpenURL(GameConfig.DiscordLink);
+                Application.OpenURL(Game.LiveAsset.GameConfig.DiscordLink);
                 Close(true);
             });
 
@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         {
             SubmitWidget = () =>
             {
-                Application.OpenURL(GameConfig.DiscordLink);
+                Application.OpenURL(Game.LiveAsset.GameConfig.DiscordLink);
                 Close(true);
             };
 
