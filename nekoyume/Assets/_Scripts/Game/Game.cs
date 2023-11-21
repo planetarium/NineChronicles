@@ -1463,7 +1463,10 @@ namespace Nekoyume.Game
                     yield return new WaitUntil(() => loginSystem.Login);
                     Debug.Log("[Game] CoLogin()... WaitUntil LoginPopup.Login. Done.");
 
+                    // NOTE: Update CommandlineOptions.PrivateKey finally.
                     _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
+                    Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+                              $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
                 }
 
                 sw.Reset();
@@ -1535,20 +1538,26 @@ namespace Nekoyume.Game
             if (planetContext.HasPledgedAccount)
             {
                 Debug.Log("[Game] CoLogin()... Has pledged account.");
+                var pk = loginSystem.GetPrivateKey();
                 introScreen.Show(
                     _commandLineOptions.KeyStorePath,
-                    ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray),
+                    ByteUtil.Hex(pk.ByteArray),
                     planetContext);
 
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
                 yield return introScreen.OnClickStart.AsObservable().First().StartAsCoroutine();
                 Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
 
+                // NOTE: Update CommandlineOptions.PrivateKey finally.
+                _commandLineOptions.PrivateKey = ByteUtil.Hex(pk.ByteArray);
+                Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+                          $" to ({pk.ToAddress()}).");
+
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
                     _commandLineOptions,
-                    loginSystem.GetPrivateKey(),
+                    pk,
                     callback);
                 sw.Stop();
                 Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
@@ -1720,6 +1729,11 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
             yield return new WaitUntil(() => loginSystem.Login);
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login. Done.");
+
+            // NOTE: Update CommandlineOptions.PrivateKey finally.
+            _commandLineOptions.PrivateKey = ByteUtil.Hex(loginSystem.GetPrivateKey().ByteArray);
+            Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
+                      $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
 
             sw.Reset();
             sw.Start();
