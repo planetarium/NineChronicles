@@ -475,11 +475,24 @@ namespace Nekoyume.UI
 
                 codeReaderView.Show(res =>
                 {
+                    var resultPpk = ProtectedPrivateKey.FromJson(res.Text);
+                    var requiredAddress = resultPpk.Address;
                     var loginSystem = Find<LoginSystem>();
-                    loginSystem.KeyStore.Add(ProtectedPrivateKey.FromJson(res.Text));
+                    var legacyKeystore = loginSystem.KeyStore;
+                    var legacyKeyList = legacyKeystore.List()
+                        .Where(tuple => !tuple.Item2.Address.Equals(requiredAddress));
+                    var backupKeystore = new Web3KeyStore(Platform.PersistentDataPath + "/backup_keystore");
+                    foreach (var tuple in legacyKeyList)
+                    {
+                        legacyKeystore.Remove(tuple.Item1);
+                        backupKeystore.Add(tuple.Item2);
+                    }
+
+                    legacyKeystore.Add(resultPpk);
+                    loginSystem.KeyStore = legacyKeystore;
                     codeReaderView.Close();
                     startButtonContainer.SetActive(false);
-                    loginSystem.Show(_keyStorePath, _privateKey);
+                    loginSystem.Show(_keyStorePath, string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
                 });
             }

@@ -450,11 +450,11 @@ namespace Nekoyume.UI
             if (Platform.IsMobilePlatform())
             {
                 var dataPath = Platform.GetPersistentDataPath("keystore");
-                KeyStore = path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
+                KeyStore ??= path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
             }
             else
             {
-                KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
+                KeyStore ??= path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             }
 
             _privateKeyString = privateKeyString;
