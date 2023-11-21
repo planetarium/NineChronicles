@@ -406,17 +406,28 @@ namespace Nekoyume.UI
 
         public void CloseWithOtherWidgets()
         {
-            var deletableWidgets = FindWidgets().Where(widget =>
-                widget is not SystemWidget &&
-                widget is not MessageCatTooltip &&
-                widget is not HeaderMenuStatic &&
-                widget is not MaterialTooltip &&
-                widget is not ShopBuy &&
-                widget is not ShopSell &&
-                widget.IsActive());
-            foreach (var widget in deletableWidgets)
+            try
             {
-                widget.Close(true);
+                var deletableWidgets = FindWidgets().Where(widget =>
+                    widget is not SystemWidget &&
+                    widget is not MessageCatTooltip &&
+                    widget is not HeaderMenuStatic &&
+                    widget is not MaterialTooltip &&
+                    widget is not ShopBuy &&
+                    widget is not ShopSell &&
+                    widget.IsActive()).ToList();
+                for (var i = deletableWidgets.Count - 1; i >= 0; i--)
+                {
+                    var widget = deletableWidgets[i];
+                    if (widget)
+                    {
+                        widget.Close(true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             Find<Menu>().Close(true);

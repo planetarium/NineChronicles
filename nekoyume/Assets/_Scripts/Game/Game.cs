@@ -1313,13 +1313,25 @@ namespace Nekoyume.Game
 
             Event.OnNestEnter.Invoke();
 
-            var deletableWidgets = Widget.FindWidgets().Where(widget =>
-                widget is not SystemWidget &&
-                widget is not MessageCatTooltip &&
-                widget.IsActive());
-            foreach (var widget in deletableWidgets)
+            try
             {
-                widget.Close(true);
+                var deletableWidgets = Widget.FindWidgets().Where(widget =>
+                    widget is not SystemWidget &&
+                    widget is not MessageCatTooltip &&
+                    widget.IsActive()).ToList();
+
+                for (var i = deletableWidgets.Count - 1; i >= 0; i--)
+                {
+                    var widget = deletableWidgets[i];
+                    if (widget)
+                    {
+                        widget.Close(true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             Widget.Find<Login>().Show();
