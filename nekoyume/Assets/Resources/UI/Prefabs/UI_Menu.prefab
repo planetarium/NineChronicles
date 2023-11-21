@@ -7883,6 +7883,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1929002957489927283}
     m_Modifications:
+    - target: {fileID: 159068446405723720, guid: 74c3eeff2c3b00248a4da1308d139ac8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 611923758360396654, guid: 74c3eeff2c3b00248a4da1308d139ac8,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -7943,6 +7948,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 4575422773675835264}
+    - target: {fileID: 2145688963606914234, guid: 74c3eeff2c3b00248a4da1308d139ac8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2843718566046558521, guid: 74c3eeff2c3b00248a4da1308d139ac8,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -8639,17 +8649,17 @@ PrefabInstance:
     - target: {fileID: 677293110201088574, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 677293110201088574, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 135
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1649790340698659352, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1649790340698659352, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
@@ -8664,7 +8674,7 @@ PrefabInstance:
     - target: {fileID: 1649790340698659352, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 24
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 1649790340698659352, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
