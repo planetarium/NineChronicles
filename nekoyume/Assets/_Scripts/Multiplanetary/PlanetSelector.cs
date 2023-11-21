@@ -317,7 +317,8 @@ namespace Nekoyume.Multiplanetary
 
         public static async UniTask<PlanetContext> UpdatePlanetAccountInfosAsync(
             PlanetContext context,
-            Address agentAddress)
+            Address agentAddress,
+            bool updateSelectedPlanetAccountInfo)
         {
             Debug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
             if (context.PlanetRegistry is null)
@@ -419,7 +420,9 @@ namespace Nekoyume.Multiplanetary
             context.PlanetAccountInfos = planetAccountInfos.ToArray();
             Debug.Log($"[PlanetSelector] PlanetAccountInfos({context.PlanetAccountInfos.Length})" +
                       " updated successfully.");
-            return UpdateSelectedPlanetAccountInfo(context);
+            return updateSelectedPlanetAccountInfo
+                ? UpdateSelectedPlanetAccountInfo(context)
+                : context;
         }
 
         public static PlanetContext SelectPlanetAccountInfo(PlanetContext context, PlanetId planetId)

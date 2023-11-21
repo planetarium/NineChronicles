@@ -1509,7 +1509,8 @@ namespace Nekoyume.Game
                     loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
-                        pk.ToAddress()).ToCoroutine();
+                        pk.ToAddress(),
+                        updateSelectedPlanetAccountInfo: true).ToCoroutine();
                     loadingScreen.Close();
                     if (planetContext.HasError)
                     {
@@ -1636,7 +1637,8 @@ namespace Nekoyume.Game
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
-                    requiredAddress).ToCoroutine();
+                    requiredAddress,
+                    updateSelectedPlanetAccountInfo: false).ToCoroutine();
                 if (planetContext.HasError)
                 {
                     callback?.Invoke(false);
