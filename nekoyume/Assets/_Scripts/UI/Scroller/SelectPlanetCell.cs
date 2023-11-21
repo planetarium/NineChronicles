@@ -1,16 +1,19 @@
+using Nekoyume.Multiplanetary;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class SelectPlanetCell : RectCell<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
+    public class SelectPlanetCell : FancyScrollRectCell<SelectPlanetCell.ViewModel, SelectPlanetScroll.ContextModel>
     {
         public class ViewModel
         {
-            public bool IsSelected;
+            public PlanetId PlanetId;
             public string PlanetName;
             public bool IsNew;
+            public bool IsSelected;
         }
 
         [SerializeField]
@@ -34,11 +37,21 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(ViewModel itemData)
         {
-            button.Interactable = itemData.IsSelected;
-            button.Text = string.IsNullOrEmpty(itemData.PlanetName)
+            _viewModel = itemData;
+            if (_viewModel is null)
+            {
+                Debug.Log("[SelectPlanetCell] UpdateContent()... _viewModel is null.");
+                button.Interactable = false;
+                button.Text = "null";
+                newMarkGO.SetActive(false);
+                return;
+            }
+
+            button.Interactable = _viewModel.IsSelected;
+            button.Text = string.IsNullOrEmpty(_viewModel.PlanetName)
                 ? "null"
-                : itemData.PlanetName;
-            newMarkGO.SetActive(itemData.IsNew);
+                : _viewModel.PlanetName;
+            newMarkGO.SetActive(_viewModel.IsNew);
         }
     }
 }
