@@ -1609,12 +1609,13 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log($"[Game] CoLogin()... AgentAddress({agentAddrInPortal.Value}) in portal" +
+                var requiredAddress = agentAddrInPortal.Value;
+                Debug.Log($"[Game] CoLogin()... AgentAddress({requiredAddress}) in portal" +
                           $" is not null. Try to update planet account infos.");
                 loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
-                    agentAddrInPortal.Value).ToCoroutine();
+                    requiredAddress).ToCoroutine();
                 if (planetContext.HasError)
                 {
                     callback?.Invoke(false);
