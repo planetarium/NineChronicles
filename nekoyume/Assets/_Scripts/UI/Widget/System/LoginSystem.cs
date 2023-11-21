@@ -127,6 +127,10 @@ namespace Nekoyume.UI
             setPasswordLaterButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/SetPassword/Cancel");
+
+                var evt = new AirbridgeEvent("SetPassword_Cancel");
+                AirbridgeUnity.TrackEvent(evt);
+
                 Close(true);
             });
 
@@ -248,6 +252,9 @@ namespace Nekoyume.UI
             {
                 AnalyzeCache.IsTrackedInputPassword = true;
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
+
+                var evt = new AirbridgeEvent("Login_Password_Input");
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             var valid = submitButton.IsSubmittable;
@@ -262,6 +269,9 @@ namespace Nekoyume.UI
             {
                 AnalyzeCache.IsTrackedRetypePassword = true;
                 Analyzer.Instance.Track("Unity/Login/Password/Retype");
+
+                var evt = new AirbridgeEvent("Login_Password_Retype");
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             UpdateSubmitButton();
@@ -366,6 +376,9 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Login/GameStartButton/Click");
 
+            var evt = new AirbridgeEvent("Login_GameStartButton_Click");
+            AirbridgeUnity.TrackEvent(evt);
+
             submitButton.Interactable = false;
             switch (State.Value)
             {
@@ -384,6 +397,10 @@ namespace Nekoyume.UI
                     SetPassPhrase(_privateKey.ToAddress().ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
+
+                    var setPasswordEvt = new AirbridgeEvent("SetPassword_Complete");
+                    AirbridgeUnity.TrackEvent(setPasswordEvt);
+
                     Close();
                     break;
                 case States.Login:
@@ -526,12 +543,20 @@ namespace Nekoyume.UI
             if (connectedAddress.HasValue)
             {
                 Analyzer.Instance.Track("Unity/Login/1");
+
+                var evt = new AirbridgeEvent("Login_1");
+                AirbridgeUnity.TrackEvent(evt);
+
                 SetState(States.ConnectedAddress_Mobile);
                 SetImage(connectedAddress.Value);
             }
             else
             {
                 Analyzer.Instance.Track("Unity/Login/2");
+
+                var evt = new AirbridgeEvent("Login_2");
+                AirbridgeUnity.TrackEvent(evt);
+
                 KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
                 _privateKey = new PrivateKey();
                 CreateProtectedPrivateKey(_privateKey);
@@ -547,6 +572,9 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
+
+            var evt = new AirbridgeEvent("SetPassword_Show");
+            AirbridgeUnity.TrackEvent(evt);
 
             SetState(States.SetPassword);
             base.Show();

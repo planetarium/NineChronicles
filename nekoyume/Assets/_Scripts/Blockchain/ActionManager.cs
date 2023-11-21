@@ -227,6 +227,10 @@ namespace Nekoyume.Blockchain
                 {
                     ["StageID"] = stageId,
                 });
+
+                var evt = new AirbridgeEvent("Click_Guided_Quest_Enter_Dungeon");
+                evt.SetValue(stageId);
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             var sentryTrace = Analyzer.Instance.Track(
@@ -239,6 +243,14 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var hasEvt = new AirbridgeEvent("HackAndSlash");
+            hasEvt.SetValue(stageId);
+            hasEvt.AddCustomAttribute("world-id", worldId);
+            hasEvt.AddCustomAttribute("play-count", playCount);
+            hasEvt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            hasEvt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(hasEvt);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Guid>();
@@ -298,10 +310,27 @@ namespace Nekoyume.Blockchain
                     ["EventDungeonID"] = eventDungeonId,
                     ["EventDungeonStageID"] = eventDungeonStageId,
                 });
+
+                var evt = new AirbridgeEvent("Click_Guided_Quest_Enter_Event_Dungeon");
+                evt.SetValue(eventDungeonStageId);
+                evt.AddCustomAttribute("event-schedule-id", eventScheduleId);
+                evt.AddCustomAttribute("event-dungeon-id", eventDungeonId);
+                AirbridgeUnity.TrackEvent(evt);
             }
 
-            var numberOfTicketPurchases =
-                RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+            var remainingTickets = RxProps.EventDungeonTicketProgress.Value.currentTickets - Action.EventDungeonBattle.PlayCount;
+            var numberOfTicketPurchases = RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
+            var ticketCostIfNeeded = buyTicketIfNeeded
+                ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
+                    eventScheduleId,
+                    out var scheduleRow)
+                    ? scheduleRow.GetDungeonTicketCost(
+                            numberOfTicketPurchases,
+                            States.Instance.GoldBalanceState.Gold.Currency)
+                        .GetQuantityString(true)
+                    : "0"
+                : "0";
+
             var sentryTrace = Analyzer.Instance.Track(
                 "Unity/EventDungeonBattle",
                 new Dictionary<string, Value>()
@@ -309,22 +338,21 @@ namespace Nekoyume.Blockchain
                 ["EventScheduleId"] = eventScheduleId,
                 ["EventDungeonId"] = eventDungeonId,
                 ["EventDungeonStageId"] = eventDungeonStageId,
-                ["RemainingTickets"] =
-                    RxProps.EventDungeonTicketProgress.Value.currentTickets -
-                    Action.EventDungeonBattle.PlayCount,
+                ["RemainingTickets"] = remainingTickets,
                 ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
                 ["BuyTicketIfNeeded"] = buyTicketIfNeeded,
-                ["TicketCostIfNeeded"] = buyTicketIfNeeded
-                    ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
-                        eventScheduleId,
-                        out var scheduleRow)
-                        ? scheduleRow.GetDungeonTicketCost(
-                            numberOfTicketPurchases,
-                            States.Instance.GoldBalanceState.Gold.Currency)
-                            .GetQuantityString(true)
-                        : "0"
-                    : "0",
+                ["TicketCostIfNeeded"] = ticketCostIfNeeded,
             }, true);
+
+            var edbEvt = new AirbridgeEvent("EventDungeonBattle");
+            edbEvt.SetValue(eventDungeonStageId);
+            edbEvt.AddCustomAttribute("event-schedule-id", eventScheduleId);
+            edbEvt.AddCustomAttribute("event-dungeon-id", eventDungeonId);
+            edbEvt.AddCustomAttribute("remaining-tickets", remainingTickets);
+            edbEvt.AddCustomAttribute("number-of-ticket-purchases", numberOfTicketPurchases);
+            edbEvt.AddCustomAttribute("buy-ticket-if-needed", buyTicketIfNeeded);
+            edbEvt.AddCustomAttribute("ticket-cost-if-needed", ticketCostIfNeeded);
+            AirbridgeUnity.TrackEvent(edbEvt);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Guid>();
@@ -404,6 +432,12 @@ namespace Nekoyume.Blockchain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            var evt = new AirbridgeEvent("CombinationConsumable");
+            evt.SetValue(recipeInfo.RecipeId);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new CombinationConsumable
             {
                 recipeId = recipeInfo.RecipeId,
@@ -429,11 +463,12 @@ namespace Nekoyume.Blockchain
                 SubRecipeView.RecipeInfo recipeInfo,
                 int slotIndex)
         {
+            var subRecipeId = recipeInfo.SubRecipeId ?? 0;
             var trackValue = new Dictionary<string, Value>()
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["RecipeId"] = recipeInfo.RecipeId,
-                ["SubRecipeId"] = recipeInfo.SubRecipeId ?? 0,
+                ["SubRecipeId"] = subRecipeId,
             };
             var num = 1;
             foreach (var pair in recipeInfo.Materials)
@@ -446,6 +481,12 @@ namespace Nekoyume.Blockchain
                 "Unity/EventConsumableItemCrafts",
                 trackValue,
                 true);
+
+            var evt = new AirbridgeEvent("EventConsumableItemCrafts");
+            evt.SetValue(recipeInfo.RecipeId);
+            evt.AddCustomAttribute("event-schedule-id", eventScheduleId);
+            evt.AddCustomAttribute("sub-recipe-id", subRecipeId);
+            AirbridgeUnity.TrackEvent(evt);
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -550,6 +591,15 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("HackAndSlashSweep");
+            evt.SetValue(stageId);
+            evt.AddCustomAttribute("ap-stone-count", apStoneCount);
+            evt.AddCustomAttribute("play_count", playCount);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new HackAndSlashSweep
             {
@@ -593,6 +643,13 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = registerInfo.AvatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("RegisterProduct");
+            evt.SetValue((double)registerInfo.Price.RawValue);
+            evt.AddCustomAttribute("product-type", registerInfo.Type.ToString());
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             if (chargeAp)
             {
@@ -638,6 +695,12 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("CancelProductRegistration");
+            evt.SetValue(productInfo.Count);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             if (chargeAp)
             {
@@ -839,6 +902,11 @@ namespace Nekoyume.Blockchain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            var evt = new AirbridgeEvent("ItemEnhancement");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new ItemEnhancement
             {
                 itemId = baseEquipment.NonFungibleId,
@@ -879,6 +947,7 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
             var action = new RankingBattle
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
@@ -971,6 +1040,15 @@ namespace Nekoyume.Blockchain
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 }, true);
+
+            var evt = new AirbridgeEvent("BattleArena");
+            evt.SetValue(championshipId);
+            evt.AddCustomAttribute("round", round);
+            evt.AddCustomAttribute("enemy-avatar-address", enemyAvatarAddress.ToString());
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
@@ -1027,6 +1105,13 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("CombinationEquipment");
+            evt.SetValue(recipeInfo.RecipeId);
+            evt.AddCustomAttribute("pet-id", petId ?? default);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -1118,6 +1203,12 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("RapidCombination");
+            evt.SetValue(cost);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
 
             var action = new RapidCombination
             {
@@ -1238,6 +1329,13 @@ namespace Nekoyume.Blockchain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            var evt = new AirbridgeEvent("Grinding");
+            evt.SetValue(gainedCrystal);
+            evt.AddCustomAttribute("equipment-count", equipmentList.Count);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new Grinding
             {
                 AvatarAddress = avatarAddress,
@@ -1272,6 +1370,13 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = avatarAddress.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("UnlockEquipmentRecipe");
+            evt.SetValue((double)openCost);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new UnlockEquipmentRecipe
             {
                 AvatarAddress = avatarAddress,
@@ -1299,6 +1404,12 @@ namespace Nekoyume.Blockchain
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
 
+            var evt = new AirbridgeEvent("UnlockWorld");
+            evt.SetValue(cost);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new UnlockWorld
             {
                 AvatarAddress = avatarAddress,
@@ -1324,6 +1435,14 @@ namespace Nekoyume.Blockchain
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             }, true);
+
+            var evt = new AirbridgeEvent("HackAndSlashRandomBuff");
+            evt.SetValue(burntCrystal);
+            evt.AddCustomAttribute("is-advanced", advanced);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             var action = new HackAndSlashRandomBuff
@@ -1482,6 +1601,14 @@ namespace Nekoyume.Blockchain
                 ["TargetLevel"] = targetLevel,
                 ["PetId"] = petId,
             }, true);
+
+            var evt = new AirbridgeEvent("PetEnhancement");
+            evt.SetValue(targetLevel);
+            evt.AddCustomAttribute("pet-id", petId);
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             var action = new PetEnhancement
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
