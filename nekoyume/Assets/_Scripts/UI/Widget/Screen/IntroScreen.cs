@@ -480,7 +480,8 @@ namespace Nekoyume.UI
                     var loginSystem = Find<LoginSystem>();
                     var legacyKeystore = loginSystem.KeyStore;
                     var legacyKeyList = legacyKeystore.List()
-                        .Where(tuple => !tuple.Item2.Address.Equals(requiredAddress));
+                        .Where(tuple => !tuple.Item2.Address.Equals(requiredAddress))
+                        .ToList();
                     var backupKeystore = new Web3KeyStore(Platform.PersistentDataPath + "/backup_keystore");
                     foreach (var tuple in legacyKeyList)
                     {
