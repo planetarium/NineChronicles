@@ -1692,16 +1692,17 @@ namespace Nekoyume.Game
                               $"\n Social Account: {email}" +
                               $"\n Agent Address: {agentAddrInPortal}";
                     Debug.LogError(msg);
-                    planetContext.Error = msg;
-                    callback?.Invoke(false);
-                    yield break;
+                    // NOTE: QR code import sets loginSystem.Login to true.
+                    introScreen.ShowForQrCodeGuide();
                 }
-
-                Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
-                Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
-                          " w/ planetContext.SelectedPlanetInfo.ID.");
-                planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
-                    e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
+                else
+                {
+                    Debug.Log("[Game] CoLogin()... Player have to make a pledge.");
+                    Debug.Log("[Game] CoLogin()... Set planetContext.SelectedPlanetAccountInfo" +
+                              " w/ planetContext.SelectedPlanetInfo.ID.");
+                    planetContext.SelectedPlanetAccountInfo = planetContext.PlanetAccountInfos!.First(e =>
+                        e.PlanetId.Equals(planetContext.SelectedPlanetInfo!.ID));
+                }
             }
 
             Debug.Log("[Game] CoLogin()... WaitUntil loginPopup.Login.");
