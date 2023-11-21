@@ -1501,7 +1501,7 @@ namespace Nekoyume.Game
                           " LoginSystem.TryLoginWithLocalPpk() is true.");
                 var pk = loginSystem.GetPrivateKey();
 
-                // NOTE: Check PlanetContext.NeedToTryAutoLogin.
+                // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
                 if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
