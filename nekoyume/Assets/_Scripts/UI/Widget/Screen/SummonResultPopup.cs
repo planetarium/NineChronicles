@@ -40,6 +40,8 @@ namespace Nekoyume.UI
         private bool _isGreat;
         private Coroutine _coroutine;
         private string _previousMusicName;
+        private System.Action _completeCallback;
+
         private readonly List<IDisposable> _disposables = new();
         private static readonly WaitForSeconds ItemViewAnimInterval = new(0.1f);
         private static readonly WaitForSeconds DefaultAnimInterval = new(1f);
@@ -69,6 +71,7 @@ namespace Nekoyume.UI
 
                 videoPlayer.Stop();
                 videoPlayer.gameObject.SetActive(false);
+                skipButton.gameObject.SetActive(false);
                 StartCoroutine(PlayResultAnimation(_isGreat));
             });
 
@@ -79,9 +82,11 @@ namespace Nekoyume.UI
             SummonSheet.Row summonRow,
             int summonCount,
             List<Equipment> resultList,
+            System.Action completeCallback = null,
             bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            _completeCallback = completeCallback;
 
             animator.SetTrigger(AnimatorHashHide);
 
@@ -151,6 +156,7 @@ namespace Nekoyume.UI
             videoPlayer.clip = currentVideoClip.summoning;
             videoPlayer.SetDirectAudioVolume(0, AudioListener.volume);
             videoPlayer.gameObject.SetActive(true);
+            skipButton.gameObject.SetActive(true);
             videoPlayer.Play();
 
             yield return new WaitUntil(() => videoPlayer.isPlaying);
@@ -172,6 +178,7 @@ namespace Nekoyume.UI
 
             videoPlayer.Stop();
             videoPlayer.gameObject.SetActive(false);
+            skipButton.gameObject.SetActive(false);
 
             yield return PlayResultAnimation(great);
         }
@@ -205,6 +212,9 @@ namespace Nekoyume.UI
             yield return null;
             audioController.PlayMusic(_previousMusicName);
             animator.SetTrigger(AnimatorHashShowButton);
+
+            _completeCallback?.Invoke();
+            _completeCallback = null;
         }
     }
 }

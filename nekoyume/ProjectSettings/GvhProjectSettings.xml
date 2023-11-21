@@ -1,26 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <projectSettings>
-  <projectSetting name="com.google.external-dependency-managerAnalyticsCookie" value="be9843fedfc24f5ea402a30c8b441010" />
-  <projectSetting name="com.google.external-dependency-managerAnalyticsEnabled" value="True" />
-  <projectSetting name="com.google.firebaseAnalyticsCookie" value="5b8cf0d7f2c94402bcee200d04642413" />
-  <projectSetting name="com.google.firebaseAnalyticsEnabled" value="True" />
   <projectSetting name="Google.IOSResolver.VerboseLoggingEnabled" value="False" />
   <projectSetting name="Google.PackageManagerResolver.VerboseLoggingEnabled" value="False" />
   <projectSetting name="Google.VersionHandler.VerboseLoggingEnabled" value="False" />
-  <projectSetting name="GooglePlayServices.AndroidPackageInstallationEnabled" value="True" />
-  <projectSetting name="GooglePlayServices.AutoResolutionDisabledWarning" value="True" />
-  <projectSetting name="GooglePlayServices.AutoResolveOnBuild" value="True" />
-  <projectSetting name="GooglePlayServices.AutoResolverEnabled" value="True" />
-  <projectSetting name="GooglePlayServices.ExplodeAars" value="True" />
-  <projectSetting name="GooglePlayServices.LocalMavenRepoDir" value="Assets/GeneratedLocalRepo" />
-  <projectSetting name="GooglePlayServices.PatchAndroidManifest" value="True" />
-  <projectSetting name="GooglePlayServices.PatchMainTemplateGradle" value="True" />
-  <projectSetting name="GooglePlayServices.PatchPropertiesTemplateGradle" value="True" />
-  <projectSetting name="GooglePlayServices.PatchSettingsTemplateGradle" value="True" />
   <projectSetting name="GooglePlayServices.PromptBeforeAutoResolution" value="False" />
-  <projectSetting name="GooglePlayServices.UseFullCustomMavenRepoPathWhenExport" value="True" />
-  <projectSetting name="GooglePlayServices.UseFullCustomMavenRepoPathWhenNotExport" value="False" />
-  <projectSetting name="GooglePlayServices.UseGradleDaemon" value="False" />
   <projectSetting name="GooglePlayServices.UseJetifier" value="True" />
-  <projectSetting name="GooglePlayServices.VerboseLogging" value="False" />
 </projectSettings>

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
-using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -98,34 +97,18 @@ namespace Nekoyume.UI.Module
                 });
             }
 
-            gradeFilter.AddOptions(new[]
-                {
-                    Grade.All,
-                    Grade.Normal,
-                    Grade.Rare,
-                    Grade.Epic,
-                    Grade.Unique,
-                    Grade.Legend,
-                }
-                .Select(type => type.ToString())
-                .ToList());
+            gradeFilter.AddOptions((
+                from grade in (Grade[])Enum.GetValues(typeof(Grade))
+                select L10nManager.Localize($"UI_ITEM_GRADE_{(int)grade}")).ToList());
 
             gradeFilter.onValueChanged.AsObservable()
                 .Select(index => (Grade)index)
                 .Subscribe(filter => _grade.Value = filter)
                 .AddTo(gameObject);
 
-            elementalFilter.AddOptions(new[]
-                {
-                    Elemental.All,
-                    Elemental.Normal,
-                    Elemental.Fire,
-                    Elemental.Water,
-                    Elemental.Land,
-                    Elemental.Wind,
-                }
-                .Select(type => type.ToString())
-                .ToList());
+            elementalFilter.AddOptions((
+                from elemental in Enum.GetNames(typeof(Elemental))
+                select L10nManager.Localize($"ELEMENTAL_TYPE_{elemental.ToUpper()}")).ToList());
 
             elementalFilter.onValueChanged.AsObservable()
                 .Select(index => (Elemental)index)
@@ -225,6 +208,11 @@ namespace Nekoyume.UI.Module
         public EnhancementInventoryItem GetEnabledItem(int index)
         {
             return GetModels().ElementAt(index);
+        }
+
+        public bool TryGetCellByIndex(int index, out EnhancementInventoryCell cell)
+        {
+            return scroll.TryGetCellByIndex(index, out cell);
         }
 
         private void OnClickItem(EnhancementInventoryItem item)

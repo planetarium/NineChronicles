@@ -65,9 +65,9 @@ namespace Nekoyume.UI
 
             try
             {
+                var categorySchemas = await GetCategorySchemas();
                 if (!_isInitailizedObj)
                 {
-                    var categorySchemas = await GetCategorySchemas();
 
                     if(categorySchemas.Count == 0)
                     {
@@ -82,7 +82,7 @@ namespace Nekoyume.UI
                             IconAndButtonSystem.SystemType.Information);
                     }
 
-                    var renderCategory = categorySchemas.Where(c => c.Active).OrderBy(c => c.Order);
+                    var renderCategory = categorySchemas.Where(c => c.Active && c.Name != "NoShow").OrderBy(c => c.Order);
                     foreach (var category in renderCategory)
                     {
                         var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
@@ -108,12 +108,12 @@ namespace Nekoyume.UI
                         var iapProductCellObjs = new List<IAPShopProductCellView>();
                         foreach (var product in productList)
                         {
-                            if (!_allProductObjs.TryGetValue(product.GoogleSku, out var productObj))
+                            if (!_allProductObjs.TryGetValue(product.Sku, out var productObj))
                             {
                                 productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
                                 productObj.SetData(product, category.Name == _recommendedString);
                                 await productObj.RefreshLocalized();
-                                _allProductObjs.Add(product.GoogleSku, productObj);
+                                _allProductObjs.Add(product.Sku, productObj);
                             }
                             iapProductCellObjs.Add(productObj);
                         }
@@ -125,6 +125,19 @@ namespace Nekoyume.UI
                             _recommendedToggle = categoryTabObj;
                     }
                     _isInitailizedObj = true;
+                }
+                else
+                {
+                    foreach (var category in categorySchemas)
+                    {
+                        foreach (var item in category.ProductList)
+                        {
+                            if (_allProductObjs.TryGetValue(item.Sku,out var cellView))
+                            {
+                                cellView.SetData(item, category.Name == _recommendedString);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -156,15 +169,17 @@ namespace Nekoyume.UI
             loading.Close();
         }
 
-        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        public static async Task LoadL10Ns()
         {
             MOBILE_L10N_SCHEMA = await Game.Game.instance.IAPServiceManager.L10NAsync();
-
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Category}");
             await L10nManager.AdditionalL10nTableDownload($"{MOBILE_L10N_SCHEMA.Host}/{MOBILE_L10N_SCHEMA.Product}");
+        }
 
+        public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
+        {
             var categorySchemas = await Game.Game.instance.IAPServiceManager
-                .GetProductsAsync(States.Instance.AgentState.address);
+                .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
             return categorySchemas;
         }
 
@@ -199,6 +214,17 @@ namespace Nekoyume.UI
                     item.gameObject.SetActive(true);
             }
             iAPShopDynamicGridLayout.Refresh();
+        }
+
+        public static string GetPrice(string isoCurrencyCode, decimal price)
+        {
+            switch (isoCurrencyCode)
+            {
+                case "KRW":
+                    return $"₩{price:N0}";
+                default:
+                    return $"{isoCurrencyCode} {price:N2}";
+            }
         }
     }
 }

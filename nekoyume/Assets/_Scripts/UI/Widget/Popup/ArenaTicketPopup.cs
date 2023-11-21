@@ -55,8 +55,8 @@ namespace Nekoyume.UI
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticketCount = RxProps.PlayersArenaParticipant.HasValue
-                ? RxProps.PlayersArenaParticipant.Value.CurrentArenaInfo.GetTicketCount(
+            var ticketCount = RxProps.ArenaInfoTuple.HasValue
+                ? RxProps.ArenaInfoTuple.Value.current.GetTicketCount(
                     blockIndex,
                     currentRound.StartBlockIndex,
                     States.Instance.GameConfigState.DailyArenaInterval)

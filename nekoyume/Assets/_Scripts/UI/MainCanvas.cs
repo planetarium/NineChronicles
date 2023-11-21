@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Game;
 using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -74,7 +75,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CanvasLayer developmentLayer = default;
-
 
 
         private List<CanvasLayer> _layers;
@@ -204,6 +204,55 @@ namespace Nekoyume.UI
 
         public IEnumerator CreateSecondWidgets()
         {
+#if UNITY_ANDROID || UNITY_IOS
+            _secondWidgets.Add(Widget.Create<Login>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Menu>());
+            yield return null;
+            
+            _secondWidgets.Add(Widget.Create<MobileShop>());
+            yield return null;
+            
+            _secondWidgets.Add(Widget.Create<WorldMap>());
+            yield return null;
+
+            _secondWidgets.Add(Widget.Create<BattlePreparation>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RaidPreparation>());
+            yield return null;
+
+            // module
+            _secondWidgets.Add(Widget.Create<Craft>());
+            _secondWidgets.Add(Widget.Create<Grind>());
+            yield return null;
+
+            // header menu
+            _secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
+            // Popup included in header menu
+            _secondWidgets.Add(Widget.Create<MailPopup>());
+            _secondWidgets.Add(Widget.Create<QuestPopup>());
+            _secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
+            _secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
+            _secondWidgets.Add(Widget.Create<RankPopup>());
+            _secondWidgets.Add(Widget.Create<ChatPopup>());
+            _secondWidgets.Add(Widget.Create<QuitSystem>());
+            _secondWidgets.Add(Widget.Create<BuffBonusPopup>());
+            yield return null;
+            
+            _secondWidgets.Add(Widget.Create<SweepPopup>());
+            yield return null;
+
+            // tooltip
+            _secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
+            yield return null;
+
+            _secondWidgets.Add(Widget.Create<Tutorial>());
+            yield return null;
+#else
             // Agent 초기화가 필요없는 widget
             _secondWidgets.Add(Widget.Create<BuffBonusLoadingScreen>());
             yield return null;
@@ -249,25 +298,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
 
-#if UNITY_ANDROID
-            _secondWidgets.Add(Widget.Create<MobileShop>());
-            yield return null;
-            Task.Run(async () =>
-            {
-                var categorySchemas = await MobileShop.GetCategorySchemas();
-                foreach (var category in categorySchemas)
-                {
-                    await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{category.Path}");
-
-                    foreach (var product in category.ProductList)
-                    {
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.BgPath}");
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{product.Path}");
-                        await Util.DownloadTextureRaw($"{MobileShop.MOBILE_L10N_SCHEMA.Host}/{L10nManager.Localize(product.PopupPathKey)}");
-                    }
-                }
-            });
-#endif
             _secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopBuy>());
@@ -294,7 +324,11 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<PatrolRewardPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPassNewPopup>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<EventReleaseNotePopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPass>());
             yield return null;
 
             // loading
@@ -409,6 +443,10 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<ShopListPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<SeasonPassPremiumPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<InviteFriendsPopup>());
+            yield return null;
 
             // tooltip
             _secondWidgets.Add(Widget.Create<EquipmentTooltip>());
@@ -426,6 +464,7 @@ namespace Nekoyume.UI
             // tutorial
             _secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
+#endif
         }
 
         public IEnumerator InitializeSecondWidgets()
@@ -466,6 +505,32 @@ namespace Nekoyume.UI
                     widget.Close();
                 }
             }
+        }
+
+        // DevCra - iOS Memory Optimization
+        public T AddWidget<T>() where T : Widget
+        {
+            var widget = Widget.Create<T>();
+            _secondWidgets.Add(widget);
+            widget.Initialize();
+            Game.Game.instance.Stage.TutorialController?.RegisterWidget(widget);
+            return widget;
+        }
+
+        // DevCra - iOS Memory Optimization
+        public bool RemoveWidget<T>(T widget) where T : Widget
+        {
+            if (Widget.TryFind<T>(out var found))
+            {
+                if (found == widget)
+                {
+                    _secondWidgets.Remove(widget);
+                    Game.Game.instance.Stage.TutorialController?.UnregisterWidget(widget);
+                    return Widget.Remove(widget);
+                }
+            }
+
+            return false;
         }
     }
 }

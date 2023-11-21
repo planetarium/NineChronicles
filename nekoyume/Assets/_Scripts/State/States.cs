@@ -761,8 +761,10 @@ namespace Nekoyume.State
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                     await SetPetStates(avatarState.address);
-                    await Widget.Find<PatrolRewardPopup>().InitializePatrolReward();
                 });
+
+                Widget.Find<PatrolRewardPopup>().InitializePatrolReward().AsUniTask().Forget();
+                Game.Game.instance.SeasonPassServiceManager.AvatarStateRefreshAsync().AsUniTask().Forget();
             }
 
             return CurrentAvatarState;

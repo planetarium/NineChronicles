@@ -82,9 +82,10 @@ ZIP = {
 }
 
 
-def cleanup_debug_dir(build_result_dir: str):
+def cleanup_debug_dir(build_result_dir: str, isMobile: bool):
+    build_name = "Nine Chronicles M" if isMobile else "NineChronicles" 
     shutil.rmtree(os.path.join(build_result_dir,
-                  "NineChronicles_BurstDebugInformation_DoNotShip"))
+                  f"{build_name}_BurstDebugInformation_DoNotShip"))
 
     if len(os.listdir(build_result_dir)) == 0:
         raise Exception("Build result is empty")
@@ -101,7 +102,7 @@ def main() -> None:
         args.platform
     )
 
-    cleanup_debug_dir(build_result_dir)
+    cleanup_debug_dir(build_result_dir, args.platform == "Android")
 
     try:
         ZIP[args.platform](build_result_dir, args.out_dir)

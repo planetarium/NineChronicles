@@ -1,18 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &5190888786674778035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3922463978809685081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9397da7710ed42e0bb65b0220056cefc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseItemView: {fileID: 3349577261423438029}
 --- !u!1001 &5275725921768098935
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -60,6 +47,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1855059774757318264, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1860317848362183433, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -99,6 +91,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3627254525406549401, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5944770851589072421, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_text
+      value: Enchant item
+      objectReference: {fileID: 0}
+    - target: {fileID: 5944770851589072421, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 13.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 5944770851589072421, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 5944770851589072421, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6743525758386440914, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 54
+      objectReference: {fileID: 0}
+    - target: {fileID: 6743525758386440914, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 54
       objectReference: {fileID: 0}
     - target: {fileID: 7984668241941466872, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
@@ -232,12 +259,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd7a738610a297e41bd57e2eebf6fe64, type: 3}
---- !u!1 &3922463978809685081 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9176155653163038766, guid: fd7a738610a297e41bd57e2eebf6fe64,
-    type: 3}
-  m_PrefabInstance: {fileID: 5275725921768098935}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3349577261423438029 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7443097800403870906, guid: fd7a738610a297e41bd57e2eebf6fe64,
@@ -250,3 +271,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40fcf8383091bc5408284e882ab64823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3370186824110105058 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7490167643023224213, guid: fd7a738610a297e41bd57e2eebf6fe64,
+    type: 3}
+  m_PrefabInstance: {fileID: 5275725921768098935}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1596523522104253573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3370186824110105058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 2
+  l10nKey: UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
+--- !u!1 &3922463978809685081 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9176155653163038766, guid: fd7a738610a297e41bd57e2eebf6fe64,
+    type: 3}
+  m_PrefabInstance: {fileID: 5275725921768098935}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5190888786674778035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3922463978809685081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9397da7710ed42e0bb65b0220056cefc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseItemView: {fileID: 3349577261423438029}

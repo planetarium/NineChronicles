@@ -195,15 +195,34 @@ namespace Nekoyume.UI.Module
                     case ToggleType.InviteFriend:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+#if UNITY_EDITOR || UNITY_ANDROID || UNITY_IOS
+                            var widget = Find<InviteFriendsPopup>();
+                            if (value)
+                            {
+                                var stage = Game.instance.Stage;
+                                if (!Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
+                                {
+                                    widget.Show(() => { toggleInfo.Toggle.isOn = false; });
+                                }
+                            }
+                            else
+                            {
+                                if (widget.isActiveAndEnabled)
+                                {
+                                    widget.Close(true);
+                                }
+                            }
+#else
+                            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
                             toggleInfo.Toggle.isOn = false;
+#endif
                         });
                         break;
                     case ToggleType.PortalReward:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
                                 var stage = Game.instance.Stage;
@@ -231,7 +250,7 @@ namespace Nekoyume.UI.Module
                     case ToggleType.Quit:
                         toggleInfo.Toggle.onValueChanged.AddListener((value) =>
                         {
-                            var confirm = Widget.Find<TitleOneButtonSystem>();
+                            var confirm = Find<TitleOneButtonSystem>();
                             if (value)
                             {
                                 var stage = Game.instance.Stage;

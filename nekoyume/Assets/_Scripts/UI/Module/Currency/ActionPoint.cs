@@ -245,6 +245,10 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage) &&
                 IsRemained)
             {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", requiredStage),
+                    NotificationCell.NotificationType.UnlockCondition);
                 return;
             }
 

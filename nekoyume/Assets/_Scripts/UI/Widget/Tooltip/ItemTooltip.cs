@@ -6,10 +6,13 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -77,6 +80,16 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             enhancementButton.onClick.AddListener(() =>
             {
+                const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Enhancement;
+                if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", requiredStage),
+                        NotificationCell.NotificationType.UnlockCondition);
+                    return;
+                }
+
                 _onEnhancement?.Invoke();
                 Close(true);
             });

@@ -36,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 19.8, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -65, y: 0}
+  m_SizeDelta: {x: 70, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1840586465201766619
 CanvasRenderer:
@@ -101,7 +101,7 @@ MonoBehaviour:
   m_fontSizeMin: 8
   m_fontSizeMax: 24
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1770,6 +1770,7 @@ GameObject:
   - component: {fileID: 1350166460297700263}
   - component: {fileID: 2990519548389006516}
   - component: {fileID: 4275896620102481988}
+  - component: {fileID: 1831119138937386279}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -1818,7 +1819,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1835,6 +1836,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1831119138937386279
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2868359013891912743}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2877418277248395129
 GameObject:
   m_ObjectHideFlags: 0
@@ -3071,7 +3084,6 @@ MonoBehaviour:
   skipButton: {fileID: 6854950839080009778}
   scripts:
   - image: {fileID: 4003993837381536622}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: 814a7f6d76cc33a469d003cf95c420e8, type: 3}
     imageAnmationType: 0
@@ -3084,7 +3096,6 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 1.5
   - image: {fileID: 4585832633440657597}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: 720b6871a2e6c63408f55709c1b3c93a, type: 3}
     imageAnmationType: 0
@@ -3097,7 +3108,6 @@ MonoBehaviour:
     scriptsAnimationTime: 1.5
     scriptsEndTerm: 1.5
   - image: {fileID: 3134668504416828593}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: 814a7f6d76cc33a469d003cf95c420e8, type: 3}
     imageAnmationType: 0
@@ -3110,7 +3120,6 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 1.5
   - image: {fileID: 1185880680634181455}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: f98f8a13a6151fa4987281a8869bffa0, type: 3}
     imageAnmationType: 0
@@ -3123,7 +3132,6 @@ MonoBehaviour:
     scriptsAnimationTime: 1
     scriptsEndTerm: 1.8
   - image: {fileID: 7941417804623930047}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: 6a400ffe013eba14d8b0f4e6dbc38eba, type: 3}
     imageAnmationType: 0
@@ -3136,7 +3144,6 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   - image: {fileID: 7941417804623930047}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: 6a400ffe013eba14d8b0f4e6dbc38eba, type: 3}
     imageAnmationType: 0
@@ -3149,7 +3156,6 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 1.5
   - image: {fileID: 1618955859485881184}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: ec60c7b624e3e40468651d68e3a9565c, type: 3}
     imageAnmationType: 0
@@ -3162,7 +3168,6 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   - image: {fileID: 8145936510238979843}
-    hasSkeletonAnimation: 0
     canvasGroup: {fileID: 0}
     sprite: {fileID: 21300000, guid: e9d7a0aee38b5ab4ca4c5f135630aa93, type: 3}
     imageAnmationType: 0
@@ -3175,8 +3180,7 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   - image: {fileID: 4275896620102481988}
-    hasSkeletonAnimation: 1
-    canvasGroup: {fileID: 8219494755231455637}
+    canvasGroup: {fileID: 1831119138937386279}
     sprite: {fileID: 0}
     imageAnmationType: 0
     imageAnimationTime: 1.5
@@ -3732,8 +3736,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 19.799995, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -65, y: 0}
+  m_SizeDelta: {x: 70, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7029243346523185477
 CanvasRenderer:
@@ -3797,7 +3801,7 @@ MonoBehaviour:
   m_fontSizeMin: 8
   m_fontSizeMax: 24
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 4
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -6209,22 +6213,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_Avatar
       objectReference: {fileID: 0}
-    - target: {fileID: 3387903653432672788, guid: 376898b195baa3a47b03b6afb7513836,
-        type: 3}
-      propertyPath: m_Alpha
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 376898b195baa3a47b03b6afb7513836, type: 3}
 --- !u!224 &5790839683328382172 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 957279357101772637, guid: 376898b195baa3a47b03b6afb7513836,
-    type: 3}
-  m_PrefabInstance: {fileID: 6707481084090358657}
-  m_PrefabAsset: {fileID: 0}
---- !u!225 &8219494755231455637 stripped
-CanvasGroup:
-  m_CorrespondingSourceObject: {fileID: 3387903653432672788, guid: 376898b195baa3a47b03b6afb7513836,
     type: 3}
   m_PrefabInstance: {fileID: 6707481084090358657}
   m_PrefabAsset: {fileID: 0}

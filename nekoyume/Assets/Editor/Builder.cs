@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+using AppleAuth.Editor;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -19,7 +20,11 @@ namespace Editor
     [ExecuteInEditMode]
     public class Builder
     {
+#if UNITY_ANDROID || UNITY_IOS
+        private static string PlayerName = "Nine Chronicles M";
+#else
         private static readonly string PlayerName = PlayerSettings.productName;
+#endif
         private const string BuildBasePath = "build";
 
         [MenuItem("Build/Standalone/Android Arm64")]
@@ -234,7 +239,9 @@ namespace Editor
             bool useDevExtension = false)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
-
+#if UNITY_ANDROID || UNITY_IOS
+            PlayerSettings.productName = PlayerName;
+#endif
 
             // This code snippets from: https://github.com/game-ci/documentation/blob/main/example/BuildScript.cs
             var cliOptions = new Dictionary<string, string>();
@@ -454,6 +461,10 @@ namespace Editor
                 "ENABLE_BITCODE",
                 "NO");
 
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
+            // libz.tbd for grpc ios build
+            pbxProject.AddFrameworkToProject(targetGuid, "libz.tbd", false);
+
             // Remove static frameworks at "UnityFramework".
             foreach (var framework in new []{"rocksdb.framework", "secp256k1.framework"})
             {
@@ -462,14 +473,50 @@ namespace Editor
                 pbxProject.RemoveFileFromBuild(unityFrameworkTargetGuid, frameworkGuid);
             }
 
+            // xcode 15 error
+            pbxProject.AddBuildProperty(unityFrameworkTargetGuid, "OTHER_LDFLAGS", "-ld64");
+
             // Re-Write project file.
             pbxProject.WriteToFile(pbxProjectPath);
+
+            var manager = new ProjectCapabilityManager(pbxProjectPath, "Entitlements.entitlements", null, pbxProject.GetUnityMainTargetGuid());
+            manager.AddSignInWithAppleWithCompatibility(pbxProject.GetUnityFrameworkTargetGuid());
+            manager.AddPushNotifications(true);
+            manager.WriteToFile();
+
+            // set plist path
+            var plistPath = Path.Combine(buildPath, "info.plist");
+
+            // read plist
+            Dictionary<string, object> dict;
+            dict = (Dictionary<string, object>)Plist.readPlist(plistPath);
+
+            // update plist
+            dict["CFBundleURLTypes"] = new List<object>
+            {
+                new Dictionary<string, object>
+                {
+                    {
+                        "CFBundleURLSchemes", new List<object>
+                        {
+                            "com.googleusercontent.apps.449111430622-14152cpabg35n1squ7bq180rjptnmcvs",
+                            "ninechroniclesmobile",
+                        }
+                    }
+                }
+            };
+
+            dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
+
+            // write plist
+            Plist.writeXml(dict, plistPath);
         }
 #endif
 
         private static void PreProcessBuildForIOS()
         {
             string identifier = "com." + PlayerSettings.companyName + '.' + PlayerSettings.productName;
+            identifier = "com.planetariumlabs.ninechroniclesmobile";
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, identifier);
             PlayerSettings.SetAdditionalIl2CppArgs("--maximum-recursive-generic-depth=30");
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneAndiPad;

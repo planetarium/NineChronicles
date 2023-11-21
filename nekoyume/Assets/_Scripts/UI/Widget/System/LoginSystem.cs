@@ -1,3 +1,11 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+#if !UNITY_EDITOR && UNITY_STANDALONE
+#define RUN_ON_STANDALONE
+#endif
+
 using System;
 using System.IO;
 using System.Linq;
@@ -45,7 +53,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public GameObject bg;
         public GameObject header;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
@@ -94,7 +101,6 @@ namespace Nekoyume.UI
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
-        private CapturedImage _capturedImage;
 
         public override bool CanHandleInputEvent => false;
 
@@ -111,7 +117,6 @@ namespace Nekoyume.UI
                 KeyStore = Web3KeyStore.DefaultKeyStore;
             }
 
-            _capturedImage = GetComponentInChildren<CapturedImage>();
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -134,6 +139,7 @@ namespace Nekoyume.UI
 
         private void SubscribeState(States states)
         {
+            Debug.Log($"[LoginSystem] SubscribeState: {states}");
             titleText.gameObject.SetActive(true);
             contentText.gameObject.SetActive(false);
 
@@ -166,7 +172,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     accountAddressHolder.gameObject.SetActive(true);
                     submitButton.Text = L10nManager.Localize("UI_GAME_SIGN_UP");
-                    bg.SetActive(false);
                     break;
                 case States.SetPassword:
                     titleText.text = L10nManager.Localize("UI_SET_PASSWORD_TITLE");
@@ -198,7 +203,6 @@ namespace Nekoyume.UI
                     findPassphraseButton.gameObject.SetActive(true);
                     loginField.Select();
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.Login_Mobile:
                     header.SetActive(false);
@@ -208,7 +212,6 @@ namespace Nekoyume.UI
                     accountGroup.SetActive(true);
                     findPassphraseButton.gameObject.SetActive(true);
                     accountAddressText.gameObject.SetActive(true);
-                    bg.SetActive(true);
                     break;
                 case States.FindPassphrase:
                     titleText.gameObject.SetActive(false);
@@ -268,10 +271,12 @@ namespace Nekoyume.UI
             retypeText.gameObject.SetActive(!valid);
         }
 
-        public bool CheckLocalPassphrase()
+        public bool TryLoginWithLocalPpk()
         {
+            Debug.Log("[LoginSystem] TryLoginWithLocalPpk invoked");
             if (Platform.IsMobilePlatform())
             {
+                Debug.Log("[LoginSystem] platform is mobile");
                 try
                 {
                     var passPhrase = GetPassPhrase(KeyStore
@@ -282,18 +287,22 @@ namespace Nekoyume.UI
                     if (_privateKey != null)
                     {
                         Login = true;
+                        Debug.Log("[LoginSystem] TryLoginWithLocalPpk success");
                         return true;
                     }
+
+                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. _privateKey is null");
                 }
                 catch
                 {
+                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. exception");
                     return false;
                 }
             }
 
+            Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. platform is not mobile");
             return false;
         }
-
 
         public static string GetPassPhrase(string address)
         {
@@ -308,13 +317,14 @@ namespace Nekoyume.UI
                    passPhrase == retyped;
         }
 
-        private void SetPassPhrase(string address, string passPhrase)
+        private static void SetPassPhrase(string address, string passPhrase)
         {
             PlayerPrefs.SetString($"LOCAL_PASSPHRASE_{address}", Util.AesEncrypt(passPhrase));
         }
 
         private void CheckLogin(System.Action success)
         {
+            Debug.Log($"[LoginSystem] CheckLogin invoked");
             try
             {
                 _privateKey = CheckPrivateKey(KeyStore, loginField.text);
@@ -328,8 +338,11 @@ namespace Nekoyume.UI
             var login = _privateKey is not null;
             if (login)
             {
+                Debug.Log($"[LoginSystem] CheckLogin... success");
                 if (Platform.IsMobilePlatform())
                 {
+                    Debug.Log($"[LoginSystem] CheckLogin... set pass phrase because platform is mobile" +
+                              $" {loginField.text}");
                     SetPassPhrase(_privateKey.ToAddress().ToString(), loginField.text);
                 }
 
@@ -344,6 +357,8 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
+            Debug.Log($"[LoginSystem] Submit invoked: submittable({submitButton.IsSubmittable})" +
+                      $", {State.Value}");
             if (!submitButton.IsSubmittable)
             {
                 return;
@@ -407,7 +422,7 @@ namespace Nekoyume.UI
                     });
                     break;
                 case States.ConnectedAddress_Mobile:
-                    Find<IntroScreen>().Show();
+                    Find<IntroScreen>().ShowForQrCodeGuide();
                     Close();
                     break;
                 default:
@@ -427,21 +442,19 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
+            // WARNING: Do not log privateKeyString.
+            Debug.Log($"[LoginSystem] Show invoked: path({path})" +
+                      $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
-
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
 
             if (Platform.IsMobilePlatform())
             {
-                string dataPath = Platform.GetPersistentDataPath("keystore");
-                KeyStore = path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
+                var dataPath = Platform.GetPersistentDataPath("keystore");
+                KeyStore ??= path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
             }
             else
             {
-                KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
+                KeyStore ??= path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             }
 
             _privateKeyString = privateKeyString;
@@ -455,7 +468,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-#if UNITY_ANDROID
+#if RUN_ON_MOBILE
             Login = false;
 
             // 해당 함수를 호출했을 때에 유효한 Keystore가 있는 것을 기대하고 있음
@@ -508,6 +521,7 @@ namespace Nekoyume.UI
         // Keystore 가 없을 때에만 가능해야 함
         public void Show(Address? connectedAddress)
         {
+            Debug.Log($"[LoginSystem] Show invoked: connectedAddress({connectedAddress})");
             // accountExist
             if (connectedAddress.HasValue)
             {
@@ -531,11 +545,8 @@ namespace Nekoyume.UI
 
         public void ShowResetPassword()
         {
+            Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
-            if (_capturedImage != null)
-            {
-                _capturedImage.Show();
-            }
 
             SetState(States.SetPassword);
             base.Show();
@@ -587,12 +598,12 @@ namespace Nekoyume.UI
                 catch (IncorrectPassphraseException)
                 {
                     Debug.LogWarningFormat(
-                        "The key {0} cannot unprotected with a passphrase; failed to load",
+                        "[LoginSystem] The key {0} cannot unprotected with a passphrase; failed to load",
                         ppk.Address
                     );
                 }
 
-                Debug.LogFormat("The key {0} was successfully loaded", ppk.Address);
+                Debug.LogFormat("[LoginSystem] The key {0} was successfully loaded", ppk.Address);
                 break;
             }
 
@@ -677,6 +688,7 @@ namespace Nekoyume.UI
 
         private void ResetPassphrase()
         {
+            Debug.Log($"[LoginSystem] ResetPassphrase invoked");
             // 이름은 reset이라곤 하지만, 그냥 raw private key 가져오는 기능임.
             // FIXME: 전부터 이름 바꿔야 한다는 얘기가 줄곧 나왔음... ("reset passphrase"가 아니라 "import private key"로)
             var hex = findPassphraseField.text;

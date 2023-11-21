@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -121,6 +122,7 @@ namespace Nekoyume.Blockchain
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Debug.Log($"[Agent] Start initialization");
             if (disposed)
             {
                 Debug.Log("Agent Exist");
@@ -128,6 +130,7 @@ namespace Nekoyume.Blockchain
             }
 
             InitAgentAsync(callback, privateKey, options);
+            Debug.Log($"[Agent] Finish initialization");
         }
 
         private async Task InitAsync(
@@ -335,6 +338,18 @@ namespace Nekoyume.Blockchain
             foreach (var address in addressList)
             {
                 var result = await await Task.FromResult(GetStateAsync(address, stateRootHash));
+                dict[address] = result;
+            }
+
+            return dict;
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetSheetsAsync(IEnumerable<Address> addressList)
+        {
+            var dict = new Dictionary<Address, IValue>();
+            foreach (var address in addressList)
+            {
+                var result = await await Task.FromResult(GetStateAsync(address));
                 dict[address] = result;
             }
 
@@ -831,7 +846,7 @@ namespace Nekoyume.Blockchain
             Transaction tx = blocks.MakeTransaction(
                 privateKey: PrivateKey,
                 actions: actions,
-                updatedAddresses: actions.CalculateUpdateAddresses()
+                updatedAddresses: ImmutableHashSet<Address>.Empty
             );
             _onMakeTransactionSubject.OnNext((tx, actions));
 

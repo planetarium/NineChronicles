@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.LiveAsset;
+using Nekoyume.UI.Module.Common;
 
 namespace Nekoyume.UI.Module
 {
@@ -57,6 +58,16 @@ namespace Nekoyume.UI.Module
             }
 
             pageView.Set(content, indexImages);
+            GetComponent<NotchAdjuster>()?.RefreshNotchByScreenState();
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+
+#if UNITY_ANDROID || UNITY_IOS
+            this.transform.SetSiblingIndex(Widget.Find<Menu>().transform.GetSiblingIndex()+1);
+#endif
         }
     }
 }

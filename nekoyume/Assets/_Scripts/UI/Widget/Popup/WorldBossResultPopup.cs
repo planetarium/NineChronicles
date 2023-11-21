@@ -31,6 +31,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject _practiceText;
 
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
+
         private GameObject _gradeObject;
 
         private List<FungibleAssetValue> _killRewards;
@@ -91,6 +97,8 @@ namespace Nekoyume.UI
                     }
                 }
             }
+
+            RefreshSeasonPassCourageAmount();
         }
 
         public void ShowAsPractice(int bossId, int score)
@@ -121,6 +129,11 @@ namespace Nekoyume.UI
                     _gradeObject.transform.localScale = Vector3.one;
                 }
             }
+
+            foreach (var item in seasonPassObjs)
+            {
+                item.SetActive(false);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -139,6 +152,25 @@ namespace Nekoyume.UI
             }
 
             base.Close(ignoreCloseAnimation);
+        }
+
+        private void RefreshSeasonPassCourageAmount()
+        {
+            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.WorldBossCourageAmount}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
     }
 }

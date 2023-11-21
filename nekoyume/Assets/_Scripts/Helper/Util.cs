@@ -40,6 +40,8 @@ namespace Nekoyume.Helper
         private static Dictionary<string, byte[]> CachedDownloadTexturesRaw =
             new Dictionary<string, byte[]>();
 
+        public const float GridScrollerAdjustCellCount = 20;
+
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
@@ -534,7 +536,7 @@ namespace Nekoyume.Helper
 
             if (CachedDownloadTexturesRaw.TryGetValue(url, out var cachedTextureRaw))
             {
-                var myTexture = new Texture2D(2, 2);
+                var myTexture = new Texture2D(0,0, TextureFormat.RGBA32, false);
                 myTexture.LoadImage(cachedTextureRaw);
                 var result = Sprite.Create(
                     myTexture,

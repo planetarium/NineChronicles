@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -13,6 +14,23 @@ namespace Nekoyume
     {
         public static async Task<string> GetCellContentAsync(this UnloadFromMyGaragesRecipientMail mail)
         {
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+            {
+                if(mail.Memo.Contains("\"t\": \"auto\""))
+                {
+                    return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS_ENDED");
+                }
+                else
+                {
+                    return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
+                }
+            }
+
             var game = Game.Game.instance;
             var iapServiceManager = game.IAPServiceManager;
             if (iapServiceManager is null)
@@ -21,82 +39,46 @@ namespace Nekoyume
                 return mail.GetCellContentsForException();
             }
 
-            var agentAddr = game.Agent.Address;
-
-            var categorys = await iapServiceManager.GetProductsAsync(agentAddr);
-            List<ProductSchema> products = new List<ProductSchema>();
-            foreach (var catagory in categorys)
+            if(Game.Game.instance.IAPStoreManager is null)
             {
-                products.AddRange(catagory.ProductList);
-            }
-
-            if (products is null)
-            {
-                Debug.Log("products is null.");
                 return mail.GetCellContentsForException();
             }
 
-            var product = products.FirstOrDefault(p =>
+            var agentAddr = game.Agent.Address;
+
+            ProductSchema product = null;
+            if (mail.Memo.Contains("iap"))
             {
-                if (p.FavList.Any())
-                {
-                    if (mail.FungibleAssetValues is null)
-                    {
-                        return false;
-                    }
+                product = GetProductFromMemo(mail.Memo);
+            }
 
-                    // NOTE: Here we compare `prodFav.Amount` to `mailFavTuple.value.MajorUnit`.
-                    //       Because the type of `prodFav.Amount` is `int`. When the type of
-                    //       `prodFav.Amount` to be `decimal` or, `prodFav` provides `MajorUnit`
-                    //       and `MinorUnit`, we should change this code.
-                    if (!mail.FungibleAssetValues.All(mFavTup =>
-                            p.FavList.Any(prodFav =>
-                                prodFav.Ticker.ToString() == mFavTup.value.Currency.Ticker &&
-                                prodFav.Amount == (decimal)mFavTup.value.MajorUnit)))
-                    {
-                        return false;
-                    }
-                }
-
-                if (p.FungibleItemList.Any())
-                {
-                    if (mail.FungibleIdAndCounts is null)
-                    {
-                        return false;
-                    }
-
-                    if (!mail.FungibleIdAndCounts.All(mFItemTup =>
-                            p.FungibleItemList.Any(prodFItem =>
-                                prodFItem.FungibleItemId == mFItemTup.fungibleId.ToString() &&
-                                prodFItem.Amount == mFItemTup.count)))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
             if (product is null)
             {
                 return mail.GetCellContentsForException();
             }
 
-            var iapStoreManager = game.IAPStoreManager;
-            if (iapStoreManager is null)
-            {
-                return mail.GetCellContentsForException();
-            }
-
-            var storeProduct = iapStoreManager.IAPProducts.FirstOrDefault(p =>
-                p.definition.id == product.GoogleSku);
-            if (storeProduct is null)
-            {
-                return mail.GetCellContentsForException();
-            }
+            var productName = L10nManager.Localize(product.L10n_Key);
 
             var format = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_FORMAT");
-            return string.Format(format, storeProduct.metadata.localizedTitle);
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
+            return string.Format(format, productName);
+        }
+
+        public static ProductSchema GetProductFromMemo(string memo)
+        {
+            ProductSchema product = null;
+#if UNITY_IOS
+                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+            Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+            Match gSkuMatch = gSkuRegex.Match(memo);
+            if (gSkuMatch.Success)
+            {
+                product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+            }
+
+            return product;
         }
 
         private static string GetCellContentsForException(
@@ -108,6 +90,81 @@ namespace Nekoyume
                 exceptionFormat,
                 mail.FungibleAssetValues?.Count() ?? 0,
                 mail.FungibleIdAndCounts?.Count() ?? 0);
+        }
+
+        public static async Task<string> GetCellContentAsync(this ClaimItemsMail mail)
+        {
+            if (mail.Memo is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+            {
+                if (mail.Memo.Contains("\"t\": \"auto\""))
+                {
+                    return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS_ENDED");
+                }
+
+                return L10nManager.Localize("MAIL_UNLOAD_FROM_MY_GARAGES_SEASON_PASS");
+            }
+
+            if (mail.Memo != null && mail.Memo.Contains("patrol"))
+            {
+                return L10nManager.Localize("NOTIFICATION_PATROL_REWARD_CLAIMED");
+            }
+
+            var game = Game.Game.instance;
+            var iapServiceManager = game.IAPServiceManager;
+            if (iapServiceManager is null)
+            {
+                Debug.Log($"{nameof(IAPServiceManager)} is null.");
+                return mail.GetCellContentsForException();
+            }
+
+            if (Game.Game.instance.IAPStoreManager is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            var agentAddr = game.Agent.Address;
+
+            ProductSchema product = null;
+            if (mail.Memo.Contains("iap"))
+            {
+#if UNITY_IOS
+                Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+                Match gSkuMatch = gSkuRegex.Match(mail.Memo);
+                if (gSkuMatch.Success)
+                {
+                    product = Game.Game.instance.IAPStoreManager.GetProductSchema(gSkuMatch.Groups[1].Value);
+                }
+            }
+
+            if (product is null)
+            {
+                return mail.GetCellContentsForException();
+            }
+
+            var productName = L10nManager.Localize(product.L10n_Key);
+
+            var format = L10nManager.Localize(
+                "UI_IAP_PURCHASE_DELIVERY_COMPLETE_MAIL");
+            return string.Format(format, productName);
+        }
+
+        private static string GetCellContentsForException(
+            this ClaimItemsMail mail)
+        {
+            var exceptionFormat = L10nManager.Localize(
+                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_EXCEPTION_FORMAT");
+            return string.Format(
+                exceptionFormat,
+                mail.FungibleAssetValues?.Count ?? 0,
+                mail.Items?.Count ?? 0);
         }
     }
 }

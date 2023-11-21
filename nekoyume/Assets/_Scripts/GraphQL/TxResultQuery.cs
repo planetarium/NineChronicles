@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL;
+using Libplanet.Crypto;
 
 namespace Nekoyume.GraphQL
 {
@@ -38,7 +41,7 @@ namespace Nekoyume.GraphQL
 
         public static async Task<TxResultResponse> QueryTxResultAsync(string txId)
         {
-            var rpcClient = Game.Game.instance.RpcClient;
+            var rpcClient = Game.Game.instance.RpcGraphQLClient;
             if (!rpcClient.IsInitialized)
             {
                 return null;

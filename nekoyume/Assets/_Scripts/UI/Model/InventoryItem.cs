@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Model
 
     public static class InventoryItemExtensions
     {
-        public static bool IsValid(this InventoryItem inventoryItem, int level)
+        public static bool IsValid(this InventoryItem inventoryItem, int level, GameConfigState gameConfig)
         {
             switch (inventoryItem.ItemBase.ItemType)
             {
@@ -84,31 +84,30 @@ namespace Nekoyume.UI.Model
                     switch (inventoryItem.ItemBase.ItemSubType)
                     {
                         case ItemSubType.FullCostume:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                            return level >= gameConfig.RequireCharacterLevel_FullCostumeSlot;
                         case ItemSubType.Title:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterTitleSlot;
-                            break;
+                            return level >= gameConfig.RequireCharacterLevel_TitleSlot;
                     }
                     break;
                 case ItemType.Equipment:
                     switch (inventoryItem.ItemBase.ItemSubType)
                     {
                         case ItemSubType.Weapon:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotWeapon;
                         case ItemSubType.Armor:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotArmor;
                         case ItemSubType.Belt:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotBelt;
                         case ItemSubType.Necklace:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotNecklace;
                         case ItemSubType.Ring:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotRing1;
                         case ItemSubType.Aura:
-                            return level >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotAura;
+                            return level >= gameConfig.RequireCharacterLevel_EquipmentSlotAura;
                     }
                     break;
                 case ItemType.Consumable:
-                    return level >= GameConfig.RequireCharacterLevel.CharacterConsumableSlot1;
+                    return level >= gameConfig.RequireCharacterLevel_ConsumableSlot1;
 
             }
 

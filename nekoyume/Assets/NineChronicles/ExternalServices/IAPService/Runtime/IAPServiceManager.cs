@@ -90,7 +90,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         //     //request to purchase to IAPService if there are missing receipts.
         // }
 
-        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr)
+        public async Task<IReadOnlyList<CategorySchema>?> GetProductsAsync(Address agentAddr, string planetId)
         {
             if (!IsInitialized)
             {
@@ -104,7 +104,7 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             //     return _cache.Products;
             // }
 
-            var (code, error, mediaType, content) = await _client.ProductAsync(agentAddr);
+            var (code, error, mediaType, content) = await _client.ProductAsync(agentAddr, planetId);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
@@ -148,7 +148,8 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
         public async Task<ReceiptDetailSchema?> PurchaseRequestAsync(
             string receipt,
             Address agentAddr,
-            Address avatarAddr)
+            Address avatarAddr,
+            string planetId)
         {
             if (!IsInitialized)
             {
@@ -161,19 +162,20 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     _store,
                     receipt,
                     agentAddr,
-                    avatarAddr);
+                    avatarAddr,
+                    planetId);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
                 Debug.LogError(
-                    $"Purchase failed: {code}, {error}, {mediaType}, {content}");
+                    $"Purchase failed: {code}, {receipt}, {error}, {mediaType}, {content}");
                 return null;
             }
 
             if (mediaType != "application/json")
             {
                 Debug.LogError(
-                    $"Unexpected media type: {code}, {error}, {mediaType}, {content}");
+                    $"Unexpected media type: {code}, {receipt}, {error}, {mediaType}, {content}");
                 return null;
             }
 

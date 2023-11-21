@@ -1,3 +1,8 @@
+#if !UNITY_EDITOR && (UNITY_ANDROID || UNITY_IOS)
+#define RUN_ON_MOBILE
+#define ENABLE_FIREBASE
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +29,8 @@ namespace Nekoyume.IAPStore
 
         private Dictionary<string, ProductSchema> _initailizedProductSchema = new Dictionary<string, ProductSchema>();
 
+        public Dictionary<string, ProductSchema> SeasonPassProduct = new Dictionary<string, ProductSchema>();
+
         private async void Awake()
         {
             try
@@ -38,10 +45,8 @@ namespace Nekoyume.IAPStore
                 Debug.LogException(exception);
             }
 
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
             var categorys = await Game.Game.instance.IAPServiceManager.GetProductsAsync(
-                States.Instance.AgentState.address);
+                States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
             if (categorys is null)
             {
                 // TODO: not initialized case handling
@@ -54,16 +59,32 @@ namespace Nekoyume.IAPStore
             {
                 foreach (var product in category.ProductList)
                 {
-                    _initailizedProductSchema.TryAdd(product.GoogleSku, product);
+                    _initailizedProductSchema.TryAdd(product.Sku, product);
+                }
+                if(category.Name == "NoShow")
+                {
+                    foreach (var product in category.ProductList)
+                    {
+                        SeasonPassProduct.Add(product.Name, product);
+                    }
                 }
             }
 
+#if UNITY_EDITOR || RUN_ON_MOBILE
+            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             foreach (var schema in _initailizedProductSchema.Where(s => s.Value.Active))
             {
-                builder.AddProduct(schema.Value.GoogleSku, ProductType.Consumable);
+                builder.AddProduct(schema.Value.Sku, ProductType.Consumable);
             }
 
             UnityPurchasing.Initialize(this, builder);
+#endif
+        }
+
+        public ProductSchema GetProductSchema(string sku)
+        {
+            _initailizedProductSchema.TryGetValue(sku, out var result);
+            return result;
         }
 
         public void OnPurchaseClicked(string productId)
@@ -119,6 +140,7 @@ namespace Nekoyume.IAPStore
             }
 
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+            Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
             return PurchaseProcessingResult.Complete;
@@ -165,9 +187,11 @@ namespace Nekoyume.IAPStore
                     .PurchaseRequestAsync(
                         e.purchasedProduct.receipt,
                         states.AgentState.address,
-                        states.CurrentAvatarState.address);
+                        states.CurrentAvatarState.address,
+                        Game.Game.instance.CurrentPlanetId.ToString());
 
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
 
                 if (result is null)
                 {
@@ -184,6 +208,15 @@ namespace Nekoyume.IAPStore
                         ("product-id", e.purchasedProduct.definition.id),
                         ("result", "Complete"),
                         ("transaction-id", e.purchasedProduct.transactionID));
+
+                    AirbridgeEvent @event = new AirbridgeEvent("IAP");
+                    @event.SetAction(e.purchasedProduct.definition.id);
+                    @event.SetLabel("iap");
+                    @event.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
+                    @event.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
+                    @event.SetTransactionId(e.purchasedProduct.transactionID);
+                    AirbridgeUnity.TrackEvent(@event);
+
                     popup.Show(
                         "UI_COMPLETED",
                         "UI_IAP_PURCHASE_COMPLETE",
@@ -205,6 +238,7 @@ namespace Nekoyume.IAPStore
             }
             catch (Exception exc)
             {
+                Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
                 Widget.Find<IconAndButtonSystem>().Show("UI_ERROR", exc.Message, localize: false);
             }

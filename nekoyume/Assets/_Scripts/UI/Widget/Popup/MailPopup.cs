@@ -22,6 +22,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Blockchain;
+    using System.Text.RegularExpressions;
     using UniRx;
 
     public class MailPopup : PopupWidget, IMail
@@ -128,6 +130,7 @@ namespace Nekoyume.UI
                     case ProductBuyerMail:
                     case ProductSellerMail:
                     case ProductCancelMail:
+                    case UnloadFromMyGaragesRecipientMail:
                         LocalLayerModifier.RemoveNewMail(avatarAddress, mail.id, true);
                         break;
                     case ItemEnhanceMail:
@@ -243,13 +246,82 @@ namespace Nekoyume.UI
                     if (eItem is not null)
                     {
                         mailRewards.Add(new MailReward(eItem, 1));
-                        LocalLayerModifier.AddItem(
-                            avatarAddress,
-                            eItem.ItemId,
-                            eItem.RequiredBlockIndex,
-                            1,
-                            false);
+                        if (eItem.ItemSubType == ItemSubType.Aura)
+                        {
+                            //Because aura is a tradable item, local removal fails and an exception is handled.
+                            LocalLayerModifier.AddNonFungibleItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                false);
+                        }
+                        else
+                        {
+                            LocalLayerModifier.AddItem(
+                                avatarAddress,
+                                eItem.ItemId,
+                                eItem.RequiredBlockIndex,
+                                1,
+                                false);
+                        }
                     }
+                    break;
+                case UnloadFromMyGaragesRecipientMail unloadFromMyGaragesRecipientMail:
+                    if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        foreach (var (fungibleId, fungibleCount) in
+                                 unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                            if (row is null)
+                            {
+                                Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                                continue;
+                            }
+
+                            var material = ItemFactory.CreateMaterial(row);
+                            mailRewards.Add(new MailReward(material, fungibleCount));
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
+                    break;
+                case ClaimItemsMail claimItemsMail:
+                    if (claimItemsMail.FungibleAssetValues is not null)
+                    {
+                        mailRewards.AddRange(
+                            claimItemsMail.FungibleAssetValues.Select(fav =>
+                                new MailReward(fav, (int)fav.MajorUnit)));
+                    }
+
+                    if (claimItemsMail.Items is not null)
+                    {
+                        var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                        var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                        foreach (var (fungibleId, itemCount) in
+                                 claimItemsMail.Items)
+                        {
+                            var row = materialSheet.OrderedList!
+                                .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                            if (row != null)
+                            {
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, itemCount));
+                                continue;
+                            }
+
+
+                            if (itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                            {
+                                var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                                mailRewards.Add(new MailReward(item, itemCount));
+                                continue;
+                            }
+
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                        }
+                    }
+                    ReactiveAvatarState.UpdateMailBox(Game.Game.instance.States.CurrentAvatarState.mailBox);
                     break;
             }
         }
@@ -356,7 +428,8 @@ namespace Nekoyume.UI
                        OrderExpirationMail or
                        CancelOrderMail or
                        CombinationMail or
-                       ItemEnhanceMail;
+                       ItemEnhanceMail or
+                       UnloadFromMyGaragesRecipientMail;
         }
 
         private void SetList(MailBox mailBox)
@@ -701,6 +774,109 @@ namespace Nekoyume.UI
                 unloadFromMyGaragesRecipientMail.id);
             ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
 
+            if (unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("season_pass"))
+            {
+                var mailRewards = new List<MailReward>();
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+
+                bool iapProductFindComplete = false;
+                if (unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
+                {
+#if UNITY_IOS
+                    Regex gSkuRegex = new Regex("\"a_sku\": \"([^\"]+)\"");
+#else
+                    Regex gSkuRegex = new Regex("\"g_sku\": \"([^\"]+)\"");
+#endif
+                    Match gSkuMatch = gSkuRegex.Match(unloadFromMyGaragesRecipientMail.Memo);
+                    if (gSkuMatch.Success)
+                    {
+                        var findKey = Game.Game.instance.IAPStoreManager.SeasonPassProduct.FirstOrDefault(_ => _.Value.GoogleSku == gSkuMatch.Groups[1].Value);
+                        if(findKey.Value != null)
+                        {
+                            iapProductFindComplete = true;
+                            foreach (var item in findKey.Value.FungibleItemList)
+                            {
+                                var row = materialSheet.OrderedList!
+                                    .FirstOrDefault(row => row.ItemId.Equals(item.FungibleItemId));
+                                if (row is null)
+                                {
+                                    Debug.LogWarning($"Not found material sheet row. {item.FungibleItemId}");
+                                    continue;
+                                }
+                                var material = ItemFactory.CreateMaterial(row);
+                                mailRewards.Add(new MailReward(material, item.Amount));
+                            }
+                            foreach (var item in findKey.Value.FavList)
+                            {
+                                var currency = Currency.Legacy(item.Ticker.ToString(), 0, null);
+                                var fav = new FungibleAssetValue(currency, (int)item.Amount, 0);
+                                mailRewards.Add(new MailReward(fav, (int)item.Amount, true));
+                            }
+                        }
+                    }
+                }
+
+                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null && !iapProductFindComplete)
+                {
+                    foreach (var (fungibleId, fungibleCount) in
+                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        mailRewards.Add(new MailReward(material, fungibleCount));
+                    }
+                    foreach (var (add, fav) in unloadFromMyGaragesRecipientMail.FungibleAssetValues)
+                    {
+                        mailRewards.Add(new MailReward(fav, (int)fav.MajorUnit, true));
+                    }
+                }
+
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(mailRewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+                return;
+            }
+
+
+            if(unloadFromMyGaragesRecipientMail.Memo != null && unloadFromMyGaragesRecipientMail.Memo.Contains("iap"))
+            {
+                var rewards = new List<MailReward>();
+                if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
+                {
+                    rewards.AddRange(
+                        unloadFromMyGaragesRecipientMail.FungibleAssetValues.Select(fav =>
+                            new MailReward(fav.value, (int)fav.value.MajorUnit)));
+                }
+
+                if (unloadFromMyGaragesRecipientMail.FungibleIdAndCounts is not null)
+                {
+                    var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                    foreach (var (fungibleId, count) in
+                             unloadFromMyGaragesRecipientMail.FungibleIdAndCounts)
+                    {
+                        var row = materialSheet.OrderedList!
+                            .FirstOrDefault(row => row.ItemId.Equals(fungibleId));
+                        if (row is null)
+                        {
+                            Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                            continue;
+                        }
+
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                    }
+                }
+                UpdateTabs();
+                Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
+                return;
+            }
+
             var showQueue = new Queue<System.Action>();
             if (unloadFromMyGaragesRecipientMail.FungibleAssetValues is not null)
             {
@@ -740,6 +916,56 @@ namespace Nekoyume.UI
             }
 
             showQueue.Dequeue()?.Invoke();
+        }
+
+        public void Read(ClaimItemsMail claimItemsMail)
+        {
+            Analyzer.Instance.Track(
+                "Unity/MailBox/ClaimItemsMail/ReceiveButton/Click");
+            var game = Game.Game.instance;
+            claimItemsMail.New = false;
+            LocalLayerModifier.RemoveNewMail(
+                game.States.CurrentAvatarState.address,
+                claimItemsMail.id);
+            ReactiveAvatarState.UpdateMailBox(game.States.CurrentAvatarState.mailBox);
+
+            var rewards = new List<MailReward>();
+            if (claimItemsMail.FungibleAssetValues is not null)
+            {
+                rewards.AddRange(
+                    claimItemsMail.FungibleAssetValues.Select(fav =>
+                        new MailReward(fav, (int) fav.MajorUnit)));
+            }
+
+            if (claimItemsMail.Items is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in
+                         claimItemsMail.Items)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        rewards.Add(new MailReward(material, count));
+                        continue;
+                    }
+
+                    
+                    if(itemSheet.TryGetValue(fungibleId, out var itemSheetRow))
+                    {
+                        var item = ItemFactory.CreateItem(itemSheetRow, new ActionRenderHandler.LocalRandom(0));
+                        rewards.Add(new MailReward(item, 1));
+                        continue;
+                    }
+
+                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+
+            Find<MailRewardScreen>().Show(rewards, "UI_IAP_PURCHASE_DELIVERY_COMPLETE_POPUP_TITLE");
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

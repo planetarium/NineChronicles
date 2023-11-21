@@ -163,6 +163,7 @@ GameObject:
   - component: {fileID: 5938905065742253311}
   - component: {fileID: 2242612977240789168}
   - component: {fileID: 8362664262452837858}
+  - component: {fileID: 1034680963443550092}
   m_Layer: 5
   m_Name: UI_EventBanner
   m_TagString: Untagged
@@ -188,7 +189,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -24, y: -70}
+  m_AnchoredPosition: {x: -24, y: -82}
   m_SizeDelta: {x: 233, y: 90}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &5938905065742253311
@@ -240,6 +241,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1034680963443550092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8242088530355959280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48da91f2539602b49ab44e38da592402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NotchType: 1
 --- !u!1 &9017770312433257000
 GameObject:
   m_ObjectHideFlags: 0

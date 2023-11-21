@@ -9,10 +9,11 @@ namespace Nekoyume.UI.Module.WorldBoss
 {
     public static class WorldBossQuery
     {
-        private static string _url;
+        public static string Url { get; private set; }
+
         public static void SetUrl(string host)
         {
-            _url = $"{host}/raid";
+            Url = $"{host}/raid";
         }
 
         public static async Task<WorldBossRankingResponse> QueryRankingAsync(
@@ -52,7 +53,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             Action<string> onSuccess,
             Action<int, Address> onFailed)
         {
-            var url = $"{_url}/{raidId}/{avatarAddress}/rewards";
+            var url = $"{Url}/{raidId}/{avatarAddress}/rewards";
             using var request = UnityWebRequest.Get(url);
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.Success)

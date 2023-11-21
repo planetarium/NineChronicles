@@ -227,7 +227,7 @@ namespace Nekoyume.Game
                 else
                 {
                     playerObject.transform.DOScale(0.9f, 1.0f);
-                    playerObject.transform.DOMoveY(-3.6f, 2.0f);
+                    playerObject.transform.DOMoveY(-5.4f, 3.0f);
 
                     if (!ReferenceEquals(anim, null) && anim.Target.activeSelf)
                     {
@@ -306,6 +306,9 @@ namespace Nekoyume.Game
         {
             Destroy(_background, fadeTime);
             _background = null;
+#if UNITY_ANDROID || UNITY_IOS
+            objectPool.RemoveAllExceptFirst();
+#endif
         }
 
         public void PlayStage(BattleLog log)
@@ -1293,20 +1296,15 @@ namespace Nekoyume.Game
         private IEnumerator CoUnlockMenu()
         {
             var menuNames = new List<string>();
-
+#if !RUN_ON_MOBILE
             if (stageId == LiveAsset.GameConfig.RequiredStage.Shop)
             {
                 menuNames.Add("UI_MAIN_MENU_SHOP");
             }
-
+#endif
             if (stageId == LiveAsset.GameConfig.RequiredStage.Arena)
             {
                 menuNames.Add("UI_MAIN_MENU_RANKING");
-            }
-
-            if (stageId == LiveAsset.GameConfig.RequiredStage.Mimisbrunnr)
-            {
-                menuNames.Add("UI_MAIN_MENU_MIMISBRUNNR");
             }
 
             if (stageId == LiveAsset.GameConfig.RequiredStage.WorldBoss)

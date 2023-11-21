@@ -163,6 +163,23 @@ namespace Nekoyume.UI
             if (_matarialsScroller != null)
                 _matarialsScroller.Position = 0;
             base.Show(ignoreShowAnimation);
+            if (enhancementInventory.TryGetCellByIndex(0, out var firstCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.CombinationInventoryFirstCell,
+                    rectTransform = (RectTransform)firstCell.transform
+                });
+            }
+
+            if (enhancementInventory.TryGetCellByIndex(1, out var secondCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.CombinationInventorySecondCell,
+                    rectTransform = (RectTransform)secondCell.transform
+                });
+            }
         }
 
         public void Show(ItemSubType itemSubType, Guid itemId, bool ignoreShowAnimation = false)

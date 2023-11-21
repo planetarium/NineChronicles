@@ -74,6 +74,8 @@ namespace Nekoyume.Blockchain
         // approximately 4h == 1200 block count
         private const int WorkshopNotifiedBlockCount = 0;
 
+        private const string WorkshopPushIdentifierKeyFormat = "WORKSHOP_SLOT_{0}_PUSH_IDENTIFIER";
+
         private ActionRenderHandler()
         {
         }
@@ -187,6 +189,8 @@ namespace Nekoyume.Blockchain
             // Claim Items
             ClaimItems();
 
+            // Mint Assets
+            MintAssets();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
             ManipulateState();
@@ -691,9 +695,35 @@ namespace Nekoyume.Blockchain
             _actionRenderer.EveryRender<ClaimItems>()
                 .ObserveOn(Scheduler.ThreadPool)
                 .Where(eval =>
-                    eval.Action.ClaimData.Any(e => e.address.Equals(States.Instance.CurrentAvatarState.address)))
+                    eval.Action.ClaimData.Any(e =>
+                        e.address.Equals(States.Instance?.CurrentAvatarState?.address)))
                 .Where(ValidateEvaluationIsSuccess)
-                .Subscribe(UpdateCurrentAvatarInventory)
+                .Select(PrepareClaimItems)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimItems)
+                .AddTo(_disposables);
+        }
+
+        /// <summary>
+        /// Process the action rendering of <see cref="ClaimItems"/>.
+        /// At now, rendering is only for updating the inventory of the current avatar.
+        /// </summary>
+        private void MintAssets()
+        {
+            _actionRenderer.EveryRender<MintAssets>()
+                .ObserveOn(Scheduler.ThreadPool)
+                .Where(ValidateEvaluationIsSuccess)
+                .Where(eval =>
+                {
+                    return eval.Action.MintSpecs?
+                        .Select(spec => spec.Recipient)
+                        .Any(addr =>
+                            addr.Equals(States.Instance.CurrentAvatarState?.address) ||
+                            addr.Equals(States.Instance.AgentState?.address)) ?? false;
+                })
+                .Select(PrepareMintAssets)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMintAssets)
                 .AddTo(_disposables);
         }
 
@@ -877,6 +907,14 @@ namespace Nekoyume.Blockchain
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 NotificationCell.NotificationType.Notification);
 
+            var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+            var identifier = PlayerPrefs.GetString(pushIdentifierKey, string.Empty);
+            if (!string.IsNullOrEmpty(identifier))
+            {
+                PushNotifier.CancelReservation(identifier);
+                PlayerPrefs.DeleteKey(pushIdentifierKey);
+            }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(
                 avatarAddress,
                 renderArgs.Evaluation.Action.slotIndex,
@@ -1019,25 +1057,28 @@ namespace Nekoyume.Blockchain
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = slot.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_CRAFT_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
 
             Widget.Find<HeaderMenuStatic>().UpdatePortalRewardOnce(HeaderMenuStatic.PortalRewardNotificationCombineKey);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private (ActionEvaluation<CombinationConsumable> Evaluation, AvatarState AvatarState, CombinationSlotState CombinationSlotState)
@@ -1324,18 +1365,22 @@ namespace Nekoyume.Blockchain
                 renderArgs.CombinationSlotState.UnlockBlockIndex,
                 result.itemUsable.ItemId);
 
+            var slotIndex = renderArgs.Evaluation.Action.slotIndex;
             var blockCount = renderArgs.CombinationSlotState.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (blockCount >= WorkshopNotifiedBlockCount)
             {
                 var expectedNotifiedTime =
-                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount * 1.15f));
+                    BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(blockCount));
                 var notificationText = L10nManager.Localize(
                     "PUSH_WORKSHOP_UPGRADE_COMPLETE_CONTENT",
                     result.itemUsable.GetLocalizedNonColoredName(false));
-                PushNotifier.Push(
+                var identifier = PushNotifier.Push(
                     notificationText,
                     expectedNotifiedTime,
                     PushNotifier.PushType.Workshop);
+
+                var pushIdentifierKey = string.Format(WorkshopPushIdentifierKeyFormat, slotIndex);
+                PlayerPrefs.SetString(pushIdentifierKey, identifier);
             }
             // ~Notify
 
@@ -1355,8 +1400,7 @@ namespace Nekoyume.Blockchain
                 itemSlotState.Equipments.Remove(renderArgs.Evaluation.Action.itemId);
             }
 
-            Widget.Find<CombinationSlotsPopup>()
-                .SetCaching(avatarAddress, renderArgs.Evaluation.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(avatarAddress, slotIndex, false);
         }
 
         private ActionEvaluation<AuraSummon> PrepareAuraSummon(ActionEvaluation<AuraSummon> eval)
@@ -1764,7 +1808,7 @@ namespace Nekoyume.Blockchain
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
                     NotificationCell.NotificationType.Notification);
                 var expectedNotifiedTime = BlockIndexExtensions.BlockToTimeSpan(Mathf.RoundToInt(
-                    States.Instance.GameConfigState.DailyRewardInterval * 1.15f));
+                    States.Instance.GameConfigState.DailyRewardInterval));
                 var notificationText = L10nManager.Localize("PUSH_PROSPERITY_METER_CONTENT");
                 PushNotifier.Push(
                     notificationText,
@@ -1794,6 +1838,7 @@ namespace Nekoyume.Blockchain
             {
                 return eval;
             }
+
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -1844,6 +1889,7 @@ namespace Nekoyume.Blockchain
 
             var tempPlayer =
                 new AvatarState((Dictionary)States.Instance.CurrentAvatarState.Serialize());
+            tempPlayer.EquipEquipments(States.Instance.CurrentItemSlotStates[BattleType.Adventure].Equipments);
             var resultModel = eval.GetHackAndSlashReward(
                 tempPlayer,
                 States.Instance.GetEquippedRuneStates(BattleType.Adventure),
@@ -2510,7 +2556,10 @@ namespace Nekoyume.Blockchain
             worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
             worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
-            UpdateAgentStateAsync(eval).Forget();
+            UniTask.RunOnThreadPool(async () =>
+            {
+                await UpdateAgentStateAsync(eval);
+            }).Forget();
         }
 
         private ActionEvaluation<HackAndSlashRandomBuff> PrepareHackAndSlashRandomBuff(
@@ -2613,7 +2662,7 @@ namespace Nekoyume.Blockchain
             {
                 await UniTask.WhenAll(
                     RxProps.ArenaInfoTuple.UpdateAsync(),
-                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+                    RxProps.ArenaInformationOrderedWithScore.UpdateAsync());
             }
             else
             {
@@ -2652,7 +2701,27 @@ namespace Nekoyume.Blockchain
                 States.Instance.UpdateRuneSlotStates(BattleType.Arena));
             // NOTE: Start cache some arena info which will be used after battle ends.
             RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            RxProps.ArenaInformationOrderedWithScore.UpdateAsync().Forget();
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    UniTask.Run(() =>
+                        {
+                            UpdateAgentStateAsync(eval).Forget();
+                            UpdateCurrentAvatarStateAsync().Forget();
+                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
+                        }).ToObservable()
+                        .First()
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
+                });
+
             var tableSheets = TableSheets.Instance;
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
@@ -2722,11 +2791,12 @@ namespace Nekoyume.Blockchain
                 var arenaSheets = tableSheets.GetArenaSimulatorSheets();
                 for (int i = 0; i < eval.Action.ticket; i++)
                 {
-                    var simulator = new ArenaSimulator(random);
+                    var simulator = new ArenaSimulator(random, BattleArena.HpIncreasingModifier);
                     var log = simulator.Simulate(
                         myDigest.Value,
                         enemyDigest.Value,
-                        arenaSheets);
+                        arenaSheets,
+                        true);
 
                     var reward = RewardSelector.Select(
                         random,
@@ -3216,11 +3286,6 @@ namespace Nekoyume.Blockchain
                 }
             }
 
-            if (action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
-                action.FungibleIdAndCounts is not null)
-            {
-                UpdateCurrentAvatarInventory(eval);
-            }
 
             return eval;
         }
@@ -3236,11 +3301,33 @@ namespace Nekoyume.Blockchain
             var gameStates = Game.Game.instance.States;
             var avatarAddr = gameStates.CurrentAvatarState.address;
             var states = eval.OutputState;
+            MailBox mailBox;
+            UnloadFromMyGaragesRecipientMail mail;
 
             IValue avatarValue = null;
             UniTask.RunOnThreadPool(() =>
             {
                 avatarValue = StateGetter.GetState(avatarAddr, states);
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                if (eval.Action.RecipientAvatarAddr.Equals(States.Instance.CurrentAvatarState.address) &&
+                    eval.Action.FungibleIdAndCounts is not null &&
+                    !(mail.Memo != null && mail.Memo.Contains("season_pass")))
+                {
+                    UpdateCurrentAvatarInventory(eval);
+                }
             }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
             {
                 if (avatarValue is not Dictionary avatarDict)
@@ -3256,22 +3343,243 @@ namespace Nekoyume.Blockchain
                     return;
                 }
 
-                var mailBox = new MailBox(mailBoxList);
-                var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
-                    .FirstOrDefault(mail => mail.blockIndex == eval.BlockIndex);
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+
                 if (mail is not null)
                 {
                     mail.New = true;
                     gameStates.CurrentAvatarState.mailBox = mailBox;
                     LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                        return;
+                    }
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
+                    {
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if(product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
+                    }
                 }
-                else
-                {
-                    Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
-                        $"the render context of UnloadFromMyGarages action.\n" +
-                        $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
-                }
+
+                Debug.LogWarning($"Not found UnloadFromMyGaragesRecipientMail from " +
+                    $"the render context of UnloadFromMyGarages action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
             });
+        }
+
+        private ActionEvaluation<ClaimItems> PrepareClaimItems(
+            ActionEvaluation<ClaimItems> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.ClaimData is not null)
+            {
+                foreach (var (addr, favList) in action.ClaimData)
+                {
+                    if (addr.Equals(avatarAddr))
+                    {
+                        foreach (var fav in favList)
+                        {
+                            var tokenCurrency = fav.Currency;
+                            if (Currencies.IsWrappedCurrency(tokenCurrency))
+                            {
+                                var currency = Currencies.GetUnwrappedCurrency(tokenCurrency);
+                                var recipientAddress = Currencies.SelectRecipientAddress(currency, agentAddr,
+                                    avatarAddr);
+                                var isCrystal = currency.Equals(Currencies.Crystal);
+                                var balance = StateGetter.GetBalance(
+                                    recipientAddress,
+                                    currency,
+                                    states);
+                                if (isCrystal)
+                                {
+                                    gameStates.SetCrystalBalance(balance);
+                                }
+                                else
+                                {
+                                    gameStates.SetCurrentAvatarBalance(balance);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
+            return eval;
+        }
+
+        private void ResponseClaimItems(ActionEvaluation<ClaimItems> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            MailBox mailBox;
+            ClaimItemsMail mail;
+
+            IValue avatarValue = null;
+            UniTask.RunOnThreadPool(() =>
+            {
+                avatarValue = StateGetter.GetState(avatarAddr, states);
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+
+                UpdateCurrentAvatarInventory(eval);
+            }).ToObservable().ObserveOnMainThread().Subscribe(_ =>
+            {
+                if (avatarValue is not Dictionary avatarDict)
+                {
+                    Debug.LogError($"Failed to get avatar state: {avatarAddr}, {avatarValue}");
+                    return;
+                }
+
+                if (!avatarDict.ContainsKey(SerializeKeys.MailBoxKey) ||
+                    avatarDict[SerializeKeys.MailBoxKey] is not List mailBoxList)
+                {
+                    Debug.LogError($"Failed to get mail box: {avatarAddr}");
+                    return;
+                }
+
+                mailBox = new MailBox(mailBoxList);
+                mail = mailBox.OfType<ClaimItemsMail>()
+                    .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+                if (mail is not null)
+                {
+                    mail.New = true;
+                    gameStates.CurrentAvatarState.mailBox = mailBox;
+                    LocalLayerModifier.AddNewMail(avatarAddr, mail.id);
+                    if (mail.Memo != null && mail.Memo.Contains("season_pass"))
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize(
+                                "NOTIFICATION_SEASONPASS_REWARD_CLAIMED_MAIL_RECEIVED"),
+                            NotificationCell.NotificationType.Notification);
+                        return;
+                    }
+
+                    if (mail.Memo != null && mail.Memo.Contains("iap"))
+                    {
+                        var product = MailExtensions.GetProductFromMemo(mail.Memo);
+                        if (product != null)
+                        {
+                            var productName = L10nManager.Localize(product.L10n_Key);
+                            var format = L10nManager.Localize(
+                                "NOTIFICATION_IAP_PURCHASE_DELIVERY_COMPLETE");
+                            OneLineSystem.Push(MailType.System,
+                                string.Format(format, productName),
+                                NotificationCell.NotificationType.Notification);
+                            return;
+                        }
+                    }
+                }
+
+                Debug.LogWarning($"Not found ClaimItemsRecipientMail from " +
+                    $"the render context of ClaimItems action.\n" +
+                    $"tx id: {eval.TxId}, action id: {eval.Action.Id}");
+            });
+        }
+
+        private ActionEvaluation<MintAssets> PrepareMintAssets(
+            ActionEvaluation<MintAssets> eval)
+        {
+            var gameStates = Game.Game.instance.States;
+            var agentAddr = gameStates.AgentState.address;
+            var avatarAddr = gameStates.CurrentAvatarState.address;
+            var states = eval.OutputState;
+            var action = eval.Action;
+            if (action.MintSpecs is {} specs)
+            {
+                var requiredUpdateAvatarState = false;
+                foreach (var spec in specs.Where(spec => spec.Recipient.Equals(avatarAddr) || spec.Recipient.Equals(agentAddr)))
+                {
+                    if (spec.Assets.HasValue)
+                    {
+                        var fav = spec.Assets.Value;
+                        {
+                            var tokenCurrency = fav.Currency;
+                            var recipientAddress = Currencies.SelectRecipientAddress(tokenCurrency, agentAddr,
+                                avatarAddr);
+                            var isCrystal = tokenCurrency.Equals(Currencies.Crystal);
+                            var balance = StateGetter.GetBalance(
+                                recipientAddress,
+                                tokenCurrency,
+                                states);
+                            if (isCrystal)
+                            {
+                                gameStates.SetCrystalBalance(balance);
+                            }
+                            else
+                            {
+                                gameStates.SetCurrentAvatarBalance(balance);
+                            }
+                        }
+                    }
+
+                    requiredUpdateAvatarState |= spec.Items.HasValue;
+                }
+
+                if (requiredUpdateAvatarState)
+                {
+                    UpdateCurrentAvatarStateAsync(StateGetter.GetAvatarState(avatarAddr, states)).Forget();
+                }
+            }
+
+            return eval;
+        }
+
+        private void ResponseMintAssets(ActionEvaluation<MintAssets> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Debug.Log(eval.Exception.Message);
+                return;
+            }
+
+            var gameStates = Game.Game.instance.States;
+            var avatar = gameStates.CurrentAvatarState;
+            var mailBox = avatar.mailBox;
+            var mail = mailBox.OfType<UnloadFromMyGaragesRecipientMail>()
+                .FirstOrDefault(m => m.blockIndex == eval.BlockIndex);
+            if (mail is not null)
+            {
+                mail.New = true;
+                gameStates.CurrentAvatarState.mailBox = mailBox;
+                LocalLayerModifier.AddNewMail(avatar.address, mail.id);
+            }
         }
     }
 }

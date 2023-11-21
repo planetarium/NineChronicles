@@ -30,6 +30,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<SimpleCountableItemView> rewards = null;
 
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
+
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 
         private System.Action _onClose;
@@ -81,13 +87,40 @@ namespace Nekoyume.UI
                 }
             }
 
+            var repeatCount = 1;
+            if (winDefeatCount.HasValue)
+            {
+                repeatCount = winDefeatCount.Value.win + winDefeatCount.Value.defeat;
+            }
+            RefreshSeasonPassCourageAmount(repeatCount);
+
             _onClose = onClose;
         }
 
         private void BackToRanking()
         {
+
             Close();
             _onClose?.Invoke();
+        }
+
+        private void RefreshSeasonPassCourageAmount(int count)
+        {
+            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.ArenaCourageAmount * count}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
     }
 }

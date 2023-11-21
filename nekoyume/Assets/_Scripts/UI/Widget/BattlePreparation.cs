@@ -235,6 +235,23 @@ namespace Nekoyume.UI
             }
 
             ReactiveAvatarState.Inventory.Subscribe(_ => UpdateStartButton()).AddTo(_disposables);
+            if (information.TryGetCellByIndex(0, out var firstCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.InventoryFirstCell,
+                    rectTransform = (RectTransform)firstCell.transform
+                });
+            }
+
+            if (information.TryGetCellByIndex(1, out var secondCell))
+            {
+                Game.Game.instance.Stage.TutorialController.SetTutorialTarget(new TutorialTarget
+                {
+                    type = TutorialTargetType.InventorySecondCell,
+                    rectTransform = (RectTransform)secondCell.transform
+                });
+            }
         }
 
         private int? UpdateCp()
@@ -710,18 +727,19 @@ namespace Nekoyume.UI
                 }
             }
 
+            const int requiredStage = Game.LiveAsset.GameConfig.RequiredStage.Sweep;
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Adventure);
-            var runes = States.Instance.GetEquippedRuneStates(BattleType.Adventure)
-                .Select(x=> x.RuneId).ToList();
             var consumables = information.GetEquippedConsumables().Select(x=> x.Id).ToList();
             var canBattle = Util.CanBattle(equipments, costumes, consumables);
+            var canSweep = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
+
             startButton.gameObject.SetActive(canBattle);
 
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(!IsFirstStage);
+                    sweepPopupButton.gameObject.SetActive(canSweep);
                     break;
                 case StageType.Mimisbrunnr:
                     boostPopupButton.gameObject.SetActive(canBattle);
@@ -769,6 +787,26 @@ namespace Nekoyume.UI
             catch
             {
                 Debug.LogError($"TryGetFirstCell throw error.");
+            }
+        }
+
+        public void TutorialActionClickBattlePreparationSecondInventoryCellView()
+        {
+            try
+            {
+                var itemCell = information.GetBestEquipmentInventoryItems();
+                if (itemCell is null)
+                {
+                    Debug.LogError($"information.GetBestEquipmentInventoryItems().ElementAtOrDefault(0) is null");
+                    return;
+                }
+
+                itemCell.Selected.Value = true;
+                Find<EquipmentTooltip>().OnEnterButtonArea(true);
+            }
+            catch
+            {
+                Debug.LogError($"GetSecondCell throw error.");
             }
         }
 

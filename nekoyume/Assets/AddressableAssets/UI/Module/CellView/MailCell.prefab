@@ -165,7 +165,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -6.9000244, y: 0}
-  m_SizeDelta: {x: 100, y: 40}
+  m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4760721883094245149
 CanvasRenderer:
@@ -368,7 +368,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -25, y: 0}
-  m_SizeDelta: {x: -190, y: 40}
+  m_SizeDelta: {x: -190, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6617661535658867317
 CanvasRenderer:
@@ -398,7 +398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<size=12><color=#a2b4d6>[Market Cat]</color></size>
+  m_text: '<color=#a2b4d6>[Market Cat]</color>
 
     asdfasdfasdsadsad'
   m_isRightToLeft: 0
@@ -428,12 +428,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 16.65
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
-  m_fontSizeMax: 20
+  m_fontSizeMin: 16
+  m_fontSizeMax: 18
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512

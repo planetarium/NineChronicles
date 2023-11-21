@@ -36,6 +36,7 @@ namespace Nekoyume.L10n
             new Dictionary<string, string>();
 
         public static State CurrentState { get; private set; } = State.None;
+        public static bool IsInitialized => CurrentState == State.Initialized;
 
         private static Dictionary<string, Dictionary<LanguageType, string>> _additionalDic = new Dictionary<string, Dictionary<LanguageType, string>>();
         private static Dictionary<string, bool> _initializedURLs = new Dictionary<string, bool>();
@@ -155,7 +156,12 @@ namespace Nekoyume.L10n
             {
                 languageType = LanguageType.English;
             }
-
+#if UNITY_STANDALONE
+            if (languageType == LanguageType.Korean)
+            {
+                languageType = LanguageType.English;
+            }
+#endif
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
             _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
@@ -234,6 +240,7 @@ namespace Nekoyume.L10n
                     ChineseSimplified = csvReader.GetField<string>("ChineseSimplified"),
                     ChineseTraditional = csvReader.GetField<string>("ChineseTraditional"),
                     Tagalog = csvReader.GetField<string>("Tagalog"),
+                    Vietnam = csvReader.GetField<string>("Vietnam"),
                 };
                 records.Add(record);
             }
@@ -243,7 +250,7 @@ namespace Nekoyume.L10n
 
         public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
             {
                 WWW directory = new WWW(CsvFilesRootDirectoryPath + "/DirectoryForAndroid.txt");
                 while (!directory.isDone)
@@ -251,12 +258,18 @@ namespace Nekoyume.L10n
                     // wait for load
                 }
 
-                String[] fileNames = directory.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
                 Dictionary<string, string> dictionary = new Dictionary<string, string>();
-                foreach (String fileName in fileNames)
+                var fileNames = directory.text
+                    .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                    .Where(line => !string.IsNullOrEmpty(line))
+                    .Select(line => line.Trim())
+                    .ToArray();
+                foreach (var fileName in fileNames)
                 {
-                    String fullName = CsvFilesRootDirectoryPath + "/" + fileName;
+#if TEST_LOG
+                    Debug.Log($"[L10nManager] GetDictionary()... fileName: {fileName}");
+#endif
+                    var fullName = CsvFilesRootDirectoryPath + "/" + fileName;
                     WWW csvFile = new WWW(fullName);
                     while (!csvFile.isDone)
                     {
@@ -271,18 +284,18 @@ namespace Nekoyume.L10n
                         PrepareHeaderForMatch = args => args.Header.ToLower(),
                     };
                     using var csvReader = new CsvReader(streamReader, csvConfig);
-#if ENABLE_IL2CPP
-                    var records = GetL10nCsvModelRecords(csvReader);
-#else
-                    var records = csvReader.GetRecords<L10nCsvModel>();
-#endif
-                    var recordsIndex = 0;
                     try
                     {
+#if ENABLE_IL2CPP
+                        var records = GetL10nCsvModelRecords(csvReader);
+#else
+                        var records = csvReader.GetRecords<L10nCsvModel>();
+#endif
+                        var recordsIndex = 0;
                         foreach (var record in records)
                         {
 #if TEST_LOG
-                        Debug.Log($"{fileName}: {recordsIndex}");
+                            Debug.Log($"[L10nManager] GetDictionary()... record.Key: {record.Key}");
 #endif
                             var key = record.Key;
                             if (string.IsNullOrEmpty(key))
@@ -302,17 +315,24 @@ namespace Nekoyume.L10n
 
                             if (dictionary.ContainsKey(key))
                             {
-                                throw new L10nAlreadyContainsKeyException(
-                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {fullName}");
+                                Debug.LogError("[L10nManager] L10n duplication Key." +
+                                               " Ignore duplicated key and use first value." +
+                                               $" key: {key}" +
+                                               $", recordsIndex: {recordsIndex}" +
+                                               $", csvFileInfo: {fullName}");
+                            }
+                            else
+                            {
+                                dictionary.Add(key, value);
                             }
 
-                            dictionary.Add(key, value);
                             recordsIndex++;
                         }
                     }
                     catch (CsvHelper.MissingFieldException e)
                     {
-                        Debug.LogWarning($"`{fileName}` file has empty field.\n{e}");
+                        Debug.LogError($"`{fileName}` file has failed parse \n{e}");
+                        continue;
                     }
                 }
 
@@ -336,14 +356,14 @@ namespace Nekoyume.L10n
                     using (var streamReader = new StreamReader(csvFileInfo.FullName))
                     using (var csvReader = new CsvReader(streamReader, csvConfig))
                     {
-                        var records = csvReader.GetRecords<L10nCsvModel>();
-                        var recordsIndex = 0;
                         try
                         {
+                            var records = csvReader.GetRecords<L10nCsvModel>();
+                            var recordsIndex = 0;
                             foreach (var record in records)
                             {
 #if TEST_LOG
-                        Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+                                Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
 #endif
                                 var key = record.Key;
                                 if (string.IsNullOrEmpty(key))
@@ -363,8 +383,11 @@ namespace Nekoyume.L10n
 
                                 if (dictionary.ContainsKey(key))
                                 {
-                                    Debug.LogError($"L10n duplication Key  key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
-                                    dictionary[key] = value;
+                                    Debug.LogError("[L10nManager] L10n duplication Key." +
+                                                   " Ignore duplicated key and use first value." +
+                                                   $" key: {key}" +
+                                                   $", recordsIndex: {recordsIndex}" +
+                                                   $", csvFileInfo: {csvFileInfo.FullName}");
                                 }
                                 else
                                 {
@@ -376,7 +399,8 @@ namespace Nekoyume.L10n
                         }
                         catch (CsvHelper.MissingFieldException e)
                         {
-                            Debug.LogWarning($"`{csvFileInfo.Name}` file has empty field.\n{e}");
+                            Debug.LogError($"`{csvFileInfo.Name}` file has failed parse \n{e}");
+                            continue;
                         }
                     }
                 }

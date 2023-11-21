@@ -48,12 +48,12 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async
             Task<(HttpStatusCode code, string? error, string? mediaType, string? content)>
-            ProductAsync(Address agentAddr)
+            ProductAsync(Address agentAddr, string planetId)
         {
             var uriBuilder = new UriBuilder(_endpoints.Product);
             uriBuilder.Query = string.IsNullOrEmpty(uriBuilder.Query)
-                ? $"agent_addr={agentAddr.ToString()}"
-                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToString()}";
+                ? $"agent_addr={agentAddr.ToString()}&planet_id={planetId}"
+                : uriBuilder.Query[1..] + $"&agent_addr={agentAddr.ToString()}&planet_id={planetId}";
             using var res = await _client.GetAsync(uriBuilder.Uri);
             return await ProcessResponseAsync(res);
         }
@@ -64,16 +64,22 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 Store store,
                 string receipt,
                 Address agentAddr,
-                Address avatarAddr)
+                Address avatarAddr,
+                string planetId)
         {
             var receiptJson = JsonNode.Parse(receipt);
+            
             var reqJson = new JsonObject
             {
                 { "store", (int)store },
                 { "data", receiptJson },
                 { "agentAddress", agentAddr.ToHex() },
-                { "avatarAddress", avatarAddr.ToHex() }
+                { "avatarAddress", avatarAddr.ToHex() },
+                { "planetId", planetId}
             };
+
+            Debug.Log($"PurchaseRequestAsync : {reqJson}");
+
             var reqContent = new StringContent(
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,

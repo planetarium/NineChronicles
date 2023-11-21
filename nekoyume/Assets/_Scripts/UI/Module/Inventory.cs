@@ -671,6 +671,13 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
+        public InventoryItem GetBestEquipmentInventoryItem()
+        {
+            var bestItem = GetUsableBestEquipments().FirstOrDefault();
+            OnClickItem(bestItem);
+            return bestItem;
+        }
+
         public List<Guid> GetBestEquipments()
         {
             return GetUsableBestEquipments()
@@ -1018,6 +1025,10 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
+        public bool TryGetCellByIndex(int index, out InventoryCell cell)
+        {
+            return scroll.TryGetCellByIndex(index, out cell);
+        }
         #endregion
     }
 }

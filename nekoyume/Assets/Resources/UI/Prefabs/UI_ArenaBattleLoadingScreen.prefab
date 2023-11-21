@@ -1911,7 +1911,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -140}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3013526382799689267
 CanvasRenderer:
@@ -2609,7 +2609,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1136, y: 640}
+  m_SizeDelta: {x: 1550, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5993899513991590159
 CanvasRenderer:
@@ -2639,7 +2639,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 8126d200eca39417b957e99c60bf738f, type: 3}
+  m_Texture: {fileID: 2800000, guid: 990731c04a118a841994cfa9f38f1a8f, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3456,6 +3456,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
+      propertyPath: m_fontSize
+      value: 14.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
+        type: 3}
       propertyPath: m_margin.x
       value: -0.030021667
       objectReference: {fileID: 0}
@@ -3690,6 +3695,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14.15
       objectReference: {fileID: 0}
     - target: {fileID: 2471016746552703132, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}

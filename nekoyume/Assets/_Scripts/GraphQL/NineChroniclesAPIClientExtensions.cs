@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL;
+using Libplanet.Crypto;
 using Libplanet.Types.Blocks;
+using Nekoyume.UI.Model;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -38,6 +42,51 @@ query {{
                 Debug.LogError(response.ToString());
                 return null;
             }
+        }
+
+        public static async Task<ArenaInfoResponse> QueryArenaInfoAsync(this NineChroniclesAPIClient client, Address avatarAddress)
+        {
+            if (!client.IsInitialized)
+            {
+                return null;
+            }
+
+            var query = @"query($avatarAddress: Address!) {
+                stateQuery {
+                    arenaParticipants(avatarAddress: $avatarAddress) {
+                        score
+                        rank
+                        avatarAddr
+                        winScore
+                        loseScore
+                        level
+                        cp
+                        nameWithHash
+                        portraitId
+                    }
+                }
+            }";
+
+            var request = new GraphQLRequest
+            {
+                Query = query,
+                Variables = new
+                {
+                    avatarAddress = avatarAddress.ToString()
+                }
+            };
+            var response = await client.GetObjectAsync<ArenaInfoResponse>(request);
+            return response;
+        }
+
+        public class ArenaInfoResponse
+        {
+            public StateQuery StateQuery;
+        }
+
+        public class StateQuery
+        {
+            public List<ArenaParticipantModel> ArenaParticipants;
         }
     }
 }

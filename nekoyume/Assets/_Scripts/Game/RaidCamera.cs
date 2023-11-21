@@ -90,15 +90,26 @@ namespace Nekoyume.Game
         public bool InPrologue = false;
         private bool _isStaticRatio;
 
+        private int _lastScreenWidth;
+        private int _lastScreenHeight;
+
         #region Mono
 
         protected void Awake()
         {
             InitScreenResolution();
+
+#if UNITY_IOS
+            Cam.clearFlags = CameraClearFlags.SolidColor;
+#endif
         }
 
         private void Update()
         {
+            if (_lastScreenWidth != Screen.width || _lastScreenHeight != Screen.height)
+            {
+                InitScreenResolution();
+            }
             UpdateScreenResolution();
         }
 
@@ -119,11 +130,17 @@ namespace Nekoyume.Game
 
         private void InitScreenResolution()
         {
-#if UNITY_ANDROID
-            UpdateStaticRatioWithLetterBox();
-#else
-            UpdateDynamicRatio();
-#endif
+            float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+            _lastScreenWidth = Screen.width;
+            _lastScreenHeight = Screen.height;
+            if (ActionCamera.MinScreenRatio > currentScreenRatio || ActionCamera.MaxScreenRatio < currentScreenRatio)
+            {
+                UpdateStaticRatioWithLetterBox();
+            }
+            else
+            {
+                UpdateDynamicRatio();
+            }
         }
 
         public void ChangeRatioState()
@@ -142,7 +159,11 @@ namespace Nekoyume.Game
         {
             _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
+#if UNITY_IOS
+            Cam.aspect = (float)Screen.width / (float)Screen.height;
+#else
             Cam.aspect = Screen.safeArea.width / Screen.safeArea.height;
+#endif
             Cam.rect = new Rect(0, 0, 1, 1);
             _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
             UpdateScreenResolution();
@@ -153,7 +174,7 @@ namespace Nekoyume.Game
 
         public void UpdateStaticRatioWithLetterBox()
         {
-            _defaultAspect = (float)referenceResolution.x / referenceResolution.y;
+            _defaultAspect = Mathf.Clamp((float)Screen.width / (float)Screen.height, ActionCamera.MinScreenRatio, ActionCamera.MaxScreenRatio);
             _defaultOrthographicSize = Cam.orthographicSize;
 
             float fixedAspectRatio = _defaultAspect;

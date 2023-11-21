@@ -18,6 +18,8 @@ namespace Nekoyume.UI
 
         public System.Action OnClick { get; set; }
 
+        public bool IsShowing => rawImage is { enabled: true };
+
         #region override
 
         private void Awake()
@@ -66,6 +68,7 @@ namespace Nekoyume.UI
 
             RenderTexture.active = prevRenderTexture;
             cam.targetTexture = null;
+            renderTexture.Release();
 
             return captured;
         }

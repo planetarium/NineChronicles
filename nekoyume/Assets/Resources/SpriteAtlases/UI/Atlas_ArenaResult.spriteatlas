@@ -50,7 +50,6 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 8126d200eca39417b957e99c60bf738f, type: 3}
   - {fileID: 21300000, guid: e6af7801e4afae842aad64f0eb1ea196, type: 3}
   - {fileID: 21300000, guid: c4648932d941ce743990f79103054e17, type: 3}
   - {fileID: 21300000, guid: 4a9e07749f32744a785b72e76d354331, type: 3}
@@ -65,7 +64,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: eaf5f99de2cecfd4586e57ead99d756c, type: 3}
   - {fileID: 21300000, guid: e409bddf93a7d4ca8abd6e05742b76a9, type: 3}
   m_PackedSpriteNamesToIndex:
-  - battle_UI_bg_99
   - bg_pvp_vs
   - UI_pvp_wing
   - Bg_Season_bg_02

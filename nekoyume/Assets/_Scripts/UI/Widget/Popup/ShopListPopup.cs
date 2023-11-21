@@ -57,20 +57,24 @@ namespace Nekoyume.UI
             base.Awake();
         
             closeButton.onClick.AddListener(() => {
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.GoogleSku));
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
                 Close();
             });
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
-                Debug.Log($"Purchase: {_data.GoogleSku}");
-                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.GoogleSku));
-                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.GoogleSku);
+                Debug.Log($"Purchase: {_data.Sku}");
+                Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click",("product-id", _data.Sku));
+                Game.Game.instance.IAPStoreManager.OnPurchaseClicked(_data.Sku);
 
                 buyButton.interactable = false;
                 buttonDisableObj.SetActive(true);
                 loadIndicator.SetActive(true);
                 buttonActiveEffectObj.SetActive(false);
+                foreach (var item in priceTexts)
+                {
+                    item.gameObject.SetActive(false);
+                }
             });
         }
 
@@ -80,6 +84,10 @@ namespace Nekoyume.UI
             buttonDisableObj.SetActive(false);
             loadIndicator.SetActive(false);
             buttonActiveEffectObj.SetActive(true);
+            foreach (var item in priceTexts)
+            {
+                item.gameObject.SetActive(true);
+            }
         }
 
         private async UniTask DownloadTexture()
@@ -98,7 +106,7 @@ namespace Nekoyume.UI
 
             foreach (var item in priceTexts)
             {
-                item.text = $"{_puchasingData.metadata.isoCurrencyCode} {_puchasingData.metadata.localizedPrice:N2}";
+                item.text = item.text = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, _puchasingData.metadata.localizedPrice);
             }
 
             int iapRewardIndex = 0;
@@ -152,12 +160,16 @@ namespace Nekoyume.UI
                 foreach (var item in preDiscountPrice)
                 {
                     var originPrice = (_puchasingData.metadata.localizedPrice * ((decimal)100 / (decimal)(100 - _data.Discount)));
-                    var origin = $"{_puchasingData.metadata.isoCurrencyCode} {originPrice:N2}";
+                    var origin = MobileShop.GetPrice(_puchasingData.metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
             }
 
             loadIndicator.SetActive(false);
+            foreach (var item in priceTexts)
+            {
+                item.gameObject.SetActive(true);
+            }
             buyButton.interactable = true;
             buttonDisableObj.SetActive(false);
             buttonActiveEffectObj.SetActive(true);

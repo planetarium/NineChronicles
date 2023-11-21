@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -13,7 +11,7 @@ namespace Nekoyume
         {
             var scriptPlayable = ScriptPlayable<TimeScaleBehaviour>.Create(graph, inputCount);
             var behaviour = scriptPlayable.GetBehaviour();
-            behaviour.timeScale = 1;
+            behaviour.timeScale = Game.Prologue.DefaultTimeScale;
             return scriptPlayable;
         }
     }

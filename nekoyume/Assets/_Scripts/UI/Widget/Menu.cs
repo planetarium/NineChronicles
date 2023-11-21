@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Lib9c;
-using Libplanet.Crypto;
 using Libplanet.Types.Assets;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -47,74 +46,56 @@ namespace Nekoyume.UI
         private const string FirstOpenMimisbrunnrKeyFormat =
             "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
-        [SerializeField]
-        private MainMenu btnQuest;
+        [SerializeField] private MainMenu btnQuest;
 
-        [SerializeField]
-        private MainMenu btnCombination;
+        [SerializeField] private MainMenu btnCombination;
 
-        [SerializeField]
-        private MainMenu btnShop;
+        [SerializeField] private MainMenu btnShop;
 
-        [SerializeField]
-        private MainMenu btnRanking;
+        [SerializeField] private MainMenu btnRanking;
 
-        [SerializeField]
-        private MainMenu btnStaking;
+        [SerializeField] private MainMenu btnStaking;
 
-        [SerializeField]
-        private MainMenu btnWorldBoss;
+        [SerializeField] private MainMenu btnWorldBoss;
 
-        [SerializeField]
-        private MainMenu btnDcc;
+        [SerializeField] private MainMenu btnDcc;
 
         [SerializeField]
         private MainMenu btnPatrolReward;
 
         [SerializeField]
+        private MainMenu btnSeasonPass;
+
+        [SerializeField]
         private SpeechBubble[] speechBubbles;
 
-        [SerializeField]
-        private GameObject shopExclamationMark;
+        [SerializeField] private GameObject shopExclamationMark;
 
-        [SerializeField]
-        private GameObject combinationExclamationMark;
+        [SerializeField] private GameObject combinationExclamationMark;
 
-        [SerializeField]
-        private GameObject questExclamationMark;
+        [SerializeField] private GameObject questExclamationMark;
 
-        [SerializeField]
-        private GameObject mimisbrunnrExclamationMark;
+        [SerializeField] private GameObject mimisbrunnrExclamationMark;
 
-        [SerializeField]
-        private GameObject eventDungeonExclamationMark;
+        [SerializeField] private GameObject eventDungeonExclamationMark;
 
-        [SerializeField]
-        private TextMeshProUGUI eventDungeonTicketsText;
+        [SerializeField] private TextMeshProUGUI eventDungeonTicketsText;
 
-        [SerializeField]
-        private Image stakingLevelIcon;
+        [SerializeField] private Image stakingLevelIcon;
 
-        [SerializeField]
-        private GuidedQuest guidedQuest;
+        [SerializeField] private GuidedQuest guidedQuest;
 
-        [SerializeField]
-        private Button playerButton;
+        [SerializeField] private Button playerButton;
 
-        [SerializeField]
-        private Button petButton;
+        [SerializeField] private Button petButton;
 
-        [SerializeField]
-        private StakeIconDataScriptableObject stakeIconData;
+        [SerializeField] private StakeIconDataScriptableObject stakeIconData;
 
-        [SerializeField]
-        private RectTransform player;
+        [SerializeField] private RectTransform player;
 
-        [SerializeField]
-        private RectTransform playerPosition;
+        [SerializeField] private RectTransform playerPosition;
 
-        [SerializeField]
-        private Transform titleSocket;
+        [SerializeField] private Transform titleSocket;
 
         private Coroutine _coLazyClose;
 
@@ -160,6 +141,7 @@ namespace Nekoyume.UI
                     btnWorldBoss.GetComponent<Button>(),
                     btnDcc.GetComponent<Button>(),
                     btnPatrolReward.GetComponent<Button>(),
+                    btnSeasonPass.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button =>
                     button.interactable = stateType == AnimationStateType.Shown);
@@ -534,14 +516,15 @@ namespace Nekoyume.UI
 
         public void StakingClick()
         {
+#if UNITY_ANDROID || UNITY_IOS
+            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+#else
             if (!btnStaking.IsUnlocked)
             {
                 return;
             }
-#if UNITY_ANDROID
-            Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-#else
+
             Find<StakingPopup>().Show();
 #endif
         }
@@ -582,7 +565,7 @@ namespace Nekoyume.UI
             }
 
             AudioController.PlayClick();
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
                 "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
 #else
@@ -601,6 +584,20 @@ namespace Nekoyume.UI
             Find<PatrolRewardPopup>().Show();
         }
 
+        public void SeasonPassClick()
+        {
+            if (!btnSeasonPass.IsUnlocked || Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData == null)
+            {
+                return;
+            }
+            if(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value == null)
+            {
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_SEASONPASS_CONNECT_FAIL"), NotificationCell.NotificationType.Notification);
+                return;
+            }
+            Find<SeasonPass>().Show();
+        }
+
         public void UpdateGuideQuest(AvatarState avatarState)
         {
             guidedQuest.UpdateList(avatarState);
@@ -610,6 +607,7 @@ namespace Nekoyume.UI
         {
             Analyzer.Instance.Track("Unity/Lobby/Show");
             SubscribeAtShow();
+            Time.timeScale = Prologue.DefaultTimeScale;
 
             if (!(_coLazyClose is null))
             {
@@ -753,7 +751,11 @@ namespace Nekoyume.UI
         {
             var player = Game.Game.instance.Stage.GetPlayer();
             player.DisableHudContainer();
-            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+            HackAndSlash(
+                States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var targetStage)
+                    ? targetStage + 1
+                    : 1);
         }
 
         // Invoke from TutorialController.PlayAction() by TutorialTargetType

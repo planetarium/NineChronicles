@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderers;
@@ -19,6 +20,7 @@ using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI
 {
@@ -80,7 +82,7 @@ namespace Nekoyume.UI
 
         private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
-        
+
         protected override void Awake()
         {
             base.Awake();
@@ -104,13 +106,17 @@ namespace Nekoyume.UI
         public async UniTaskVoid ShowAsync(
             bool ignoreShowAnimation = false)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Arena);
             await UniTask.WhenAll(RxProps.ArenaInfoTuple.UpdateAsync(),
-                RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),
+                RxProps.ArenaInformationOrderedWithScore.UpdateAsync(),
                 States.Instance.GrandFinaleStates
                     .UpdateGrandFinaleParticipantsOrderedWithScoreAsync());
             loading.Close();
+            sw.Stop();
+            Debug.Log($"[Arena] Loading Complete. {sw.Elapsed}");
             Show(ignoreShowAnimation);
         }
 
@@ -185,7 +191,7 @@ namespace Nekoyume.UI
                     Find<LoadingScreen>().Close();
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaParticipantsOrderedWithScore.Value);
+                        RxProps.ArenaInformationOrderedWithScore.Value);
                     return;
                 case InnerState.Idle:
                     UpdateBottomButtons();
@@ -223,12 +229,19 @@ namespace Nekoyume.UI
         private void UpdateScrolls()
         {
             var scrollData = GetScrollData();
-            var selectedRoundData = TableSheets.Instance.ArenaSheet.TryGetCurrentRound(
+            var arenaSheet = TableSheets.Instance.ArenaSheet;
+            var selectedRoundData = arenaSheet.TryGetCurrentRound(
                 Game.Game.instance.Agent.BlockIndex,
                 out var outCurrentRoundData)
                 ? outCurrentRoundData
                 : null;
-            var selectedIndex = selectedRoundData?.Round - 1 ?? 0;
+            var selectedIndex = 0;
+            if (selectedRoundData is not null)
+            {
+                selectedIndex = arenaSheet[selectedRoundData.ChampionshipId].Round
+                    .IndexOf(selectedRoundData);
+            }
+
             _scroll.SetData(scrollData, selectedIndex);
             _barScrollCellCount = scrollData.Count;
             _barScroll.SetData(
@@ -344,7 +357,7 @@ namespace Nekoyume.UI
                     Close();
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
-                        RxProps.ArenaParticipantsOrderedWithScore.Value);
+                        RxProps.ArenaInformationOrderedWithScore.Value);
                     return;
                 }
 
@@ -672,6 +685,10 @@ namespace Nekoyume.UI
             Find<StageInformation>().Close();
             Find<BattlePreparation>().Close();
             Find<Grind>().Show();
+        }
+        public void TutorialActionSeasonPassGuidePopup()
+        {
+            Widget.Find<SeasonPassNewPopup>().Show();
         }
     }
 }

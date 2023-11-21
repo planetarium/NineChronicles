@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class Widget : MonoBehaviour
     {
         protected enum AnimationStateType
@@ -132,7 +133,7 @@ namespace Nekoyume.UI
                 Debug.LogWarning($"Duplicated create widget: {type}");
                 Pool[type].gameObject.SetActive(activate);
 
-                return (T) Pool[type].widget;
+                return (T)Pool[type].widget;
             }
 
             var widgetType = res.GetComponent<T>().WidgetType;
@@ -170,10 +171,15 @@ namespace Nekoyume.UI
             var type = typeof(T);
             if (!Pool.TryGetValue(type, out var model))
             {
+#if UNITY_ANDROID || UNITY_IOS
+                // Memory optimization
+                return MainCanvas.instance.AddWidget<T>();
+#else
                 throw new WidgetNotFoundException(type.Name);
+#endif
             }
 
-            return (T) model.widget;
+            return (T)model.widget;
         }
 
         public static bool TryFind<T>(out T widget) where T : Widget
@@ -185,7 +191,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            widget = (T) model.widget;
+            widget = (T)model.widget;
             return true;
         }
 
@@ -205,7 +211,8 @@ namespace Nekoyume.UI
             if (go)
             {
                 var widget = go.GetComponent<T>();
-                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                go.transform.SetParent(
+                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
                 return widget;
             }
             else
@@ -216,7 +223,8 @@ namespace Nekoyume.UI
                 go.name = widgetName;
                 pool.Add(go, 1);
                 var widget = go.GetComponent<T>();
-                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                go.transform.SetParent(
+                    MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
 
                 return widget;
             }
@@ -261,6 +269,7 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
+            Debug.Log($"[Widget][{GetType().Name}] Show({ignoreShowAnimation}) invoked.");
             if (_coClose is not null)
             {
                 StopCoroutine(_coClose);
@@ -277,6 +286,10 @@ namespace Nekoyume.UI
             AnimationState.Value = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
+#if UNITY_ANDROID || UNITY_IOS
+            transform.SetAsLastSibling();
+#endif
+
             if (!Animator || ignoreShowAnimation)
             {
                 AnimationState.Value = AnimationStateType.Shown;
@@ -292,8 +305,10 @@ namespace Nekoyume.UI
             _isClosed = false;
             Close(ignoreCloseAnimation);
         }
+
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
+            Debug.Log($"[Widget][{GetType().Name}] Close({ignoreCloseAnimation}) invoked.");
             if (WidgetStack.Count > 0 &&
                 WidgetStack.Peek() == gameObject)
             {
@@ -391,17 +406,28 @@ namespace Nekoyume.UI
 
         public void CloseWithOtherWidgets()
         {
-            var deletableWidgets = FindWidgets().Where(widget =>
-                widget is not SystemWidget &&
-                widget is not MessageCatTooltip &&
-                widget is not HeaderMenuStatic &&
-                widget is not MaterialTooltip &&
-                widget is not ShopBuy &&
-                widget is not ShopSell &&
-                widget.IsActive());
-            foreach (var widget in deletableWidgets)
+            try
             {
-                widget.Close(true);
+                var deletableWidgets = FindWidgets().Where(widget =>
+                    widget is not SystemWidget &&
+                    widget is not MessageCatTooltip &&
+                    widget is not HeaderMenuStatic &&
+                    widget is not MaterialTooltip &&
+                    widget is not ShopBuy &&
+                    widget is not ShopSell &&
+                    widget.IsActive()).ToList();
+                for (var i = deletableWidgets.Count - 1; i >= 0; i--)
+                {
+                    var widget = deletableWidgets[i];
+                    if (widget)
+                    {
+                        widget.Close(true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             Find<Menu>().Close(true);
@@ -494,6 +520,12 @@ namespace Nekoyume.UI
                 WidgetHandler.Instance.HideAllMessageCat();
                 CloseWidget?.Invoke();
             }
+        }
+
+        public static bool Remove<T>(T widget) where T : Widget
+        {
+            Destroy(widget.gameObject);
+            return Pool.Remove(typeof(T));
         }
     }
 }

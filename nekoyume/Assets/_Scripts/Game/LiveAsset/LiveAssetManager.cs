@@ -11,6 +11,7 @@ using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using Nekoyume.L10n;
 
 namespace Nekoyume.Game.LiveAsset
 {
@@ -21,6 +22,8 @@ namespace Nekoyume.Game.LiveAsset
         private const string AlreadyReadNoticeKey = "AlreadyReadNoticeList";
         private static readonly Vector2 Pivot = new(0.5f, 0.5f);
         private const string CLOEndpointPrefix = "https://raw.githubusercontent.com/planetarium/NineChronicles.LiveAssets/main/Assets/Json/CloForAppVersion/clo-app-ver-";
+        private const string KoreanImagePostfix = "_KR";
+        private const string JapaneseImagePostfix = "_JP";
 
         private readonly List<EventNoticeData> _bannerData = new();
         private readonly ReactiveCollection<string> _alreadyReadNotices = new();
@@ -56,8 +59,14 @@ namespace Nekoyume.Game.LiveAsset
         public void InitializeData()
         {
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
+            var noticeUrl = L10nManager.CurrentLanguage switch
+            {
+                LanguageType.Korean => _endpoint.NoticeJsonKoreanUrl,
+                LanguageType.Japanese => _endpoint.NoticeJsonJapaneseUrl,
+                _ => _endpoint.NoticeJsonUrl
+            };
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.EventJsonUrl, SetEventData));
-            StartCoroutine(RequestManager.instance.GetJson(_endpoint.NoticeJsonUrl, SetNotices));
+            StartCoroutine(RequestManager.instance.GetJson(noticeUrl, SetNotices));
             StartCoroutine(RequestManager.instance.GetJson(_endpoint.GameConfigJsonUrl, SetLiveAssetData));
         }
 
@@ -71,10 +80,18 @@ namespace Nekoyume.Game.LiveAsset
 #endif
             var cloEndpoint = $"{CLOEndpointPrefix}{Application.version.Replace(".", "-")}{osKey}.json";
             Debug.Log($"[InitializeApplicationCLO] cloEndpoint: {cloEndpoint}");
-            yield return StartCoroutine(RequestManager.instance.GetJson(cloEndpoint, SetCommandLineOptions));
+            yield return StartCoroutine(
+                RequestManager.instance.GetJson(
+                    cloEndpoint,
+                    SetCommandLineOptions));
 
-            if(CommandLineOptions == null)
-                yield return StartCoroutine(RequestManager.instance.GetJson(_endpoint.CommandLineOptionsJsonUrl, SetCommandLineOptions));
+            if (CommandLineOptions == null)
+            {
+                yield return StartCoroutine(
+                    RequestManager.instance.GetJson(
+                        _endpoint.CommandLineOptionsJsonUrl,
+                        SetCommandLineOptions));
+            }
         }
 
         public void AddToCheckedList(string key)
@@ -119,20 +136,9 @@ namespace Nekoyume.Game.LiveAsset
                 CommandLineOptions = options;
             }
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                AllowTrailingCommas = true,
-                Converters =
-                {
-                    new CommandLineOptions.StringEnumerableConverter(),
-                },
-                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                ReadCommentHandling = JsonCommentHandling.Skip,
-            };
-
-            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(response, jsonOptions);
+            CommandLineOptions = JsonSerializer.Deserialize<CommandLineOptions>(
+                response,
+                CommandLineOptions.JsonOptions);
         }
 
         private async UniTaskVoid MakeNoticeData(IEnumerable<EventBannerData> bannerData)
@@ -189,8 +195,14 @@ namespace Nekoyume.Game.LiveAsset
 
         private async UniTask<Sprite> GetTexture(string textureType, string imageName)
         {
+            var postfix = L10nManager.CurrentLanguage switch
+            {
+                LanguageType.Korean => KoreanImagePostfix,
+                LanguageType.Japanese => JapaneseImagePostfix,
+                _ => string.Empty
+            };
             var www = UnityWebRequestTexture.GetTexture(
-                $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}.png");
+                $"{_endpoint.ImageRootUrl}/{textureType}/{imageName}{postfix}.png");
             await www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)

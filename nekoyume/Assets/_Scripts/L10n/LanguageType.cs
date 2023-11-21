@@ -104,6 +104,8 @@ namespace Nekoyume.L10n
         ChineseTraditional,
 
         Tagalog,
+
+        Vietnam,
     }
 
     public class LanguageTypeComparer : IEqualityComparer<LanguageType>
@@ -158,6 +160,8 @@ namespace Nekoyume.L10n
                     return LanguageType.ChineseTraditional;
                 case "tl":
                     return LanguageType.Tagalog;
+                case "vi":
+                    return LanguageType.Vietnam;
                 default:
                     Debug.LogWarning($"Does not support LanguageType for {iso396}");
                     return LanguageType.English;

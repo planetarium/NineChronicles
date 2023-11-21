@@ -28,11 +28,11 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
-        private const int CreateAvatarRewardTutorialId = 2;
+        private const int CreateAvatarRewardTutorialId = 50000;
         private static string CheckPointKey =>
             $"Tutorial_Check_Point_{Game.Game.instance.States.CurrentAvatarKey}";
 
-        public static readonly int[] TutorialStageArray = { 3, 5, 7, 10, 15, 23, 35, 40, 45, 49 };
+        public static readonly int[] TutorialStageArray = { 5, 7, 10, 15, 23, 35, 40, 45, 49 };
 
         public bool IsPlaying => _tutorial.IsActive();
 
@@ -152,6 +152,12 @@ namespace Nekoyume.UI
                 WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
             });
 
+        }
+
+        // force-set tutorial target. not recommend.
+        public void SetTutorialTarget(TutorialTarget target)
+        {
+            _targets[target.type] = target.rectTransform;
         }
 
         private void PlayAction(TutorialActionType actionType)
@@ -294,8 +300,11 @@ namespace Nekoyume.UI
                 {
                     for (var i = 0; i < count; i++)
                     {
-                        var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
-                        mailRewards.Add(new MailReward(item, 1));
+                        if (itemRow.ItemSubType != ItemSubType.Aura)
+                        {
+                            var item = ItemFactory.CreateItem(itemRow, new ActionRenderHandler.LocalRandom(0));
+                            mailRewards.Add(new MailReward(item, 1));
+                        }
                     }
                 }
             }
@@ -305,6 +314,52 @@ namespace Nekoyume.UI
                     .Select(row =>
                         new MailReward(row.Currency * row.Quantity, row.Quantity)));
             Widget.Find<RewardScreen>().Show(mailRewards);
+        }
+
+        public void RegisterWidget(Widget widget)
+        {
+            foreach (var target in widget.tutorialTargets.Where(target => target != null))
+            {
+                if (_targets.ContainsKey(target.type))
+                {
+                    Debug.LogError($"Duplication Tutorial Targets AlreadyRegisterd : {_targets[target.type].gameObject.name}  TryRegisterd : {target.rectTransform.gameObject.name}");
+                    continue;
+                }
+                _targets.Add(target.type, target.rectTransform);
+            }
+
+            foreach (var action in widget.tutorialActions)
+            {
+                var type = widget.GetType();
+                var methodInfo = type.GetMethod(action.ToString());
+                if (methodInfo != null)
+                {
+                    if (_actions.ContainsKey(action))
+                    {
+                        Debug.LogError($"Duplication Tutorial {action} Action AlreadyRegisterd : {_actions[action].ActionWidget.name}  TryRegisterd : {widget.name}");
+                        continue;
+                    }
+                    _actions.Add(action, new TutorialAction(widget, methodInfo));
+                }
+            }
+        }
+
+        public void UnregisterWidget(Widget widget)
+        {
+            foreach (var target in widget.tutorialTargets.Where(target => target != null))
+            {
+                _targets.Remove(target.type);
+            }
+
+            foreach (var action in widget.tutorialActions)
+            {
+                var type = widget.GetType();
+                var methodInfo = type.GetMethod(action.ToString());
+                if (methodInfo != null)
+                {
+                    _actions.Remove(action);
+                }
+            }
         }
     }
 }

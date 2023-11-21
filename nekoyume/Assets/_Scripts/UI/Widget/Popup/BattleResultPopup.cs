@@ -27,6 +27,7 @@ namespace Nekoyume.UI
 {
     using Nekoyume.Helper;
     using UniRx;
+    using UnityEngine.Serialization;
 
     public class BattleResultPopup : PopupWidget
     {
@@ -187,10 +188,16 @@ namespace Nekoyume.UI
         private Button craftButton;
 
         [SerializeField]
-        private Button foodButton;
+        [FormerlySerializedAs("foodButton")]
+        private Button starButton;
 
         [SerializeField]
         private ActionPoint actionPoint;
+
+        [SerializeField]
+        private GameObject[] seasonPassObjs;
+        [SerializeField]
+        private TextMeshProUGUI seasonPassCourageAmount;
 
         private Coroutine _coUpdateBottomText;
 
@@ -221,7 +228,7 @@ namespace Nekoyume.UI
 
             shopButton.OnClickAsObservable().Subscribe(_ => GoToProduct()).AddTo(gameObject);
             craftButton.OnClickAsObservable().Subscribe(_ => GoToCraft()).AddTo(gameObject);
-            foodButton.OnClickAsObservable().Subscribe(_ => GoToFood()).AddTo(gameObject);
+            starButton.OnClickAsObservable().Subscribe(_ => OnClickStage()).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
@@ -416,6 +423,9 @@ namespace Nekoyume.UI
             actionPoint.SetEventTriggerEnabled(true);
 
             base.Show();
+
+            RefreshSeasonPassCourageAmount();
+
             closeButton.gameObject.SetActive(
                 model.StageID >= Battle.RequiredStageForExitButton ||
                 model.LastClearedStageId >= Battle.RequiredStageForExitButton);
@@ -591,8 +601,7 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
-            var canExit = SharedModel.IsClear &&
-                          (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
+            var canExit = (SharedModel.StageID >= Battle.RequiredStageForExitButton ||
                            SharedModel.LastClearedStageId >= Battle.RequiredStageForExitButton);
             if (!SharedModel.IsClear)
             {
@@ -605,13 +614,21 @@ namespace Nekoyume.UI
                                       SharedModel.StageType == StageType.EventDungeon;
             if (isActionPointEnough)
             {
-                repeatButton.gameObject.SetActive(canExit);
-                repeatButton.interactable = canExit;
+                if (SharedModel.IsClear)
+                {
+                    stagePreparationButton.gameObject.SetActive(canExit);
+                    stagePreparationButton.interactable = canExit;
+                }
+                else
+                {
+                    repeatButton.gameObject.SetActive(canExit);
+                    repeatButton.interactable = canExit;
+                }
             }
             else
             {
-                stagePreparationButton.gameObject.SetActive(canExit);
-                stagePreparationButton.interactable = canExit;
+                stagePreparationButton.gameObject.SetActive(canExit && !SharedModel.IsClear);
+                stagePreparationButton.interactable = canExit && !SharedModel.IsClear;
             }
 
             if (!SharedModel.IsEndStage && isActionPointEnough && SharedModel.IsClear)
@@ -918,7 +935,7 @@ namespace Nekoyume.UI
                 switch (SharedModel.StageType)
                 {
                     case StageType.HackAndSlash:
-                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, true);
                         stageNumber = SharedModel.StageID;
                         break;
 
@@ -1041,6 +1058,35 @@ namespace Nekoyume.UI
 
             canvasGroup.alpha = 0f;
             canvasGroup.blocksRaycasts = false;
+        }
+
+        private void RefreshSeasonPassCourageAmount()
+        {
+            if (Game.Game.instance.SeasonPassServiceManager.CurrentSeasonPassData != null)
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(true);
+                }
+                int playCount = 0;
+                try
+                {
+                    playCount = SharedModel.ClearedCountForEachWaves.Sum();
+                }
+                catch
+                {
+                    Debug.LogError("SharedModel.ClearedCountForEachWaves Sum Failed");
+                }
+
+                seasonPassCourageAmount.text = $"+{Game.Game.instance.SeasonPassServiceManager.AdventureCourageAmount * playCount}";
+            }
+            else
+            {
+                foreach (var item in seasonPassObjs)
+                {
+                    item.SetActive(false);
+                }
+            }
         }
     }
 }
