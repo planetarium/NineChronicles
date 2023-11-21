@@ -423,13 +423,18 @@ namespace Nekoyume.UI
         {
             Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo invoked.");
             var planetAccountInfo = planetContext?.SelectedPlanetAccountInfo;
-            if (planetAccountInfo?.AgentAddress is null ||
-                !(planetAccountInfo.IsAgentPledged.HasValue &&
-                planetAccountInfo.IsAgentPledged.Value))
+            if (planetAccountInfo?.AgentAddress is null)
             {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null" +
-                          " or planetAccountInfo.IsAgentPledged is null or false");
+                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
                 planetAccountInfoText.text = string.Empty;
+                return;
+            }
+
+            if (!(planetAccountInfo.IsAgentPledged.HasValue &&
+                  planetAccountInfo.IsAgentPledged.Value))
+            {
+                Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo.IsAgentPledged is false.");
+                planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_CHARACTER");
                 return;
             }
 
