@@ -197,7 +197,9 @@ namespace Nekoyume.Game.LiveAsset
         {
             var postfix = L10nManager.CurrentLanguage switch
             {
-                LanguageType.Korean => KoreanImagePostfix,
+                LanguageType.Korean => Platform.IsMobilePlatform()
+                    ? KoreanImagePostfix
+                    : string.Empty,
                 LanguageType.Japanese => JapaneseImagePostfix,
                 _ => string.Empty
             };
