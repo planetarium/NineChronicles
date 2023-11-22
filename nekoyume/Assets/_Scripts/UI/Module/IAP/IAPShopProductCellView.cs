@@ -125,7 +125,12 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             var isDiscount = _data.Discount > 0;
-            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == _data.Sku);
+            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
+            if(_puchasingData == null)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
 
             switch (_data.Size)
             {
