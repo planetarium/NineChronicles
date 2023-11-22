@@ -47,9 +47,15 @@ namespace Nekoyume.Game.OAuth
                 {
                     case SignInState.Signed:
                         Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Signed");
+
+                        var signedEvt = new AirbridgeEvent("Intro_GoogleSignIn_Signed");
+                        AirbridgeUnity.TrackEvent(signedEvt);
                         break;
                     case SignInState.Canceled:
                         Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Canceled");
+
+                        var canceledEvt = new AirbridgeEvent("Intro_GoogleSignIn_Canceled");
+                        AirbridgeUnity.TrackEvent(canceledEvt);
                         break;
                 }
             });

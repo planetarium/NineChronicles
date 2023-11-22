@@ -18,6 +18,11 @@ namespace Nekoyume.UI
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             Analyzer.Instance.Track("Unity/SystemPopupImpression");
+
+            var evt = new AirbridgeEvent("System_Popup_Impression");
+            evt.SetValue(Game.Game.instance.Stage.stageId);
+            AirbridgeUnity.TrackEvent(evt);
+
             if (Game.Game.instance.IsInWorld)
             {
                 var props = new Dictionary<string, Value>()
@@ -25,6 +30,10 @@ namespace Nekoyume.UI
                     ["StageId"] = Game.Game.instance.Stage.stageId,
                 };
                 Analyzer.Instance.Track("Unity/Stage Exit Crash", props);
+
+                var crashEvt = new AirbridgeEvent("Stage_Exit_Crash");
+                evt.SetValue(Game.Game.instance.Stage.stageId);
+                AirbridgeUnity.TrackEvent(crashEvt);
             }
 
             base.Show(title, content, labelOK, localize);

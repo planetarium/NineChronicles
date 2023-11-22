@@ -106,15 +106,23 @@ namespace Nekoyume.Blockchain
                     var currentAvatarState = States.Instance.CurrentAvatarState;
                     if (currentAvatarState is not null)
                     {
+                        var type = actionType.TypeIdentifier.Inspect(false);
                         Analyzer.Instance.Track(
                             "Unity/ActionRender",
                             new Dictionary<string, Value>
                             {
-                                ["ActionType"] = actionType.TypeIdentifier.Inspect(false),
+                                ["ActionType"] = type,
                                 ["Elapsed"] = elapsed,
                                 ["AvatarAddress"] = currentAvatarState.address.ToString(),
                                 ["AgentAddress"] = agentState.address.ToString(),
                             });
+
+                        var category = $"ActionRender_{type}";
+                        var evt = new AirbridgeEvent(category);
+                        evt.SetValue(elapsed);
+                        evt.AddCustomAttribute("agent-address", agentState.address.ToString());
+                        evt.AddCustomAttribute("avatar-address", currentAvatarState.address.ToString());
+                        AirbridgeUnity.TrackEvent(evt);
                     }
 
                     var actionTypeName = actionType.TypeIdentifier.Inspect(false);
@@ -1919,12 +1927,19 @@ namespace Nekoyume.Blockchain
                 Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill",
                     new Dictionary<string, Value>
                     {
-                        ["RandomSkillId"] = eval.Action.StageBuffId,
+                        ["RandomSkillId"] = eval.Action.StageBuffId.Value,
                         ["IsCleared"] = simulator.Log.IsClear,
                         ["AvatarAddress"] =
                             States.Instance.CurrentAvatarState.address.ToString(),
                         ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                     });
+
+                var evt = new AirbridgeEvent("Use_Crystal_Bonus_Skill");
+                evt.SetValue(eval.Action.StageBuffId.Value);
+                evt.AddCustomAttribute("is-clear", simulator.Log.IsClear);
+                evt.AddCustomAttribute("agent-address", States.Instance.AgentState.address.ToString());
+                evt.AddCustomAttribute("avatar-address", States.Instance.CurrentAvatarState.address.ToString());
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             if (Widget.Find<LoadingScreen>().IsActive())

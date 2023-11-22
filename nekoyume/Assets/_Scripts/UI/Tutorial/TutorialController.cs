@@ -279,6 +279,11 @@ namespace Nekoyume.UI
                 ["Id"] = id,
             };
             Analyzer.Instance.Track("Unity/Tutorial progress", props);
+
+            var evt = new AirbridgeEvent("Tutorial_Progress");
+            evt.SetValue(id);
+            AirbridgeUnity.TrackEvent(evt);
+
         }
 
         private IEnumerator CoShowTutorialRewardScreen()

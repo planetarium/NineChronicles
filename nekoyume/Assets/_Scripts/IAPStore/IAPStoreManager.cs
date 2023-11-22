@@ -170,6 +170,13 @@ namespace Nekoyume.IAPStore
                 "Unity/Shop/IAP/PurchaseResult",
                 ("product-id", p.productId),
                 ("result", p.reason.ToString()));
+
+            var evt = new AirbridgeEvent("IAP_Failed");
+            evt.SetAction(p.productId);
+            evt.SetLabel(p.reason.ToString());
+            evt.AddCustomAttribute("product-id", p.productId);
+            AirbridgeUnity.TrackEvent(evt);
+
             if (p.reason == PurchaseFailureReason.PurchasingUnavailable)
             {
                 // IAP may be disabled in device settings.
@@ -209,14 +216,14 @@ namespace Nekoyume.IAPStore
                         ("result", "Complete"),
                         ("transaction-id", e.purchasedProduct.transactionID));
 
-                    AirbridgeEvent @event = new AirbridgeEvent("IAP");
-                    @event.SetAction(e.purchasedProduct.definition.id);
-                    @event.SetLabel("iap");
-                    @event.SetCurrency(e.purchasedProduct.metadata.isoCurrencyCode);
-                    @event.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
-                    @event.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
-                    @event.SetTransactionId(e.purchasedProduct.transactionID);
-                    AirbridgeUnity.TrackEvent(@event);
+                    var evt = new AirbridgeEvent("IAP");
+                    evt.SetAction(e.purchasedProduct.definition.id);
+                    evt.SetLabel("iap");
+                    evt.SetCurrency(e.purchasedProduct.metadata.isoCurrencyCode);
+                    evt.SetValue((double)e.purchasedProduct.metadata.localizedPrice);
+                    evt.AddCustomAttribute("product-id", e.purchasedProduct.definition.id);
+                    evt.SetTransactionId(e.purchasedProduct.transactionID);
+                    AirbridgeUnity.TrackEvent(evt);
 
                     popup.Show(
                         "UI_COMPLETED",
