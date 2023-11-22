@@ -1125,7 +1125,11 @@ namespace Nekoyume.Game
                     var clickRetry = false;
                     var popup = Widget.Find<TitleOneButtonSystem>();
                     popup.Show("Time Out", "Please try again", "Retry", false);
-                    popup.SubmitCallback = () => clickRetry = true;
+                    popup.SubmitCallback = () =>
+                    {
+                        clickRetry = true;
+                        popup.Close();
+                    };
                     yield return new WaitUntil(() => clickRetry);
                 }
             }
