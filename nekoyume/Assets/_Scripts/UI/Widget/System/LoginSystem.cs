@@ -106,16 +106,7 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            // Default KeyStore in android is invalid, we should redefine it.
-            if (Platform.IsMobilePlatform())
-            {
-                string dataPath = Platform.PersistentDataPath;
-                KeyStore = new Web3KeyStore(dataPath + "/keystore");
-            }
-            else
-            {
-                KeyStore = Web3KeyStore.DefaultKeyStore;
-            }
+            InitializeKeyStore(null);
 
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
@@ -464,15 +455,7 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            if (Platform.IsMobilePlatform())
-            {
-                var dataPath = Platform.GetPersistentDataPath("keystore");
-                KeyStore ??= path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
-            }
-            else
-            {
-                KeyStore ??= path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
-            }
+            InitializeKeyStore(path);
 
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
@@ -557,7 +540,7 @@ namespace Nekoyume.UI
                 var evt = new AirbridgeEvent("Login_2");
                 AirbridgeUnity.TrackEvent(evt);
 
-                KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
+                InitializeKeyStore(null);
                 _privateKey = new PrivateKey();
                 CreateProtectedPrivateKey(_privateKey);
                 Login = _privateKey is not null;
@@ -775,6 +758,30 @@ namespace Nekoyume.UI
                 accountImage.SetNativeSize();
                 accountAddressText.text = address.ToString();
                 accountAddressText.gameObject.SetActive(true);
+            }
+        }
+
+        private void InitializeKeyStore(string path)
+        {
+            Debug.Log($"[LoginSystem] InitializeKeyStore invoked: path({path})");
+
+            if (KeyStore is not null)
+            {
+                Debug.Log("[LoginSystem] InitializeKeyStore: KeyStore is not null");
+                return;
+            }
+
+            if (Platform.IsMobilePlatform())
+            {
+                KeyStore = path is null
+                    ? new Web3KeyStore(Platform.GetPersistentDataPath("keystore"))
+                    : new Web3KeyStore(path);
+            }
+            else
+            {
+                KeyStore = path is null
+                    ? Web3KeyStore.DefaultKeyStore
+                    : new Web3KeyStore(path);
             }
         }
     }
