@@ -83,28 +83,24 @@ namespace Nekoyume.UI.Scroller
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             var newItemsSource = planetAccountInfos.Select(e =>
+            {
+                if (!planetRegistry.TryGetPlanetInfoById(e.PlanetId, out var planetInfo))
                 {
-                    if (!planetRegistry.TryGetPlanetInfoById(e.PlanetId, out var planetInfo))
-                    {
-                        return new PlanetAccountInfoCell.ViewModel
-                        {
-                            PlanetName = "null",
-                            PlanetAccountInfo = e,
-                            NeedToImportKey = needToImportKey,
-                        };
-                    }
-
                     return new PlanetAccountInfoCell.ViewModel
                     {
-                        PlanetName = textInfo.ToTitleCase(planetInfo.Name),
+                        PlanetName = "null",
                         PlanetAccountInfo = e,
                         NeedToImportKey = needToImportKey,
                     };
-                }).OrderByDescending(e => e.PlanetAccountInfo.PlanetId.Equals(PlanetId.Odin) ||
-                                          e.PlanetAccountInfo.PlanetId.Equals(PlanetId.OdinInternal)
-                    ? default
-                    : Guid.NewGuid())
-                .ToArray();
+                }
+
+                return new PlanetAccountInfoCell.ViewModel
+                {
+                    PlanetName = textInfo.ToTitleCase(planetInfo.Name),
+                    PlanetAccountInfo = e,
+                    NeedToImportKey = needToImportKey,
+                };
+            }).ToArray();
             UpdateContents(newItemsSource);
         }
     }

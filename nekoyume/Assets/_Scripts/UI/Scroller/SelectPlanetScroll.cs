@@ -68,43 +68,39 @@ namespace Nekoyume.UI.Scroller
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             var newItemsSource = planetRegistry.PlanetInfos.Select(e =>
+            {
+                if (e is null)
                 {
-                    if (e is null)
+                    return new SelectPlanetCell.ViewModel
                     {
-                        return new SelectPlanetCell.ViewModel
-                        {
-                            PlanetId = default,
-                            PlanetName = "null",
-                            IsSelected = false,
-                            IsNew = false,
-                        };
-                    }
+                        PlanetId = default,
+                        PlanetName = "null",
+                        IsSelected = false,
+                        IsNew = false,
+                    };
+                }
 
-                    if (selectedPlanetId is null)
-                    {
-                        return new SelectPlanetCell.ViewModel
-                        {
-                            PlanetId = e.ID,
-                            PlanetName = textInfo.ToTitleCase(e.Name),
-                            IsSelected = false,
-                            IsNew = !(e.ID.Equals(PlanetId.Odin) ||
-                                      e.ID.Equals(PlanetId.OdinInternal)),
-                        };
-                    }
-
+                if (selectedPlanetId is null)
+                {
                     return new SelectPlanetCell.ViewModel
                     {
                         PlanetId = e.ID,
                         PlanetName = textInfo.ToTitleCase(e.Name),
-                        IsSelected = e.ID.Equals(selectedPlanetId),
+                        IsSelected = false,
                         IsNew = !(e.ID.Equals(PlanetId.Odin) ||
                                   e.ID.Equals(PlanetId.OdinInternal)),
                     };
-                }).OrderByDescending(e => e.PlanetId.Equals(PlanetId.Odin) ||
-                                          e.PlanetId.Equals(PlanetId.OdinInternal)
-                    ? default
-                    : Guid.NewGuid())
-                .ToArray();
+                }
+
+                return new SelectPlanetCell.ViewModel
+                {
+                    PlanetId = e.ID,
+                    PlanetName = textInfo.ToTitleCase(e.Name),
+                    IsSelected = e.ID.Equals(selectedPlanetId),
+                    IsNew = !(e.ID.Equals(PlanetId.Odin) ||
+                              e.ID.Equals(PlanetId.OdinInternal)),
+                };
+            }).ToArray();
             UpdateContents(newItemsSource);
         }
 
