@@ -458,9 +458,12 @@ namespace Nekoyume.Game
                 QuitWithMessage("planetContext.CurrentPlanetInfo is null in mobile.");
                 yield break;
             }
-
-            Analyzer.SetPlanetId(planetContext.SelectedPlanetInfo.ID.ToString());
 #endif
+
+            yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
+            Analyzer.SetPlanetId(CurrentPlanetId?.ToString());
+            Debug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
+
             if (agentInitializeSucceed)
             {
                 Analyzer.SetAgentAddress(Agent.Address.ToString());
@@ -473,9 +476,6 @@ namespace Nekoyume.Game
                 QuitWithAgentConnectionError(null);
                 yield break;
             }
-
-            yield return UpdateCurrentPlanetIdAsync(planetContext).ToCoroutine();
-            Debug.Log($"[Game] Start()... CurrentPlanetId updated. {CurrentPlanetId?.ToString()}");
 
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
