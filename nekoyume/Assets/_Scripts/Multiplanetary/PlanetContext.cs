@@ -25,12 +25,12 @@ namespace Nekoyume.Multiplanetary
 
         public bool HasError => !string.IsNullOrEmpty(Error);
 
-        public bool HasAccount => PlanetAccountInfos?.Any() ?? false;
+        public bool HasPledgedAccount => PlanetAccountInfos?.Any(e =>
+            e.IsAgentPledged.HasValue &&
+            e.IsAgentPledged.Value) ?? false;
 
-        public bool HasPledgedAccount => PlanetAccountInfos?.Any(e => e.IsAgentPledged.HasValue &&
-                                                               e.IsAgentPledged.Value) ?? false;
-
-        public bool IsSelectedPlanetAccountPledged => SelectedPlanetAccountInfo is { IsAgentPledged: true };
+        public bool IsSelectedPlanetAccountPledged =>
+            SelectedPlanetAccountInfo is { IsAgentPledged: true };
 
         public PlanetContext(CommandLineOptions commandLineOptions)
         {
