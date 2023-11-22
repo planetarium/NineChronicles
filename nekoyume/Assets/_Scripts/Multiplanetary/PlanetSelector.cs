@@ -54,7 +54,7 @@ namespace Nekoyume.Multiplanetary
             }
 
 #elif !UNITY_ANDROID && !UNITY_IOS
-            Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+            Debug.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
                       " the platform not supported in non-editor." +
                       "(Only Android and iOS are supported)");
             context.IsSkipped = true;
@@ -64,7 +64,7 @@ namespace Nekoyume.Multiplanetary
             var clo = context.CommandLineOptions;
             if (!clo.RpcClient)
             {
-                Debug.Log("[PlanetSelector] Skip initializing Planets because" +
+                Debug.Log("[PlanetSelector] Skip initializing PlanetRegistry because" +
                           " RpcClient is false.");
                 context.IsSkipped = true;
                 return context;
@@ -72,13 +72,13 @@ namespace Nekoyume.Multiplanetary
 
             try
             {
-                Debug.Log("[PlanetSelector] Initializing Planets with" +
+                Debug.Log("[PlanetSelector] Initializing PlanetRegistry with" +
                           $" PlanetRegistryUrl: {clo.PlanetRegistryUrl}");
                 context.PlanetRegistry = new PlanetRegistry(clo.PlanetRegistryUrl);
             }
             catch (ArgumentException)
             {
-                context.Error = "[PlanetSelector] Failed to initialize Planets." +
+                context.Error = "[PlanetSelector] Failed to initialize PlanetRegistry." +
                                 " PlanetRegisterUrl in CommandLineOptions must" +
                                 " not be null or empty when RpcClient is true.";
                 Debug.LogError(context.Error);
@@ -92,23 +92,34 @@ namespace Nekoyume.Multiplanetary
             Debug.Log($"[PlanetSelector] PlanetRegistry initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
             if (!context.PlanetRegistry.IsInitialized)
             {
-                context.Error = "[PlanetSelector] Failed to initialize Planets.";
+                context.Error = "[PlanetSelector] Failed to initialize PlanetRegistry.";
                 Debug.LogError(context.Error);
                 return context;
             }
 
-            Debug.Log("[PlanetSelector] Planets initialized successfully.");
+            Debug.Log("[PlanetSelector] PlanetRegistry initialized successfully.");
             return context;
         }
 
         #region PlanetInfo
 
+        /// <summary>
+        /// This method initializes <see cref="PlanetContext.SelectedPlanetInfo"/> and
+        /// <see cref="PlanetContext.CanSkipPlanetSelection"/> if possible.
+        ///
+        /// Check planet selection in the following order:
+        /// 1. <see cref="Nekoyume.Helper.CommandLineOptions.SelectedPlanetId"/> in context argument.
+        /// 2. <see cref="PlanetSelector.CachedPlanetIdString"/>.
+        /// 3. <see cref="Nekoyume.Helper.CommandLineOptions.DefaultPlanetId"/> in context argument.
+        /// 4. <see cref="PlanetSelector.DefaultPlanetId"/>
+        /// 5. finally, first planet info in <see cref="PlanetRegistry.PlanetInfos"/> in context argument.
+        /// </summary>
         public static PlanetContext InitializeSelectedPlanetInfo(PlanetContext context)
         {
             Debug.Log("[PlanetSelector] Initializing CurrentPlanetInfo...");
             if (context.PlanetRegistry is null)
             {
-                context.Error = "[PlanetSelector] Planets is null." +
+                context.Error = "[PlanetSelector] PlanetRegistry is null." +
                                 " Use InitializeAsync() before calling this method.";
                 Debug.LogError(context.Error);
                 return context;
@@ -116,7 +127,7 @@ namespace Nekoyume.Multiplanetary
 
             if (!context.PlanetRegistry.PlanetInfos.Any())
             {
-                context.Error = "[PlanetSelector] Planets.PlanetInfos is empty." +
+                context.Error = "[PlanetSelector] PlanetRegistry.PlanetInfos is empty." +
                                 " It cannot proceed without planet infos.";
                 Debug.LogError(context.Error);
                 return context;
@@ -216,7 +227,7 @@ namespace Nekoyume.Multiplanetary
             Debug.Log($"[PlanetSelector] Selecting planet by id({planetId})...");
             if (context.PlanetRegistry is null)
             {
-                context.Error = "[PlanetSelector] Planets is null." +
+                context.Error = "[PlanetSelector] PlanetRegistry is null." +
                                 " Use InitializeAsync() before calling this method.";
                 Debug.LogError(context.Error);
                 return context;
@@ -245,7 +256,7 @@ namespace Nekoyume.Multiplanetary
             Debug.Log($"[PlanetSelector] Selecting planet by id string({planetIdString})...");
             if (context.PlanetRegistry is null)
             {
-                context.Error = "[PlanetSelector] Planets is null." +
+                context.Error = "[PlanetSelector] PlanetRegistry is null." +
                                 " Use InitializeAsync() before calling this method.";
                 Debug.LogError(context.Error);
                 return context;
@@ -274,7 +285,7 @@ namespace Nekoyume.Multiplanetary
             Debug.Log($"[PlanetSelector] Selecting planet by name({planetName})...");
             if (context.PlanetRegistry is null)
             {
-                context.Error = "[PlanetSelector] Planets is null." +
+                context.Error = "[PlanetSelector] PlanetRegistry is null." +
                                 " Use InitializeAsync() before calling this method.";
                 Debug.LogError(context.Error);
                 return context;
@@ -324,7 +335,7 @@ namespace Nekoyume.Multiplanetary
             Debug.Log($"[PlanetSelector] Updating PlanetAccountInfos...");
             if (context.PlanetRegistry is null)
             {
-                context.Error = "[PlanetSelector] Planets is null." +
+                context.Error = "[PlanetSelector] PlanetRegistry is null." +
                                 " Use InitializeAsync() before calling this method.";
                 Debug.LogError(context.Error);
                 return context;
@@ -332,7 +343,7 @@ namespace Nekoyume.Multiplanetary
 
             if (!context.PlanetRegistry.PlanetInfos?.Any() ?? true)
             {
-                context.Error = "[PlanetSelector] Planets.PlanetInfos is null or empty." +
+                context.Error = "[PlanetSelector] PlanetRegistry.PlanetInfos is null or empty." +
                                 " It cannot proceed without planet infos.";
                 Debug.LogError(context.Error);
                 return context;
