@@ -132,18 +132,14 @@ namespace Nekoyume.IAPStore
         /// </summary>
         PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs e)
         {
-            _controller.ConfirmPendingPurchase(e.purchasedProduct);
             if (e.purchasedProduct.availableToPurchase)
             {
                 OnPurchaseRequestAsync(e);
-                return PurchaseProcessingResult.Pending;
             }
-
             Widget.Find<ShopListPopup>().PurchaseButtonLoadingEnd();
             Widget.Find<SeasonPassPremiumPopup>().PurchaseButtonLoadingEnd();
-
             Debug.LogWarning($"not availableToPurchase. e.purchasedProduct.availableToPurchase: {e.purchasedProduct.availableToPurchase}");
-            return PurchaseProcessingResult.Complete;
+            return PurchaseProcessingResult.Pending;
         }
 
         /// <summary>
@@ -231,6 +227,7 @@ namespace Nekoyume.IAPStore
                         "UI_OK",
                         true,
                         IconAndButtonSystem.SystemType.Information);
+
                     popup.ConfirmCallback = () =>
                     {
                         if (LoginSystem.GetPassPhrase(states.AgentState.address.ToString()).Equals(string.Empty))
@@ -238,6 +235,7 @@ namespace Nekoyume.IAPStore
                             Widget.Find<LoginSystem>().ShowResetPassword();
                         }
                     };
+
                     Widget.Find<MobileShop>().PurchaseComplete(e.purchasedProduct.definition.id);
                     Widget.Find<MobileShop>().RefreshGrid();
                     Widget.Find<ShopListPopup>().Close();
