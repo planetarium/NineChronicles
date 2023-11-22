@@ -35,6 +35,7 @@ namespace Nekoyume.Multiplanetary
 
         public static Subject<(PlanetContext planetContext, PlanetInfo? planetInfo)>
             SelectedPlanetInfoSubject { get; } = new();
+
         public static Subject<(PlanetContext planetContext, PlanetAccountInfo? planetAccountInfo)>
             SelectedPlanetAccountInfoSubject { get; } = new();
 
@@ -142,9 +143,9 @@ namespace Nekoyume.Multiplanetary
                 }
 
                 Debug.LogWarning("[PlanetSelector] Cannot use CommandLineOptions.SelectedPlanetId(" +
-                                $"{context.CommandLineOptions.SelectedPlanetId})." +
-                                " PlanetRegistry does not have planet info for it." +
-                                " Try the following steps...");
+                                 $"{context.CommandLineOptions.SelectedPlanetId})." +
+                                 " PlanetRegistry does not have planet info for it." +
+                                 " Try the following steps...");
             }
 
             // Check cached planet id in player prefs.
