@@ -86,12 +86,39 @@ namespace Nekoyume
         private static string GetCellContentsForException(
             this UnloadFromMyGaragesRecipientMail mail)
         {
+            string itemNames = string.Empty;
+            if (mail.FungibleAssetValues is not null)
+            {
+                foreach (var fav in mail.FungibleAssetValues)
+                {
+                    itemNames += fav.value.Currency.Ticker + ", ";
+                }
+            }
+
+            if (mail.FungibleIdAndCounts is not null)
+            {
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+                foreach (var (fungibleId, count) in
+                         mail.FungibleIdAndCounts)
+                {
+                    var row = materialSheet.OrderedList!
+                        .FirstOrDefault(row => row.Id.Equals(fungibleId));
+                    if (row != null)
+                    {
+                        var material = ItemFactory.CreateMaterial(row);
+                        itemNames += LocalizationExtensions.GetLocalizedName(material) + ", ";
+                        continue;
+                    }
+                    Debug.LogWarning($"Not found material sheet row. {fungibleId}");
+                }
+            }
+
             var exceptionFormat = L10nManager.Localize(
-                "MAIL_UNLOAD_FROM_MY_GARAGES_RECIPIENT_CELL_CONTENT_EXCEPTION_FORMAT");
-            return string.Format(
-                exceptionFormat,
-                mail.FungibleAssetValues?.Count() ?? 0,
-                mail.FungibleIdAndCounts?.Count() ?? 0);
+                "UI_RECEIVED");
+            itemNames += exceptionFormat;
+
+            return itemNames;
         }
 
         public static async Task<string> GetCellContentAsync(this ClaimItemsMail mail)
@@ -166,7 +193,7 @@ namespace Nekoyume
             {
                 foreach (var fav in mail.FungibleAssetValues)
                 {
-                    itemNames += LocalizationExtensions.GetLocalizedName(fav) + ", ";
+                    itemNames += fav.Currency.Ticker + ", ";
                 }
             }
 
@@ -195,10 +222,7 @@ namespace Nekoyume
                     Debug.LogWarning($"Not found material sheet row. {fungibleId}");
                 }
             }
-            if(itemNames.Length > 2)
-            {
-                itemNames.Remove(itemNames.Length-2,2);
-            }
+
             var exceptionFormat = L10nManager.Localize(
                 "UI_RECEIVED");
             itemNames += exceptionFormat;
