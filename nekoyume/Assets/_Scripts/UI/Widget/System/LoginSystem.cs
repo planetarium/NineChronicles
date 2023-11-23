@@ -106,16 +106,7 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            // Default KeyStore in android is invalid, we should redefine it.
-            if (Platform.IsMobilePlatform())
-            {
-                string dataPath = Platform.PersistentDataPath;
-                KeyStore = new Web3KeyStore(dataPath + "/keystore");
-            }
-            else
-            {
-                KeyStore = Web3KeyStore.DefaultKeyStore;
-            }
+            InitializeKeyStore(null);
 
             State.Value = States.Show;
             State.Subscribe(SubscribeState).AddTo(gameObject);
@@ -127,6 +118,10 @@ namespace Nekoyume.UI
             setPasswordLaterButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/SetPassword/Cancel");
+
+                var evt = new AirbridgeEvent("SetPassword_Cancel");
+                AirbridgeUnity.TrackEvent(evt);
+
                 Close(true);
             });
 
@@ -248,6 +243,9 @@ namespace Nekoyume.UI
             {
                 AnalyzeCache.IsTrackedInputPassword = true;
                 Analyzer.Instance.Track("Unity/Login/Password/Input");
+
+                var evt = new AirbridgeEvent("Login_Password_Input");
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             var valid = submitButton.IsSubmittable;
@@ -262,6 +260,9 @@ namespace Nekoyume.UI
             {
                 AnalyzeCache.IsTrackedRetypePassword = true;
                 Analyzer.Instance.Track("Unity/Login/Password/Retype");
+
+                var evt = new AirbridgeEvent("Login_Password_Retype");
+                AirbridgeUnity.TrackEvent(evt);
             }
 
             UpdateSubmitButton();
@@ -366,6 +367,9 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Login/GameStartButton/Click");
 
+            var evt = new AirbridgeEvent("Login_GameStartButton_Click");
+            AirbridgeUnity.TrackEvent(evt);
+
             submitButton.Interactable = false;
             switch (State.Value)
             {
@@ -384,6 +388,10 @@ namespace Nekoyume.UI
                     SetPassPhrase(_privateKey.ToAddress().ToString(), passPhraseField.text);
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SET_PASSWORD_COMPLETE"), NotificationCell.NotificationType.Notification);
                     Analyzer.Instance.Track("Unity/SetPassword/Complete");
+
+                    var setPasswordEvt = new AirbridgeEvent("SetPassword_Complete");
+                    AirbridgeUnity.TrackEvent(setPasswordEvt);
+
                     Close();
                     break;
                 case States.Login:
@@ -447,15 +455,7 @@ namespace Nekoyume.UI
                       $", privateKeyString is null or empty({string.IsNullOrEmpty(privateKeyString)})");
             AnalyzeCache.Reset();
 
-            if (Platform.IsMobilePlatform())
-            {
-                var dataPath = Platform.GetPersistentDataPath("keystore");
-                KeyStore ??= path is null ? new Web3KeyStore(dataPath) : new Web3KeyStore(path);
-            }
-            else
-            {
-                KeyStore ??= path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
-            }
+            InitializeKeyStore(path);
 
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
@@ -526,13 +526,21 @@ namespace Nekoyume.UI
             if (connectedAddress.HasValue)
             {
                 Analyzer.Instance.Track("Unity/Login/1");
+
+                var evt = new AirbridgeEvent("Login_1");
+                AirbridgeUnity.TrackEvent(evt);
+
                 SetState(States.ConnectedAddress_Mobile);
                 SetImage(connectedAddress.Value);
             }
             else
             {
                 Analyzer.Instance.Track("Unity/Login/2");
-                KeyStore = new Web3KeyStore(Platform.GetPersistentDataPath("keystore"));
+
+                var evt = new AirbridgeEvent("Login_2");
+                AirbridgeUnity.TrackEvent(evt);
+
+                InitializeKeyStore(null);
                 _privateKey = new PrivateKey();
                 CreateProtectedPrivateKey(_privateKey);
                 Login = _privateKey is not null;
@@ -547,6 +555,9 @@ namespace Nekoyume.UI
         {
             Debug.Log($"[LoginSystem] ShowResetPassword invoked");
             Analyzer.Instance.Track("Unity/SetPassword/Show");
+
+            var evt = new AirbridgeEvent("SetPassword_Show");
+            AirbridgeUnity.TrackEvent(evt);
 
             SetState(States.SetPassword);
             base.Show();
@@ -747,6 +758,30 @@ namespace Nekoyume.UI
                 accountImage.SetNativeSize();
                 accountAddressText.text = address.ToString();
                 accountAddressText.gameObject.SetActive(true);
+            }
+        }
+
+        private void InitializeKeyStore(string path)
+        {
+            Debug.Log($"[LoginSystem] InitializeKeyStore invoked: path({path})");
+
+            if (KeyStore is not null)
+            {
+                Debug.Log("[LoginSystem] InitializeKeyStore: KeyStore is not null");
+                return;
+            }
+
+            if (Platform.IsMobilePlatform())
+            {
+                KeyStore = path is null
+                    ? new Web3KeyStore(Platform.GetPersistentDataPath("keystore"))
+                    : new Web3KeyStore(path);
+            }
+            else
+            {
+                KeyStore = path is null
+                    ? Web3KeyStore.DefaultKeyStore
+                    : new Web3KeyStore(path);
             }
         }
     }

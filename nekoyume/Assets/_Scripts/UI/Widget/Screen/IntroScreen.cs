@@ -254,6 +254,10 @@ namespace Nekoyume.UI
             {
                 Debug.Log("[IntroScreen] Click start button.");
                 Analyzer.Instance.Track("Unity/Intro/StartButton/Click");
+
+                var evt = new AirbridgeEvent("Intro_StartButton_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 OnClickStart.OnNext(this);
             });
@@ -269,6 +273,10 @@ namespace Nekoyume.UI
 
                 Debug.Log("[IntroScreen] Click apple sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/AppleSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_AppleSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 ProcessAppleSigning();
             });
@@ -276,24 +284,42 @@ namespace Nekoyume.UI
             {
                 Debug.Log("[IntroScreen] Click google sign in button.");
                 Analyzer.Instance.Track("Unity/Intro/GoogleSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_GoogleSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 ProcessGoogleSigning();
             });
             twitterSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click twitter sign in button.");
+
                 Analyzer.Instance.Track("Unity/Intro/TwitterSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_TwitterSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Twitter);
             });
             discordSignInButton.onClick.AddListener(() =>
             {
                 Debug.Log("[IntroScreen] Click discord sign in button.");
+
                 Analyzer.Instance.Track("Unity/Intro/DiscordSignIn/Click");
+
+                var evt = new AirbridgeEvent("Intro_DiscordSignIn_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 ShowPortalConnectGuidePopup(SigninContext.SocialType.Discord);
             });
             signinButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/SigninButton/Click");
+
+                var evt = new AirbridgeEvent("Intro_SigninButton_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 qrCodeGuideBackground.Show();
                 qrCodeGuideContainer.SetActive(true);
                 foreach (var image in qrCodeGuideImages)
@@ -399,6 +425,10 @@ namespace Nekoyume.UI
         public void Show(string keyStorePath, string privateKey, PlanetContext planetContext)
         {
             Analyzer.Instance.Track("Unity/Intro/Show");
+
+            var evt = new AirbridgeEvent("Intro_Show");
+            AirbridgeUnity.TrackEvent(evt);
+
             SetData(keyStorePath, privateKey, planetContext);
 
 #if RUN_ON_MOBILE
@@ -462,6 +492,10 @@ namespace Nekoyume.UI
         private void OnVideoEnd()
         {
             Analyzer.Instance.Track("Unity/Intro/Video/End");
+
+            var evt = new AirbridgeEvent("Intro_Video_End");
+            AirbridgeUnity.TrackEvent(evt);
+
             videoImage.gameObject.SetActive(false);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
         }
@@ -495,11 +529,19 @@ namespace Nekoyume.UI
                     startButtonContainer.SetActive(false);
                     loginSystem.Show(_keyStorePath, string.Empty);
                     Analyzer.Instance.Track("Unity/Intro/QRCodeImported");
+
+                    var evt = new AirbridgeEvent("Intro_QRCodeImported");
+                    AirbridgeUnity.TrackEvent(evt);
                 });
             }
             else
             {
                 Analyzer.Instance.Track($"Unity/Intro/GuideDMX/{_guideIndex + 1}");
+
+                var evt = new AirbridgeEvent("Intro_GuideDMX");
+                evt.SetValue(_guideIndex + 1);
+                AirbridgeUnity.TrackEvent(evt);
+
                 qrCodeGuideImages[_guideIndex].SetActive(true);
                 qrCodeGuideText.text = L10nManager.Localize($"INTRO_QR_CODE_GUIDE_{_guideIndex}");
             }
@@ -525,6 +567,10 @@ namespace Nekoyume.UI
             guestButton.onClick.AddListener(() =>
             {
                 Analyzer.Instance.Track("Unity/Intro/Guest/Click");
+
+                var evt = new AirbridgeEvent("Intro_Guest_Click");
+                AirbridgeUnity.TrackEvent(evt);
+
                 startButtonContainer.SetActive(false);
                 Find<LoginSystem>().Show(_keyStorePath, pk);
             });
