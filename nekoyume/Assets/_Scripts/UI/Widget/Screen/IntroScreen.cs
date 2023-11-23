@@ -227,9 +227,20 @@ namespace Nekoyume.UI
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             _planetContext = planetContext;
-            ApplyPlanetRegistry(_planetContext);
-            ApplySelectedPlanetInfo(_planetContext);
-            ApplySelectedPlanetAccountInfo(_planetContext);
+            ApplyPlanetContext(_planetContext);
+
+            if (SigninContext.HasLatestSignedInSocialType)
+            {
+                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is true");
+                startButtonGO.SetActive(true);
+                socialButtonsGO.SetActive(false);
+            }
+            else
+            {
+                Debug.Log("[IntroScreen] SetData: SigninContext.HasLatestSignedInSocialType is false");
+                startButtonGO.SetActive(false);
+                socialButtonsGO.SetActive(true);
+            }
         }
 
         public void ShowTabToStart()
@@ -382,12 +393,15 @@ namespace Nekoyume.UI
         }
 #endif
 
-        private void ApplyPlanetRegistry(PlanetContext planetContext)
+        private void ApplyPlanetContext(PlanetContext planetContext)
         {
             Debug.Log("[IntroScreen] ApplyPlanetRegistry invoked.");
             selectPlanetScroll.SetData(
                 planetContext?.PlanetRegistry,
                 planetContext?.SelectedPlanetInfo?.ID);
+
+            ApplySelectedPlanetInfo(planetContext);
+            ApplySelectedPlanetAccountInfo(planetContext);
         }
 
         private void ApplySelectedPlanetInfo(PlanetContext planetContext)
@@ -404,19 +418,6 @@ namespace Nekoyume.UI
 
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
             yourPlanetButtonText.text = textInfo.ToTitleCase(planetInfo.Name);
-
-            if (planetContext.HasPledgedAccount)
-            {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is true");
-                startButtonGO.SetActive(true);
-                socialButtonsGO.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("[IntroScreen] ApplySelectedPlanetInfo... planetContext.HasPledgedAccount is false");
-                startButtonGO.SetActive(false);
-                socialButtonsGO.SetActive(true);
-            }
         }
 
         private void ApplySelectedPlanetAccountInfo(PlanetContext planetContext)
@@ -426,14 +427,9 @@ namespace Nekoyume.UI
             if (planetAccountInfo?.AgentAddress is null)
             {
                 Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
-                if (planetContext?.HasPledgedAccount ?? false)
-                {
-                    planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT");
-                }
-                else
-                {
-                    planetAccountInfoText.text = string.Empty;
-                }
+                planetAccountInfoText.text = SigninContext.HasLatestSignedInSocialType
+                    ? L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT")
+                    : string.Empty;
 
                 return;
             }
