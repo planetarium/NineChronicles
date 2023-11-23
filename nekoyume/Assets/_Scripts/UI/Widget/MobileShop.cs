@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -30,22 +29,21 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject loadDataScreen;
 
-        private bool _isInitailizedObj;
-        private Dictionary<string, IAPShopProductCellView> _allProductObjs = new Dictionary<string, IAPShopProductCellView>();
-        private Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory = new Dictionary<string, List<IAPShopProductCellView>>();
+        private bool _isInitializedObj;
+
+        private readonly Dictionary<string, IAPShopProductCellView> _allProductObjs =
+            new Dictionary<string, IAPShopProductCellView>();
+
+        private readonly Dictionary<string, List<IAPShopProductCellView>> _allProductObjByCategory =
+            new Dictionary<string, List<IAPShopProductCellView>>();
 
         private Toggle _recommendedToggle;
 
-        private const string _recommendedString = "Recommended";
+        private const string RecommendedString = "Recommended";
 
         private string _lastSelectedCategory;
 
         public static L10NSchema MOBILE_L10N_SCHEMA;
-
-        protected override void Awake()
-        {
-            base.Awake();
-        }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -66,65 +64,23 @@ namespace Nekoyume.UI
             try
             {
                 var categorySchemas = await GetCategorySchemas();
-                if (!_isInitailizedObj)
+                if (!_isInitializedObj)
                 {
-
-                    if(categorySchemas.Count == 0)
+                    if (categorySchemas.Count == 0)
                     {
                         loading.Close();
                         base.Show(ignoreShowAnimation);
                         Close();
-                        Widget.Find<IconAndButtonSystem>().Show(
+                        Find<IconAndButtonSystem>().Show(
                             "UI_ERROR",
                             "NOTIFICATION_NO_ENTRY_SHOP",
                             "UI_OK",
                             true,
                             IconAndButtonSystem.SystemType.Information);
                     }
+                    await InitializeObj(categorySchemas);
 
-                    var renderCategory = categorySchemas.Where(c => c.Active && c.Name != "NoShow").OrderBy(c => c.Order);
-                    foreach (var category in renderCategory)
-                    {
-                        var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
-
-                        var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
-                        categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key, iconSprite);
-
-                        categoryTabObj.onObject.SetActive(false);
-                        categoryTabObj.offObject.SetActive(true);
-                        categoryTabObj.group = tabToggleGroup;
-                        tabToggleGroup.RegisterToggle(categoryTabObj);
-                        categoryTabObj.onValueChanged.AddListener((isOn) =>
-                        {
-                            if (!isOn)
-                                return;
-
-                            AudioController.PlayClick();
-                            RefreshGridByCategory(category.Name);
-                            _lastSelectedCategory = category.Name;
-                        });
-
-                        var productList = category.ProductList?.Where(p => p.Active).OrderBy(p => p.Order);
-                        var iapProductCellObjs = new List<IAPShopProductCellView>();
-                        foreach (var product in productList)
-                        {
-                            if (!_allProductObjs.TryGetValue(product.Sku, out var productObj))
-                            {
-                                productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
-                                productObj.SetData(product, category.Name == _recommendedString);
-                                await productObj.RefreshLocalized();
-                                _allProductObjs.Add(product.Sku, productObj);
-                            }
-                            iapProductCellObjs.Add(productObj);
-                        }
-                        _allProductObjByCategory.Add(category.Name, iapProductCellObjs);
-
-                        categoryTabObj.interactable = true;
-
-                        if (category.Name == _recommendedString)
-                            _recommendedToggle = categoryTabObj;
-                    }
-                    _isInitailizedObj = true;
+                    _isInitializedObj = true;
                 }
                 else
                 {
@@ -132,9 +88,9 @@ namespace Nekoyume.UI
                     {
                         foreach (var item in category.ProductList)
                         {
-                            if (_allProductObjs.TryGetValue(item.Sku,out var cellView))
+                            if (_allProductObjs.TryGetValue(item.Sku, out var cellView))
                             {
-                                cellView.SetData(item, category.Name == _recommendedString);
+                                cellView.SetData(item, category.Name == RecommendedString);
                             }
                         }
                     }
@@ -146,7 +102,7 @@ namespace Nekoyume.UI
                 loading.Close();
                 base.Show(ignoreShowAnimation);
                 Close();
-                Widget.Find<IconAndButtonSystem>().Show(
+                Find<IconAndButtonSystem>().Show(
                     "UI_ERROR",
                     "ERROR_NO_ENTRY_SHOP",
                     "UI_OK",
@@ -156,17 +112,75 @@ namespace Nekoyume.UI
 
             base.Show(ignoreShowAnimation);
 
-            if(_recommendedToggle != null)
+            if (_recommendedToggle != null)
             {
                 _recommendedToggle.isOn = true;
                 _recommendedToggle.onObject.SetActive(true);
                 _recommendedToggle.offObject.SetActive(true);
-                RefreshGridByCategory(_recommendedString);
-                _lastSelectedCategory = _recommendedString;
+                RefreshGridByCategory(RecommendedString);
+                _lastSelectedCategory = RecommendedString;
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             loading.Close();
+        }
+
+        private async Task InitializeObj(IEnumerable<CategorySchema> categorySchemas)
+        {
+            var renderCategory = categorySchemas
+                .Where(c => c.Active && c.Name != "NoShow")
+                .OrderBy(c => c.Order);
+
+            foreach (var category in renderCategory)
+            {
+                var categoryTabObj = Instantiate(originCategoryTab, tabToggleGroup.transform);
+
+                var iconSprite = await Util.DownloadTexture($"{MOBILE_L10N_SCHEMA.Host}/{category.Path}");
+                categoryTabObj.GetComponent<IAPCategoryTab>().SetData(category.L10n_Key, iconSprite);
+
+                categoryTabObj.onObject.SetActive(false);
+                categoryTabObj.offObject.SetActive(true);
+                categoryTabObj.group = tabToggleGroup;
+                tabToggleGroup.RegisterToggle(categoryTabObj);
+                categoryTabObj.onValueChanged.AddListener((isOn) =>
+                {
+                    if (!isOn)
+                    {
+                        return;
+                    }
+
+                    AudioController.PlayClick();
+                    RefreshGridByCategory(category.Name);
+                    _lastSelectedCategory = category.Name;
+                });
+
+                var productList = category.ProductList
+                    .Where(p => p.Active)
+                    .OrderBy(p => p.Order);
+
+                var iapProductCellObjs = new List<IAPShopProductCellView>();
+                foreach (var product in productList)
+                {
+                    if (!_allProductObjs.TryGetValue(product.Sku, out var productObj))
+                    {
+                        productObj = Instantiate(originProductCellView, iAPShopDynamicGridLayout.transform);
+                        productObj.SetData(product, category.Name == RecommendedString);
+                        await productObj.RefreshLocalized();
+                        _allProductObjs.Add(product.Sku, productObj);
+                    }
+
+                    iapProductCellObjs.Add(productObj);
+                }
+
+                _allProductObjByCategory.Add(category.Name, iapProductCellObjs);
+
+                categoryTabObj.interactable = true;
+
+                if (category.Name == RecommendedString)
+                {
+                    _recommendedToggle = categoryTabObj;
+                }
+            }
         }
 
         public static async Task LoadL10Ns()
@@ -178,9 +192,8 @@ namespace Nekoyume.UI
 
         public static async Task<IReadOnlyList<CategorySchema>> GetCategorySchemas()
         {
-            var categorySchemas = await Game.Game.instance.IAPServiceManager
+            return await Game.Game.instance.IAPServiceManager
                 .GetProductsAsync(States.Instance.AgentState.address, Game.Game.instance.CurrentPlanetId.ToString());
-            return categorySchemas;
         }
 
         public void RefreshGrid()
@@ -195,15 +208,15 @@ namespace Nekoyume.UI
 
         public void PurchaseComplete(string productId)
         {
-            if(_allProductObjs.TryGetValue(productId, out var cell))
+            if (_allProductObjs.TryGetValue(productId, out var cell))
             {
-                cell.LocalPurchaseSucces();
+                cell.LocalPurchaseSuccess();
             }
         }
 
         private void RefreshGridByCategory(string categoryName)
         {
-            Analyzer.Instance.Track("Unity/Shop/IAP/Tab/Click",("category-name", categoryName));
+            Analyzer.Instance.Track("Unity/Shop/IAP/Tab/Click", ("category-name", categoryName));
 
             var evt = new AirbridgeEvent("IAP_Tab_Click");
             evt.SetAction(categoryName);
@@ -213,11 +226,12 @@ namespace Nekoyume.UI
             {
                 item.Value.gameObject.SetActive(false);
             }
-            foreach (var item in _allProductObjByCategory[categoryName])
+
+            foreach (var item in _allProductObjByCategory[categoryName].Where(item => item.IsBuyable()))
             {
-                if(item.IsBuyable())
-                    item.gameObject.SetActive(true);
+                item.gameObject.SetActive(true);
             }
+
             iAPShopDynamicGridLayout.Refresh();
         }
 

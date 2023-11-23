@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-using NineChronicles.ExternalServices.IAPService.Runtime.Models;
 
 namespace Nekoyume.UI.Module
 {
@@ -22,18 +18,20 @@ namespace Nekoyume.UI.Module
             var rectTrans = GetComponent<RectTransform>();
             rectTrans.pivot = new Vector2(0, 1);
 
-            
-            List<RectTransform> children = new List<RectTransform>();
+            var children = new List<RectTransform>();
 
             for (int i = 0; i < transform.childCount; i++)
             {
-                if(transform.GetChild(i).gameObject.activeSelf)
+                if (transform.GetChild(i).gameObject.activeSelf)
+                {
                     children.Add(transform.GetChild(i).GetComponent<RectTransform>());
+                }
             }
+
             children.Sort(Compare);
 
-            Vector2 lastPos = new Vector2(space, -space);
-            float minHeight = 0;
+            var lastPos = new Vector2(space, -space);
+            var minHeight = 0f;
             for (int i = 0; i < children.Count; i++)
             {
                 children[i].pivot = new Vector2(0, 1);
@@ -44,7 +42,7 @@ namespace Nekoyume.UI.Module
 
                 children[i].localPosition = lastPos;
                 if (lastPos.x + children[i].rect.width + space > rectTrans.rect.width ||
-                    lastPos.x + children[i].rect.width + space + children[Mathf.Min((i + 1), (children.Count - 1))].rect.width + space > rectTrans.rect.width)
+                    lastPos.x + children[i].rect.width + space + children[Mathf.Min(i + 1, children.Count - 1)].rect.width + space > rectTrans.rect.width)
                 {
                     lastPos.x = space;
                     lastPos.y -= (children[i].rect.height + space);
@@ -60,9 +58,9 @@ namespace Nekoyume.UI.Module
                     lastPos.x += children[i].rect.width + space;
                 }
 
-                if ((lastPos.y - children[i].rect.height) < minHeight && i + 1 < children.Count)
+                if (lastPos.y - children[i].rect.height < minHeight && i + 1 < children.Count)
                 {
-                    minHeight = (lastPos.y - children[i].rect.height);
+                    minHeight = lastPos.y - children[i].rect.height;
                 }
             }
 
