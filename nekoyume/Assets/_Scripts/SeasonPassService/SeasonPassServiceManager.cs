@@ -119,7 +119,21 @@ namespace Nekoyume
                 return;
             }
 
+            if(Game.Game.instance.States == null || Game.Game.instance.States.CurrentAvatarState == null)
+            {
+                AvatarInfo.SetValueAndForceNotify(null);
+                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] States or CurrentAvatarState is null");
+                return;
+            }
+
             var avatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+
+            if(Client == null)
+            {
+                AvatarInfo.SetValueAndForceNotify(null);
+                Debug.LogError("$SeasonPassServiceManager [AvatarStateRefreshAsync] Client is null");
+                return;
+            }
             
             await Client.GetUserStatusAsync(CurrentSeasonPassData.Id, avatarAddress.ToString(), Game.Game.instance.CurrentPlanetId.ToString(),
                 (result) =>

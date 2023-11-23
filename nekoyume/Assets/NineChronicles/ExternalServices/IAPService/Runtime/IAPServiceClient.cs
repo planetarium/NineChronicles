@@ -63,19 +63,21 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
             PurchaseRequestAsync(
                 Store store,
                 string receipt,
-                Address agentAddr,
-                Address avatarAddr,
-                string planetId)
+                string agentAddr,
+                string avatarAddr,
+                string planetId,
+                string transactionId,
+                string appleOriginalTransactionID)
         {
             var receiptJson = JsonNode.Parse(receipt);
             
             var reqJson = new JsonObject
             {
                 { "store", (int)store },
+                { "agentAddress", agentAddr },
+                { "avatarAddress", avatarAddr},
+                { "planetId", planetId},
                 { "data", receiptJson },
-                { "agentAddress", agentAddr.ToHex() },
-                { "avatarAddress", avatarAddr.ToHex() },
-                { "planetId", planetId}
             };
 
             Debug.Log($"PurchaseRequestAsync : {reqJson}");
@@ -84,6 +86,14 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                 reqJson.ToJsonString(JsonSerializerOptions),
                 System.Text.Encoding.UTF8,
                 "application/json");
+
+            reqContent.Headers.Add("agentAddress", agentAddr);
+            reqContent.Headers.Add("orderId", transactionId);
+            if (!string.IsNullOrEmpty(appleOriginalTransactionID))
+            {
+                reqContent.Headers.Add("appleOriginalTransactionID", appleOriginalTransactionID);
+            }
+
             using var res = await _client.PostAsync(_endpoints.PurchaseRequest, reqContent);
             return await ProcessResponseAsync(res);
         }
