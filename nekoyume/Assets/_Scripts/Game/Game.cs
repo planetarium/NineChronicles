@@ -1428,6 +1428,7 @@ namespace Nekoyume.Game
 
             var introScreen = Widget.Find<IntroScreen>();
             var loginSystem = Widget.Find<LoginSystem>();
+            var dimmedLoadingScreen = Widget.Find<DimmedLoadingScreen>();
             var sw = new Stopwatch();
             if (Application.isBatchMode)
             {
@@ -1469,6 +1470,7 @@ namespace Nekoyume.Game
                               $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
                 }
 
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
@@ -1477,6 +1479,7 @@ namespace Nekoyume.Game
                     callback);
                 sw.Stop();
                 Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                dimmedLoadingScreen.Close();
                 yield break;
             }
 
@@ -1492,7 +1495,6 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            var loadingScreen = Widget.Find<DimmedLoadingScreen>();
             // NOTE: Check already logged in or local passphrase.
             if (loginSystem.Login ||
                 loginSystem.TryLoginWithLocalPpk())
@@ -1506,12 +1508,12 @@ namespace Nekoyume.Game
                 if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
                 {
                     Debug.Log("[Game] CoLogin()... PlanetContext.CanSkipPlanetSelection is true.");
-                    loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
+                    dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                     yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                         planetContext,
                         pk.ToAddress(),
                         updateSelectedPlanetAccountInfo: true).ToCoroutine();
-                    loadingScreen.Close();
+                    dimmedLoadingScreen.Close();
                     if (planetContext.HasError)
                     {
                         callback?.Invoke(false);
@@ -1554,6 +1556,7 @@ namespace Nekoyume.Game
                 Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                           $" to ({pk.ToAddress()}).");
 
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
                 sw.Reset();
                 sw.Start();
                 yield return Agent.Initialize(
@@ -1561,6 +1564,7 @@ namespace Nekoyume.Game
                     pk,
                     callback);
                 sw.Stop();
+                dimmedLoadingScreen.Close();
                 Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
                 yield break;
             }
@@ -1593,7 +1597,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
 
             // NOTE: Portal login flow.
-            loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
             Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
             sw.Reset();
             sw.Start();
@@ -1634,7 +1638,7 @@ namespace Nekoyume.Game
                 var requiredAddress = agentAddrInPortal.Value;
                 Debug.Log($"[Game] CoLogin()... AgentAddress({requiredAddress}) in portal" +
                           $" is not null. Try to update planet account infos.");
-                loadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPlanetAccountInfoSyncing);
                 yield return PlanetSelector.UpdatePlanetAccountInfosAsync(
                     planetContext,
                     requiredAddress,
@@ -1646,9 +1650,9 @@ namespace Nekoyume.Game
                 }
             }
 
-            if (loadingScreen.IsActive())
+            if (dimmedLoadingScreen.IsActive())
             {
-                loadingScreen.Close();
+                dimmedLoadingScreen.Close();
             }
 
             // NOTE: Check if the planets have at least one agent.
@@ -1737,6 +1741,7 @@ namespace Nekoyume.Game
             Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey finally updated" +
                       $" to ({loginSystem.GetPrivateKey().ToAddress()}).");
 
+            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForConnectingToPlanet);
             sw.Reset();
             sw.Start();
             yield return Agent.Initialize(
@@ -1744,6 +1749,7 @@ namespace Nekoyume.Game
                 loginSystem.GetPrivateKey(),
                 callback);
             sw.Stop();
+            dimmedLoadingScreen.Close();
             Debug.Log($"[Game] CoLogin()... Agent initialized in {sw.ElapsedMilliseconds}ms.(elapsed)");
         }
 
