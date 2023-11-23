@@ -61,7 +61,9 @@ namespace Nekoyume.Game.LiveAsset
             _endpoint = Resources.Load<LiveAssetEndpointScriptableObject>("ScriptableObject/LiveAssetEndpoint");
             var noticeUrl = L10nManager.CurrentLanguage switch
             {
-                LanguageType.Korean => _endpoint.NoticeJsonKoreanUrl,
+                LanguageType.Korean => Platform.IsMobilePlatform()
+                    ? _endpoint.NoticeJsonKoreanUrl
+                    : _endpoint.NoticeJsonUrl,
                 LanguageType.Japanese => _endpoint.NoticeJsonJapaneseUrl,
                 _ => _endpoint.NoticeJsonUrl
             };
