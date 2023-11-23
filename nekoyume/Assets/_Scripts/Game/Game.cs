@@ -1503,6 +1503,11 @@ namespace Nekoyume.Game
                           " LoginSystem.TryLoginWithLocalPpk() is true.");
                 var pk = loginSystem.GetPrivateKey();
 
+                // NOTE: Update CommandlineOptions.PrivateKey.
+                _commandLineOptions.PrivateKey = ByteUtil.Hex(pk.ByteArray);
+                Debug.Log("[Game] CoLogin()... CommandLineOptions.PrivateKey updated" +
+                          $" to ({pk.ToAddress()}).");
+
                 // NOTE: Check PlanetContext.CanSkipPlanetSelection.
                 //       If true, then update planet account infos for IntroScreen.
                 if (planetContext.CanSkipPlanetSelection.HasValue && planetContext.CanSkipPlanetSelection.Value)
@@ -1578,38 +1583,66 @@ namespace Nekoyume.Game
             yield return introScreen.OnClickTabToStart.AsObservable().First().StartAsCoroutine();
             Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickTabToStart. Done.");
 
-            // NOTE: Social login flow.
-            Debug.Log("[Game] CoLogin()... Go to social login flow.");
-            var socialType = SigninContext.SocialType.Apple;
             string email = null;
-            string idToken = null;
-            introScreen.OnSocialSignedIn.AsObservable()
-                .First()
-                .Subscribe(value =>
+            Address? agentAddrInPortal;
+            if (SigninContext.HasLatestSignedInSocialType)
+            {
+                var startClicked = false;
+                introScreen.OnClickStart.AsObservable()
+                    .First()
+                    .Subscribe(_ => startClicked = true);
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                sw.Reset();
+                sw.Start();
+                var getTokensTask = PortalConnect.GetTokensSilentlyAsync();
+                yield return new WaitUntil(() => getTokensTask.IsCompleted);
+                sw.Stop();
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                dimmedLoadingScreen.Close();
+                (email, _, agentAddrInPortal) = getTokensTask.Result;
+                if (!startClicked)
                 {
-                    socialType = value.socialType;
-                    email = value.email;
-                    idToken = value.idToken;
-                });
+                    Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart.");
+                    yield return new WaitUntil(() => startClicked);
+                    Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnClickStart. Done.");
+                }
+            }
+            else
+            {
+                // NOTE: Social login flow.
+                Debug.Log("[Game] CoLogin()... Go to social login flow.");
+                var socialType = SigninContext.SocialType.Apple;
+                string idToken = null;
+                introScreen.OnSocialSignedIn.AsObservable()
+                    .First()
+                    .Subscribe(value =>
+                    {
+                        socialType = value.socialType;
+                        email = value.email;
+                        idToken = value.idToken;
+                    });
 
-            Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
-            yield return new WaitUntil(() => idToken is not null);
-            Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn.");
+                yield return new WaitUntil(() => idToken is not null);
+                Debug.Log("[Game] CoLogin()... WaitUntil introScreen.OnSocialSignedIn. Done.");
+                
+                // NOTE: Portal login flow.
+                dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
+                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
+                sw.Reset();
+                sw.Start();
+                var portalSigninTask = socialType == SigninContext.SocialType.Apple
+                    ? PortalConnect.SendAppleIdTokenAsync(idToken)
+                    : PortalConnect.SendGoogleIdTokenAsync(idToken);
+                yield return new WaitUntil(() => portalSigninTask.IsCompleted);
+                sw.Stop();
+                Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
+                Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
+                dimmedLoadingScreen.Close();
+                
+                agentAddrInPortal = portalSigninTask.Result;
+            }
 
-            // NOTE: Portal login flow.
-            dimmedLoadingScreen.Show(DimmedLoadingScreen.ContentType.WaitingForPortalAuthenticating);
-            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync.");
-            sw.Reset();
-            sw.Start();
-            var portalSigninTask = socialType == SigninContext.SocialType.Apple
-                ? PortalConnect.SendAppleIdTokenAsync(idToken)
-                : PortalConnect.SendGoogleIdTokenAsync(idToken);
-            yield return new WaitUntil(() => portalSigninTask.IsCompleted);
-            sw.Stop();
-            Debug.Log($"[Game] CoLogin()... Portal signed in in {sw.ElapsedMilliseconds}ms.(elapsed)");
-            Debug.Log("[Game] CoLogin()... WaitUntil PortalConnect.Send{Apple|Google}IdTokenAsync. Done.");
-
-            var agentAddrInPortal = portalSigninTask.Result;
             // NOTE: Update PlanetContext.PlanetAccountInfos.
             if (agentAddrInPortal is null)
             {
@@ -1643,16 +1676,12 @@ namespace Nekoyume.Game
                     planetContext,
                     requiredAddress,
                     updateSelectedPlanetAccountInfo: false).ToCoroutine();
+                dimmedLoadingScreen.Close();
                 if (planetContext.HasError)
                 {
                     callback?.Invoke(false);
                     yield break;
                 }
-            }
-
-            if (dimmedLoadingScreen.IsActive())
-            {
-                dimmedLoadingScreen.Close();
             }
 
             // NOTE: Check if the planets have at least one agent.
