@@ -147,9 +147,11 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
 
         public async Task<ReceiptDetailSchema?> PurchaseRequestAsync(
             string receipt,
-            Address agentAddr,
-            Address avatarAddr,
-            string planetId)
+            string agentAddr,
+            string avatarAddr,
+            string planetId,
+            string transactionId,
+            string appleOriginalTransactionID)
         {
             if (!IsInitialized)
             {
@@ -163,7 +165,9 @@ namespace NineChronicles.ExternalServices.IAPService.Runtime
                     receipt,
                     agentAddr,
                     avatarAddr,
-                    planetId);
+                    planetId,
+                    transactionId,
+                    appleOriginalTransactionID);
             if (code != HttpStatusCode.OK ||
                 !string.IsNullOrEmpty(error))
             {
