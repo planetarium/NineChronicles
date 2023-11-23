@@ -188,9 +188,9 @@ namespace Nekoyume.IAPStore
                 pData = new PurchaseReciept
                 {
                     Receipt = product.receipt,
-                    AgentAddressHex = states.AgentState.address.ToHex(),
-                    AvatarAddressHex = states.CurrentAvatarState.address.ToHex(),
-                    PlanetId = Game.Game.instance.CurrentPlanetId.ToString(),
+                    AgentAddressHex = states?.AgentState?.address.ToHex(),
+                    AvatarAddressHex = states?.CurrentAvatarState?.address.ToHex(),
+                    PlanetId = Game.Game.instance?.CurrentPlanetId?.ToString(),
                 };
             }
             else
@@ -201,9 +201,9 @@ namespace Nekoyume.IAPStore
             var result = await Game.Game.instance.IAPServiceManager
                     .PurchaseRequestAsync(
                         product.receipt,
-                        pData.AgentAddressHex,
-                        pData.AvatarAddressHex,
-                        pData.PlanetId,
+                        pData.AgentAddressHex != null ? pData.AgentAddressHex : string.Empty,
+                        pData.AvatarAddressHex != null ? pData.AvatarAddressHex : string.Empty,
+                        pData.PlanetId != null ? pData.PlanetId : string.Empty,
                         product.transactionID,
                         product.appleOriginalTransactionID);
 
