@@ -245,5 +245,32 @@ namespace Nekoyume.UI
                     return $"{isoCurrencyCode} {price:N2}";
             }
         }
+
+        public static string RemainTimeForDailyLimit
+        {
+            get
+            {
+                var now = DateTime.UtcNow;
+                var nextDay = now.Date.AddDays(1);
+                return (nextDay - now).TimespanToString();
+            }
+        }
+
+        public static string RemainTimeForWeeklyLimit
+        {
+            get
+            {
+                var now = DateTime.UtcNow;
+
+                var daysUntilNextSunday = DayOfWeek.Sunday - now.DayOfWeek;
+                if (daysUntilNextSunday <= 0)
+                {
+                    daysUntilNextSunday += 7;
+                }
+
+                var nextSunday = now.Date.AddDays(daysUntilNextSunday);
+                return (nextSunday - now).TimespanToString();
+            }
+        }
     }
 }
