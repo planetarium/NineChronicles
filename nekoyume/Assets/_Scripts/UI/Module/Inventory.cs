@@ -514,6 +514,8 @@ namespace Nekoyume.UI.Module
                 }
                 _cachedNotificationCostumes.Add(item);
             }
+
+            costumeButton.HasNotification.SetValueAndForceNotify(_cachedNotificationCostumes.Any());
         }
 
         private void UpdateRuneNotification(IEnumerable<InventoryItem> bestItems)
