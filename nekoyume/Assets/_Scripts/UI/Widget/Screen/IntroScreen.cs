@@ -426,7 +426,15 @@ namespace Nekoyume.UI
             if (planetAccountInfo?.AgentAddress is null)
             {
                 Debug.Log("[IntroScreen] ApplySelectedPlanetAccountInfo... planetAccountInfo?.AgentAddress is null.");
-                planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT");
+                if (planetContext?.HasPledgedAccount ?? false)
+                {
+                    planetAccountInfoText.text = L10nManager.Localize("SDESC_THERE_IS_NO_ACCOUNT");
+                }
+                else
+                {
+                    planetAccountInfoText.text = string.Empty;
+                }
+
                 return;
             }
 
