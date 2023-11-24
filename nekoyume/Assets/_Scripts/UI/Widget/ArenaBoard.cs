@@ -64,8 +64,7 @@ namespace Nekoyume.UI
             loading.Show(LoadingScreen.LoadingType.Arena);
             var sw = new Stopwatch();
             sw.Start();
-            await UniTask.WaitWhile(() =>
-                RxProps.ArenaInformationOrderedWithScore.IsUpdating);
+            await RxProps.ArenaInformationOrderedWithScore.UpdateAsync();
             loading.Close();
             Show(RxProps.ArenaInformationOrderedWithScore.Value,
                 ignoreShowAnimation);
