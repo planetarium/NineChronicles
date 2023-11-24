@@ -75,8 +75,6 @@ namespace Nekoyume.State
         public Dictionary<BattleType, RuneSlotState> CurrentRuneSlotStates { get; } = new();
         public Dictionary<BattleType, ItemSlotState> CurrentItemSlotStates { get; } = new();
 
-        public GrandFinaleStates GrandFinaleStates { get; } = new();
-
         private class Workshop
         {
             public Dictionary<int, CombinationSlotState> States { get; } = new();

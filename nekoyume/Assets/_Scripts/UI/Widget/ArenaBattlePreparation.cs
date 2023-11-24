@@ -66,11 +66,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI enemyCp;
 
-        [SerializeField]
-        private ConditionalButton grandFinaleStartButton;
-
         private GameObject _cachedCharacterTitle;
-        private int _grandFinaleId;
 
         private const int TicketCountToUse = 1;
         private ArenaSheet.RoundData _roundData;
@@ -129,12 +125,6 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowArenaTicketPopup())
                 .AddTo(gameObject);
 
-            grandFinaleStartButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.IsInWorld)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => OnClickGrandFinale())
-                .AddTo(gameObject);
-
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
@@ -148,25 +138,10 @@ namespace Nekoyume.UI
             _roundData = roundData;
             _info = info;
             enemyCp.text = chooseAvatarCp.ToString();
-            UpdateStartButton(false);
+            UpdateStartButton();
             information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
             coverToBlockClick.SetActive(false);
             AgentStateSubject.Crystal.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
-        }
-
-        public void Show(
-            int grandFinaleId,
-            ArenaParticipantModel info,
-            int chooseAvatarCp,
-            bool ignoreShowAnimation = false)
-        {
-            _grandFinaleId = grandFinaleId;
-            enemyCp.text = chooseAvatarCp.ToString();
-            _info = info;
-            UpdateStartButton(true);
-            information.UpdateInventory(BattleType.Arena, chooseAvatarCp);
-            coverToBlockClick.SetActive(false);
-            base.Show(ignoreShowAnimation);
         }
 
         public void UpdateInventory()
@@ -306,49 +281,6 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        private void SendBattleGrandFinaleAction()
-        {
-            startButton.gameObject.SetActive(false);
-            var playerAvatar = States.Instance.CurrentAvatarState;
-            Find<ArenaBattleLoadingScreen>().Show(
-                playerAvatar.NameWithHash,
-                playerAvatar.level,
-                Util.GetPortraitId(BattleType.Arena),
-                playerAvatar.address,
-                _info.NameWithHash,
-                _info.Level,
-                _info.PortraitId,
-                _info.AvatarAddr);
-
-            var costumes = States.Instance.CurrentItemSlotStates[BattleType.Arena].Costumes;
-            var equipments = States.Instance.CurrentItemSlotStates[BattleType.Arena].Equipments;
-            var runeInfos = States.Instance.CurrentRuneSlotStates[BattleType.Arena]
-                .GetEquippedRuneSlotInfos();
-
-            ActionRenderHandler.Instance.Pending = true;
-            ActionManager.Instance.BattleGrandFinale(
-                    _info.AvatarAddr,
-                    costumes,
-                    equipments,
-                    _grandFinaleId)
-                .Subscribe();
-        }
-
-        private void OnClickGrandFinale()
-        {
-            AudioController.PlayClick();
-
-            if (Game.Game.instance.IsInWorld)
-            {
-                return;
-            }
-
-            var game = Game.Game.instance;
-            game.IsInWorld = true;
-            game.Stage.IsShowHud = true;
-            SendBattleGrandFinaleAction();
-        }
-
         public void OnRenderBattleArena(ActionEvaluation<BattleArena> eval)
         {
             if (eval.Exception is { })
@@ -361,20 +293,8 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Close();
         }
 
-        public void OnRenderBattleArena(ActionEvaluation<BattleGrandFinale> eval)
-        {
-            if (eval.Exception is { })
-            {
-                Find<ArenaBattleLoadingScreen>().Close();
-                return;
-            }
-
-            Close(true);
-            Find<ArenaBattleLoadingScreen>().Close();
-        }
-
         // This method subscribe BlockIndexSubject. Be careful of duplicate subscription.
-        private void UpdateStartButton(bool isGrandFinale)
+        private void UpdateStartButton()
         {
             var (equipments, costumes) = States.Instance.GetEquippedItems(BattleType.Arena);
             var runes = States.Instance.GetEquippedRuneStates(BattleType.Arena)
@@ -384,18 +304,17 @@ namespace Nekoyume.UI
             var isEquipmentValid = Util.CanBattle(equipments, costumes, consumables);
             var isIntervalValid = IsIntervalValid(Game.Game.instance.Agent.BlockIndex);
 
-            SetStartButton(isGrandFinale, isEquipmentValid && isIntervalValid, isEquipmentValid);
+            SetStartButton(isEquipmentValid && isIntervalValid, isEquipmentValid);
             if (isEquipmentValid && !isIntervalValid)
             {
                 Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                     .Subscribe(blockIndex =>
                     {
-                        SetStartButton(isGrandFinale, IsIntervalValid(blockIndex), true);
+                        SetStartButton(IsIntervalValid(blockIndex), true);
                     }).AddTo(_disposables);
             }
 
-            grandFinaleStartButton.Interactable = isGrandFinale;
-            startButton.Interactable = !isGrandFinale;
+            startButton.Interactable = true;
         }
 
         private static bool IsIntervalValid(long blockIndex)
@@ -406,12 +325,11 @@ namespace Nekoyume.UI
             return blockIndex - lastBattleBlockIndex >= battleArenaInterval;
         }
 
-        private void SetStartButton(bool isGrandFinale, bool canBattle, bool isEquipValid)
+        private void SetStartButton(bool canBattle, bool isEquipValid)
         {
-            startButton.gameObject.SetActive(!isGrandFinale && canBattle);
-            grandFinaleStartButton.gameObject.SetActive(isGrandFinale && canBattle);
+            startButton.gameObject.SetActive(canBattle);
             blockStartingText.gameObject.SetActive(!canBattle);
-            repeatPopupButton.gameObject.SetActive(!isGrandFinale && canBattle &&
+            repeatPopupButton.gameObject.SetActive(canBattle &&
                                                    _roundData.ArenaType == ArenaType.OffSeason);
 
             if (!canBattle)
