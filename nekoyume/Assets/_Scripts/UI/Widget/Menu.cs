@@ -273,7 +273,14 @@ namespace Nekoyume.UI
         private void GoToCraftWithToggleType(int toggleIndex)
         {
             AudioController.PlayClick();
+
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
+
+            var evt = new AirbridgeEvent("Click_Guided_Quest_Combination_Equipment");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithToggleIndex(toggleIndex));
         }
@@ -281,12 +288,19 @@ namespace Nekoyume.UI
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
             AudioController.PlayClick();
+
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment",
                 new Dictionary<string, Value>()
                 {
                     ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                     ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
                 });
+
+            var evt = new AirbridgeEvent("Click_Guided_Quest_Combination_Equipment");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             CombinationClickInternal(() =>
                 Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
@@ -390,6 +404,9 @@ namespace Nekoyume.UI
 
             Analyzer.Instance.Track("Unity/Lobby/ShopButton/Click");
 
+            var evt = new AirbridgeEvent("Lobby_ShopButton_Click");
+            AirbridgeUnity.TrackEvent(evt);
+
             if (shopExclamationMark.gameObject.activeSelf)
             {
                 var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
@@ -440,11 +457,18 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaJoin>().ShowAsync().Forget();
+
             Analyzer.Instance.Track("Unity/Enter arena page", new Dictionary<string, Value>()
             {
                 ["AvatarAddress"] = States.Instance.CurrentAvatarState.address.ToString(),
                 ["AgentAddress"] = States.Instance.AgentState.address.ToString(),
             });
+
+            var evt = new AirbridgeEvent("Enter_Arena_Page");
+            evt.AddCustomAttribute("agent-address", States.Instance.CurrentAvatarState.address.ToString());
+            evt.AddCustomAttribute("avatar-address", States.Instance.AgentState.address.ToString());
+            AirbridgeUnity.TrackEvent(evt);
+
             AudioController.PlayClick();
         }
 
@@ -555,6 +579,9 @@ namespace Nekoyume.UI
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();
             Analyzer.Instance.Track("Unity/Enter world boss page");
+
+            var evt = new AirbridgeEvent("Enter_World_Boss_Page");
+            AirbridgeUnity.TrackEvent(evt);
         }
 
         public void DccClick()
@@ -606,6 +633,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Analyzer.Instance.Track("Unity/Lobby/Show");
+
+            var evt = new AirbridgeEvent("Lobby_Show");
+            AirbridgeUnity.TrackEvent(evt);
+
             SubscribeAtShow();
             Time.timeScale = Prologue.DefaultTimeScale;
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
+using Nekoyume.UI;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,14 +16,21 @@ namespace Nekoyume.Helper
         {
             IKeyStore store;
 
-            if (Platform.IsMobilePlatform())
+            if (Application.isPlaying)
             {
-                string dataPath = Platform.GetPersistentDataPath("keystore");
-                store = new Web3KeyStore(dataPath);
+                store = Widget.Find<LoginSystem>().KeyStore;
             }
             else
             {
-                store = Web3KeyStore.DefaultKeyStore;
+                if (Platform.IsMobilePlatform())
+                {
+                    var dataPath = Platform.GetPersistentDataPath("keystore");
+                    store = new Web3KeyStore(dataPath);
+                }
+                else
+                {
+                    store = Web3KeyStore.DefaultKeyStore;
+                }
             }
 
             return store;

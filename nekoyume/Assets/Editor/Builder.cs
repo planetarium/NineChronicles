@@ -505,6 +505,8 @@ namespace Editor
                     }
                 }
             };
+            
+            dict["ITSAppUsesNonExemptEncryption"] = false;
 
             dict["GIDClientID"] = "449111430622-14152cpabg35n1squ7bq180rjptnmcvs.apps.googleusercontent.com";
 

@@ -351,6 +351,10 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             Analyzer.Instance.Track("Unity/Synopsis Start");
+
+            var evt = new AirbridgeEvent("Synopsis_Start");
+            AirbridgeUnity.TrackEvent(evt);
+
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             skipButton.SetActive(true);
             StartCoroutine(StartSynopsis(true));
@@ -386,6 +390,10 @@ namespace Nekoyume.UI
             }
 
             Analyzer.Instance.Track("Unity/Synopsis End");
+
+            var evt = new AirbridgeEvent("Synopsis_End");
+            AirbridgeUnity.TrackEvent(evt);
+
             Close();
         }
 
@@ -397,6 +405,10 @@ namespace Nekoyume.UI
         public void SkipAll()
         {
             Analyzer.Instance.Track("Unity/Synopsis Skip");
+
+            var evt = new AirbridgeEvent("Synopsis_Skip");
+            AirbridgeUnity.TrackEvent(evt);
+
             skipAll = true;
             Skip();
         }

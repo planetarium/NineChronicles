@@ -66,6 +66,12 @@ namespace Nekoyume.UI.Module
 
                 Widget.Find<MobileShop>().SetLoadingDataScreen(true);
                 Analyzer.Instance.Track("Unity/Shop/IAP/GridCell/Click", ("product-id", _data.Sku));
+
+                var evt = new AirbridgeEvent("IAP_GridCell_Click");
+                evt.SetAction(_data.Sku);
+                evt.AddCustomAttribute("product-id", _data.Sku);
+                AirbridgeUnity.TrackEvent(evt);
+
                 Widget.Find<ShopListPopup>().Show(_data, _puchasingData).Forget();
             });
 
@@ -119,7 +125,12 @@ namespace Nekoyume.UI.Module
         private void Refresh()
         {
             var isDiscount = _data.Discount > 0;
-            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.First(p => p.definition.id == _data.Sku);
+            _puchasingData = Game.Game.instance.IAPStoreManager.IAPProducts.FirstOrDefault(p => p.definition.id == _data.Sku);
+            if(_puchasingData == null)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
 
             switch (_data.Size)
             {
