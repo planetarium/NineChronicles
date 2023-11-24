@@ -1839,14 +1839,31 @@ namespace Nekoyume.Blockchain
             }
         }
 
-        private ActionEvaluation<HackAndSlash> PrepareHackAndSlash(
+        private (ActionEvaluation<HackAndSlash> eval, AvatarState avatarState, CrystalRandomSkillState randomSkillState) PrepareHackAndSlash(
             ActionEvaluation<HackAndSlash> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
             {
-                return eval;
+                return (eval, null, null);
             }
 
+            var avatarState =
+                StateGetter.GetAvatarState(eval.Action.AvatarAddress, eval.OutputState);
+            var randomSkillState = GetCrystalRandomSkillState(eval);
+            return (eval, avatarState, randomSkillState);
+        }
+
+        private async void ResponseHackAndSlashAsync((ActionEvaluation<HackAndSlash>, AvatarState, CrystalRandomSkillState) prepared)
+        {
+            await Task.WhenAll(
+                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
+                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
+
+            var (eval, newAvatarState, newRandomSkillState) = prepared;
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            {
+                return;
+            }
 
             _disposableForBattleEnd?.Dispose();
             _disposableForBattleEnd =
@@ -1854,35 +1871,24 @@ namespace Nekoyume.Blockchain
                     .First()
                     .Subscribe(_ =>
                     {
-                        var task = UniTask.RunOnThreadPool(async () =>
+                        UniTask.Void(async () =>
                         {
-                            await UpdateCurrentAvatarStateAsync(eval);
-                            UpdateCrystalRandomSkillState(eval);
-                            var avatarState = States.Instance.CurrentAvatarState;
-                            RenderQuest(
-                                eval.Action.AvatarAddress,
-                                avatarState.questList.completedQuestIds);
-                            _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            try
+                            {
+                                await UpdateCurrentAvatarStateAsync(newAvatarState);
+                                States.Instance.SetCrystalRandomSkillState(newRandomSkillState);
+                                RenderQuest(
+                                    eval.Action.AvatarAddress,
+                                    newAvatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogException(e);
+                            }
                         });
-                        task.ToObservable()
-                            .First()
-                            // ReSharper disable once ConvertClosureToMethodGroup
-                            .DoOnError(e => Debug.LogException(e));
                     });
-            return eval;
-        }
-
-        private async void ResponseHackAndSlashAsync(ActionEvaluation<HackAndSlash> eval)
-        {
-            await Task.WhenAll(
-                States.Instance.UpdateItemSlotStates(BattleType.Adventure),
-                States.Instance.UpdateRuneSlotStates(BattleType.Adventure));
-
-            if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
-            {
-                return;
-            }
 
             var tableSheets = TableSheets.Instance;
             var skillsOnWaveStart = new List<Skill>();

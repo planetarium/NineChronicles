@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -24,7 +25,7 @@ namespace Nekoyume.UI
         {
             if (WorldBossFrontHelper.TryGetBossData(model.BoosId, out var data))
             {
-                bossName.text = data.name;
+                bossName.text = L10nManager.LocalizeCharacterName(data.id);
                 bossImage.sprite = data.illustration;
             }
 
