@@ -294,9 +294,10 @@ namespace Nekoyume.UI
 
                     Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. _privateKey is null");
                 }
-                catch
+                catch (Exception e)
                 {
-                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed. exception");
+                    Debug.Log("[LoginSystem] TryLoginWithLocalPpk failed with exception." +
+                              $" {e.GetType().FullName}: {e.Message}");
                     return false;
                 }
             }

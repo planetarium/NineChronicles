@@ -12,7 +12,7 @@ namespace Nekoyume.Multiplanetary
     public class PlanetRegistry
     {
         private readonly string _planetRegistryUrl;
-        private List<PlanetInfo> _planetInfos;
+        private PlanetInfo[] _planetInfos;
 
         public bool IsInitialized { get; private set; }
         public IEnumerable<PlanetInfo> PlanetInfos => _planetInfos;
@@ -27,10 +27,12 @@ namespace Nekoyume.Multiplanetary
             }
 
             _planetRegistryUrl = planetRegistryUrl;
-            _planetInfos = new List<PlanetInfo>();
+            _planetInfos = Array.Empty<PlanetInfo>();
         }
 
-        public async UniTask<bool> InitializeAsync(float timeout = 10f)
+        public async UniTask<bool> InitializeAsync(
+            float timeout = 10f,
+            bool shuffleOrderOfPlanetInfos = true)
         {
             if (IsInitialized)
             {
@@ -71,7 +73,20 @@ namespace Nekoyume.Multiplanetary
                     return false;
                 }
 
-                _planetInfos = planetInfos;
+                if (shuffleOrderOfPlanetInfos)
+                {
+                    _planetInfos = planetInfos.OrderByDescending(e =>
+                            e.ID.Equals(PlanetId.Odin) ||
+                            e.ID.Equals(PlanetId.OdinInternal)
+                                ? default
+                                : Guid.NewGuid())
+                        .ToArray();
+                }
+                else
+                {
+                    _planetInfos = planetInfos.ToArray();
+                }
+
                 var text = string.Join(", ", _planetInfos.Select(e =>
                     $"{e.ID.ToString()}({e.Name})"));
                 Debug.Log($"[PlanetRegistry] initialize succeeded: [{text}]");
@@ -120,6 +135,7 @@ namespace Nekoyume.Multiplanetary
                     }
                 }
             }
+
             return false;
         }
     }
