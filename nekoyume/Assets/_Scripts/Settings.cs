@@ -80,7 +80,7 @@ namespace Nekoyume
             volumeMusic = PlayerPrefs.GetFloat(VolumeMusicKey, 1f);
             volumeSfx = PlayerPrefs.GetFloat(VolumeSfxKey, 1f);
 
-            isVolumeMasterMuted = PlayerPrefs.GetInt(VolumeMasterIsMutedKey,  0) != 0;
+            isVolumeMasterMuted = PlayerPrefs.GetInt(VolumeMasterIsMutedKey, 0) != 0;
             isVolumeMusicMuted = PlayerPrefs.GetInt(VolumeMusicIsMutedKey, 0) != 0;
             isVolumeSfxMuted = PlayerPrefs.GetInt(VolumeSfxIsMutedKey, 0) != 0;
 
