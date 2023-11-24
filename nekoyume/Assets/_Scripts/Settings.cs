@@ -5,7 +5,7 @@ namespace Nekoyume
 {
     public class Settings
     {
-        public static Settings Instance => (_instance is null) ? _instance = new Settings() : _instance;
+        public static Settings Instance => _instance ??= new Settings();
         private static Settings _instance;
 
         private const string VolumeMasterKey = "SETTINGS_VOLUME_MASTER";
@@ -43,6 +43,8 @@ namespace Nekoyume
         public bool isWorldbossPushEnabled = true;
         public bool isPatrolRewardPushEnabled = true;
 
+        public float MasterVolume => isVolumeMasterMuted ? 0 : volumeMaster;
+
         public class Resolution
         {
             public int Width { get; }
@@ -78,9 +80,9 @@ namespace Nekoyume
             volumeMusic = PlayerPrefs.GetFloat(VolumeMusicKey, 1f);
             volumeSfx = PlayerPrefs.GetFloat(VolumeSfxKey, 1f);
 
-            isVolumeMasterMuted = PlayerPrefs.GetInt(VolumeMasterIsMutedKey, 0) == 0 ? false : true;
-            isVolumeMusicMuted = PlayerPrefs.GetInt(VolumeMusicIsMutedKey, 0) == 0 ? false : true;
-            isVolumeSfxMuted = PlayerPrefs.GetInt(VolumeSfxIsMutedKey, 0) == 0 ? false : true;
+            isVolumeMasterMuted = PlayerPrefs.GetInt(VolumeMasterIsMutedKey,  0) != 0;
+            isVolumeMusicMuted = PlayerPrefs.GetInt(VolumeMusicIsMutedKey, 0) != 0;
+            isVolumeSfxMuted = PlayerPrefs.GetInt(VolumeSfxIsMutedKey, 0) != 0;
 
             resolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, 0);
             isWindowed = PlayerPrefs.GetInt(ResolutionWindowedKey, 1) == 1 ? true : false;
