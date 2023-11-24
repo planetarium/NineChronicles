@@ -146,9 +146,8 @@ namespace Nekoyume.Game.Character
                 isDcc = isVisible;
             }
 
-            if (isDcc)
+            if (isDcc && await Dcc.instance.GetParts(id) is {} dccParts)
             {
-                var dccParts = await Dcc.instance.GetParts(id);
                 // ignore full costume
                 SpineController.UnequipFullCostume(false);
                 UpdateArmor(armor, dccParts[DccPartsType.skin], true);
