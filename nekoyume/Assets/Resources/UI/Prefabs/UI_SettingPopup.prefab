@@ -2857,7 +2857,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -4}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: -160, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &1737574172701527266
 CanvasRenderer:
@@ -2914,8 +2914,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 8
@@ -16271,10 +16271,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224898616830980190}
     m_Modifications:
+    - target: {fileID: 855680711893374056, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 855680711893374056, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 22
+      objectReference: {fileID: 0}
     - target: {fileID: 855680711893374070, guid: 936dac6a982dd664fa69abbe93a50c52,
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 855680711893374071, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -160
+      objectReference: {fileID: 0}
+    - target: {fileID: 855680711893374071, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 855680711906279035, guid: 936dac6a982dd664fa69abbe93a50c52,
         type: 3}
