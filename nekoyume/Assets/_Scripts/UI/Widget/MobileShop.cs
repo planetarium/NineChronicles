@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -50,13 +51,32 @@ namespace Nekoyume.UI
             ShowAsync(ignoreShowAnimation);
         }
 
+        public async void ShowAsProduct(ProductSchema product, UnityEngine.Purchasing.Product purchasingData)
+        {
+            await ShowAsync();
+
+            if (!product.Buyable)
+            {
+                return;
+            }
+
+            Analyzer.Instance.Track("Unity/Shop/IAP/LobbyPopup/Click", ("product-id", product.Sku));
+
+            var evt = new AirbridgeEvent("IAP_LobbyPopup_Click");
+            evt.SetAction(product.Sku);
+            evt.AddCustomAttribute("product-id", product.Sku);
+            AirbridgeUnity.TrackEvent(evt);
+
+            Find<ShopListPopup>().Show(product, purchasingData).Forget();
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Game.Event.OnRoomEnter.Invoke(true);
             base.Close(ignoreCloseAnimation);
         }
 
-        private async void ShowAsync(bool ignoreShowAnimation = false)
+        private async Task ShowAsync(bool ignoreShowAnimation = false)
         {
             var loading = Find<LoadingScreen>();
             loading.Show(LoadingScreen.LoadingType.Shop);

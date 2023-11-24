@@ -1,3 +1,6 @@
+using System;
+using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -60,6 +63,26 @@ namespace Nekoyume.UI
 
         private ProductSchema _data;
         private UnityEngine.Purchasing.Product _puchasingData;
+        private bool _isInLobby;
+
+        private const string LastReadingDayKey = "SHOP_LIST_POPUP_LAST_READING_DAY";
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss";
+
+        public bool HasUnread
+        {
+            get
+            {
+                var notReadAtToday = true;
+                if (PlayerPrefs.HasKey(LastReadingDayKey) &&
+                    DateTime.TryParseExact(PlayerPrefs.GetString(LastReadingDayKey),
+                        DateTimeFormat, null, DateTimeStyles.None, out var result))
+                {
+                    notReadAtToday = DateTime.Today != result.Date;
+                }
+
+                return notReadAtToday;
+            }
+        }
 
         protected override void Awake()
         {
@@ -67,6 +90,12 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
+                if (_isInLobby)
+                {
+                    Close();
+                    return;
+                }
+
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/Close", ("product-id", _data.Sku));
 
                 var evt = new AirbridgeEvent("IAP_ShopListPopup_Close");
@@ -79,6 +108,14 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
             buyButton.onClick.AddListener(() =>
             {
+                if (_isInLobby)
+                {
+                    Close();
+
+                    Find<MobileShop>().ShowAsProduct(_data, _puchasingData);
+                    return;
+                }
+
                 Debug.Log($"Purchase: {_data.Sku}");
 
                 Analyzer.Instance.Track("Unity/Shop/IAP/ShopListPopup/PurchaseButton/Click", ("product-id", _data.Sku));
@@ -124,6 +161,7 @@ namespace Nekoyume.UI
             _puchasingData = purchasingData;
 
             Find<MobileShop>().SetLoadingDataScreen(true);
+
             await DownloadTexture();
 
             var metadata = _puchasingData.metadata;
@@ -248,6 +286,30 @@ namespace Nekoyume.UI
 
             Find<MobileShop>().SetLoadingDataScreen(false);
             base.Show(ignoreShowAnimation);
+
+            PlayerPrefs.SetString(LastReadingDayKey, DateTime.Today.ToString(DateTimeFormat));
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            _isInLobby = false;
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public async void ShowAtRoomEntering()
+        {
+            _isInLobby = true;
+
+            var categorySchemas = await MobileShop.GetCategorySchemas();
+            var category = categorySchemas
+                .Where(c => c.Active && c.Name != "NoShow")
+                .OrderBy(c => c.Order).First();
+            var product = category.ProductList
+                .Where(p => p.Active)
+                .OrderBy(p => p.Order).First();
+            var purchasingProduct = Game.Game.instance.IAPStoreManager.IAPProducts
+                .FirstOrDefault(p => p.definition.id == product.Sku);
+            Show(product, purchasingProduct).Forget();
         }
     }
 }
