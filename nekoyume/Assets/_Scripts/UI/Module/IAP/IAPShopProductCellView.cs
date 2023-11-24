@@ -16,7 +16,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI productName;
 
         [SerializeField]
+        private GameObject tagObj;
+
+        [SerializeField]
         private TextMeshProUGUI discount;
+
+        [SerializeField]
+        private TextMeshProUGUI timeLimitText;
 
         [SerializeField]
         private TextMeshProUGUI[] preDiscountPrice;
@@ -165,6 +171,9 @@ namespace Nekoyume.UI.Module
                 item.SetActive(isDiscount);
             }
 
+            tagObj.SetActive(false);
+            discount.gameObject.SetActive(false);
+            timeLimitText.gameObject.SetActive(false);
             if (isDiscount)
             {
                 discount.text = $"{_data.Discount}%";
@@ -174,6 +183,20 @@ namespace Nekoyume.UI.Module
                     var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
+                discount.gameObject.SetActive(true);
+                tagObj.SetActive(true);
+            }
+            else if (_data.DailyLimit != null)
+            {
+                timeLimitText.text = MobileShop.RemainTimeForDailyLimit;
+                timeLimitText.gameObject.SetActive(true);
+                tagObj.SetActive(true);
+            }
+            else if (_data.WeeklyLimit != null)
+            {
+                timeLimitText.text = MobileShop.RemainTimeForWeeklyLimit;
+                timeLimitText.gameObject.SetActive(true);
+                tagObj.SetActive(true);
             }
 
             buyButton.interactable = _data.Buyable;

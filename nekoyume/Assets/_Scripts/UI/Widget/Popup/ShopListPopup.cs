@@ -20,7 +20,13 @@ namespace Nekoyume.UI
         private GameObject[] discountObjs;
 
         [SerializeField]
+        private GameObject tagObj;
+
+        [SerializeField]
         private TextMeshProUGUI discountText;
+
+        [SerializeField]
+        private TextMeshProUGUI timeLimitText;
 
         [SerializeField]
         private TextMeshProUGUI[] preDiscountPrice;
@@ -180,6 +186,10 @@ namespace Nekoyume.UI
                 item.SetActive(isDiscount);
             }
 
+            tagObj.SetActive(false);
+            discountText.gameObject.SetActive(false);
+            timeLimitText.gameObject.SetActive(false);
+
             if (isDiscount)
             {
                 discountText.text = _data.Discount.ToString();
@@ -189,6 +199,8 @@ namespace Nekoyume.UI
                     var origin = MobileShop.GetPrice(metadata.isoCurrencyCode, originPrice);
                     item.text = origin;
                 }
+                tagObj.SetActive(true);
+                discountText.gameObject.SetActive(true);
             }
 
             loadIndicator.SetActive(false);
@@ -216,6 +228,10 @@ namespace Nekoyume.UI
                 buyLimitText.text =
                     $"{L10nManager.Localize("MOBILE_SHOP_PRODUCT_WeeklyLimit", _data.WeeklyLimit.Value)} " +
                     $"({_data.WeeklyLimit.Value - _data.PurchaseCount}/{_data.WeeklyLimit.Value})";
+
+                tagObj.SetActive(true);
+                timeLimitText.text = MobileShop.RemainTimeForWeeklyLimit;
+                timeLimitText.gameObject.SetActive(true);
             }
 
             if (_data.DailyLimit != null)
@@ -224,6 +240,10 @@ namespace Nekoyume.UI
                 buyLimitText.text =
                     $"{L10nManager.Localize("MOBILE_SHOP_PRODUCT_DailyLimit", _data.DailyLimit.Value)} " +
                     $"({_data.DailyLimit.Value - _data.PurchaseCount}/{_data.DailyLimit.Value})";
+
+                tagObj.SetActive(true);
+                timeLimitText.text = MobileShop.RemainTimeForDailyLimit;
+                timeLimitText.gameObject.SetActive(true);
             }
 
             Find<MobileShop>().SetLoadingDataScreen(false);
