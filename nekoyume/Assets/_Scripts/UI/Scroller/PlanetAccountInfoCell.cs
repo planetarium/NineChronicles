@@ -134,7 +134,7 @@ namespace Nekoyume.UI.Scroller
                             format: AccountTextFormat,
                             avatar.Level,
                             avatar.Name,
-                            avatar.Address[..4]);
+                            avatar.Address[..6]);
                         text.gameObject.SetActive(true);
                     }
                     else
