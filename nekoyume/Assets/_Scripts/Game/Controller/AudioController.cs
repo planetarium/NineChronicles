@@ -222,7 +222,7 @@ namespace Nekoyume.Game.Controller
 
         public void Initialize()
         {
-            AudioListener.volume = Settings.Instance.volumeMaster;
+            AudioListener.volume = Settings.Instance.MasterVolume;
 
             if (CurrentState != State.None)
             {
