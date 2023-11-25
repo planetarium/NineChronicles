@@ -122,6 +122,14 @@ namespace Nekoyume.UI.Module
                             return;
                         AudioController.PlayClick();
 
+                        if(Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremium ||
+                        Game.Game.instance.SeasonPassServiceManager.AvatarInfo.Value.IsPremiumPlus)
+                        {
+                            var tooltip = ItemTooltip.Find(itemBaseForToolTip.ItemType);
+                            tooltip.Show(itemBaseForToolTip, string.Empty, false, null);
+                            return;
+                        }
+
                         if (ItemView.LevelLimitObject.activeSelf && isNotPremium)
                         {
                             OneLineSystem.Push(MailType.System,
